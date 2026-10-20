@@ -50,6 +50,7 @@ import subprocess
 import statistics
 import sys
 import traceback
+import uuid
 import xml.etree.ElementTree as ET
 from datetime import datetime, timezone
 from pathlib import Path
@@ -901,11 +902,19 @@ class MainPipeline:
         self.out_dir = self.settings.output_dir()
         ensure_dir(self.out_dir)
 
+        # Terminal run identity (generated once at admission)
+        self._run_id = uuid.uuid4().hex
+        self._run_started_at = datetime.now(timezone.utc).isoformat()
+        self._source_sha = self._get_source_sha()
+        self._profile = self._get_effective_profile()
+        self._settings_digest = self._compute_settings_digest()
+        self._write_run_identity()
+
         # Optional preanchoring provenance (opt-in; default OFF)
         self._preanchor_manifest: dict = {"applied": False}
         self._sumo_repair_meta: dict = {"enabled": False}
 
-        self.vreport = ValidationReport()
+        self.vreport = ValidationReport(run_id=self._run_id)
         self.qgate = QualityGateManager(self.vreport, logs_dir=self.settings.logs_dir())
 
         # 🚗 CARLA client (reliable, with recovery)
@@ -955,6 +964,85 @@ class MainPipeline:
     def _mark_stage(self, stage: str, *, message: str | None = None) -> None:
         self._run_stage = str(stage)
         self._write_run_status(status="running", stage=self._run_stage, message=message)
+
+    # -----------------------------------------------------
+    # 🏷️ TERMINAL RUN IDENTITY & STALE SUCCESS REVOCATION
+    # -----------------------------------------------------
+    def _get_source_sha(self) -> str:
+        """Return the current Git commit SHA, or a deterministic placeholder."""
+        try:
+            import subprocess
+            repo_root = Path(__file__).resolve().parents[2]
+            result = subprocess.run(
+                ["git", "rev-parse", "HEAD"],
+                cwd=repo_root,
+                capture_output=True,
+                text=True,
+                timeout=5,
+            )
+            if result.returncode == 0:
+                return result.stdout.strip()
+        except Exception:
+            pass
+        return "unknown"
+
+    def _get_effective_profile(self) -> str:
+        """Resolve the effective release profile from settings or environment."""
+        profile = getattr(self.settings, "RELEASE_PROFILE", "")
+        if not profile:
+            profile = os.getenv("UP_RELEASE_PROFILE", "")
+        if not profile:
+            profile = "structural_release"
+        return profile.lower()
+
+    def _compute_settings_digest(self) -> str:
+        """Compute a deterministic SHA-256 of the effective settings snapshot."""
+        try:
+            s = self.settings
+            snapshot = {
+                k: getattr(s, k)
+                for k in dir(s)
+                if k.isupper() and not callable(getattr(s, k))
+            }
+            blob = json.dumps(snapshot, sort_keys=True, default=str).encode("utf-8")
+            return hashlib.sha256(blob).hexdigest()
+        except Exception:
+            return ""
+
+    def _write_run_identity(self) -> None:
+        """Write run_identity.json at admission time."""
+        try:
+            identity = {
+                "run_id": self._run_id,
+                "source_sha": self._source_sha,
+                "profile": self._profile,
+                "settings_digest": self._settings_digest,
+                "started_at_utc": self._run_started_at,
+                "out_dir": self.out_dir,
+            }
+            path = Path(self.out_dir) / "run_identity.json"
+            path.write_text(json.dumps(identity, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+        except Exception as e:
+            print(f"⚠️ Failed to write run_identity.json: {e}")
+
+    def _revoke_stale_success(self) -> None:
+        """Detect and revoke any pre-existing SUCCESS.txt before a new run mutates state."""
+        success_path = Path(self.out_dir) / "SUCCESS.txt"
+        if success_path.is_file():
+            try:
+                stale_hash = hashlib.sha256(success_path.read_bytes()).hexdigest()[:16]
+            except Exception:
+                stale_hash = "unreadable"
+            try:
+                success_path.unlink()
+                print(f"🗑️  Revoked stale SUCCESS.txt (sha256:{stale_hash}) from previous run")
+            except Exception as e:
+                print(f"⚠️ Failed to revoke stale SUCCESS.txt: {e}")
+
+    def _find_final_xodr(self) -> str:
+        """Return the path to the final XODR artifact for this run."""
+        s = self.settings
+        return str(s.stage_path("08_final"))
 
     # -----------------------------------------------------
     # 🚀 MAIN ENTRY
@@ -1627,6 +1715,9 @@ if str(_repo_root) not in sys.path:
         - on success: returns self.out_dir
         - on failure: writes crash artifacts into self.out_dir and re-raises
         """
+        # Revoke any stale SUCCESS from a previous run before mutating state.
+        self._revoke_stale_success()
+
         try:
             settings_blob = json.dumps(
                 {
@@ -1644,14 +1735,45 @@ if str(_repo_root) not in sys.path:
             self._mark_stage("start")
             self._validate_stage_capability_contract()
             self._run_internal()
-            try:
-                from ultimate_pipeline.quality.pipeline_health_summary import (
-                    write_pipeline_health_summary,
+
+            # ── TERMINAL CHAIN (strict ordering) ──────────────────────
+            # 1. Pipeline health (must succeed; not fail-open)
+            from ultimate_pipeline.quality.pipeline_health_summary import (
+                write_pipeline_health_summary,
+            )
+            write_pipeline_health_summary(self.out_dir)
+
+            # 2. Final run verdict (uses actual profile & settings)
+            from ultimate_pipeline.signals.verdict import write_final_run_verdict
+            final_xodr_path = self._find_final_xodr()
+            write_final_run_verdict(
+                self.out_dir,
+                profile=self._profile,
+                settings=self.settings,
+                final_xodr=final_xodr_path,
+            )
+
+            # 3. Registry-derived mandatory pack finalization
+            from ultimate_pipeline.signals.registry import mandatory_pack_artifacts
+            from ultimate_pipeline.utils.finalize_run_pack import (
+                finalize_run_pack,
+                verify_run_pack,
+            )
+            mandatory = mandatory_pack_artifacts(
+                self._profile,
+                final_xodr_path,
+                settings=self.settings,
+            )
+            finalize_run_pack(self.out_dir, mandatory, emit_success=True)
+
+            # 4. Post-publication verification
+            verify_result = verify_run_pack(self.out_dir)
+            if verify_result.get("status") != "PASS":
+                raise RuntimeError(
+                    f"Terminal pack verification failed: {verify_result.get('problems', [])}"
                 )
 
-                write_pipeline_health_summary(self.out_dir)
-            except Exception as e:
-                print(f"⚠️ Pipeline health summary skipped: {e}")
+            # 5. Terminal run status (only after full chain passes)
             self._write_run_status(status="ok", stage="done")
             return self.out_dir
         except Exception as e:
@@ -3814,36 +3936,6 @@ if str(_repo_root) not in sys.path:
             )
         return verdict
 
-    def _finalize_run_pack_gated(self, key_paths, *, mandatory=None,
-                                 summary: str = "") -> dict:
-        """Finalize the run pack, emitting the success marker only on PASS.
-
-        This is the production producer declared by
-        ``ultimate_pipeline/signals/registry.py`` for the ``SUCCESS_MARKER``
-        hard-gate signal. It enforces the registry invariant: the success
-        marker may only be published when the final run verdict is PASS. The
-        verdict is produced first, so a failing or unwritable verdict fails
-        closed and no success marker can appear.
-        """
-        from ultimate_pipeline.signals.verdict import VERDICT_PASS
-        from ultimate_pipeline.utils.finalize_run_pack import finalize_run_pack
-
-        verdict = self._compute_final_run_verdict()
-        emit_success = verdict.get("status") == VERDICT_PASS
-        if not emit_success:
-            print(
-                "[WARN] final run verdict is "
-                f"{verdict.get('status')!r}; the success marker will NOT be "
-                "emitted (SUCCESS_MARKER invariant)"
-            )
-        return finalize_run_pack(
-            self.out_dir,
-            key_paths,
-            mandatory=mandatory,
-            summary=summary,
-            emit_success=emit_success,
-        )
-
     def _final_summary_and_llm(self, final_out: str) -> None:
         s = self.settings
         vreport_path = os.path.join(s.logs_dir(), "validation_report_full.json")
@@ -3943,37 +4035,6 @@ if str(_repo_root) not in sys.path:
                     write_drivability_sanity(self.out_dir, xodr_path)
         except Exception:
             pass
-
-        try:
-            # V5/NEW-202 (D16): the final map itself is mandatory. The supporting
-            # reports are only produced when their stage ran, so they are
-            # conditional: hashed into the manifest when present, but their
-            # absence does not by itself block SUCCESS.txt.
-            mandatory_artifacts = [final_out]
-            conditional_artifacts = [
-                os.path.join(self.out_dir, "tile_metadata.json"),
-                vreport_path,
-                os.path.join(self.out_dir, "domain_gap", "full_report.json"),
-                os.path.join(self.out_dir, "domain_gap", "summary.csv"),
-                os.path.join(self.out_dir, "perception_status.json"),
-            ]
-            receipt = self._finalize_run_pack_gated(
-                mandatory_artifacts + conditional_artifacts,
-                mandatory=mandatory_artifacts,
-                summary="main_pipeline",
-            )
-            if receipt["status"] != "PASS":
-                raise RuntimeError(
-                    "mandatory run-pack finalization failed: "
-                    + "; ".join(
-                        f"{f['key'] or f['requested']} ({f['category']})"
-                        for f in receipt["failures"]
-                    )
-                )
-        except Exception as exc:
-            raise RuntimeError(
-                f"Failed to write mandatory finalization artifacts (signature/success marker): {exc}"
-            ) from exc
 
         repair_diff_path = os.path.join(self.out_dir, "repair_diff.json")
         diff_log.save(repair_diff_path)
