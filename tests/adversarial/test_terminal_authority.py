@@ -261,36 +261,47 @@ class TestStaleSuccessRevocation:
         _write_fake_previous_run(tmp_path, "old-run-123")
         assert (tmp_path / "SUCCESS.txt").exists()
 
-        # Simulate new run admission: should revoke stale SUCCESS
-        from ultimate_pipeline.main_pipeline import MainPipeline
-        from ultimate_pipeline.config import settings as settings_mod
+        # Simulate new run admission: should revoke stale SUCCESS using REAL production method
+        from ultimate_pipeline.core.terminal_authority import revoke_stale_success
 
-        # We can't easily instantiate MainPipeline without full settings,
-        # so test the revocation logic directly
-        from ultimate_pipeline.main_pipeline import MainPipeline as MP
-
-        # Create a minimal pipeline instance to test _revoke_stale_success
-        class MockSettings:
-            def output_dir(self): return str(tmp_path)
-            RELEASE_PROFILE = "structural_release"
-
-        class MockPipeline:
-            out_dir = str(tmp_path)
-            _run_id = "new-run-456"
-
-            def _revoke_stale_success(self):
-                from pathlib import Path as P
-                import hashlib
-                success_path = P(self.out_dir) / "SUCCESS.txt"
-                if success_path.is_file():
-                    stale_hash = hashlib.sha256(success_path.read_bytes()).hexdigest()[:16]
-                    success_path.unlink()
-                    print(f"Revoked stale SUCCESS.txt (sha256:{stale_hash})")
-
-        mp = MockPipeline()
-        mp._revoke_stale_success()
+        # Call the real production function directly
+        revoke_stale_success(tmp_path)
 
         assert not (tmp_path / "SUCCESS.txt").exists(), "Stale SUCCESS.txt was not revoked"
+
+    def test_stale_success_idempotent_when_absent(self, tmp_path: Path):
+        """If no SUCCESS.txt exists, revoke_stale_success is idempotent (no error)."""
+        from ultimate_pipeline.core.terminal_authority import revoke_stale_success
+
+        # Should not raise
+        revoke_stale_success(tmp_path)
+        assert not (tmp_path / "SUCCESS.txt").exists()
+
+    def test_stale_success_deletion_failure_fails_closed(self, tmp_path: Path, monkeypatch):
+        """If SUCCESS.txt exists but cannot be deleted, the function must raise."""
+        from ultimate_pipeline.core.terminal_authority import revoke_stale_success
+
+        # Create a stale SUCCESS.txt
+        (tmp_path / "SUCCESS.txt").write_text("OK 2026-01-01T00:00:00Z\nstatus=PASS\n", encoding="utf-8")
+        assert (tmp_path / "SUCCESS.txt").exists()
+
+        # Make the file undeletable by patching Path.unlink to raise
+        from pathlib import Path as P
+        original_unlink = P.unlink
+
+        def failing_unlink(self, missing_ok=False):
+            if self.name == "SUCCESS.txt":
+                raise PermissionError("Permission denied")
+            return original_unlink(self, missing_ok)
+
+        monkeypatch.setattr(P, "unlink", failing_unlink)
+
+        import pytest
+        with pytest.raises(RuntimeError, match="Failed to revoke stale SUCCESS.txt"):
+            revoke_stale_success(tmp_path)
+
+        # SUCCESS.txt should still exist (deletion failed)
+        assert (tmp_path / "SUCCESS.txt").exists()
 
 
 class TestStaleEvidenceRejection:
@@ -491,3 +502,139 @@ class TestNoLateWritesAfterSuccess:
 
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])
+
+
+class TestMainPipelineRunTerminalChain:
+    """Test that the real MainPipeline.run() executes the terminal chain correctly."""
+
+    def test_run_executes_terminal_chain_in_order(self, tmp_path: Path, monkeypatch):
+        """Verify MainPipeline.run() calls terminal chain steps in correct order."""
+        from ultimate_pipeline.main_pipeline import MainPipeline
+
+        # Create minimal settings object
+        class MockSettings:
+            def output_dir(self): return str(tmp_path)
+            def logs_dir(self): return str(tmp_path / "logs")
+            RELEASE_PROFILE = "structural_release"
+            ENABLE_CARLA = False
+            DETERMINISTIC_MODE = False
+            KEEP_LAST_RUNS = 10
+            INPUT_XODR = str(tmp_path / "input.xodr")
+            OSM_FILE = str(tmp_path / "input.osm")
+            DEM_TIF = str(tmp_path / "dem.tif")
+            GPS_BOUNDS = {"lat_min": 0, "lat_max": 1, "lon_min": 0, "lon_max": 1}
+            BASE_OUTPUT_DIR = str(tmp_path)
+            LOG_DIR = str(tmp_path / "logs")
+            STAGE_DIRS = {}
+            def stage_path(self, name): return str(tmp_path / f"{name}.xodr")
+            def load_gps_bounds(self): return self.GPS_BOUNDS
+            def to_dict(self): return {}
+
+        # Create required input files
+        (tmp_path / "input.xodr").write_text("<?xml version='1.0'?><OpenDRIVE/>", encoding="utf-8")
+        (tmp_path / "input.osm").write_text("<osm/>", encoding="utf-8")
+        (tmp_path / "dem.tif").write_text("dummy", encoding="utf-8")
+        (tmp_path / "logs").mkdir(exist_ok=True)
+
+        # Create pipeline instance
+        pipeline = MainPipeline(settings=MockSettings())
+
+        # Track terminal chain calls
+        terminal_calls = []
+
+        # Mock _run_internal (the heavy pipeline stages)
+        original_run_internal = pipeline._run_internal
+        def mock_run_internal():
+            terminal_calls.append("_run_internal")
+            # Create minimal artifacts that the terminal chain expects
+            pipeline._write_run_identity()  # Already done in __init__, but ensure it's there
+        pipeline._run_internal = mock_run_internal
+
+        # Mock the terminal chain steps to track order
+        from ultimate_pipeline.quality import pipeline_health_summary as phs_module
+        original_write_health = phs_module.write_pipeline_health_summary
+        def mock_write_health(out_dir, stage_reports_dir=None, expected_gates=None):
+            terminal_calls.append("write_pipeline_health_summary")
+            # Create minimal health summary
+            (Path(out_dir) / "pipeline_health_summary.json").write_text(
+                json.dumps({"schema": "pipeline_health_summary/v1", "overall_ok": True, "gates": {}}, indent=2),
+                encoding="utf-8"
+            )
+        monkeypatch.setattr(phs_module, "write_pipeline_health_summary", mock_write_health)
+
+        from ultimate_pipeline.signals import verdict as verdict_module
+        original_write_verdict = verdict_module.write_final_run_verdict
+        def mock_write_verdict(out_dir, profile=None, settings=None, env=None, final_xodr=None):
+            terminal_calls.append("write_final_run_verdict")
+            (Path(out_dir) / "final_run_verdict.json").write_text(
+                json.dumps({"schema": "final_run_verdict/v1", "status": "PASS", "run_status_ok": True}, indent=2),
+                encoding="utf-8"
+            )
+            return {"status": "PASS"}
+        monkeypatch.setattr(verdict_module, "write_final_run_verdict", mock_write_verdict)
+
+        from ultimate_pipeline.signals import registry as registry_module
+        original_mandatory = registry_module.mandatory_pack_artifacts
+        def mock_mandatory(profile, final_xodr, settings=None):
+            terminal_calls.append("mandatory_pack_artifacts")
+            return [final_xodr, str(tmp_path / "pipeline_health_summary.json")]
+        monkeypatch.setattr(registry_module, "mandatory_pack_artifacts", mock_mandatory)
+
+        from ultimate_pipeline.utils import finalize_run_pack as frp_module
+        original_finalize = frp_module.finalize_run_pack
+        def mock_finalize(out_dir, key_paths, summary="", mandatory=None, emit_success=True):
+            terminal_calls.append("finalize_run_pack")
+            # Create a minimal PASS receipt
+            from ultimate_pipeline.utils.finalize_run_pack import STATUS_PASS
+            receipt = {
+                "schema": "RUN_PACK_FINALIZATION/v2",
+                "status": STATUS_PASS,
+                "files": {Path(k).name: "a" * 64 for k in key_paths if isinstance(k, str)},
+            }
+            # Write signature.json and SUCCESS.txt
+            import json as _json
+            sig_path = Path(out_dir) / "signature.json"
+            sig_path.write_text(_json.dumps(receipt, indent=2) + "\n", encoding="utf-8")
+            if emit_success:
+                (Path(out_dir) / "SUCCESS.txt").write_text("OK 2026-01-01T00:00:00Z\nstatus=PASS\n", encoding="utf-8")
+            return receipt
+        monkeypatch.setattr(frp_module, "finalize_run_pack", mock_finalize)
+
+        original_verify = frp_module.verify_run_pack
+        def mock_verify(out_dir):
+            terminal_calls.append("verify_run_pack")
+            return {"schema": "RUN_PACK_VERIFICATION/v2", "status": "PASS", "problems": []}
+        monkeypatch.setattr(frp_module, "verify_run_pack", mock_verify)
+
+        # Mock _write_run_status to track final status write
+        original_write_status = pipeline._write_run_status
+        def mock_write_status(status, stage, message=None, error=None):
+            terminal_calls.append(f"_write_run_status({status})")
+            return original_write_status(status=status, stage=stage, message=message, error=error)
+        pipeline._write_run_status = mock_write_status
+
+        # Run the pipeline
+        result = pipeline.run()
+
+        # Verify terminal chain was executed in correct order
+        expected_order = [
+            "_write_run_status(running)",
+            "_run_internal",
+            "write_pipeline_health_summary",
+            "write_final_run_verdict",
+            "mandatory_pack_artifacts",
+            "finalize_run_pack",
+            "verify_run_pack",
+            "_write_run_status(ok)",
+        ]
+        assert terminal_calls == expected_order, f"Terminal chain order mismatch: {terminal_calls}"
+
+        # Verify SUCCESS.txt was created
+        assert (tmp_path / "SUCCESS.txt").exists()
+        success_content = (tmp_path / "SUCCESS.txt").read_text(encoding="utf-8")
+        assert success_content.startswith("OK ")
+
+        # Verify run_status.json is "ok"
+        run_status = json.loads((tmp_path / "run_status.json").read_text(encoding="utf-8"))
+        assert run_status["status"] == "ok"
+        assert run_status["stage"] == "done"
