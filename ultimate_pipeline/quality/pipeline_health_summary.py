@@ -15,9 +15,6 @@ import os
 from datetime import datetime, timezone
 from typing import Any, Dict, Iterable, List, Optional, Tuple
 
-# Import expected health gates from registry for authoritative gate list
-from ultimate_pipeline.signals.registry import expected_health_gates
-
 
 def _utc_now() -> str:
     return datetime.now(timezone.utc).isoformat()
@@ -208,7 +205,7 @@ def build_pipeline_health_summary(
         "malformed_gates": [],
         "gates": {},
         "per_stage_failures": {},
-        "malformed_gates": [],
+        "malformed_gate_reports": [],
         "tolerances": {},
         "run_metadata": {
             "map_name": None,
@@ -217,12 +214,6 @@ def build_pipeline_health_summary(
             "junctions": None,
         },
     }
-    # Use registry-derived expected gates by default
-    if expected_gates is None:
-        try:
-            expected_gates = expected_health_gates()
-        except Exception:
-            expected_gates = []
     expected: list[str] = sorted({str(g).strip() for g in (expected_gates or []) if str(g).strip()})
     summary["expected_gates"] = list(expected)
 

@@ -1709,7 +1709,10 @@ if str(_repo_root) not in sys.path:
             from ultimate_pipeline.quality.pipeline_health_summary import (
                 write_pipeline_health_summary,
             )
-            write_pipeline_health_summary(self.out_dir)
+            from ultimate_pipeline.signals.registry import expected_health_gates
+            write_pipeline_health_summary(
+                self.out_dir, expected_gates=expected_health_gates()
+            )
 
             # 2. Final run verdict (uses actual profile & settings)
             from ultimate_pipeline.signals.verdict import write_final_run_verdict
