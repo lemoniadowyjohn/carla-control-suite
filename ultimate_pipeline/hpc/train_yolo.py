@@ -6,13 +6,6 @@ import json
 import os
 from typing import Dict, Any
 
-from ultimate_pipeline.domain_gap.perception_gap import (
-    PerceptionMetrics,
-    PerceptionGap,
-)
-from ultimate_pipeline.domain_gap.experiment_logger import ExperimentLogger
-
-
 
 ###############################################################################
 #  TRAINING + EVALUATION PLACEHOLDER
@@ -23,36 +16,40 @@ def train_and_eval_model(cfg: Dict[str, Any]) -> Dict[str, Any]:
     """Train and evaluate a YOLO model.
 
     If Ultralytics is installed, this calls `YOLOBackend.train_and_eval(cfg)`.
-    Otherwise, it falls back to a deterministic placeholder so the pipeline
-    scripts remain runnable in minimal environments.
+    Otherwise, it raises an explicit error rather than fabricating metrics.
     """
+    # First check if ultralytics is importable WITHOUT importing yolo_backend
+    # (which transitively imports heavy deps like shapely, matplotlib)
+    try:
+        import ultralytics
+    except ImportError as exc:
+        raise RuntimeError(
+            "Ultralytics not installed; cannot train or evaluate YOLO model. "
+            "Install ultralytics or provide a trained model. "
+            f"Original error: {exc}"
+        ) from exc
+
+    # Ultralytics available, now safe to import the backend
     try:
         from ultimate_pipeline.hpc.yolo_backend import YOLOBackend
         return YOLOBackend.train_and_eval(cfg)
-    except Exception:
-        # Minimal fallback (keeps legacy scripts working without Ultralytics).
-        return {
-            "miou": {"road": 0.80, "building": 0.65, "lane": 0.72},
-            "mAP": 0.75,
-        }
+    except Exception as exc:
+        raise RuntimeError(
+            f"YOLO training/evaluation failed: {exc}"
+        ) from exc
 
 
-###############################################################################
-#  PERCEPTION METRIC EXTRACTION
-###############################################################################
-
-def extract_perception_metrics(results: Dict[str, Any]) -> PerceptionMetrics:
+def extract_perception_metrics(results: Dict[str, Any]) -> Any:
     """
     Convert YOLO training results into PerceptionMetrics.
+
+    Lazy import to avoid matplotlib dependency when not training.
     """
+    from ultimate_pipeline.domain_gap.perception_gap import PerceptionMetrics
     miou = results.get("miou", {})
     mAP = results.get("mAP", 0.0)
     return PerceptionMetrics(miou=miou, map_score=mAP)
 
-
-###############################################################################
-#  MAIN EXPERIMENT DRIVER
-###############################################################################
 
 def parse_args():
     ap = argparse.ArgumentParser()
@@ -88,11 +85,12 @@ def main():
     auto_metrics = perception_metrics
 
     # Placeholder manual metrics (replace later)
-    manual_metrics = PerceptionMetrics(
+    manual_metrics = type(auto_metrics)(
         miou={k: v + 0.05 for k, v in auto_metrics.miou.items()},
         map_score=auto_metrics.map_score + 0.03,
     )
 
+    from ultimate_pipeline.domain_gap.perception_gap import PerceptionGap
     perception_gap = PerceptionGap.compare(
         manual=manual_metrics,
         auto=auto_metrics
@@ -112,6 +110,7 @@ def main():
     ###############################################
     os.makedirs("logs/hpc", exist_ok=True)
 
+    from ultimate_pipeline.domain_gap.experiment_logger import ExperimentLogger
     out_path = f"logs/hpc/{args.exp_name}_full_report.json"
     ExperimentLogger.write_report(
         exp_name=args.exp_name,
