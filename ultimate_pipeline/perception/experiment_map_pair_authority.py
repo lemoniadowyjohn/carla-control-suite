@@ -231,7 +231,17 @@ def create_experiment_manifest(
     if accepted_pairing_keys is None or len(accepted_pairing_keys) == 0:
         invalid_reasons.append("accepted_frame_pairing_keys_empty")
 
-    # 7. Build candidate and validate through the STRICT downstream contract
+    # 7. Derive pair-validity from evidence predicates (never trust caller flag)
+    derived_pair_valid = (
+        len(invalid_reasons) == 0
+        and bool(route_manifest_sha256)
+        and bool(capture_completion_receipt_sha256)
+        and (terminal_status == "COMPLETED" or not terminal_status)
+        and bool(dataset_content_sha256)
+        and (accepted_pairing_keys is not None and len(accepted_pairing_keys) > 0)
+    )
+
+    # 8. Build candidate with DERIVED predicate, then validate
     candidate = build_pair_manifest(
         pair_id=pair_id, software_git_sha=software_git_sha,
         carla_client_version=carla_client_version, carla_server_version=carla_server_version,
