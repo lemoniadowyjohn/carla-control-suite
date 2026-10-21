@@ -174,7 +174,7 @@ def _z_at_ref(road: ET.Element, at_start: bool) -> Optional[float]:
     s0, attr = seg
     a, b, c, d = (_safe_float(attr.get(k, "0")) for k in ("a", "b", "c", "d"))
     ds = max(0.0, s_target - s0)
-    return a + b * ds + c * ds * ds + d * ds * ds
+    return a + b * ds + c * ds * ds + d * ds ** 3
 
 
 def _grade_bit(road: ET.Element, at_start: bool) -> float:
@@ -203,94 +203,63 @@ def _length_of(road: ET.Element) -> float:
 # ---------------------------------------------------------------------------
 
 def scan_dangling_mandatory_lane_successors(root: ET.Element) -> Dict[str, Any]:
-    """Every driving lane of every road that terminates at a junction must be
-    routed through that junction's connections/laneLinks. A road boundary lane
-    with no candidate laneLink is a dangling mandatory successor.
+    """Audit-semantics P0-A scan: mirrors final_integrity exactly.
+
+    The authoritative measure is ``check_lane_connectivity.find_broken_lanes_detailed``
+    (the module behind stage-8 ``assert_all_lanes_have_successors``): a driving
+    lane requires either a lane-level ``<successor>`` or, at the terminal
+    section of a junction-boundary road, provisionally valid junction laneLink
+    connectivity. This scan delegates so the oracle can never diverge from the
+    gate, and adds GAP-048 candidate classification (ambiguous fork vs
+    no-candidate) as diagnostic enrichment.
     """
+    from ultimate_pipeline.quality.check_lane_connectivity import (
+        find_broken_lanes_detailed,
+    )
+
     roads = _roads(root)
-    lanes_records: List[Dict[str, Any]] = []
+    broken = find_broken_lanes_detailed(root, allow_dead_ends=True)
 
-    # junction membership: road_id -> set(junction ids whose connections name it)
-    connection_index: Dict[str, List[ET.Element]] = {}
-    for junction in root.findall("junction"):
-        for conn in junction.findall("connection"):
-            incoming = conn.get("incomingRoad")
-            if incoming:
-                connection_index.setdefault(incoming, []).append(junction)
+    # GAP-048 enrichment: count distinct validated laneLink targets per broken
+    # terminal lane (0 => NO_CANDIDATE_ROUTING, >=2 => VALID_AMBIGUITY_FORK).
+    by_reason: Dict[str, int] = {}
+    by_candidate_class: Dict[str, int] = {}
+    records: List[Dict[str, Any]] = []
+    for b in broken:
+        rid = str(b["road_id"])
+        lane_id = str(b["lane_id"])
+        by_reason[b["reason"]] = by_reason.get(b["reason"], 0) + 1
 
-    for rid, road in roads.items():
-        # a road is junction-terminating if it has no successor road link and
-        # is an incomingRoad inside a junction's connection set; roads with a
-        # road successor whose element type is "junction" count too.
-        end_side_is_junction = False
-        junction_ids: set = set()
-        link = road.find("./link/successor")
-        if link is not None and link.get("elementType") == "junction":
-            end_side_is_junction = True
-            if link.get("elementId"):
-                junction_ids.add(link.get("elementId"))
-        for junc_id in connection_index.get(rid, []):
-            junction_ids.add(junc_id.get("id"))
-            if not end_side_is_junction and junction_ids:
-                end_side_is_junction = True
-
-        if not end_side_is_junction:
-            continue
-
-        secs = _sorted_sections(road)
-        if not secs:
-            continue
-        boundary = secs[-1]  # the end section faces the junction
-        driving = _driving_lanes(boundary)
-        for lane_id, lane in driving.items():
-            # junction routing membership: ∃ connection of a containing
-            # junction with incomingRoad == rid and a laneLink from == lane_id
-            candidates: List[Tuple[str, str]] = []
-            routed = False
+        targets: set = set()
+        road = roads.get(rid)
+        if road is not None:
             for junc in root.findall("junction"):
                 for conn in junc.findall("connection"):
                     if conn.get("incomingRoad") != rid:
                         continue
-                    has_link = any(
-                        str(ll.get("from")) == str(lane_id)
-                        for ll in conn.findall("laneLink")
-                    )
-                    candidates.append((junc.get("id"), conn.get("connectingRoad")))
-                    routed = routed or has_link
-            record = {
-                "road_id": rid,
-                "lane_id": lane_id,
-                "road_length_m": round(_length_of(road), 3),
-                "junctions_connected": sorted(junction_ids),
-                "candidate_connections": len(candidates),
-                "routed": routed,
-                "classification": None,
-            }
-            if not routed:
-                if len({c[1] for c in candidates}) > 1:
-                    record["classification"] = "VALID_AMBIGUITY_CANDIDATE"
-                record["candidates"] = candidates[:8]
-                lanes_records.append(record)
-
-    dangling_records = []
-    for r in lanes_records:
-        if r["routed"]:
-            continue
-        distinct_connectors = {c[1] for c in r.get("candidates", [])}
-        if len(distinct_connectors) > 1:
-            r["classification"] = "VALID_AMBIGUITY"
+                    for ll in conn.findall("laneLink"):
+                        if str(ll.get("from")) == lane_id:
+                            targets.add((conn.get("connectingRoad"), str(ll.get("to"))))
+        if len(targets) == 0:
+            cand_class = "NO_CANDIDATE_ROUTING"
+        elif len({c[0] for c in targets}) > 1:
+            cand_class = "VALID_AMBIGUITY_FORK"
         else:
-            r["classification"] = "NO_CANDIDATE_ROUTING"
-        dangling_records.append(r)
+            cand_class = "SINGLE_CONNECTOR_MULTI_LANE"
+        by_candidate_class[cand_class] = by_candidate_class.get(cand_class, 0) + 1
 
-    classes: Dict[str, int] = {}
-    for r in dangling_records:
-        classes[r["classification"]] = classes.get(r["classification"], 0) + 1
+        rec = {**b, "candidate_class": cand_class}
+        if cand_class != "NO_CANDIDATE_ROUTING":
+            rec["candidate_targets"] = sorted(f"{c[0]}/{c[1]}" for c in targets)[:8]
+        records.append(rec)
+
     return {
-        "mandatory_lanes_checked": len(lanes_records),
-        "dangling_mandatory_lane_successors": len(dangling_records),
-        "dangling_by_class": classes,
-        "dangling_records": dangling_records,
+        "checker": "check_lane_connectivity.find_broken_lanes_detailed (final_integrity semantics)",
+        "allow_dead_ends": True,
+        "dangling_mandatory_lane_successors": len(broken),
+        "dangling_by_reason": by_reason,
+        "dangling_by_class": by_candidate_class,
+        "dangling_records": records,
     }
 
 
@@ -299,9 +268,19 @@ def scan_dangling_mandatory_lane_successors(root: ET.Element) -> Dict[str, Any]:
 # ---------------------------------------------------------------------------
 
 def scan_orphan_drivable_roads(root: ET.Element) -> Dict[str, Any]:
-    """CLOSURE-18 definition: a road with >=1 driving lane that has no
-    predecessor/successor road link and is not a member of any junction
-    connection (neither incomingRoad nor connectingRoad) is an orphan."""
+    """P0-B orphan scan, CLOSURE-18 reconciliation.
+
+    Two classes are tracked separately and never merged:
+    - ``ORPHAN_FULLY_DISCONNECTED``: a road with >= 1 driving lane that has no
+      predecessor/successor link element of any kind and is not a member of
+      any junction connection (incomingRoad or connectingRoad). This is the
+      authoritative orphan class that gates admission (CLOSURE-18: 6 roads on
+      the 20261014 regen artifacts; expected 0 on a correct candidate).
+    - ``JUNCTION_LINK_UNRESOLVED``: a road that declares a junction-type link
+      but no junction connection honours it (half-wired). Diagnostic only;
+      road 42335 (predecessor junction 11, no connection membership) is the
+      canonical sample on the map of record.
+    """
     roads = _roads(root)
     junction_roads: set = set()
     for junction in root.findall("junction"):
@@ -310,30 +289,73 @@ def scan_orphan_drivable_roads(root: ET.Element) -> Dict[str, Any]:
                 if rid:
                     junction_roads.add(rid)
 
+    def _geom_kind(geom: ET.Element) -> str:
+        for tag in ("line", "paramPoly3", "poly3", "arc", "spiral"):
+            if geom.find(tag) is not None:
+                return tag
+        return "other"
+
     orphans: List[Dict[str, Any]] = []
+    normal = 0
+    junction_connected = 0
     for rid, road in roads.items():
-        has_driving = any(
-            len(_driving_lanes(sec)) for sec in _sorted_sections(road)
-        )
-        if not has_driving or rid in junction_roads:
+        if rid in junction_roads:
+            junction_connected += 1
             continue
         links = road.find("./link")
         pred = links.find("predecessor") if links is not None else None
         succ = links.find("successor") if links is not None else None
-        pred_road = pred is not None and pred.get("elementType") != "junction" and pred.get("elementId") in roads
-        succ_road = succ is not None and succ.get("elementType") != "junction" and succ.get("elementId") in roads
-        if pred_road or succ_road:
+        road_road_link = (
+            (pred is not None and pred.get("elementType") != "junction"
+             and pred.get("elementId") in roads)
+            or (succ is not None and succ.get("elementType") != "junction"
+                and succ.get("elementId") in roads)
+        )
+        if road_road_link:
+            normal += 1
             continue
+        driving_total = sum(
+            len(_driving_lanes(sec)) for sec in _sorted_sections(road)
+        )
+        if not driving_total:
+            normal += 1
+            continue
+        geoms = road.findall("./planView/geometry")
+        referenced_junction = (
+            pred.get("elementId") if pred is not None and pred.get("elementType") == "junction"
+            else (succ.get("elementId") if succ is not None and succ.get("elementType") == "junction" else None)
+        )
         orphans.append({
             "road_id": rid,
             "length_m": round(_length_of(road), 3),
             "predecessor": (pred.attrib if pred is not None else None),
             "successor": (succ.attrib if succ is not None else None),
+            "driving_lanes": driving_total,
+            "geometry_types": [_geom_kind(g) for g in geoms],
+            "referenced_junction": referenced_junction,
         })
     for rec in orphans:
-        rec["classification"] = "UNEXPLAINED"
+        # CLOSURE-18 orphan semantics: fully disconnected = no road-road link
+        # AND no junction connection membership. Roads that still declare a
+        # junction-type link which no junction connection honours are the
+        # half-wired class -- tracked separately, never merged into the orphan
+        # count that gates admission.
+        has_any_link = rec["predecessor"] is not None or rec["successor"] is not None
+        rec["classification"] = (
+            "JUNCTION_LINK_UNRESOLVED" if has_any_link else "ORPHAN_FULLY_DISCONNECTED"
+        )
+    fully_disconnected = sum(
+        1 for rec in orphans if rec["classification"] == "ORPHAN_FULLY_DISCONNECTED"
+    )
+    junction_unresolved = len(orphans) - fully_disconnected
     return {
+        "total_roads": len(roads),
+        "junction_connected": junction_connected,
+        "normal": normal,
         "orphan_drivable_roads": len(orphans),
+        "orphan_fully_disconnected": fully_disconnected,
+        "orphan_junction_link_unresolved": junction_unresolved,
+        "orphan_gate_breach": fully_disconnected,
         "orphan_records": orphans,
     }
 
@@ -351,6 +373,8 @@ def scan_connector_lane_interface_dz(root: ET.Element) -> Dict[str, Any]:
     roads = _roads(root)
     links: List[Dict[str, Any]] = []
     connection_records: List[Dict[str, Any]] = []
+    audit_interfaces_bad = 0
+    audit_interfaces_total = 0
     for junction in root.findall("junction"):
         for conn in junction.findall("connection"):
             incoming = conn.get("incomingRoad")
@@ -383,6 +407,13 @@ def scan_connector_lane_interface_dz(root: ET.Element) -> Dict[str, Any]:
                 conn_class = "VALID_GRADE_CHANGE"
             else:
                 conn_class = "UNKNOWN_NO_Z"
+            # audit-convention per-side interface counting: each connection
+            # contributes a start and an end interface (2/connection, the
+            # audit's 45,178 link unit); an interface is BAD when |dz| > 0.5.
+            audit_interfaces_total += 2
+            for v in (dz_start, dz_end):
+                if v is not None and abs(v) > _DANGLING_CONNECTOR_DZ_THRESHOLD_M:
+                    audit_interfaces_bad += 1
             connection_records.append({
                 "junction_id": junction.get("id"),
                 "connector_road": connecting,
@@ -434,6 +465,8 @@ def scan_connector_lane_interface_dz(root: ET.Element) -> Dict[str, Any]:
         "interface_links": len(links),
         "connections_total": len(connection_records),
         "connection_interfaces": len(connection_records) * 2,
+        "audit_style_interfaces": audit_interfaces_total,
+        "audit_style_bad_interfaces": audit_interfaces_bad,
         "bad_seams": len(bad),
         "bad_connections": len(conn_bad),
         "bad_interface_examples": conn_bad[:50],
@@ -450,6 +483,26 @@ def scan_connector_lane_interface_dz(root: ET.Element) -> Dict[str, Any]:
 # ---------------------------------------------------------------------------
 # P0-D: structure terrain separation
 # ---------------------------------------------------------------------------
+
+def _unwrap_terrain_sample(result: Any) -> Optional[float]:
+    """Normalize a terrain sample to a float (None when invalid/nodata).
+
+    Samplers in this repo return either a float, None, or a (z, ok) tuple.
+    """
+    if result is None:
+        return None
+    if isinstance(result, tuple):
+        if len(result) == 2:
+            z, ok = result
+            return z if (ok and z is not None) else None
+        for cand in result:
+            if isinstance(cand, (int, float)):
+                return float(cand)
+        return None
+    if isinstance(result, (int, float)):
+        return float(result)
+    return None
+
 
 def scan_structure_terrain_separation(
     root: ET.Element,
@@ -499,11 +552,13 @@ def scan_structure_terrain_separation(
                     b = _safe_float(el.get("b"), 0.0)
                     c = _safe_float(el.get("c"), 0.0)
                     d = _safe_float(el.get("d"), 0.0)
-                    road_z = a + b * ds + c * ds * ds + d * ds * ds
+                    road_z = a + b * ds + c * ds * ds + d * ds ** 3
             if road_z is None:
                 continue
-            terrain_z = terrain_sampler(float(pose.x), float(pose.y))
-            dz = round(road_z - terrain_z, 3)
+            terrain_z = _unwrap_terrain_sample(terrain_sampler(float(pose.x), float(pose.y)))
+            if terrain_z is None:
+                continue
+            dz = round(road_z - float(terrain_z), 3)
             samples.append({"s": round(s, 1), "road_z": round(road_z, 3), "terrain_z": round(terrain_z, 3), "dz": dz})
         if not samples:
             continue
@@ -589,7 +644,8 @@ def main() -> int:
     orph = report["orphan_drivable_roads"]
     conn = report["connector_lane_interface_dz"]
     print(f"dangling_mandatory={dm['dangling_mandatory_lane_successors']} "
-          f"orphan_drivable={orph['orphan_drivable_roads']} "
+          f"orphans(fully_disconnected)={orph['orphan_fully_disconnected']} "
+          f"orphans(junction_link_unresolved)={orph['orphan_junction_link_unresolved']} "
           f"bad_connector_seams={conn['bad_seams']}/{conn['interface_links']} "
           f"worst_dz={conn['worst_dz']}")
     return 0

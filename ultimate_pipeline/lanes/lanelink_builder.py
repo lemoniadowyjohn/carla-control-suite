@@ -18,9 +18,20 @@ class LaneLinkBuilder:
         * |id| ordering (inner first)
         * direction (positive to positive, negative to negative)
     - Only 'driving' lanes are linked.
+    - NO fallback pairing: an incoming driving lane whose (side, order) has no
+      connector driving lane is left unlinked, never cross-sign or cross-edge
+      guessed (GAP-048 policy; ambiguous forges stay unlinked).
+    - Failure modes are classified and counted in ``last_failure_report``
+      (see ``_classify_lane_failures``) so generator deficiencies are
+      observable instead of silent.
     """
 
     DRIVING_TYPES = {"driving"}
+
+    #: aggregated output of the last regenerate_lane_links call:
+    #: {"summary": {reason: n, ...}, "records": [ ... up to 500 ... ],
+    #:  "connections_total": n, "lane_links_emitted": n}
+    last_failure_report: Dict[str, object] = {}
 
     @staticmethod
     def regenerate_lane_links(root: ET.Element, verbose: bool = True) -> None:
@@ -49,7 +60,22 @@ class LaneLinkBuilder:
             secs = lane_sections.get(road_id)
             if not secs:
                 return None
-            return secs[0] if at_start else secs[-1]
+            if at_start:
+                return secs[0]
+            # Degenerate-terminal filter: a laneSection anchored exactly at the
+            # road's end (s == length) has zero length and carries no
+            # interface lanes; the real terminal face is the last section
+            # with nonzero extent BEFORE the boundary.
+            road = roads.get(road_id)
+            len_m = _safe_float(road.get("length")) if road is not None else 0.0
+            if len_m > 0.0:
+                cand = [
+                    s for s in secs
+                    if _safe_float(s.get("s"), 0.0) < len_m - 1e-9
+                ]
+                if cand:
+                    return cand[-1]
+            return secs[-1]
 
         # ---------- Lane extraction helpers ----------
 
@@ -114,6 +140,13 @@ class LaneLinkBuilder:
         # ---------- MAIN LOOP ----------
         total_links = 0
         conn_count = 0
+        failure_counts: Dict[str, int] = {}
+        failure_records: List[Dict[str, object]] = []
+
+        def _note_failure(reason: str, record: Dict[str, object]) -> None:
+            failure_counts[reason] = failure_counts.get(reason, 0) + 1
+            if len(failure_records) < 500:
+                failure_records.append({"reason": reason, **record})
 
         for junc in root.findall("junction"):
             junc_id = junc.get("id", "?")
@@ -144,6 +177,12 @@ class LaneLinkBuilder:
                 if inc_sec is None or con_sec is None:
                     if verbose:
                         print(f"⚠️ Junction {junc_id}, conn {incoming}->{connecting}: missing laneSections.")
+                    _note_failure(
+                        "CONNECTOR_MISSING_INTERFACE_SECTION"
+                        if con_sec is None else "INCOMING_MISSING_EDGE_SECTION",
+                        {"junction_id": junc_id, "incoming": incoming,
+                         "connecting": connecting, "contact_point": point},
+                    )
                     continue
 
                 # extract driving lanes
@@ -157,6 +196,8 @@ class LaneLinkBuilder:
                 left_pairs = match_by_direction(list(in_left.keys()), list(con_left.keys()))
 
                 count = 0
+                emitted_from: set[int] = set()
+                emitted_to: set[int] = set()
                 for from_id, to_id in right_pairs + left_pairs:
                     from_lane = in_right.get(from_id)
                     if from_lane is None:
@@ -178,8 +219,58 @@ class LaneLinkBuilder:
                         "from": str(from_id),
                         "to": str(to_id),
                     })
+                    emitted_from.add(from_id)
+                    emitted_to.add(to_id)
 
                     count += 1
+
+                # ---------- failure-mode classification (no fallback) ----------
+                # Every incoming driving lane that ends this connection with no
+                # laneLink is classified; leftover connector driving lanes are
+                # classified too. Nothing is re-paired across sides/signs.
+                con_widthless_left = {
+                    lid for lid, el in con_left.items() if not el.findall("width")
+                }
+                con_widthless_right = {
+                    lid for lid, el in con_right.items() if not el.findall("width")
+                }
+                for side, inc_lanes, con_lanes, con_widthless in (
+                    ("right", in_right, con_right, con_widthless_right),
+                    ("left", in_left, con_left, con_widthless_left),
+                ):
+                    for lid, lane_el in inc_lanes.items():
+                        if lid in emitted_from:
+                            continue
+                        if not lane_el.findall("width"):
+                            _note_failure("INCOMING_LANE_NO_WIDTH", {
+                                "junction_id": junc_id, "incoming": incoming,
+                                "connecting": connecting, "lane_id": lid, "side": side,
+                            })
+                            continue
+                        paired_side = [
+                            (i, c) for i, c in right_pairs + left_pairs
+                            if (i in inc_lanes) and i == lid
+                        ]
+                        if not paired_side:
+                            if not con_lanes:
+                                _note_failure("CONNECTOR_SIDE_NO_DRIVING_LANES", {
+                                    "junction_id": junc_id, "incoming": incoming,
+                                    "connecting": connecting, "lane_id": lid, "side": side,
+                                })
+                            elif con_widthless.intersection(con_lanes) and not (
+                                con_lanes.keys() - con_widthless
+                            ):
+                                _note_failure("CONNECTOR_LANE_NO_WIDTH", {
+                                    "junction_id": junc_id, "incoming": incoming,
+                                    "connecting": connecting, "lane_id": lid, "side": side,
+                                })
+                            else:
+                                _note_failure("COUNT_MISMATCH_INNER_FIRST_EXHAUSTED", {
+                                    "junction_id": junc_id, "incoming": incoming,
+                                    "connecting": connecting, "lane_id": lid, "side": side,
+                                    "incoming_lanes": sorted(inc_lanes),
+                                    "connector_lanes": sorted(con_lanes),
+                                })
 
                 total_links += count
                 conn_count += 1
@@ -189,6 +280,18 @@ class LaneLinkBuilder:
 
         if verbose:
             print(f"✅ LaneLinkBuilder: {total_links} laneLinks across {conn_count} connections.")
+            if failure_counts:
+                print(
+                    "⚠️ unlinked driving-lane failure modes (no fallback pairing): "
+                    + ", ".join(f"{k}={v}" for k, v in sorted(failure_counts.items()))
+                )
+
+        LaneLinkBuilder.last_failure_report = {
+            "connections_total": conn_count,
+            "lane_links_emitted": total_links,
+            "summary": dict(failure_counts),
+            "records": failure_records,
+        }
 
     # ⭐⭐ THE WRAPPER THE PIPELINE EXPECTS ⭐⭐
     @staticmethod
