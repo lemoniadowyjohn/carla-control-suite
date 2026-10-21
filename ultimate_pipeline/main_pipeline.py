@@ -1420,6 +1420,45 @@ class MainPipeline:
             and (not auto_info["params_complete"])
             and self._offset_large(offset)
         )
+
+        # P0-E: governed georeference upgrade. When the final map still carries
+        # the bare Osm2Odr `+proj=tmerc` (no absolute origin) and its header
+        # offset matches the pinned frame-contract rebase, re-express that SAME
+        # rebase inside the projection (x_0/y_0) so the file becomes physically
+        # invertible (truthful GNSS) without touching any coordinate value.
+        # Opt out with UP_DISABLE_GEOF_ABSOLUTE_AUTOPIN=1 (legacy reproduction).
+        contract_georef = ""
+        embed_contract = False
+        embed_block_reason = ""
+        try:
+            from ultimate_pipeline.core.georef_utils import (
+                has_embedded_georef_origin,
+            )
+            from ultimate_pipeline.geometry.coordinate_frame_contract import (
+                REBASE_DX,
+                REBASE_DY,
+                open_drive_georeference,
+            )
+
+            contract_georef = open_drive_georeference()
+            if float(offset.get("x", 0.0)) == 0.0 and float(offset.get("y", 0.0)) == 0.0:
+                embed_block_reason = "offset_zero_or_missing"
+            elif abs(float(offset.get("x", 0.0)) - REBASE_DX) > 1e-3 or (
+                abs(float(offset.get("y", 0.0)) - REBASE_DY) > 1e-3
+            ):
+                embed_block_reason = "offset_not_pinned_rebase"
+            elif has_embedded_georef_origin(auto_info["norm"]):
+                embed_block_reason = "auto_georef_already_embeds_origin"
+            elif os.getenv("UP_DISABLE_GEOF_ABSOLUTE_AUTOPIN", "").strip().lower() in (
+                "1", "true", "yes", "on",
+            ):
+                embed_block_reason = "embed_autopin_disabled_by_env"
+            else:
+                embed_contract = True
+        except Exception as exc:
+            embed_block_reason = f"contract_unavailable:{exc.__class__.__name__}"
+            contract_georef = ""
+
         provenance = {
             "action": "skipped",
             "reason": "",
@@ -1449,18 +1488,38 @@ class MainPipeline:
                 tree.write(final_out, encoding="utf-8", xml_declaration=True)
                 provenance["action"] = "applied"
                 provenance["reason"] = "auto_georef_incomplete_and_offset_large"
+            elif embed_contract:
+                geo.text = normalize_georeference(contract_georef)
+                tree.write(final_out, encoding="utf-8", xml_declaration=True)
+                provenance["action"] = "embed_rebase_autopin"
+                provenance["reason"] = (
+                    "bare_georef_missing_absolute_origin;_pinned_rebase_embedded_in_proj_params;_no_coordinate_mutation"
+                )
+                provenance["contract_georef"] = contract_georef
+                provenance["rebase_embedded"] = {
+                    "x_0": -float(offset.get("x", 0.0)),
+                    "y_0": -float(offset.get("y", 0.0)),
+                }
             else:
                 if auto_info["norm"]:
                     geo.text = normalize_georeference(auto_info["norm"])
                     tree.write(final_out, encoding="utf-8", xml_declaration=True)
                 if not manual_present:
                     provenance["reason"] = "manual_xodr_missing"
+                    if embed_block_reason:
+                        provenance["reason"] += f";_embed_blocked:{embed_block_reason}"
                 elif not manual_info["valid"]:
                     provenance["reason"] = "manual_georef_invalid"
+                    if embed_block_reason:
+                        provenance["reason"] += f";_embed_blocked:{embed_block_reason}"
                 elif auto_info["params_complete"]:
                     provenance["reason"] = "auto_georef_complete"
+                    if embed_block_reason:
+                        provenance["reason"] += f";_embed_blocked:{embed_block_reason}"
                 else:
                     provenance["reason"] = "offset_small_or_missing"
+                    if embed_block_reason:
+                        provenance["reason"] += f";_embed_blocked:{embed_block_reason}"
         except Exception as exc:
             provenance["action"] = "failed"
             provenance["reason"] = f"exception:{exc.__class__.__name__}"

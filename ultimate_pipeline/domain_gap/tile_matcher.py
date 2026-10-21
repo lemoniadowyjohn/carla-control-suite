@@ -188,14 +188,28 @@ def _apply_header_offset(
 def _iter_planview_anchor_points(root: ET.Element) -> List[Tuple[float, float]]:
     points: List[Tuple[float, float]] = []
     offset = _read_header_offset(root)
+    # P0-E: when the geoReference already re-expresses the header <offset> as
+    # +x_0/+y_0 (maps plan-view coordinates directly), the header offset must
+    # not be applied again, or tile anchors would be shifted a second time.
+    geo_norm = _read_georef_text(root)
+    skip_offset = False
+    if geo_norm:
+        from ultimate_pipeline.core.georef_utils import georef_describes_local_coords
+
+        skip_offset = georef_describes_local_coords(
+            geo_norm, offset.get("x", 0.0), offset.get("y", 0.0)
+        )
     for geom in root.findall(".//road/planView/geometry"):
         x_raw = geom.get("x")
         y_raw = geom.get("y")
         if x_raw is None or y_raw is None:
             continue
         try:
-            px, py = _apply_header_offset(float(x_raw), float(y_raw), offset)
-            points.append((float(px), float(py)))
+            if skip_offset:
+                points.append((float(x_raw), float(y_raw)))
+            else:
+                px, py = _apply_header_offset(float(x_raw), float(y_raw), offset)
+                points.append((float(px), float(py)))
         except Exception:
             continue
     return points
