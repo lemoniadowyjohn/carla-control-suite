@@ -343,3 +343,19 @@ class TestRQ2PinnedPairIdentity:
         assert replay.HISTORICAL_MANUAL_SHA == PINNED_MAP_REGISTRY["manual_grid0828"]["sha256"]
         assert replay.HISTORICAL_VALIDATION_PATH.is_file()
         assert replay.FROZEN_ORACLE_PATH.is_file()
+
+
+class TestDriverPerRunTimeout:
+    def test_default_timeout_raised_to_8h_tool_level(self):
+        # Tool-level resource policy, NOT a contract threshold. 7200s was
+        # insufficient: attempt-1 historical receipt = FAILED_TIMEOUT at 7200s
+        # and campaign-2 run_00 was still mid-stage-6 at 7200s.
+        import inspect
+
+        import tools.rq1b_five_run_driver as driver
+
+        assert driver.RUN_TIMEOUT_S == 28800
+        sig = inspect.signature(driver.run_one)
+        assert sig.parameters["timeout_s"].default == driver.RUN_TIMEOUT_S
+        source = inspect.getsource(driver.main)
+        assert "--timeout-per-run" in source

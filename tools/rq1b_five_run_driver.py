@@ -44,6 +44,13 @@ from research.rq1_determinism_matrix import build_determinism_matrix
 
 EXPECTED_XODR_SHA = "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8"
 
+# Per-run wall-clock limit (tool-level resource policy, NOT a frozen-contract
+# threshold). Raised from 7200s after campaign-2 run_00 demonstrated the full
+# pipeline exceeds 2h on this host without reaching the final stages
+# (attempt-1's historical receipt showed FAILED_TIMEOUT at 7200s for the
+# same full-pipeline mode).
+RUN_TIMEOUT_S = 28800
+
 PINNED_OSM = "campaigns/ingolstadt_cooked_perception_v1/source/ingolstadt_authoritative.osm"
 PINNED_BUILDINGS = (
     "campaigns/ingolstadt_cooked_perception_v1/source/ingolstadt_buildings_overpass.json"
@@ -124,7 +131,7 @@ def build_child_env(run_dir: Path, run_idx: int) -> Dict[str, str]:
     return env
 
 
-def run_one(run_idx: int, out_base: Path) -> Dict[str, Any]:
+def run_one(run_idx: int, out_base: Path, timeout_s: int = RUN_TIMEOUT_S) -> Dict[str, Any]:
     from ultimate_pipeline.carla_tools.map_registry import verify_pinned_map
 
     pinned = verify_pinned_map("auto_map_of_record")
@@ -153,7 +160,7 @@ def run_one(run_idx: int, out_base: Path) -> Dict[str, Any]:
             text=True,
             encoding="utf-8",
             errors="replace",
-            timeout=7200,
+            timeout=timeout_s,
         )
     except subprocess.TimeoutExpired as exc:
         timed_out = True
@@ -162,7 +169,7 @@ def run_one(run_idx: int, out_base: Path) -> Dict[str, Any]:
     if timed_out:
         (run_dir / "child_stdout.log").write_text("", encoding="utf-8")
         (run_dir / "child_stderr.log").write_text(
-            f"TIMEOUT after {dur:.0f}s (limit 7200s): {timeout_exc}", encoding="utf-8"
+            f"TIMEOUT after {dur:.0f}s (limit {timeout_s}s): {timeout_exc}", encoding="utf-8"
         )
         return_code = -1
     else:
@@ -181,7 +188,7 @@ def run_one(run_idx: int, out_base: Path) -> Dict[str, Any]:
         "command": " ".join(cmd),
         "return_code": return_code,
         "timed_out": timed_out,
-        "timeout_limit_s": 7200,
+        "timeout_limit_s": timeout_s,
         "duration_s": round(dur, 1),
         "isolated": True,
         "shared_cache": False,
@@ -199,6 +206,12 @@ def main() -> int:
     ap = argparse.ArgumentParser(description="RQ1B five-run cold determinism driver")
     ap.add_argument("--runs", type=int, default=5)
     ap.add_argument("--output-base", type=Path, default=Path("reports/rq1b_runs"))
+    ap.add_argument(
+        "--timeout-per-run",
+        type=int,
+        default=RUN_TIMEOUT_S,
+        help="Per-run wall-clock limit in seconds (not a contract threshold).",
+    )
     args = ap.parse_args()
 
     out_base = args.output_base
@@ -207,7 +220,7 @@ def main() -> int:
     receipts: List[Dict[str, Any]] = []
     for i in range(args.runs):
         print(f"=== RQ1B run {i:02d} ===", flush=True)
-        receipts.append(run_one(i, out_base))
+        receipts.append(run_one(i, out_base, timeout_s=args.timeout_per_run))
         print(
             f"    rc={receipts[-1]['return_code']} dur={receipts[-1]['duration_s']}s "
             f"receipt={receipts[-1]['receipt_found']}",
@@ -232,6 +245,7 @@ def main() -> int:
         "all_returncode_zero": all(r["return_code"] == 0 for r in receipts),
         "all_receipts_present": all(r["receipt_found"] for r in receipts),
         "any_timed_out": any(r.get("timed_out") for r in receipts),
+        "timeout_limit_per_run_s": args.timeout_per_run,
         "determinism": matrix,
         "receipts": receipts,
     }
