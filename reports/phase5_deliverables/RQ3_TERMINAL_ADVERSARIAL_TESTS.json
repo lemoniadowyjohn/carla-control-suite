@@ -1,0 +1,28 @@
+{
+  "command": "py -m pytest ultimate_pipeline/tests/unit/test_rq3_terminal_adversarial_tests.py -v --tb=line",
+  "controls": [
+    "sensor_timeout",
+    "missing_rgb",
+    "missing_semantic",
+    "missing_lidar",
+    "session_collision",
+    "duplicate_frame",
+    "invalid_map_identity",
+    "failed_world_restoration",
+    "failed_tm_restoration",
+    "missing_dataset_sha"
+  ],
+  "document_id": "RQ3_TERMINAL_ADVERSARIAL_TESTS_20261021",
+  "evidence": [
+    "Every control yields authoritative=False with exact machine-readable invalid_reasons",
+    "No capture promoted after terminal error; dataset manifest stays NOT_ADMITTED and synthetic",
+    "Runtime server absence did not justify omission: all injection points executed offline with fake CARLA"
+  ],
+  "exit_code": 0,
+  "final_sha": "363a1868455cab0c33ce9584d6f4b09d594f74e3",
+  "status": "PASS",
+  "test_file": "tests/unit/test_rq3_terminal_adversarial_tests.py",
+  "tests_collected": 10,
+  "tests_failed": 0,
+  "tests_passed": 10
+}
