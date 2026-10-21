@@ -1,0 +1,23 @@
+{
+  "command": "py -m pytest ultimate_pipeline/tests/unit/test_task1_2_cross_arm_sync.py -v --tb=line",
+  "document_id": "RQ3_CROSS_ARM_23_TEST_RECEIPT_20261021",
+  "exit_code": 0,
+  "files_changed": [
+    "tests/unit/test_task1_2_cross_arm_sync.py"
+  ],
+  "final_sha": "363a1868455cab0c33ce9584d6f4b09d594f74e3",
+  "findings": [
+    "Pairing key = frozen pair_frame_index; raw CARLA frame_id equality is NOT required across arms (100-109 vs 900-909 passes)",
+    "Same-arm matching frame IDs pass; equal counts with different frame IDs fail",
+    "Cross-arm missing semantic / missing lidar / duplicate / uncommitted / corrupt / unequal pairing keys all fail",
+    "14 capture-validity negative controls block claim promotion",
+    "No spatial pose/heading tolerance invented (protocol authority required; absence reported)"
+  ],
+  "root_cause_of_previous_2_failures": "Fixture parameter name mismatch only: FrameMember declares 'sha256', fixtures used 'sha'. The frozen schema was NOT changed to accommodate the malformed test.",
+  "status": "PASS",
+  "test_file": "tests/unit/test_task1_2_cross_arm_sync.py",
+  "tests_collected": 23,
+  "tests_failed": 0,
+  "tests_passed": 23,
+  "tests_skipped": 0
+}

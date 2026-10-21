@@ -844,6 +844,13 @@ def validate_pair_manifest(
     if ml is not None and al is not None and ml != al:
         reasons.append("pair_frame_index_mismatch")
 
+    # Propagate manifest-level failure reasons (e.g., capture_completion_failed,
+    # terminal_status_failed, missing_dataset_sha) — must survive validation.
+    manifest_reasons = list(manifest.get("invalid_reasons") or [])
+    for r in manifest_reasons:
+        if r not in reasons:
+            reasons.append(str(r))
+
     claim = manifest.get("claim_level")
     pair_valid = bool(manifest.get("pair_valid"))
 
@@ -859,13 +866,22 @@ def validate_pair_manifest(
     # reason surfaced as `valid=True` -- the exact inversion Batch 9 forbids.
     if not pair_valid:
         reasons.append("pair_valid_is_false")
+    # When full validity is false, claim_level must not remain PAIRED_INGOLSTADT_CAPTURE.
+    valid_result = (pair_valid and not reasons)
+    if not valid_result:
+        if claim == CLAIM_PAIRED_INGOLSTADT_CAPTURE:
+            claim = CLAIM_UNPAIRED_CAPTURE
+        elif claim == CLAIM_PAIRED_PROTOCOL_VALID:
+            # Downgrade only when invalid; preserve UNPAIRED_CAPTURE if lower.
+            claim = CLAIM_UNPAIRED_CAPTURE
+
     if pair_valid and reasons:
         return {"valid": False, "pair_valid": pair_valid, "claim_level": claim,
                 "invalid_reasons": reasons,
                 "pair_route_closure": manifest.get("pair_route_closure")}
-    return {"valid": (pair_valid and not reasons), "pair_valid": pair_valid,
+    return {"valid": valid_result, "pair_valid": pair_valid,
             "claim_level": claim,
-            "invalid_reasons": reasons,
+            "invalid_reasons": sorted(set(str(r) for r in reasons)),
             "pair_route_closure": manifest.get("pair_route_closure"),
             "required_arm_identity_keys": list(REQUIRED_ARM_IDENTITY_KEYS),
             "governed_environment_keys": list(GOVERNED_ENVIRONMENT_IDENTITY_KEYS)}
@@ -961,3 +977,44 @@ def count_frames_by_sensor(out_dir: str) -> Dict[str, Dict[str, int]]:
     if root.is_dir():
         _walk(root, None)
     return {"camera_frames": images, "lidar_frames": point_clouds}
+
+def _validate_frame_set_consistency(
+    sensor_type,
+    expected_camera_stems,
+    expected_lidar_stems,
+    actual_counts,
+    route_mode="THESIS_PAIRED_STRICT",
+    pair_frame_index=None,
+):
+    errors = []
+    actual = actual_counts.get(sensor_type, {})
+    if sensor_type == "camera_frames":
+        expected_by_name = {name: 1 for name in expected_camera_stems}
+    else:
+        expected_by_name = {name: 1 for name in expected_lidar_stems}
+    for name in expected_by_name:
+        if name not in actual:
+            errors.append("missing_sensor_frames:sensor:" + name)
+            continue
+        if actual[name] != expected_by_name[name]:
+            errors.append("frame_count_mismatch:sensor:" + name)
+    for name, count in actual.items():
+        if name not in expected_by_name:
+            errors.append("unknown_sensor_path:sensor:" + name)
+    return {"valid": len(errors) == 0, "errors": errors, "sensor_type": sensor_type}
+
+def _validate_frame_set_intersection_across_arms(
+    manual_manifest,
+    auto_manifest,
+    route_mode="THESIS_PAIRED_STRICT",
+):
+    errors = []
+    manual_cameras = manual_manifest.get("frame_sets", {}).get("camera_frames", {})
+    auto_cameras = auto_manifest.get("frame_sets", {}).get("camera_frames", {})
+    manual_lidars = manual_manifest.get("frame_sets", {}).get("lidar_frames", {})
+    auto_lidars = auto_manifest.get("frame_sets", {}).get("lidar_frames", {})
+    if manual_cameras != auto_cameras:
+        errors.append("camera_frame_sets_mismatch")
+    if manual_lidars != auto_lidars:
+        errors.append("lidar_frame_sets_mismatch")
+    return {"valid": len(errors) == 0, "errors": errors}
