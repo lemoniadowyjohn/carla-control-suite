@@ -188,12 +188,14 @@ def adjudicate_rq1(
 
     if not all(all_equal.values()):
         problems.append(f"identity repeatability not established: {all_equal}")
+        divergence = determinism_matrix.get("divergence_classification")
         return _claim(
             "RQ1",
             "BOUNDED",
             "partial evidence: required valid runs executed, but identity "
             "repeatability across raw/normalized/structural domains is not "
-            "fully established for an authoritative determinism claim",
+            "fully established for an authoritative determinism claim "
+            f"(classification={divergence})",
             problems,
             statuses,
             contract,
@@ -272,15 +274,25 @@ def adjudicate_rq2(
                 problems.append(f"missing RQ2 metric identities: {sorted(missing)}")
         return _claim("RQ2", "NOT_RUN", None, problems, statuses, contract, detail)
 
-    scope = (admissible[0].get("map_identities") or {}).get("scope")
-    detail["scope"] = scope
-    identities = admissible[0].get("map_identities") or {}
-
-    if scope != "manual_hull":
+    # Deterministic scope selection: hull-scope evidence outranks whole-map
+    # context. A whole-map-only receipt set can never support the bounded
+    # claim (whole-map work alone can never upgrade the claim); but whole-map
+    # context must not mask admissible hull receipts that arrived earlier.
+    hull_receipts = [
+        r
+        for r in admissible
+        if (r.get("map_identities") or {}).get("scope") == "manual_hull"
+    ]
+    if not hull_receipts:
+        scope = (admissible[0].get("map_identities") or {}).get("scope")
+        detail["scope"] = scope
         problems.append(
             "whole-map scope alone cannot support the local-hull bounded claim"
         )
         return _claim("RQ2", "NOT_RUN", None, problems, statuses, contract, detail)
+    scope = "manual_hull"
+    detail["scope"] = scope
+    identities = hull_receipts[0].get("map_identities") or {}
 
     frozen_reproduced = bool(identities.get("frozen_reproduction"))
     if frozen_reproduced:

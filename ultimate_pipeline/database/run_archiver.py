@@ -36,7 +36,7 @@ class RunArchiver:
             p for p in self.output_root.iterdir()
             if p.is_dir() and p.name[:8].isdigit()
         ]
-        return sorted(runs, key=lambda p: p.stat().st_mtime, reverse=True)
+        return sorted(runs, key=lambda p: (p.stat().st_mtime, p.name), reverse=True)
 
     def archive_old_runs(self) -> None:
         runs = self._list_runs()

@@ -107,6 +107,48 @@ def _flatten_metrics(scope_doc: Dict[str, Any]) -> Dict[str, Any]:
     return out
 
 
+def _aggregate_metric_comparison(
+    frozen_flat: Dict[str, Any], current_flat: Dict[str, Any]
+) -> tuple:
+    """Classify frozen-vs-current flattened metrics.
+
+    Classification rules (order matters):
+    - dict on either side -> STRUCTURAL_VALUE (compared via subkeys upstream)
+    - None on both sides  -> NULL_BOTH (availability gap, NOT a value change)
+    - exactly one side None -> change record "unavailable side"
+    - numeric both -> MATCH(atol=1e-9) or change with diff
+    - otherwise -> change record on non-equality
+    """
+    changes: List[Dict[str, Any]] = []
+    agreement: Dict[str, Any] = {}
+    for key in sorted(set(frozen_flat) | set(current_flat)):
+        fv, cv = frozen_flat.get(key), current_flat.get(key)
+        if isinstance(fv, dict) or isinstance(cv, dict):
+            agreement[key] = "STRUCTURAL_VALUE (compare via subkeys)"
+            continue
+        if fv is None and cv is None:
+            agreement[key] = "NULL_BOTH (unavailable on both sides; not a value change)"
+            continue
+        if fv is None or cv is None:
+            changes.append({"metric": key, "frozen": fv, "current": cv, "note": "unavailable side"})
+            continue
+        if isinstance(fv, (int, float)) and isinstance(cv, (int, float)):
+            if abs(float(fv) - float(cv)) <= 1e-9:
+                agreement[key] = "MATCH(atol=1e-9)"
+            else:
+                changes.append(
+                    {
+                        "metric": key,
+                        "frozen": fv,
+                        "current": cv,
+                        "diff": float(cv) - float(fv),
+                    }
+                )
+        elif fv != cv:
+            changes.append({"metric": key, "frozen": fv, "current": cv})
+    return agreement, changes
+
+
 def main() -> int:
     now = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
 
@@ -152,31 +194,7 @@ def main() -> int:
 
     frozen_flat = _flatten_scopes(frozen.get("scopes", {}))
     current_flat = _flatten_scopes(doc["scopes"])
-
-    changes: List[Dict[str, Any]] = []
-    agreement: Dict[str, Any] = {}
-    for key in sorted(set(frozen_flat) | set(current_flat)):
-        fv, cv = frozen_flat.get(key), current_flat.get(key)
-        if isinstance(fv, dict) or isinstance(current_flat.get(key), dict):
-            agreement[key] = "STRUCTURAL_VALUE (compare via subkeys)"
-            continue
-        if fv is None or cv is None:
-            changes.append({"metric": key, "frozen": fv, "current": cv, "note": "unavailable side"})
-            continue
-        if isinstance(fv, (int, float)) and isinstance(cv, (int, float)):
-            if abs(float(fv) - float(cv)) <= 1e-9:
-                agreement[key] = "MATCH(atol=1e-9)"
-            else:
-                changes.append(
-                    {
-                        "metric": key,
-                        "frozen": fv,
-                        "current": cv,
-                        "diff": float(cv) - float(fv),
-                    }
-                )
-        elif fv != cv:
-            changes.append({"metric": key, "frozen": fv, "current": cv})
+    agreement, changes = _aggregate_metric_comparison(frozen_flat, current_flat)
 
     pair_identity_ok = (
         doc["pair"]["auto"]["sha256"] == HISTORICAL_AUTO_SHA
