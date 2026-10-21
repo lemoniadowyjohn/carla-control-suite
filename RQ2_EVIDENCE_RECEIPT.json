@@ -1,0 +1,190 @@
+{
+  "claim": {
+    "adjudication": {
+      "adjudicator_version": "research-claim-adjudicator/v1",
+      "contract_sha256": "9754b159840bdb517d1c2d66f0864eacef67bbdbc7be2e7f26eb1dc338cd5c9a",
+      "detail": {
+        "boundary": "bounded local-hull",
+        "gate": "rq2_structural_gap",
+        "scope": "manual_hull"
+      },
+      "problems": []
+    },
+    "claim_statement": "RQ2 structural domain gap recomputed on the current lineage under the frozen local-hull scope, reproducing the frozen metric citations; claim remains bounded to the local-hull comparison",
+    "claim_status": "BOUNDED"
+  },
+  "experiment_receipt": {
+    "claim_boundary": "RQ2 structural domain gap, local-hull primary scope (same region); whole_map reported as context only; no universal claim drawn",
+    "contract_sha256": "9754b159840bdb517d1c2d66f0864eacef67bbdbc7be2e7f26eb1dc338cd5c9a",
+    "dirty_reason": null,
+    "execution_status": "COMPLETED",
+    "generated_at_utc": "2026-10-21T01:23:41.232500Z",
+    "git_sha": "4f3055bbb3f1b9a8e3008d6c71ac3a43f7a92cd0",
+    "inputs": [
+      {
+        "path": "campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_map_of_record_20260916_232831.xodr",
+        "sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8"
+      },
+      {
+        "path": "campaigns\\ingolstadt_cooked_perception_v1\\source\\manual\\Grid0828.xodr",
+        "sha256": "5eaece230e02f6c1b2075db851894870790e86ac64710abb3465bcfc533e9b0c"
+      },
+      {
+        "path": "H:\\opencode\\rq12-closure\\ultimate_pipeline\\domain_gap\\rq2_metric_authority.py",
+        "sha256": "b5989cd22d39d6f34ea64547ca2bfde2ae8736d44bbfff8e8e446baecc943242"
+      },
+      {
+        "path": "H:\\opencode\\rq12-closure\\RQ2_RESULTS.json",
+        "sha256": "9b7c81f4d5ff6b64e6b891c9fdf02ef2918ac438ab29682b3ba4c3fb066884a1"
+      },
+      {
+        "path": "research/thesis_rq_contract.yaml",
+        "sha256": "9754b159840bdb517d1c2d66f0864eacef67bbdbc7be2e7f26eb1dc338cd5c9a"
+      }
+    ],
+    "map_identities": {
+      "auto_sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+      "frozen_reproduction": true,
+      "manual_sha256": "5eaece230e02f6c1b2075db851894870790e86ac64710abb3465bcfc533e9b0c",
+      "scope": "manual_hull"
+    },
+    "metric_agreement": {
+      "agreement": {
+        "manual_hull.building_density_gap": "MATCH(atol=1e-9)",
+        "manual_hull.curvature_gap": "MATCH(atol=1e-9)",
+        "manual_hull.curvature_wasserstein_gap": "MATCH(atol=1e-9)",
+        "manual_hull.frechet_distance.mean_m": "MATCH(atol=1e-9)",
+        "manual_hull.frechet_distance.median_m": "MATCH(atol=1e-9)",
+        "manual_hull.frechet_distance.p90_m": "MATCH(atol=1e-9)",
+        "manual_hull.frechet_distance.pairs": "MATCH(atol=1e-9)",
+        "manual_hull.junction_ratio": "MATCH(atol=1e-9)",
+        "manual_hull.lane_width_gap": "MATCH(atol=1e-9)",
+        "manual_hull.road_count_ratio": "MATCH(atol=1e-9)",
+        "manual_hull.road_length_ratio": "MATCH(atol=1e-9)",
+        "whole_map.building_density_gap": "NULL_BOTH (unavailable on both sides; not a value change)",
+        "whole_map.connectivity_gap.auto": "STRUCTURAL_VALUE (compare via subkeys)",
+        "whole_map.connectivity_gap.disabled": "MATCH(atol=1e-9)",
+        "whole_map.connectivity_gap.gap": "STRUCTURAL_VALUE (compare via subkeys)",
+        "whole_map.connectivity_gap.manual": "STRUCTURAL_VALUE (compare via subkeys)",
+        "whole_map.junction_ratio": "MATCH(atol=1e-9)",
+        "whole_map.road_count_ratio": "MATCH(atol=1e-9)",
+        "whole_map.road_length_ratio": "MATCH(atol=1e-9)",
+        "whole_map.semantic_object_gap.lane_markings": "STRUCTURAL_VALUE (compare via subkeys)",
+        "whole_map.semantic_object_gap.meta": "STRUCTURAL_VALUE (compare via subkeys)",
+        "whole_map.semantic_object_gap.objects": "STRUCTURAL_VALUE (compare via subkeys)",
+        "whole_map.semantic_object_gap.road_types": "STRUCTURAL_VALUE (compare via subkeys)",
+        "whole_map.semantic_object_gap.traffic_lights": "STRUCTURAL_VALUE (compare via subkeys)"
+      },
+      "changed_value_explanations": {},
+      "changed_values": [],
+      "frozen_oracle": {
+        "path": "H:\\opencode\\rq12-closure\\RQ2_RESULTS.json",
+        "sha256": "9b7c81f4d5ff6b64e6b891c9fdf02ef2918ac438ab29682b3ba4c3fb066884a1",
+        "source": "rq2-authority@2159a358 (frozen at 56a82a35; comparison oracle only)"
+      },
+      "frozen_validation_check": "PASS",
+      "historical_validation": {
+        "base_sha": "65eb0f14d226104692dd845f8a528759fbeb90c4",
+        "git_sha": "65eb0f14d226104692dd845f8a528759fbeb90c4",
+        "path": "H:\\opencode\\rq12-closure\\RQ2_FINAL_VALIDATION.json",
+        "rq2_status_auth": "AUTHORITATIVE"
+      },
+      "pair_matches_historical": true,
+      "published_precision_citations": {
+        "frechet_mean_m_2dp": [
+          58.18,
+          2
+        ],
+        "frechet_median_m_2dp": [
+          36.13,
+          2
+        ],
+        "frechet_p90_m_2dp": [
+          140.48,
+          2
+        ],
+        "frechet_pairs": [
+          894,
+          null
+        ],
+        "hull_building_density_gap_4dp": [
+          0.2308,
+          4
+        ],
+        "hull_curvature_gap_4dp": [
+          0.2206,
+          4
+        ],
+        "hull_junction_ratio_3dp": [
+          3.782,
+          3
+        ],
+        "hull_lane_width_gap_4dp": [
+          0.0597,
+          4
+        ],
+        "hull_road_count_ratio_3dp": [
+          3.561,
+          3
+        ],
+        "hull_road_length_ratio_3dp": [
+          2.683,
+          3
+        ]
+      }
+    },
+    "metric_ids": [
+      "building_density_gap",
+      "connectivity_gap",
+      "curvature_gap",
+      "curvature_wasserstein_gap",
+      "frechet_distance",
+      "junction_ratio",
+      "lane_width_gap",
+      "road_count_ratio",
+      "road_length_ratio",
+      "semantic_object_gap"
+    ],
+    "output_paths": [
+      {
+        "path": "H:\\opencode\\rq12-closure\\RQ2_CURRENT_METRICS_PAYLOAD.json",
+        "sha256": "06398eadd40cf2a6d84a3a4089a0955e11172519f91db290edced6412a8ad3e8"
+      }
+    ],
+    "outputs": [
+      {
+        "path": "H:\\opencode\\rq12-closure\\RQ2_CURRENT_METRICS_PAYLOAD.json",
+        "sha256": "06398eadd40cf2a6d84a3a4089a0955e11172519f91db290edced6412a8ad3e8"
+      }
+    ],
+    "protocol": {
+      "path": "H:\\opencode\\rq12-closure\\research\\thesis_rq_contract.yaml",
+      "sha256": "9754b159840bdb517d1c2d66f0864eacef67bbdbc7be2e7f26eb1dc338cd5c9a"
+    },
+    "raw_metric_payload_sha256": "2be69e71825c101937d136cf246f18d875253f8eb61c739274fd52b0cc22400c",
+    "rq_id": "RQ2",
+    "runtime": {
+      "platform": "Windows-11-10.0.26300-SP0",
+      "python": "3.12.2"
+    },
+    "schema": "rq_experiment_receipt/v1",
+    "seeds": [
+      "deterministic-no-seed"
+    ],
+    "settings_digest": "7569cf6b2bf78e093ba8c5096bcc30319377607bce7972edfc5371e71a4d8830",
+    "source_dirty": false,
+    "statistics_method": "point metric recomputation under frozen thresholds; frozen-check agreement at atol=1e-9 + published-precision citation checks"
+  },
+  "experiment_receipt_digest": "4cbe02d338b16b2d7750aa4ae9d4600ddbdcb7b6aea810e22dbbdde0c643afb7",
+  "final_status": "BOUNDED",
+  "generated_at_utc": "2026-10-21T01:23:41.232500Z",
+  "notes": [
+    "frozen local-hull claim boundary preserved; no upgrade to a whole-world universal claim"
+  ],
+  "rq2_current_validation": {
+    "path": "H:\\opencode\\rq12-closure\\RQ2_CURRENT_VALIDATION.json",
+    "sha256": "716d7132c0d319ecdac9ee44d85442ec217ce4c0006cc83b427ae57c997292ac"
+  },
+  "rq_id": "RQ2",
+  "schema": "rq2_evidence_receipt/v1"
+}
