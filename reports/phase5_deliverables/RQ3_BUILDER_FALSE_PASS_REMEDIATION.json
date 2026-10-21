@@ -1,0 +1,29 @@
+{
+  "defect": "create_experiment_manifest emitted pair_valid=True / PAIRED_INGOLSTADT_CAPTURE although the strict downstream validator rejected the pair because required arm-level identities were missing and no capture-completion evidence existed.",
+  "document_id": "RQ3_BUILDER_FALSE_PASS_REMEDIATION_20261021",
+  "files_changed": [
+    "ultimate_pipeline/perception/experiment_map_pair_authority.py"
+  ],
+  "final_sha": "363a1868455cab0c33ce9584d6f4b09d594f74e3",
+  "rejection_tests": [
+    "eligible_maps_missing_calibration -> REJECTED",
+    "eligible_maps_missing_effective_rig -> REJECTED",
+    "eligible_maps_mismatched_weather -> REJECTED",
+    "eligible_maps_wrong_timing -> REJECTED",
+    "eligible_maps_invalid_route -> REJECTED",
+    "eligible_maps_incomplete_frames -> REJECTED",
+    "eligible_maps_failed_terminal_execution -> REJECTED",
+    "eligible_maps_missing_dataset_sha -> REJECTED",
+    "eligible_maps_tampered_manifest -> REJECTED",
+    "eligible_maps_asserted_positive_pair_valid -> REJECTED (caller assertion ignored)"
+  ],
+  "remediation": "Strict multi-stage builder: (1) MAP_PAIR_ELIGIBLE evaluated independently; (2) identity completeness on BOTH arms for all REQUIRED_ARM_IDENTITY_KEYS; (3) cross-arm equality + top-level binding; (4) route bound to verified artifact (synthesized /reference/ fallback rejected); (5) capture-completion receipt, dataset content sha, terminal status; (6) accepted pairing keys; (7) strict validate_pair_manifest(); (8) claim promoted ONLY when validator valid AND all evidence present.",
+  "root_cause": "Builder validated ONLY the map pair (validate_ingolstadt_pair) then constructed manual_arm/auto_arm dicts containing map identity only, with no REQUIRED_ARM_IDENTITY_KEYS.",
+  "separation_of_concerns": [
+    "MAP_PAIR_ELIGIBLE",
+    "CAPTURE_ARM_COMPLETION",
+    "STRICT_PAIR_COMPARABILITY",
+    "FINAL_PAIRED_CAPTURE_CLAIM"
+  ],
+  "status": "REMEDIATED"
+}
