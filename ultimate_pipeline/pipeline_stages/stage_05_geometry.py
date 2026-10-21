@@ -958,6 +958,45 @@ def _step5_dem_and_geometry(self, topo_fixed: str, elev_out: str) -> str:
             f"{dem_qc_report.get('reason')} (see {dem_qc_report_path}).{hint}{actionable_hint}"
         )
 
+    # Lane Z source-stage repair: reconcile connector boundary elevations so
+    # every junction connector starts/ends exactly C0 with the incident roads
+    # (P0-C audit-style interface seams). Runs on the final in-memory DEM
+    # elevation tree, right before it is persisted; incident roads, lane
+    # topology and planView are never touched. Degrades without blocking on
+    # any failure (admission is decided by the P0-C oracle after regen).
+    connector_reconcile_enabled = str(
+        os.getenv("UP_CONNECTOR_ELEV_RECONCILE", "1")
+    ).strip().lower() not in ("0", "false", "no", "off")
+    if connector_reconcile_enabled:
+        try:
+            from ultimate_pipeline.topology.connector_elevation_reconciler import (
+                reconcile_connector_elevations,
+            )
+
+            connector_elevation_report = reconcile_connector_elevations(root)
+            connector_reconcile_report_path = os.path.join(
+                self.out_dir, "connector_elevation_reconciliation_report.json"
+            )
+            with open(connector_reconcile_report_path, "w", encoding="utf-8") as f:
+                json.dump(
+                    connector_elevation_report, f, indent=2, ensure_ascii=True, sort_keys=True
+                )
+            self.vreport.add_dict(
+                "connector_elevation_reconciliation", connector_elevation_report
+            )
+            print(
+                "✅ Connector elevation reconciliation: "
+                f"rewritten={connector_elevation_report['rewritten']} "
+                f"already_continuous={connector_elevation_report['already_continuous']} "
+                f"missing_bc={connector_elevation_report['missing_boundary_conditions']} "
+                f"conflicts={connector_elevation_report['conflicting_boundary_conditions']}"
+            )
+        except Exception as e:
+            print(f"⚠️ Connector elevation reconciliation failed (continuing): {e}")
+            self.vreport.add_dict(
+                "connector_elevation_reconciliation", {"error": str(e)}
+            )
+
     save_xodr(tree, topo_fixed)
 
     # DEM coverage gate (only if DEM was used)
