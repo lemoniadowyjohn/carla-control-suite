@@ -179,6 +179,9 @@ def _step4_enrichment(self, topo_fixed: str) -> str:
         try:
             n_lights = TrafficLightInferer.infer_and_insert(root)
             self.vreport.add("enrichment", "traffic_lights_added", str(n_lights))
+            self.vreport.add_dict(
+                "traffic_light_run_stats", dict(TrafficLightInferer.last_run_stats)
+            )
             save_xodr(tree, topo_fixed)
             print(f"   → Inserted {n_lights} traffic lights.")
 
@@ -186,10 +189,12 @@ def _step4_enrichment(self, topo_fixed: str) -> str:
             self.vreport.add_dict("traffic_light_junction_coverage", coverage)
             print(
                 "   → Junction signal coverage: "
-                f"{coverage['eligible_junctions_with_inferred_signal']}/"
+                f"{coverage['eligible_junctions_with_signal']}/"
                 f"{coverage['eligible_junctions']} eligible junctions "
-                f"({coverage['eligible_junction_coverage_fraction']:.1%}), "
-                "100% topology-heuristic, no real-world source."
+                f"({coverage['eligible_junction_coverage_fraction']:.1%}) "
+                f"[OSM-grounded: {coverage['eligible_junctions_with_osm_signal']}, "
+                f"heuristic: {coverage['eligible_junctions_with_heuristic_signal']}] "
+                + coverage["provenance"]
             )
 
             print("🧪 Validating traffic light → lane references…")
