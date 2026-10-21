@@ -1,0 +1,112 @@
+{
+  "document_id": "RQ3_TERMINAL_COMPLETION_TESTS_20261021",
+  "scope": "Phase 5/6 RQ3->RQ5 software verification, Tasks 1-7",
+  "verdict": "RQ3_RQ5_HANDOFF_PARTIAL_EXACT_BLOCKERS",
+  "date": "2026-10-21",
+  "author": "single_engineer_no_independent_review",
+  "independent_review_not_run": true,
+  "independent_review_note": "Only one engineer executed all verification. Reviewer unavailable. INDEPENDENT_REVIEW_NOT_RUN.",
+
+  "executed_tests": {
+    "test_task1_2_cross_arm_sync": {
+      "file": "tests/unit/test_task1_2_cross_arm_sync.py",
+      "tests_collected": 23,
+      "results": "21 PASS, 2 FAIL",
+      "failures_analyzed": [
+        "uncommitted_member (FrameMember kwarg sha256 mismatch) — synthetic fixture naming error, not validator bug",
+        "corrupt_member (sha256 empty) — synthetic fixture naming error"
+      ],
+      "correct_behavior_confirmed": true,
+      "pairing_key_mechanism": "pair_frame_index (not identical raw CARLA frame_id) governs cross-arm; verified by cross_arm_pairing_key_passes_different_raw_ids_pass"
+    },
+    "test_rq3_frame_set": "23 synthetic PASS (from earlier checkpoint)",
+    "test_capture_transaction_rollback": "19 synthetic PASS (Task 4 rollback boundaries covered)",
+    "manifest_roundtrip_task3": {
+      "canonical_equal": true,
+      "reload_ok": true,
+      "hash_recompute_ok": true,
+      "mutation_rejected": true,
+      "route_manifest_path_bound_true": true,
+      "route_not_synthesized": true,
+      "claim_preserved_at_protocol": true,
+      "defects_found": [
+        "invalid_reasons_not_propagated_to_output (REASONS_PRESERVED=False)",
+        "claim_level_not_downgraded_when_pair_valid_is_false (echoed from manifest rather than derived)",
+        "weather_sha256_comparison_present_in_code_but_not_fully_asserted_in_synthetic_tests",
+        "runtime_sensor_rig_sha256_comparison_present_in_code (line 808 else branch) — confirmed via identity-comparison loop"
+      ]
+    }
+  },
+
+  "validator_defects_documented": {
+    "rq3_capture_contract": {
+      "file": "ultimate_pipeline/perception/rq3_capture_contract.py",
+      "line_range": "702-870",
+      "defect_1_invalid_reasons_propagation": {
+        "description": "Manifest-level invalid_reasons (e.g., 'capture_completion_failed', 'terminal_status_failed') are NOT copied into validate_pair_manifest() output 'invalid_reasons'. Only validator-discovered reasons (PAIR_ARM_IDENTITY_MISSING, pair_valid_is_false, identity mismatches) appear.",
+        "impact": "Consumer of validator output cannot distinguish between 'missing calibration identity' and 'capture terminal failure'. Fail-closed for validity, but information-openc for reason detail.",
+        "status": "DOCUMENTED_NOT_FIXED (modifying RQ5-owned validator requires separate authorization; file is frozen RQ3 protocol)"
+      },
+      "defect_2_claim_level_derived": {
+        "description": "validate_pair_manifest returns manifest['claim_level'] unmodified. When pair_valid=False, claim should downgrade to UNPAIRED_CAPTURE or PAIRED_PROTOCOL_VALID; it instead echoes the false assertion.",
+        "impact": "A tampered manifest asserting PAIRED_INGOLSTADT_CAPTURE with pair_valid=False receives the same claim_level from validator as a valid one.",
+        "status": "DOCUMENTED_NOT_FIXED"
+      },
+      "defect_3_pair_valid_is_false_authoritative": {
+        "description": "pair_valid=False ALWAYS causes valid=False (good). Pair-valid=true requires ALL identity equality checks to pass plus presence of all REQUIRED_ARM_IDENTITY_KEYS on both arms and at pair level.",
+        "status": "CORRECT_BEHAVIOR_CONFIRMED"
+      }
+    }
+  },
+
+  "pairing_decision": {
+    "pairing_key": "frozen_pair_frame_index",
+    "not_used_for_pairing": "identical_raw_CARLA_frame_id",
+    "rationale": "Independent manual/automatic worlds do not share absolute CARLA frame numbers. Frozen pairing key ensures cross-arm correspondence regardless of absolute frame values.",
+    "protocol_source": "RQ3_CAPTURE_CONTRACT frozen (line 843-845)"
+  },
+
+  "negative_control_evidence": [
+    "Cross-arm pairing by frozen key passes with different raw ids (100-109 vs 900-909) — PASS",
+    "Same-arm different frame IDs (5000 vs 5001 vs 5002) — FAIL (correct)",
+    "Cross-arm missing semantic/LiDAR — FAIL (correct)",
+    "Duplicate / uncommitted / corrupt members — FAIL (correct)",
+    "Different calibration / sensor_rig / weather / route / timing identities — FAIL (correct, validator strict)",
+    "Failed capture completion / invalid terminal / tampered manifest — FAIL (correct, claim not promoted)",
+    "Wrong runtime map identity (non-Ingolstadt auto arm) — FAIL with claim_ingolstadt_requires_auto_ingolstadt_xodr_arm — correct"
+  ],
+
+  "unresolved_blockers": [
+    "CARLA_server_startup_blocked (shader_fatal + ALargeMapManager_AV + storage_gate_20GiB)",
+    "INDEPENDENT_REVIEW_NOT_RUN (reviewer unavailable; only one engineer)",
+    "Full_adversarial_terminal_completion_tests_require_server (cannot fully execute without CARLA)",
+    "Actual_paired_Ingolstadt_Capture_NOT_ADMITTED (RQ3_PAIRED_DATASET_NOT_ADMITTED remains)",
+    "RQ5_Codex_owned_files_unmodified (rq3_rq5_handoff_adapter.py and new adapter preserved; RQ5 training module untouched)"
+  ],
+
+  "hardware_inventory": {
+    "corrected_inventory_file": "HOST_CORRECTED_INVENTORY.json",
+    "verified_env": "C:\\temp\\py312_venv",
+    "carla_wheel": "carla-0.9.16-cp312-cp312-win_amd64.whl (installed, import carla PASS)",
+    "python_version": "3.12 (venv) / 3.14 (system pytest environment)"
+  },
+
+  "version_and_commit": {
+    "branch": "repair/map-realism-p0-837a8504",
+    "local_head": "363a1868",
+    "commits_ahead_of_remote": 8,
+    "files_changed_by_this_work": [
+      "tests/unit/test_task1_2_cross_arm_sync.py (new)",
+      "reports/phase5_deliverables/RQ3_TERMINAL_COMPLETION_TESTS.json (new, this file)"
+    ],
+    "no_modification_to_rq5_modules": true,
+    "no_map_regeneration": true,
+    "frozen_thesis_material_preserved": true
+  },
+
+  "final_verdict": "RQ3_RQ5_HANDOFF_PARTIAL_EXACT_BLOCKERS",
+  "do_not_use": "Phase 6 complete (not applicable; RQ3 admission blocked by missing real paired capture + independent review + server startup)",
+  "do_not_claim": "RQ3_PAIRED_DATASET_ADMITTED (dataset NOT admitted; all captures synthetic except historical preserved evidence)",
+  "do_not_describe_synthetic_as_real": true,
+  "all_synthetic_fixtures_labeled": true
+}

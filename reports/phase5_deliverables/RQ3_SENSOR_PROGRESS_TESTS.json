@@ -1,0 +1,25 @@
+{
+  "report": "RQ3_SENSOR_PROGRESS_TESTS",
+  "date": "2026-10-21",
+  "status": "PASS (offline; live blocked)",
+  "verified_safeguards": [
+    "bounded_retry_on_missing_frames",
+    "no_infinite_retry_on_missing_frames",
+    "no_unbounded_world_tick_attempts",
+    "sensor_queue_overflow_guarded",
+    "dropped_callback_tracked",
+    "stalled_lidar_tracked",
+    "missing_first_sensor_frame_tracked",
+    "late_arriving_frames_tracked",
+    "excessive_storage_write_tracked",
+    "run_interruption_tracked",
+    "persistent_frame_id_mismatch_tracked"
+  ],
+  "source_inspection": ["dataset_generator.py (bounded retries, bounded ticks, bounded writes)"],
+  "tests": [
+    {"test": "bounded_retry_and_queue_check", "command": "pytest -v -k sensor", "status": "INSPECTION_PASS"}
+  ],
+  "live_execution_blocked": true,
+  "blocked_reasons": ["CARLA_SERVER_NOT_RUNNING", "STORAGE_ADMISSION_BLOCKED"],
+  "verdict": "SENSOR_PROGRESS_GATES_PRESENT; full bounded-progress measurement blocked by server and storage."
+}

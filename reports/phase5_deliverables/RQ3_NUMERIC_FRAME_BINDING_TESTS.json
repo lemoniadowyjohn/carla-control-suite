@@ -1,0 +1,26 @@
+{
+  "report": "RQ3_NUMERIC_FRAME_BINDING_TESTS",
+  "version": "v1",
+  "date": "2026-10-21",
+  "status": "PARTIAL_EXACT_BLOCKERS",
+  "requirement": "Do not accept matching EPSG identifiers as sufficient world-placement proof. Verify CRS definition, axis order, OpenDRIVE offset, CARLA origin, heading interpretation, scale, forward/inverse transforms.",
+  "executed_offline": [
+    {
+      "test": "crs_epsg_identity_is_not_sufficient",
+      "command": "py -m pytest ultimate_pipeline/tests/unit/ -k crs",
+      "exit_code": 0,
+      "result": "existing CRS/origin-anchored tests pass; origin anchoring enforced at P0-E (force policy for bare tmerc)"
+    }
+  ],
+  "negative_control_status": {
+    "five_synthetic_distributed_anchors": "NOT_RUN - requires authoritative source anchors from the accepted Ingolstadt candidate",
+    "same_epsg_different_local_offset_negative": "NOT_RUN - requires two real candidate maps"
+  },
+  "binding_requirement": "Route-frame identity must bind to the actual numeric transform and map SHA, not just the EPSG label.",
+  "blockers": [
+    "No accepted final candidate map (map-of-record pin is frozen at 370abbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8)",
+    "Full Ingolstadt generation blocked by 20 GiB storage gate",
+    "Automatic arm runtime map identity unknown (CARLA server not running)"
+  ],
+  "verdict_note": "This is explicitly NOT a P0-E acceptance; source-grounded final-candidate evidence is absent."
+}

@@ -1,0 +1,54 @@
+{
+  "report": "RQ3_FRAMESET_INTERSECTION_TESTS",
+  "version": "v1",
+  "date": "2026-10-21T14:40:00Z",
+  "verdict": "PASS",
+  "module_added": "ultimate_pipeline/perception/rq3_frame_set.py",
+  "design": {
+    "completion_inferred_from_file_count": false,
+    "frame_completion_basis": "per-frame-index member intersection across required modalities, bound to CARLA frame id and simulation timestamp",
+    "staging_never_accepted": true,
+    "uncommitted_never_accepted": true,
+    "cross_arm_pairing_key": "pair_frame_index (frozen route/temporal ordinal)",
+    "absolute_frame_id_shared_across_worlds_assumed": false,
+    "timestamp_tolerance_s": 0.016666666666666666,
+    "reason_codes": ["missing_modality", "frame_id_mismatch", "timestamp_mismatch", "duplicate_member", "uncommitted_member", "staging_frame", "missing_hash", "hash_mismatch", "empty_frame_index"]
+  },
+  "tests": {
+    "command": "py -m pytest ultimate_pipeline/tests/unit/test_rq3_frame_set.py -v",
+    "exit_code": 0,
+    "executed": 23,
+    "passing": 23,
+    "failing": 0,
+    "verified_tests": [
+      "test_within_arm_completeness",
+      "test_within_arm_intersection",
+      "test_unequal_frame_ids_fail",
+      "test_equal_counts_unequal_cross_arm_keys_fail",
+      "test_missing_lidar_fails",
+      "test_missing_lidar_allowed_when_not_mandatory",
+      "test_missing_semantic_camera_fails",
+      "test_timestamp_mismatch_fails",
+      "test_timestamp_within_tolerance_passes",
+      "test_duplicate_member_fails",
+      "test_uncommitted_member_fails",
+      "test_staging_frame_fails",
+      "test_missing_hash_fails",
+      "test_interrupted_recovery_rejects_unfinished",
+      "test_paired_route_frame_alignment",
+      "test_cross_arm_alignment_mismatch_keys",
+      "test_incorrect_rgb_semantic_correspondence",
+      "test_wrong_modality_name_rejected",
+      "test_hash_bound_complete_frame_set",
+      "test_corrupt_committed_member_fails_verification",
+      "test_session_isolation",
+      "test_complete_exported_manifest",
+      "test_manifest_excludes_rejected_frames"
+    ]
+  },
+  "not_executed": [
+    "live CARLA capture (runtime blocked)",
+    "on-disk dataset readback with real artifacts (no real RQ3 capture exists)"
+  ],
+  "synthetic_data_policy": "All fixtures are synthetic and labeled; none registered as real RQ3 captures."
+}

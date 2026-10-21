@@ -1,0 +1,89 @@
+{
+  "all_exit_codes_zero": true,
+  "diff_validation": {
+    "modified_existing": [
+      "ultimate_pipeline/perception/experiment_map_pair_authority.py",
+      "ultimate_pipeline/perception/rq3_capture_contract.py",
+      "ultimate_pipeline/perception/record_route_fixed.py"
+    ],
+    "new": [
+      "tests/unit/test_task1_2_cross_arm_sync.py",
+      "tests/unit/test_rq3_terminal_adversarial_tests.py",
+      "tests/unit/test_strict_runner_integration.py",
+      "tests/unit/test_canonical_runner_integration.py",
+      "tests/unit/test_rq3_builder_false_pass_regression.py",
+      "reports/phase5_deliverables/"
+    ]
+  },
+  "document_id": "RQ3_HANDOFF_FULL_REGRESSION_20261021",
+  "final_sha": "363a1868455cab0c33ce9584d6f4b09d594f74e3",
+  "import_static_checks": [
+    "import carla PASS (py312_venv C:\\temp\\py312_venv)",
+    "rq3_capture_contract.py import PASS",
+    "rq3_frame_set.py import PASS",
+    "rq3_rq5_handoff_adapter.py import PASS",
+    "capture_transaction.py import PASS",
+    "record_route_fixed.py AST/import PASS (3646 lines)",
+    "experiment_map_pair_authority.py import PASS"
+  ],
+  "not_executed": [
+    "CARLA_SERVER_STARTUP_PASS (blocked: shader-fatal + ALargeMapManager AV + 20 GiB storage gate)",
+    "Full-map Ingolstadt regeneration (not authorized; storage gate unmet)",
+    "Adversarial tests requiring a live server (offline equivalents executed instead)"
+  ],
+  "status": "PASS",
+  "suites": {
+    "builder_false_pass_regression": {
+      "collected": 12,
+      "exit_code": 0,
+      "failed": 0,
+      "passed": 12
+    },
+    "canonical_runner_integration": {
+      "collected": 3,
+      "exit_code": 0,
+      "failed": 0,
+      "passed": 3
+    },
+    "capture_transaction_rollback": {
+      "collected": 19,
+      "exit_code": 0,
+      "failed": 0,
+      "passed": 19
+    },
+    "cross_arm_task1_2": {
+      "collected": 23,
+      "exit_code": 0,
+      "failed": 0,
+      "passed": 23
+    },
+    "manifest_negative_controls": {
+      "collected": 8,
+      "exit_code": 0,
+      "failed": 0,
+      "passed": 8
+    },
+    "rq3_frame_set": {
+      "collected": 23,
+      "exit_code": 0,
+      "failed": 0,
+      "passed": 23
+    },
+    "strict_runner_integration": {
+      "collected": 1,
+      "exit_code": 0,
+      "failed": 0,
+      "passed": 1
+    },
+    "terminal_adversarial": {
+      "collected": 10,
+      "exit_code": 0,
+      "failed": 0,
+      "passed": 10
+    }
+  },
+  "tests_collected": 99,
+  "tests_failed": 0,
+  "tests_passed": 99,
+  "tests_skipped": 0
+}

@@ -1,0 +1,18 @@
+{
+  "report": "RQ3_SESSION_ISOLATION_TESTS",
+  "version": "v1",
+  "date": "2026-10-21",
+  "status": "PASS",
+  "tests_executed": [
+    "session_isolation_same_pair_different_session_digest",
+    "manifest_excludes_rejected_frames",
+    "no_silent_reuse_of_existing_session"
+  ],
+  "results": [
+    {"test": "session_isolation_same_pair_different_session_digest", "exit": 0, "verified": true},
+    {"test": "manifest_excludes_rejected_frames", "exit": 0, "verified": true},
+    {"test": "no_silent_reuse_of_existing_session", "exit": 0, "verified": true}
+  ],
+  "synthetic_fixtures": true,
+  "not_executed": ["real paired session writes to disk (blocked by storage and server)"]
+}

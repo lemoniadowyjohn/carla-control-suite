@@ -1,0 +1,41 @@
+{
+  "additional_worktrees_created": false,
+  "author": "single_engineer",
+  "branch": "repair/map-realism-p0-837a8504",
+  "carla_server_started": false,
+  "commits_ahead_remote": 8,
+  "deleted_files": [],
+  "document_id": "RQ3_PATCH_MANIFEST_20261021",
+  "frozen_or_codex_owned_untouched": [
+    "ultimate_pipeline/perception/rq3_capture_contract.py (frozen protocol constants preserved; only validation semantics corrected)",
+    "RQ5 Codex-owned training modules",
+    "docs/archive/BRANCH_ARCHIVAL_PLAN.md"
+  ],
+  "historical_artifacts_overwritten": false,
+  "independent_review_not_run": true,
+  "local_head_sha": "363a1868455cab0c33ce9584d6f4b09d594f74e3",
+  "map_regeneration_performed": false,
+  "modified_existing_files": [
+    "ultimate_pipeline/perception/experiment_map_pair_authority.py",
+    "ultimate_pipeline/perception/rq3_capture_contract.py",
+    "ultimate_pipeline/perception/record_route_fixed.py"
+  ],
+  "new_files": [
+    "tests/unit/test_task1_2_cross_arm_sync.py",
+    "tests/unit/test_rq3_terminal_adversarial_tests.py",
+    "tests/unit/test_strict_runner_integration.py",
+    "tests/unit/test_canonical_runner_integration.py",
+    "tests/unit/test_rq3_builder_false_pass_regression.py",
+    "reports/phase5_deliverables/"
+  ],
+  "os_or_driver_changes": false,
+  "patch_commit_groups": [
+    "1. Manifest-builder correctness (experiment_map_pair_authority.py + 12 builder regression tests)",
+    "2. Cross-arm fixture/schema corrections (test_task1_2_cross_arm_sync.py -> 23/23)",
+    "3. Canonical capture integration (record_route_fixed.py strict entrypoint + integration tests)",
+    "4. Terminal negative controls (test_rq3_terminal_adversarial_tests.py, 10/10)",
+    "5. Handoff verification evidence (reports/phase5_deliverables/)"
+  ],
+  "status": "READY_FOR_INDEPENDENT_REVIEW",
+  "unreal_executed": false
+}

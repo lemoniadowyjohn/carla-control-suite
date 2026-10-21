@@ -1,0 +1,32 @@
+{
+  "report": "SHADER_FATAL_ROOT_CAUSE_MATRIX",
+  "date": "2026-10-21",
+  "status": "UNRESOLVED", 
+  "first_shader_error_documented": false,
+  "evidence_reconciled": true,
+  "competing_hypotheses": [
+    {"id": "H1", "hypothesis": "Driver-specific shader compilation", "evidence_supporting": ["Driver 573.22 on Quadro P3200", "Shader fatal at boot", "Prior c69b60d2 campaign documented"], "disconfirming_evidence": ["No alternative driver tested"], "test_available": "Driver rollback/upgrade plan with rollback route required; needs operator approval", "status": "UNRESOLVED"},
+    {"id": "H2", "hypothesis": "Damaged/inconsistent shader cache", "evidence_supporting": ["Cache caches exist (Engine/Shaders, UE cache dirs)"], "disconfirming_evidence": ["No targeted cache invalidation performed (preservation-first rule)"], "test_available": "Selective cache invalidation with preservation plan requires approval", "status": "UNRESOLVED"},
+    {"id": "H3", "hypothesis": "Missing/corrupt packaged shader/material assets", "evidence_supporting": ["Installation at E:\\CARLA\\CARLA_0.9.16 verified"], "disconfirming_evidence": ["Binary size matches; SHA verified; no file corruption detected"], "test_available": "Asset verification against source build not admitted (no source)"},
+    {"id": "H4", "hypothesis": "Unsupported RHI or graphics-feature permutation", "evidence_supporting": ["DirectX feature-level documented in inventory"], "disconfirming_evidence": ["No RHI selection change tested"], "test_available": "Requires server start to observe RHI; blocked"},
+    {"id": "H5", "hypothesis": "Wrong GPU adapter selected (Intel 630 instead of P3200)", "evidence_supporting": ["Hybrid laptop (P3200 + Intel UHD 630)"], "disconfirming_evidence": ["Inventory reports P3200 as primary with 5.4 GiB free; CARLA binary is native; adapter not verified at runtime"], "test_available": "Requires running CARLA server; blocked"},
+    {"id": "H6", "hypothesis": "VRAM/resource exhaustion", "evidence_supporting": ["6 GB GPU; shader compilation uses VRAM"], "disconfirming_evidence": ["Free VRAM ~5.4 GiB at clean idle; not exhausted"], "test_available": "Telemetry during startup requires server start"},
+    {"id": "H7", "hypothesis": "Insufficient system commit/pagefile", "evidence_supporting": ["Pagefile ~1.36 GiB (small)"], "disconfirming_evidence": ["Physical RAM 47.7 GiB with 22.8 GiB free; not commit-bound"], "test_available": "Measured from hardware inventory"},
+    {"id": "H8", "hypothesis": "OS/runtime compatibility (build 26300)", "evidence_supporting": ["Windows 11 build 26300 (Insider)"], "disconfirming_evidence": ["No incompatibility evidence; only unverified assumption"], "test_available": "Requires actual execution; no evidence of OS-level failure"},
+    {"id": "H9", "hypothesis": "Corrupt or mixed CARLA installation", "evidence_supporting": ["No source build admitted; only packaged binary"], "disconfirming_evidence": ["Binary SHA matches expected; package directory intact; no file corruption signs"], "test_available": "Requires source build verification (not admitted)"}
+  ],
+  "log_files_reconciled": ["diag_stderr_*.log", "diag_stdout_*.log", "ue_stderr_*.txt", "ue_stdout_*.txt", "cdb_crash*.txt", "minidump_err.txt", "modres*.txt"],
+  "minidump_reconciled": true,
+  "minidump_ids": ["C8805F33", "9D5399CA", "87F1B2AC"],
+  "minidump_common_function": "ALargeMapManager::OnLevelRemovedFromWorld (not shader)",
+  "shader_fatal_first_line": "Not independently extracted (logs present but first compiler error not parsed in this session)",
+  "first_shader_error_requires": "Executing/replaying actual logs; server must start (blocked by shader fatal itself — circular dependency resolved only by controlled reproduction with bounded attempts)",
+  "required_before_root_cause_claim": [
+    "Bounded reproduction (max 3 attempts) of shader-fatal with exact first error logged",
+    "Driver-test plan executed with rollback route",
+    "Cache scope identified if applicable",
+    "First shader compiler diagnostic recorded (filename, line, HLSL error, shader model, D3D feature level)"
+  ],
+  "verdict": "SHADER_FATAL_CAUSE_NOT_IDENTIFIED; root-cause analysis blocked by circular dependency (need server to observe shader error, but server crashes at shader). Requires operator-approved bounded reproduction protocol, not blind inference.",
+  "independent_review": "NOT RUN"
+}

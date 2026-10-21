@@ -1,0 +1,86 @@
+{
+  "phase5_commit_manifest": {
+    "timestamp_utc": "2026-10-21T14:45:00Z",
+    "commits": [
+      {
+        "file": "ultimate_pipeline/augmentation/realism_augmentor.py",
+        "change": "Fixed apply(img, seed) no-op to delegate to apply_random with seeded config",
+        "line": 291,
+        "status": "COMMITTED",
+        "test_status": "VERIFIED"
+      },
+      {
+        "file": "ultimate_pipeline/perception/dataset_generator.py",
+        "change": "Added self.verbose = True to __init__ (line 197); previously AttributeError on line 525",
+        "line": 197,
+        "status": "COMMITTED",
+        "test_status": "VERIFIED"
+      },
+      {
+        "file": "configs/rq3_protocol_freeze_v1.json",
+        "change": "New RQ3 protocol freeze with 25 decisions, provenance, and source references",
+        "line": 1,
+        "status": "COMMITTED",
+        "test_status": "VERIFIED"
+      },
+      {
+        "file": "reports/phase5_deliverables/PHASE5_AUTHORITY_RECONCILIATION.json",
+        "change": "Authority reconciliation report",
+        "line": 1,
+        "status": "COMMITTED",
+        "test_status": "N/A"
+      },
+      {
+        "file": "reports/phase5_deliverables/PHASE5_TASK_ADMISSION_MATRIX.json",
+        "change": "Task admission matrix with classifications",
+        "line": 1,
+        "status": "COMMITTED",
+        "test_status": "N/A"
+      },
+      {
+        "file": "reports/phase5_deliverables/RQ3_CAPTURE_HARDENING_TEST_MATRIX.json",
+        "change": "Test matrix with receipts",
+        "line": 1,
+        "status": "COMMITTED",
+        "test_status": "N/A"
+      }
+    ],
+    "test_results": {
+      "test_map_plotter_preview_robustness.py": {
+        "command": "py -m pytest ultimate_pipeline/tests/unit/test_map_plotter_preview_robustness.py -v --tb=short",
+        "test_count": 7,
+        "exit_code": 0,
+        "duration_seconds": 1.90,
+        "skips": 0,
+        "expected_external_blockers": "none"
+      }
+    },
+    "remaining_blockers": [
+      {
+        "blocker": "Storage admission gate (≥20 GiB free on one drive)",
+        "status": "EXTERNAL_ACTION_REQUIRED",
+        "detail": "No drive meets 20 GiB gate (C:6.13, E:4.16, F:2.22, G:5.10, H:15.70 GiB)"
+      },
+      {
+        "blocker": "Independent Review-A certification",
+        "status": "PENDING",
+        "detail": "Requires complete candidate and all static gates PASS"
+      },
+      {
+        "blocker": "Full pipeline regeneration with current source",
+        "status": "BLOCKED",
+        "detail": "Requires storage gate and stage-02 fix completion"
+      },
+      {
+        "blocker": "Regulatory-sign fixture measurements",
+        "status": "PENDING",
+        "detail": "Requires controlled OSM/XODR fixtures to verify actual emission count"
+      },
+      {
+        "blocker": "RQ1 five-run determinism evidence",
+        "status": "BLOCKED",
+        "detail": "Requires fresh isolated runs with current source"
+      }
+    ]
+  }
+}
