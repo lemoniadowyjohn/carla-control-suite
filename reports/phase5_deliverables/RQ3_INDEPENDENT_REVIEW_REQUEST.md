@@ -1,75 +1,38 @@
-# Independent Review Request — RQ3->RQ5 Handoff Repair
+# Independent Review Request — RQ3->RQ5 Handoff Repair (Updated for final SHA)
 
 - Worktree: `E:\wt\repair-map-realism-p0-837a8504`
-- HEAD: `363a1868455cab0c33ce9584d6f4b09d594f74e3`
-- Branch: `repair/map-realism-p0-837a8504` (8 commits ahead of remote)
-- Author: single engineer (only writer); **INDEPENDENT_REVIEW_NOT_RUN**
-- Date: 2026-10-21
+- Implementation SHA reviewed: `9e777a270f91299bd20efcc879919029e2956e45` (short: `9e777a27`)
+- Receipt SHA (this doc): will be assigned at separate commitment; NOT self-referenced with `9e777a27`
+- Branch: `repair/map-realism-p0-837a8504`
+- Author / writer: single engineer (`dba5aabe` → `9e777a27` chain)
+- Independent review status: **INDEPENDENT_REVIEW_NOT_RUN**
+- Frozen protocol authority: `configs/rq3_protocol_freeze_v1.json` (SHA-256 `5aa8ae2...`) — present, unedited, tracked at `9e777a27`
 
-## Repaired P0 defects (exact)
+## Verified artifacts at `9e777a27`
+- Strict CLI dispatch (`record_route_fixed.py`): `main()` routes `--strict-rq3` to `run_strict_capture_entrypoint`; no legacy fallback; `__main__` after strict definitions.
+- Synthetic-to-authoritative gate (`rq3_evidence_gate.py`): evidence states separated (`structural_test_valid`, `synthetic_fixture_valid`, `real_capture_complete`, `dataset_admitted`, `experimental_evidence_authoritative`); claim never promoted without live-capture provenance + independent review + verified artifacts.
+- Manifest promotion (`experiment_map_pair_authority.py`): derived `pair_valid` from evidence predicates (not caller flag); strict validator applied; claim downgraded when invalid.
+- Artifact byte verification (`rq3_evidence_gate.verify_artifact_set`): SHA-256 of actual file contents; path traversal blocked; stale session / uncommitted staging / duplicate identity / missing modality / modified after manifest all rejected.
+- Frozen protocol tracked unedited (`configs/rq3_protocol_freeze_v1.json`).
+- Reproducible environment: `C:\temp\py312_venv`; Python 3.12.2; pytest 9.1.1; `import carla` PASS.
 
-1. **Manifest-builder false PASS** (`ultimate_pipeline/perception/experiment_map_pair_authority.py`).
-   Root cause: the builder validated only the map pair and then emitted `manual_arm`/`auto_arm`
-   containing map identity only — no `REQUIRED_ARM_IDENTITY_KEYS` — while promoting
-   `pair_valid=True` / `PAIRED_INGOLSTADT_CAPTURE`. Remediation: `MAP_PAIR_ELIGIBLE`,
-   capture-arm completion, strict comparability and the final paired claim are now separate
-   stages; the candidate is validated by the existing strict contract and the claim is promoted
-   only after every predicate succeeds. `invalid_reasons` are preserved; the claim is downgraded
-   when invalid; `route_manifest_path` is bound to the supplied verified artifact.
+## Evidence receipts bound to `9e777a27`
+- `RQ3_EVIDENCE_RECEIPT_20261022_9e777a27.json`
+- `RQ3_HANDOFF_PARTIAL_EXACT_BLOCKERS.md`
+- `RQ3_PATCH_MANIFEST.json` (updated)
 
-2. **Cross-arm pairing** (`tests/unit/test_task1_2_cross_arm_sync.py`): 23/23 PASS.
-   The two previous failures were fixture-only (`sha` vs the schema's `sha256`); the frozen
-   schema was not relaxed. Pairing uses the frozen `pair_frame_index`, never raw CARLA frame id.
+## Blockers preserved (not masked)
+- `RQ3_PAIRED_DATASET_NOT_ADMITTED`: no paired runtime capture.
+- `INDEPENDENT_REVIEW_NOT_RUN`: only one engineer executed.
+- `CARLA_SERVER_STARTUP`: blocked (shader + ALargeMapManager AV + storage gate).
+- Some pre-existing unrelated contract failures remain in wider regression suite (not masked by this fix).
 
-3. **Failure-reason preservation** (`ultimate_pipeline/perception/rq3_capture_contract.py`):
-   manifest-level reasons now propagate into `validate_pair_manifest` output and the claim is
-   downgraded to `UNPAIRED_CAPTURE` whenever full validity is false.
+## Request
+Request independent Codex reviewer to execute:
+1. Inspect committed tree at SHA `9e777a27` (`git show 9e777a27 --stat`).
+2. Reproduce strict CLI (`python -m pytest ...`) with the exact venv interpreter (`C:\temp\py312_venv\Scripts\python.exe`).
+3. Verify synthetic fixtures stay `SYNTHETIC_TEST_ONLY`; verify no promotion path exists through helper/manifest/CLI/adapter without verified artifacts + `APPROVED` independent review + live-capture provenance.
+4. Confirm frozen protocol bytes unchanged (`sha256sum configs/rq3_protocol_freeze_v1.json`).
+5. Confirm receipt SHA `9e777a27` is the tested implementation, not recycled from an earlier commit.
 
-4. **Canonical capture integration** (`ultimate_pipeline/perception/record_route_fixed.py`):
-   new `run_strict_rq3_capture` / `run_strict_capture_entrypoint` (`--strict-rq3`) invoke
-   `capture_transaction`, `rq3_frame_set` and `rq3_rq5_handoff_adapter` from the real runner and
-   fail the process on any invariant violation.
-
-5. **Terminal adversarial controls**: 10/10 offline injections block authoritative completion.
-
-6. **Regression**: 99 executed / 99 PASS / 0 FAIL / 0 SKIP, all exit codes 0.
-
-## Outstanding blockers (must remain open)
-
-- `RQ3_PAIRED_DATASET_NOT_ADMITTED` — no paired Ingolstadt runtime capture exists.
-- `INDEPENDENT_REVIEW_NOT_RUN` — single engineer only; reviewer must confirm before admission.
-- `CARLA_SERVER_STARTUP_PASS` — blocked by shader-fatal boot, ALargeMapManager AV and the
-  20 GiB storage gate. Python 3.12 isolation is verified (`import carla` PASS), server is not.
-- `CONTINUOUS_DRIVING` vs `POSE_REPLAY` policy — remains explicitly escalated to scientific
-  authority; no default mode was invented.
-- Full-map Ingolstadt regeneration not authorized (storage gate unmet); no map regeneration run.
-
-## Evidence preserved
-
-- `reports/CARLA_RUNTIME_QUALIFICATION_c69b60d2_20261021/` and
-  `E:\CARLA_RUNTIME_QUALIFICATION_c69b60d2_20261021\` — untouched.
-- `HOST_CORRECTED_INVENTORY.json`, `PYTHON312_CARLA_ENVIRONMENT.json` — untouched.
-- Frozen thesis material — untouched.
-
-## Reproducible commands
-
-```bash
-py -m pytest ultimate_pipeline/tests/unit/test_task1_2_cross_arm_sync.py -v --tb=line          # 23 passed
-py -m pytest ultimate_pipeline/tests/unit/test_experiment_manifest_negative_controls.py -q    # 8 passed
-py -m pytest ultimate_pipeline/tests/unit/test_rq3_frame_set.py -q                             # 23 passed
-py -m pytest ultimate_pipeline/tests/unit/test_capture_transaction_rollback.py -q             # 19 passed
-py -m pytest ultimate_pipeline/tests/unit/test_rq3_builder_false_pass_regression.py -v        # 12 passed
-py -m pytest ultimate_pipeline/tests/unit/test_canonical_runner_integration.py -q             # 3 passed
-py -m pytest ultimate_pipeline/tests/unit/test_strict_runner_integration.py -q                # 1 passed
-py -m pytest ultimate_pipeline/tests/unit/test_rq3_terminal_adversarial_tests.py -v          # 10 passed
-py -c "import carla; print(carla.__version__)"                                              # client PASS
-```
-
-## Verdict requested (do not self-issue)
-
-- `RQ3_HANDOFF_READY_FOR_INDEPENDENT_REVIEW`
-- `RQ3_HANDOFF_PARTIAL_EXACT_BLOCKERS` (current state; this report supports PARTIAL)
-- `RQ3_HANDOFF_FAILED_VERIFICATION`
-
-Do **not** issue `RQ3_HANDOFF_SOFTWARE_VERIFIED`, do **not** admit the paired dataset, and do
-**not** describe the RQ3 handoff as "Phase 6 complete".
+Do NOT merge to production until (a) independent review completed, (b) dataset admission verified from live paired capture, (c) server startup resolved.
