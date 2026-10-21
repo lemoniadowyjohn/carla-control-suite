@@ -163,6 +163,12 @@ def parse_args():
         action="store_true",
         help="NEW-243: require and verify a companion model_manifest.json next to the checkpoint",
     )
+    ap.add_argument(
+        "--migration-contract",
+        type=str,
+        default=None,
+        help="Migration contract identifier required for partial checkpoint loads (required if --allow-partial-load is used with mismatched keys)",
+    )
     return ap.parse_args()
 
 
@@ -285,7 +291,10 @@ def main() -> int:
     try:
         load_record: Dict[str, Any] = {}
         report["state_dict_load"] = load_state_dict_governed(
-            model, model_path, allow_partial=args.allow_partial_load, record=load_record
+            model, model_path,
+            allow_partial=args.allow_partial_load,
+            migration_contract=args.migration_contract,
+            record=load_record,
         )
     except (StateDictLoadError, FileNotFoundError) as exc:
         report["errors"].append(f"state_dict_load_failed: {exc}")

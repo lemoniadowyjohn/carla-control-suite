@@ -36,19 +36,18 @@ never a torn PNG. See `_atomic_path`.
 from __future__ import annotations
 
 import contextlib
+import json
 import logging
 import os
 import tempfile
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Iterator, Optional
+from typing import Any, Dict, Iterator, List, Mapping, Optional
 
 import numpy as np
 
-from ultimate_pipeline.perception.carla_classes import assert_label_ids_in_range
-from ultimate_pipeline.perception.segmentation_dataset_generator_queues import (
-    _write_png_raw_ids,
-)
+from ultimate_pipeline.perception.semantic_classes import validate_num_classes
+
 
 logger = logging.getLogger(__name__)
 
@@ -128,6 +127,27 @@ def _class_ids_from_seg_image(image: Any) -> np.ndarray:
     """Extract the raw class-id (R channel of BGRA) from a semantic image."""
     bgra = _image_raw_bgra(image)
     return bgra[:, :, 2]  # BGRA -> index 2 is R
+
+
+def write_png_raw_ids(image: Any, out_path: Path) -> None:
+    """Write a single-channel raw class-id PNG (the TRAINING label).
+
+    Public entry point: the shared writer owns the label encoding so the
+    capture side and the reader side can never drift. ``segmentation_dataset_
+    generator_queues`` re-exports this for backwards compatibility; keeping the
+    implementation here makes the module import graph one-directional (writer
+    must not import the generator that consumes it).
+    """
+    class_id = _class_ids_from_seg_image(image)
+    with _atomic_path(Path(out_path)) as tmp:
+        try:
+            import imageio.v2 as imageio
+
+            imageio.imwrite(tmp.as_posix(), class_id.astype(np.uint8))
+        except Exception:
+            from PIL import Image as PILImage
+
+            PILImage.fromarray(class_id.astype(np.uint8), mode="L").save(tmp.as_posix())
 
 
 def _write_viz_png(image: Any, out_path: Path) -> None:
@@ -261,3 +281,120 @@ def save_capture_frame(
         result.detection_status = "explicit_noop"
 
     return result
+
+
+# ---------------------------------------------------------------------------
+# Frame-set transactions (CD-4 remediation)
+# ---------------------------------------------------------------------------
+#
+# NEW-CD4: the per-PNG atomicity above guarantees a member file is never
+# torn, but a *frame set* (all cameras of one tick + the metadata row) was
+# previously only "probably complete" — a crash between camera 1 and camera
+# 2 left a partial frame indistinguishable from a complete one. Every valid
+# sample is now one transaction:
+#
+#   tx = FrameSetTransaction(dataset_root, frame)
+#   try:
+#       member files written per-file-atomically (as before)
+#       tx.add_member(image_path); tx.add_member(label_path) ...
+#       tx.commit()                     -> frame_status/<frame>.json status
+#                                            "complete" (+ member hashes)
+#   except BaseException as exc:
+#       tx.mark_rejected_incomplete(exc) -> status "rejected_incomplete"
+#
+# A frame whose ``frame_status/<frame>.json`` does not say ``complete`` is
+# REJECTED_INCOMPLETE for every governed consumer (split authority, dataset
+# identity) and can never enter a train/test manifest.
+# ---------------------------------------------------------------------------
+
+FRAME_STATUS_DIRNAME = "frame_status"
+FRAME_STATUS_COMPLETE = "complete"
+FRAME_STATUS_REJECTED_INCOMPLETE = "rejected_incomplete"
+
+
+class FrameSetTransaction:
+    """Publish-at-end-once frame validity for one captured frame set."""
+
+    def __init__(self, dataset_root: Path, frame: int, *, metadata: Optional[Mapping[str, Any]] = None):
+        self.dataset_root = Path(dataset_root)
+        self.frame = int(frame)
+        self._metadata = dict(metadata or {})
+        self._members: List[Dict[str, Any]] = []
+        self._closed = False
+
+    def add_member(self, path: Optional[Path]) -> None:
+        """Record one member file of the frame set (with its content SHA-256)."""
+        if path is None:
+            return
+        p = Path(path)
+        if not p.is_file():
+            raise RuntimeError(f"frame-set member missing after write: {p}")
+        import hashlib
+
+        digest = hashlib.sha256(p.read_bytes()).hexdigest()
+        try:
+            rel = p.relative_to(self.dataset_root).as_posix()
+        except ValueError:  # pragma: no cover - defensive
+            rel = p.name
+        self._members.append({"path": rel, "sha256": digest})
+
+    def status_path(self) -> Path:
+        return Path(self.dataset_root) / FRAME_STATUS_DIRNAME / f"{int(self.frame):08d}.json"
+
+    def commit(self, *, extra: Optional[Mapping[str, Any]] = None) -> Path:
+        """Publish the frame as complete (only valid after ALL members exist)."""
+        if self._closed:
+            raise RuntimeError("frame-set transaction already closed")
+        if not self._members:
+            raise RuntimeError("frame-set transaction has no members to publish")
+        payload = {
+            "schema": "frame_set_status_v1",
+            "frame": self.frame,
+            "status": FRAME_STATUS_COMPLETE,
+            "members": self._members,
+            "metadata": self._metadata,
+            **(dict(extra or {})),
+        }
+        return self._publish(payload)
+
+    def mark_rejected_incomplete(self, reason: Any) -> Path:
+        """Record the frame as REJECTED_INCOMPLETE (never a manifest candidate)."""
+        if self._closed:
+            raise RuntimeError("frame-set transaction already closed")
+        payload = {
+            "schema": "frame_set_status_v1",
+            "frame": self.frame,
+            "status": FRAME_STATUS_REJECTED_INCOMPLETE,
+            "members": self._members,
+            "metadata": self._metadata,
+            "reject_reason": str(reason),
+        }
+        return self._publish(payload)
+
+    def _publish(self, payload: Dict[str, Any]) -> Path:
+        import json
+
+        status_dir = Path(self.dataset_root) / FRAME_STATUS_DIRNAME
+        _ensure_dir(status_dir)
+        target = status_dir / f"{int(self.frame):08d}.json"
+        with _atomic_path(target) as tmp:
+            tmp.write_text(json.dumps(payload, indent=2, sort_keys=True), encoding="utf-8")
+        self._closed = True
+        return target
+
+
+def read_frame_status(dataset_root: Path, frame: int) -> Optional[Dict[str, Any]]:
+    """Return the recorded frame-set status payload for ``frame`` (or None)."""
+    path = Path(dataset_root) / FRAME_STATUS_DIRNAME / f"{int(frame):08d}.json"
+    if not path.is_file():
+        return None
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return None
+
+
+def frame_status_is_complete(dataset_root: Path, frame: int) -> bool:
+    """True only for a positively published ``complete`` frame set."""
+    payload = read_frame_status(dataset_root, frame)
+    return bool(payload) and payload.get("status") == FRAME_STATUS_COMPLETE
