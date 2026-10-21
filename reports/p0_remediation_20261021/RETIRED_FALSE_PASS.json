@@ -1,0 +1,114 @@
+{
+  "retired_claims": [
+    {
+      "claim": "reports/post_audit_hardening/20260804T204419Z/L9_sensor_validation.json reports rgb/depth/semantic_segmentation/lidar/gnss/imu sensors CAPTURED with frame_non_empty=true, timestamp_valid=true and gnss_agreement=PASS",
+      "status": "RETIRED_FALSE_PASS",
+      "reason": "Fabricated evidence. phase_l_validation.py (code state @837a8504) hardcoded this record without spawning any sensor rig, opening any listener, or receiving any frame. Production 20261021 rewrite converts every sensor record to NOT_RUN_NO_SENSOR_RIG with null frame/timestamp fields; any certification citing this artifact is invalid.",
+      "evidence": {
+        "sha256": "a1a71a9001f528074ba05d793ed422cc5ef9b92b80c8f7ae6bd409a94eb101a3",
+        "size_bytes": 793,
+        "pinned_by": "reports/EVIDENCE_INDEX.json",
+        "artifact_state": "NOT_CHECKED_OUT_IN_WORKTREE (sparse checkout); hash pinned by evidence index",
+        "mutation_test": "tests/unit/test_phase_l_fail_closed.py::test_l9_no_sensor_rig_must_not_be_pass"
+      }
+    },
+    {
+      "claim": "reports/post_audit_hardening/20260804T205730Z/L9_sensor_validation.json reports the same six-sensor CAPTURED/PASS record",
+      "status": "RETIRED_FALSE_PASS",
+      "reason": "Fabricated evidence from the same hardcoded phase_l_validation.py code state. No sensor rig existed. Retired; re-validate only from a run of the fail-closed rewrite.",
+      "evidence": {
+        "sha256": "a747bd09d537c4598545b29a587046fac679d8eda7a72f31b8895dffe853424f",
+        "size_bytes": 814,
+        "pinned_by": "reports/EVIDENCE_INDEX.json"
+      }
+    },
+    {
+      "claim": "reports/post_audit_hardening/20260804T205920Z/L9_sensor_validation.json reports the same six-sensor CAPTURED/PASS record",
+      "status": "RETIRED_FALSE_PASS",
+      "reason": "Fabricated evidence from the same hardcoded phase_l_validation.py code state. Retired; re-validate only from the fail-closed rewrite.",
+      "evidence": {
+        "sha256": "bf852fc73a0773ad5ea6f5a2cf084243c2f974e7485ac9bad621110beba68d43",
+        "size_bytes": 814,
+        "pinned_by": "reports/EVIDENCE_INDEX.json"
+      }
+    },
+    {
+      "claim": "reports/post_audit_hardening/20260804T210232Z/L9_sensor_validation.json reports the same six-sensor CAPTURED/PASS record",
+      "status": "RETIRED_FALSE_PASS",
+      "reason": "Fabricated evidence from the same hardcoded phase_l_validation.py code state. Retired; re-validate only from the fail-closed rewrite.",
+      "evidence": {
+        "sha256": "ba5f94c76b0e2f07e5316d500f62384cd5bcdc8d70e643932aa0a9ada159abc2",
+        "size_bytes": 814,
+        "pinned_by": "reports/EVIDENCE_INDEX.json"
+      }
+    },
+    {
+      "claim": "reports/post_audit_hardening/20260805T122525Z/L9_sensor_validation.json reports the same six-sensor CAPTURED/PASS record",
+      "status": "RETIRED_FALSE_PASS",
+      "reason": "Fabricated evidence from the same hardcoded phase_l_validation.py code state. Retired; re-validate only from the fail-closed rewrite.",
+      "evidence": {
+        "sha256": "c4354e4c6b729a3cc34e4895dbfe5adac5587242964e78d64cd341dec3f3f6f7",
+        "size_bytes": 814,
+        "pinned_by": "reports/EVIDENCE_INDEX.json"
+      }
+    },
+    {
+      "claim": "Sibling fabricated claims in the same post_audit_hardening runs: L7_drivability.json PASS with vehicle_spawn_attempts=0; L8_signal_validation.json PASS with signal_*_valid=true hardcoded; L10_performance.json PASS with fps=0; L11_old_vs_new.json PASS with identical_*=true hardcoded; L4_alignment.json ALIGNED with residual_p50..p99=0.0 hardcoded; L3_parser_logs.json parse_status=OK with empty warning lists; L6 fixture statuses PASS with count 0",
+      "status": "RETIRED_FALSE_PASS",
+      "reason": "All produced by phase_l_validation.py stubs at code state @837a8504: statuses were constants, not measured outcomes. The 20261021 rewrite replaces every such constant with governed_status() fail-closed semantics (PASS requires the mandatory producer to have executed with evidence). All sibling artifacts from the affected runs are retired as false-pass evidence.",
+      "evidence": {
+        "affected_runs": [
+          "reports/post_audit_hardening/20260804T204419Z",
+          "reports/post_audit_hardening/20260804T205730Z",
+          "reports/post_audit_hardening/20260804T205920Z",
+          "reports/post_audit_hardening/20260804T210232Z",
+          "reports/post_audit_hardening/20260805T122525Z"
+        ],
+        "pinned_by": "reports/EVIDENCE_INDEX.json",
+        "mutation_test": "tests/unit/test_phase_l_fail_closed.py"
+      }
+    },
+    {
+      "claim": "Phase L provenance: branch=fix/post-audit-phase-e-junctions-roundabouts-20260803 commit=f5aabc0a4f170e564aa03efcb906966880859a9f (as recorded in L13_outputs.json of the affected runs and PHASE_L_RUNTIME_VALIDATION.json)",
+      "status": "RETIRED_FALSE_PASS",
+      "reason": "The branch/commit pair was a hardcoded string constant inside step_l13_outputs, not the working tree identity of those validation runs. Fabricated provenance falsifies every L13 record produced by that code state. The rewrite derives branch/commit/dirty from git at run time and reports None (never invented) when git is unavailable.",
+      "evidence": {
+        "fabricated_constant": {
+          "branch": "fix/post-audit-phase-e-junctions-roundabouts-20260803",
+          "commit": "f5aabc0a4f170e564aa03efcb906966880859a9f"
+        },
+        "mutation_test": "tests/unit/test_phase_l_fail_closed.py::test_l13_provenance_is_dynamic_not_hardcoded"
+      }
+    },
+    {
+      "claim": "Traffic-light signal authority: 2724/3561 (76.5%) of all Ingolstadt junctions tagged signal-controlled from a topology-only heuristic (21163 signals), used as perception ground truth",
+      "status": "HISTORICAL_SUPERSEDED",
+      "reason": "The heuristic inference asserted signal presence with zero source evidence (CODEX_TRAFFIC_LIGHT_GROUND_TRUTH_AUDIT.md). Superseded by the 20261021 governed authority hierarchy: OSM-sourced grounded signals (provenance osm_traffic_signals:node/<id>, confidence=grounded) take precedence; the topology heuristic is opt-in only (UP_ENABLE_TL_HEURISTIC_FALLBACK=1) and produces confidence=inferred records that are never merged over grounded ones; with no OSM source and fallback disabled, zero signals are inserted. The Ingolstadt OSM extract contains 0 highway=traffic_signals nodes and 46 crossing=traffic_signals nodes.",
+      "evidence": {
+        "mutation_test": "tests/unit/test_traffic_light_osm_authority.py",
+        "code": "ultimate_pipeline/enrichment/traffic_light_infer.py (infer_and_insert dispatcher, junction_coverage_stats signal_authority_counts)"
+      }
+    }
+  ],
+  "authoritative_current": [
+    {
+      "claim": "Phase-L runtime validation statuses (L1-L13) from phase_l_validation.py at the 20261021 rewrite onward",
+      "status": "AUTHORITATIVE_CURRENT",
+      "reason": "Fail-closed governed_status() semantics: PASS requires the mandatory producer to have executed with supporting evidence; unexecuted producers report NOT_RUN and the L13 verdict reports L_SOME_FAIL."
+    },
+    {
+      "claim": "Traffic-light authority breakdown from junction_coverage_stats signal_authority_counts (osm_mapped / heuristic) and infer_and_insert run stats",
+      "status": "AUTHORITATIVE_CURRENT",
+      "reason": "Source-confidence-budgeted: grounded = OSM evidence, inferred = explicitly-enabled heuristic fallback; unmatched OSM nodes are counted, never force-matched."
+    }
+  ],
+  "limitations": [
+    "The five L9_sensor_validation.json artifacts and their sibling phase-L files are not materialized in this worktree (sparse checkout); hashes above are pinned from reports/EVIDENCE_INDEX.json and the artifacts remain immutable historical records on the backing store.",
+    "Retirement does not delete anything: historical artifacts are immutable by campaign policy. This record revokes their evidentiary status for thesis/certification citation."
+  ],
+  "provenance": {
+    "campaign": "p0_remediation_20261021 (branch repair/map-realism-p0-837a8504, base 837a8504b624dc90653aef3a48300abb3275e291)",
+    "control_point": "fabricated-sensor-evidence (P0-F)",
+    "fix_commits": "georef+fail-closed Phase L rewrite and OSM-first signal authority on repair/map-realism-p0-837a8504"
+  }
+}
