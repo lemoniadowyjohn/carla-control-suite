@@ -294,7 +294,7 @@ def _step4_enrichment(self, topo_fixed: str) -> str:
                 root, {}, correspondence_by_road_id=associations
             )
             n_signs = apply_regulatory_signs(
-                root, {}, correspondence_by_road_id=associations
+                root, positioned_ways, correspondence_by_road_id=associations
             )
 
             if n_speed or n_turn or n_signs:
