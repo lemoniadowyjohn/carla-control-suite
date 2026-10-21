@@ -1,0 +1,24 @@
+{
+  "baseline_snapshot": {
+    "recorded_at_utc": "2026-10-21T00:00:00Z",
+    "base_branch": "repair/map-realism-p0-837a8504 (isolated new branch)",
+    "base_sha": "837a8504b624dc90653aef3a48300abb3275e291",
+    "base_choice_note": "audit-designated SHA; integration/production-convergence-20261020 (a9c9b6c1) is a 14-commit descendant but contains a GUI feature merge (carla-gui), not governance-only fixes -> not eligible",
+    "working_tree_state": "clean (branch freshly created from 837a8504; LFS materialized 81/81 objects; map of record verified non-zero)",
+    "worktree": "E:/wt/repair-map-realism-p0-837a8504",
+    "isolated_from": ["H:/opencode/rq12-closure (locked - Prompt 4)", "F:/wt/authority-convergence-20261020", "F:/wt/production-convergence", "E:/CARLA/worktrees/*", "F:/carla-worktrees/*"],
+    "map_of_record_path": "campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_perception_map_of_record_20260916_232831.xodr",
+    "map_of_record_sha256": "370abbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+    "production_branch": "integration/production-large-map-20260918 @ 68868f763d22a630fc9ba8d818ed1919a7b8414d",
+    "authority_convergence_branch": "integration/authority-convergence-20261020 @ 837a8504",
+    "newer_descendant_rejected": {"branch": "integration/production-convergence-20261020", "tip": "a9c9b6c1", "reason": "carla-gui feature merge, not governance-only"},
+    "ue4": {"qualification_engine_path_claimed_blocked": "C:/E: (UE426_QUALIFICATION.json)", "source_auth_engine": "G:/UnrealEngine_4.26_CARLA (UE426_SOURCE_AUTHORITY.json; prebuilt UE4Editor-Cmd.exe + ShaderCompileWorker)"},
+    "carla": {"packaged_executable": "E:/CARLA/CARLA_0.9.16/CarlaUE4.exe", "exe_sha256": "0bc4b3d089470ffdc91a2ec6bf2f26187de271d0e9e71a01beee8416633c7320", "verified_by_rpc": true},
+    "disk_free_gb": {"C": 1.4, "D": 1.4, "E": 9.9, "F": 6.4, "G": 9.1},
+    "gpu": "Quadro P3200 (6144 MiB)",
+    "active_carla_ue_processes": "none found at campaign start",
+    "active_leases": [".agent_locks/worktree_leases/carla_-main.lock", "F_wt_carla-gui-integration lock", "wt_test_* locks", "H:/opencode/rq12-closure locked (Prompt 4 - DO NOT TOUCH)"],
+    "git_index_lock": false,
+    "prior_audit": "C:/Users/admin/AppData/Local/Temp/opencode/MAP_REALISM_AUDIT_837a8504/MAP_REALISM_AUDIT_837a8504.md (verdict MAP_REALISM_BLOCKED_P0)"
+  }
+}
