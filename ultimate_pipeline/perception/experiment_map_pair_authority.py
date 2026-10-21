@@ -246,14 +246,17 @@ def create_experiment_manifest(
         vehicle_calibration_binding_sha256=vehicle_calibration_binding_sha256,
         sim_timing_sha256=sim_timing_sha256, weather_schema_version=weather_schema_version,
         manual_arm=dict(manual_arm), auto_arm=dict(auto_arm),
-        pair_valid=False, invalid_reasons=list(invalid_reasons),
+        pair_valid=derived_pair_valid, invalid_reasons=list(invalid_reasons),
         claim_level=CLAIM_UNPAIRED_CAPTURE,
     )
     validation = validate_pair_manifest(candidate, require_governed_environment=True)
 
-    # 8. Only promote when validator fully accepts AND required evidence is present
-    if validation["valid"] and capture_completion_receipt_sha256 and terminal_status == "COMPLETED" \
-            and dataset_content_sha256 and (not accepted_pairing_keys or accepted_pairing_keys):
+    # 9. Only promote when the STRICT validator accepts the DERIVED candidate
+    #    AND every evidence predicate holds. The caller's claim flag is never
+    #    used to derive validity.
+    if validation["valid"] and derived_pair_valid \
+            and capture_completion_receipt_sha256 and terminal_status == "COMPLETED" \
+            and dataset_content_sha256 and accepted_pairing_keys:
         candidate["pair_valid"] = True
         candidate["claim_level"] = CLAIM_PAIRED_INGOLSTADT_CAPTURE
         candidate["invalid_reasons"] = []

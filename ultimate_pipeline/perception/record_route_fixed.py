@@ -1614,6 +1614,24 @@ def parse_args(argv: Optional[list[str]] = None) -> argparse.Namespace:
         default=bool(os.environ.get("UP_STRICT_RQ3", "")),
         help="Enable strict RQ3 capture adjudication (fails on any invariant violation).",
     )
+    ap.add_argument(
+        "--session-id",
+        type=str,
+        default=os.environ.get("UP_RQ3_SESSION_ID", "rq3_default_session"),
+        help="Strict RQ3 capture session identity (immutable per capture).",
+    )
+    ap.add_argument(
+        "--route-manifest-path",
+        type=str,
+        default=os.environ.get("UP_RQ3_ROUTE_MANIFEST_PATH", "/verified/route.json"),
+        help="Verified route manifest artifact path used by strict mode.",
+    )
+    ap.add_argument(
+        "--route-manifest-sha256",
+        type=str,
+        default=os.environ.get("UP_RQ3_ROUTE_MANIFEST_SHA256", ""),
+        help="SHA-256 of the verified route manifest artifact.",
+    )
     return ap.parse_args(argv)
 
 
@@ -3411,6 +3429,12 @@ def _main_impl(argv: Optional[list[str]] = None) -> int:
 
 def main(argv: Optional[list[str]] = None) -> int:
     try:
+        # P0-1: strict mode is dispatched EXPLICITLY and never falls back to
+        # the legacy diagnostic capture path.
+        parsed_for_dispatch = parse_args(argv)
+        if bool(getattr(parsed_for_dispatch, "strict_rq3", False)):
+            strict_exit = _main_impl_strict(parsed_for_dispatch)
+            return int(strict_exit)
         exit_code = int(_main_impl(argv))
         context = dict(_LAST_CAPTURE_CONTEXT)
         out_dir_text = str(context.get("out_dir", "") or "").strip()
@@ -3476,8 +3500,38 @@ def main(argv: Optional[list[str]] = None) -> int:
         return 0 if status == "SKIP" else 2
 
 
-if __name__ == "__main__":
-    raise SystemExit(main())
+def _main_impl_strict(args) -> int:
+    """Strict RQ3 capture entrypoint: never silent fallback to legacy."""
+    from ultimate_pipeline.perception.record_route_fixed import (
+        run_strict_rq3_capture, run_strict_capture_entrypoint,
+    )
+    return run_strict_capture_entrypoint(
+        out_dir=Path(getattr(args, "out_dir", "rq3_strict_output")),
+        session_id=str(getattr(args, "session_id", "rq3_default")),
+        arm_name=str(getattr(args, "town", "manual")),
+        world=None,
+        traffic_manager=None,
+        get_weather=lambda: None,
+        set_weather=lambda w: None,
+        destroy_actor=lambda a: None,
+        detach_listener=lambda s, cid: None,
+        quarantine_staging=lambda: None,
+        stages={},
+        arm_members=[],
+        other_arm_members=[],
+        expected_map_name=str(getattr(args, "town", "") or "Grid0828"),
+        observed_map_name=str(getattr(args, "town", "") or "Grid0828"),
+        dataset_content_sha256="",
+        capture_completion_receipt_sha256="",
+        terminal_status="COMPLETED",
+        route_manifest_path=str(getattr(args, "route_manifest_path", "/verified/route.json")),
+        route_manifest_sha256=str(getattr(args, "route_manifest_sha256", "")),
+    )
+
+
+# NOTE: the module-level ``if __name__ == "__main__"`` guard is placed at the
+# END of this file, after every strict-entrypoint definition, so that direct
+# script execution and ``python -m`` execution both dispatch correctly.
 
 
 # ------------------------------------------------------------------
@@ -3500,6 +3554,10 @@ def run_strict_rq3_capture(
     terminal_status: str = "",
     route_manifest_path: str = "",
     route_manifest_sha256: str = "",
+    artifact_members=None,
+    artifact_root=None,
+    independent_review_status: str = "NOT_RUN",
+    live_capture: bool = False,
 ) -> dict:
     """Strict capture adjudication using the tested RQ3 helper modules.
 
@@ -3512,6 +3570,9 @@ def run_strict_rq3_capture(
     from ultimate_pipeline.perception.rq3_frame_set import ArmFrameSet, FrameMember, intersect_frame_sets
     from ultimate_pipeline.perception.capture_transaction import CaptureTransaction, run_governed_capture
     from ultimate_pipeline.perception.rq3_rq5_handoff_adapter import build_current_handoff_report
+    from ultimate_pipeline.perception.rq3_evidence_gate import (
+        evaluate_strict_evidence, CLAIM_SYNTHETIC_TEST_ONLY,
+    )
 
     out_dir = Path(out_dir) if not isinstance(out_dir, Path) else out_dir
     session_dir = out_dir / "rq3_strict_sessions" / session_id
@@ -3628,26 +3689,60 @@ def run_strict_rq3_capture(
     if tx_result is None:
         invalid_reasons.append("capture_transaction_absent")
 
+    # P0-2 / P0-4: authority is decided by the strict evidence gate, never by
+    # caller-supplied flags. Synthetic fixtures may pass structural checks but
+    # can never become experimental evidence authority.
+    evidence = evaluate_strict_evidence(
+        synthetic=not (bool(live_capture) and independent_review_status == "APPROVED"),
+        independent_review_status=independent_review_status,
+        terminal_status=terminal_status,
+        dataset_content_sha256=dataset_content_sha256,
+        capture_receipt_sha256=capture_completion_receipt_sha256,
+        artifact_members=list(artifact_members or []),
+        root=Path(artifact_root) if artifact_root else Path(out_dir),
+        approved_roots=None,
+        session_id=session_id,
+    )
+    invalid_reasons.extend(
+        [f"evidence_gate:{r}" for r in evidence.get("reasons", [])]
+        if not evidence.get("experimental_evidence_authoritative")
+        else []
+    )
     authoritative = (
-        tx_result is not None
+        bool(evidence.get("experimental_evidence_authoritative"))
+        and tx_result is not None
         and tx_result.authoritative
         and not invalid_reasons
         and len(accepted) > 0
         and "rgb" in completed
-        and dataset_content_sha256 != ""
-        and capture_completion_receipt_sha256 != ""
-        and terminal_status == "COMPLETED"
     )
+    claim_level = evidence.get("claim_level", CLAIM_SYNTHETIC_TEST_ONLY)
 
     lock_path.write_text(json.dumps({
         "session_id": session_id,
         "authoritative": authoritative,
+        "claim_level": claim_level,
         "invalid_reasons": invalid_reasons,
         "session_identity_sha256": identity_sha,
+        "evidence_states": {
+            "structural_test_valid": bool(evidence.get("structural_test_valid")),
+            "synthetic_fixture_valid": bool(evidence.get("synthetic_fixture_valid")),
+            "real_capture_complete": bool(evidence.get("real_capture_complete")),
+            "dataset_admitted": bool(evidence.get("dataset_admitted")),
+            "experimental_evidence_authoritative": bool(evidence.get("experimental_evidence_authoritative")),
+        },
     }, sort_keys=True), encoding="utf-8")
 
     return {
         "authoritative": authoritative,
+        "claim_level": claim_level,
+        "evidence_states": {
+            "structural_test_valid": bool(evidence.get("structural_test_valid")),
+            "synthetic_fixture_valid": bool(evidence.get("synthetic_fixture_valid")),
+            "real_capture_complete": bool(evidence.get("real_capture_complete")),
+            "dataset_admitted": bool(evidence.get("dataset_admitted")),
+            "experimental_evidence_authoritative": bool(evidence.get("experimental_evidence_authoritative")),
+        },
         "invalid_reasons": invalid_reasons,
         "session_dir": str(session_dir),
         "session_identity_sha256": identity_sha,
@@ -3764,6 +3859,9 @@ def run_strict_capture_entrypoint(
     terminal_status: str = "COMPLETED",
     route_manifest_path: str = "",
     route_manifest_sha256: str = "",
+    artifact_members=None,
+    artifact_root=None,
+    independent_review_status: str = "NOT_RUN",
 ) -> int:
     """Strict RQ3 capture entrypoint.
 
@@ -3799,6 +3897,10 @@ def run_strict_capture_entrypoint(
         terminal_status=terminal_status,
         route_manifest_path=route_manifest_path,
         route_manifest_sha256=route_manifest_sha256,
+        artifact_members=artifact_members,
+        artifact_root=artifact_root,
+        independent_review_status=independent_review_status,
+        live_capture=world is not None,
     )
 
     verdict_path = out_dir / "RQ3_STRICT_CAPTURE_VERDICT.json"
@@ -3812,3 +3914,6 @@ def run_strict_capture_entrypoint(
         flush=True,
     )
     return STRICT_EXIT_INVARIANT_VIOLATION
+
+if __name__ == "__main__":
+    raise SystemExit(main())
