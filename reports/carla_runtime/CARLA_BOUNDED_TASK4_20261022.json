@@ -1,0 +1,22 @@
+{
+  "task": "MANUAL_AND_SMALL_XODR_RUNTIME_MATRIX",
+  "run_id": "bounded_20261022_0045Z",
+  "carla_version_target": "0.9.16",
+  "server_pid": 22152,
+  "initial_world": "Carla/Maps/Town10HD_Opt",
+  "initial_frame": 11,
+  "gpu_used_mib_before": 5857,
+  "gpu_free_mib_before": 167,
+  "rpc_ready": true,
+  "initial_world_confirmed": "Carla/Maps/Town10HD_Opt",
+  "initial_tick": 2376,
+  "stage_a_grid0828_load": true,
+  "stage_a_map": "Grid0828/Maps/Grid0828/Grid0828",
+  "stage_a_tick_frame": 2383,
+  "stage_b_small_xodr": "NOT_EXECUTED_LIVE \u2014 requires generate_opendrive_world; design only (payload SHA preserved in contract)",
+  "stage_c_rgb_spawn": false,
+  "stage_c_error": "Python argument types in\n    World.spawn_actor(World, ActorBlueprint, Transform, AttachmentType)\ndid not match C++ signature:\n    spawn_actor(class carla::client::World {lvalue}, class carla::client::ActorBlueprint blueprint, class carla::geom::Transform transform, class carla::client::Actor * __ptr64 attach_to=None, enum carla::rpc::AttachmentType attachment_type=carla.libcarla.AttachmentType.Rigid, class std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> > bone='')",
+  "completed_at_utc": "2026-10-21T22:48:05.735605+00:00",
+  "status": "BOUNDED_TASK_4_COMPLETE_WITHCleanup_PENDING",
+  "cleanup_action": "Kill server PID 22152 / 36076 after JSON write; restore original world in next session if needed."
+}
