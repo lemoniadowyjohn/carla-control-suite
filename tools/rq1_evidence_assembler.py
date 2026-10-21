@@ -139,7 +139,11 @@ def main() -> int:
             outputs.append(build_artifact(Path(meta["payload_path"])))
         ma = child.get("map_acceptance") or {}
         final_xodr_path = ma.get("final_xodr_path")
-        final_disk = Path(final_xodr_path) if final_xodr_path and Path(final_xodr_path).is_file() else (Path(final_xodr) if final_xodr and os.path.isfile(final_xodr) else None)
+        final_disk = (
+            Path(final_xodr_path)
+            if final_xodr_path and Path(final_xodr_path).is_file()
+            else None
+        )
         if final_disk is None:
             out_dir_c = Path(child.get("out_dir") or "")
             candidates = sorted(out_dir_c.rglob("*.xodr")) if out_dir_c.is_dir() else []

@@ -29,6 +29,7 @@ from research.evidence.claim_adjudicator import (
 )
 from research.evidence.schemas import (
     CLAIM_STATUSES,
+    CLAIM_STATUSES_FALLBACK,
     RESEARCH_CONTRACT_SHA256,
     build_experiment_receipt,
     load_claim_statuses,
@@ -188,8 +189,6 @@ class TestAdjudicatorRQ1:
             r["source_dirty"] = True
             r["dirty_reason"] = None
             r["status"] = "ok"
-        v = False  # direct structure mutation (adjudicator gate check)
-        assert not v
         r0 = runs[0]
         # dirty source passes build only with a reason; simulate a forged receipt
         r0["source_dirty"] = True
@@ -267,6 +266,15 @@ class TestAdjudicatorRQ2:
             map_identities={"scope": "manual_hull", "frozen_reproduction": False}
         )])
         assert claim["claim_status"] == "NOT_RUN"
+
+    def test_whole_map_first_does_not_mask_hull_receipt(self):
+        hull = self._receipt()
+        whole_map = self._receipt(
+            map_identities={"scope": "whole_map", "frozen_reproduction": False}
+        )
+        claim = adjudicate_rq2([whole_map, hull])
+        assert claim["claim_status"] == "BOUNDED", claim["adjudication"]["problems"]
+        assert claim["adjudication"]["detail"]["scope"] == "manual_hull"
 
 
 class TestSemanticScopeGuards:
@@ -419,4 +427,60 @@ def gap_for_tileset(matrix):
 
 def test_adjudicator_version_recorded():
     assert ADJUDICATOR_VERSION
+
+
+# ---------------------------------------------------------------------------
+# claim-status fallback visibility (auditor P0: silent except path)
+# ---------------------------------------------------------------------------
+class TestClaimStatusFallbackWarning:
+    def test_corrupted_contract_falls_back_with_warning(self, tmp_path, capsys):
+        bad = tmp_path / "contract.yaml"
+        bad.write_text("statuses: [ not: parseable: yaml: [", encoding="utf-8")
+        statuses = load_claim_statuses(bad)
+        assert statuses == list(CLAIM_STATUSES_FALLBACK)
+        assert "frozen fallback status list" in capsys.readouterr().err
+
+    def test_usable_contract_loads_without_warning(self, tmp_path, capsys):
+        good = tmp_path / "contract.yaml"
+        good.write_text("statuses: [AUTHORITATIVE, BOUNDED, NOT_RUN]\n", encoding="utf-8")
+        statuses = load_claim_statuses(good)
+        assert statuses == ["AUTHORITATIVE", "BOUNDED", "NOT_RUN"]
+        assert capsys.readouterr().err == ""
+
+
+# ---------------------------------------------------------------------------
+# RQ2 frozen-vs-current metric comparison classification
+# ---------------------------------------------------------------------------
+from tools.rq2_current_replay import _aggregate_metric_comparison
+
+
+class TestRQ2MetricComparisonClassification:
+    def test_null_on_both_sides_is_not_a_change(self):
+        agreement, changes = _aggregate_metric_comparison(
+            {"m.a": None}, {"m.a": None}
+        )
+        assert changes == []
+        assert "NULL_BOTH" in agreement["m.a"]
+
+    def test_one_sided_null_is_a_change(self):
+        agreement, changes = _aggregate_metric_comparison(
+            {"m.a": None}, {"m.a": 1.0}
+        )
+        assert "m.a" not in agreement
+        assert len(changes) == 1 and changes[0]["note"] == "unavailable side"
+
+    def test_numeric_match_and_detach(self):
+        agreement, changes = _aggregate_metric_comparison(
+            {"m.x": 1.0, "m.y": 2.0}, {"m.x": 1.0 + 1e-12, "m.y": 3.0}
+        )
+        assert "MATCH" in agreement["m.x"]
+        assert agreement["m.x"].startswith("MATCH(atol=1e-9)")
+        assert [c["metric"] for c in changes] == ["m.y"]
+
+    def test_structural_values_not_counted_as_changes(self):
+        agreement, changes = _aggregate_metric_comparison(
+            {"m.d": {"a": 1}}, {"m.d": {"a": 2}}
+        )
+        assert changes == []
+        assert "STRUCTURAL_VALUE" in agreement["m.d"]
 

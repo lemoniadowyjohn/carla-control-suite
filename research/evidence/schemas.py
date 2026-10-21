@@ -27,6 +27,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import sys
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
@@ -64,9 +65,16 @@ def load_claim_statuses(contract_path: Optional[Path] = None) -> List[str]:
         if not isinstance(statuses, list) or not statuses:
             return list(CLAIM_STATUSES_FALLBACK)
         return [str(s) for s in statuses]
-    except Exception:
-        # Fail closed to the frozen fallback list; caller-visible contract
-        # hash still binds the actual file used.
+    except Exception as exc:  # pragma: no cover - defensive path
+        # Fail closed to the frozen fallback list, but make the fallback
+        # VISIBLE: a corrupted/unreadable contract must not silently pass
+        # status validation with a stale list while receipts still carry
+        # the (possibly drifted) contract hash.
+        print(
+            f"warning: claim-status load from {path} failed ({exc!r}); "
+            "using frozen fallback status list",
+            file=sys.stderr,
+        )
         return list(CLAIM_STATUSES_FALLBACK)
 
 
