@@ -1,15 +1,16 @@
 # P0 Map Realism Remediation — Acceptance Matrix (scaffold)
 
-Campaign: P0 map realism / physical-correctness remediation
-Branch: `repair/map-realism-p0-837a8504` (base SHA `837a8504b624dc90653aef3a48300abb3275e291`)
-Map of record (BEFORE subject, immutable): `ingolstadt_perception_map_of_record_20260916_232831.xodr`
-sha256 `370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8` (149,799,632 B)
-Authoritative audit: `MAP_REALISM_AUDIT_837a8504.md`
-Current head at scaffold write: `1e1b090c` (Lane T, Lane Z, Lane B pushes complete)
+Campaign: P0 map realism / physical-correctness remediation  
+Branch: `repair/map-realism-p0-837a8504` (base SHA `837a8504b624dc90653aef3a48300abb3275e291`)  
+Map of record (BEFORE subject, immutable): `ingolstadt_perception_map_of_record_20260916_232831.xodr`  
+sha256 `370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8` (149,799,632 B)  
+Authoritative audit: `MAP_REALISM_AUDIT_837a8504.md`  
+Current head at scaffold write: `1e1b090c` (Lane T, Lane Z, Lane B pushes complete)  
 
-Status legend: `PASS` (executed evidence, receipts pinned) · `FAIL` · `INCOMPLETE` (inputs absent, tolerated as incomplete — never scored as pass) · `BLOCKED_EXTERNAL` · `PENDING` (run in flight)
+Status legend: `PASS` (executed evidence, receipts pinned) · `FAIL` · `INCOMPLETE` (inputs absent, tolerated as incomplete — never scored as pass) · `BLOCKED_EXTERNAL` · `PENDING` (run in flight)  
 
 ## BEFORE state — measured 2026-10-21 (oracle v3 manifest: `stage8_rca_output/p0_before_oracle_v3.json`)
+
 Commit: `8d3fc821`. Scan = read-only against the immutable record map.
 
 | P0 | Measure (authoritative semantics) | BEFORE value | Audit concordance |
@@ -51,9 +52,9 @@ To be filled on regen completion; every claim requires an executed command recei
 
 ## Verdict rubric (pre-registered)
 
-- **MAP_P0_REMEDIATION_PASS**: all static gates PASS at candidate + all Lane closures evidenced.
-- **PARTIAL**: static gates PASS but runtime rungs (cook/load/drive) remain host-blocked — static remediation complete, runtime qualification externally escalated.
-- **BLOCKED_EXTERNAL**: runtime-only blockers preclude any candidate evidence.
-- **FAIL**: any static gate FAIL at candidate with executed receipts.
+- **MAP_P0_REMEDIATION_PASS**: all static gates PASS at candidate + all Lane closures evidenced.  
+- **PARTIAL**: static gates PASS but runtime rungs (cook/load/drive) remain host-blocked — static remediation complete, runtime qualification externally escalated.  
+- **BLOCKED_EXTERNAL**: runtime-only blockers preclude any candidate evidence.  
+- **FAIL**: any static gate FAIL at candidate with executed receipts.  
 
 Runtime success requires an actual RPC response; port/process listening alone is never evidence.

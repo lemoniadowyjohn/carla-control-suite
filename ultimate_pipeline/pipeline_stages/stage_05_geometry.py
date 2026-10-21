@@ -997,6 +997,44 @@ def _step5_dem_and_geometry(self, topo_fixed: str, elev_out: str) -> str:
                 "connector_elevation_reconciliation", {"error": str(e)}
             )
 
+    # P0-D source-stage fix: enforce bridge/tunnel/elevated separation from
+    # terrain using DEM samples. Runs after connector elevation reconciliation
+    # and before final save so the deck/elevation profile is set correctly.
+    structure_repair_enabled = str(
+        os.getenv("UP_STRUCTURE_ELEV_REPAIR", "1")
+    ).strip().lower() not in ("0", "false", "no", "off")
+    if structure_repair_enabled and dem_path and os.path.exists(dem_path):
+        try:
+            from ultimate_pipeline.topology.structure_elevation_repair import (
+                repair_structure_elevation_separation,
+            )
+
+            # Need OSM for classification: use same path as structure resolution
+            structure_repair_report = repair_structure_elevation_separation(
+                root,
+                road_classes=structure_report.get("plausibility_road_classes", {}),
+                dem_path=dem_path,
+                xodr_path=cont_out if 'cont_out' in locals() else topo_fixed,
+                min_clearance_m=0.5,
+            )
+            structure_repair_path = os.path.join(
+                self.out_dir, "structure_elevation_repair_report.json"
+            )
+            import json as _json
+            with open(structure_repair_path, "w", encoding="utf-8") as f:
+                _json.dump(structure_repair_report, f, indent=2, ensure_ascii=True)
+            self.vreport.add_dict("structure_elevation_repair", structure_repair_report)
+            print(
+                "✅ P0-D structure elevation separation: "
+                f"repaired={structure_repair_report['repaired_roads']} "
+                f"unrepaired={structure_repair_report['unrepaired_roads']}"
+            )
+        except Exception as e:
+            print(f"⚠️ P0-D structure elevation repair failed (continuing): {e}")
+            self.vreport.add_dict(
+                "structure_elevation_repair", {"error": str(e)}
+            )
+
     save_xodr(tree, topo_fixed)
 
     # DEM coverage gate (only if DEM was used)
