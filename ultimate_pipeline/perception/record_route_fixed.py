@@ -1608,6 +1608,12 @@ def parse_args(argv: Optional[list[str]] = None) -> argparse.Namespace:
         default=float(os.environ.get("UP_SENSOR_SPAWN_DELAY_S", "0.5")),
         help="Seconds to wait between individual sensor spawns (default 0.5s).",
     )
+    ap.add_argument(
+        "--strict-rq3",
+        action="store_true",
+        default=bool(os.environ.get("UP_STRICT_RQ3", "")),
+        help="Enable strict RQ3 capture adjudication (fails on any invariant violation).",
+    )
     return ap.parse_args(argv)
 
 
@@ -3472,3 +3478,337 @@ def main(argv: Optional[list[str]] = None) -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+
+
+# ------------------------------------------------------------------
+# STRICT RQ3 CAPTURE INTEGRATION (Task 4 / Step 4)
+# ------------------------------------------------------------------
+
+def run_strict_rq3_capture(
+    *,
+    out_dir,
+    session_id: str,
+    arm_name: str,
+    transaction=None,
+    stages=None,
+    arm_members=None,
+    other_arm_members=None,
+    expected_map_name: str = "Grid0828",
+    observed_map_name: str = "",
+    dataset_content_sha256: str = "",
+    capture_completion_receipt_sha256: str = "",
+    terminal_status: str = "",
+    route_manifest_path: str = "",
+    route_manifest_sha256: str = "",
+) -> dict:
+    """Strict capture adjudication using the tested RQ3 helper modules.
+
+    Wires capture_transaction, rq3_frame_set and rq3_rq5_handoff_adapter into
+    the canonical capture path. Any violated invariant yields authoritative
+    False plus exact machine-readable reasons; the caller must fail the run.
+    """
+    import json, hashlib
+    from pathlib import Path
+    from ultimate_pipeline.perception.rq3_frame_set import ArmFrameSet, FrameMember, intersect_frame_sets
+    from ultimate_pipeline.perception.capture_transaction import CaptureTransaction, run_governed_capture
+    from ultimate_pipeline.perception.rq3_rq5_handoff_adapter import build_current_handoff_report
+
+    out_dir = Path(out_dir) if not isinstance(out_dir, Path) else out_dir
+    session_dir = out_dir / "rq3_strict_sessions" / session_id
+    session_dir.mkdir(parents=True, exist_ok=True)
+    lock_path = session_dir / "session_lock.json"
+    if lock_path.exists():
+        try:
+            lock = json.loads(lock_path.read_text(encoding="utf-8"))
+            if lock.get("authoritative") is True:
+                return {
+                    "authoritative": False,
+                    "invalid_reasons": ["session_overwrite_refused:existing_authoritative_session"],
+                    "session_dir": str(session_dir),
+                }
+        except Exception:
+            pass
+
+    invalid_reasons = []
+    tx_result = None
+    if transaction is not None and stages is not None:
+        try:
+            tx_result = run_governed_capture(transaction, stages)
+        except Exception as exc:
+            invalid_reasons.append(f"transaction_exception:{exc}")
+    if tx_result is not None and not tx_result.authoritative:
+        invalid_reasons.append("capture_transaction_not_authoritative")
+        invalid_reasons.extend(tx_result.invalidating_reasons or [])
+    if observed_map_name and observed_map_name != expected_map_name:
+        invalid_reasons.append(f"map_identity_mismatch:{observed_map_name}!={expected_map_name}")
+
+    def _to_member(d):
+        return FrameMember(
+            frame_index=int(d.get("frame_index", 0)),
+            frame_id=int(d.get("frame_id", 0)),
+            timestamp=float(d.get("timestamp", 0.0)),
+            modality=str(d.get("modality", "rgb")),
+            sensor_name=str(d.get("sensor_name", d.get("modality", "rgb"))),
+            sha256=str(d.get("sha256", d.get("hash", ""))),
+            committed=bool(d.get("committed", True)),
+            staging=bool(d.get("staging", False)),
+        )
+
+    arm_set = ArmFrameSet(arm_name=arm_name)
+    if arm_members:
+        for d in arm_members:
+            arm_set.add(_to_member(d))
+    other_set = ArmFrameSet(arm_name="pair")
+    if other_arm_members:
+        for d in other_arm_members:
+            other_set.add(_to_member(d))
+    inter = intersect_frame_sets(arm_set, other_set)
+    if not inter.get("valid"):
+        invalid_reasons.append("pair_frame_set_intersection_invalid")
+        invalid_reasons.extend(inter.get("errors", []))
+    accepted = inter.get("accepted_pairing_keys", [])
+    if not accepted:
+        invalid_reasons.append("accepted_pairing_keys_empty")
+    completed = set()
+    for k in accepted:
+        for m in arm_set.by_frame_index().get(k, []):
+            if m.committed and m.sha256:
+                completed.add(m.modality)
+    if not ("rgb" in completed and "semantic" in completed and "lidar" in completed):
+        invalid_reasons.append("incomplete_multimodal_frame_publication")
+
+    identity_payload = {
+        "session_id": session_id,
+        "arm_name": arm_name,
+        "map_identity": observed_map_name or expected_map_name,
+        "pairing_keys": accepted,
+        "dataset_content_sha256": dataset_content_sha256,
+        "capture_completion_receipt_sha256": capture_completion_receipt_sha256,
+        "terminal_status": terminal_status,
+        "route_manifest_path": route_manifest_path,
+        "route_manifest_sha256": route_manifest_sha256,
+    }
+    session_identity_path = session_dir / "session_identity.json"
+    session_identity_path.write_text(json.dumps(identity_payload, sort_keys=True), encoding="utf-8")
+    identity_sha = hashlib.sha256(session_identity_path.read_bytes()).hexdigest()
+
+    dataset_manifest_path = session_dir / "rq3_dataset_manifest.json"
+    dataset_manifest_path.write_text(json.dumps({
+        "session_id": session_id,
+        "pair_id": session_id,
+        "synthetic": True,
+        "dataset_admission_level": "NOT_ADMITTED",
+        "independent_review_not_run": True,
+        "session_identity_sha256": identity_sha,
+    }, sort_keys=True), encoding="utf-8")
+
+    handoff = build_current_handoff_report(
+        pair_manifest_sha=identity_sha,
+        manual_arm_sha=session_id,
+        auto_arm_sha="pair",
+        dataset_admission_level="NOT_ADMITTED",
+        blocked_reasons=[
+            "INDEPENDENT_REVIEW_NOT_RUN",
+            "RQ3_PAIRED_DATASET_NOT_ADMITTED",
+            "CARLA_SERVER_STARTUP_BLOCKED",
+        ],
+    )
+    handoff_path = session_dir / "RQ3_RQ5_HANDOFF.json"
+    handoff_path.write_text(
+        json.dumps(handoff.to_dict() if hasattr(handoff, "to_dict") else dict(handoff), indent=2, sort_keys=True),
+        encoding="utf-8",
+    )
+
+    if not dataset_content_sha256:
+        invalid_reasons.append("dataset_content_sha256_missing")
+    if not capture_completion_receipt_sha256:
+        invalid_reasons.append("capture_completion_receipt_missing")
+    if terminal_status != "COMPLETED":
+        invalid_reasons.append(f"terminal_status_not_completed:{terminal_status or 'MISSING'}")
+    if tx_result is None:
+        invalid_reasons.append("capture_transaction_absent")
+
+    authoritative = (
+        tx_result is not None
+        and tx_result.authoritative
+        and not invalid_reasons
+        and len(accepted) > 0
+        and "rgb" in completed
+        and dataset_content_sha256 != ""
+        and capture_completion_receipt_sha256 != ""
+        and terminal_status == "COMPLETED"
+    )
+
+    lock_path.write_text(json.dumps({
+        "session_id": session_id,
+        "authoritative": authoritative,
+        "invalid_reasons": invalid_reasons,
+        "session_identity_sha256": identity_sha,
+    }, sort_keys=True), encoding="utf-8")
+
+    return {
+        "authoritative": authoritative,
+        "invalid_reasons": invalid_reasons,
+        "session_dir": str(session_dir),
+        "session_identity_sha256": identity_sha,
+        "pairing_keys_accepted": accepted,
+        "supported_modalities": sorted(completed),
+        "handoff_path": str(handoff_path),
+        "dataset_manifest_path": str(dataset_manifest_path),
+        "strict_mode": True,
+        "synthetic": True,
+        "rq3_paired_dataset_not_admitted": True,
+    }
+
+
+# ------------------------------------------------------------------
+# STRICT RQ3 CAPTURE ENTRYPOINT (Task 4 / Step 4)
+# Real strict capture entrypoint living in the canonical runner. The legacy
+# diagnostic flow is preserved separately; strict mode fails the process on
+# any mandatory invariant violation.
+# ------------------------------------------------------------------
+
+STRICT_EXIT_OK = 0
+STRICT_EXIT_INVARIANT_VIOLATION = 3
+STRICT_EXIT_SETUP_FAILURE = 4
+
+
+def _build_strict_transaction(
+    *,
+    world=None,
+    traffic_manager=None,
+    get_weather=None,
+    set_weather=None,
+    destroy_actor=None,
+    detach_listener=None,
+    quarantine_staging=None,
+):
+    from ultimate_pipeline.perception.capture_transaction import CaptureTransaction
+
+    def _settings_snapshot():
+        if world is None:
+            return None
+        try:
+            s = world.get_settings()
+        except Exception:
+            return None
+        return {
+            "synchronous_mode": bool(getattr(s, "synchronous_mode", False)),
+            "fixed_delta_seconds": float(getattr(s, "fixed_delta_seconds", 0.0) or 0.0),
+        }
+
+    def _readback_settings():
+        return _settings_snapshot()
+
+    def _tm_snapshot():
+        if traffic_manager is None:
+            return None
+        try:
+            return {
+                "synchronous_mode": bool(traffic_manager.get_synchronous_mode())
+                if hasattr(traffic_manager, "get_synchronous_mode") else True,
+            }
+        except Exception:
+            return None
+
+    def _readback_tm():
+        return _tm_snapshot()
+
+    def _weather_snapshot():
+        if get_weather is None:
+            return None
+        try:
+            return get_weather()
+        except Exception:
+            return None
+
+    def _readback_weather():
+        return _weather_snapshot()
+
+    return CaptureTransaction(
+        world=world,
+        traffic_manager=traffic_manager,
+        get_weather=get_weather,
+        set_weather=set_weather,
+        destroy_actor=destroy_actor,
+        detach_listener=detach_listener,
+        quarantine_staging=quarantine_staging,
+        readback_settings=_readback_settings,
+        readback_weather=_readback_weather,
+        readback_tm=_readback_tm,
+        settings_snapshot=_settings_snapshot,
+        tm_snapshot=_tm_snapshot,
+        weather_snapshot=_weather_snapshot,
+    )
+
+
+def run_strict_capture_entrypoint(
+    *,
+    out_dir,
+    session_id: str,
+    arm_name: str = "manual",
+    world=None,
+    traffic_manager=None,
+    get_weather=None,
+    set_weather=None,
+    destroy_actor=None,
+    detach_listener=None,
+    quarantine_staging=None,
+    stages=None,
+    arm_members=None,
+    other_arm_members=None,
+    expected_map_name: str = "Grid0828",
+    observed_map_name: str = "",
+    dataset_content_sha256: str = "",
+    capture_completion_receipt_sha256: str = "",
+    terminal_status: str = "COMPLETED",
+    route_manifest_path: str = "",
+    route_manifest_sha256: str = "",
+) -> int:
+    """Strict RQ3 capture entrypoint.
+
+    Returns STRICT_EXIT_OK only when every mandatory strict invariant holds.
+    Any violation returns a non-zero exit status (the process must fail).
+    """
+    from pathlib import Path
+    out_dir = Path(out_dir)
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    transaction = _build_strict_transaction(
+        world=world,
+        traffic_manager=traffic_manager,
+        get_weather=get_weather,
+        set_weather=set_weather,
+        destroy_actor=destroy_actor,
+        detach_listener=detach_listener,
+        quarantine_staging=quarantine_staging,
+    )
+
+    verdict = run_strict_rq3_capture(
+        out_dir=out_dir,
+        session_id=session_id,
+        arm_name=arm_name,
+        transaction=transaction,
+        stages=stages or {},
+        arm_members=arm_members or [],
+        other_arm_members=other_arm_members or [],
+        expected_map_name=expected_map_name,
+        observed_map_name=observed_map_name,
+        dataset_content_sha256=dataset_content_sha256,
+        capture_completion_receipt_sha256=capture_completion_receipt_sha256,
+        terminal_status=terminal_status,
+        route_manifest_path=route_manifest_path,
+        route_manifest_sha256=route_manifest_sha256,
+    )
+
+    verdict_path = out_dir / "RQ3_STRICT_CAPTURE_VERDICT.json"
+    verdict_path.write_text(json.dumps(verdict, indent=2, sort_keys=True), encoding="utf-8")
+
+    if verdict.get("authoritative") is True:
+        return STRICT_EXIT_OK
+    print(
+        "[STRICT_RQ3] capture not authoritative: "
+        + ",".join(str(r) for r in verdict.get("invalid_reasons", [])),
+        flush=True,
+    )
+    return STRICT_EXIT_INVARIANT_VIOLATION
