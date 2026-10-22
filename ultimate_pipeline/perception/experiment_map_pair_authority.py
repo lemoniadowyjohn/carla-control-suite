@@ -11,6 +11,8 @@ Synthetic fixtures are clearly labeled; never registered as real captures.
 """
 from __future__ import annotations
 
+import json
+from pathlib import Path
 from typing import Any, Dict, Mapping, Optional, Sequence
 
 from ultimate_pipeline.carla_tools.map_registry import verify_pinned_map
@@ -284,8 +286,11 @@ def main() -> int:
     parser = argparse.ArgumentParser(description="Validate an Ingolstadt experiment pair")
     parser.add_argument("--manual", type=Path, required=True, help="Manual arm identity JSON")
     parser.add_argument("--auto", type=Path, required=True, help="Auto arm identity JSON")
+    parser.add_argument(
+        "--out", type=Path, required=True,
+        help="Path to write the validation result JSON",
+    )
     args = parser.parse_args()
-    from ultimate_pipeline.perception.rq3_capture_contract import MANIFEST_SCHEMA_VERSION  # noqa: F401
     manual = json.loads(args.manual.read_text(encoding="utf-8"))
     auto = json.loads(args.auto.read_text(encoding="utf-8"))
     result = validate_ingolstadt_pair(manual, auto)

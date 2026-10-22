@@ -11,7 +11,10 @@ Tests the frame-set validation logic in rq3_capture_contract.py:
 - Uncommitted staging frames fail
 """
 
+from pathlib import Path
 from typing import Any, Dict, List, Sequence
+
+_RQ3_CONTRACT_PATH = Path(__file__).resolve().parents[2] / "perception" / "rq3_capture_contract.py"
 
 
 def test_frame_set_consistency_basic():
@@ -21,7 +24,7 @@ def test_frame_set_consistency_basic():
     import sys
 
     spec = importlib.util.spec_from_file_location(
-        "frame_validation", "E:/wt/repair-map-realism-p0-837a8504/ultimate_pipeline/perception/rq3_capture_contract.py"
+        "frame_validation", str(_RQ3_CONTRACT_PATH)
     )
     if spec is None or spec.loader is None:
         raise ImportError("Cannot load rq3_capture_contract module")
@@ -37,6 +40,7 @@ def test_frame_set_consistency_basic():
         actual_counts=test_counts,
         route_mode="THESIS_PAIRED_STRICT",
         pair_frame_index=None,
+        expected_counts={"cam1": 5, "cam2": 5, "lidar1": 3},
     )
 
     assert result["valid"] == True, f"Expected valid, got errors: {result['errors']}"
@@ -49,7 +53,7 @@ def test_frame_set_consistency_mismatch():
     import sys
 
     spec = importlib.util.spec_from_file_location(
-        "frame_validation", "E:/wt/repair-map-realism-p0-837a8504/ultimate_pipeline/perception/rq3_capture_contract.py"
+        "frame_validation", str(_RQ3_CONTRACT_PATH)
     )
     if spec is None or spec.loader is None:
         raise ImportError("Cannot load rq3_capture_contract module")
@@ -64,6 +68,7 @@ def test_frame_set_consistency_mismatch():
         actual_counts=test_counts,
         route_mode="THESIS_PAIRED_STRICT",
         pair_frame_index=None,
+        expected_counts={"cam1": 5, "cam2": 5, "lidar1": 3},
     )
 
     assert result["valid"] == False, "Expected invalid due to frame count mismatch"
@@ -77,7 +82,7 @@ def test_frame_set_intersection_across_arms():
     import sys
 
     spec = importlib.util.spec_from_file_location(
-        "frame_validation", "E:/wt/repair-map-realism-p0-837a8504/ultimate_pipeline/perception/rq3_capture_contract.py"
+        "frame_validation", str(_RQ3_CONTRACT_PATH)
     )
     if spec is None or spec.loader is None:
         raise ImportError("Cannot load rq3_capture_contract module")
@@ -103,7 +108,7 @@ def test_frame_set_intersection_mismatch():
     import sys
 
     spec = importlib.util.spec_from_file_location(
-        "frame_validation", "E:/wt/repair-map-realism-p0-837a8504/ultimate_pipeline/perception/rq3_capture_contract.py"
+        "frame_validation", str(_RQ3_CONTRACT_PATH)
     )
     if spec is None or spec.loader is None:
         raise ImportError("Cannot load rq3_capture_contract module")
@@ -130,7 +135,7 @@ def test_synthetic_pair_positive():
     import sys
 
     spec = importlib.util.spec_from_file_location(
-        "frame_validation", "E:/wt/repair-map-realism-p0-837a8504/ultimate_pipeline/perception/rq3_capture_contract.py"
+        "frame_validation", str(_RQ3_CONTRACT_PATH)
     )
     if spec is None or spec.loader is None:
         raise ImportError("Cannot load rq3_capture_contract module")

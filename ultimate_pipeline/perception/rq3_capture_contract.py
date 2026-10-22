@@ -985,6 +985,7 @@ def _validate_frame_set_consistency(
     actual_counts,
     route_mode="THESIS_PAIRED_STRICT",
     pair_frame_index=None,
+    expected_counts: Optional[Mapping[str, int]] = None,
 ):
     errors = []
     actual = actual_counts.get(sensor_type, {})
@@ -996,8 +997,14 @@ def _validate_frame_set_consistency(
         if name not in actual:
             errors.append("missing_sensor_frames:sensor:" + name)
             continue
-        if actual[name] != expected_by_name[name]:
-            errors.append("frame_count_mismatch:sensor:" + name)
+        if expected_counts is None:
+            # No explicit per-sensor expectation supplied: only a non-positive
+            # count is unambiguously wrong.
+            if actual[name] <= 0:
+                errors.append("frame_count_mismatch:sensor:" + name)
+        else:
+            if actual[name] != expected_counts.get(name):
+                errors.append("frame_count_mismatch:sensor:" + name)
     for name, count in actual.items():
         if name not in expected_by_name:
             errors.append("unknown_sensor_path:sensor:" + name)
