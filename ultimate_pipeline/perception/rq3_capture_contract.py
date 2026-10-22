@@ -993,18 +993,33 @@ def _validate_frame_set_consistency(
         expected_by_name = {name: 1 for name in expected_camera_stems}
     else:
         expected_by_name = {name: 1 for name in expected_lidar_stems}
+    # G03: strict enforcement. A frame set is only complete when an explicit
+    # per-sensor expectation exists AND the observed count equals it exactly.
+    # The relaxed rule ("no expected counts -> only reject a non-positive
+    # count") let a truncated capture (e.g. 3 of 5 frames) pass as complete.
+    if expected_counts is None:
+        errors.append("expected_counts_missing:sensor:" + str(sensor_type))
     for name in expected_by_name:
         if name not in actual:
             errors.append("missing_sensor_frames:sensor:" + name)
             continue
         if expected_counts is None:
-            # No explicit per-sensor expectation supplied: only a non-positive
-            # count is unambiguously wrong.
-            if actual[name] <= 0:
-                errors.append("frame_count_mismatch:sensor:" + name)
-        else:
-            if actual[name] != expected_counts.get(name):
-                errors.append("frame_count_mismatch:sensor:" + name)
+            continue
+        if name not in expected_counts:
+            errors.append("expected_count_missing:sensor:" + name)
+            continue
+        try:
+            expected_value = int(expected_counts.get(name))
+        except (TypeError, ValueError):
+            errors.append("expected_count_invalid:sensor:" + name)
+            continue
+        try:
+            actual_value = int(actual[name])
+        except (TypeError, ValueError):
+            errors.append("frame_count_invalid:sensor:" + name)
+            continue
+        if actual_value != expected_value:
+            errors.append("frame_count_mismatch:sensor:" + name)
     for name, count in actual.items():
         if name not in expected_by_name:
             errors.append("unknown_sensor_path:sensor:" + name)

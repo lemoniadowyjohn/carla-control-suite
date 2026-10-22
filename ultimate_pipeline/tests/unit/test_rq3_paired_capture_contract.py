@@ -418,3 +418,92 @@ def test_case12_manifests_deterministic_apart_from_excluded_wallclock():
     }
     assert canonical_digest(m1) == canonical_digest(m2)
     assert deterministic_digest(m1) == deterministic_digest(m2)
+
+
+# --- G03: strict frame-count enforcement -----------------------------------
+#
+# The relaxed rule (introduced with the B01 repair) only rejected a
+# non-positive observed count when no explicit per-sensor expectation was
+# supplied, so a truncated capture (e.g. 3 of 5 frames) could be reported as
+# a complete frame set. Strict enforcement requires an explicit expectation
+# and an exact per-sensor match.
+
+
+def _frame_set_consistency(sensor_type, camera_stems, lidar_stems, counts, expected_counts):
+    from ultimate_pipeline.perception.rq3_capture_contract import (
+        _validate_frame_set_consistency,
+    )
+
+    return _validate_frame_set_consistency(
+        sensor_type=sensor_type,
+        expected_camera_stems=camera_stems,
+        expected_lidar_stems=lidar_stems,
+        actual_counts=counts,
+        route_mode=MODE_THESIS_PAIRED_STRICT,
+        pair_frame_index=None,
+        expected_counts=expected_counts,
+    )
+
+
+def test_frame_set_consistency_requires_explicit_expected_counts():
+    """G03: without explicit expectations the frame set must fail closed."""
+    # 3 of 5 frames observed -- the relaxed rule accepted this as valid.
+    counts = {"camera_frames": {"cam1": 5, "cam2": 3}, "lidar_frames": {"lidar1": 3}}
+    result = _frame_set_consistency(
+        "camera_frames", ("cam1", "cam2"), ("lidar1",), counts, None
+    )
+    assert result["valid"] is False, result
+    assert any("expected_counts_missing" in e for e in result["errors"]), result["errors"]
+
+
+def test_frame_set_consistency_rejects_partial_and_excess_counts():
+    """G03: observed counts must equal the expected count exactly."""
+    expected = {"cam1": 5, "cam2": 5, "lidar1": 3}
+    for observed in (0, 1, 3, 4, 6, 50):
+        counts = {
+            "camera_frames": {"cam1": 5, "cam2": observed},
+            "lidar_frames": {"lidar1": 3},
+        }
+        result = _frame_set_consistency(
+            "camera_frames", ("cam1", "cam2"), ("lidar1",), counts, expected
+        )
+        assert result["valid"] is False, (observed, result)
+        assert "frame_count_mismatch:sensor:cam2" in result["errors"], result["errors"]
+
+
+def test_frame_set_consistency_accepts_exact_match():
+    """G03 control: an exact per-sensor match stays valid."""
+    expected = {"cam1": 5, "cam2": 5, "lidar1": 3}
+    counts = {
+        "camera_frames": {"cam1": 5, "cam2": 5},
+        "lidar_frames": {"lidar1": 3},
+    }
+    result = _frame_set_consistency(
+        "camera_frames", ("cam1", "cam2"), ("lidar1",), counts, expected
+    )
+    assert result["valid"] is True, result["errors"]
+    assert result["errors"] == [], result["errors"]
+
+
+def test_frame_set_consistency_rejects_sensor_without_expectation():
+    """G03: a sensor with no declared expectation cannot count as complete."""
+    counts = {
+        "camera_frames": {"cam1": 5, "cam2": 5},
+        "lidar_frames": {"lidar1": 3},
+    }
+    result = _frame_set_consistency(
+        "camera_frames", ("cam1", "cam2"), ("lidar1",), counts, {"cam1": 5}
+    )
+    assert result["valid"] is False, result
+    assert "expected_count_missing:sensor:cam2" in result["errors"], result["errors"]
+
+
+def test_frame_set_consistency_rejects_missing_sensor_frames():
+    """G03: a sensor with no frames at all is still a hard failure."""
+    counts = {"camera_frames": {"cam1": 5}, "lidar_frames": {"lidar1": 3}}
+    result = _frame_set_consistency(
+        "camera_frames", ("cam1", "cam2"), ("lidar1",), counts,
+        {"cam1": 5, "cam2": 5, "lidar1": 3},
+    )
+    assert result["valid"] is False, result
+    assert "missing_sensor_frames:sensor:cam2" in result["errors"], result["errors"]
