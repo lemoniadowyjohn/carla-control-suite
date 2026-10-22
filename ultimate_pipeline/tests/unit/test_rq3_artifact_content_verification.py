@@ -4,13 +4,20 @@ P0-4 — Artifact bytes verification (offline synthetic fixtures).
 Every route must reject bad content; synthetic fixtures keep NOT_ADMITTED.
 """
 import hashlib
+import os
+import shutil
+import tempfile
 from pathlib import Path
 
 from ultimate_pipeline.perception.rq3_evidence_gate import (
     evaluate_strict_evidence, verify_artifact_set, resolve_artifact,
 )
 
-ROOT = Path(r"E:\wt\repair-map-realism-p0-837a8504")
+# G05: no machine-specific absolute path. The repository root is derived from
+# this file's location and may be overridden with RQ3_TEST_ROOT.
+_ROOT_ENV = "RQ3_TEST_ROOT"
+_ENV_ROOT = os.environ.get(_ROOT_ENV, "").strip()
+ROOT = Path(_ENV_ROOT).expanduser() if _ENV_ROOT else Path(__file__).resolve().parents[3]
 DELIV = ROOT / "reports" / "phase5_deliverables"
 
 
@@ -70,15 +77,21 @@ def test_artifact_integrity_checks():
     print("PASS: staging_uncommitted")
 
     # 6. Modified after manifest creation rejects
-    tmp = Path(r"E:\temp\rq3_truncated_test.json")
-    tmp.write_text("{}", encoding="utf-8")
-    artifacts[0] = {"path": str(tmp.relative_to(ROOT)), "sha256": hashlib.sha256(b"{}").hexdigest(),
-                   "modality": "rgb", "committed": True, "session_id": "s1", "member_id": "mod"}
-    tmp.write_bytes(b"MODIFIED")  # content changed after manifest declared
-    artifacts[0]["sha256"] = hashlib.sha256(b"{}").hexdigest()  # stale declaration
-    ok, reasons, _ = verify_artifact_set(artifacts, root=ROOT, approved_roots=[ROOT])
-    assert ok is False and any("digest_mismatch" in r for r in reasons), f"modified after manifest accepted: {reasons}"
-    tmp.unlink()
+    # G05: the scratch file must live inside the approved root (so that the
+    # relative artifact path resolves) and must not be a machine-specific
+    # absolute path. A throwaway directory keeps the repository clean.
+    tmp_dir = Path(tempfile.mkdtemp(dir=str(ROOT), prefix=".rq3_test_tmp_"))
+    try:
+        tmp = tmp_dir / "rq3_truncated_test.json"
+        tmp.write_text("{}", encoding="utf-8")
+        artifacts[0] = {"path": str(tmp.relative_to(ROOT)), "sha256": hashlib.sha256(b"{}").hexdigest(),
+                       "modality": "rgb", "committed": True, "session_id": "s1", "member_id": "mod"}
+        tmp.write_bytes(b"MODIFIED")  # content changed after manifest declared
+        artifacts[0]["sha256"] = hashlib.sha256(b"{}").hexdigest()  # stale declaration
+        ok, reasons, _ = verify_artifact_set(artifacts, root=ROOT, approved_roots=[ROOT])
+        assert ok is False and any("digest_mismatch" in r for r in reasons), f"modified after manifest accepted: {reasons}"
+    finally:
+        shutil.rmtree(tmp_dir, ignore_errors=True)
     print("PASS: modified_after_manifest")
 
     # 7. Duplicate identity different content
@@ -117,6 +130,38 @@ def test_artifact_integrity_checks():
     print("PASS: non_synthetic_without_live_artifacts_not_admitted")
 
 
+def test_approved_root_is_configurable_not_hardcoded(monkeypatch, tmp_path):
+    """G05: no machine-specific absolute path may survive in the gate.
+
+    The approved root must be resolvable from the environment or derived
+    from the repository layout, never pinned to one workstation.
+    """
+    import ultimate_pipeline.perception.rq3_evidence_gate as gate
+
+    source = Path(gate.__file__).read_text(encoding="utf-8")
+    assert "E:\\wt" not in source, "gate still hardcodes a workstation path"
+    assert "E:/wt" not in source, "gate still hardcodes a workstation path"
+
+    # Default resolution: the repository root that contains the module.
+    assert gate.resolve_approved_root() == Path(gate.__file__).resolve().parents[2]
+    # An explicit root always wins.
+    assert gate.resolve_approved_root(tmp_path) == tmp_path
+    # The environment override is honoured (configuration, not hardcoding).
+    monkeypatch.setenv(gate.RQ3_APPROVED_ROOT_ENV, str(tmp_path))
+    assert gate.resolve_approved_root() == tmp_path
+    print("PASS: approved_root_configurable_not_hardcoded")
+
+
+def test_test_module_paths_are_portable():
+    """G05: this test module must not pin itself to one workstation."""
+    source = Path(__file__).read_text(encoding="utf-8")
+    assert "E:\\wt" not in source, "test module still hardcodes a workstation path"
+    assert ROOT == Path(__file__).resolve().parents[3], "repository root is not derived from this file"
+    assert DELIV == ROOT / "reports" / "phase5_deliverables"
+    print("PASS: test_module_paths_portable")
+
+
 if __name__ == "__main__":
     test_artifact_integrity_checks()
+    test_test_module_paths_are_portable()
     print("\n=== P0-4 ARTIFACT CONTENT VERIFICATION: 10/10 PASS ===")

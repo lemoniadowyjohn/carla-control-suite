@@ -7,7 +7,7 @@ Follows frozen RQ3 protocol; no fabricated protocol replacement.
 from __future__ import annotations
 from typing import Any, Dict, List, Mapping, Optional, Sequence, Tuple
 from pathlib import Path
-import hashlib, json
+import hashlib, json, os
 
 CLAIM_SYNTHETIC_TEST_ONLY = "SYNTHETIC_TEST_ONLY"
 CLAIM_DATASET_ADMITTED = "DATASET_ADMITTED"
@@ -15,7 +15,34 @@ CLAIM_EXPERIMENTAL_EVIDENCE_AUTHORITATIVE = "EXPERIMENTAL_EVIDENCE_AUTHORITATIVE
 CLAIM_UNPAIRED_CAPTURE = "UNPAIRED_CAPTURE"
 CLAIM_PAIRED_INGOLSTADT_CAPTURE = "PAIRED_INGOLSTADT_CAPTURE"
 
-APPROVED_ROOT = Path(r"E:\wt\repair-map-realism-p0-837a8504")
+#: Environment variable that overrides the approved artifact root.
+#:
+#: G05: the gate must not hardcode a machine-specific absolute path. The
+#: resolution order is: explicit ``root`` argument -> ``RQ3_APPROVED_ROOT``
+#: environment variable -> the repository root that contains this module.
+RQ3_APPROVED_ROOT_ENV = "RQ3_APPROVED_ROOT"
+
+
+def resolve_approved_root(root: Optional[Path] = None) -> Path:
+    """Resolve the approved artifact root without hardcoded absolute paths.
+
+    Order:
+      1. explicit ``root`` argument (caller wins),
+      2. ``RQ3_APPROVED_ROOT`` environment variable,
+      3. the repository root containing this module (portable default).
+    """
+    if root is not None:
+        return Path(root)
+    env = os.environ.get(RQ3_APPROVED_ROOT_ENV, "").strip()
+    if env:
+        return Path(env).expanduser()
+    # ultimate_pipeline/perception/rq3_evidence_gate.py -> repository root
+    return Path(__file__).resolve().parents[2]
+
+
+#: Backwards-compatible module constant. New code should call
+#: ``resolve_approved_root()`` so the environment override stays live.
+APPROVED_ROOT = resolve_approved_root()
 
 
 def _sha256_file(path: Path) -> str:
@@ -126,7 +153,7 @@ def evaluate_strict_evidence(
     dataset_content_sha256: str = "",
     capture_receipt_sha256: str = "",
     artifact_members: Sequence[Mapping[str, Any]] = (),
-    root: Path = APPROVED_ROOT,
+    root: Optional[Path] = None,
     approved_roots: Sequence[Path] = None,
     session_id: Optional[str] = None,
 ) -> dict:
@@ -135,6 +162,7 @@ def evaluate_strict_evidence(
     Returns a verdict dict; claim is never PAIRED_INGOLSTADT_CAPTURE unless
     experimental_evidence_authoritative is True.
     """
+    root = resolve_approved_root(root)
     if approved_roots is None:
         approved_roots = [root, root / "datasets", root / "records"]
     structural = True
