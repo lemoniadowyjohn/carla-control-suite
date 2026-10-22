@@ -200,6 +200,27 @@ def _artifact_members(digests, names=("rgb", "semantic", "lidar")):
     return members
 
 
+def _full_evidence_members(digests):
+    """Capture members plus the dataset / capture / review receipts.
+
+    The receipts are part of the verified evidence set, so their digests are
+    byte-checked by verify_artifact_set() and are therefore usable as the
+    content binding for dataset_content_sha256 / capture_receipt_sha256 and
+    as the independent-review receipt.
+    """
+    members = _artifact_members(digests)
+    for name in ("dataset", "capture_receipt", "review_receipt"):
+        members.append({
+            "path": f"{name}.bin",
+            "sha256": digests[name],
+            "modality": "receipt",
+            "committed": True,
+            "session_id": "s1",
+            "member_id": name,
+        })
+    return members
+
+
 def test_admission_requires_completed_terminal(tmp_path):
     """G01: a terminal status other than COMPLETED must never be admitted.
 
@@ -209,13 +230,14 @@ def test_admission_requires_completed_terminal(tmp_path):
     """
     root = tmp_path / "evidence"
     digests = _write_evidence_set(root)
-    members = _artifact_members(digests)
+    members = _full_evidence_members(digests)
 
     kwargs = dict(
         synthetic=False,
         independent_review_status="APPROVED",
         dataset_content_sha256=digests["dataset"],
         capture_receipt_sha256=digests["capture_receipt"],
+        review_receipt_sha256=digests["review_receipt"],
         artifact_members=members,
         root=root,
         approved_roots=[root],
@@ -235,6 +257,114 @@ def test_admission_requires_completed_terminal(tmp_path):
         assert v["claim_level"] == "UNPAIRED_CAPTURE", (bad, v)
         assert "terminal_capture_not_completed" in v["reasons"], (bad, v)
     print("PASS: admission_requires_completed_terminal")
+
+
+def test_review_approval_requires_bound_receipt(tmp_path):
+    """G02: a bare independent_review_status="APPROVED" must not admit.
+
+    The approval used to be a self-attested string with no binding at all;
+    it now requires a review receipt digest that is present in the verified
+    evidence set.
+    """
+    root = tmp_path / "evidence"
+    digests = _write_evidence_set(root)
+    members = _full_evidence_members(digests)
+    base = dict(
+        synthetic=False,
+        independent_review_status="APPROVED",
+        terminal_status="COMPLETED",
+        dataset_content_sha256=digests["dataset"],
+        capture_receipt_sha256=digests["capture_receipt"],
+        artifact_members=members,
+        root=root,
+        approved_roots=[root],
+    )
+
+    # (a) APPROVED without any review receipt -> blocked
+    v = evaluate_strict_evidence(**base)
+    assert v["experimental_evidence_authoritative"] is False, v
+    assert v["dataset_admitted"] is False, v
+    assert "independent_review_receipt_missing" in v["reasons"], v["reasons"]
+
+    # (b) APPROVED with a receipt digest that is not in the evidence set -> blocked
+    v = evaluate_strict_evidence(review_receipt_sha256="0" * 64, **base)
+    assert v["experimental_evidence_authoritative"] is False, v
+    assert "independent_review_receipt_not_in_evidence_set" in v["reasons"], v["reasons"]
+
+    # (c) APPROVED with the receipt present in the evidence set -> admitted
+    v = evaluate_strict_evidence(review_receipt_sha256=digests["review_receipt"], **base)
+    assert v["experimental_evidence_authoritative"] is True, v
+    assert v["reasons"] == [], v["reasons"]
+    print("PASS: review_approval_requires_bound_receipt")
+
+
+def test_content_digests_must_resolve_to_real_bytes(tmp_path):
+    """G02: declared dataset / capture digests must resolve to real bytes."""
+    root = tmp_path / "evidence"
+    digests = _write_evidence_set(root)
+    members = _full_evidence_members(digests)
+    base = dict(
+        synthetic=False,
+        independent_review_status="APPROVED",
+        terminal_status="COMPLETED",
+        review_receipt_sha256=digests["review_receipt"],
+        root=root,
+        approved_roots=[root],
+    )
+
+    # (a) dataset digest that names nothing -> blocked
+    v = evaluate_strict_evidence(
+        dataset_content_sha256="0" * 64,
+        capture_receipt_sha256=digests["capture_receipt"],
+        artifact_members=members,
+        **base,
+    )
+    assert v["experimental_evidence_authoritative"] is False, v
+    assert any(r.startswith("dataset_content_sha256_unresolved") for r in v["reasons"]), v["reasons"]
+
+    # (b) capture receipt digest that names nothing -> blocked
+    v = evaluate_strict_evidence(
+        dataset_content_sha256=digests["dataset"],
+        capture_receipt_sha256="0" * 64,
+        artifact_members=members,
+        **base,
+    )
+    assert v["experimental_evidence_authoritative"] is False, v
+    assert any(r.startswith("capture_receipt_sha256_unresolved") for r in v["reasons"]), v["reasons"]
+
+    # (c) digest bound to a file whose real bytes differ -> blocked
+    members_no_dataset = [m for m in members if m["member_id"] != "dataset"]
+    v = evaluate_strict_evidence(
+        dataset_content_sha256=digests["dataset"],
+        capture_receipt_sha256=digests["capture_receipt"],
+        artifact_members=members_no_dataset,
+        content_index={digests["dataset"]: root / "rgb.bin"},
+        **base,
+    )
+    assert v["experimental_evidence_authoritative"] is False, v
+    assert any("digest_bytes_mismatch" in r for r in v["reasons"]), v["reasons"]
+
+    # (d) digest bound to a path outside the approved roots -> blocked
+    v = evaluate_strict_evidence(
+        dataset_content_sha256=digests["dataset"],
+        capture_receipt_sha256=digests["capture_receipt"],
+        artifact_members=members_no_dataset,
+        content_index={digests["dataset"]: Path(__file__).resolve()},
+        **base,
+    )
+    assert v["experimental_evidence_authoritative"] is False, v
+    assert any("digest_path_not_approved_or_missing" in r for r in v["reasons"]), v["reasons"]
+
+    # (e) fully bound -> admitted
+    v = evaluate_strict_evidence(
+        dataset_content_sha256=digests["dataset"],
+        capture_receipt_sha256=digests["capture_receipt"],
+        artifact_members=members,
+        **base,
+    )
+    assert v["experimental_evidence_authoritative"] is True, v
+    assert v["reasons"] == [], v["reasons"]
+    print("PASS: content_digests_must_resolve_to_real_bytes")
 
 
 if __name__ == "__main__":

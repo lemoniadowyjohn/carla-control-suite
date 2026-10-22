@@ -56,6 +56,11 @@ def _sha256_file(path: Path) -> str:
     return h.hexdigest()
 
 
+def _normalize_sha(value: Any) -> str:
+    """Normalize a declared digest for comparison (lower-case hex string)."""
+    return str(value or "").strip().lower()
+
+
 def resolve_artifact(root: Path, relative: str, approved_roots: Sequence[Path]) -> Optional[Path]:
     """Resolve relative artifact; reject traversal outside approved root."""
     try:
@@ -145,6 +150,94 @@ def verify_artifact_set(
     return (ok, reasons, verified)
 
 
+def _resolve_approved_path(
+    path_like: Any,
+    root: Path,
+    approved_roots: Sequence[Path],
+) -> Optional[Path]:
+    """Resolve a path to an existing, non-empty file inside an approved root.
+
+    Relative paths are interpreted against ``root``; absolute paths must still
+    live inside one of the approved roots (traversal is rejected).
+    """
+    try:
+        candidate = Path(path_like)
+        if not candidate.is_absolute():
+            candidate = Path(root) / candidate
+        resolved = candidate.resolve()
+    except Exception:
+        return None
+    try:
+        if not resolved.exists() or not resolved.is_file():
+            return None
+        if resolved.stat().st_size <= 0:
+            return None
+    except OSError:
+        return None
+    for a in approved_roots:
+        try:
+            resolved.relative_to(Path(a).resolve())
+            return resolved
+        except ValueError:
+            continue
+    return None
+
+
+def build_content_index(
+    verified_artifacts: Sequence[Mapping[str, Any]] = (),
+    content_index: Optional[Mapping[str, Any]] = None,
+) -> Dict[str, Path]:
+    """Map declared sha256 -> filesystem path for the whole evidence set.
+
+    The verified artifacts come first: their paths were already resolved
+    against the approved roots and their bytes were already hashed, so they
+    are the strongest binding available. Caller-supplied ``content_index``
+    entries (sha256 -> path) are added for files that are referenced by a
+    digest but are not themselves capture members.
+    """
+    index: Dict[str, Path] = {}
+    for art in verified_artifacts or ():
+        sha = _normalize_sha(art.get("sha256", art.get("digest", "")))
+        path = art.get("path")
+        if sha and path:
+            index.setdefault(sha, Path(path))
+    for sha, path in (content_index or {}).items():
+        key = _normalize_sha(sha)
+        if key and path:
+            index.setdefault(key, Path(path))
+    return index
+
+
+def resolve_digest_to_bytes(
+    sha256: str,
+    index: Mapping[str, Path],
+    *,
+    root: Path,
+    approved_roots: Sequence[Path],
+) -> Tuple[bool, Optional[Path], str]:
+    """Resolve a declared digest to a file whose real bytes hash to it.
+
+    Returns ``(ok, resolved_path, failure_reason)``. A declared digest that
+    cannot be tied to actual file bytes is never treated as satisfied.
+    """
+    key = _normalize_sha(sha256)
+    if not key:
+        return False, None, "digest_missing"
+    path = index.get(key)
+    if path is None:
+        return False, None, "digest_not_in_evidence_set"
+    target = _resolve_approved_path(path, root, approved_roots)
+    if target is None:
+        return False, None, "digest_path_not_approved_or_missing"
+    try:
+        actual = _sha256_file(target)
+    except Exception as exc:
+        return False, None, f"digest_unreadable:{type(exc).__name__}"
+    if actual != key:
+        return False, None, f"digest_bytes_mismatch:{actual}!={key}"
+    return True, target, ""
+
+
 def evaluate_strict_evidence(
     *,
     synthetic: bool = True,
@@ -152,7 +245,9 @@ def evaluate_strict_evidence(
     terminal_status: str = "",
     dataset_content_sha256: str = "",
     capture_receipt_sha256: str = "",
+    review_receipt_sha256: str = "",
     artifact_members: Sequence[Mapping[str, Any]] = (),
+    content_index: Optional[Mapping[str, Any]] = None,
     root: Optional[Path] = None,
     approved_roots: Sequence[Path] = None,
     session_id: Optional[str] = None,
@@ -161,19 +256,28 @@ def evaluate_strict_evidence(
     Strict evidence predicate. Never promotes synthetic fixtures.
     Returns a verdict dict; claim is never PAIRED_INGOLSTADT_CAPTURE unless
     experimental_evidence_authoritative is True.
+
+    G01: admission requires ``terminal_status == "COMPLETED"`` AND an empty
+    ``reasons`` list. Previously a non-completed terminal only produced a
+    reason string while the admission branch ignored it, so a failed capture
+    could still be admitted.
+
+    G02: the self-attested admission inputs are bound to real bytes.
+      * ``independent_review_status == "APPROVED"`` additionally requires
+        ``review_receipt_sha256`` naming a receipt that is present in the
+        verified evidence set.
+      * ``dataset_content_sha256`` / ``capture_receipt_sha256`` must resolve
+        to files whose real bytes hash to the declared digest.
     """
     root = resolve_approved_root(root)
     if approved_roots is None:
         approved_roots = [root, root / "datasets", root / "records"]
     structural = True
     fixture_valid = True
-    # Synthetic fixtures are structurally valid by design, but never authoritative.
-    # Real capture requires non-synthetic evidence origin + independent review.
-    real_capture = not synthetic and bool(dataset_content_sha256) and bool(capture_receipt_sha256)
     dataset_admitted = False
     evidence_authoritative = False
     claim = CLAIM_SYNTHETIC_TEST_ONLY
-    reasons = []
+    reasons: List[str] = []
 
     # Verify artifacts (only when artifacts provided — offline tests may omit)
     artifact_ok = True
@@ -186,13 +290,49 @@ def evaluate_strict_evidence(
             structural = False
             reasons.extend(artifact_reasons)
 
-    # Independent review required before admission
+    # --- G02: bind the self-attested admission inputs to real bytes -------
+    index = build_content_index(verified, content_index)
+
+    content_binding_ok = True
+    for label, declared in (
+        ("dataset_content_sha256", dataset_content_sha256),
+        ("capture_receipt_sha256", capture_receipt_sha256),
+    ):
+        if not _normalize_sha(declared):
+            continue
+        ok, _target, why = resolve_digest_to_bytes(
+            declared, index, root=root, approved_roots=approved_roots
+        )
+        if not ok:
+            content_binding_ok = False
+            reasons.append(f"{label}_unresolved:{why}")
+
+    # Independent review must be bound to a review receipt inside the
+    # verified evidence set; a bare "APPROVED" string proves nothing.
     if independent_review_status not in ("APPROVED",):
         reasons.append("independent_review_not_approved")
+    else:
+        declared_review = _normalize_sha(review_receipt_sha256)
+        if not declared_review:
+            reasons.append("independent_review_receipt_missing")
+        else:
+            evidence_shas = {_normalize_sha(v.get("sha256")) for v in verified}
+            if declared_review not in evidence_shas:
+                reasons.append("independent_review_receipt_not_in_evidence_set")
 
     # Terminal must be COMPLETED
     if terminal_status != "COMPLETED":
         reasons.append("terminal_capture_not_completed")
+
+    # Synthetic fixtures are structurally valid by design, but never authoritative.
+    # Real capture requires non-synthetic evidence origin + independent review
+    # and digests that resolve to actual file bytes.
+    real_capture = (
+        not synthetic
+        and bool(dataset_content_sha256)
+        and bool(capture_receipt_sha256)
+        and content_binding_ok
+    )
 
     # Real dataset must have content digest verified against actual bytes
     if real_capture and dataset_content_sha256:
@@ -250,4 +390,6 @@ def evaluate_strict_evidence(
         "verified_artifacts": verified if artifact_members else [],
         "synthetic": synthetic,
         "independent_review_status": independent_review_status,
+        "review_receipt_sha256": _normalize_sha(review_receipt_sha256),
+        "approved_root": str(root),
     }
