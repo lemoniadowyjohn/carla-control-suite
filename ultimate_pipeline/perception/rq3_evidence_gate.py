@@ -214,7 +214,21 @@ def evaluate_strict_evidence(
         if structural and fixture_valid:
             claim = CLAIM_SYNTHETIC_TEST_ONLY  # structural pass, but not evidence
     else:
-        if structural and fixture_valid and real_capture and independent_review_status == "APPROVED" and artifact_ok and len(verified) > 0:
+        # G01: admission requires a COMPLETED terminal AND an empty reason
+        # list. A non-completed terminal previously only produced a reason
+        # string that the admission branch ignored, so a failed/aborted
+        # capture could still be admitted as authoritative evidence.
+        admissible = (
+            structural
+            and fixture_valid
+            and real_capture
+            and independent_review_status == "APPROVED"
+            and artifact_ok
+            and len(verified) > 0
+            and terminal_status == "COMPLETED"
+            and not reasons
+        )
+        if admissible:
             evidence_authoritative = True
             dataset_admitted = True  # only when fully verified
             claim = CLAIM_EXPERIMENTAL_EVIDENCE_AUTHORITATIVE

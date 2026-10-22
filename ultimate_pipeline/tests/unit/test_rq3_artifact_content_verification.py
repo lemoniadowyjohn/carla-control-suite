@@ -161,6 +161,82 @@ def test_test_module_paths_are_portable():
     print("PASS: test_module_paths_portable")
 
 
+# ---------------------------------------------------------------------------
+# Shared synthetic evidence-set fixture (clearly synthetic, never real RQ3)
+# ---------------------------------------------------------------------------
+
+_EVIDENCE_PAYLOADS = {
+    "rgb": b"synthetic-rgb-frames",
+    "semantic": b"synthetic-semantic-frames",
+    "lidar": b"synthetic-lidar-frames",
+    "dataset": b"synthetic-dataset-content",
+    "capture_receipt": b"synthetic-capture-receipt",
+    "review_receipt": b"synthetic-independent-review-receipt",
+}
+
+
+def _write_evidence_set(root: Path):
+    """Write a synthetic evidence set on disk; return {name: sha256}."""
+    root.mkdir(parents=True, exist_ok=True)
+    digests = {}
+    for name, payload in _EVIDENCE_PAYLOADS.items():
+        (root / f"{name}.bin").write_bytes(payload)
+        digests[name] = hashlib.sha256(payload).hexdigest()
+    return digests
+
+
+def _artifact_members(digests, names=("rgb", "semantic", "lidar")):
+    """Build artifact members whose digests match the written files."""
+    members = []
+    for name in names:
+        members.append({
+            "path": f"{name}.bin",
+            "sha256": digests[name],
+            "modality": name,
+            "committed": True,
+            "session_id": "s1",
+            "member_id": name,
+        })
+    return members
+
+
+def test_admission_requires_completed_terminal(tmp_path):
+    """G01: a terminal status other than COMPLETED must never be admitted.
+
+    Before the fix the terminal status only produced a reason string that the
+    admission branch ignored, so an aborted capture that carried a full
+    verified artifact set was still promoted to authoritative evidence.
+    """
+    root = tmp_path / "evidence"
+    digests = _write_evidence_set(root)
+    members = _artifact_members(digests)
+
+    kwargs = dict(
+        synthetic=False,
+        independent_review_status="APPROVED",
+        dataset_content_sha256=digests["dataset"],
+        capture_receipt_sha256=digests["capture_receipt"],
+        artifact_members=members,
+        root=root,
+        approved_roots=[root],
+    )
+
+    # Control: a COMPLETED terminal is admitted.
+    admitted = evaluate_strict_evidence(terminal_status="COMPLETED", **kwargs)
+    assert admitted["experimental_evidence_authoritative"] is True, admitted
+    assert admitted["dataset_admitted"] is True, admitted
+    assert admitted["reasons"] == [], admitted["reasons"]
+
+    # Regression: every other terminal status must block admission.
+    for bad in ("FAILED", "ABORTED", "", "RUNNING", "completed"):
+        v = evaluate_strict_evidence(terminal_status=bad, **kwargs)
+        assert v["experimental_evidence_authoritative"] is False, (bad, v)
+        assert v["dataset_admitted"] is False, (bad, v)
+        assert v["claim_level"] == "UNPAIRED_CAPTURE", (bad, v)
+        assert "terminal_capture_not_completed" in v["reasons"], (bad, v)
+    print("PASS: admission_requires_completed_terminal")
+
+
 if __name__ == "__main__":
     test_artifact_integrity_checks()
     test_test_module_paths_are_portable()
