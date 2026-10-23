@@ -4,6 +4,7 @@ P0-4 — Artifact bytes verification (offline synthetic fixtures).
 Every route must reject bad content; synthetic fixtures keep NOT_ADMITTED.
 """
 import hashlib
+import json
 import os
 import shutil
 import tempfile
@@ -204,7 +205,7 @@ _EVIDENCE_PAYLOADS = {
     "lidar": b"synthetic-lidar-frames",
     "dataset": b"synthetic-dataset-content",
     "capture_receipt": b"synthetic-capture-receipt",
-    "review_receipt": b"synthetic-independent-review-receipt",
+    "review_receipt": b'{"verdict":"APPROVED","reviewer_id":"indep-reviewer-001","reviewed_sha256":"__DATASET__"}',
 }
 
 
@@ -212,7 +213,19 @@ def _write_evidence_set(root: Path):
     """Write a synthetic evidence set on disk; return {name: sha256}."""
     root.mkdir(parents=True, exist_ok=True)
     digests = {}
+    # write dataset first to get its sha for review receipt
+    dataset_payload = _EVIDENCE_PAYLOADS["dataset"]
+    (root / "dataset.bin").write_bytes(dataset_payload)
+    digests["dataset"] = hashlib.sha256(dataset_payload).hexdigest()
     for name, payload in _EVIDENCE_PAYLOADS.items():
+        if name == "dataset":
+            continue
+        if name == "review_receipt":
+            payload = json.dumps({
+                "verdict": "APPROVED",
+                "reviewer_id": "indep-reviewer-001",
+                "reviewed_sha256": digests["dataset"],
+            }).encode("utf-8")
         (root / f"{name}.bin").write_bytes(payload)
         digests[name] = hashlib.sha256(payload).hexdigest()
     return digests
@@ -242,7 +255,7 @@ def _full_evidence_members(digests):
     as the independent-review receipt.
     """
     members = _artifact_members(digests)
-    for name in ("dataset", "capture_receipt", "review_receipt"):
+    for name in ("dataset", "capture_receipt"):
         members.append({
             "path": f"{name}.bin",
             "sha256": digests[name],
@@ -251,6 +264,14 @@ def _full_evidence_members(digests):
             "session_id": "s1",
             "member_id": name,
         })
+    members.append({
+        "path": "review_receipt.bin",
+        "sha256": digests["review_receipt"],
+        "modality": "review_receipt",
+        "committed": True,
+        "session_id": "s1",
+        "member_id": "review_receipt",
+    })
     return members
 
 
@@ -398,6 +419,114 @@ def test_content_digests_must_resolve_to_real_bytes(tmp_path):
     assert v["experimental_evidence_authoritative"] is True, v
     assert v["reasons"] == [], v["reasons"]
     print("PASS: content_digests_must_resolve_to_real_bytes")
+
+
+def test_c1_bypass_a_review_receipt_sha_from_rgb_capture_frame(tmp_path):
+    """(a) review_receipt_sha256 = sha256 of an RGB capture frame (no receipt exists)."""
+    root = tmp_path / "evidence"
+    root.mkdir(parents=True, exist_ok=True)
+    members = []
+    (root / "rgb.bin").write_bytes(b"rgbdata")
+    rgb_sha = hashlib.sha256(b"rgbdata").hexdigest()
+    members.append({"path": "rgb.bin", "sha256": rgb_sha, "modality": "rgb", "committed": True, "session_id": "s1", "member_id": "rgb"})
+    (root / "semantic.bin").write_bytes(b"semdata")
+    sem_sha = hashlib.sha256(b"semdata").hexdigest()
+    members.append({"path": "semantic.bin", "sha256": sem_sha, "modality": "semantic", "committed": True, "session_id": "s1", "member_id": "semantic"})
+    (root / "lidar.bin").write_bytes(b"lidata")
+    lidar_sha = hashlib.sha256(b"lidata").hexdigest()
+    members.append({"path": "lidar.bin", "sha256": lidar_sha, "modality": "lidar", "committed": True, "session_id": "s1", "member_id": "lidar"})
+    (root / "review_receipt.json").write_text(json.dumps({"review": "REJECTED"}))
+    review_sha = hashlib.sha256((root / "review_receipt.json").read_bytes()).hexdigest()
+    members.append({"path": "review_receipt.json", "sha256": review_sha, "modality": "receipt", "committed": True, "session_id": "s1", "member_id": "review_receipt"})
+    (root / "dataset.bin").write_bytes(b"dsdata")
+    dataset_sha = hashlib.sha256(b"dsdata").hexdigest()
+    (root / "capture.bin").write_bytes(b"capdata")
+    capture_sha = hashlib.sha256(b"capdata").hexdigest()
+    members.append({"path": "dataset.bin", "sha256": dataset_sha, "modality": "receipt", "committed": True, "session_id": "s1", "member_id": "dataset"})
+    members.append({"path": "capture.bin", "sha256": capture_sha, "modality": "receipt", "committed": True, "session_id": "s1", "member_id": "capture_receipt"})
+    v = evaluate_strict_evidence(
+        synthetic=False,
+        independent_review_status="APPROVED",
+        terminal_status="COMPLETED",
+        dataset_content_sha256=dataset_sha,
+        capture_receipt_sha256=capture_sha,
+        review_receipt_sha256=rgb_sha,
+        artifact_members=members,
+        root=root,
+        approved_roots=[root],
+    )
+    assert v["experimental_evidence_authoritative"] is False
+    assert any("review_receipt" in r for r in v["reasons"])
+
+
+def test_c1_bypass_b_digest_equality_to_capture_members(tmp_path):
+    """(b) review/dataset/capture digests = the rgb/semantic/lidar member frames, content_index=None."""
+    root = tmp_path / "evidence"
+    root.mkdir(parents=True, exist_ok=True)
+    members = []
+    (root / "rgb.bin").write_bytes(b"rgbdata")
+    rgb_sha = hashlib.sha256(b"rgbdata").hexdigest()
+    members.append({"path": "rgb.bin", "sha256": rgb_sha, "modality": "rgb", "committed": True, "session_id": "s1", "member_id": "rgb"})
+    (root / "semantic.bin").write_bytes(b"semdata")
+    sem_sha = hashlib.sha256(b"semdata").hexdigest()
+    members.append({"path": "semantic.bin", "sha256": sem_sha, "modality": "semantic", "committed": True, "session_id": "s1", "member_id": "semantic"})
+    (root / "lidar.bin").write_bytes(b"lidata")
+    lidar_sha = hashlib.sha256(b"lidata").hexdigest()
+    members.append({"path": "lidar.bin", "sha256": lidar_sha, "modality": "lidar", "committed": True, "session_id": "s1", "member_id": "lidar"})
+    (root / "review_receipt.json").write_text(json.dumps({"review": "REJECTED"}))
+    review_sha = hashlib.sha256((root / "review_receipt.json").read_bytes()).hexdigest()
+    members.append({"path": "review_receipt.json", "sha256": review_sha, "modality": "receipt", "committed": True, "session_id": "s1", "member_id": "review_receipt"})
+    v = evaluate_strict_evidence(
+        synthetic=False,
+        independent_review_status="APPROVED",
+        terminal_status="COMPLETED",
+        dataset_content_sha256=rgb_sha,
+        capture_receipt_sha256=sem_sha,
+        review_receipt_sha256=lidar_sha,
+        artifact_members=members,
+        root=root,
+        approved_roots=[root],
+    )
+    assert v["experimental_evidence_authoritative"] is False
+    assert any("review_receipt" in r or "dataset_capture_review_digest_collision" in r or "shares_capture_member" in r for r in v["reasons"])
+
+
+def test_c1_bypass_c_receipt_content_rejected(tmp_path):
+    """(c) the "receipt" file's content is {"review":"REJECTED"}."""
+    root = tmp_path / "evidence"
+    root.mkdir(parents=True, exist_ok=True)
+    members = []
+    (root / "rgb.bin").write_bytes(b"rgbdata")
+    rgb_sha = hashlib.sha256(b"rgbdata").hexdigest()
+    members.append({"path": "rgb.bin", "sha256": rgb_sha, "modality": "rgb", "committed": True, "session_id": "s1", "member_id": "rgb"})
+    (root / "semantic.bin").write_bytes(b"semdata")
+    sem_sha = hashlib.sha256(b"semdata").hexdigest()
+    members.append({"path": "semantic.bin", "sha256": sem_sha, "modality": "semantic", "committed": True, "session_id": "s1", "member_id": "semantic"})
+    (root / "lidar.bin").write_bytes(b"lidata")
+    lidar_sha = hashlib.sha256(b"lidata").hexdigest()
+    members.append({"path": "lidar.bin", "sha256": lidar_sha, "modality": "lidar", "committed": True, "session_id": "s1", "member_id": "lidar"})
+    (root / "review_receipt.json").write_text(json.dumps({"review": "REJECTED"}))
+    review_sha = hashlib.sha256((root / "review_receipt.json").read_bytes()).hexdigest()
+    members.append({"path": "review_receipt.json", "sha256": review_sha, "modality": "receipt", "committed": True, "session_id": "s1", "member_id": "review_receipt"})
+    (root / "dataset.bin").write_bytes(b"dsdata")
+    dataset_sha = hashlib.sha256(b"dsdata").hexdigest()
+    (root / "capture.bin").write_bytes(b"capdata")
+    capture_sha = hashlib.sha256(b"capdata").hexdigest()
+    members.append({"path": "dataset.bin", "sha256": dataset_sha, "modality": "receipt", "committed": True, "session_id": "s1", "member_id": "dataset"})
+    members.append({"path": "capture.bin", "sha256": capture_sha, "modality": "receipt", "committed": True, "session_id": "s1", "member_id": "capture_receipt"})
+    v = evaluate_strict_evidence(
+        synthetic=False,
+        independent_review_status="APPROVED",
+        terminal_status="COMPLETED",
+        dataset_content_sha256=dataset_sha,
+        capture_receipt_sha256=capture_sha,
+        review_receipt_sha256=review_sha,
+        artifact_members=members,
+        root=root,
+        approved_roots=[root],
+    )
+    assert v["experimental_evidence_authoritative"] is False
+    assert any("verdict_not_approved" in r or "review_receipt_verdict_not_approved" in r for r in v["reasons"])
 
 
 if __name__ == "__main__":

@@ -280,6 +280,9 @@ def evaluate_strict_evidence(
     root: Optional[Path] = None,
     approved_roots: Sequence[Path] = None,
     session_id: Optional[str] = None,
+    review_receipt_identity: Optional[str] = None,
+    capture_identity: Optional[str] = None,
+    implementer_identity: Optional[str] = None,
 ) -> dict:
     """
     Strict evidence predicate. Never promotes synthetic fixtures.
@@ -346,8 +349,84 @@ def evaluate_strict_evidence(
             reasons.append("independent_review_receipt_missing")
         else:
             evidence_shas = {_normalize_sha(v.get("sha256")) for v in verified}
+            evidence_member_map = {_normalize_sha(v.get("sha256")): v for v in verified}
             if declared_review not in evidence_shas:
                 reasons.append("independent_review_receipt_not_in_evidence_set")
+            else:
+                # C1: review receipt must be a dedicated artifact with role "review_receipt"
+                review_member = evidence_member_map.get(declared_review)
+                if review_member is not None:
+                    rmod = str(review_member.get("modality") or review_member.get("kind") or review_member.get("role") or "")
+                    # also check role in member
+                    if str(review_member.get("role") or "") != "review_receipt" and rmod != "review_receipt":
+                        reasons.append("review_receipt_role_missing")
+                    # must not share digest with any capture member
+                    capture_member_shas = set()
+                    for v in verified:
+                        vmod = str(v.get("modality") or v.get("kind") or v.get("role") or "")
+                        if vmod in ("rgb", "semantic", "lidar", "capture"):
+                            # capture modalities are rgb/semantic/lidar; also be strict
+                            pass
+                    for v in verified:
+                        vmod = str(v.get("modality") or v.get("kind") or "")
+                        if vmod in ("rgb", "semantic", "lidar"):
+                            capture_member_shas.add(_normalize_sha(v.get("sha256")))
+                    if declared_review in capture_member_shas:
+                        reasons.append("review_receipt_digest_shares_capture_member")
+                else:
+                    reasons.append("review_receipt_role_missing")
+                # must not equal dataset/capture digests
+                ds_n = _normalize_sha(dataset_content_sha256)
+                cap_n = _normalize_sha(capture_receipt_sha256)
+                if declared_review == ds_n and ds_n:
+                    reasons.append("dataset_capture_review_digest_collision")
+                if declared_review == cap_n and cap_n:
+                    reasons.append("dataset_capture_review_digest_collision")
+                if ds_n and cap_n and ds_n == cap_n:
+                    reasons.append("dataset_capture_review_digest_collision")
+                # pairwise distinct among the three
+                if ds_n and cap_n and declared_review:
+                    if len({ds_n, cap_n, declared_review}) != 3:
+                        reasons.append("dataset_capture_review_digest_collision")
+                # Parse receipt content
+                try:
+                    if review_member is None:
+                        raise ValueError("no member")
+                    rpath = review_member.get("path")
+                    if not rpath:
+                        raise ValueError("no path")
+                    rtarget = _resolve_approved_path(rpath, root, approved_roots)
+                    if rtarget is None:
+                        # try resolve_artifact style
+                        rtarget = resolve_artifact(root, rpath, approved_roots) if rpath else None
+                    if rtarget is None or not rtarget.exists():
+                        reasons.append("review_receipt_parse_error")
+                    else:
+                        try:
+                            data = json.loads(rtarget.read_text(encoding="utf-8"))
+                        except Exception:
+                            reasons.append("review_receipt_parse_error")
+                        else:
+                            verdict = str(data.get("verdict") or data.get("status") or data.get("review") or data.get("decision") or "").strip().upper()
+                            if verdict != "APPROVED":
+                                reasons.append("review_receipt_verdict_not_approved")
+                            # reviewer identity
+                            reviewer_id = str(data.get("reviewer_id") or data.get("reviewer") or data.get("reviewer_identity") or data.get("independent_reviewer") or data.get("reviewer_role") or "").strip()
+                            cap_id = str(capture_identity or data.get("capture_identity") or data.get("capture_reviewer") or "").strip()
+                            impl_id = str(implementer_identity or data.get("implementer_identity") or data.get("author") or "").strip()
+                            if not reviewer_id or reviewer_id == cap_id or reviewer_id == impl_id:
+                                reasons.append("review_receipt_reviewer_identity_missing_or_equal")
+                            # reviewed SHA
+                            reviewed = str(data.get("reviewed_sha256") or data.get("reviewed_sha") or data.get("dataset_content_sha256") or data.get("dataset_sha") or data.get("implementation_sha") or data.get("implementation_sha256") or data.get("bound_implementation_sha") or "").strip().lower()
+                            if not reviewed or (ds_n and reviewed != ds_n and reviewed != _normalize_sha(data.get("implementation_sha256") or data.get("bound_implementation_sha") or "")):
+                                # also allow if equals implementation sha if passed differently? but requirement says equals dataset_content_sha256 or implementation SHA per schema
+                                pass
+                            # must equal dataset_content_sha256 (or impl sha per schema) - prefer dataset_content_sha256
+                            target_reviewed = ds_n if ds_n else _normalize_sha(data.get("implementation_sha256") or data.get("bound_implementation_sha") or "")
+                            if not reviewed or reviewed != target_reviewed:
+                                reasons.append("review_receipt_reviewed_sha_mismatch")
+                except Exception:
+                    reasons.append("review_receipt_parse_error")
 
     # Terminal must be COMPLETED
     if terminal_status != "COMPLETED":
