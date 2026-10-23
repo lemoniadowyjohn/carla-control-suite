@@ -99,11 +99,34 @@ def verify_artifact_set(
 
     for art in artifacts:
         rel_path = str(art.get("path", ""))
-        sha_declared = str(art.get("sha256", art.get("digest", "")))
-        modality = str(art.get("modality", art.get("kind", "rgb")))
-        session_ref = str(art.get("session_id", art.get("run_id", "")))
-        committed = bool(art.get("committed", True))
+        # Compute artifact_id early for error messages
         artifact_id = str(art.get("member_id", art.get("id", rel_path)))
+
+        if not rel_path:
+            reasons.append(f"missing_path:{artifact_id}")
+            continue
+        sha_declared = str(art.get("sha256", art.get("digest", "")))
+        if not sha_declared:
+            reasons.append(f"missing_sha256:{artifact_id}")
+            continue
+
+        # C1 addendum: Reject missing modality (was defaulting to rgb)
+        if "modality" not in art and "kind" not in art:
+            reasons.append(f"missing_modality:{artifact_id}")
+            continue
+        modality = str(art.get("modality", art.get("kind", "rgb")))
+
+        # C1 addendum: Reject missing committed (was defaulting to True)
+        if "committed" not in art:
+            reasons.append(f"missing_committed:{artifact_id}")
+            continue
+        committed = bool(art.get("committed", True))
+
+        # C1 addendum: Reject empty session_id (was skipping stale check)
+        session_ref = str(art.get("session_id", art.get("run_id", "")))
+        if has_session and not session_ref:
+            reasons.append(f"missing_session_id:{artifact_id}")
+            continue
 
         if not committed:
             reasons.append(f"staging_uncommitted:{artifact_id}:{modality}:{rel_path}")
