@@ -14,14 +14,18 @@ from typing import Optional
 
 
 def test_world_settings_rollback_exists():
-    source = open("E:/wt/repair-map-realism-p0-837a8504/ultimate_pipeline/perception/dataset_generator.py").read()
+    import os
+    base = os.environ.get("RQ3_TEST_ROOT", os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
+    source = open(os.path.join(base, "ultimate_pipeline", "perception", "dataset_generator.py")).read()
     assert "_prev_settings" in source
     assert "_restore_settings" in source
     print("PASS: rollback_world_settings_exists")
 
 
 def test_rollback_finally_covered():
-    source = open("E:/wt/repair-map-realism-p0-837a8504/ultimate_pipeline/perception/dataset_generator.py").read()
+    import os
+    base = os.environ.get("RQ3_TEST_ROOT", os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
+    source = open(os.path.join(base, "ultimate_pipeline", "perception", "dataset_generator.py")).read()
     assert "_prev_settings = None" in source
     assert "_restore_settings" in source
     print("PASS: rollback_finally_covered")
@@ -30,7 +34,9 @@ def test_rollback_finally_covered():
 def test_transaction_rollback_for_each_critical_stage():
     # Read dataset_generator source and verify exception handlers cover
     # world settings, spawn, sensor, listener, tick, dataset, teardown
-    source = open("E:/wt/repair-map-realism-p0-837a8504/ultimate_pipeline/perception/dataset_generator.py").read()
+    import os
+    base = os.environ.get("RQ3_TEST_ROOT", os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
+    source = open(os.path.join(base, "ultimate_pipeline", "perception", "dataset_generator.py")).read()
     # Must have finally block with restoration
     assert "finally:" in source
     assert "_prev_settings" in source
@@ -41,7 +47,9 @@ def test_failed_restoration_invalidates_capture():
     # The code must NOT claim PASS when restoration fails.
     # Check that if restoration fails (exception during restore), the capture
     # does not continue as a success.
-    source = open("E:/wt/repair-map-realism-p0-837a8504/ultimate_pipeline/perception/dataset_generator.py").read()
+    import os
+    base = os.environ.get("RQ3_TEST_ROOT", os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
+    source = open(os.path.join(base, "ultimate_pipeline", "perception", "dataset_generator.py")).read()
     # Check if restoration errors are caught but the method does not suppress them silently
     lines = source.splitlines()
     for i, line in enumerate(lines):
