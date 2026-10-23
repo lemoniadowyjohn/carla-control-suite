@@ -219,13 +219,17 @@ def attach_access_metadata(root: ET.Element, matches: Iterable[AccessMatch]) -> 
     for match in matches:
         by_road.setdefault(match.xodr_road_id, []).append(match)
     road_map = {str(road.get("id", "")): road for road in root.findall("road")}
+    unresolved_road_ids = sorted(set(by_road).difference(road_map))
+    if unresolved_road_ids:
+        raise ValueError(
+            "access_metadata_unresolved_xodr_road_ids:" + ",".join(unresolved_road_ids)
+        )
     attached_roads = 0
     tag_counts: Counter[str] = Counter()
     written_records = 0
     for road_id in sorted(by_road):
         road = road_map.get(road_id)
-        if road is None:
-            continue
+        assert road is not None  # validated above before any mutation
         user_data = road.find("userData")
         if user_data is None:
             user_data = ET.SubElement(road, "userData")

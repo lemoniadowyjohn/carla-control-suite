@@ -13,6 +13,7 @@ import xml.etree.ElementTree as ET
 from typing import Any, Dict, List
 
 from ultimate_pipeline.geometry.opendrive_geometry_kernel import endpoint as canonical_endpoint
+from ultimate_pipeline.core.file_utils import atomic_write_json
 
 
 PROTECTED_STAGE6_TAGS = (
@@ -242,8 +243,7 @@ def _copy_artifact(src: str, dst: str) -> None:
 
 def _write_stage6_containment_report(self, report: Dict[str, Any]) -> None:
     path = os.path.join(self.out_dir, "stage6_containment_runtime.json")
-    with open(path, "w", encoding="utf-8") as f:
-        json.dump(report, f, indent=2, default=str, ensure_ascii=True, sort_keys=True)
+    atomic_write_json(path, report, indent=2, default=str, ensure_ascii=True, sort_keys=True)
 
 
 def _run_stage6_read_only_diagnostic(
@@ -340,8 +340,7 @@ def _run_stage6_read_only_diagnostic(
 
     debug_path = os.path.join(self.out_dir, "continuity_debug.json")
     try:
-        with open(debug_path, "w", encoding="utf-8") as f:
-            json.dump(continuity_scan, f, indent=2, default=str, ensure_ascii=True, sort_keys=True)
+        atomic_write_json(debug_path, continuity_scan, indent=2, default=str, ensure_ascii=True, sort_keys=True)
         print(f"✅ continuity_debug.json written → {debug_path}")
     except Exception as e:
         print(f"⚠️ Could not create continuity debug file: {e}")
@@ -578,8 +577,7 @@ def _step6_planview_continuity(
     try:
         r = MeshContinuityRepairer(cont_out)
         scan = r.scan_roads()
-        with open(debug_path, "w", encoding="utf-8") as f:
-            json.dump(scan, f, indent=2)
+        atomic_write_json(debug_path, scan, indent=2)
         print(f"✅ continuity_debug.json written → {debug_path}")
     except Exception as e:
         print(f"⚠️ Could not create continuity debug file: {e}")
@@ -704,15 +702,10 @@ def _step6_planview_continuity(
                 repair_path = os.path.join(
                     self.out_dir, "planview_internal_seams_step6_autorepair.json"
                 )
-                with open(repair_path, "w", encoding="utf-8") as f:
-                    json.dump(
-                        repair_report,
-                        f,
-                        indent=2,
-                        default=str,
-                        ensure_ascii=True,
-                        sort_keys=True,
-                    )
+                atomic_write_json(
+                    repair_path, repair_report, indent=2, default=str,
+                    ensure_ascii=True, sort_keys=True,
+                )
             except Exception as e:
                 print(
                     f"[STEP 6] planView seam auto-repair report write skipped: {e}"
@@ -721,15 +714,10 @@ def _step6_planview_continuity(
             seam_report_path = os.path.join(
                 self.out_dir, "planview_internal_seams_step6.json"
             )
-            with open(seam_report_path, "w", encoding="utf-8") as f:
-                json.dump(
-                    seam_report,
-                    f,
-                    indent=2,
-                    default=str,
-                    ensure_ascii=True,
-                    sort_keys=True,
-                )
+            atomic_write_json(
+                seam_report_path, seam_report, indent=2, default=str,
+                ensure_ascii=True, sort_keys=True,
+            )
         except Exception as e:
             print(f"[STEP 6] planView seam report write skipped: {e}")
 

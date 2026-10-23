@@ -253,8 +253,9 @@ def _step9_positional_semantics(self, final_out: str) -> str:
             f"{access_metadata['metadata_records_written']} record(s)"
         )
     except Exception as e:
-        print(f"⚠️ OSM access metadata materialization failed: {e}")
+        print(f"❌ OSM access metadata materialization failed: {e}")
         self.vreport.add("osm_access_restriction_postfreeze", "error", str(e))
+        raise RuntimeError("access metadata materialization failed closed") from e
 
     # ------------------------------------------------------------------
     # Crosswalks: apply to final road/junction geometry

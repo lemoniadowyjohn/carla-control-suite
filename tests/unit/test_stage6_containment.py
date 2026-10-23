@@ -214,6 +214,21 @@ def test_stage6_semantic_diff_detects_protected_planview_change(tmp_path: Path) 
     assert diff["changed"] == [{"domain": "road", "road_id": "1"}]
 
 
+def test_stage6_containment_report_publish_failure_keeps_previous_report(tmp_path: Path, monkeypatch) -> None:
+    stage = _FakeStage(tmp_path)
+    report_path = tmp_path / "stage6_containment_runtime.json"
+    report_path.write_text('{"previous":true}', encoding="utf-8")
+
+    def fail_publish(*args, **kwargs):
+        raise OSError("injected disk-full report failure")
+
+    monkeypatch.setattr(stage_06_links, "atomic_write_json", fail_publish)
+    with pytest.raises(OSError, match="disk-full"):
+        stage_06_links._write_stage6_containment_report(stage, {"new": True})
+
+    assert report_path.read_text(encoding="utf-8") == '{"previous":true}'
+
+
 def test_stage6_governed_profiles_are_contained() -> None:
     class Release:
         RELEASE_PROFILE = "STRUCTURAL_RELEASE"

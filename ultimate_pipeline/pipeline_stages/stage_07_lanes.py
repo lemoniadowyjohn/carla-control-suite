@@ -405,30 +405,13 @@ def _step7_lanes_sidewalks(self, cont_out: str, lanes_out: str) -> str:
         f"reclassified={intraroad_report.get('reclassified_none_or_restricted_lanes', 0)}"
     )
 
-    # --- P0-A source-stage fix: regenerate junction laneLinks from topology ---
-    # LaneLinkBuilder runs HERE at source stage (Stage 7), before lane-successor
-    # inference, so that `infer_lane_successors_from_topology` sees fully
-    # populated junction laneLinks.  GAP-048: no fallback pairing — unlinked
-    # incoming lanes are classified as residuals (never guessed).
-    # This replaces the earlier GAP-026 remap which only PRUNED mispaired
-    # links but never generated missing ones.
+    # The reviewed GAP-026 remap above is the sole Stage 7 junction-laneLink
+    # mutation.  Do not regenerate links here: that would discard the approved
+    # SUMO/remapped set before successor inference.
     tree, root = load_xodr(lanes_out)
-    try:
-        from ultimate_pipeline.lanes.lanelink_builder import LaneLinkBuilder
-        LaneLinkBuilder.regenerate_lane_links(root, verbose=True)
-        ll_report = LaneLinkBuilder.last_failure_report
-        self.vreport.add_dict("lane_link_regenerate", ll_report)
-        print(
-            "[STEP 7] LaneLinkBuilder.regenerate_lane_links: "
-            f"connections={ll_report.get('connections_total', 0)} "
-            f"laneLinks={ll_report.get('lane_links_emitted', 0)} "
-            f"unlinked={sum(v for k, v in ll_report.get('summary', {}).items() if not k.endswith('_for') or True) or 'see report'}"
-        )
-    except Exception as e:
-        print(f"⚠️ LaneLinkBuilder.regenerate_lane_links failed (non-fatal): {e}")
 
     # --- Infer lane-level successors from road topology (generator stage) ---
-    # Runs HERE at source stage using now-populated junction laneLinks.
+    # Runs HERE at source stage using the preserved/reviewed junction laneLinks.
     # Unique-proof only (terminal sections for junction targets); ambiguous
     # or unproven cases stay unresolved and are reported (never guessed).
     from ultimate_pipeline.enrichment.lane_successor_topology import infer_lane_successors_from_topology

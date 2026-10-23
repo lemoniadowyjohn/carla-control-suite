@@ -4,10 +4,12 @@
 from __future__ import annotations
 
 import os
+from pathlib import Path
 import xml.etree.ElementTree as ET
 
 import pytest
 
+from ultimate_pipeline.core import file_utils
 from ultimate_pipeline.core.file_utils import copy_file, ensure_dir, read_xodr, write_xodr
 from ultimate_pipeline.core.repair_diff import RepairDiff
 from ultimate_pipeline.core.return_codes import PerceptionReturnCode
@@ -86,6 +88,45 @@ def test_write_xodr_creates_missing_output_dir(tmp_path):
     write_xodr(tree, str(p_out))
 
     assert p_out.exists()
+
+
+def test_write_xodr_keeps_existing_map_when_publish_fails(tmp_path, monkeypatch):
+    """A failed final replace must never expose a partial map at destination."""
+    p_out = tmp_path / "map.xodr"
+    original = b"<OpenDRIVE><old/></OpenDRIVE>"
+    p_out.write_bytes(original)
+    tree = ET.ElementTree(ET.Element("OpenDRIVE"))
+
+    def fail_replace(source, destination):
+        raise OSError("injected disk-full publish failure")
+
+    monkeypatch.setattr(file_utils.os, "replace", fail_replace)
+    with pytest.raises(OSError, match="disk-full"):
+        write_xodr(tree, str(p_out))
+
+    assert p_out.read_bytes() == original
+    assert list(tmp_path.glob(".map.xodr.*.tmp")) == []
+
+
+def test_write_xodr_keeps_existing_map_when_temp_write_fails(tmp_path):
+    """A disk-full failure while writing the temp map also leaves destination intact."""
+    p_out = tmp_path / "map.xodr"
+    original = b"<OpenDRIVE><old/></OpenDRIVE>"
+    p_out.write_bytes(original)
+
+    class FailingTree:
+        def getroot(self):
+            return ET.Element("OpenDRIVE")
+
+        def write(self, path, **kwargs):
+            Path(path).write_bytes(b"partial")
+            raise OSError("injected disk-full temp write")
+
+    with pytest.raises(OSError, match="disk-full"):
+        write_xodr(FailingTree(), str(p_out))
+
+    assert p_out.read_bytes() == original
+    assert list(tmp_path.glob(".map.xodr.*.tmp")) == []
 
 
 # ---------------------------------------------------------------------------
