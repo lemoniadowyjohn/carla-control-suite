@@ -120,7 +120,13 @@ def verify_artifact_set(
         if "committed" not in art:
             reasons.append(f"missing_committed:{artifact_id}")
             continue
-        committed = bool(art.get("committed", True))
+        raw_committed = art["committed"]
+        # Reviewer B1: a string-encoded "false"/"no"/"0" survives bool() and must
+        # not count as committed evidence -- the field must be a JSON boolean.
+        if type(raw_committed) is not bool:
+            reasons.append(f"committed_invalid:{artifact_id}:not_bool")
+            continue
+        committed = raw_committed
 
         # C1 addendum: Reject empty session_id (was skipping stale check)
         session_ref = str(art.get("session_id", art.get("run_id", "")))

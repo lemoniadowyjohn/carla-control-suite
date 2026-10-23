@@ -167,6 +167,33 @@ def test_test_module_paths_are_portable():
     print("PASS: test_module_paths_portable")
 
 
+def test_committed_field_requires_real_bool():
+    """Reviewer B1 (G02a): string-encoded false values must not count as committed.
+
+    The member's bytes satisfy their declaration (real tracked file with a
+    matching sha256), so only the committed-type rule (bool required) can
+    reject these artifacts.
+    """
+    real = ROOT / "ultimate_pipeline" / "perception" / "rq3_evidence_gate.py"
+    sha = hashlib.sha256(real.read_bytes()).hexdigest()
+    relp = "ultimate_pipeline/perception/rq3_evidence_gate.py"
+
+    for bad in ("false", "False", "no", "0", 0, 1, None):
+        art = [{"path": relp, "sha256": sha, "modality": "rgb",
+                "committed": bad, "session_id": "s1", "member_id": "cbdemo"}]
+        ok, reasons, _ = verify_artifact_set(art, root=ROOT, approved_roots=[ROOT], required_modalities=())
+        assert ok is False, (bad, ok)
+        assert any("committed_invalid" in r or "missing_committed" in r for r in reasons), (bad, reasons)
+
+    # control: a real bool True stays admitted (same artifact, positive check)
+    ok, reasons, _ = verify_artifact_set(
+        [{"path": relp, "sha256": sha, "modality": "rgb", "committed": True,
+          "session_id": "s1", "member_id": "cbtrue"}],
+        root=ROOT, approved_roots=[ROOT], required_modalities=())
+    assert ok is True, reasons
+    print("PASS: committed_field_requires_real_bool")
+
+
 # ---------------------------------------------------------------------------
 # Shared synthetic evidence-set fixture (clearly synthetic, never real RQ3)
 # ---------------------------------------------------------------------------
