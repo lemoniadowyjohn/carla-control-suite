@@ -209,6 +209,69 @@ def test_test_module_paths_are_portable():
     print("PASS: test_module_paths_portable")
 
 
+def test_committed_field_requires_real_bool():
+    """OpenCode G02a regression: truthy encodings never count as committed."""
+    real = ROOT / "ultimate_pipeline" / "perception" / "rq3_evidence_gate.py"
+    sha = hashlib.sha256(real.read_bytes()).hexdigest()
+    artifact = {
+        "path": "ultimate_pipeline/perception/rq3_evidence_gate.py",
+        "sha256": sha,
+        "modality": "rgb",
+        "session_id": "s1",
+        "member_id": "committed-type",
+    }
+    for bad in ("false", "False", "no", "0", 0, 1, None):
+        ok, reasons, _ = verify_artifact_set(
+            [{**artifact, "committed": bad}], root=ROOT,
+            approved_roots=[ROOT], required_modalities=(),
+        )
+        assert not ok, (bad, reasons)
+
+    ok, reasons, _ = verify_artifact_set(
+        [{**artifact, "committed": True}], root=ROOT,
+        approved_roots=[ROOT], required_modalities=(),
+    )
+    assert ok, reasons
+
+
+def test_review_receipt_cannot_alias_capture_or_use_unsigned_content(tmp_path):
+    """OpenCode G02b attacks remain blocked by Claude's signed-receipt gate."""
+    root = tmp_path / "evidence"
+    digests = _write_evidence_set(root)
+    members = _full_evidence_members(digests)
+    base = dict(
+        synthetic=False, independent_review_status="APPROVED",
+        terminal_status="COMPLETED", dataset_content_sha256=digests["dataset"],
+        capture_receipt_sha256=digests["capture_receipt"], artifact_members=members,
+        root=root, approved_roots=[root], review_trust_root=REVIEW_TRUST_ROOT,
+        capture_operator_id=CAPTURE_OPERATOR_ID,
+    )
+    # A capture-frame digest cannot impersonate the dedicated review receipt.
+    result = evaluate_strict_evidence(review_receipt_sha256=digests["rgb"], **base)
+    assert not result["experimental_evidence_authoritative"], result
+    assert "independent_review_receipt_not_in_evidence_set" in result["reasons"]
+
+    # A declared digest collision with capture evidence remains non-authoritative.
+    result = evaluate_strict_evidence(
+        dataset_content_sha256=digests["rgb"],
+        capture_receipt_sha256=digests["semantic"],
+        review_receipt_sha256=digests["lidar"], **{k: v for k, v in base.items()
+        if k not in ("dataset_content_sha256", "capture_receipt_sha256")},
+    )
+    assert not result["experimental_evidence_authoritative"], result
+
+    # A validly located receipt with invalid JSON/schema cannot authorize capture.
+    receipt = root / "review_receipt.bin"
+    receipt.write_bytes(b'{"review":"REJECTED"}')
+    altered = hashlib.sha256(receipt.read_bytes()).hexdigest()
+    for member in members:
+        if member["member_id"] == "review_receipt":
+            member["sha256"] = altered
+    result = evaluate_strict_evidence(review_receipt_sha256=altered, **base)
+    assert not result["experimental_evidence_authoritative"], result
+    assert "review_receipt_schema_invalid" in result["reasons"]
+
+
 # ---------------------------------------------------------------------------
 # Shared synthetic evidence-set fixture (clearly synthetic, never real RQ3)
 # ---------------------------------------------------------------------------

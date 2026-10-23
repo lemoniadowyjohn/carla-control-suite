@@ -253,7 +253,10 @@ def build_current_handoff_report(
 if __name__ == "__main__":
     contract = build_current_handoff_report()
     payload = contract.to_dict()
-    with open("E:/wt/repair-map-realism-p0-837a8504/reports/phase5_deliverables/RQ3_TO_RQ5_HANDOFF_CONTRACT.json", "w") as f:
+    import os
+    root = os.environ.get("RQ3_APPROVED_ROOT", os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
+    handoff_path = os.path.join(root, "reports", "phase5_deliverables", "RQ3_TO_RQ5_HANDOFF_CONTRACT.json")
+    with open(handoff_path, "w") as f:
         json.dump(payload, f, indent=2)
     print("Wrote RQ3_TO_RQ5_HANDOFF_CONTRACT.json")
     print(f"Status: {payload['dataset_status']}")
