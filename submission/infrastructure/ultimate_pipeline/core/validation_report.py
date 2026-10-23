@@ -17,7 +17,7 @@ class ValidationReport:
 
     LOG_PATH = None
 
-    def __init__(self, run_id: str | None = None):
+    def __init__(self):
         # high-level pipeline stage entries (old system)
         self.stage_entries = []
 
@@ -31,7 +31,6 @@ class ValidationReport:
             "failing_roads": set(),
             "timestamp": datetime.now().isoformat(),
         }
-        self.run_id = run_id
 
     # ===========================================================
     # INITIALIZATION (old system)
@@ -130,8 +129,6 @@ class ValidationReport:
             },
             "timestamp": datetime.now().isoformat(),
         }
-        if self.run_id:
-            serializable["run_id"] = self.run_id
 
         with open(path, "w", encoding="utf-8") as f:
             json.dump(serializable, f, indent=4)
