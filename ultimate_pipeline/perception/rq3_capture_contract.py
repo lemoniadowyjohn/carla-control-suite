@@ -1008,14 +1008,14 @@ def _validate_frame_set_consistency(
         if name not in expected_counts:
             errors.append("expected_count_missing:sensor:" + name)
             continue
-        try:
-            expected_value = int(expected_counts.get(name))
-        except (TypeError, ValueError):
+        expected_value = expected_counts.get(name)
+        # O4/G03b: strict typing -- expectations must be positive ints
+        if type(expected_value) is not int or expected_value <= 0:
             errors.append("expected_count_invalid:sensor:" + name)
             continue
-        try:
-            actual_value = int(actual[name])
-        except (TypeError, ValueError):
+        actual_value = actual[name]
+        # O4/G03b: strict typing -- observed counts must be non-negative ints
+        if type(actual_value) is not int or actual_value < 0:
             errors.append("frame_count_invalid:sensor:" + name)
             continue
         if actual_value != expected_value:

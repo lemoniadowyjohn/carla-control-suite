@@ -507,3 +507,28 @@ def test_frame_set_consistency_rejects_missing_sensor_frames():
     )
     assert result["valid"] is False, result
     assert "missing_sensor_frames:sensor:cam2" in result["errors"], result["errors"]
+
+
+
+def test_frame_set_consistency_rejects_non_int_expectations():
+    """O4/G03b: strict typing -- float/bool/str/zero/negative expectations are invalid."""
+    counts = {"camera_frames": {"cam1": 5, "cam2": 5}, "lidar_frames": {"lidar1": 3}}
+    for bad in (5.9, True, "5", 0, -1):
+        expected = {"cam1": bad, "cam2": bad, "lidar1": bad}
+        result = _frame_set_consistency(
+            "camera_frames", ("cam1", "cam2"), ("lidar1",), counts, expected
+        )
+        assert result["valid"] is False, (bad, result)
+        assert "expected_count_invalid:sensor:cam1" in result["errors"], (bad, result["errors"])
+
+
+def test_frame_set_consistency_rejects_non_int_observed_counts():
+    """O4/G03b: strict typing -- float/bool/str observed counts are invalid."""
+    for bad in (5.9, True, "5"):
+        counts = {"camera_frames": {"cam1": 5, "cam2": bad}, "lidar_frames": {"lidar1": 3}}
+        result = _frame_set_consistency(
+            "camera_frames", ("cam1", "cam2"), ("lidar1",), counts,
+            {"cam1": 5, "cam2": 5, "lidar1": 3},
+        )
+        assert result["valid"] is False, (bad, result)
+        assert "frame_count_invalid:sensor:cam2" in result["errors"], (bad, result["errors"])
