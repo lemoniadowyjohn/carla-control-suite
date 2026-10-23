@@ -37,6 +37,7 @@ def test_artifact_integrity_checks():
         ("RQ3_BUILDER_FALSE_PASS_REMEDIATION.json", "semantic"),
         ("RQ3_CROSS_ARM_23_TEST_RECEIPT.json", "lidar"),
     ]
+
     artifacts = []
     for name, mod in files:
         a = {
@@ -48,6 +49,30 @@ def test_artifact_integrity_checks():
             "member_id": name[:12],
         }
         artifacts.append(a)
+
+    def _fresh_artifacts():
+        """Rebuild the 3-item baseline list from the real, correct digests.
+
+        G02c (review fix round): step 2 below corrupts every entry's
+        sha256 *in place*; steps 3-6 only ever reset ``artifacts[0]``, so
+        without rebuilding a clean list here, every step from 3 onward
+        silently inherited step 2's corruption on items [1] and [2]
+        (and, after step 6, a path pointing at an already-deleted tmp
+        file). That made step 7's assertion pass or fail for the wrong
+        reason depending on what state leaked in from earlier steps. Each
+        step that needs a clean baseline below now calls this first.
+        """
+        out = []
+        for name, mod in files:
+            out.append({
+                "path": f"reports/phase5_deliverables/{name}",
+                "sha256": _sha(DELIV / name),
+                "modality": mod,
+                "committed": True,
+                "session_id": "s1",
+                "member_id": name[:12],
+            })
+        return out
 
     # 1. Correct digest passes all modalities
     ok, reasons, verified = verify_artifact_set(artifacts, root=ROOT, approved_roots=[ROOT])
@@ -62,6 +87,7 @@ def test_artifact_integrity_checks():
     print("PASS: wrong_digest")
 
     # 3. Missing file rejects
+    artifacts = _fresh_artifacts()
     artifacts[0]["path"] = "nonexistent_file_12345.json"
     artifacts[0]["sha256"] = _sha(DELIV / "RQ3_PATCH_MANIFEST.json")
     ok, reasons, _ = verify_artifact_set(artifacts, root=ROOT, approved_roots=[ROOT])
@@ -69,6 +95,7 @@ def test_artifact_integrity_checks():
     print("PASS: missing_file")
 
     # 4. Path traversal rejects
+    artifacts = _fresh_artifacts()
     artifacts[0] = {"path": "../../../etc/passwd", "sha256": _sha(DELIV / "RQ3_PATCH_MANIFEST.json"),
                     "modality": "rgb", "committed": True, "session_id": "s1", "member_id": "trav"}
     ok, reasons, _ = verify_artifact_set(artifacts, root=ROOT, approved_roots=[ROOT])
@@ -76,6 +103,7 @@ def test_artifact_integrity_checks():
     print("PASS: path_traversal")
 
     # 5. Uncommitted staging rejects
+    artifacts = _fresh_artifacts()
     artifacts[0] = {"path": "reports/phase5_deliverables/RQ3_PATCH_MANIFEST.json", "sha256": _sha(DELIV / "RQ3_PATCH_MANIFEST.json"),
                     "modality": "rgb", "committed": False, "session_id": "s1", "member_id": "staging"}
     ok, reasons, _ = verify_artifact_set(artifacts, root=ROOT, approved_roots=[ROOT])
@@ -86,6 +114,7 @@ def test_artifact_integrity_checks():
     # G05: the scratch file must live inside the approved root (so that the
     # relative artifact path resolves) and must not be a machine-specific
     # absolute path. A throwaway directory keeps the repository clean.
+    artifacts = _fresh_artifacts()
     tmp_dir = Path(tempfile.mkdtemp(dir=str(ROOT), prefix=".rq3_test_tmp_"))
     try:
         tmp = tmp_dir / "rq3_truncated_test.json"
@@ -101,9 +130,22 @@ def test_artifact_integrity_checks():
     print("PASS: modified_after_manifest")
 
     # 7. Duplicate identity different content
-    dup = {"path": "reports/phase5_deliverables/RQ3_BUILDER_FALSE_PASS_REMEDIATION.json",
-           "sha256": _sha(DELIV / "RQ3_PATCH_MANIFEST.json"),
-           "modality": "semantic", "committed": True, "session_id": "s1", "member_id": "dup"}
+    #
+    # G02c: verify_artifact_set()'s duplicate-identity check keys on
+    # member_id (the claimed identity), not on path. To genuinely exercise
+    # "same identity, different real content" the second entry must reuse
+    # an *existing* verified member_id (here artifacts[1]'s) while pointing
+    # at different real bytes that match ITS OWN declared digest (so it
+    # passes its own integrity check first and only then collides on
+    # identity with a different recorded digest). The previous fixture
+    # reused artifacts[1]'s *path* with a mismatched digest under a brand
+    # new member_id ("dup") -- that can never reach the duplicate-identity
+    # branch; it is rejected earlier as a plain digest mismatch.
+    artifacts = _fresh_artifacts()
+    dup_member_id = artifacts[1]["member_id"]
+    dup = {"path": "reports/phase5_deliverables/RQ3_CROSS_ARM_23_TEST_RECEIPT.json",
+           "sha256": _sha(DELIV / "RQ3_CROSS_ARM_23_TEST_RECEIPT.json"),
+           "modality": "lidar", "committed": True, "session_id": "s1", "member_id": dup_member_id}
     ok, reasons, _ = verify_artifact_set(artifacts + [dup], root=ROOT, approved_roots=[ROOT])
     assert ok is False and any("duplicate_identity" in r for r in reasons), f"dup id accepted: {reasons}"
     print("PASS: duplicate_identity_different_content")

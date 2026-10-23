@@ -39,6 +39,7 @@ from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 from cryptography.hazmat.primitives.serialization import Encoding, PublicFormat
 
 from ultimate_pipeline.perception.rq3_evidence_gate import (
+    REVIEW_RECEIPT_MAX_BYTES,
     REVIEW_RECEIPT_SCHEMA,
     canonical_receipt_message,
     ed25519_verifier,
@@ -114,6 +115,7 @@ def _write_review_receipt_member(
     omit_signature: bool = False,
     omit_signer_key_id: bool = False,
     skip_signing: bool = False,
+    pad_to_bytes: int = None,
 ):
     """Build + write a review-receipt evidence member. Returns (member, sha, receipt)."""
     receipt = {
@@ -142,6 +144,12 @@ def _write_review_receipt_member(
         receipt["signature"] = base64.b64encode(signature_bytes).decode("ascii")
 
     payload = json.dumps(receipt, sort_keys=True).encode("utf-8")
+    if pad_to_bytes is not None and len(payload) < pad_to_bytes:
+        # G02c: pad *after* signing so the receipt grows past the size cap;
+        # the signature need not stay valid -- the size cap must reject the
+        # receipt before signature verification is ever reached.
+        receipt["_test_padding"] = "A" * (pad_to_bytes - len(payload) + 64)
+        payload = json.dumps(receipt, sort_keys=True).encode("utf-8")
     sha = _write(root, name, payload)
     member = {
         "path": name, "sha256": sha, "modality": "review_receipt",
@@ -417,6 +425,79 @@ def test_reviewer_equals_capture_operator_rejected(tmp_path):
     assert v["dataset_admitted"] is False, v
     assert "review_receipt_reviewer_not_independent" in v["reasons"], v["reasons"]
     print("PASS: reviewer_equals_capture_operator_rejected")
+
+
+def test_reviewer_independence_case_differs_rejected(tmp_path):
+    """G02c: "ALICE" vs "alice" must still be treated as the same person."""
+    v = _full_scenario(
+        tmp_path,
+        receipt_kwargs_overrides={"reviewer_id": "ALICE"},
+        capture_operator_id="alice",
+    )
+    assert v["dataset_admitted"] is False, v
+    assert "review_receipt_reviewer_not_independent" in v["reasons"], v["reasons"]
+    print("PASS: reviewer_independence_case_differs_rejected")
+
+
+def test_reviewer_independence_whitespace_rejected(tmp_path):
+    """G02c: "alice " vs "alice" must still be treated as the same person."""
+    v = _full_scenario(
+        tmp_path,
+        receipt_kwargs_overrides={"reviewer_id": "alice "},
+        capture_operator_id="alice",
+    )
+    assert v["dataset_admitted"] is False, v
+    assert "review_receipt_reviewer_not_independent" in v["reasons"], v["reasons"]
+    print("PASS: reviewer_independence_whitespace_rejected")
+
+
+def test_reviewer_independence_unicode_casefold_rejected(tmp_path):
+    """G02c: "Straße" vs "STRASSE" must still be treated as the same person
+    (str.casefold() normalizes German sharp-s / eszett the same as "ss")."""
+    v = _full_scenario(
+        tmp_path,
+        receipt_kwargs_overrides={"reviewer_id": "Straße"},
+        capture_operator_id="STRASSE",
+    )
+    assert v["dataset_admitted"] is False, v
+    assert "review_receipt_reviewer_not_independent" in v["reasons"], v["reasons"]
+    print("PASS: reviewer_independence_unicode_casefold_rejected")
+
+
+def test_whitespace_only_reviewer_id_treated_as_missing(tmp_path):
+    """G02c: a whitespace-only reviewer_id must not count as a non-empty id."""
+    v = _full_scenario(tmp_path, receipt_kwargs_overrides={"reviewer_id": "   "})
+    assert v["dataset_admitted"] is False, v
+    assert "review_receipt_reviewer_missing" in v["reasons"], v["reasons"]
+    print("PASS: whitespace_only_reviewer_id_treated_as_missing")
+
+
+def test_whitespace_only_capture_operator_id_treated_as_missing(tmp_path):
+    """G02c: a whitespace-only capture_operator_id must not count as a real id."""
+    v = _full_scenario(tmp_path, capture_operator_id="   ")
+    assert v["dataset_admitted"] is False, v
+    assert "capture_operator_id_missing" in v["reasons"], v["reasons"]
+    print("PASS: whitespace_only_capture_operator_id_treated_as_missing")
+
+
+def test_oversized_review_receipt_rejected(tmp_path):
+    """G02c: a receipt larger than REVIEW_RECEIPT_MAX_BYTES must be rejected
+    before it is ever json-parsed."""
+    v = _full_scenario(
+        tmp_path,
+        receipt_kwargs_overrides={"pad_to_bytes": REVIEW_RECEIPT_MAX_BYTES + 1},
+    )
+    assert v["dataset_admitted"] is False, v
+    assert "review_receipt_too_large" in v["reasons"], v["reasons"]
+    print("PASS: oversized_review_receipt_rejected")
+
+
+def test_receipt_at_or_under_size_cap_not_rejected_for_size(tmp_path):
+    """Control: a receipt comfortably under the cap is never flagged too-large."""
+    v = _full_scenario(tmp_path)
+    assert "review_receipt_too_large" not in v["reasons"], v["reasons"]
+    assert v["dataset_admitted"] is True, v
+    print("PASS: receipt_at_or_under_size_cap_not_rejected_for_size")
 
 
 def test_missing_capture_operator_id_rejected(tmp_path):

@@ -263,6 +263,26 @@ def resolve_digest_to_bytes(
 REVIEW_RECEIPT_MODALITY = "review_receipt"
 REVIEW_RECEIPT_SCHEMA = "rq3_independent_review_receipt/v1"
 
+#: G02c (review fix round): a review receipt is a small, fixed-shape JSON
+#: document. Reject anything larger than this before ever attempting to
+#: decode/parse it (defense against unbounded-read / parser-pressure via a
+#: maliciously large "receipt" file).
+REVIEW_RECEIPT_MAX_BYTES = 64 * 1024
+
+
+def _normalize_identity(value: Any) -> str:
+    """Normalize an identity string (reviewer id / capture operator id) for
+    an independence comparison: strip surrounding whitespace and casefold.
+
+    G02c: a bare ``==`` comparison let a self-approval through whenever the
+    two ids merely differed in case ("ALICE" vs "alice"), surrounding
+    whitespace ("alice " vs "alice"), or Unicode case form (e.g. German
+    "Straße" vs "STRASSE", which casefold() normalizes identically). A
+    whitespace-only string normalizes to empty, so it is treated the same
+    as a genuinely missing id by the callers below.
+    """
+    return str(value or "").strip().casefold()
+
 
 def canonical_receipt_message(receipt: Mapping[str, Any]) -> bytes:
     """Canonical signed message for a review receipt: sorted-key JSON with
@@ -331,6 +351,17 @@ def _validate_review_receipt(
 
     try:
         raw = Path(receipt_member["path"]).read_bytes()
+    except Exception:
+        reasons.append("review_receipt_schema_invalid")
+        return reasons
+
+    # G02c: reject an oversized receipt before ever attempting to decode or
+    # json.loads() it.
+    if len(raw) > REVIEW_RECEIPT_MAX_BYTES:
+        reasons.append("review_receipt_too_large")
+        return reasons
+
+    try:
         receipt = json.loads(raw.decode("utf-8"))
         if not isinstance(receipt, dict):
             raise ValueError("review receipt content is not a JSON object")
@@ -344,13 +375,17 @@ def _validate_review_receipt(
     if receipt.get("verdict") != "APPROVED":
         reasons.append("review_receipt_verdict_not_approved")
 
-    reviewer_id = str(receipt.get("reviewer_id") or "")
-    if not reviewer_id:
+    # G02c: normalize both sides (strip + casefold) before the independence
+    # comparison so case/whitespace/Unicode-case-form variants of the same
+    # identity cannot be used to self-approve.
+    reviewer_id_norm = _normalize_identity(receipt.get("reviewer_id"))
+    if not reviewer_id_norm:
         reasons.append("review_receipt_reviewer_missing")
 
-    if not capture_operator_id:
+    capture_operator_norm = _normalize_identity(capture_operator_id)
+    if not capture_operator_norm:
         reasons.append("capture_operator_id_missing")
-    elif reviewer_id and reviewer_id == str(capture_operator_id):
+    elif reviewer_id_norm and reviewer_id_norm == capture_operator_norm:
         reasons.append("review_receipt_reviewer_not_independent")
 
     if _normalize_sha(receipt.get("reviewed_dataset_content_sha256")) != _normalize_sha(dataset_content_sha256):
