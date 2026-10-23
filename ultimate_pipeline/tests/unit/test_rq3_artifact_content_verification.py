@@ -3,14 +3,20 @@
 P0-4 — Artifact bytes verification (offline synthetic fixtures).
 Every route must reject bad content; synthetic fixtures keep NOT_ADMITTED.
 """
+import base64
 import hashlib
+import json
 import os
 import shutil
 import tempfile
 from pathlib import Path
 
+from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
+from cryptography.hazmat.primitives.serialization import Encoding, PublicFormat
+
 from ultimate_pipeline.perception.rq3_evidence_gate import (
     evaluate_strict_evidence, verify_artifact_set, resolve_artifact,
+    canonical_receipt_message, ed25519_verifier, REVIEW_RECEIPT_SCHEMA,
 )
 
 # G05: no machine-specific absolute path. The repository root is derived from
@@ -171,17 +177,52 @@ _EVIDENCE_PAYLOADS = {
     "lidar": b"synthetic-lidar-frames",
     "dataset": b"synthetic-dataset-content",
     "capture_receipt": b"synthetic-capture-receipt",
-    "review_receipt": b"synthetic-independent-review-receipt",
 }
+
+# G02b / CHAT-01: the independent review receipt is now a signed, schema'd
+# JSON evidence member, not a bare digest. These module-level fixtures build
+# one fixed, synthetic Ed25519 "trust root" so every positive control below
+# can admit via a real signature instead of the old bare-digest shortcut.
+REVIEWER_ID = "independent-reviewer-1"
+CAPTURE_OPERATOR_ID = "capture-operator-1"
+_REVIEW_KEY_ID = "rq3-test-review-key-1"
+_REVIEW_PRIVATE_KEY = Ed25519PrivateKey.generate()
+_REVIEW_PUBLIC_KEY_BYTES = _REVIEW_PRIVATE_KEY.public_key().public_bytes(
+    encoding=Encoding.Raw, format=PublicFormat.Raw
+)
+REVIEW_TRUST_ROOT = {_REVIEW_KEY_ID: ed25519_verifier(_REVIEW_PUBLIC_KEY_BYTES)}
+
+
+def _signed_review_receipt_bytes(dataset_sha256: str, capture_receipt_sha256: str, session_id: str = "s1") -> bytes:
+    """Build a properly signed, schema-valid independent review receipt."""
+    receipt = {
+        "schema": REVIEW_RECEIPT_SCHEMA,
+        "verdict": "APPROVED",
+        "reviewer_id": REVIEWER_ID,
+        "reviewed_dataset_content_sha256": dataset_sha256,
+        "reviewed_capture_receipt_sha256": capture_receipt_sha256,
+        "session_id": session_id,
+        "signer_key_id": _REVIEW_KEY_ID,
+    }
+    signature = _REVIEW_PRIVATE_KEY.sign(canonical_receipt_message(receipt))
+    receipt["signature"] = base64.b64encode(signature).decode("ascii")
+    return json.dumps(receipt, sort_keys=True).encode("utf-8")
 
 
 def _write_evidence_set(root: Path):
-    """Write a synthetic evidence set on disk; return {name: sha256}."""
+    """Write a synthetic evidence set on disk; return {name: sha256}.
+
+    Includes a real, Ed25519-signed independent review receipt bound to the
+    dataset / capture-receipt digests written in the same evidence set.
+    """
     root.mkdir(parents=True, exist_ok=True)
     digests = {}
     for name, payload in _EVIDENCE_PAYLOADS.items():
         (root / f"{name}.bin").write_bytes(payload)
         digests[name] = hashlib.sha256(payload).hexdigest()
+    review_payload = _signed_review_receipt_bytes(digests["dataset"], digests["capture_receipt"])
+    (root / "review_receipt.bin").write_bytes(review_payload)
+    digests["review_receipt"] = hashlib.sha256(review_payload).hexdigest()
     return digests
 
 
@@ -201,15 +242,17 @@ def _artifact_members(digests, names=("rgb", "semantic", "lidar")):
 
 
 def _full_evidence_members(digests):
-    """Capture members plus the dataset / capture / review receipts.
+    """Capture members plus the dataset / capture receipts and the signed,
+    dedicated-modality independent review receipt.
 
     The receipts are part of the verified evidence set, so their digests are
     byte-checked by verify_artifact_set() and are therefore usable as the
-    content binding for dataset_content_sha256 / capture_receipt_sha256 and
-    as the independent-review receipt.
+    content binding for dataset_content_sha256 / capture_receipt_sha256. The
+    review receipt carries its own ``review_receipt`` modality (G02b) so it
+    is never counted toward the required rgb/semantic/lidar coverage.
     """
     members = _artifact_members(digests)
-    for name in ("dataset", "capture_receipt", "review_receipt"):
+    for name in ("dataset", "capture_receipt"):
         members.append({
             "path": f"{name}.bin",
             "sha256": digests[name],
@@ -218,6 +261,14 @@ def _full_evidence_members(digests):
             "session_id": "s1",
             "member_id": name,
         })
+    members.append({
+        "path": "review_receipt.bin",
+        "sha256": digests["review_receipt"],
+        "modality": "review_receipt",
+        "committed": True,
+        "session_id": "s1",
+        "member_id": "review_receipt",
+    })
     return members
 
 
@@ -241,6 +292,11 @@ def test_admission_requires_completed_terminal(tmp_path):
         artifact_members=members,
         root=root,
         approved_roots=[root],
+        # G02b: the review receipt is now a signed JSON member; the positive
+        # control below needs a trust root + distinct capture operator id to
+        # admit (it is a no-op for the negative "bad terminal" loop).
+        review_trust_root=REVIEW_TRUST_ROOT,
+        capture_operator_id=CAPTURE_OPERATOR_ID,
     )
 
     # Control: a COMPLETED terminal is admitted.
@@ -278,6 +334,10 @@ def test_review_approval_requires_bound_receipt(tmp_path):
         artifact_members=members,
         root=root,
         approved_roots=[root],
+        # G02b: needed for the (c) positive control; irrelevant to (a)/(b),
+        # which must still fail before any signature check is reached.
+        review_trust_root=REVIEW_TRUST_ROOT,
+        capture_operator_id=CAPTURE_OPERATOR_ID,
     )
 
     # (a) APPROVED without any review receipt -> blocked
@@ -310,6 +370,10 @@ def test_content_digests_must_resolve_to_real_bytes(tmp_path):
         review_receipt_sha256=digests["review_receipt"],
         root=root,
         approved_roots=[root],
+        # G02b: needed for the (e) positive control; (a)-(d) must still fail
+        # on their own targeted reason regardless of the trust root.
+        review_trust_root=REVIEW_TRUST_ROOT,
+        capture_operator_id=CAPTURE_OPERATOR_ID,
     )
 
     # (a) dataset digest that names nothing -> blocked
