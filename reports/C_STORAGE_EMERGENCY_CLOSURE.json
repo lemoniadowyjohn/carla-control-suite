@@ -1,0 +1,105 @@
+{
+  "schema": "C_STORAGE_EMERGENCY_CLOSURE/v1",
+  "schema_version": 1,
+
+  "C_FREE_BEFORE_MB": 4,
+  "C_FREE_BEFORE_NOTE":
+    "observed at 2026-10-06T20:02Z as 4 MB free (0.00 GB). By the time this task began the figure had already recovered to 18730 MB because the pytest run that caused the spike had exited on its own.",
+
+  "PYTEST_WRITER_IDENTITY": "UNPROVEN_NO_WRITER_PRESENT",
+  "PYTEST_ROOT_PID": null,
+  "PYTEST_ROOT_CREATION_TIME": null,
+  "writer_finding":
+    "no pytest process existed at any point during this task. Two independent samples returned zero real pytest invocations. There was therefore nothing to terminate, and the authorized termination path was never exercised.",
+
+  "guard_defect_found_and_fixed": {
+    "initial_guard": "matched the bare word 'pytest' in any process command line",
+    "failure_mode":
+      "the guard aborted the first cleanup run reporting 5 live pytest processes. Investigation showed the only match was the audit shell itself, whose command line contained the literal search string, plus its own probe children.",
+    "root_cause": "substring matching on a word that appears in the auditor's own command line",
+    "fix":
+      "guard now requires the process to be a python process AND its command line to match '-m pytest' or a pytest console-script invocation, and shells are excluded by requiring Name to match ^python",
+    "verification": "the corrected guard returns an empty list against the same machine state that produced 5 false positives",
+    "note": "the guard failed safe by refusing to delete, which is the correct behaviour for a false positive"
+  },
+
+  "inactivity_basis": {
+    "type": "OWNERSHIP_AND_IDLE, not age",
+    "live_pytest_processes": 0,
+    "samples": 2,
+    "tree_byte_delta_over_30s": 0,
+    "root_mtime_utc": "2026-10-06T20:05:35Z",
+    "latest_child_mtime_utc": "2026-10-06T20:10:03Z"
+  },
+
+  "PYTEST_RUN_TERMINATED": false,
+  "PYTEST_RUN_TERMINATED_NOTE": "no live pytest process existed, so nothing was terminated",
+  "PYTEST_DESCENDANTS_ALIVE": 0,
+  "MANUAL_TERMINATION": false,
+
+  "PYTEST_TEMP_SIZE_BEFORE_GB": 14.06,
+  "PYTEST_TEMP_STILL_GROWING": false,
+  "PYTEST_TEMP_LIVE_OWNER_COUNT": 0,
+
+  "INACTIVE_PYTEST_DIR_COUNT": 24,
+  "INACTIVE_PYTEST_RECLAIMED_GB": 13.62,
+  "deletion_detail": {
+    "first_pass": {"dirs_deleted": 11, "dirs_failed": 13,
+                   "reclaimed_gb": 7.22,
+                   "failure": "WinError 5 Access is denied"},
+    "retry_pass": {"dirs_deleted": 13, "dirs_undeletable": 0,
+                   "reclaimed_gb": 6.40,
+                   "method": "clear read-only attribute in an onerror handler and retry up to 3 times"},
+    "residual": "0 GB in 1 file across 8 now-empty directory entries",
+    "force_takeown_used": false,
+    "acl_modified": false
+  },
+
+  "P0_RECLAIMED_GB": 0,
+  "P0_NOTE":
+    "not required. Reclaiming inactive pytest scratch alone reached 34.73 GB, above the 20 GB minimum, so no npm/pip/CrashDumps deletion was attempted and no new broad deletion was performed.",
+
+  "C_FREE_AFTER_GB": 32.34,
+  "C_FREE_AFTER_PERCENT": 6.8,
+  "C_FREE_AFTER_NOTE":
+    "34.73 GB immediately after cleanup, settling to 32.34 GB because the other session's second bounded cook began writing during the verification window. Both figures are far above the 20 GB minimum.",
+
+  "C_STORAGE_EMERGENCY_CLEARED": true,
+
+  "preservation_guarantees": {
+    "TEMP_OPENCODE_PRESERVED": true,
+    "TEMP_OPENCODE_BYTES_UNCHANGED": 8471928170,
+    "DIRTY_WORKTREES_PRESERVED": true,
+    "SOURCE_PRESERVED": true,
+    "EVIDENCE_PRESERVED": true,
+    "USER_DATA_PRESERVED": true,
+    "PAGEFILE_PRESERVED": true,
+    "scope_guard":
+      "only direct children of Temp\\pytest-of-admin were ever enumerated as deletion candidates; Temp\\opencode and all other Temp siblings were structurally excluded"
+  },
+
+  "POST_RECOVERY_QUIESCENCE": {
+    "live_pytest": 0,
+    "UE4Editor": 1,
+    "ShaderCompileWorker": 0,
+    "opencode_processes_legitimate": 3,
+    "detail":
+      "one UE4Editor.exe PID 16164 created 2026-10-06T20:23:42Z is the other session's SECOND bounded cook (BoundedCook_10_9, tile Ingolstadt_Tile_10_9) launched via supervised_ue_run.py. It is legitimate work, was not touched, and is why C: free drifted down slightly during verification.",
+    "quiescent": false
+  },
+
+  "CARLA_CODE_CHANGED": false,
+  "COOK_STARTED": false,
+  "RQ1_STARTED": false,
+  "SUPERVISION_PATCHED": false,
+  "FILES_MODIFIED_OUTSIDE_REPORTS": [
+    "scripts/c_emergency_pytest_cleanup.py (new, cleanup tool)",
+    "scripts/c_emergency_pytest_retry.py (new, cleanup retry tool)"
+  ],
+  "CARLA_CONTENT_MUTATED": false,
+
+  "NEXT_RECOMMENDED_ACTION":
+    "1) the C: emergency is cleared, no further host action needed; 2) note that another session is running a second bounded cook (tile 10_9), so the machine is not quiescent and RQ1 must not start until it ends; 3) reconcile COOK_620e51db into POST_HOC_RECONCILIATION including the lease's failure to transition to terminal; 4) open the isolated harness repair branch for the four supervision defects plus lease terminal transition; 5) re-verify with the identity/matrix/stress/T6/coupling suites before any authoritative rerun.",
+
+  "FINAL_VERDICT": "C_STORAGE_EMERGENCY_CLEARED"
+}

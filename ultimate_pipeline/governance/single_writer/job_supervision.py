@@ -11,11 +11,21 @@ from __future__ import annotations
 
 import ctypes
 import subprocess
+import sys
 import time
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
 
-_kernel32 = ctypes.WinDLL("kernel32", use_last_error=True)
+# GAP-055: ctypes.WinDLL exists only on Windows. This module is imported (via
+# the single_writer package) by collected tests, and pytest runs module-level
+# code during COLLECTION -- before any skipif marker -- so an unconditional
+# WinDLL call aborted CI's offline-pytest job on Linux (exit 2). Bind only on
+# win32; elsewhere the handle stays None and real use fails loudly at call
+# time (Windows-only tests skip on non-Windows; collection stays green).
+if sys.platform == "win32":
+    _kernel32 = ctypes.WinDLL("kernel32", use_last_error=True)
+else:
+    _kernel32 = None
 
 _JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE = 0x00002000
 _JOB_OBJECT_LIMIT_JOB_TIME = 0x00000004
@@ -67,9 +77,24 @@ def _check(result: bool, what: str) -> None:
 
 @dataclass
 class OwnedJob:
+    """A job object HANDLE owned by this instance.
+
+    Ownership contract: the handle returned by ``create_job`` is owned here and
+    is released exactly once by :meth:`close`. ``close`` is idempotent, so an
+    explicit teardown and any later teardown cannot release the same handle
+    twice. Windows recycles handle values, so a second ``CloseHandle`` on a
+    stale value can close an unrelated object.
+    """
+
     handle: int
     root_pid: int
     kill_on_close: bool = True
+    _released: bool = field(default=False, init=False, repr=False, compare=False)
+
+    @property
+    def released(self) -> bool:
+        """True once this owner has released the handle."""
+        return self._released
 
     def member_pids(self) -> List[int]:
         buf = _JOBOBJECT_BASIC_PROCESS_ID_LIST()
@@ -89,6 +114,13 @@ class OwnedJob:
                "TerminateJobObject")
 
     def close(self) -> None:
+        """Release the owned handle exactly once. Safe to call repeatedly."""
+        if self._released:
+            return
+        # Flip the ownership flag BEFORE the call so that a failure inside
+        # CloseHandle cannot leave the owner believing it still holds a
+        # handle it has already handed to the OS.
+        self._released = True
         _kernel32.CloseHandle(self.handle)
 
 
@@ -124,13 +156,21 @@ class _THREADENTRY32(ctypes.Structure):
     ]
 
 
-def _resume_primary_thread(pid: int) -> None:
+def _resume_primary_thread(pid: int, max_attempts: int = 8) -> None:
     """Resume the first thread of a CREATE_SUSPENDED process.
 
     ResumeThread needs a THREAD handle; subprocess only exposes the process
     handle (passing it silently fails and leaves the child frozen -- this
     exact bug was observed: members listed the child but no grandchild ever
     spawned). Enumerate threads via Toolhelp and resume the owner's first.
+
+    A single successful API call is NOT accepted as proof. ResumeThread
+    returns the *previous* suspend count and only fails (0xFFFFFFFF) on an
+    API error, so a child can be reported as resumed while its thread is
+    still suspended -- observed as an orphan with WaitReason=Suspended that
+    never ran and never exited. The loop therefore drives the count to zero
+    and raises if it cannot be confirmed, so the caller's kill path runs
+    instead of leaking a frozen child into the job.
     """
     TH32CS_SNAPTHREAD = 0x00000004
     THREAD_SUSPEND_RESUME = 0x0002
@@ -146,15 +186,32 @@ def _resume_primary_thread(pid: int) -> None:
             if entry.th32OwnerProcessID == pid:
                 th = _kernel32.OpenThread(THREAD_SUSPEND_RESUME, False,
                                           entry.th32ThreadID)
-                if th:
-                    try:
-                        if _kernel32.ResumeThread(th) != 0xFFFFFFFF:
-                            return
-                    finally:
-                        _kernel32.CloseHandle(th)
+                if not th:
                     raise ctypes.WinError(ctypes.get_last_error(),
-                                          "ResumeThread")
-                raise ctypes.WinError(ctypes.get_last_error(), "OpenThread")
+                                          "OpenThread")
+                try:
+                    previous = _kernel32.ResumeThread(th)
+                    if previous == 0xFFFFFFFF:
+                        raise ctypes.WinError(ctypes.get_last_error(),
+                                              "ResumeThread")
+                    # Drive the suspend count to zero. previous == 0 means
+                    # there was nothing left to resume, i.e. the thread is
+                    # confirmed running.
+                    attempts = 0
+                    while previous > 0 and attempts < max_attempts:
+                        previous = _kernel32.ResumeThread(th)
+                        if previous == 0xFFFFFFFF:
+                            raise ctypes.WinError(ctypes.get_last_error(),
+                                                  "ResumeThread")
+                        attempts += 1
+                    if previous > 0:
+                        raise RuntimeError(
+                            f"thread {entry.th32ThreadID} of pid {pid} is "
+                            f"still suspended after {attempts} resume "
+                            f"attempts (count {previous})")
+                    return
+                finally:
+                    _kernel32.CloseHandle(th)
             ok = _kernel32.Thread32Next(snap, ctypes.byref(entry))
         raise RuntimeError(f"no thread found for pid {pid}")
     finally:
@@ -213,20 +270,24 @@ class _PROCESSENTRY32(ctypes.Structure):
     ]
 
 
-_kernel32.CreateToolhelp32Snapshot.argtypes = [ctypes.c_uint32,
-                                                     ctypes.c_uint32]
-_kernel32.CreateToolhelp32Snapshot.restype = ctypes.c_void_p
-_kernel32.Process32FirstW.argtypes = [ctypes.c_void_p,
-                                      ctypes.POINTER(_PROCESSENTRY32)]
-_kernel32.Process32FirstW.restype = ctypes.c_bool
-_kernel32.Process32NextW.argtypes = [ctypes.c_void_p,
-                                     ctypes.POINTER(_PROCESSENTRY32)]
-_kernel32.Process32NextW.restype = ctypes.c_bool
-_kernel32.OpenThread.argtypes = [ctypes.c_uint32, ctypes.c_bool,
-                                 ctypes.c_uint32]
-_kernel32.OpenThread.restype = ctypes.c_void_p
-_kernel32.ResumeThread.argtypes = [ctypes.c_void_p]
-_kernel32.ResumeThread.restype = ctypes.c_uint32
+# Prototype bindings for the Toolhelp APIs used below. GAP-055: gated on
+# win32 like the handle itself -- module-level attribute reads on a None
+# handle would break Linux collection (exit 2) before any skipif applies.
+if sys.platform == "win32":
+    _kernel32.CreateToolhelp32Snapshot.argtypes = [ctypes.c_uint32,
+                                                         ctypes.c_uint32]
+    _kernel32.CreateToolhelp32Snapshot.restype = ctypes.c_void_p
+    _kernel32.Process32FirstW.argtypes = [ctypes.c_void_p,
+                                          ctypes.POINTER(_PROCESSENTRY32)]
+    _kernel32.Process32FirstW.restype = ctypes.c_bool
+    _kernel32.Process32NextW.argtypes = [ctypes.c_void_p,
+                                         ctypes.POINTER(_PROCESSENTRY32)]
+    _kernel32.Process32NextW.restype = ctypes.c_bool
+    _kernel32.OpenThread.argtypes = [ctypes.c_uint32, ctypes.c_bool,
+                                     ctypes.c_uint32]
+    _kernel32.OpenThread.restype = ctypes.c_void_p
+    _kernel32.ResumeThread.argtypes = [ctypes.c_void_p]
+    _kernel32.ResumeThread.restype = ctypes.c_uint32
 
 
 def process_parent_map() -> Dict[int, int]:

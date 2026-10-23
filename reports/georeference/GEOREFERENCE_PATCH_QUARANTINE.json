@@ -1,0 +1,31 @@
+{
+  "schema": "georeference_patch_quarantine/v1",
+  "captured_utc": "2026-10-05T18:08:29Z",
+  "repository": "G:\\CARLA\\carla_source_probe",
+  "branch": "HEAD",
+  "head_sha": "294096eb1c38eabf246e4f3a9cdab704e33a7f4c",
+  "file": "LibCarla/source/carla/opendrive/parser/GeoReferenceParser.cpp",
+  "quarantined_patch": {
+    "working_tree_sha256": "8D641ACE2CAFD42D1F371549AE1E9966B86FA630262F254797F9359C5503C7C8",
+    "head_blob_sha": "cc5d2c947a4541dd7e206d8ed5469e120935ec7a",
+    "mtime": "2026-10-05 11:20:57",
+    "git_numstat": {
+      "insertions": 53,
+      "deletions": 10
+    },
+    "status": "QUARANTINED_UNBUILT",
+    "quarantine_reason": "It correctly removed the silent 42/2 fallback and range-validated +lat_0/+lon_0, but it REJECTED any geoReference lacking both origin parameters. The authoritative map of record (SHA256 370ABBBB...) declares only '+proj=tmerc', so this patch would have made the authoritative Ingolstadt map fail to parse and fail to load."
+  },
+  "preserved_ideas_carried_forward": [
+    "silent 42/2 default eliminated entirely",
+    "finite/range validation of +lat_0 and +lon_0",
+    "partial origin (exactly one of the pair) rejected as inconsistent",
+    "reject rather than clamp out-of-range values",
+    "std::stod full-token consumption (no leading/trailing garbage)"
+  ],
+  "ideas_deliberately_not_carried_forward": [
+    "rejecting a projection that carries no origin parameters -- that is the legitimate local-frame case (bare +proj=tmerc, UTM, empty)"
+  ],
+  "superseded_working_tree_sha256": "2aa422a0b3fff87089e326220cdff375abeb9c1d20722355ac554faea6043e70",
+  "current_diff_line_count": 174
+}

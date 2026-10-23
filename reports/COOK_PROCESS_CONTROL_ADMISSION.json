@@ -1,0 +1,27 @@
+{
+  "schema": "COOK_PROCESS_CONTROL_ADMISSION/v1",
+  "PROCESS_TREE_SUPERVISION": "PASS",
+  "evidence": "reports/PROCESS_TREE_SUPERVISION_FINAL.json; clean-checkout reproduction at published SHA 32fbde8e: matrix 25/25, stress 270/270, T6 5/5, coupling 11/11, identity 15/15, native crashes 0, GetProcessHandleCount 176->181 growth 5.",
+  "LEASE_JOB_COUPLING": "PASS",
+  "SINGLE_WRITER_CONTROL_PLANE": "PASS",
+  "NATIVE_CRASHES": 0,
+  "ACTIVE_CONTENT_MUTATORS": 1,
+  "ACTIVE_CONTENT_MUTATORS_detail": [
+    {
+      "pid": 396,
+      "creation_utc": "2026-10-06T12:30:44.7613250Z",
+      "executable": "G:\\UnrealEngine_4.26_CARLA\\Engine\\Binaries\\Win64\\UE4Editor.exe",
+      "command_line": "\"G:\\UnrealEngine_4.26_CARLA\\Engine\\Binaries\\Win64\\UE4Editor.exe\" G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\CarlaUE4.uproject -nullrhi -unattended -executecmds=quit",
+      "parent_pid": 31268,
+      "parent_alive": false,
+      "working_set_mb": 1220,
+      "private_mb": 9732,
+      "threads": 114,
+      "classification": "UNKNOWN_PRESERVE",
+      "why_unknown": "-nullrhi -unattended -executecmds=quit should terminate almost immediately, yet the process is still resident ~25 minutes after creation. Its parent (31268) is gone, so it is ORPHANED and outside any single-writer lease or Job Object supervision. It cannot be shown to be governed, and it cannot be shown to be harmless: an unsupervised Unreal process can hold package file locks on the exact Content tree a cook would read."
+    }
+  ],
+  "COOK_ADMISSION": "DENIED",
+  "COOK_ADMISSION_reason": "B2 requires ACTIVE_CONTENT_MUTATORS=0. An orphaned, unsupervised UE4Editor is present on the target project. Per the prompt's own rule, an unknown mutator yields UNKNOWN_PRESERVE and denies cook admission.",
+  "action_not_taken": "This process was NOT killed. It was not started by this session, killing by image name is forbidden, and terminating a process the operator may be using is an operator decision."
+}

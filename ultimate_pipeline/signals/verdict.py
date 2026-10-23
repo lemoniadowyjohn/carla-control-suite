@@ -194,6 +194,17 @@ def compute_final_run_verdict(
     acceptance_status = STATUS_MISSING
     experiment_status: str | None = None
 
+    # Read current run_id for stale evidence detection
+    run_identity_path = os.path.join(root, "run_identity.json")
+    current_run_id = None
+    if os.path.exists(run_identity_path):
+        try:
+            with open(run_identity_path, "r", encoding="utf-8") as f:
+                identity = json.load(f)
+            current_run_id = identity.get("run_id")
+        except Exception:
+            pass
+
     for sid in candidate_ids:
         entry = SIGNAL_REGISTRY[sid]
         enabled = is_signal_enabled(sid, settings=settings, env=env_map)
@@ -211,7 +222,7 @@ def compute_final_run_verdict(
         elif not present:
             status = STATUS_MISSING
         else:
-            status = normalize_signal_status(sid, payload, error=error)
+            status = normalize_signal_status(sid, payload, error=error, run_id=current_run_id)
 
         record = {
             "signal_id": sid,

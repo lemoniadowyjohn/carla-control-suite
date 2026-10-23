@@ -1,0 +1,69 @@
+{
+  "schema": "STORAGE_CLEANUP_PLAN/v1",
+  "executed": false,
+  "policy": "PLAN ONLY. No deletion was performed. The batch objective is a recovery plan; Phase 9 permits deletion only for paths already classified as disposable cache, and the operator has not authorised a sweep.",
+  "P0_zero_risk_regenerable": {
+    "count": 3,
+    "gb": 4.29,
+    "items": [
+      "npm-cache 4.14 GB",
+      "pip cache 0.11 GB",
+      "CrashDumps 0.04 GB"
+    ],
+    "recovery_impact": "none; all repopulate on demand",
+    "rollback": "not applicable"
+  },
+  "P1_stale_generated": {
+    "count": 5,
+    "gb": 38.72,
+    "items": [
+      "C: zero-dirty worktrees 34.94 GB",
+      "C: Temp\\pytest-of-admin older numbered subdirs ~3.3 GB",
+      "C: Temp\\Diagnostics 0.23 GB",
+      "F: zero-dirty worktrees 8.46 GB",
+      "E: zero-dirty worktrees 4.23 GB"
+    ],
+    "recovery_impact": "removes only working copies; every branch remains in git and each worktree is recreatable with git worktree add <path> <branch>",
+    "rollback": "git worktree add recreates the exact commit; uncommitted work is unaffected because only zero-dirty trees qualify",
+    "precondition": "13 of 35 worktrees are zero-dirty and therefore eligible; the other 22 are DIRTY_PRESERVE and must not be touched. Several dirty trees belong to other agent sessions that may be live."
+  },
+  "P2_requires_operator_confirmation": [
+    {
+      "path": "C:\\Users\\admin\\AppData\\Local\\Temp\\opencode",
+      "size_gb": 7.89,
+      "why": "live agent session store for the operator's tooling, including the session running this audit",
+      "recommendation": "PRESERVE unless the operator confirms no tooling session is live"
+    },
+    {
+      "path": "F:\\pulpit",
+      "size_gb": 53.33,
+      "why": "purpose unknown",
+      "recommendation": "PRESERVE"
+    },
+    {
+      "path": "F:\\UCDownloads",
+      "size_gb": 34.1,
+      "why": "purpose unknown",
+      "recommendation": "PRESERVE"
+    },
+    {
+      "path": "F:\\Win11_25H2_Polish_x64_v2.iso",
+      "size_gb": 7.77,
+      "why": "OS installer",
+      "recommendation": "PRESERVE"
+    }
+  ],
+  "P3_preserve": [
+    "F:\\MobileSync",
+    "F:\\pobrane",
+    "F:\\Pictures",
+    "F:\\Program Files",
+    "C: pagefile",
+    "G: engine/Content/FBX inputs"
+  ],
+  "old_cook_and_ddc": {
+    "OLD_COOK_OUTPUT_AUTHORITY": "STALE",
+    "COOK_RESUME_ALLOWED": false,
+    "deletion": "none proposed; old cook output stays quarantined as evidence and must never be reused"
+  }
+}

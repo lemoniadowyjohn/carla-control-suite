@@ -1,0 +1,40 @@
+{
+  "BEFORE": {
+    "lane_link_targets": {
+      "ok": true,
+      "num_issues": 0,
+      "cross_road_lane_link_issues": 0,
+      "cross_road_lane_links_checked": 46812
+    },
+    "connectivity_assert": {
+      "raised": true,
+      "broken": 10563,
+      "msg_tail": "Fix lane links BEFORE CARLA load."
+    },
+    "gap026_junction_lanelink": {
+      "checked": 23406,
+      "passed": 20482,
+      "failed": 2924
+    },
+    "gap026_status": "fail"
+  },
+  "AFTER": {
+    "lane_link_targets": {
+      "ok": true,
+      "num_issues": 0,
+      "cross_road_lane_link_issues": 0,
+      "cross_road_lane_links_checked": 46812
+    },
+    "connectivity_assert": {
+      "raised": true,
+      "broken": 383,
+      "msg_tail": "Fix lane links BEFORE CARLA load."
+    },
+    "gap026_junction_lanelink": {
+      "checked": 23406,
+      "passed": 20482,
+      "failed": 2924
+    },
+    "gap026_status": "fail"
+  }
+}

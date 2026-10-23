@@ -1,0 +1,84 @@
+{
+  "timestamp_utc": "2026-10-11T00:00:00Z",
+  "campaign": "CARLA_THESIS_NEXT_EXECUTION_CAMPAIGN",
+  "entry_snapshot": {
+    "production_sha": "68868f763d22a630fc9ba8d818ed1919a7b8414d",
+    "consolidation_sha": "9fa11e1ea6a72f934105a287166aae3445f386c2",
+    "gap055_sha": "08a55439cbb0722cd0114a8e78aa5a7abc71c603",
+    "gap048_sha": "ef3003c2a97f838360aff94812fee9cc1dd79ca6",
+    "consolidation_vs_production": {
+      "merge_base": "68868f763d22a630fc9ba8d818ed1919a7b8414d",
+      "ahead_by": 11
+    },
+    "gap055_vs_consolidation": {
+      "merge_base": "68868f763d22a630fc9ba8d818ed1919a7b8414d",
+      "based_on": "production",
+      "missing_from_consolidation": true
+    },
+    "gap048_vs_consolidation": {
+      "merge_base": "68868f763d22a630fc9ba8d818ed1919a7b8414d",
+      "based_on": "production",
+      "missing_from_consolidation": true
+    },
+    "active_mutators": 0,
+    "active_cpu_heavy_tasks": 0
+  },
+  "gap055": {
+    "local_test_drift": "wt-gap055-clean had extended test with witness.main() call causing failure; origin/08a55439 does not have this",
+    "fix_sha": "bec68678",
+    "fix_branch": "fix/gap055-ci-windll-platform-guard-20261011",
+    "local_tests": "GAP-055 tests: 2/2 pass; Governance tests: 61/61 pass; Collection errors: 0",
+    "ci_status": "PENDING - branch pushed, awaiting GitHub Actions"
+  },
+  "gap026": {
+    "input_sha": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+    "checker_oracle_match": true,
+    "root_cause": "ROAD_GEOMETRY_ENDPOINT_DEFECT",
+    "fix_sha": "NOT_YET_IMPLEMENTED",
+    "fail_before": 2992,
+    "fail_after_regeneration": 2315,
+    "severe_before": 1283,
+    "severe_after": 206,
+    "improvement_pct": {
+      "total_failures": 22.6,
+      "severe_distance": 75.2,
+      "severe_angle": 100.0
+    },
+    "classification": {
+      "primary": "ROAD_GEOMETRY_ENDPOINT_DEFECT",
+      "sub_causes": ["HEADING_MISALIGNMENT", "LANE_WIDTH_MISMATCH"],
+      "first_bad_stage": "Road planView geometry generation (OSM2World / upstream pipeline)"
+    }
+  },
+  "gap048": {
+    "repaired": 10180,
+    "ambiguous": 261,
+    "no_candidate": 115,
+    "unexplained_residual": 0,
+    "no_candidate_overlap_with_gap026": "HIGH - missing laneLink in generator"
+  },
+  "gap046": {
+    "trial_admitted": false,
+    "trial_run": false,
+    "status": "DEFERRED_UNTIL_TOPOLOGY_STABLE",
+    "reason": "final_integrity expected to fail on unresolved topology; GAP-026 may alter residual GAP-048 no-candidate population"
+  },
+  "submission_tree": {
+    "modified": false,
+    "policy": "FROZEN_HISTORICAL_SNAPSHOT",
+    "reason": "submission/ is a frozen archived thesis submission; O(N^2) implementation intentional historical content"
+  },
+  "stale_sha_2a1c1cb": {
+    "found": false,
+    "replacement": null,
+    "status": "UNRESOLVED_REFERENCE",
+    "action": "Report to docs/gap-register owner"
+  },
+  "full_pytest": "NOT_RUN - disk space constraints; unit tests pass (GAP-055: 2/2, Governance: 61/61)",
+  "ci": {
+    "gap055": "PENDING",
+    "consolidation": "UNKNOWN"
+  },
+  "next_scientific_blocker": "GAP-026 generator fix required before GAP-046 Phase 5 admission",
+  "final_verdict": "CAMPAIGN_PARTIAL_EXACT_BLOCKERS"
+}

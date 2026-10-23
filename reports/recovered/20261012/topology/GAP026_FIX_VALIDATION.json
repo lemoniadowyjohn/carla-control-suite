@@ -1,0 +1,35 @@
+{
+  "schema": "GAP026_FIX_VALIDATION/v1",
+  "branch": "fix/gap026-junction-lanelink-generator-20261011",
+  "base": "68868f763d22a630fc9ba8d818ed1919a7b8414d (origin/integration/production-large-map-20260918)",
+  "worktree": "C:/Users/admin/AppData/Local/Temp/wt-gap026-fix",
+  "threshold_modified": false,
+  "final_xodr_cosmetically_patched": false,
+  "fix": [
+    "ultimate_pipeline/lanes/junction_lane_width_harmonizer.py (new): Stage-7 source-stage connector width inheritance from matched incoming lane; wired after LaneWidthClamp in stage_07_lanes.py",
+    "ultimate_pipeline/lanes/lanelink_builder.py:prune_outer_to_inner_mispaired_lane_links (new Stage-8 guard): removes existing outer->inner mispairs (|from|!=|to|) disagreeing with canonical inner-first pairing; equal-order links kept; residuals explicit, never re-guessed",
+    "tests/unit/test_gap026_junction_lanelink_generator.py (new): 16 adversarial tests covering contactPoint start/end, positive/negative lanes, direction reversal, asymmetric counts, fork, merge, roundabout, multiple connections, multiple laneLinks, missing laneLink, missing target lane, multi-section road, very short connector + real fixtures j1/c3, j12/c3, j411/c15, j5/c1, j3125/c4"
+  ],
+  "revalidation": {
+    "method": "in-memory simulation on pinned map (149799632 bytes, 370abbbb): harmonize + prune applied to parsed tree, re-measured with UNCHANGED production checker + independent oracle (both kernels). Full pipeline regen NOT_RUN in-session (city-scale hours); no map promoted.",
+    "FAIL_BEFORE": 2992,
+    "FAIL_AFTER": 459,
+    "CHECKED_BEFORE": 23529,
+    "CHECKED_AFTER": 22699,
+    "SEVERE_BEFORE": {"DIST_GT_3M": 832, "ANGLE_GT_12_DEG": 451, "BOTH": 152},
+    "SEVERE_AFTER": {"DIST_GT_3M": 141, "ANGLE_GT_12_DEG": 441, "BOTH": 134},
+    "NEW_FAILURES_ON_PREVIOUS_PASSING_LINKS": 0,
+    "CHECKER_ORACLE_STILL_AGREES": true,
+    "oracle_kernel_vs_og_max_delta_m_after": 0,
+    "harmonized_widths": 19807,
+    "pruned_mispairs": 830,
+    "residual_character": "predominantly angular (441): genuine connector heading/geometry defects + 180deg orientation flips + 45 ref-gap cases that width/mapping repair cannot address; 7 dist-only residuals remain"
+  },
+  "tests": {
+    "targeted_new": "16 passed (test_gap026_junction_lanelink_generator.py)",
+    "lane_related_subset": "76 passed (worktree, -k lanelink/lane_link/lane_width/lane_generator)",
+    "full_pytest": "NOT_RUN in-session (GAP-048 baseline: 7669 passed / 24 unrelated failed; rerun required before merge)"
+  },
+  "GAP026_STATUS": "BOUNDED_EXPLICIT_RESIDUALS",
+  "status_rationale": "FAIL 2992->459 (-84.7%), zero new failures, oracle agreement intact, thresholds untouched, fix at source stage. Not CLOSED: 459 residuals (mostly angular/geometry) need connector-geometry + connecting-road-selection work; full-pipeline regen + full pytest + CARLA RPC runtime proof still required before promotion. No checker change, no final-XODR patch, no tolerance widening, no fabricated links."
+}

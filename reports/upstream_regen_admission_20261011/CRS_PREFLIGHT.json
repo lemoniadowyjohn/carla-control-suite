@@ -1,0 +1,23 @@
+{
+  "CRS_PREFLIGHT": "PASS",
+  "ab_test": {
+    "PROJ_LIB_pyproj_own_dir": {
+      "pj_obj_create_warnings": 0,
+      "seed_sha256": "26e6af4aa4751b209143c1bb4dc02b3e7a057896470d886ee585948cd3965756",
+      "verdict": "C++ lookup resolved; structural comparison vs cleared-env seeds pending acceptance"
+    },
+    "cleared_PROJ_LIB": {
+      "pj_obj_create_warnings": ">=4",
+      "verdict": "C++ components ran WITHOUT proj.db (authority loss)"
+    }
+  },
+  "correct_environment": "PROJ_LIB := pyproj own data dir (guard-consistent AND C++-visible); PROJ_DATA unset; never hardcoded into repo code",
+  "cpp_components": "SUMO netconvert + CARLA Osm2Odr do NOT read pyproj datadir; pj_obj_create warnings show they ran WITHOUT a proj.db. A/B proof pending (attempt6 sets PROJ_LIB=pyproj-own dir; compare warning presence + seed structural signature)",
+  "environment_override_source": "inherited foreign PROJ_LIB from tool-session env (different venv); must be unset or pointed at pyproj-own dir, never hardcoded into repo code",
+  "epsg_32632_resolves": true,
+  "pipeline_crs_note": "native tmerc(0,0) proj_string pinned explicitly (GAP-021); Osm2Odr conversion succeeds; python-level CRS fully functional (15 passed, 1 skipped repo CRS tests)",
+  "pipeline_crs_resolves": true,
+  "proj_database_found": true,
+  "proj_database_path": "C:/Users/admin/PycharmProjects/gpt4/pythonProject3/carla_-main/.venv/Lib/site-packages/pyproj/proj_dir/share/proj/proj.db (10207232 bytes)",
+  "pyproj_data_dir": "C:/Users/admin/PycharmProjects/gpt4/pythonProject3/carla_-main/.venv/Lib/site-packages/pyproj/proj_dir/share/proj"
+}

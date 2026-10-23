@@ -1,0 +1,81 @@
+{
+  "schema": "reference_producer_trace/v1",
+  "generated_at_utc": "2026-10-04T22:20:00Z",
+  "method": "Read-only inspection of UE4 binary .umap/.uasset name tables (package paths are stored as plain strings), plus LargeMapManager.cpp source.",
+
+  "headline": "A Town11 tile umap is the positive control and it REFERENCES /Game/Carla/Static/Terrain/Town11/<mesh>. That confirms Static/Terrain/<MapName>/ is the authoritative mesh location and FIX_A (move meshes beside the umap) is definitively wrong. FIX_B-prime (point references at Static/Terrain) is the correct direction.",
+
+  "positive_control_town11": {
+    "tile_umap": "Content/Maps/Town11/Town11_Tile_0_0.umap (21024 bytes)",
+    "tile_umap_count_on_disk": 132,
+    "mesh_reference_inside_tile_umap": "/Game/Carla/Static/Terrain/Town11/Town11_Tile_0_0_Terrain_GroundNode",
+    "mesh_location_on_disk": "Content/Static/Terrain/Town11/Town11_Tile_0_0_Terrain_GroundNode.uasset (7142 uassets in that folder)",
+    "conclusion": "A tile streaming level references its meshes from Static/Terrain/<MapName>/, NOT from the map folder. Ingolstadt's meshes are already in exactly that canonical place."
+  },
+
+  "ingolstadt_current_state": {
+    "tile_umap_count": 0,
+    "only_umap": "Content/Ingolstadt/Maps/Ingolstadt/Ingolstadt.umap (25828 bytes)",
+    "tile_mesh_assets": "Content/Ingolstadt/Static/Terrain/Ingolstadt/ = 5711 uasset, 72.13 MB, mtime 2026-10-04T16:39:27..16:40:56",
+    "ingolstadt_umap_internal_refs": [
+      "/Game/Carla/Blueprints/Game/CarlaGameMode",
+      "/Game/Carla/Blueprints/Weather/BP_Sky",
+      "/Game/Carla/Blueprints/Weather/Materials/M_SkyTimeOfDay_Inst",
+      "/Game/Carla/Maps/BaseLargeMap/LargeMap",
+      "/Game/Carla/Maps/BaseLargeMap/LargeMap.Ingolstadt",
+      "/Game/Carla/Maps/Town03",
+      "/Game/Carla/Static/HDRi/HDRi_Neutral",
+      "/Game/Ingolstadt/Maps/Ingolstadt"
+    ],
+    "ingolstadt_tile_name_occurrences_in_umap": 0,
+    "size_sanity": "25828 bytes cannot hold a 5711-entry name table (>=325527 bytes needed), so Ingolstadt.umap provably does NOT contain the 5711 building references."
+  },
+
+  "revised_diagnosis_of_the_5711": {
+    "previous_claim": "The persisted tile map serializes 5711 wrong references.",
+    "correction": "NOT SUPPORTED by the persisted artifacts. Ingolstadt.umap contains zero Ingolstadt_Tile_X_Y_ references, and no tile .umap exists. The 5711 'Failed to find object' messages therefore cannot have come from a saved Ingolstadt tile map.",
+    "most_likely_explanation": "They were emitted from IN-FLIGHT tile scenes created by the FBX import (bConvertScene=1) during the interrupted run. The mesh packages were written to Static/Terrain/Ingolstadt at 16:39-16:40, while the tile scenes' references still used the import destination /Game/Ingolstadt/Maps/Ingolstadt, and the .umap saves never completed because the run was externally interrupted at 17:03:54.",
+    "status": "HYPOTHESIS - requires a clean completed import to confirm",
+    "implication_if_true": "The namespace defect may be an artifact of the interrupted run rather than a standing pipeline defect. That must be established before any fix is applied, otherwise a correct pipeline could be 'fixed' into a wrong state.",
+    "alternative_explanation_not_excluded": "A previous generation left references in some asset not searched here.",
+    "how_to_settle": "Run one clean import of a SINGLE small tile to completion and inspect whether (a) the tile umap is written to Maps/Ingolstadt and (b) its references point at Static/Terrain/Ingolstadt or Maps/Ingolstadt. That single experiment discriminates the two explanations."
+  },
+
+  "why_GenerateMap_found_zero_tiles": {
+    "source": "Plugins/Carla/Source/Carla/MapGen/LargeMapManager.cpp:430 GenerateMap(FString InAssetsPath)",
+    "mechanism": "Loads UWorld assets from InAssetsPath and keeps only names containing '_Tile_', then LoadCarlaMapTile(...) each as a streaming level.",
+    "log_evidence": "LogCarla: 'GenerateMap num Tiles generated 0'",
+    "explanation": "Ingolstadt has zero *_Tile_*.umap assets, so the large map has no tile streaming levels at all. This is fully explained and is a direct consequence of the tile .umap files never being saved.",
+    "downstream_effect": "A LargeMap with no tiles renders no Ingolstadt geometry, regardless of whether the 5711 references resolve."
+  },
+
+  "primary_asset_id_families_ROOT_CAUSED": {
+    "Map:EmptyMap": {
+      "root_cause": "PROVEN",
+      "evidence": "Town11_Tile_0_0.umap contains /Game/Carla/Maps/TestMaps/EmptyMap.EmptyMap, .Town11_Tile_0_0 and .Default__Town11_Tile_0_0_C",
+      "explanation": "Each Town11_Tile_* package hosts an EmptyMap world object and a Default__ object. Because 132 tile packages all expose EmptyMap as their primary asset, UE4 computes the same PrimaryAssetID Map:EmptyMap for all of them and reports 775 duplicates.",
+      "classification": "STRUCTURAL_CARLA_BEHAVIOUR - each tile is a scene variant sharing one template world package"
+    },
+    "Map:LargeMap": {
+      "root_cause": "PROVEN",
+      "evidence": "Ingolstadt.umap references /Game/Carla/Maps/BaseLargeMap/LargeMap.Ingolstadt; the log's duplicate warning pairs /Game/Carla/Maps/BaseLargeMap/LargeMap against /Game/Maps/BaseLargeMap/LargeMap",
+      "explanation": "Content/Carla/Maps is a junction to Content/Maps, so the same physical LargeMap is reachable as both /Game/Carla/Maps/... and /Game/Maps/.... UE4 Map PrimaryAssetID is Map:<AssetName>, which ignores path, so the alias alone produces the duplicate.",
+      "classification": "UNSAFE_DOUBLE_DISCOVERY via junction aliasing",
+      "note": "Also establishes that Ingolstadt is registered as a streaming level INSIDE LargeMap, not as an independent map."
+    }
+  },
+
+  "fix_direction_now_confirmed": {
+    "FIX_A_move_meshes_beside_umap": "REJECTED - contradicts the Town11 positive control and would duplicate 72 MB out of the canonical location",
+    "FIX_B_prime_point_references_at_Static_Terrain": "CORRECT DIRECTION - matches how Town11 tile umaps reference their meshes",
+    "blocking_question": "Whether the reference path is produced by the FBX scene import (in which case import settings are wrong) or by a later relink step that never ran because the import was interrupted.",
+    "single_tile_experiment_needed": "One clean, completed, single-tile import answers this and must precede any bulk fix."
+  },
+
+  "live_cook_constraint_respected": {
+    "cook_still_running": true,
+    "ue4editor_pid": 5852,
+    "actions_taken": "read-only file reads and source inspection only",
+    "content_modified": false
+  }
+}

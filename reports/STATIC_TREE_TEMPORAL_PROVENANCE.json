@@ -1,0 +1,21 @@
+{
+  "MAPS_ASSETS_WRITTEN_DURING_003": 0,
+  "STATIC_CREATED_DURING_003": 0,
+  "STATIC_MODIFIED_DURING_003": 0,
+  "STATIC_POSTDATING_003": 0,
+  "STATIC_PREDATING_003": 5711,
+  "STATIC_TREE_PROVENANCE": "PRIOR_IMPORT",
+  "confidence": "HIGH",
+  "evidence": "0 of 5711 Static/Terrain assets have a last-write time inside the run window; all 5711 predate it.",
+  "generated_utc": "2026-10-06T10:01:07.441757Z",
+  "run_window_utc": [
+    "2026-10-05T18:38:44.1538360Z",
+    "2026-10-06T01:19:40.524957Z"
+  ],
+  "schema": "STATIC_TREE_TEMPORAL_PROVENANCE/v1",
+  "schema_version": 1,
+  "static_newest_utc": "2026-10-04T14:40:56.290296Z",
+  "static_oldest_utc": "2026-10-04T14:39:27.081145Z",
+  "static_root": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Ingolstadt\\Static\\Terrain\\Ingolstadt",
+  "timestamp_semantics": "NTFS last-write time is used as one component only. A move within a volume may preserve last-write while changing creation time, and a copy rewrites it, so no origin is inferred from mtime alone."
+}

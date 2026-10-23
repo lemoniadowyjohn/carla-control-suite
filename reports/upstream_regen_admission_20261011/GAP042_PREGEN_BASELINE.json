@@ -1,0 +1,18 @@
+{
+  "REPRESENTATIVE_TILE": "Ingolstadt_Tile_7_8",
+  "REPRESENTATIVE_MAP": "Ingolstadt (tile sublevel; base map Ingolstadt.umap is 25 KB lobby only)",
+  "SELECTION_RATIONALE": "central tile (7_8 of 6-10 x 6-9 grid), 573 building Static refs (dense urban fabric => representative road topology underneath), 688 KB umap, no special-case status",
+  "INPUT_XODR_SHA": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+  "INPUT_XODR_LOCATION": "Content/Ingolstadt/Maps/Ingolstadt/OpenDrive/Ingolstadt.xodr (149799632 B, == map-of-record)",
+  "road_related_actors": 0,
+  "terrain_related_actors": 0,
+  "staticmesh_refs_total": 573,
+  "staticmesh_refs_roads": 0,
+  "staticmesh_refs_terrain": 0,
+  "citymapgenerator_refs": 0,
+  "opendrive_actor_refs": 0,
+  "xodr_refs": 0,
+  "static_road_dir_contents": "absent (no Static/Road/Ingolstadt)",
+  "static_terrain_dir_contents": "5711 building uassets only (misplaced import output), 0 terrain meshes",
+  "package_refs_note": "tile references /Game/Ingolstadt/Static/* building meshes only; AssetRegistry deps identical set by construction (no separate registry dump needed: 0 road/terrain deps possible)"
+}

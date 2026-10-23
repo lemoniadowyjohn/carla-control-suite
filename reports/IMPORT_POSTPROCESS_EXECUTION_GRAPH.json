@@ -1,0 +1,105 @@
+{
+  "maps_dest_occurrences": 1,
+  "namespace_calculation": [
+    {
+      "line": 808,
+      "text": "            maps_dest = \"/\" + \"/\".join([\"Game\", package_name, \"Maps\", umap[\"name\"]])"
+    },
+    {
+      "line": 817,
+      "text": "                \"DestinationPath\": maps_dest,"
+    }
+  ],
+  "observed_order": [
+    {
+      "call": "import_assets",
+      "line": 1005
+    },
+    {
+      "call": "move_assets_commandlet",
+      "line": 1014
+    },
+    {
+      "call": "prepare_maps_commandlet_for_cooking",
+      "line": 1018
+    },
+    {
+      "call": "load_asset_materials_commandlet",
+      "line": 1019
+    },
+    {
+      "call": "build_binary_for_tm",
+      "line": 1020
+    }
+  ],
+  "props_destination_calculation": [
+    {
+      "line": 796,
+      "text": "            props_dest = \"/\" + \"/\".join([\"Game\", package_name, \"Static\", prop[\"tag\"], prop[\"name\"]])"
+    },
+    {
+      "line": 802,
+      "text": "                \"DestinationPath\": props_dest,"
+    }
+  ],
+  "stages": [
+    {
+      "external_command": null,
+      "function": "deduplicate_package_manifests",
+      "name": "deduplicate_package_manifests",
+      "note": "resolves manifest identity before any asset work",
+      "stage": 0,
+      "writes_content": false
+    },
+    {
+      "external_command": "ImportAssets commandlet",
+      "function": "import_assets",
+      "idempotency": "NOT_IDEMPOTENT (bReplaceExisting=true, rebuilds meshes)",
+      "input_namespace": "/Game/<pkg>/Maps/<map> (destination of tiles)",
+      "name": "import_assets",
+      "stage": 1,
+      "writes_content": true
+    },
+    {
+      "external_command": "MoveAssets commandlet",
+      "function": "move_assets_commandlet",
+      "idempotency": "UNKNOWN_PENDING_FIXTURE",
+      "name": "move_assets_commandlet",
+      "stage": 2,
+      "writes_content": true
+    },
+    {
+      "external_command": "PrepareAssetsForCooking -OnlyPrepareMaps=1",
+      "function": "prepare_maps_commandlet_for_cooking",
+      "idempotency": "UNKNOWN_PENDING_FIXTURE",
+      "name": "prepare_maps_commandlet_for_cooking",
+      "stage": 3,
+      "writes_content": true
+    },
+    {
+      "external_command": "LoadAssetMaterials",
+      "function": "load_asset_materials_commandlet",
+      "idempotency": "UNKNOWN_PENDING_FIXTURE",
+      "name": "load_asset_materials_commandlet",
+      "stage": 4,
+      "uses_ddc": true,
+      "writes_content": false
+    },
+    {
+      "external_command": null,
+      "function": "build_binary_for_tm",
+      "name": "build_binary_for_tm",
+      "note": "python-side carla.Map cook_in_memory_map",
+      "stage": 5,
+      "writes_content": true
+    },
+    {
+      "external_command": null,
+      "function": "generate_package_file",
+      "name": "generate_package_file",
+      "note": "writes Content/<pkg>/Config/<pkg>.Package.json",
+      "stage": 6,
+      "writes_content": false
+    }
+  ]
+}

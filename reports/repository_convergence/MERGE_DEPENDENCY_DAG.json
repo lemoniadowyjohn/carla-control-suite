@@ -1,0 +1,141 @@
+{
+  "schema": "merge_dependency_dag/v1",
+  "generated_utc": "2026-10-12T18:19:18.323220+00:00",
+  "read_only": true,
+  "anything_merged": false,
+  "target_integration_branch": "integration/consolidate-fixes-20261008",
+  "target_sha": "9fa11e1ea6a72f934105a287166aae3445f386c2",
+  "canonical_code_branch": "fix/topology-convergence-gap026-gap048-20261011",
+  "canonical_evidence_branch": "docs/sync-gap-register-md-20261008",
+  "production_sha": "68868f763d22a630fc9ba8d818ed1919a7b8414d",
+  "branches": [
+    {
+      "branch": "fix/topology-convergence-gap026-gap048-20261011",
+      "head": "3a6f32255916b9783e41981ba284d68401294a92",
+      "purpose": "GAP-026 + GAP-048 convergence; also carries two GAP-055 WinDLL guards",
+      "unique_value": "5 commits; fast-forward (cons_only=0)",
+      "dependency": "none - built on consolidation tip 9fa11e1e",
+      "merge_mode": "DIRECT_MERGE",
+      "merge_clean": true,
+      "commits": [
+        "2af80330 GAP-048 source-stage through-junction lane successor repair",
+        "9ff56e7d GAP-026 junction lane-width harmonizer + outer->inner mispair prune",
+        "3c9048be GAP-055 guard orphan_terminal_witness WinDLL + tests",
+        "19cdb3a2 GAP-055 platform-guard module-level ctypes.WinDLL so Linux collects",
+        "3a6f3225 GAP-026 junction connector rebuild heading threshold"
+      ]
+    },
+    {
+      "branch": "fix/gap049-poller-delta-only-20261011",
+      "head": "73cbcb3ea1d313296cf99db9fdece744231089c7",
+      "purpose": "Fixes the runaway-CSV defect in the cook harness already in consolidation",
+      "unique_value": "1 commit; fast-forward (cons_only=0)",
+      "dependency": "none - built on consolidation tip",
+      "merge_mode": "DIRECT_MERGE",
+      "merge_clean": true,
+      "commits": [
+        "73cbcb3e poller emits deltas only + per-cycle flush"
+      ]
+    },
+    {
+      "branch": "fix/gap048-through-junction-20261009",
+      "head": "ef3003c2a97f838360aff94812fee9cc1dd79ca6",
+      "purpose": "GAP-048 through-junction lane successor repair",
+      "unique_value": "NONE - patch-id 14e0a70b83ea is IDENTICAL to topology 2af80330",
+      "dependency": "superseded by topology-convergence",
+      "merge_mode": "NO_MERGE_SUPERSEDED",
+      "merge_clean": true,
+      "commits": [
+        "ef3003c2 (patch-duplicate of 2af80330)"
+      ]
+    },
+    {
+      "branch": "fix/gap055-ci-windll-platform-guard-20261011",
+      "head": "bec68678c375f44da12e7bb1c4ee90e0fca614b5",
+      "purpose": "GAP-055 module-level ctypes.WinDLL guard for Linux collection",
+      "unique_value": "2 commits with patch-ids 5bd46579162d / 22ab20e979bb that do NOT match topology's GAP-055 pair (8744673375b1 / bdc414013d2b) despite identical subjects",
+      "dependency": "divergent twin of topology's GAP-055 commits",
+      "merge_mode": "REVIEW_REQUIRED",
+      "merge_clean": true,
+      "commits": [
+        "08a55439 platform-guard module-level ctypes.WinDLL",
+        "bec68678 guard orphan_terminal_witness WinDLL"
+      ]
+    },
+    {
+      "branch": "rq2-authority",
+      "head": "2159a358feff585be5646a7757b96257dd935d82",
+      "purpose": "Registry-resolved RQ2 metric authority (manual_hull/whole_map scopes, --validate-only)",
+      "unique_value": "2 commits, 40 behind consolidation - direct merge unsafe",
+      "dependency": "independent of GAP-026/048",
+      "merge_mode": "CHERRY_PICK_EXACT_COMMIT",
+      "merge_clean": true,
+      "commits": [
+        "56a82a35 canonical metric authority",
+        "2159a358 --validate-only merge gate"
+      ]
+    },
+    {
+      "branch": "rq5-readiness",
+      "head": "7a2310c217800e6b4b68c67957b9a253c8c76b2a",
+      "purpose": "RQ5 offline readiness with v2 protocol freeze",
+      "unique_value": "2 commits, 40 behind consolidation",
+      "dependency": "independent",
+      "merge_mode": "CHERRY_PICK_EXACT_COMMIT",
+      "merge_clean": true,
+      "commits": [
+        "9474894f offline readiness",
+        "7a2310c2 commit fixtures_rq5"
+      ]
+    },
+    {
+      "branch": "tools/rq1-stage-profiler-20261008",
+      "head": "64ce3fae9c4d15c024bf87c6d57ecf50a78cc703",
+      "purpose": "Per-stage RQ1 profiler",
+      "unique_value": "NONE - already in consolidation as 7f320c7b",
+      "dependency": "already integrated",
+      "merge_mode": "NO_MERGE_ALREADY_ABSORBED",
+      "merge_clean": false,
+      "commits": []
+    },
+    {
+      "branch": "tools/cook-diagnostics-harness-20261008",
+      "head": "c859cd831c5b5a50d76cb513bc4e287493f326c4",
+      "purpose": "GAP-049 cook diagnostics harness",
+      "unique_value": "NONE - already in consolidation as 9fa11e1e",
+      "dependency": "already integrated",
+      "merge_mode": "NO_MERGE_ALREADY_ABSORBED",
+      "merge_clean": false,
+      "commits": []
+    },
+    {
+      "branch": "tools/gap017-diagnostic-toolkit-20261008",
+      "head": "35e78936f9c9a9b65999869c417e6089d7453544",
+      "purpose": "GAP-017 live RPC diagnostic probe",
+      "unique_value": "NONE - already in consolidation as e10839c6",
+      "dependency": "already integrated",
+      "merge_mode": "NO_MERGE_ALREADY_ABSORBED",
+      "merge_clean": false,
+      "commits": []
+    }
+  ],
+  "recommended_order": [
+    "1. fix/gap049-poller-delta-only-20261011 - fast-forward; fixes the runaway-CSV defect already merged",
+    "2. fix/topology-convergence-gap026-gap048-20261011 - fast-forward; carries GAP-026 + GAP-048 + GAP-055",
+    "3. REVIEW gap055 divergent twin before any merge (patch-ids differ from topology's)",
+    "4. rq2-authority - cherry-pick 56a82a35, 2159a358",
+    "5. rq5-readiness - cherry-pick 9474894f, 7a2310c2"
+  ],
+  "expected_conflicts": [
+    "gap055 twin: 08a55439/bec68678 have the same subjects as topology 19cdb3a2/3c9048be but DIFFERENT patch-ids - a semantic divergence, not a text conflict. merge-tree reports clean; that must not be read as safe.",
+    "tools/* branches report CONFLICTS precisely because their content is already in consolidation; merging them wholesale would replay the 12-commit polluted base.",
+    "rq2-authority / rq5-readiness share merge-base 7fbd33ff and are 40 behind consolidation."
+  ],
+  "tests_required_after_each_step": [
+    "step1: pytest tests/unit/test_package_write_poller*.py tests/unit/test_cook_resource_census.py tests/unit/test_stall_watchdog.py",
+    "step2: full bare pytest; plus pytest -k lane_successor_topology",
+    "step3: pytest --collect-only must exit 0 (GAP-047 guard)",
+    "step4: pytest tests/unit/test_gate_class_registry_coverage.py ultimate_pipeline/tests/unit/test_waiver_taxonomy.py",
+    "step5: pytest -k rq5"
+  ]
+}

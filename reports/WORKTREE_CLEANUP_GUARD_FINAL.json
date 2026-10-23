@@ -1,0 +1,70 @@
+{
+  "schema": "worktree_cleanup_guard_final/v1",
+  "cases": [
+    {
+      "case": "repo_root",
+      "target": "C:\\Users\\admin\\AppData\\Local\\Temp\\cleanup_guard_fixture_w93y9eey\\repo",
+      "canonical": "c:\\users\\admin\\appdata\\local\\temp\\cleanup_guard_fixture_w93y9eey\\repo",
+      "verdict": "DENY",
+      "expected": "DENY",
+      "reasons": [
+        "REPOSITORY_ROOT",
+        "PROTECTED_PATH"
+      ],
+      "pass": true
+    },
+    {
+      "case": "worktree_root",
+      "target": "C:\\Users\\admin\\AppData\\Local\\Temp\\cleanup_guard_fixture_w93y9eey\\scratch\\wt",
+      "canonical": "c:\\users\\admin\\appdata\\local\\temp\\cleanup_guard_fixture_w93y9eey\\scratch\\wt",
+      "verdict": "DENY",
+      "expected": "DENY",
+      "reasons": [
+        "REGISTERED_WORKTREE_ROOT",
+        "PROTECTED_PATH"
+      ],
+      "pass": true
+    },
+    {
+      "case": "parent_of_worktree",
+      "target": "C:\\Users\\admin\\AppData\\Local\\Temp\\cleanup_guard_fixture_w93y9eey\\scratch",
+      "canonical": "c:\\users\\admin\\appdata\\local\\temp\\cleanup_guard_fixture_w93y9eey\\scratch",
+      "verdict": "DENY",
+      "expected": "DENY",
+      "reasons": [
+        "PROTECTED_PATH"
+      ],
+      "pass": true
+    },
+    {
+      "case": "junction_to_worktree",
+      "target": "C:\\Users\\admin\\AppData\\Local\\Temp\\cleanup_guard_fixture_w93y9eey\\junction_to_wt",
+      "canonical": "c:\\users\\admin\\appdata\\local\\temp\\cleanup_guard_fixture_w93y9eey\\scratch\\wt",
+      "verdict": "DENY",
+      "expected": "DENY",
+      "reasons": [
+        "REGISTERED_WORKTREE_ROOT",
+        "PROTECTED_PATH",
+        "RESOLVES_VIA_LINK_TO_PROTECTED"
+      ],
+      "pass": true
+    },
+    {
+      "case": "allowed_scratch_child",
+      "target": "C:\\Users\\admin\\AppData\\Local\\Temp\\cleanup_guard_fixture_w93y9eey\\scratch\\child_dir",
+      "canonical": "c:\\users\\admin\\appdata\\local\\temp\\cleanup_guard_fixture_w93y9eey\\scratch\\child_dir",
+      "verdict": "ALLOW",
+      "expected": "ALLOW",
+      "reasons": [],
+      "pass": true
+    }
+  ],
+  "passed": 5,
+  "total": 5,
+  "deny_enforced_on_worktree": true,
+  "no_autostage_in_source": true,
+  "git_status_identical_before_after": true,
+  "git_index_unchanged_by_allowed_delete": true,
+  "staged_paths_after": [],
+  "ALL_REQUIRED_PASS": true
+}

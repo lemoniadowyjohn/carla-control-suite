@@ -1,0 +1,131 @@
+{
+  "schema": "HARNESS_REPAIR_LINEAGE_AUDIT/v1",
+  "generated_batch": "governance-repair-final-validation",
+  "repo": "C:/Users/admin/PycharmProjects/gpt4/pythonProject3/carla_-main",
+
+  "branches": {
+    "fix/harness-identity-contract-20261006": "4e1841f62c368dd4239252528dbbb0dd76493e6f",
+    "control/writer-lock-semantic-diff-20261006": "fdc8c16600db1c7de4892ef2ad868ea49baffece",
+    "integration/production-large-map-20260918": "65eb0f14d226104692dd845f8a528759fbeb90c4",
+    "integration/process-supervision-closure-20261006": "32fbde8ed9f464ec43534952efe977619196d247",
+    "review/carla-production-convergence-20261002": "462f816d5ce29c62ea7ffa52f7f01473cf6cded4"
+  },
+
+  "correction_to_prior_reporting": {
+    "field": "integration/production-large-map-20260918",
+    "previously_stated_as": "f897e0eb747ac827941ac4883170a5181a603111",
+    "actual_observed": "65eb0f14d226104692dd845f8a528759fbeb90c4",
+    "note": "f897e0eb is not the branch head; it is the merge-base of the repair branch and the process-supervision branch. The earlier figure was wrong."
+  },
+
+  "merge_base": {
+    "repair__control_writer_lock": "fdc8c16600db1c7de4892ef2ad868ea49baffece",
+    "repair__production_large_map": "65eb0f14d226104692dd845f8a528759fbeb90c4",
+    "repair__process_supervision": "f897e0eb747ac827941ac4883170a5181a603111",
+    "process_supervision__production_large_map": "65eb0f14d226104692dd845f8a528759fbeb90c4"
+  },
+
+  "ahead_behind_via_repair": {
+    "control/writer-lock-semantic-diff-20261006": {"repair_ahead": 1, "repair_behind": 0},
+    "integration/production-large-map-20260918": {"repair_ahead": 261, "repair_behind": 0},
+    "integration/process-supervision-closure-20261006": {"repair_ahead": 40, "repair_behind": 5}
+  },
+
+  "file_presence": {
+    "note": "verified with cat-file -e using exit code, not stdout truthiness",
+    "fix/harness-identity-contract-20261006": {
+      "tools/supervised_ue_run.py": true,
+      "ultimate_pipeline/governance/single_writer/lease_store.py": true,
+      "ultimate_pipeline/governance/single_writer/job_supervision.py": true,
+      "tests/unit/test_harness_governance_contract.py": true,
+      "reports/PROCESS_IDENTITY_CONTRACT_V2.json": true,
+      "scripts/job_supervision.py": false,
+      "scripts/control_plane.py": false,
+      "scripts/t6_determinism.py": false,
+      "scripts/test_job_matrix.py": false,
+      "scripts/test_job_stress.py": false,
+      "scripts/lease_job_coupling.py": false
+    },
+    "control/writer-lock-semantic-diff-20261006": {
+      "tools/supervised_ue_run.py": true,
+      "ultimate_pipeline/governance/single_writer/lease_store.py": true
+    },
+    "integration/production-large-map-20260918": {
+      "tools/supervised_ue_run.py": false,
+      "ultimate_pipeline/governance/single_writer/lease_store.py": false
+    },
+    "integration/process-supervision-closure-20261006": {
+      "tools/supervised_ue_run.py": false,
+      "ultimate_pipeline/governance/single_writer/lease_store.py": false,
+      "scripts/job_supervision.py": true,
+      "scripts/control_plane.py": true,
+      "scripts/t6_determinism.py": true,
+      "scripts/test_job_matrix.py": true,
+      "scripts/test_job_stress.py": true,
+      "scripts/lease_job_coupling.py": true
+    }
+  },
+
+  "test_file_counts_tests_unit": {
+    "fix/harness-identity-contract-20261006": 247,
+    "integration/process-supervision-closure-20261006": 239,
+    "integration/production-large-map-20260918": 194
+  },
+
+  "critical_structural_finding": {
+    "id": "LINEAGE-1",
+    "severity": "HIGH",
+    "statement": "There are two distinct and divergent job_supervision implementations.",
+    "a": {
+      "path": "ultimate_pipeline/governance/single_writer/job_supervision.py",
+      "lines": 310,
+      "sha256_prefix": "C1E4B4FD9AEE4D57",
+      "imported_by": "tools/supervised_ue_run.py (the repaired harness)",
+      "required_api_complete": true,
+      "api_checked": ["create_job", "_kernel32", "resolve_executor_pid", "_resume_primary_thread", "terminate_owned", "close", "member_pids", "wait_for_drain", "AssignProcessToJobObject", "OwnedJob"]
+    },
+    "b": {
+      "path": "scripts/job_supervision.py",
+      "lines": 500,
+      "sha256_prefix": "CB0F0D66C30A6ABF",
+      "imported_by": "nothing in the harness",
+      "hProcess_mentions": 6,
+      "introduced_by": "66339213 feat(process-control): add Windows lease + Job Object control plane"
+    },
+    "diff_stat": "466 insertions, 276 deletions between the two files",
+    "implication": "The published process-supervision verification at 32fbde8 (identity 15/15, Job matrix 25/25, Job stress 270/270, T6 5/5, coupling 11/11) validates scripts/job_supervision.py, which is NOT the module the repaired harness imports. That verification therefore does not cover the harness's actual job-control code path.",
+    "honesty_note": "This is a coverage gap, not a proven defect. The package implementation exposes the full required API and the repaired harness is functional on it, but its Job/handle behaviour has not been independently validated by the matrix/stress/T6/coupling suites."
+  },
+
+  "LINEAGE-2": {
+    "severity": "HIGH",
+    "statement": "integration/production-large-map-20260918 does not contain the harness at all.",
+    "consequence": "The repair commit cannot be cherry-picked directly onto the designated integration target: its parent file state does not exist there.",
+    "harness_added_on": "control/writer-lock-semantic-diff-20261006 lineage, 261 commits after the integration target head"
+  },
+
+  "LINEAGE-3": {
+    "severity": "MEDIUM",
+    "statement": "The two working lineages have diverged.",
+    "detail": "process-supervision-closure branched at f897e0eb and is 5 behind / 40 ahead of the repair line; the integration target has since advanced to 65eb0f14.",
+    "consequence": "Governance validation suites (Job matrix, Job stress, T6, lease/job coupling) are reachable only from the process-supervision lineage, so a single-branch full governance regression is not currently possible."
+  },
+
+  "phase3_decision": {
+    "option_A_direct_cherry_pick_onto_integration": "REJECTED",
+    "option_A_reason": "integration/production-large-map-20260918 lacks tools/supervised_ue_run.py and lease_store.py entirely (LINEAGE-2)",
+    "option_B_stacked_on_prerequisite": "VIABLE_BUT_LARGE",
+    "option_B_detail": "the minimal true prerequisite is the control/writer-lock harness series, 261 commits; merging that is a pre-existing integration decision and is explicitly out of scope for this batch",
+    "option_C_self_contained_branch": "TRUE",
+    "option_C_detail": "the repair branch is self-contained: harness, lease_store, contract JSON and tests all present and tracked",
+    "option_D_larger_prerequisite_series": "REQUIRED_FOR_INTEGRATION_TARGET",
+    "PUBLICATION_STRATEGY": "DIRECT_MINIMAL_PR",
+    "PUBLICATION_STRATEGY_rationale": "The repair is exactly 1 commit ahead of / 0 behind fdc8c166, so it fast-forwards onto control/writer-lock-semantic-diff-20260918 with no conflicts and no prerequisites. Publication to the designated integration target is separately blocked on integrating the harness series itself.",
+    "PR_base": "control/writer-lock-semantic-diff-20261006",
+    "PR_source": "fix/harness-identity-contract-20261006",
+    "REQUIRED_PREREQUISITE_COMMITS": ["fdc8c16600db1c7de4892ef2ad868ea49baffece (harness + lease_store base, already an ancestor)"],
+    "cherry_pick_applied_yet": false,
+    "rebase_applied_yet": false,
+    "historical_commit_08e3284b_untouched": true
+  }
+}

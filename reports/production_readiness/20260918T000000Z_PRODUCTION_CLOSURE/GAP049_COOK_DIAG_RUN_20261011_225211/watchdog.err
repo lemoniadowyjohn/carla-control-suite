@@ -1,0 +1,5 @@
+<frozen runpy>:128: RuntimeWarning: 'tools.cook_diagnostics.stall_watchdog' found in sys.modules after import of package 'tools.cook_diagnostics', but prior to execution of 'tools.cook_diagnostics.stall_watchdog'; this may result in unpredictable behaviour
+C:\Users\admin\PycharmProjects\gpt4\pythonProject3\carla_-main\tools\cook_diagnostics\stall_watchdog.py:89: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  timestamp=datetime.utcnow().isoformat() + "Z",
+C:\Users\admin\PycharmProjects\gpt4\pythonProject3\carla_-main\tools\cook_diagnostics\stall_watchdog.py:138: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  dump_file = self.dump_dir / f"cook_stall_pid{self.pid}_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}.dmp"

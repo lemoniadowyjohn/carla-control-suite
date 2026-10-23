@@ -1,0 +1,65 @@
+{
+  "report": "CANONICAL_AUTHORITY_SNAPSHOT",
+  "generated_utc": "2026-10-12T14:07:00Z",
+  "repository": "lemoniadowyjohn/carla-control-suite",
+  "audit_mode": "READ_ONLY",
+  "snapshot_validity": "PROVISIONAL - repo NOT quiescent; authority SHAs below are immutable and remain valid, but the working-tree/branch population counts are a moving snapshot.",
+  "CANONICAL_TOPOLOGY_REF": "origin/fix/topology-convergence-gap026-gap048-20261011",
+  "CANONICAL_TOPOLOGY_SHA": "3a6f32255916b9783e41981ba284d68401294a92",
+  "canonical_selection_rationale": [
+    "No LOCAL branch named fix/topology-convergence-gap026-gap048-20261011 exists; only the remote-tracking ref. Per brief, a remote-tracking ref is valid authority.",
+    "Verified 3a6f3225 is NOT an ancestor of any other authority ref, i.e. it is the newest commit across the convergence family.",
+    "It contains the GAP-026 + GAP-055 + GAP-048 fixes and the tooling cherry-picks, making it the correct absorption baseline for prior audit REPO-CONV work."
+  ],
+  "canonical_subject": "GAP-026: Junction connector rebuild heading threshold + Stage-8 mutation removal",
+  "frozen_sha_policy": "Use SHA 3a6f3225 for all subsequent comparisons. Do not use branch names internally; they can move.",
+  "ref_resolution": {
+    "origin/fix/topology-convergence-gap026-gap048-20261011": {
+      "sha": "3a6f32255916b9783e41981ba284d68401294a92",
+      "local_exists": false
+    },
+    "origin/integration/consolidate-fixes-20261008": {
+      "sha": "9fa11e1ea6a72f934105a287166aae3445f386c2",
+      "local_exists": true,
+      "local_sha": "75371cd900f2ec4ef745bfe2db78f03eb1765642",
+      "note": "LOCAL BEHIND REMOTE BY 3"
+    },
+    "origin/fix/gap049-poller-delta-only-20261011": {
+      "sha": "73cbcb3ea1d313296cf99db9fdece744231089c7",
+      "local_exists": true,
+      "local_sha": "73cbcb3ea1d313296cf99db9fdece744231089c7",
+      "note": "IN SYNC"
+    },
+    "origin/fix/gap055-ci-windll-platform-guard-20261011": {
+      "sha": "bec68678c375f44da12e7bb1c4ee90e0fca614b5",
+      "local_exists": false,
+      "note": "No local branch; do not create one."
+    },
+    "origin/rq2-authority": {
+      "sha": "2159a358feff585be5646a7757b96257dd935d82",
+      "local_exists": true,
+      "local_sha": "2159a358feff585be5646a7757b96257dd935d82",
+      "note": "IN SYNC"
+    },
+    "origin/rq5-readiness": {
+      "sha": "7a2310c217800e6b4b68c67957b9a253c8c76b2a",
+      "local_exists": true,
+      "local_sha": "7a2310c217800e6b4b68c67957b9a253c8c76b2a",
+      "note": "IN SYNC"
+    }
+  },
+  "counts": {
+    "WORKTREES": 33,
+    "LOCAL_BRANCHES": 515,
+    "REMOTE_BRANCHES": 236,
+    "total_refs": 769
+  },
+  "working_tree": {
+    "tracked_modified": 1,
+    "untracked": 279,
+    "staged": 0,
+    "modified_example": "ultimate_pipeline/pipeline_stages/stage_07_lanes.py",
+    "high_risk_uncommitted": "~279 untracked files incl. GAP026_ROOT_CAUSE_AUDIT.json, GAP026_FIX_VALIDATION.json, GAP055_FINAL_VERDICT.md, RQ2_FINAL_VALIDATION.json, RQ4_FINAL_VALIDATION.json, HH1_VERIFICATION_REPORT.md - verified present in ZERO commits anywhere (control-validated query)."
+  },
+  "FINAL_VERDICT": "REPO_NOT_QUIESCENT"
+}

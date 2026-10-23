@@ -177,6 +177,7 @@ def evaluate_model(
     allow_partial_load: bool = False,
     require_manifest: bool = False,
     min_frames: int = 1,
+    migration_contract: Optional[str] = None,
 ) -> Dict[str, Any]:
     """Evaluate model on labeled sim dataset.
 
@@ -237,7 +238,10 @@ def evaluate_model(
     try:
         load_record: Dict[str, Any] = {}
         report["state_dict_load"] = load_state_dict_governed(
-            model, model_path, allow_partial=allow_partial_load, record=load_record
+            model, model_path,
+            allow_partial=allow_partial_load,
+            migration_contract=migration_contract,
+            record=load_record,
         )
     except (StateDictLoadError, FileNotFoundError) as exc:
         report["errors"].append(f"state_dict_load_failed: {exc}")
@@ -358,6 +362,12 @@ def parse_args():
         help="NEW-245: accept a checkpoint whose parameters do not fully match (recorded, not silent)",
     )
     ap.add_argument(
+        "--migration-contract",
+        type=str,
+        default=None,
+        help="Migration contract identifier required for partial checkpoint loads (required if --allow-partial-load is combined with mismatched keys)",
+    )
+    ap.add_argument(
         "--require-manifest",
         action="store_true",
         help="NEW-243: require and verify a companion model_manifest.json next to the checkpoint",
@@ -378,6 +388,7 @@ def main() -> int:
         allow_partial_load=args.allow_partial_load,
         require_manifest=args.require_manifest,
         min_frames=args.min_frames,
+        migration_contract=args.migration_contract,
     )
 
     out_path = Path(args.out_json)

@@ -1,0 +1,1616 @@
+{
+  "BUILD_PREFLIGHT_EFFECT": "ALLOW",
+  "PASS": true,
+  "compared_count": 227,
+  "discovered_mirrored_header_count": 227,
+  "generated_utc": "2026-10-05T21:46:29.867416Z",
+  "headers": [
+    {
+      "header": "AtomicList.h",
+      "libcarla_sha256": "eb961c6aada11950e5ed8611458525989ec87dc2fdf572bd4c6f876cd6d4d702",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "eb961c6aada11950e5ed8611458525989ec87dc2fdf572bd4c6f876cd6d4d702"
+    },
+    {
+      "header": "AtomicSharedPtr.h",
+      "libcarla_sha256": "8cad97d27939c8d52c248539ecdc8e73fdfbe837038e50ce6afefb71cf6fb735",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "8cad97d27939c8d52c248539ecdc8e73fdfbe837038e50ce6afefb71cf6fb735"
+    },
+    {
+      "header": "Buffer.h",
+      "libcarla_sha256": "4ec0cfb0d83877750b02c23f28079b604b9d774e18f598faf0b1c5158854cc43",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "4ec0cfb0d83877750b02c23f28079b604b9d774e18f598faf0b1c5158854cc43"
+    },
+    {
+      "header": "BufferPool.h",
+      "libcarla_sha256": "42fbfab441db6525e57add06088baa71c5010eccf488b9d82be71caf622a5096",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "42fbfab441db6525e57add06088baa71c5010eccf488b9d82be71caf622a5096"
+    },
+    {
+      "header": "BufferView.h",
+      "libcarla_sha256": "d88222b75ec6273a38ce3b064cc749d8041ddf4fcf3a3767b1e7c2fba080d785",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "d88222b75ec6273a38ce3b064cc749d8041ddf4fcf3a3767b1e7c2fba080d785"
+    },
+    {
+      "header": "Debug.h",
+      "libcarla_sha256": "e6bee511135f7da3317438a6f9c83f61f9fd06a45f8faa75f1163c139d329d4d",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "e6bee511135f7da3317438a6f9c83f61f9fd06a45f8faa75f1163c139d329d4d"
+    },
+    {
+      "header": "Exception.h",
+      "libcarla_sha256": "2c7b5f2e431e3a5a824986175000fe062b0aa74ef53ff69991d7a9a1166dea80",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "2c7b5f2e431e3a5a824986175000fe062b0aa74ef53ff69991d7a9a1166dea80"
+    },
+    {
+      "header": "FileSystem.h",
+      "libcarla_sha256": "5ae859d5923ad3cf6dfdd8c1413e003ba846c69907f060cb98cd45bfde7c9f42",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "5ae859d5923ad3cf6dfdd8c1413e003ba846c69907f060cb98cd45bfde7c9f42"
+    },
+    {
+      "header": "Functional.h",
+      "libcarla_sha256": "9ffbbd25d04da26a16d8ed8c35dbf5d6dc09c0c61d644c3c4b2f7439e2e7d2f1",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "9ffbbd25d04da26a16d8ed8c35dbf5d6dc09c0c61d644c3c4b2f7439e2e7d2f1"
+    },
+    {
+      "header": "Iterator.h",
+      "libcarla_sha256": "03f824c2a67f71bb80c6af372a7659d14e07f750fdcb8e7704745fda7173d658",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "03f824c2a67f71bb80c6af372a7659d14e07f750fdcb8e7704745fda7173d658"
+    },
+    {
+      "header": "ListView.h",
+      "libcarla_sha256": "b166bb355be0a8e0ad13deaa1323da6502bd624ce53685818e76777038724ec4",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "b166bb355be0a8e0ad13deaa1323da6502bd624ce53685818e76777038724ec4"
+    },
+    {
+      "header": "Logging.h",
+      "libcarla_sha256": "afcaa388ca5c038c7126cbc632bd5b8b4aad970c43779ff4e9e1a260aa95b272",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "afcaa388ca5c038c7126cbc632bd5b8b4aad970c43779ff4e9e1a260aa95b272"
+    },
+    {
+      "header": "Memory.h",
+      "libcarla_sha256": "8d11fcaab6aa7ab0cf7a1df0045b54ab94609e16c4342c2d0c4a474a575c52c9",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "8d11fcaab6aa7ab0cf7a1df0045b54ab94609e16c4342c2d0c4a474a575c52c9"
+    },
+    {
+      "header": "MoveHandler.h",
+      "libcarla_sha256": "918b02e4c347b7ca230c04a2e978d8a3d47ce9d53222b94e28434d118f76bc23",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "918b02e4c347b7ca230c04a2e978d8a3d47ce9d53222b94e28434d118f76bc23"
+    },
+    {
+      "header": "MsgPack.h",
+      "libcarla_sha256": "4faa111d1642b9602db3211ee7cc970ce7617a5aa5aab635e6f6fa1ee1e77605",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "4faa111d1642b9602db3211ee7cc970ce7617a5aa5aab635e6f6fa1ee1e77605"
+    },
+    {
+      "header": "MsgPackAdaptors.h",
+      "libcarla_sha256": "e545cb1be02f84fef9d65dd7d1c00218c64589027d304d449701c02b67064b96",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "e545cb1be02f84fef9d65dd7d1c00218c64589027d304d449701c02b67064b96"
+    },
+    {
+      "header": "NonCopyable.h",
+      "libcarla_sha256": "579568faf396660499c66d28dd741195c73f1d8402a13c47a4fbf9325649c215",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "579568faf396660499c66d28dd741195c73f1d8402a13c47a4fbf9325649c215"
+    },
+    {
+      "header": "Platform.h",
+      "libcarla_sha256": "7b3eb51084b453ffd51ac99b62f4081f9e604c8ca41b8dee4407ef9316a6d144",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "7b3eb51084b453ffd51ac99b62f4081f9e604c8ca41b8dee4407ef9316a6d144"
+    },
+    {
+      "header": "PythonUtil.h",
+      "libcarla_sha256": "b298411a67b29060870b024fe7ffd3189928f9ec1508611ce7b5ed293edc7c8a",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "b298411a67b29060870b024fe7ffd3189928f9ec1508611ce7b5ed293edc7c8a"
+    },
+    {
+      "header": "RecurrentSharedFuture.h",
+      "libcarla_sha256": "65e8e68e06938a6c1ff5696ef9990da890ccf3a4068e711a606ef6072fa21b40",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "65e8e68e06938a6c1ff5696ef9990da890ccf3a4068e711a606ef6072fa21b40"
+    },
+    {
+      "header": "Sockets.h",
+      "libcarla_sha256": "325782911de91ccc1c8273285be52e8e0dd57c620cd6060d51e0c3b83fc1b3de",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "325782911de91ccc1c8273285be52e8e0dd57c620cd6060d51e0c3b83fc1b3de"
+    },
+    {
+      "header": "StopWatch.h",
+      "libcarla_sha256": "64c1eda4d44dbe5ca72fa929545abdbb137b27d11651ce9172b283aacb237e9b",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "64c1eda4d44dbe5ca72fa929545abdbb137b27d11651ce9172b283aacb237e9b"
+    },
+    {
+      "header": "StringUtil.h",
+      "libcarla_sha256": "f1902456ffff927581b07f1f31f8c08fcf78d35e46ea94977caf25a6f9d2b686",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "f1902456ffff927581b07f1f31f8c08fcf78d35e46ea94977caf25a6f9d2b686"
+    },
+    {
+      "header": "ThreadGroup.h",
+      "libcarla_sha256": "7f0552df7dc8637055d0310cdbc3494610dc498046767409d6aa1a61655f5894",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "7f0552df7dc8637055d0310cdbc3494610dc498046767409d6aa1a61655f5894"
+    },
+    {
+      "header": "ThreadPool.h",
+      "libcarla_sha256": "6bc05cf905612685525a9967c6eb5cd9df26e8ee7dc9923be3faf1934e477154",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "6bc05cf905612685525a9967c6eb5cd9df26e8ee7dc9923be3faf1934e477154"
+    },
+    {
+      "header": "Time.h",
+      "libcarla_sha256": "42b001775ba132d2f11f0c76415a22ed764080c64090d7515c68d50d74b27985",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "42b001775ba132d2f11f0c76415a22ed764080c64090d7515c68d50d74b27985"
+    },
+    {
+      "header": "TypeTraits.h",
+      "libcarla_sha256": "53d566db7dda74d66a2f41c45d1871a33301e279b200b35d51a358d4392c507a",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "53d566db7dda74d66a2f41c45d1871a33301e279b200b35d51a358d4392c507a"
+    },
+    {
+      "header": "Version.h",
+      "libcarla_sha256": "da51796074c772b5704ebd21e83a0f4cb61abea136df2ab587eac47d73f6da1d",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "da51796074c772b5704ebd21e83a0f4cb61abea136df2ab587eac47d73f6da1d"
+    },
+    {
+      "header": "client/Map.h",
+      "libcarla_sha256": "5efff7faf4fe93d28778319dd0725e5be90c59649dbfad98e91cda941961a5cd",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "5efff7faf4fe93d28778319dd0725e5be90c59649dbfad98e91cda941961a5cd"
+    },
+    {
+      "header": "geom/BoundingBox.h",
+      "libcarla_sha256": "e88871765b403fe2150d2e1ff778df84bb56adda86195757afc0e7a0c41abcf3",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "e88871765b403fe2150d2e1ff778df84bb56adda86195757afc0e7a0c41abcf3"
+    },
+    {
+      "header": "geom/CubicPolynomial.h",
+      "libcarla_sha256": "a69109e83402f1944977f719eff82d63d91f47b3f11db4f1eea7869c9e4d22ba",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "a69109e83402f1944977f719eff82d63d91f47b3f11db4f1eea7869c9e4d22ba"
+    },
+    {
+      "header": "geom/GeoLocation.h",
+      "libcarla_sha256": "c34624bc4ae758cdb193747523c94ed14d3c80db43a4968d68afe47b92435a30",
+      "required_by_gate": true,
+      "status": "IDENTICAL",
+      "vendored_sha256": "c34624bc4ae758cdb193747523c94ed14d3c80db43a4968d68afe47b92435a30"
+    },
+    {
+      "header": "geom/Location.h",
+      "libcarla_sha256": "d9a834465f8d0520ac77f7176f85307c7b3b69a4a41b62eb83eb6879257383e2",
+      "required_by_gate": true,
+      "status": "IDENTICAL",
+      "vendored_sha256": "d9a834465f8d0520ac77f7176f85307c7b3b69a4a41b62eb83eb6879257383e2"
+    },
+    {
+      "header": "geom/Math.h",
+      "libcarla_sha256": "98eb551dd99c4a97886ce59f2e6a5fc76cd08944d2b367dfda17a339b08233d6",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "98eb551dd99c4a97886ce59f2e6a5fc76cd08944d2b367dfda17a339b08233d6"
+    },
+    {
+      "header": "geom/Mesh.h",
+      "libcarla_sha256": "cba438849a6d01e5de6ce43b7d41baad0be0a1d90a24311cd24f9118e1b66105",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "cba438849a6d01e5de6ce43b7d41baad0be0a1d90a24311cd24f9118e1b66105"
+    },
+    {
+      "header": "geom/Rotation.h",
+      "libcarla_sha256": "15bf8fe9c371a308bd72f2d7823bf52b08c694196908a22dbee6135fec868e95",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "15bf8fe9c371a308bd72f2d7823bf52b08c694196908a22dbee6135fec868e95"
+    },
+    {
+      "header": "geom/Rtree.h",
+      "libcarla_sha256": "6619e23dae12af41554684edf083704fc0e7efb280ed5d1e8e5f705f53f91152",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "6619e23dae12af41554684edf083704fc0e7efb280ed5d1e8e5f705f53f91152"
+    },
+    {
+      "header": "geom/Simplification.h",
+      "libcarla_sha256": "7175fd7e446220adbe7d327bae293f181a399a3a3b5744fa17fc525cf8a0f50c",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "7175fd7e446220adbe7d327bae293f181a399a3a3b5744fa17fc525cf8a0f50c"
+    },
+    {
+      "header": "geom/Transform.h",
+      "libcarla_sha256": "3cd2c671b9667be28ed761f978367a145afadc20312e86473872f32ac7dece60",
+      "required_by_gate": true,
+      "status": "IDENTICAL",
+      "vendored_sha256": "3cd2c671b9667be28ed761f978367a145afadc20312e86473872f32ac7dece60"
+    },
+    {
+      "header": "geom/Vector2D.h",
+      "libcarla_sha256": "ec78333225218894b592a5411d580e644f27091cc7569e4315f8eb1ced0ccf5a",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "ec78333225218894b592a5411d580e644f27091cc7569e4315f8eb1ced0ccf5a"
+    },
+    {
+      "header": "geom/Vector3D.h",
+      "libcarla_sha256": "3e3ed3233f987e2520720d6d4d6d22c65c2eaecd042f9edd49d97b4983e68c50",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "3e3ed3233f987e2520720d6d4d6d22c65c2eaecd042f9edd49d97b4983e68c50"
+    },
+    {
+      "header": "geom/Vector3DInt.h",
+      "libcarla_sha256": "a6f83ff066a7a815391f2f2cf53b05cb09a2b311321bfada8ab59dd76bcc9c0d",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "a6f83ff066a7a815391f2f2cf53b05cb09a2b311321bfada8ab59dd76bcc9c0d"
+    },
+    {
+      "header": "multigpu/commands.h",
+      "libcarla_sha256": "57bdcc687c5c049b15964b571f20e530fa651071424331bdead48af7ada27401",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "57bdcc687c5c049b15964b571f20e530fa651071424331bdead48af7ada27401"
+    },
+    {
+      "header": "multigpu/incomingMessage.h",
+      "libcarla_sha256": "abba8d8de5b0612132b9ce644dcd795506a9417925407e92a5f4f9825e09bdf0",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "abba8d8de5b0612132b9ce644dcd795506a9417925407e92a5f4f9825e09bdf0"
+    },
+    {
+      "header": "multigpu/listener.h",
+      "libcarla_sha256": "bd249813605e5ca04dbde5f7d1a7df12926baeed71bec470b891d6a112168d14",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "bd249813605e5ca04dbde5f7d1a7df12926baeed71bec470b891d6a112168d14"
+    },
+    {
+      "header": "multigpu/primary.h",
+      "libcarla_sha256": "17e818db3748ed2f210dd77ca3237de2f81876d85eff584cde748fa56ec56748",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "17e818db3748ed2f210dd77ca3237de2f81876d85eff584cde748fa56ec56748"
+    },
+    {
+      "header": "multigpu/primaryCommands.h",
+      "libcarla_sha256": "20ec627675942d19cd09ee13fc63b586dbb2fa90d1389a43ea78e3af26d0a0d7",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "20ec627675942d19cd09ee13fc63b586dbb2fa90d1389a43ea78e3af26d0a0d7"
+    },
+    {
+      "header": "multigpu/router.h",
+      "libcarla_sha256": "5e097264bccff46777bb12dd348252c304d4b169f3fc0e273e3370feb9e1881d",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "5e097264bccff46777bb12dd348252c304d4b169f3fc0e273e3370feb9e1881d"
+    },
+    {
+      "header": "multigpu/secondary.h",
+      "libcarla_sha256": "c787611eb6215fa3941e4dddbe060ce205f1ddd7c1ec354d93599c87c256fc04",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "c787611eb6215fa3941e4dddbe060ce205f1ddd7c1ec354d93599c87c256fc04"
+    },
+    {
+      "header": "multigpu/secondaryCommands.h",
+      "libcarla_sha256": "d32ccb567621a90855dec0e1e858b0858a5937facb218f3285a330e90d58c5bb",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "d32ccb567621a90855dec0e1e858b0858a5937facb218f3285a330e90d58c5bb"
+    },
+    {
+      "header": "opendrive/OpenDriveParser.h",
+      "libcarla_sha256": "eff28c64f790dd042e28ea63e1440911b4170c089ba6f313dd59446eef18d49c",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "eff28c64f790dd042e28ea63e1440911b4170c089ba6f313dd59446eef18d49c"
+    },
+    {
+      "header": "opendrive/parser/ControllerParser.h",
+      "libcarla_sha256": "5377e8249b4539da8b3ec08fa493cfd35a2e05b217f67f5ce1becaafc9c3f5f8",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "5377e8249b4539da8b3ec08fa493cfd35a2e05b217f67f5ce1becaafc9c3f5f8"
+    },
+    {
+      "header": "opendrive/parser/GeoReferenceParser.h",
+      "libcarla_sha256": "edffb1c71b11c843f7ebf52fd3816a6d03fceab14d78581a7e0fc7804b0c0e55",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "edffb1c71b11c843f7ebf52fd3816a6d03fceab14d78581a7e0fc7804b0c0e55"
+    },
+    {
+      "header": "opendrive/parser/GeometryParser.h",
+      "libcarla_sha256": "bbd3deb7602a4d2d4275ae54a7fc2b75116c16444a0c78f9145259bbd28c6458",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "bbd3deb7602a4d2d4275ae54a7fc2b75116c16444a0c78f9145259bbd28c6458"
+    },
+    {
+      "header": "opendrive/parser/JunctionParser.h",
+      "libcarla_sha256": "0a892bdd6fafde0db99206f5b3c76898af134492b50b75debb09653044117c10",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "0a892bdd6fafde0db99206f5b3c76898af134492b50b75debb09653044117c10"
+    },
+    {
+      "header": "opendrive/parser/LaneParser.h",
+      "libcarla_sha256": "3c3380c257cc2aff04ba2e2e2696e9faf7d14f9e195f6e8d9ef95aeec9a16fda",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "3c3380c257cc2aff04ba2e2e2696e9faf7d14f9e195f6e8d9ef95aeec9a16fda"
+    },
+    {
+      "header": "opendrive/parser/ObjectParser.h",
+      "libcarla_sha256": "28453c640b7428f7f630d2a123eafbbf7398de7b57b9e04353e1e62da36e235d",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "28453c640b7428f7f630d2a123eafbbf7398de7b57b9e04353e1e62da36e235d"
+    },
+    {
+      "header": "opendrive/parser/ProfilesParser.h",
+      "libcarla_sha256": "72badc2d995a1ff73751dbccea98c5f2f835031e1510905a7728eeef3de39cfb",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "72badc2d995a1ff73751dbccea98c5f2f835031e1510905a7728eeef3de39cfb"
+    },
+    {
+      "header": "opendrive/parser/RoadParser.h",
+      "libcarla_sha256": "73bd31b430f8af3764cb5fee54f431c60d611220dc5b2e563aafdba76b023915",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "73bd31b430f8af3764cb5fee54f431c60d611220dc5b2e563aafdba76b023915"
+    },
+    {
+      "header": "opendrive/parser/SignalParser.h",
+      "libcarla_sha256": "1947899e03159a6ada9fec9df62570a417da80323276d324349cbdcd96be433d",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "1947899e03159a6ada9fec9df62570a417da80323276d324349cbdcd96be433d"
+    },
+    {
+      "header": "opendrive/parser/TrafficGroupParser.h",
+      "libcarla_sha256": "499158d5ca5e9f10b3dddb842cfa37f1e37efa4d020235f913197406e21084dd",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "499158d5ca5e9f10b3dddb842cfa37f1e37efa4d020235f913197406e21084dd"
+    },
+    {
+      "header": "profiler/LifetimeProfiled.h",
+      "libcarla_sha256": "7de27c58b12b32bd955e95ce882b37603cf93f2c40883e6b55dd6755d63e9a88",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "7de27c58b12b32bd955e95ce882b37603cf93f2c40883e6b55dd6755d63e9a88"
+    },
+    {
+      "header": "profiler/Profiler.h",
+      "libcarla_sha256": "d16ad49702eeddaf111203860dc5658454428dfbd79dfe0b4c44ec41677bbd2f",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "d16ad49702eeddaf111203860dc5658454428dfbd79dfe0b4c44ec41677bbd2f"
+    },
+    {
+      "header": "road/Controller.h",
+      "libcarla_sha256": "bd57a9c14f25a488cec3f04d02bde400886d3d4f7406d53d57fa1918b299ee84",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "bd57a9c14f25a488cec3f04d02bde400886d3d4f7406d53d57fa1918b299ee84"
+    },
+    {
+      "header": "road/Deformation.h",
+      "libcarla_sha256": "3bc8070ed8a0345d6746752e0306a3df72cd69b1f849919e830ab0fa543ae322",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "3bc8070ed8a0345d6746752e0306a3df72cd69b1f849919e830ab0fa543ae322"
+    },
+    {
+      "header": "road/InformationSet.h",
+      "libcarla_sha256": "4ce63154d25fde0204b4447f491d0173dc7ea411b7de9341ebf971298b831ba6",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "4ce63154d25fde0204b4447f491d0173dc7ea411b7de9341ebf971298b831ba6"
+    },
+    {
+      "header": "road/Junction.h",
+      "libcarla_sha256": "f73a72ca1aef3690c3b02e45c86d3021befaeeca8fbf58e3419af6d472fc7b28",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "f73a72ca1aef3690c3b02e45c86d3021befaeeca8fbf58e3419af6d472fc7b28"
+    },
+    {
+      "header": "road/Lane.h",
+      "libcarla_sha256": "ce2ef11d1d11ac71ad3c55512ab8bebd4034fa72423facbb443984c638309c8e",
+      "required_by_gate": true,
+      "status": "IDENTICAL",
+      "vendored_sha256": "ce2ef11d1d11ac71ad3c55512ab8bebd4034fa72423facbb443984c638309c8e"
+    },
+    {
+      "header": "road/LaneSection.h",
+      "libcarla_sha256": "0e37af38cafcd8a0d9ae91ab90d6544e13afbe288e7b91193f8591eeec224ba9",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "0e37af38cafcd8a0d9ae91ab90d6544e13afbe288e7b91193f8591eeec224ba9"
+    },
+    {
+      "header": "road/LaneSectionMap.h",
+      "libcarla_sha256": "b0827d9456b9024dccb07dab49587aec576fb41c2cf7dc9820c6252df8316977",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "b0827d9456b9024dccb07dab49587aec576fb41c2cf7dc9820c6252df8316977"
+    },
+    {
+      "header": "road/LaneValidity.h",
+      "libcarla_sha256": "542e097571af277498ba2f27a335b6b56dfdb3c99f86cdc2fae2cafccca79d4d",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "542e097571af277498ba2f27a335b6b56dfdb3c99f86cdc2fae2cafccca79d4d"
+    },
+    {
+      "header": "road/Map.h",
+      "libcarla_sha256": "305c8a474810fa2ca77aaa7f063be19762455d368a934c8390d24094bb9e65df",
+      "required_by_gate": true,
+      "status": "IDENTICAL",
+      "vendored_sha256": "305c8a474810fa2ca77aaa7f063be19762455d368a934c8390d24094bb9e65df"
+    },
+    {
+      "header": "road/MapBuilder.h",
+      "libcarla_sha256": "317bc5287d517dcbd90221d7a116d5bc372c58fcb261f3066e70bbfcff593694",
+      "required_by_gate": true,
+      "status": "IDENTICAL",
+      "vendored_sha256": "317bc5287d517dcbd90221d7a116d5bc372c58fcb261f3066e70bbfcff593694"
+    },
+    {
+      "header": "road/MapData.h",
+      "libcarla_sha256": "03da6b6eb47cf3ae0b316e478e5c7407945e5eb9c7bd8f679e6cfd5f5bcafb6e",
+      "required_by_gate": true,
+      "status": "IDENTICAL",
+      "vendored_sha256": "03da6b6eb47cf3ae0b316e478e5c7407945e5eb9c7bd8f679e6cfd5f5bcafb6e"
+    },
+    {
+      "header": "road/MeshFactory.h",
+      "libcarla_sha256": "e0c918231e03198263f07c977e22a8d4dfb5652c253eea59f8d016b13dfad21a",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "e0c918231e03198263f07c977e22a8d4dfb5652c253eea59f8d016b13dfad21a"
+    },
+    {
+      "header": "road/Object.h",
+      "libcarla_sha256": "cd308c263ce58649c73f475e3519601aca17ef2337c6a66a687c6b28ba499b30",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "cd308c263ce58649c73f475e3519601aca17ef2337c6a66a687c6b28ba499b30"
+    },
+    {
+      "header": "road/Road.h",
+      "libcarla_sha256": "f3701203ab5375a7977be54c4ab15b64ac027688d2f3d561951556eaf532a06c",
+      "required_by_gate": true,
+      "status": "IDENTICAL",
+      "vendored_sha256": "f3701203ab5375a7977be54c4ab15b64ac027688d2f3d561951556eaf532a06c"
+    },
+    {
+      "header": "road/RoadElementSet.h",
+      "libcarla_sha256": "00a2ee41ca51d409c0abf5948223daf830a85ff82013b376af529e5c6ebc41f6",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "00a2ee41ca51d409c0abf5948223daf830a85ff82013b376af529e5c6ebc41f6"
+    },
+    {
+      "header": "road/RoadTypes.h",
+      "libcarla_sha256": "f7789969b7ffd63f4c6e2a9f22fdc24db379514ff3be5a160b300c9fdebeb12f",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "f7789969b7ffd63f4c6e2a9f22fdc24db379514ff3be5a160b300c9fdebeb12f"
+    },
+    {
+      "header": "road/Signal.h",
+      "libcarla_sha256": "f692d2377d8dc41318f55a73e0336fd058d5fd416b855d85bf0d7ec35324e543",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "f692d2377d8dc41318f55a73e0336fd058d5fd416b855d85bf0d7ec35324e543"
+    },
+    {
+      "header": "road/SignalType.h",
+      "libcarla_sha256": "7a2071f02a84627ebc05783589176c6cfa3c6543832594a0e828f22242d3faa9",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "7a2071f02a84627ebc05783589176c6cfa3c6543832594a0e828f22242d3faa9"
+    },
+    {
+      "header": "road/Stencil.h",
+      "libcarla_sha256": "7d244697877514e2cb7ad01dfaf5c7a9d1956bac76072e0b98647264d519cbb3",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "7d244697877514e2cb7ad01dfaf5c7a9d1956bac76072e0b98647264d519cbb3"
+    },
+    {
+      "header": "road/element/Geometry.h",
+      "libcarla_sha256": "18897a81303e6dc3fc46c825db045f19b5a263cdc383a85aab7693209a551a0c",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "18897a81303e6dc3fc46c825db045f19b5a263cdc383a85aab7693209a551a0c"
+    },
+    {
+      "header": "road/element/LaneCrossingCalculator.h",
+      "libcarla_sha256": "9e5dab2a548028f13721bdc2e2d5734e6ba957ee703a4f3a77012a8d6b885b8d",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "9e5dab2a548028f13721bdc2e2d5734e6ba957ee703a4f3a77012a8d6b885b8d"
+    },
+    {
+      "header": "road/element/LaneMarking.h",
+      "libcarla_sha256": "1bde3f9ddf549e0c8228cfbcff45fd4da848a807f600eb1277c7f7ed5eff2931",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "1bde3f9ddf549e0c8228cfbcff45fd4da848a807f600eb1277c7f7ed5eff2931"
+    },
+    {
+      "header": "road/element/RoadInfo.h",
+      "libcarla_sha256": "d6ad67ab59ac428c098bacae063009585760816af5dde37779f7d61c647cbb99",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "d6ad67ab59ac428c098bacae063009585760816af5dde37779f7d61c647cbb99"
+    },
+    {
+      "header": "road/element/RoadInfoCrosswalk.h",
+      "libcarla_sha256": "23ae6933bc17c6c6ba47435f22e41a47d89c5e95633c24a4b102d6127804a667",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "23ae6933bc17c6c6ba47435f22e41a47d89c5e95633c24a4b102d6127804a667"
+    },
+    {
+      "header": "road/element/RoadInfoElevation.h",
+      "libcarla_sha256": "64afe170b3417c996411bedf11a03560522fdf97c7e0c5c69ac70dd36c7a4c79",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "64afe170b3417c996411bedf11a03560522fdf97c7e0c5c69ac70dd36c7a4c79"
+    },
+    {
+      "header": "road/element/RoadInfoGeometry.h",
+      "libcarla_sha256": "24e3f29f8853126e5a92b125faea723cb3d587727a8794b35c90c6ea61a44b67",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "24e3f29f8853126e5a92b125faea723cb3d587727a8794b35c90c6ea61a44b67"
+    },
+    {
+      "header": "road/element/RoadInfoIterator.h",
+      "libcarla_sha256": "9441808bb7f9d5a5f3849c5439bf9691e05433fc6ff5bb3e75b8219441cfb3c8",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "9441808bb7f9d5a5f3849c5439bf9691e05433fc6ff5bb3e75b8219441cfb3c8"
+    },
+    {
+      "header": "road/element/RoadInfoLaneAccess.h",
+      "libcarla_sha256": "b0bb3de1e8f78455a02e5634d2d26d3accdabaa3c4c5bc46bd47b2b7ffa0454c",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "b0bb3de1e8f78455a02e5634d2d26d3accdabaa3c4c5bc46bd47b2b7ffa0454c"
+    },
+    {
+      "header": "road/element/RoadInfoLaneBorder.h",
+      "libcarla_sha256": "a3aa03d3c8054077677282471aff700510ee65e50762fa62ed022184d12ec4c0",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "a3aa03d3c8054077677282471aff700510ee65e50762fa62ed022184d12ec4c0"
+    },
+    {
+      "header": "road/element/RoadInfoLaneHeight.h",
+      "libcarla_sha256": "444e17a3e4207cbaeb8d222eb1687c9c5b351055039688d1df91f6cd67f61d21",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "444e17a3e4207cbaeb8d222eb1687c9c5b351055039688d1df91f6cd67f61d21"
+    },
+    {
+      "header": "road/element/RoadInfoLaneMaterial.h",
+      "libcarla_sha256": "a9f92f91ff793ef729a3cead26e5fb036b59164267b55330fc705b28c24e7bfc",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "a9f92f91ff793ef729a3cead26e5fb036b59164267b55330fc705b28c24e7bfc"
+    },
+    {
+      "header": "road/element/RoadInfoLaneOffset.h",
+      "libcarla_sha256": "27a3cee19707ddc1e51b649879390dd1bdfd0ff654b6387aef8cf0282f2deb38",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "27a3cee19707ddc1e51b649879390dd1bdfd0ff654b6387aef8cf0282f2deb38"
+    },
+    {
+      "header": "road/element/RoadInfoLaneRule.h",
+      "libcarla_sha256": "a86bf7fa25da22d41385c202456c3a910113755da5400ad3eb56d0cd11e356b3",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "a86bf7fa25da22d41385c202456c3a910113755da5400ad3eb56d0cd11e356b3"
+    },
+    {
+      "header": "road/element/RoadInfoLaneVisibility.h",
+      "libcarla_sha256": "9d882151144a3f09ba84f9a6d19ce07333fb0eca403ff53e34ade6a88b0cf649",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "9d882151144a3f09ba84f9a6d19ce07333fb0eca403ff53e34ade6a88b0cf649"
+    },
+    {
+      "header": "road/element/RoadInfoLaneWidth.h",
+      "libcarla_sha256": "f6e4222743fde537ca7e6a1899b7845e4d9f60e83aacb6ccb9213122b6d4f1a3",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "f6e4222743fde537ca7e6a1899b7845e4d9f60e83aacb6ccb9213122b6d4f1a3"
+    },
+    {
+      "header": "road/element/RoadInfoMarkRecord.h",
+      "libcarla_sha256": "556dba5f34eb12cf54d9cbbafe83b7bc98b30d7a2f7f4bb7dbdd6784274d73e7",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "556dba5f34eb12cf54d9cbbafe83b7bc98b30d7a2f7f4bb7dbdd6784274d73e7"
+    },
+    {
+      "header": "road/element/RoadInfoMarkTypeLine.h",
+      "libcarla_sha256": "84f2b79b94f469e03630a72ef4ac3385d6ded74e95f7459262e4274888035a2f",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "84f2b79b94f469e03630a72ef4ac3385d6ded74e95f7459262e4274888035a2f"
+    },
+    {
+      "header": "road/element/RoadInfoSignal.h",
+      "libcarla_sha256": "d90acef83eeacb59e3c4d252bf1aa43feeedee1a5402b98f535a666caad90d3f",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "d90acef83eeacb59e3c4d252bf1aa43feeedee1a5402b98f535a666caad90d3f"
+    },
+    {
+      "header": "road/element/RoadInfoSpeed.h",
+      "libcarla_sha256": "3f765ea9536c8ef58a916e2cf26788dd8d26acc706cc7c49bb18d76b9288456e",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "3f765ea9536c8ef58a916e2cf26788dd8d26acc706cc7c49bb18d76b9288456e"
+    },
+    {
+      "header": "road/element/RoadInfoStencil.h",
+      "libcarla_sha256": "ba2e0a8dce47d4c17f74e444046eec9aad749b6d377950aba149fc9ec4d0ba50",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "ba2e0a8dce47d4c17f74e444046eec9aad749b6d377950aba149fc9ec4d0ba50"
+    },
+    {
+      "header": "road/element/RoadInfoVisitor.h",
+      "libcarla_sha256": "fa7424a8ccdf41253756ca91933053701ddebf158a798480620549734454dd84",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "fa7424a8ccdf41253756ca91933053701ddebf158a798480620549734454dd84"
+    },
+    {
+      "header": "road/element/Waypoint.h",
+      "libcarla_sha256": "5b5d6cb0a187a2b03e292e0b88711c1d2c31ba74021f337bc79a105898088aa3",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "5b5d6cb0a187a2b03e292e0b88711c1d2c31ba74021f337bc79a105898088aa3"
+    },
+    {
+      "header": "road/object/RepeatRecord.h",
+      "libcarla_sha256": "8e6ea6fa8817d7f5b9a98d89b34f8fce97512553fc84b0ac536a4919fd4ce1ca",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "8e6ea6fa8817d7f5b9a98d89b34f8fce97512553fc84b0ac536a4919fd4ce1ca"
+    },
+    {
+      "header": "ros2/ROS2.h",
+      "libcarla_sha256": "bb4e43bb5ea91888fc03ae8c106162b5ea13a0f8b3c1c0409cae5e10732fbca3",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "bb4e43bb5ea91888fc03ae8c106162b5ea13a0f8b3c1c0409cae5e10732fbca3"
+    },
+    {
+      "header": "ros2/ROS2CallbackData.h",
+      "libcarla_sha256": "9ed8a7a940f0c77ee46b5f71f8f08fb0cee8aadc529c2aafc23c4d9a21d0cae7",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "9ed8a7a940f0c77ee46b5f71f8f08fb0cee8aadc529c2aafc23c4d9a21d0cae7"
+    },
+    {
+      "header": "rpc/AckermannControllerSettings.h",
+      "libcarla_sha256": "59119eac26e930394534dd8dd606c6692d3a0b45acd3da89b39794cea390e348",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "59119eac26e930394534dd8dd606c6692d3a0b45acd3da89b39794cea390e348"
+    },
+    {
+      "header": "rpc/Actor.h",
+      "libcarla_sha256": "77cb79fdfb9050cf616c0d2bed56c7083454d27ec7aa023f79ba64d8cafd0890",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "77cb79fdfb9050cf616c0d2bed56c7083454d27ec7aa023f79ba64d8cafd0890"
+    },
+    {
+      "header": "rpc/ActorAttribute.h",
+      "libcarla_sha256": "b973d700dc0f2a1389bb9a182234668fbecd58c42faebf422ba06e9134028fa5",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "b973d700dc0f2a1389bb9a182234668fbecd58c42faebf422ba06e9134028fa5"
+    },
+    {
+      "header": "rpc/ActorAttributeType.h",
+      "libcarla_sha256": "0f01a26910e77ef0e800c5b6262172f2496fe87f3031d5f70a5d5d3aae7bfa23",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "0f01a26910e77ef0e800c5b6262172f2496fe87f3031d5f70a5d5d3aae7bfa23"
+    },
+    {
+      "header": "rpc/ActorDefinition.h",
+      "libcarla_sha256": "f96211cb9cdb2554fca5f6894dfc7f0bcb1c5044f3af7f43602a485bf906d9e5",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "f96211cb9cdb2554fca5f6894dfc7f0bcb1c5044f3af7f43602a485bf906d9e5"
+    },
+    {
+      "header": "rpc/ActorDescription.h",
+      "libcarla_sha256": "259b7215d55f7b43d72929906027b06c882713bed545dbd7970f1811b0bd3f1a",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "259b7215d55f7b43d72929906027b06c882713bed545dbd7970f1811b0bd3f1a"
+    },
+    {
+      "header": "rpc/ActorId.h",
+      "libcarla_sha256": "406aab9d3fc21a672f5a278723f048ead40bbd4c279e41be3b3ea6f3b31595c8",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "406aab9d3fc21a672f5a278723f048ead40bbd4c279e41be3b3ea6f3b31595c8"
+    },
+    {
+      "header": "rpc/ActorState.h",
+      "libcarla_sha256": "61632a9a24cef1719ee6042a320790916405f4b5449544959c883b3cb0024de5",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "61632a9a24cef1719ee6042a320790916405f4b5449544959c883b3cb0024de5"
+    },
+    {
+      "header": "rpc/AttachmentType.h",
+      "libcarla_sha256": "d2511d8207e3d8c7ce0b1e9f2bdbdd7d76b3defa8ef0577b67e7169d8369c4e2",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "d2511d8207e3d8c7ce0b1e9f2bdbdd7d76b3defa8ef0577b67e7169d8369c4e2"
+    },
+    {
+      "header": "rpc/BoneTransformDataIn.h",
+      "libcarla_sha256": "8371e9c6d40a485c6409ef50b254fe11f9c617eb1470db44bf119f357c1118b2",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "8371e9c6d40a485c6409ef50b254fe11f9c617eb1470db44bf119f357c1118b2"
+    },
+    {
+      "header": "rpc/BoneTransformDataOut.h",
+      "libcarla_sha256": "a08b968cdfc16e467649ab6f8e6827772f056c47b9755c887076c9f3cd410d78",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "a08b968cdfc16e467649ab6f8e6827772f056c47b9755c887076c9f3cd410d78"
+    },
+    {
+      "header": "rpc/BoundingBox.h",
+      "libcarla_sha256": "71b67df4b555b823d098351249ea5e57cb69ac539ac129de0d36ddad6cfad3c8",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "71b67df4b555b823d098351249ea5e57cb69ac539ac129de0d36ddad6cfad3c8"
+    },
+    {
+      "header": "rpc/Client.h",
+      "libcarla_sha256": "63946731a70b358fbd2e5d3e38673af76ba8a600b5a9ffc98a1a3c78b317f463",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "63946731a70b358fbd2e5d3e38673af76ba8a600b5a9ffc98a1a3c78b317f463"
+    },
+    {
+      "header": "rpc/Color.h",
+      "libcarla_sha256": "57fd88e1c35cf106af206ff6ed997fab978ad74e95fcf4881a207f561ca2c859",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "57fd88e1c35cf106af206ff6ed997fab978ad74e95fcf4881a207f561ca2c859"
+    },
+    {
+      "header": "rpc/Command.h",
+      "libcarla_sha256": "8e78bd37a49bc023a3690a7e2a4656c363370c5b257f00d9fae3c15a7498c508",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "8e78bd37a49bc023a3690a7e2a4656c363370c5b257f00d9fae3c15a7498c508"
+    },
+    {
+      "header": "rpc/CommandResponse.h",
+      "libcarla_sha256": "c20634c7a5c2b90fb010172aac0f571bf13d65b7ebeebc15e5aadc5c51da318c",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "c20634c7a5c2b90fb010172aac0f571bf13d65b7ebeebc15e5aadc5c51da318c"
+    },
+    {
+      "header": "rpc/DebugShape.h",
+      "libcarla_sha256": "eac6b672052dab33e5b1720c33fa4133b4d6cd0905907ff7be1a497b88c4a807",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "eac6b672052dab33e5b1720c33fa4133b4d6cd0905907ff7be1a497b88c4a807"
+    },
+    {
+      "header": "rpc/EnvironmentObject.h",
+      "libcarla_sha256": "536230468c38fd77574f824b073c76b9d248918ebfc6d46f66d6125d03e72963",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "536230468c38fd77574f824b073c76b9d248918ebfc6d46f66d6125d03e72963"
+    },
+    {
+      "header": "rpc/EpisodeInfo.h",
+      "libcarla_sha256": "b45f13bd81c67e7534a56671e191c42a377adf1720fa8724cf99534aa8f864c9",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "b45f13bd81c67e7534a56671e191c42a377adf1720fa8724cf99534aa8f864c9"
+    },
+    {
+      "header": "rpc/EpisodeSettings.h",
+      "libcarla_sha256": "c0b91bb923e2524b7deebc5a1b6702c61fee7415b2f75c897aab484ad79af91c",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "c0b91bb923e2524b7deebc5a1b6702c61fee7415b2f75c897aab484ad79af91c"
+    },
+    {
+      "header": "rpc/FloatColor.h",
+      "libcarla_sha256": "7c2e1865f868bd5c5d85f14047bfb5fa6b1ac3c94979f84883c2c24da053e5b1",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "7c2e1865f868bd5c5d85f14047bfb5fa6b1ac3c94979f84883c2c24da053e5b1"
+    },
+    {
+      "header": "rpc/GearPhysicsControl.h",
+      "libcarla_sha256": "b7ed083ead2f73fa53e81055c97ad64ad5d2fbd85eb4998b3caa7edf9301eda3",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "b7ed083ead2f73fa53e81055c97ad64ad5d2fbd85eb4998b3caa7edf9301eda3"
+    },
+    {
+      "header": "rpc/LabelledPoint.h",
+      "libcarla_sha256": "74e693f025e8f8f5157f09d110d054cbbd7584532cf0d64245ac1143a3d90450",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "74e693f025e8f8f5157f09d110d054cbbd7584532cf0d64245ac1143a3d90450"
+    },
+    {
+      "header": "rpc/LightState.h",
+      "libcarla_sha256": "6dac8626a3d18de7a34a88d48ad76cf8be23aaa75fdd3b4e98a611d295554232",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "6dac8626a3d18de7a34a88d48ad76cf8be23aaa75fdd3b4e98a611d295554232"
+    },
+    {
+      "header": "rpc/Location.h",
+      "libcarla_sha256": "a2cb90bada3ea73a5fed5dbf78b12a8e19c3f77113d83864f961f6c84b43172c",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "a2cb90bada3ea73a5fed5dbf78b12a8e19c3f77113d83864f961f6c84b43172c"
+    },
+    {
+      "header": "rpc/MapInfo.h",
+      "libcarla_sha256": "10e669cc6bb0acc1d63ad6db96695d4419f185e5120531d0d4d424ff33178f68",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "10e669cc6bb0acc1d63ad6db96695d4419f185e5120531d0d4d424ff33178f68"
+    },
+    {
+      "header": "rpc/MapLayer.h",
+      "libcarla_sha256": "074f9de6ebfdfcf6f14890d69285887a72244f22674849808c0b1a0fe5c21ba9",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "074f9de6ebfdfcf6f14890d69285887a72244f22674849808c0b1a0fe5c21ba9"
+    },
+    {
+      "header": "rpc/MaterialParameter.h",
+      "libcarla_sha256": "ce639bc16183d31d5d891056150a6f04dde22c7a259da7fee8566a637e2e45f6",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "ce639bc16183d31d5d891056150a6f04dde22c7a259da7fee8566a637e2e45f6"
+    },
+    {
+      "header": "rpc/Metadata.h",
+      "libcarla_sha256": "027e2b7c2071e633e502e50831b0c23ade7bbcbd9154a1835249ec788d2dad61",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "027e2b7c2071e633e502e50831b0c23ade7bbcbd9154a1835249ec788d2dad61"
+    },
+    {
+      "header": "rpc/ObjectLabel.h",
+      "libcarla_sha256": "67c6a7228954652a91cbaab6fbe67bd98fa75078dce82c2dc1365e2af355afc0",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "67c6a7228954652a91cbaab6fbe67bd98fa75078dce82c2dc1365e2af355afc0"
+    },
+    {
+      "header": "rpc/OpendriveGenerationParameters.h",
+      "libcarla_sha256": "f8047a6fd5b0911b5118580b6c7a4e6ea28dc314bfa779d8515c681a0eb44c65",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "f8047a6fd5b0911b5118580b6c7a4e6ea28dc314bfa779d8515c681a0eb44c65"
+    },
+    {
+      "header": "rpc/QualityLevel.h",
+      "libcarla_sha256": "0d7a1b132a8f375b79bdc634d94da634d6dbf36b141946844c38f7e223fe2bb4",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "0d7a1b132a8f375b79bdc634d94da634d6dbf36b141946844c38f7e223fe2bb4"
+    },
+    {
+      "header": "rpc/Response.h",
+      "libcarla_sha256": "246b42fd9be6d0e74636f160b6522c26fa8ec4b4f2c69edba30816eee77ea257",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "246b42fd9be6d0e74636f160b6522c26fa8ec4b4f2c69edba30816eee77ea257"
+    },
+    {
+      "header": "rpc/Server.h",
+      "libcarla_sha256": "4d15bb4df4a9e7c4c5b66baa9338b2ffc418e042981fc9487e39e2e2d837871e",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "4d15bb4df4a9e7c4c5b66baa9338b2ffc418e042981fc9487e39e2e2d837871e"
+    },
+    {
+      "header": "rpc/String.h",
+      "libcarla_sha256": "ce7a3002660dbd9fea1aa1c64ded5225016c5336f57cf65dfa7c66088cb3b3b7",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "ce7a3002660dbd9fea1aa1c64ded5225016c5336f57cf65dfa7c66088cb3b3b7"
+    },
+    {
+      "header": "rpc/Texture.h",
+      "libcarla_sha256": "607433daffe3ec0fa400174712722bcbf13fd7d53e1bf4e67a7ba1a606ad9366",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "607433daffe3ec0fa400174712722bcbf13fd7d53e1bf4e67a7ba1a606ad9366"
+    },
+    {
+      "header": "rpc/TrafficLightState.h",
+      "libcarla_sha256": "95a7c66ff1d70ca8aa756c46c17bdead889df45f7ff6c56141d0c15fbe59bce1",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "95a7c66ff1d70ca8aa756c46c17bdead889df45f7ff6c56141d0c15fbe59bce1"
+    },
+    {
+      "header": "rpc/Transform.h",
+      "libcarla_sha256": "cc48220a8ee385aafbbbac60fbc2f7d32a63f65114f6e8815e1bbed43fee8940",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "cc48220a8ee385aafbbbac60fbc2f7d32a63f65114f6e8815e1bbed43fee8940"
+    },
+    {
+      "header": "rpc/Vector2D.h",
+      "libcarla_sha256": "bae2284613c4b9285e00ca50662a9eb84bac45c3764c333386cf40a732af1831",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "bae2284613c4b9285e00ca50662a9eb84bac45c3764c333386cf40a732af1831"
+    },
+    {
+      "header": "rpc/Vector3D.h",
+      "libcarla_sha256": "02d09a8835ba38d981ce466e4c2a774af569047af89c25afeefd739e5121720f",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "02d09a8835ba38d981ce466e4c2a774af569047af89c25afeefd739e5121720f"
+    },
+    {
+      "header": "rpc/VehicleAckermannControl.h",
+      "libcarla_sha256": "d4ab3b253a71953d39900e33f048101d685ce16e175a29a16c4da7f418c8f853",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "d4ab3b253a71953d39900e33f048101d685ce16e175a29a16c4da7f418c8f853"
+    },
+    {
+      "header": "rpc/VehicleControl.h",
+      "libcarla_sha256": "4481dfb53325e6069d9eaa65f15e502b9d5e1b17666ebad4d3ddcc7f3c1fcc00",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "4481dfb53325e6069d9eaa65f15e502b9d5e1b17666ebad4d3ddcc7f3c1fcc00"
+    },
+    {
+      "header": "rpc/VehicleDoor.h",
+      "libcarla_sha256": "ac701aea47a4cb44f55a54b8310cbc0567d755bb5033a1e48289494351ef1f78",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "ac701aea47a4cb44f55a54b8310cbc0567d755bb5033a1e48289494351ef1f78"
+    },
+    {
+      "header": "rpc/VehicleFailureState.h",
+      "libcarla_sha256": "344125e43782d8a1d247cb3ef58973e76347bd44b5c6b580ae8b4e076cab5cb4",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "344125e43782d8a1d247cb3ef58973e76347bd44b5c6b580ae8b4e076cab5cb4"
+    },
+    {
+      "header": "rpc/VehicleLightState.h",
+      "libcarla_sha256": "f196a1f0f28dfd9db0ea768ce3e229284ab75d59fbe9d1a3fe2d6da75895612e",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "f196a1f0f28dfd9db0ea768ce3e229284ab75d59fbe9d1a3fe2d6da75895612e"
+    },
+    {
+      "header": "rpc/VehicleLightStateList.h",
+      "libcarla_sha256": "f352f75de1d1d749f3b8254f1676e83479332ad0625831b97fe36030b675fb43",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "f352f75de1d1d749f3b8254f1676e83479332ad0625831b97fe36030b675fb43"
+    },
+    {
+      "header": "rpc/VehiclePhysicsControl.h",
+      "libcarla_sha256": "e89e1334d44daab221a22f0c64b7c435deed5d54ec069684831df1188f8e14b6",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "e89e1334d44daab221a22f0c64b7c435deed5d54ec069684831df1188f8e14b6"
+    },
+    {
+      "header": "rpc/VehicleTelemetryData.h",
+      "libcarla_sha256": "ce1fce2255e800ce237715043bbad38a089346ecf07d3caf69b5252f4dd5026a",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "ce1fce2255e800ce237715043bbad38a089346ecf07d3caf69b5252f4dd5026a"
+    },
+    {
+      "header": "rpc/VehicleWheels.h",
+      "libcarla_sha256": "98fa27098b1e2e0a5b54ce50618a92210cbcf58999e566f9ac4fc73bb9c1de09",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "98fa27098b1e2e0a5b54ce50618a92210cbcf58999e566f9ac4fc73bb9c1de09"
+    },
+    {
+      "header": "rpc/WalkerBoneControlIn.h",
+      "libcarla_sha256": "e59e9b3852b04496ff4120c3734afc981e941274b5ea173689d53e452093f797",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "e59e9b3852b04496ff4120c3734afc981e941274b5ea173689d53e452093f797"
+    },
+    {
+      "header": "rpc/WalkerBoneControlOut.h",
+      "libcarla_sha256": "1e4fc70adc9c1c638f16b1c13f0b05908880b9206c66a7d4cc0ab861b21e58f7",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "1e4fc70adc9c1c638f16b1c13f0b05908880b9206c66a7d4cc0ab861b21e58f7"
+    },
+    {
+      "header": "rpc/WalkerControl.h",
+      "libcarla_sha256": "a1b32a6888ab691f481bc838e988e978f92b803ceda9738560dea5f0a1dfc258",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "a1b32a6888ab691f481bc838e988e978f92b803ceda9738560dea5f0a1dfc258"
+    },
+    {
+      "header": "rpc/WeatherParameters.h",
+      "libcarla_sha256": "2f680dd20d59695fadc97005aedd4effa4562b2d9a2e6ec7666142f2ba6b35b5",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "2f680dd20d59695fadc97005aedd4effa4562b2d9a2e6ec7666142f2ba6b35b5"
+    },
+    {
+      "header": "rpc/WheelPhysicsControl.h",
+      "libcarla_sha256": "6c85af98e1d6995050a90249f51cb8066f6b41f79a467ab0deab3f5b93638314",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "6c85af98e1d6995050a90249f51cb8066f6b41f79a467ab0deab3f5b93638314"
+    },
+    {
+      "header": "rpc/WheelTelemetryData.h",
+      "libcarla_sha256": "3ad115a461ed0f84a81de6bb2cd9f486b0d31f6e09c8ae85d4ac13819c2d3383",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "3ad115a461ed0f84a81de6bb2cd9f486b0d31f6e09c8ae85d4ac13819c2d3383"
+    },
+    {
+      "header": "sensor/CompileTimeTypeMap.h",
+      "libcarla_sha256": "03e5a52e19e91cc3a834f810ed4bb2a12025d0f3de141bf4fbe0a4c2b8e2be78",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "03e5a52e19e91cc3a834f810ed4bb2a12025d0f3de141bf4fbe0a4c2b8e2be78"
+    },
+    {
+      "header": "sensor/CompositeSerializer.h",
+      "libcarla_sha256": "796ca2c4b5a141a079c29a837720c18128ee6da734467a0a97463afc26cac411",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "796ca2c4b5a141a079c29a837720c18128ee6da734467a0a97463afc26cac411"
+    },
+    {
+      "header": "sensor/Deserializer.h",
+      "libcarla_sha256": "28428cd7740834d9d58581e9f248cec93396f5b3d97c56041c93cd0ce3a8ac26",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "28428cd7740834d9d58581e9f248cec93396f5b3d97c56041c93cd0ce3a8ac26"
+    },
+    {
+      "header": "sensor/RawData.h",
+      "libcarla_sha256": "e549093a81f2cd0987e43e44140d9021f2a96228f36f1958af4d956073102958",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "e549093a81f2cd0987e43e44140d9021f2a96228f36f1958af4d956073102958"
+    },
+    {
+      "header": "sensor/SensorData.h",
+      "libcarla_sha256": "00a5e848a60949397cee2c6f7d8751c267e5261f6ac49b55c874d3551a637b80",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "00a5e848a60949397cee2c6f7d8751c267e5261f6ac49b55c874d3551a637b80"
+    },
+    {
+      "header": "sensor/SensorRegistry.h",
+      "libcarla_sha256": "dcaac38b56b1c7477c1f5a26b1e6fed68c9ffe53213dcc36fd53b75263cf94c3",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "dcaac38b56b1c7477c1f5a26b1e6fed68c9ffe53213dcc36fd53b75263cf94c3"
+    },
+    {
+      "header": "sensor/data/ActorDynamicState.h",
+      "libcarla_sha256": "dc11095d518e2c012039b656d65bc89cb656dc06c7836dad0e2b3aa88e32ca92",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "dc11095d518e2c012039b656d65bc89cb656dc06c7836dad0e2b3aa88e32ca92"
+    },
+    {
+      "header": "sensor/data/Array.h",
+      "libcarla_sha256": "70f90ee8ebe5a81274a85f293b813d1a9214fe54d480c25d23878019e29d6d05",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "70f90ee8ebe5a81274a85f293b813d1a9214fe54d480c25d23878019e29d6d05"
+    },
+    {
+      "header": "sensor/data/CollisionEvent.h",
+      "libcarla_sha256": "7c1ca485a21f15a92541d4ea58a2cb024cdf0e90f71f031a218dec0f2ba09fb8",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "7c1ca485a21f15a92541d4ea58a2cb024cdf0e90f71f031a218dec0f2ba09fb8"
+    },
+    {
+      "header": "sensor/data/Color.h",
+      "libcarla_sha256": "33860e1f5a62309417081a2d00f7daf9802e68c093690ca177df58a25f6f3173",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "33860e1f5a62309417081a2d00f7daf9802e68c093690ca177df58a25f6f3173"
+    },
+    {
+      "header": "sensor/data/DVSEvent.h",
+      "libcarla_sha256": "72971ffb18ac2320329fd902b124d1be07e9e93a3ad30a048f500d05359e46e9",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "72971ffb18ac2320329fd902b124d1be07e9e93a3ad30a048f500d05359e46e9"
+    },
+    {
+      "header": "sensor/data/DVSEventArray.h",
+      "libcarla_sha256": "0784b3f60a981c3aa17f2b015b0d66db1d5045e78f7792beb5d1edb496d26760",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "0784b3f60a981c3aa17f2b015b0d66db1d5045e78f7792beb5d1edb496d26760"
+    },
+    {
+      "header": "sensor/data/GnssMeasurement.h",
+      "libcarla_sha256": "5e328571a48b34d825286bc4f6940ebaea43d4e781d2eeb6e474296f3d979c68",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "5e328571a48b34d825286bc4f6940ebaea43d4e781d2eeb6e474296f3d979c68"
+    },
+    {
+      "header": "sensor/data/IMUMeasurement.h",
+      "libcarla_sha256": "6c90d8b237bc67b372bbf14a8ba7f9ed5fd58d8c68be3b93cfad17b04c44c023",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "6c90d8b237bc67b372bbf14a8ba7f9ed5fd58d8c68be3b93cfad17b04c44c023"
+    },
+    {
+      "header": "sensor/data/Image.h",
+      "libcarla_sha256": "2ea2376b75901687dc5d26820946c8727a9a754001c7f57fbe4ce0350d249860",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "2ea2376b75901687dc5d26820946c8727a9a754001c7f57fbe4ce0350d249860"
+    },
+    {
+      "header": "sensor/data/ImageTmpl.h",
+      "libcarla_sha256": "2699d21d11e79ca4408e5c943ff52a63641cf04cd4ac64d71dfd31f790e72506",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "2699d21d11e79ca4408e5c943ff52a63641cf04cd4ac64d71dfd31f790e72506"
+    },
+    {
+      "header": "sensor/data/LaneInvasionEvent.h",
+      "libcarla_sha256": "3af32f92c04f8f2b2c42041e2acdc25721d300e492950d965990332a3c51227d",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "3af32f92c04f8f2b2c42041e2acdc25721d300e492950d965990332a3c51227d"
+    },
+    {
+      "header": "sensor/data/LibITS.h",
+      "libcarla_sha256": "0be1452e4593d41d6b21f89f2a7ffdde9bf3529ee0d2a42486ab2ab13271c3bc",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "0be1452e4593d41d6b21f89f2a7ffdde9bf3529ee0d2a42486ab2ab13271c3bc"
+    },
+    {
+      "header": "sensor/data/LidarData.h",
+      "libcarla_sha256": "8df3d42cc73bc624a35979f117dd2b49341cdf09da32160cad1a36ebe274d26e",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "8df3d42cc73bc624a35979f117dd2b49341cdf09da32160cad1a36ebe274d26e"
+    },
+    {
+      "header": "sensor/data/LidarMeasurement.h",
+      "libcarla_sha256": "0c06f94fb248dc2e363c604170fc91e418e395118134eef4176b02739c90c3d3",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "0c06f94fb248dc2e363c604170fc91e418e395118134eef4176b02739c90c3d3"
+    },
+    {
+      "header": "sensor/data/ObstacleDetectionEvent.h",
+      "libcarla_sha256": "e9d80fdc263f27e95a1c07e36b8e4b806f2ba274b518125d3708cfe2ebf9ea2d",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "e9d80fdc263f27e95a1c07e36b8e4b806f2ba274b518125d3708cfe2ebf9ea2d"
+    },
+    {
+      "header": "sensor/data/RadarData.h",
+      "libcarla_sha256": "a37ac8d4ac2842a448bb94307a29c7a430c0daac43d24e7de3d6b8319a7bd583",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "a37ac8d4ac2842a448bb94307a29c7a430c0daac43d24e7de3d6b8319a7bd583"
+    },
+    {
+      "header": "sensor/data/RadarMeasurement.h",
+      "libcarla_sha256": "f5e0d908d38c5f7ebfb7cd73009e02a63259195c88d3000cac11458442c2b3fa",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "f5e0d908d38c5f7ebfb7cd73009e02a63259195c88d3000cac11458442c2b3fa"
+    },
+    {
+      "header": "sensor/data/RawEpisodeState.h",
+      "libcarla_sha256": "ac972e200282bf549c5c97d464566b6f5f2e133d6443f30d6b5963e7e92eb424",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "ac972e200282bf549c5c97d464566b6f5f2e133d6443f30d6b5963e7e92eb424"
+    },
+    {
+      "header": "sensor/data/RssResponse.h",
+      "libcarla_sha256": "701c92a619103159d5a5bcb6c39b19a3955c7ecf5729b956b36242fa9938d1b8",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "701c92a619103159d5a5bcb6c39b19a3955c7ecf5729b956b36242fa9938d1b8"
+    },
+    {
+      "header": "sensor/data/SemanticLidarData.h",
+      "libcarla_sha256": "3b681a8261420caed84651dee787f63823335c8236e7ca26a60bb0e1a3d0b155",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "3b681a8261420caed84651dee787f63823335c8236e7ca26a60bb0e1a3d0b155"
+    },
+    {
+      "header": "sensor/data/SemanticLidarMeasurement.h",
+      "libcarla_sha256": "c5b453a1f81b2d091c8f6e96beae0b7dc0e67ab7c1a527029532ea4ae8a9bbc5",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "c5b453a1f81b2d091c8f6e96beae0b7dc0e67ab7c1a527029532ea4ae8a9bbc5"
+    },
+    {
+      "header": "sensor/data/V2XData.h",
+      "libcarla_sha256": "115d04f90fd7a2ba4a01d31f57cde7ecd0afdded02cda1fce9c3b42015e69425",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "115d04f90fd7a2ba4a01d31f57cde7ecd0afdded02cda1fce9c3b42015e69425"
+    },
+    {
+      "header": "sensor/data/V2XEvent.h",
+      "libcarla_sha256": "82baf376efda373699635d2d0dcea5d9268716c3474b6617982f8ea2b4c4667f",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "82baf376efda373699635d2d0dcea5d9268716c3474b6617982f8ea2b4c4667f"
+    },
+    {
+      "header": "sensor/s11n/CollisionEventSerializer.h",
+      "libcarla_sha256": "fb263d70aa20c4997c41968f04f3ed2deda4acccbdf039f03d10b8a99ddff58e",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "fb263d70aa20c4997c41968f04f3ed2deda4acccbdf039f03d10b8a99ddff58e"
+    },
+    {
+      "header": "sensor/s11n/DVSEventArraySerializer.h",
+      "libcarla_sha256": "61c0bb2326f007a3544f418036db6fafae2e7703effcdabc039faf97cf719771",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "61c0bb2326f007a3544f418036db6fafae2e7703effcdabc039faf97cf719771"
+    },
+    {
+      "header": "sensor/s11n/EpisodeStateSerializer.h",
+      "libcarla_sha256": "913949f827cc85f524852e8ad60252c83ca40ef638bb9cae0c97d4c914bbb31e",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "913949f827cc85f524852e8ad60252c83ca40ef638bb9cae0c97d4c914bbb31e"
+    },
+    {
+      "header": "sensor/s11n/GBufferFloatSerializer.h",
+      "libcarla_sha256": "089d27a01c1f1c4347a8a28299b5ddf0ef3575f23e3f969206d51c633a40a1f6",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "089d27a01c1f1c4347a8a28299b5ddf0ef3575f23e3f969206d51c633a40a1f6"
+    },
+    {
+      "header": "sensor/s11n/GBufferUint8Serializer.h",
+      "libcarla_sha256": "31525a8337536899257846664e245046e7e185de4da51ef456420b5003458891",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "31525a8337536899257846664e245046e7e185de4da51ef456420b5003458891"
+    },
+    {
+      "header": "sensor/s11n/GnssSerializer.h",
+      "libcarla_sha256": "74f25b733c853e87a944c64c2b1f2a66895f53920b2af28d8e7ade538613a2ef",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "74f25b733c853e87a944c64c2b1f2a66895f53920b2af28d8e7ade538613a2ef"
+    },
+    {
+      "header": "sensor/s11n/IMUSerializer.h",
+      "libcarla_sha256": "0e7532db9320f93be27d08dcad7ec8bcf020fc4fa703cbc329fc3d11268dda07",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "0e7532db9320f93be27d08dcad7ec8bcf020fc4fa703cbc329fc3d11268dda07"
+    },
+    {
+      "header": "sensor/s11n/ImageSerializer.h",
+      "libcarla_sha256": "68e3b11ae1bad0874be43f4deadb36049deb0e895beb2935c0007f41b4bc8463",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "68e3b11ae1bad0874be43f4deadb36049deb0e895beb2935c0007f41b4bc8463"
+    },
+    {
+      "header": "sensor/s11n/LidarSerializer.h",
+      "libcarla_sha256": "231d66d853e11e4c439863a27464eb9caa24757c80a8e217e656466e48ea30fc",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "231d66d853e11e4c439863a27464eb9caa24757c80a8e217e656466e48ea30fc"
+    },
+    {
+      "header": "sensor/s11n/NoopSerializer.h",
+      "libcarla_sha256": "4b5d022886550610f476a6610cba8c99378a370bf28f230807653b39600273ca",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "4b5d022886550610f476a6610cba8c99378a370bf28f230807653b39600273ca"
+    },
+    {
+      "header": "sensor/s11n/NormalsImageSerializer.h",
+      "libcarla_sha256": "64cb70731e6418fcf1d948f2fb55a917b8e60dc674a6e00f532a1a1bd73782e6",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "64cb70731e6418fcf1d948f2fb55a917b8e60dc674a6e00f532a1a1bd73782e6"
+    },
+    {
+      "header": "sensor/s11n/ObstacleDetectionEventSerializer.h",
+      "libcarla_sha256": "c2bb82ce1a166855bcb27ff0ea01ffde88cffd0b8203097ed9eeef8aec05e704",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "c2bb82ce1a166855bcb27ff0ea01ffde88cffd0b8203097ed9eeef8aec05e704"
+    },
+    {
+      "header": "sensor/s11n/OpticalFlowImageSerializer.h",
+      "libcarla_sha256": "4b45a2efc3686a800045765923f6aa4f8a214492f2aa0ecf938128db82ae2feb",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "4b45a2efc3686a800045765923f6aa4f8a214492f2aa0ecf938128db82ae2feb"
+    },
+    {
+      "header": "sensor/s11n/RadarSerializer.h",
+      "libcarla_sha256": "26f184015365776bfaf1003f4a2292a4f9378676c3ff3f135068baf0255d8a9b",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "26f184015365776bfaf1003f4a2292a4f9378676c3ff3f135068baf0255d8a9b"
+    },
+    {
+      "header": "sensor/s11n/SemanticLidarSerializer.h",
+      "libcarla_sha256": "e422a33d2a3ab542d8813ce81d3435fcde7ce9430515d1f2e4f1413406aaac1d",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "e422a33d2a3ab542d8813ce81d3435fcde7ce9430515d1f2e4f1413406aaac1d"
+    },
+    {
+      "header": "sensor/s11n/SensorHeaderSerializer.h",
+      "libcarla_sha256": "95959278936b0f3bb51a86f3a0a4eff955e6181d74d4b2d74d59d180f7f98fa7",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "95959278936b0f3bb51a86f3a0a4eff955e6181d74d4b2d74d59d180f7f98fa7"
+    },
+    {
+      "header": "sensor/s11n/V2XSerializer.h",
+      "libcarla_sha256": "22e175852074a8bc2ce632022b122580f6e61f16e97c1c11f311d1dcaf7e039e",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "22e175852074a8bc2ce632022b122580f6e61f16e97c1c11f311d1dcaf7e039e"
+    },
+    {
+      "header": "streaming/Client.h",
+      "libcarla_sha256": "5fcd826a7541194751480373c1c16f12827bb0e87c5c702a52908151259c51d9",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "5fcd826a7541194751480373c1c16f12827bb0e87c5c702a52908151259c51d9"
+    },
+    {
+      "header": "streaming/EndPoint.h",
+      "libcarla_sha256": "acffdcc31b3f8e6c83288b850e38cd1987a26a0d4bd9e42d72563d2ac55d333e",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "acffdcc31b3f8e6c83288b850e38cd1987a26a0d4bd9e42d72563d2ac55d333e"
+    },
+    {
+      "header": "streaming/Server.h",
+      "libcarla_sha256": "341168f53c5b450b4808c216264d7a9fb20281e3d96a44794bd932dca873690c",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "341168f53c5b450b4808c216264d7a9fb20281e3d96a44794bd932dca873690c"
+    },
+    {
+      "header": "streaming/Stream.h",
+      "libcarla_sha256": "77a9095c5f1d7ffe62af0623f39096b552e7b19eb9f75d89a3b01bf3abdc73d1",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "77a9095c5f1d7ffe62af0623f39096b552e7b19eb9f75d89a3b01bf3abdc73d1"
+    },
+    {
+      "header": "streaming/Token.h",
+      "libcarla_sha256": "60a73bb566cdcccb820517f814717b1ebfe50100fc784277337e697cf424fc7c",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "60a73bb566cdcccb820517f814717b1ebfe50100fc784277337e697cf424fc7c"
+    },
+    {
+      "header": "streaming/detail/Dispatcher.h",
+      "libcarla_sha256": "64fc1ed6d9adaea53b9c07ebf1cb3c91ebfc370573c0b74fa38d8db8fbbeb011",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "64fc1ed6d9adaea53b9c07ebf1cb3c91ebfc370573c0b74fa38d8db8fbbeb011"
+    },
+    {
+      "header": "streaming/detail/MultiStreamState.h",
+      "libcarla_sha256": "5f540c14d67a3707eab84aa898b00fda849241d2e6b7991f505e7842a95c2b51",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "5f540c14d67a3707eab84aa898b00fda849241d2e6b7991f505e7842a95c2b51"
+    },
+    {
+      "header": "streaming/detail/Session.h",
+      "libcarla_sha256": "c86b1a8eb933edef044b08e76ece6a3b8424b639a7648f969eb8dd6802d6f7e1",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "c86b1a8eb933edef044b08e76ece6a3b8424b639a7648f969eb8dd6802d6f7e1"
+    },
+    {
+      "header": "streaming/detail/Stream.h",
+      "libcarla_sha256": "3da6aedf5ce3ae881bf55e4b64cdd308dc124d491e1be43d46cc9d1463c8c636",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "3da6aedf5ce3ae881bf55e4b64cdd308dc124d491e1be43d46cc9d1463c8c636"
+    },
+    {
+      "header": "streaming/detail/StreamStateBase.h",
+      "libcarla_sha256": "29bbf6dd91009d5861715f20b629f80a7e3b13ad3e176de65e590f6a16c2ba5c",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "29bbf6dd91009d5861715f20b629f80a7e3b13ad3e176de65e590f6a16c2ba5c"
+    },
+    {
+      "header": "streaming/detail/Token.h",
+      "libcarla_sha256": "5b8e84abca82282889648600e78423dfdb5767033b08be4b10f561495fec468f",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "5b8e84abca82282889648600e78423dfdb5767033b08be4b10f561495fec468f"
+    },
+    {
+      "header": "streaming/detail/Types.h",
+      "libcarla_sha256": "1b3a44c091c1f7eea12c8bb5ff2fa03e72193d0316eb511c9d18f42a30414c2d",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "1b3a44c091c1f7eea12c8bb5ff2fa03e72193d0316eb511c9d18f42a30414c2d"
+    },
+    {
+      "header": "streaming/detail/tcp/Client.h",
+      "libcarla_sha256": "650a229b60ba86934bc55e459e10b402f969ccec7ebcba7badbb7b00f6b0823b",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "650a229b60ba86934bc55e459e10b402f969ccec7ebcba7badbb7b00f6b0823b"
+    },
+    {
+      "header": "streaming/detail/tcp/Message.h",
+      "libcarla_sha256": "4bbf69cc17688bd76b1955eef496f30f9fef7df06cc9ec6e0b5ac8e378e7dabf",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "4bbf69cc17688bd76b1955eef496f30f9fef7df06cc9ec6e0b5ac8e378e7dabf"
+    },
+    {
+      "header": "streaming/detail/tcp/Server.h",
+      "libcarla_sha256": "7715795d8bf5ec27a58393c517bf138fb7f49c1e4c82d7998e2f4fee77797736",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "7715795d8bf5ec27a58393c517bf138fb7f49c1e4c82d7998e2f4fee77797736"
+    },
+    {
+      "header": "streaming/detail/tcp/ServerSession.h",
+      "libcarla_sha256": "7ce3126250a56195ed0e7adf4ffac23aa2224fa21dcf4f5f3137c907bf36ece7",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "7ce3126250a56195ed0e7adf4ffac23aa2224fa21dcf4f5f3137c907bf36ece7"
+    },
+    {
+      "header": "streaming/low_level/Client.h",
+      "libcarla_sha256": "a2c84d7c39c5b8aa68ede63959f3402ecd69e2de4cc4fdb2d595a649e97d7dbf",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "a2c84d7c39c5b8aa68ede63959f3402ecd69e2de4cc4fdb2d595a649e97d7dbf"
+    },
+    {
+      "header": "streaming/low_level/Server.h",
+      "libcarla_sha256": "b23da357372b08f42a8c76dc30b60ff6a06fc787feee88c37fb6d5cc41fb5f95",
+      "required_by_gate": false,
+      "status": "IDENTICAL",
+      "vendored_sha256": "b23da357372b08f42a8c76dc30b60ff6a06fc787feee88c37fb6d5cc41fb5f95"
+    }
+  ],
+  "libcarla_root": "G:\\CARLA\\carla_source_probe\\LibCarla\\source\\carla",
+  "rationale": "The UE plugin does not consume LibCarla/source/carla directly; it compiles against a vendored mirror. A LibCarla-only change is invisible to the UE build, which is how C2039 on carla::road::Map::HasAbsoluteOrigin reached the linker.",
+  "required_failures": [],
+  "required_headers": [
+    "road/Map.h",
+    "road/MapData.h",
+    "road/MapBuilder.h",
+    "road/Lane.h",
+    "road/Road.h",
+    "geom/GeoLocation.h",
+    "geom/Location.h",
+    "geom/Transform.h",
+    "rpc/WorldInfo.h"
+  ],
+  "schema": "VENDORED_HEADER_DRIFT_GATE/v1",
+  "schema_version": 1,
+  "unexpected_drift_outside_required_set": [],
+  "vendored_root": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Plugins\\Carla\\CarlaDependencies\\include\\carla"
+}

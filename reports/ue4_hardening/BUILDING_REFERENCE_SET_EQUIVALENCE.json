@@ -1,0 +1,197 @@
+{
+  "all_tiles_equal": true,
+  "count_equality": true,
+  "method_note": "Unique references per tile, not log occurrences. Tiles 10_6 and 10_7 appeared over-counted in v2 because the same reference is logged on each map load.",
+  "not_caused_by": {
+    "degenerate_geometry": false,
+    "duplicate_object_names_within_a_tile": "unlikely; Blender would suffix .001",
+    "sanitization_alone": "unlikely as the sole cause; sanitized names are exactly what UE4 itself reports in the log"
+  },
+  "per_tile": {
+    "10_6": {
+      "duplicate_log_occurrences": 6,
+      "equal": true,
+      "meshes_produced_A": 6,
+      "unique_unresolved_B": 6
+    },
+    "10_7": {
+      "duplicate_log_occurrences": 3,
+      "equal": true,
+      "meshes_produced_A": 74,
+      "unique_unresolved_B": 74
+    },
+    "10_8": {
+      "duplicate_log_occurrences": 0,
+      "equal": true,
+      "meshes_produced_A": 5,
+      "unique_unresolved_B": 5
+    },
+    "10_9": {
+      "duplicate_log_occurrences": 0,
+      "equal": true,
+      "meshes_produced_A": 303,
+      "unique_unresolved_B": 303
+    },
+    "6_6": {
+      "duplicate_log_occurrences": 0,
+      "equal": true,
+      "meshes_produced_A": 263,
+      "unique_unresolved_B": 263
+    },
+    "6_7": {
+      "duplicate_log_occurrences": 0,
+      "equal": true,
+      "meshes_produced_A": 395,
+      "unique_unresolved_B": 395
+    },
+    "6_8": {
+      "duplicate_log_occurrences": 0,
+      "equal": true,
+      "meshes_produced_A": 625,
+      "unique_unresolved_B": 625
+    },
+    "6_9": {
+      "duplicate_log_occurrences": 0,
+      "equal": true,
+      "meshes_produced_A": 159,
+      "unique_unresolved_B": 159
+    },
+    "7_6": {
+      "duplicate_log_occurrences": 0,
+      "equal": true,
+      "meshes_produced_A": 326,
+      "unique_unresolved_B": 326
+    },
+    "7_7": {
+      "duplicate_log_occurrences": 0,
+      "equal": true,
+      "meshes_produced_A": 411,
+      "unique_unresolved_B": 411
+    },
+    "7_8": {
+      "duplicate_log_occurrences": 0,
+      "equal": true,
+      "meshes_produced_A": 573,
+      "unique_unresolved_B": 573
+    },
+    "7_9": {
+      "duplicate_log_occurrences": 0,
+      "equal": true,
+      "meshes_produced_A": 429,
+      "unique_unresolved_B": 429
+    },
+    "8_6": {
+      "duplicate_log_occurrences": 0,
+      "equal": true,
+      "meshes_produced_A": 263,
+      "unique_unresolved_B": 263
+    },
+    "8_7": {
+      "duplicate_log_occurrences": 0,
+      "equal": true,
+      "meshes_produced_A": 409,
+      "unique_unresolved_B": 409
+    },
+    "8_8": {
+      "duplicate_log_occurrences": 0,
+      "equal": true,
+      "meshes_produced_A": 493,
+      "unique_unresolved_B": 493
+    },
+    "8_9": {
+      "duplicate_log_occurrences": 0,
+      "equal": true,
+      "meshes_produced_A": 353,
+      "unique_unresolved_B": 353
+    },
+    "9_6": {
+      "duplicate_log_occurrences": 0,
+      "equal": true,
+      "meshes_produced_A": 8,
+      "unique_unresolved_B": 8
+    },
+    "9_7": {
+      "duplicate_log_occurrences": 0,
+      "equal": true,
+      "meshes_produced_A": 28,
+      "unique_unresolved_B": 28
+    },
+    "9_8": {
+      "duplicate_log_occurrences": 0,
+      "equal": true,
+      "meshes_produced_A": 193,
+      "unique_unresolved_B": 193
+    },
+    "9_9": {
+      "duplicate_log_occurrences": 0,
+      "equal": true,
+      "meshes_produced_A": 395,
+      "unique_unresolved_B": 395
+    }
+  },
+  "root_cause_status": "MOUNT_POINT_OR_NAMESPACE_MISMATCH_STRONG_HYPOTHESIS",
+  "schema": "building_reference_set_equivalence/v3",
+  "set_A": {
+    "definition": "produced StaticMesh building instances, summed over 20 governed tiles",
+    "per_tile": {
+      "10_6": 6,
+      "10_7": 74,
+      "10_8": 5,
+      "10_9": 303,
+      "6_6": 263,
+      "6_7": 395,
+      "6_8": 625,
+      "6_9": 159,
+      "7_6": 326,
+      "7_7": 411,
+      "7_8": 573,
+      "7_9": 429,
+      "8_6": 263,
+      "8_7": 409,
+      "8_8": 493,
+      "8_9": 353,
+      "9_6": 8,
+      "9_7": 28,
+      "9_8": 193,
+      "9_9": 395
+    },
+    "total": 5711
+  },
+  "set_B": {
+    "definition": "unique unresolved UE4 object reference names from the log",
+    "log_occurrences_total": 5720,
+    "per_tile_unique": {
+      "10_6": 6,
+      "10_7": 74,
+      "10_8": 5,
+      "10_9": 303,
+      "6_6": 263,
+      "6_7": 395,
+      "6_8": 625,
+      "6_9": 159,
+      "7_6": 326,
+      "7_7": 411,
+      "7_8": 573,
+      "7_9": 429,
+      "8_6": 263,
+      "8_7": 409,
+      "8_8": 493,
+      "8_9": 353,
+      "9_6": 8,
+      "9_7": 28,
+      "9_8": 193,
+      "9_9": 395
+    },
+    "unique_total": 5711
+  },
+  "tiles_with_mismatch": [],
+  "verdict": "ALL_BUILDINGS_REFERENCE_BROKEN",
+  "verdict_basis": [
+    "Produced mesh instances (summed over 20 tiles) = 5711",
+    "Unique unresolved object references = 5711",
+    "Equal totals.",
+    "Per-tile equality holds for 20 of 20 tiles; the remaining none differ only by duplicate log occurrences of references already counted.",
+    "0 produced FBX object names carry the Ingolstadt_Tile_X_Y_ prefix, while 100% of unresolved references do."
+  ],
+  "why_not_proven_yet": "The hypothesis is that tile maps serialize references under /Game/Ingolstadta/Maps/... while the meshes were imported under the CARLA root (/Game/Carla/...), so resolution fails on the mount point rather than the name. UE4's own log shows it knows these objects under the prefixed sanitized names, which is what makes a name mismatch unlikely and a namespace mismatch likely. Confirming it requires resolving each reference against the AssetRegistry and comparing with on-disk .uasset locations -- not yet done."
+}

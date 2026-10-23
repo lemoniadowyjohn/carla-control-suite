@@ -1,0 +1,20 @@
+{
+  "rules": [
+    "ZIP pyproject.toml defines 'carla-authority-hardening' project - live repo is 'ultimate-pipeline' - DO_NOT_IMPORT",
+    "ZIP README.md is standalone package README - must NOT replace repository README.md",
+    "ZIP ultimate_pipeline/__init__.py is empty - live repo has exports - DO NOT REPLACE",
+    "ZIP ultimate_pipeline/contracts/__init__.py is empty - live repo has contract exports - DO NOT REPLACE",
+    "ZIP tools/cook_diagnostics/__init__.py is empty - live repo has CookResourceCensus exports - DO NOT REPLACE",
+    "ZIP requirements-dev.txt is for standalone package - live repo requirements already include psutil - DO_NOT_IMPORT",
+    "ZIP docs/ must be adapted under docs/architecture/authority_hardening/ if useful",
+    "ZIP examples/ are demonstration only - DOCUMENTATION_ONLY",
+    "ZIP verification/ artifacts are standalone synthetic results - STANDALONE_TEST_ONLY"
+  ],
+  "protected_files": [
+    "README.md",
+    "pyproject.toml",
+    "ultimate_pipeline/__init__.py",
+    "ultimate_pipeline/contracts/__init__.py",
+    "tools/cook_diagnostics/__init__.py"
+  ]
+}

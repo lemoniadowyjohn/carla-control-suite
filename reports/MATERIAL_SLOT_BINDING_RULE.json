@@ -1,0 +1,59 @@
+{
+  "schema": "MATERIAL_SLOT_BINDING_RULE/v1",
+  "mechanism": {
+    "producer_of_real_bindings": "Plugins/Carla/Source/Carla/Commandlet/PrepareAssetsForCookingCommandlet.cpp lines 225-267",
+    "binding_level": "StaticMeshComponent override (SetMaterial), NOT the StaticMesh asset's StaticMaterials array",
+    "selector": "AssetName.Contains(SSTags::...) against the asset name string",
+    "sstags": {
+      "R_ROAD1": "Road_Road",
+      "R_ROAD2": "Roads_Road",
+      "R_GRASS1": "Road_Grass",
+      "R_GRASS2": "Roads_Grass",
+      "R_MARKING1": "Road_Marking",
+      "R_MARKING2": "Roads_Marking",
+      "R_SIDEWALK1": "Road_Sidewalk",
+      "R_SIDEWALK2": "Roads_Sidewalk",
+      "R_CURB1": "Road_Curb",
+      "R_CURB2": "Roads_Curb",
+      "R_GUTTER1": "Road_Gutter",
+      "R_GUTTER2": "Roads_Gutter",
+      "R_TERRAIN": "Terrain"
+    },
+    "assigned_materials": {
+      "R_MARKING": [
+        "M_Road_03_Tiled_V3",
+        "M_Road_03_LMW"
+      ],
+      "R_ROAD": [
+        "M_Road_03_Tiled_V2"
+      ],
+      "R_TERRAIN": [
+        "MI_LargeLandscape_Grass"
+      ],
+      "R_SIDEWALK": [
+        "MI_largeM_tile02"
+      ],
+      "R_CURB": [
+        "MI_largeM_curb01"
+      ],
+      "R_GUTTER": [
+        "MI_largeM_gutter01"
+      ]
+    },
+    "note": "SetMaterial(i, ...) on the component writes an override; the mesh asset's own StaticMaterials are left as imported."
+  },
+  "canonical_mesh_total": 5711,
+  "canonical_meshes_matching_any_branch": 0,
+  "canonical_meshes_matching_no_branch": 5711,
+  "per_branch_counts": {},
+  "per_sstag_counts": {},
+  "branch_examples": {},
+  "MAT_N_M_count": 8,
+  "MAT_N_M_matching_any_sstag": [],
+  "MAT_N_M_can_be_selected_by_this_mechanism": "NO. No SSTag substring appears in any MAT_N_M name, and no SetMaterial call in PrepareAssetsForCookingCommandlet references a MAT_ path.",
+  "tile_worlds_scanned": 20,
+  "tile_worlds_referencing_assigned_materials": 0,
+  "tile_world_material_references": {},
+  "DYNAMIC_MATERIAL_LOOKUP": "REFUTED",
+  "DYNAMIC_MATERIAL_LOOKUP_basis": "No LoadObject/StaticLoadObject/FindObject/FSoftObjectPath lookup keyed on a MAT_ name exists in the tile pipeline. The only runtime material binding for map meshes is the PrepareAssets SetMaterial branch above, which selects 7 fixed /Game/Carla/... material instances by asset-name tag."
+}

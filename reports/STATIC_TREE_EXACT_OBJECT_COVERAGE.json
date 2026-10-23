@@ -1,0 +1,155 @@
+{
+  "schema": "STATIC_TREE_EXACT_OBJECT_COVERAGE/v1",
+  "CURRENT_FBX_COUNT": 20,
+  "CURRENT_FBX_MANIFEST_SHA": "a201d7a3a2f64ae9c49aeab1c2419509e6d48acb67667bec8f71a4fee2cc4482",
+  "CURRENT_FBX_MANIFEST_MATCH": false,
+  "RUN003_FBX_LOADED_COUNT": 20,
+  "RUN003_SAVE_RECORDS": 5711,
+  "RUN003_DISTINCT_SAVED_TILE_ASSETS": 5711,
+  "RUN003_DUPLICATE_SAVE_RECORDS": 0,
+  "CURRENT_CANONICAL_DISTINCT_MESHES": 5711,
+  "CURRENT_CANONICAL_DUPLICATES": 0,
+  "RUN003_ONLY": 0,
+  "CURRENT_ONLY": 0,
+  "INTERSECTION": 5711,
+  "RUN003_TO_CANONICAL_NAME_COVERAGE": "PASS",
+  "STATIC_EXPECTED_OBJECT_COUNT": 5711,
+  "STATIC_OBSERVED_OBJECT_COUNT": 5711,
+  "STATIC_MISSING_COUNT": 0,
+  "STATIC_UNEXPECTED_COUNT": 0,
+  "STATIC_DUPLICATE_COUNT": 0,
+  "PER_TILE_COUNT_MATCHES": 20,
+  "PER_TILE_COUNT_MISMATCHES": 0,
+  "STATIC_TREE_EXACT_OBJECT_COVERAGE": "PASS",
+  "per_tile": [
+    {
+      "tile": "6_6",
+      "run003_saved": 263,
+      "current_canonical": 263,
+      "match": true
+    },
+    {
+      "tile": "6_7",
+      "run003_saved": 395,
+      "current_canonical": 395,
+      "match": true
+    },
+    {
+      "tile": "6_8",
+      "run003_saved": 625,
+      "current_canonical": 625,
+      "match": true
+    },
+    {
+      "tile": "6_9",
+      "run003_saved": 159,
+      "current_canonical": 159,
+      "match": true
+    },
+    {
+      "tile": "7_6",
+      "run003_saved": 326,
+      "current_canonical": 326,
+      "match": true
+    },
+    {
+      "tile": "7_7",
+      "run003_saved": 411,
+      "current_canonical": 411,
+      "match": true
+    },
+    {
+      "tile": "7_8",
+      "run003_saved": 573,
+      "current_canonical": 573,
+      "match": true
+    },
+    {
+      "tile": "7_9",
+      "run003_saved": 429,
+      "current_canonical": 429,
+      "match": true
+    },
+    {
+      "tile": "8_6",
+      "run003_saved": 263,
+      "current_canonical": 263,
+      "match": true
+    },
+    {
+      "tile": "8_7",
+      "run003_saved": 409,
+      "current_canonical": 409,
+      "match": true
+    },
+    {
+      "tile": "8_8",
+      "run003_saved": 493,
+      "current_canonical": 493,
+      "match": true
+    },
+    {
+      "tile": "8_9",
+      "run003_saved": 353,
+      "current_canonical": 353,
+      "match": true
+    },
+    {
+      "tile": "9_6",
+      "run003_saved": 8,
+      "current_canonical": 8,
+      "match": true
+    },
+    {
+      "tile": "9_7",
+      "run003_saved": 28,
+      "current_canonical": 28,
+      "match": true
+    },
+    {
+      "tile": "9_8",
+      "run003_saved": 193,
+      "current_canonical": 193,
+      "match": true
+    },
+    {
+      "tile": "9_9",
+      "run003_saved": 395,
+      "current_canonical": 395,
+      "match": true
+    },
+    {
+      "tile": "10_6",
+      "run003_saved": 6,
+      "current_canonical": 6,
+      "match": true
+    },
+    {
+      "tile": "10_7",
+      "run003_saved": 74,
+      "current_canonical": 74,
+      "match": true
+    },
+    {
+      "tile": "10_8",
+      "run003_saved": 5,
+      "current_canonical": 5,
+      "match": true
+    },
+    {
+      "tile": "10_9",
+      "run003_saved": 303,
+      "current_canonical": 303,
+      "match": true
+    }
+  ],
+  "maps_namespace": {
+    "MAPS_CURRENT_FILE_COUNT": 29,
+    "MATERIAL_COUNT": 8,
+    "TILE_UMAP_COUNT": 20,
+    "OTHER_MAPS_PACKAGE_COUNT": 1,
+    "OTHER_MAPS_PACKAGES": [
+      "Ingolstadt.umap"
+    ]
+  }
+}

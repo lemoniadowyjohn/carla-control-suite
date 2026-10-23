@@ -1,0 +1,29 @@
+{
+  "COORDINATES_JSON": {
+    "classification": "OPTIONAL_UNUSED",
+    "configured_value": "wt-topo-conv/ultimate_pipeline/config/coordinates.json",
+    "evidence": "settings.load_gps_bounds falls back to embedded DEFAULT_GPS_BOUNDS when missing; odr_io records path string in provenance only; no dummy file created",
+    "exists": false,
+    "referenced_during_regen": true,
+    "required_for_output_semantics": false,
+    "setting": "COORDINATES_JSON"
+  },
+  "HPC_DIR": {
+    "classification": "OPTIONAL_UNUSED",
+    "configured_value": "wt-topo-conv/hpc",
+    "evidence": "HPC experiment log/config dirs only",
+    "exists": false,
+    "referenced_during_regen": false,
+    "required_for_output_semantics": false,
+    "setting": "HPC_DIR"
+  },
+  "MANUAL_TILES_DIR": {
+    "classification": "OPTIONAL_UNUSED",
+    "configured_value": "wt-topo-conv/domain_gap_results/manual_tiles",
+    "evidence": "consumed only by domain-gap stages (stage_12, run_full_domain_gap), not by regen stages 01-08 or acceptance",
+    "exists": false,
+    "referenced_during_regen": false,
+    "required_for_output_semantics": false,
+    "setting": "MANUAL_TILES_DIR"
+  }
+}

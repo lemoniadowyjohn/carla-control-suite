@@ -1,0 +1,47 @@
+{
+  "conclusion": "No source-stage repair is required: every pinned building ring is geometrically valid.",
+  "defective_elements": [],
+  "defective_elements_truncated": false,
+  "policy": {
+    "note": "No source file, tile membership, OpenDRIVE topology or governed artifact is modified by this audit.",
+    "rationale": "This script only measures. Whether to repair is a separate, explicitly authorized decision: the governed rule is that geometry is fixed at the generator stage and never silently rewritten in a final artifact.",
+    "repair_is_not_performed_by_this_script": true,
+    "statuses": [
+      "PASS",
+      "REPAIRED",
+      "REJECTED"
+    ]
+  },
+  "schema": "osm_building_repair_report/v1",
+  "source": "campaigns\\ingolstadt_cooked_perception_v1\\source\\ingolstadt_buildings_overpass.json",
+  "tile_membership_counts": {
+    "10_6": 6,
+    "10_7": 74,
+    "10_8": 5,
+    "10_9": 303,
+    "6_6": 263,
+    "6_7": 395,
+    "6_8": 625,
+    "6_9": 159,
+    "7_6": 326,
+    "7_7": 411,
+    "7_8": 573,
+    "7_9": 429,
+    "8_6": 263,
+    "8_7": 409,
+    "8_8": 493,
+    "8_9": 353,
+    "9_6": 8,
+    "9_7": 28,
+    "9_8": 193,
+    "9_9": 395
+  },
+  "totals": {
+    "defect_histogram": {},
+    "elements_clean": 5711,
+    "elements_loaded": 5711,
+    "elements_with_defects": 0,
+    "placed": 5711,
+    "unplaceable": 0
+  }
+}

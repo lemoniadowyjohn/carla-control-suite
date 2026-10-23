@@ -1,0 +1,66 @@
+{
+  "schema": "package_manifest_dedup_contract/v1",
+  "cases": [
+    {
+      "case": "A_one_manifest_imported_once",
+      "pass": true,
+      "detail": {
+        "unique": 1,
+        "dupes": 0,
+        "tiles": 20
+      }
+    },
+    {
+      "case": "B_byte_identical_imported_once",
+      "pass": true,
+      "detail": {
+        "unique": 1,
+        "dupes": 1,
+        "tiles": 20
+      }
+    },
+    {
+      "case": "C_formatting_variant_imported_once",
+      "pass": true,
+      "detail": {
+        "unique": 1,
+        "dupes": 1
+      }
+    },
+    {
+      "case": "D_tile_list_divergence_fails_closed",
+      "pass": true,
+      "detail": "refusing to import: 1 conflicting package manifest(s) share a package identity: C:\\Users\\admin\\AppData\\Local\\Temp\\manifest_dedup_zm298l0o\\d\\package.json <> C:\\Users\\admin\\AppData\\Local\\Temp\\manifest_d"
+    },
+    {
+      "case": "E_metadata_divergence_fails_closed",
+      "pass": true,
+      "detail": "refusing to import: 1 conflicting package manifest(s) share a package identity: C:\\Users\\admin\\AppData\\Local\\Temp\\manifest_dedup_zm298l0o\\e\\package.json <> C:\\Users\\admin\\AppData\\Local\\Temp\\manifest_d"
+    },
+    {
+      "case": "F_distinct_packages_both_processed",
+      "pass": true,
+      "detail": {
+        "unique": 2,
+        "dupes": 0,
+        "tiles": 40
+      }
+    },
+    {
+      "case": "G_real_fixture_20_tiles_not_40",
+      "pass": true,
+      "detail": {
+        "tile_executions_before": 40,
+        "tile_executions_after": 20,
+        "identical_duplicates": 1,
+        "package_key": "maps=Ingolstadt|props=",
+        "payload_hash": "fabc8afb2274c8cdff27cdc6853129932ad36bbaf3e70f21eec8efa1622fddd2"
+      }
+    }
+  ],
+  "passed": 7,
+  "total": 7,
+  "IMPORT_TILE_EXECUTIONS_BEFORE": 40,
+  "IMPORT_TILE_EXECUTIONS_AFTER": 20,
+  "ALL_REQUIRED_PASS": true
+}

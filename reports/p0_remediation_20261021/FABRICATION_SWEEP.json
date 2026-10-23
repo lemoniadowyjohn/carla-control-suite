@@ -1,0 +1,42 @@
+{
+  "sweep": "P0-F fabricated-evidence inventory sweep",
+  "campaign": "p0_remediation_20261021",
+  "base_sha": "837a8504b624dc90653aef3a48300abb3275e291",
+  "branch": "repair/map-realism-p0-837a8504",
+  "method": "repository-wide grep for literal CAPTURED sensor-status producers and gnss_agreement claims, in *.py, at the 20261021 sweep checkpoint",
+  "findings": [
+    {
+      "path": "phase_q/certifier_validation.py",
+      "lines": "94-95, 127 (make_valid_bundle / apply_negative)",
+      "classification": "ACCEPTABLE_NEGATIVE_CONTROL_FIXTURE",
+      "reason": "Not a live evidence producer. make_valid_bundle() builds a synthetic all-PASS bundle specifically so run_negative_controls() can assert the governed certifier engine REJECTS fabrications (NEGATIVE_CASES includes empty_sensor_marked_pass -> EMPTY_SENSOR_EVIDENCE_MARKED_PASS, zero_fps_marked_pass -> ZERO_FPS_MARKED_PASS, zero_vehicle_spawns_marked_pass, manually_edited_pass_json). This code is the anti-fabrication tripwire itself; mutating it would weaken certification, not clean it."
+    },
+    {
+      "path": "phase_q/certifier_decision.py",
+      "lines": "151",
+      "classification": "ACCEPTABLE_CONSUMER_GUARD",
+      "reason": "Consumer logic that requires status==CAPTURED AND frame_non_empty before counting sensor evidence against a bundle. It hardens against empty-sensor bundles; keeping it is fail-safe. The phase-L producer no longer emits CAPTURED for unexecuted rigs (retired to NOT_RUN_NO_SENSOR_RIG), so the guard only ever fires on genuinely captured frames or on legacy bundles, which are retired separately in RETIRED_FALSE_PASS.json."
+    },
+    {
+      "path": "scripts/tile_umap_and_gnss_findings.py",
+      "line": 228,
+      "classification": "ACCEPTABLE_HISTORICAL_READER",
+      "reason": "Read-only analysis script that summarizes the retired, immutable historical artifacts (reports/post_audit_hardening/L9 runs). It produces no status values itself. Its output must be cited together with RETIRED_FALSE_PASS.json, which revokes the evidentiary status of those artifacts."
+    },
+    {
+      "path": "phase_l_validation.py",
+      "line": 528,
+      "classification": "FIXED_FAIL_CLOSED",
+      "reason": "Post-rewrite field: gnss_agreement is explicitly None with sensor status NOT_RUN_NO_SENSOR_RIG when no sensor rig ran. Verified by tests/unit/test_phase_l_fail_closed.py::test_l9_no_sensor_rig_must_not_be_pass."
+    },
+    {
+      "path": "tests/unit/test_phase_l_fail_closed.py",
+      "line": 95,
+      "classification": "MUTATION_TEST",
+      "reason": "The regression test asserting CAPTURED can no longer appear without an executed rig."
+    }
+  ],
+  "retired_artifacts_note": "The five fabricated L9_sensor_validation.json artifacts are not materialized in this sparse worktree; they are hash-pinned in reports/EVIDENCE_INDEX.json and revoked in reports/p0_remediation_20261021/RETIRED_FALSE_PASS.json without any file mutation (historical artifacts immutable).",
+  "conclusion": "No live producer of fabricated sensor evidence remains outside retired historical artifacts and the intentional certifier negative-control fixtures.",
+  "governance_note": "phase_q make_valid_bundle/apply_negative are test scaffolding for run_negative_controls(); they must NOT be removed or weakened. Recorded here so future audits do not re-flag them as fabrication."
+}

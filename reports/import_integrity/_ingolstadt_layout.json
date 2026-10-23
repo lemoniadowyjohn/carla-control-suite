@@ -1,0 +1,242 @@
+{
+  "Content/Ingolstadt": [
+    {
+      "kind": "dir",
+      "name": "Config",
+      "size": null
+    },
+    {
+      "kind": "dir",
+      "name": "Maps",
+      "size": null
+    },
+    {
+      "kind": "dir",
+      "name": "Static",
+      "size": null
+    }
+  ],
+  "Content/Ingolstadt/Maps": [
+    {
+      "kind": "dir",
+      "name": "Ingolstadt",
+      "size": null
+    }
+  ],
+  "Content/Ingolstadt/Maps/Ingolstadt": [
+    {
+      "kind": "file",
+      "name": "Ingolstadt.umap",
+      "size": 25828
+    },
+    {
+      "kind": "file",
+      "name": "MAT_0_0.uasset",
+      "size": 4100
+    },
+    {
+      "kind": "file",
+      "name": "MAT_1_0.uasset",
+      "size": 4100
+    },
+    {
+      "kind": "file",
+      "name": "MAT_2_0.uasset",
+      "size": 4100
+    },
+    {
+      "kind": "file",
+      "name": "MAT_3_0.uasset",
+      "size": 4100
+    },
+    {
+      "kind": "file",
+      "name": "MAT_4_0.uasset",
+      "size": 4100
+    },
+    {
+      "kind": "file",
+      "name": "MAT_5_0.uasset",
+      "size": 4100
+    },
+    {
+      "kind": "file",
+      "name": "MAT_6_0.uasset",
+      "size": 4100
+    },
+    {
+      "kind": "file",
+      "name": "MAT_7_0.uasset",
+      "size": 4100
+    },
+    {
+      "kind": "dir",
+      "name": "OpenDrive",
+      "size": null
+    },
+    {
+      "kind": "dir",
+      "name": "TM",
+      "size": null
+    }
+  ],
+  "Content/Ingolstadt/Static": [
+    {
+      "kind": "dir",
+      "name": "Terrain",
+      "size": null
+    }
+  ],
+  "Content/Maps": [
+    {
+      "kind": "dir",
+      "name": "BaseLargeMap",
+      "size": null
+    },
+    {
+      "kind": "dir",
+      "name": "BaseMap",
+      "size": null
+    },
+    {
+      "kind": "file",
+      "name": "CityTile.obj",
+      "size": 84795
+    },
+    {
+      "kind": "dir",
+      "name": "Nav",
+      "size": null
+    },
+    {
+      "kind": "dir",
+      "name": "OpenDrive",
+      "size": null
+    },
+    {
+      "kind": "file",
+      "name": "OpenDriveMap.umap",
+      "size": 86976
+    },
+    {
+      "kind": "file",
+      "name": "OpenDriveMap_BuiltData.uasset",
+      "size": 146857884
+    },
+    {
+      "kind": "dir",
+      "name": "Sublevels",
+      "size": null
+    },
+    {
+      "kind": "dir",
+      "name": "TestMaps",
+      "size": null
+    },
+    {
+      "kind": "dir",
+      "name": "TM",
+      "size": null
+    },
+    {
+      "kind": "file",
+      "name": "Town01.umap",
+      "size": 18236418
+    },
+    {
+      "kind": "file",
+      "name": "Town01_BuiltData.uasset",
+      "size": 38406
+    },
+    {
+      "kind": "file",
+      "name": "Town01_Opt.umap",
+      "size": 76345
+    },
+    {
+      "kind": "file",
+      "name": "Town02.umap",
+      "size": 10939456
+    },
+    {
+      "kind": "file",
+      "name": "Town02_BuiltData.uasset",
+      "size": 37158
+    },
+    {
+      "kind": "file",
+      "name": "Town02_Opt.umap",
+      "size": 58325
+    },
+    {
+      "kind": "file",
+      "name": "Town03.umap",
+      "size": 27222227
+    },
+    {
+      "kind": "file",
+      "name": "Town03_BuiltData.uasset",
+      "size": 161841601
+    },
+    {
+      "kind": "file",
+      "name": "Town03_Opt.umap",
+      "size": 97055
+    },
+    {
+      "kind": "file",
+      "name": "Town04.umap",
+      "size": 56963831
+    },
+    {
+      "kind": "file",
+      "name": "Town04_BuiltData.uasset",
+      "size": 1314794
+    },
+    {
+      "kind": "file",
+      "name": "Town04_Opt.umap",
+      "size": 94402
+    },
+    {
+      "kind": "file",
+      "name": "Town05.umap",
+      "size": 43541379
+    },
+    {
+      "kind": "file",
+      "name": "Town05_BuiltData.uasset",
+      "size": 1324874
+    },
+    {
+      "kind": "file",
+      "name": "Town05_Opt.umap",
+      "size": 143806
+    },
+    {
+      "kind": "file",
+      "name": "Town06.umap",
+      "size": 53342377
+    },
+    {
+      "kind": "file",
+      "name": "Town06_BuiltData.uasset",
+      "size": 1292632
+    },
+    {
+      "kind": "file",
+      "name": "Town06_Opt.umap",
+      "size": 86304
+    },
+    {
+      "kind": "file",
+      "name": "Town07.umap",
+      "size": 50867952
+    },
+    {
+      "kind": "file",
+      "name": "Town07_BuiltData.uasset",
+      "size": 1257016
+    }
+  ]
+}

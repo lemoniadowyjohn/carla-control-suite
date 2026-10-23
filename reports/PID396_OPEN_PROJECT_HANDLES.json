@@ -1,0 +1,240 @@
+{
+  "schema": "PID396_OPEN_PROJECT_HANDLES/v1",
+  "method": "exclusive-open probe (FileShare semantics via plain read open) over representative project files; Sysinternals handle.exe is not installed on this host",
+  "unreal_processes_present": 1,
+  "carla_modules_loaded_by_that_process": 562,
+  "total_modules_loaded": 666,
+  "files_probed": 40,
+  "files_locked": 0,
+  "locked_paths": [],
+  "probe_results": [
+    {
+      "kind": "canonical_mesh",
+      "path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Ingolstadt\\Static\\Terrain\\Ingolstadt\\Ingolstadt_Tile_10_6_Building0.uasset",
+      "exclusive_open": "free"
+    },
+    {
+      "kind": "canonical_mesh",
+      "path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Ingolstadt\\Static\\Terrain\\Ingolstadt\\Ingolstadt_Tile_10_6_Building1.uasset",
+      "exclusive_open": "free"
+    },
+    {
+      "kind": "canonical_mesh",
+      "path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Ingolstadt\\Static\\Terrain\\Ingolstadt\\Ingolstadt_Tile_10_6_Building2.uasset",
+      "exclusive_open": "free"
+    },
+    {
+      "kind": "canonical_mesh",
+      "path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Ingolstadt\\Static\\Terrain\\Ingolstadt\\Ingolstadt_Tile_10_6_Building3.uasset",
+      "exclusive_open": "free"
+    },
+    {
+      "kind": "canonical_mesh",
+      "path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Ingolstadt\\Static\\Terrain\\Ingolstadt\\Ingolstadt_Tile_10_6_Building_Mmax.uasset",
+      "exclusive_open": "free"
+    },
+    {
+      "kind": "canonical_mesh",
+      "path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Ingolstadt\\Static\\Terrain\\Ingolstadt\\Ingolstadt_Tile_7_8_Building358.uasset",
+      "exclusive_open": "free"
+    },
+    {
+      "kind": "canonical_mesh",
+      "path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Ingolstadt\\Static\\Terrain\\Ingolstadt\\Ingolstadt_Tile_7_8_Building359.uasset",
+      "exclusive_open": "free"
+    },
+    {
+      "kind": "canonical_mesh",
+      "path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Ingolstadt\\Static\\Terrain\\Ingolstadt\\Ingolstadt_Tile_7_8_Building36.uasset",
+      "exclusive_open": "free"
+    },
+    {
+      "kind": "canonical_mesh",
+      "path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Ingolstadt\\Static\\Terrain\\Ingolstadt\\Ingolstadt_Tile_9_9_Building_Schneider_Xaver_GmbH___Co__KG.uasset",
+      "exclusive_open": "free"
+    },
+    {
+      "kind": "canonical_mesh",
+      "path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Ingolstadt\\Static\\Terrain\\Ingolstadt\\Ingolstadt_Tile_9_9_Building_St__Martin_Apotheke.uasset",
+      "exclusive_open": "free"
+    },
+    {
+      "kind": "canonical_mesh",
+      "path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Ingolstadt\\Static\\Terrain\\Ingolstadt\\Ingolstadt_Tile_9_9_Building_Stberecke.uasset",
+      "exclusive_open": "free"
+    },
+    {
+      "kind": "tile_world",
+      "path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Ingolstadt\\Maps\\Ingolstadt\\Ingolstadt.umap",
+      "exclusive_open": "free"
+    },
+    {
+      "kind": "tile_world",
+      "path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Ingolstadt\\Maps\\Ingolstadt\\Ingolstadt_Tile_10_6.umap",
+      "exclusive_open": "free"
+    },
+    {
+      "kind": "tile_world",
+      "path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Ingolstadt\\Maps\\Ingolstadt\\Ingolstadt_Tile_10_7.umap",
+      "exclusive_open": "free"
+    },
+    {
+      "kind": "tile_world",
+      "path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Ingolstadt\\Maps\\Ingolstadt\\Ingolstadt_Tile_10_8.umap",
+      "exclusive_open": "free"
+    },
+    {
+      "kind": "tile_world",
+      "path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Ingolstadt\\Maps\\Ingolstadt\\Ingolstadt_Tile_10_9.umap",
+      "exclusive_open": "free"
+    },
+    {
+      "kind": "tile_world",
+      "path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Ingolstadt\\Maps\\Ingolstadt\\Ingolstadt_Tile_6_6.umap",
+      "exclusive_open": "free"
+    },
+    {
+      "kind": "tile_world",
+      "path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Ingolstadt\\Maps\\Ingolstadt\\Ingolstadt_Tile_6_7.umap",
+      "exclusive_open": "free"
+    },
+    {
+      "kind": "tile_world",
+      "path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Ingolstadt\\Maps\\Ingolstadt\\Ingolstadt_Tile_6_8.umap",
+      "exclusive_open": "free"
+    },
+    {
+      "kind": "tile_world",
+      "path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Ingolstadt\\Maps\\Ingolstadt\\Ingolstadt_Tile_6_9.umap",
+      "exclusive_open": "free"
+    },
+    {
+      "kind": "tile_world",
+      "path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Ingolstadt\\Maps\\Ingolstadt\\Ingolstadt_Tile_7_6.umap",
+      "exclusive_open": "free"
+    },
+    {
+      "kind": "tile_world",
+      "path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Ingolstadt\\Maps\\Ingolstadt\\Ingolstadt_Tile_7_7.umap",
+      "exclusive_open": "free"
+    },
+    {
+      "kind": "tile_world",
+      "path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Ingolstadt\\Maps\\Ingolstadt\\Ingolstadt_Tile_7_8.umap",
+      "exclusive_open": "free"
+    },
+    {
+      "kind": "tile_world",
+      "path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Ingolstadt\\Maps\\Ingolstadt\\Ingolstadt_Tile_7_9.umap",
+      "exclusive_open": "free"
+    },
+    {
+      "kind": "tile_world",
+      "path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Ingolstadt\\Maps\\Ingolstadt\\Ingolstadt_Tile_8_6.umap",
+      "exclusive_open": "free"
+    },
+    {
+      "kind": "tile_world",
+      "path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Ingolstadt\\Maps\\Ingolstadt\\Ingolstadt_Tile_8_7.umap",
+      "exclusive_open": "free"
+    },
+    {
+      "kind": "tile_world",
+      "path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Ingolstadt\\Maps\\Ingolstadt\\Ingolstadt_Tile_8_8.umap",
+      "exclusive_open": "free"
+    },
+    {
+      "kind": "tile_world",
+      "path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Ingolstadt\\Maps\\Ingolstadt\\Ingolstadt_Tile_8_9.umap",
+      "exclusive_open": "free"
+    },
+    {
+      "kind": "tile_world",
+      "path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Ingolstadt\\Maps\\Ingolstadt\\Ingolstadt_Tile_9_6.umap",
+      "exclusive_open": "free"
+    },
+    {
+      "kind": "tile_world",
+      "path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Ingolstadt\\Maps\\Ingolstadt\\Ingolstadt_Tile_9_7.umap",
+      "exclusive_open": "free"
+    },
+    {
+      "kind": "tile_world",
+      "path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Ingolstadt\\Maps\\Ingolstadt\\Ingolstadt_Tile_9_8.umap",
+      "exclusive_open": "free"
+    },
+    {
+      "kind": "tile_world",
+      "path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Ingolstadt\\Maps\\Ingolstadt\\Ingolstadt_Tile_9_9.umap",
+      "exclusive_open": "free"
+    },
+    {
+      "kind": "material",
+      "path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Ingolstadt\\Maps\\Ingolstadt\\MAT_0_0.uasset",
+      "exclusive_open": "free"
+    },
+    {
+      "kind": "material",
+      "path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Ingolstadt\\Maps\\Ingolstadt\\MAT_1_0.uasset",
+      "exclusive_open": "free"
+    },
+    {
+      "kind": "material",
+      "path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Ingolstadt\\Maps\\Ingolstadt\\MAT_2_0.uasset",
+      "exclusive_open": "free"
+    },
+    {
+      "kind": "material",
+      "path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Ingolstadt\\Maps\\Ingolstadt\\MAT_3_0.uasset",
+      "exclusive_open": "free"
+    },
+    {
+      "kind": "material",
+      "path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Ingolstadt\\Maps\\Ingolstadt\\MAT_4_0.uasset",
+      "exclusive_open": "free"
+    },
+    {
+      "kind": "material",
+      "path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Ingolstadt\\Maps\\Ingolstadt\\MAT_5_0.uasset",
+      "exclusive_open": "free"
+    },
+    {
+      "kind": "material",
+      "path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Ingolstadt\\Maps\\Ingolstadt\\MAT_6_0.uasset",
+      "exclusive_open": "free"
+    },
+    {
+      "kind": "material",
+      "path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Ingolstadt\\Maps\\Ingolstadt\\MAT_7_0.uasset",
+      "exclusive_open": "free"
+    }
+  ],
+  "directories_of_interest": [
+    {
+      "kind": "project_Saved",
+      "path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Saved",
+      "exists": true
+    },
+    {
+      "kind": "project_Intermediate",
+      "path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Intermediate",
+      "exists": true
+    },
+    {
+      "kind": "project_DerivedDataCache",
+      "path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\DerivedDataCache",
+      "exists": true
+    },
+    {
+      "kind": "engine_Saved",
+      "path": "G:\\UnrealEngine_4.26_CARLA\\Engine\\Saved",
+      "exists": true
+    },
+    {
+      "kind": "engine_DerivedDataCache",
+      "path": "G:\\UnrealEngine_4.26_CARLA\\Engine\\DerivedDataCache",
+      "exists": true
+    }
+  ],
+  "interpretation": "A locked file proves some process holds it. With exactly one Unreal process resident on this project, attribution to PID 396 is sound. A fully free result set means no Content package is currently pinned, which lowers but does not eliminate the risk of the process writing during a concurrent cook."
+}

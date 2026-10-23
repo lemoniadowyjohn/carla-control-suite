@@ -197,6 +197,9 @@ def _step5_geometry_elevation_continuity(self, topo_fixed: str) -> str:
                 start_gap_threshold_m=float(
                     os.getenv("UP_JUNCTION_CONNECTOR_REBUILD_START_GAP_M", "2.0")
                 ),
+                heading_threshold_deg=float(
+                    os.getenv("UP_JUNCTION_CONNECTOR_REBUILD_HEADING_DEG", "10.0")
+                ),
                 max_after_gap_m=float(
                     os.getenv("UP_JUNCTION_CONNECTOR_REBUILD_MAX_AFTER_GAP_M", "0.5")
                 ),
@@ -248,6 +251,44 @@ def _step5_geometry_elevation_continuity(self, topo_fixed: str) -> str:
     # (unlike junction_connector_rebuild above) -- see
     # _run_junction_connector_snap's own docstring for the evidence.
     _run_junction_connector_snap(self, cont_out)
+
+    # --- GAP-026 severe-angle: per-connector Hermite tangent fit ---
+    # Repairs junction connectors whose reference-line interface heading
+    # violates the 12-degree criterion via a single normalized-paramPoly3
+    # Hermite segment. Runs after snap (position gaps) and before freeze
+    # (geometry must be final). Opt-in via
+    # UP_ENABLE_JUNCTION_CONNECTOR_TANGENT_FIT (default OFF: brand-new
+    # geometry mutation requires explicit enablement; per-connector strict
+    # validation still applies when enabled).
+    if os.getenv("UP_ENABLE_JUNCTION_CONNECTOR_TANGENT_FIT", "0").strip().lower() in (
+        "1", "true", "yes", "on",
+    ):
+        try:
+            from ultimate_pipeline.topology.junction_connector_tangent_fit import (
+                apply_junction_connector_tangent_fit,
+            )
+
+            tree_tf, root_tf = load_xodr(cont_out)
+            tangent_report = apply_junction_connector_tangent_fit(root_tf)
+            if int(tangent_report.get("rebuilt", 0) or 0) > 0:
+                save_xodr(tree_tf, cont_out)
+            tangent_report_path = os.path.join(
+                self.out_dir, "junction_connector_tangent_fit_report.json"
+            )
+            with open(tangent_report_path, "w", encoding="utf-8") as handle:
+                json.dump(tangent_report, handle, indent=2)
+            self.vreport.add_dict("junction_connector_tangent_fit", tangent_report)
+            print(
+                "[STEP 6] Junction connector tangent fit: "
+                f"examined={tangent_report.get('connectors_examined', 0)} "
+                f"rebuilt={tangent_report.get('rebuilt', 0)} "
+                f"rejected={tangent_report.get('rejected', 0)} "
+                f"-> {tangent_report_path}"
+            )
+        except Exception as exc:
+            print(f"[STEP 6] Junction connector tangent fit failed (continuing): {exc}")
+    else:
+        print("[STEP 6] Junction connector tangent fit disabled (opt-in).")
 
     # 🧊 Freeze horizontal geometry BEFORE elevation is applied.
     # This ensures DEM samples z at the final XY positions.
@@ -916,6 +957,83 @@ def _step5_dem_and_geometry(self, topo_fixed: str, elev_out: str) -> str:
             "DEM sampling QC failed in strict mode: "
             f"{dem_qc_report.get('reason')} (see {dem_qc_report_path}).{hint}{actionable_hint}"
         )
+
+    # Lane Z source-stage repair: reconcile connector boundary elevations so
+    # every junction connector starts/ends exactly C0 with the incident roads
+    # (P0-C audit-style interface seams). Runs on the final in-memory DEM
+    # elevation tree, right before it is persisted; incident roads, lane
+    # topology and planView are never touched. Degrades without blocking on
+    # any failure (admission is decided by the P0-C oracle after regen).
+    connector_reconcile_enabled = str(
+        os.getenv("UP_CONNECTOR_ELEV_RECONCILE", "1")
+    ).strip().lower() not in ("0", "false", "no", "off")
+    if connector_reconcile_enabled:
+        try:
+            from ultimate_pipeline.topology.connector_elevation_reconciler import (
+                reconcile_connector_elevations,
+            )
+
+            connector_elevation_report = reconcile_connector_elevations(root)
+            connector_reconcile_report_path = os.path.join(
+                self.out_dir, "connector_elevation_reconciliation_report.json"
+            )
+            with open(connector_reconcile_report_path, "w", encoding="utf-8") as f:
+                json.dump(
+                    connector_elevation_report, f, indent=2, ensure_ascii=True, sort_keys=True
+                )
+            self.vreport.add_dict(
+                "connector_elevation_reconciliation", connector_elevation_report
+            )
+            print(
+                "✅ Connector elevation reconciliation: "
+                f"rewritten={connector_elevation_report['rewritten']} "
+                f"already_continuous={connector_elevation_report['already_continuous']} "
+                f"missing_bc={connector_elevation_report['missing_boundary_conditions']} "
+                f"conflicts={connector_elevation_report['conflicting_boundary_conditions']}"
+            )
+        except Exception as e:
+            print(f"⚠️ Connector elevation reconciliation failed (continuing): {e}")
+            self.vreport.add_dict(
+                "connector_elevation_reconciliation", {"error": str(e)}
+            )
+
+    # P0-D source-stage fix: enforce bridge/tunnel/elevated separation from
+    # terrain using DEM samples. Runs after connector elevation reconciliation
+    # and before final save so the deck/elevation profile is set correctly.
+    structure_repair_enabled = str(
+        os.getenv("UP_STRUCTURE_ELEV_REPAIR", "1")
+    ).strip().lower() not in ("0", "false", "no", "off")
+    if structure_repair_enabled and dem_path and os.path.exists(dem_path):
+        try:
+            from ultimate_pipeline.topology.structure_elevation_repair import (
+                repair_structure_elevation_separation,
+            )
+
+            # Need OSM for classification: use same path as structure resolution
+            structure_repair_report = repair_structure_elevation_separation(
+                root,
+                road_classes=structure_report.get("plausibility_road_classes", {}),
+                dem_path=dem_path,
+                xodr_path=cont_out if 'cont_out' in locals() else topo_fixed,
+                min_clearance_m=0.5,
+            )
+            structure_repair_path = os.path.join(
+                self.out_dir, "structure_elevation_repair_report.json"
+            )
+            import json as _json
+            with open(structure_repair_path, "w", encoding="utf-8") as f:
+                _json.dump(structure_repair_report, f, indent=2, ensure_ascii=True)
+            self.vreport.add_dict("structure_elevation_repair", structure_repair_report)
+            print(
+                "✅ P0-D structure elevation separation: "
+                f"repaired={structure_repair_report['repaired_roads']} "
+                f"unrepaired={structure_repair_report['unrepaired_roads']}"
+            )
+        except Exception as e:
+            print(f"⚠️ P0-D structure elevation repair failed (continuing): {e}")
+            self.vreport.add_dict(
+                "structure_elevation_repair", {"error": str(e)}
+            )
 
     save_xodr(tree, topo_fixed)
 

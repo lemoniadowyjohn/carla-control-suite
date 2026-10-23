@@ -1,0 +1,72 @@
+{
+  "schema": "COOK_EXECUTOR_ADMISSION/v1",
+  "PHASE_0_RESULT": "FAIL",
+  "PROCESS_TREE_SUPERVISION": "PASS",
+  "LEASE_JOB_COUPLING": "PASS",
+  "SINGLE_WRITER_CONTROL_PLANE": "PASS",
+  "process_control_basis": "reports/PROCESS_TREE_SUPERVISION_FINAL.json and clean-checkout reproduction at published SHA 32fbde8e (matrix 25/25, stress 270/270, T6 5/5, coupling 11/11, identity 15/15, native crashes 0).",
+  "ACTIVE_CONFLICTING_MUTATORS": 1,
+  "mutators": [
+    {
+      "pid": 396,
+      "creation_time_utc": "2026-10-06T12:30:44.7613250Z",
+      "parent_pid": 31268,
+      "parent_alive": false,
+      "image": "UE4Editor.exe",
+      "executable": "G:\\UnrealEngine_4.26_CARLA\\Engine\\Binaries\\Win64\\UE4Editor.exe",
+      "command_line": "UE4Editor.exe G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\CarlaUE4.uproject -nullrhi -unattended -executecmds=quit",
+      "classification": "UNKNOWN_PRESERVE",
+      "state_observed": {
+        "private_mb": 9861,
+        "working_set_mb": 1240,
+        "threads": 115,
+        "accumulated_cpu_s": 4997,
+        "cpu_delta_over_12s_wall": 7.44,
+        "cpu_utilisation_pct_of_one_core": 62,
+        "private_mb_delta_over_12s": 0.0
+      },
+      "why_this_is_a_hard_stop": [
+        "ORPHANED: parent PID 31268 no longer exists, so this process is outside any single-writer lease and outside any Job Object. It cannot be supervised or reaped by the control plane.",
+        "HUNG: -executecmds=quit should terminate almost immediately, yet it has run for over 35 minutes and accumulated ~5000 s of CPU.",
+        "ACTIVELY SPINNING: 7.44 s CPU per 12 s of wall clock, sustained at 62% of one core, with no memory release.",
+        "ACTIVELY CONSUMING SCARCE STORAGE: G: free space fell from 32.7 GB to 28.7 GB (about 4 GB) during roughly 20 minutes of observation, while G: is already at 3.1% free. The writes are not attributed, which is itself disqualifying.",
+        "It holds an Unreal process on the exact project and Content tree a bounded cook would read and write."
+      ]
+    }
+  ],
+  "other_mutators": {
+    "ShaderCompileWorker": "none running",
+    "UE4Editor-Cmd": "none running",
+    "CarlaUE4_server": "none running",
+    "Import.py": "none running",
+    "cook processes": "none running"
+  },
+  "ACTION_NOT_TAKEN": {
+    "process_not_killed": true,
+    "reason": "This process was not started by this session, killing by image name is forbidden, and terminating a possibly operator-owned process is an operator decision. It is reported with exact PID + creation_time so it can be terminated deterministically.",
+    "exact_binding_for_operator_action": {
+      "pid": 396,
+      "creation_time_utc": "2026-10-06T12:30:44.7613250Z",
+      "note": "bind termination to this PID AND creation time, never to the image name UE4Editor.exe, because other legitimate editor sessions may exist."
+    },
+    "no_content_mutated": true,
+    "no_cook_started": true
+  },
+  "downstream_not_reached": {
+    "PHASE_1_PRECOOK_CONTENT_AUTHORITY": "NOT_RUN",
+    "PHASE_2_COOK_INPUT_FINGERPRINT_V3": "NOT_RUN",
+    "PHASE_3_TILE_WORLD_EDITOR_LOAD": "NOT_RUN",
+    "PHASE_4_MAIN_LARGEMAP_WORLD_VALIDATION": "NOT_RUN",
+    "PHASE_5_PRECOOK_LARGEMAP_DISCOVERY": "NOT_RUN",
+    "PHASE_6_WINDOWS_RHI_CONFIG_PROMOTION": "NOT_RUN",
+    "PHASE_7_DDC_CURRENT_AUTHORITY": "PARTIAL_PRIOR_BATCH_READING_ONLY",
+    "PHASE_8_STORAGE_BENCHMARK": "PARTIAL_TOPOLOGY_ONLY",
+    "PHASE_9_F_DDC_CAPACITY": "FAIL_PRECONDITION",
+    "PHASE_10_QUALIFY_INTERNAL_DDC": "NOT_RUN",
+    "PHASE_11_SCW_QUALIFICATION": "PARTIAL_STATIC_IDENTITY_ONLY",
+    "PHASE_12_REPRESENTATIVE_TILE_SELECTION": "NOT_RUN",
+    "PHASE_20_EXECUTE_BOUNDED_COOK": "NOT_RUN",
+    "PHASE_32_FULL_PRODUCTION_COOK_ADMISSION": "NOT_AUTHORIZED"
+  },
+  "why_not_proceed_on_a_best_effort_basis": "Phase 3 would have to launch Unreal against the same project an unsupervised Unreal process currently holds, which risks lock contention and would make any load result untrustworthy. Phase 9 capacity additionally fails independently. The prompt requires an immediate stop on an unknown plausible mutator."
+}

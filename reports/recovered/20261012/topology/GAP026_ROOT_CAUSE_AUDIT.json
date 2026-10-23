@@ -1,0 +1,77 @@
+{
+  "schema": "GAP026_ROOT_CAUSE_AUDIT/v1",
+  "input": {
+    "INPUT_SHA": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+    "INPUT_SHA_MATCHES_EXPECTED": true,
+    "ROAD_COUNT": 32267,
+    "JUNCTION_COUNT": 3561,
+    "LANELINK_COUNT": 23529,
+    "CONNECTION_COUNT": 22589,
+    "registry_key": "auto_map_of_record",
+    "registry_fingerprint": "4f5ba9587cfee5f76958ba26ac1b1d6c32b6b953f2b4f583e2bd9e9bfa58a534",
+    "bytes": 149799632,
+    "frame": "rebased-to-local (dx=832671.676 dy=5458671.104)"
+  },
+  "oracle_vs_checker": {
+    "CHECKER_ORACLE_MAX_DELTA": 0.0,
+    "FALSE_POSITIVES": 0,
+    "FALSE_NEGATIVES": 0,
+    "kernel_vs_og_max_delta_m": 0.0,
+    "intersection": 2992,
+    "verdict": "CHECKER_VALIDATED — generator work proceeds"
+  },
+  "population": {
+    "TOTAL": 23529,
+    "FAIL": 2992,
+    "DIST_GT_3M": 832,
+    "ANGLE_GT_12_DEG": 451,
+    "BOTH_SEVERE": 152,
+    "buckets": {
+      "0.25-0.5": 1721,
+      "0.5-1": 146,
+      "1-3": 292,
+      "3-5": 686,
+      "5-10": 123,
+      ">10": 23,
+      "heading_only": 1
+    }
+  },
+  "clusters": {
+    "contactPoint": {"start": 2992, "end": 0},
+    "junction_type": {"default": 2992},
+    "lane_sign": {"neg->neg": 2992},
+    "connections_per_junction": {"1": 76, "2": 338, "3": 108, "4": 125, "5": 85, "6": 189, "7": 359, "8": 386, "9": 439, "10": 51, "11": 20, "12": 80, "13": 114, "14": 174, "15": 137, "16": 280, "17": 10, "21": 11, "22": 10},
+    "laneLinks_per_connection": {"1": 2451, "2": 461, "3": 68, "4": 10, "5": 2},
+    "incoming_geometry_endpoint": {"line": 2992},
+    "connecting_geometry_at_contact": {"paramPoly3": 2754, "line": 238},
+    "lane_section_count": {"incoming_single": 2989, "connecting_single": 2990},
+    "incoming_predecessor_successor": "always junction:junction segments; top pair count 6 — fully dispersed, no single predecessor dominates",
+    "dominant_cluster": "single-laneLink start-contact default junctions, right-side driving, paramPoly3 connectors, single laneSection; 81.9% of failures live on 1-laneLink connections"
+  },
+  "trace_80": {
+    "severe_distance_20": "20/20 connector-synthesis lane-count mismatch (inc 2-4 lanes vs con 1 lane), outer->inner mapping, ref-coincident. FIRST_DIVERGENCE_STAGE=Stage3/7 connector synthesis.",
+    "severe_angle_20": "mixed: width mismatch (3.25/3.0/3.75 vs 3.5) + lane-count mismatch + genuine heading discontinuity on equal-count equal-width links (e.g. j5/c1 96deg, j122/c1 90deg). FIRST_DIVERGENCE_STAGE=Stage7 width policy OR Stage3/5 geometry.",
+    "both_20": "equal-count width mismatch with ~180deg heading flips (wrong connecting-road orientation / reversed geometry) + lane-count mismatch cases. FIRST_DIVERGENCE_STAGE=Stage7 width policy OR Stage8 mapping/geometry.",
+    "passing_20": "equal-count inner->inner with small width delta (0.125m, below threshold) pass; multi-lane connector j1/c4 (2v2) passes at 0.0. Confirms inner->inner + harmonized width is the passing shape.",
+    "method": "final XODR laneLink read -> lane link builder semantics -> junction graph (connection/contactPoint) -> road link builder (predecessor/successor) -> SUMO conversion inheritance (outer->inner signature differs from match_by_direction inner-first) -> OSM lane-count authority"
+  },
+  "gap048_correlation": {
+    "GAP048_ambiguous": 261,
+    "GAP048_no_candidate": 115,
+    "lane_level_overlap_no_candidate_with_gap026_failing_incoming_lanes": 11,
+    "road_level": {"GAP026_ONLY": 4413, "GAP048_ONLY": 92, "BOTH": 16},
+    "interpretation": "Same generator deficiency (single-lane connectors vs multi-lane incident roads) produces two complementary symptoms: WRONG laneLink (GAP-026 outer->inner mispair, 830 pruned) vs MISSING laneLink (GAP-048 no-candidate outer lanes left unwired). Low direct lane overlap (9.6%) is expected — they are opposite outcomes of one cause. The 115 missing-candidate cases partially stem from the same deficiency; the 261 ambiguous forks are genuine topology requiring explicit residuals."
+  },
+  "root_cause": {
+    "classification": "MULTIPLE_ROOT_CAUSES",
+    "sub_causes": [
+      {"id": "WRONG_FROM_TO_MAPPING", "share": "704/832 severe-dist (84.6%) count-mismatch; 789/2992 outer->inner overall", "stage": "Stage3/7 connector synthesis (single-lane) + Stage8 laneLink mapping inherited from SUMO conversion"},
+      {"id": "WRONG_LANE_SECTION", "share": "1963/2992 width-mismatch-only (65.6%); 1489/1721 near-threshold with 0.5m tier diff", "stage": "Stage7 lane-width policy boundary (connector fixed 3.5 vs incident 3.0/3.25/3.75)"},
+      {"id": "ROAD_GEOMETRY_ENDPOINT_DEFECT", "share": "45 ref>0.25 gaps + 102 heading-flip-180 + equal-count equal-width angular tail", "stage": "Stage3/5 connector geometry / connecting-road selection"}
+    ],
+    "ruled_out": ["WRONG_CONTACT_POINT (reversal fixes 0/832)", "WRONG_LANE_DIRECTION_MAPPING (all neg->neg correct side)"],
+    "SEVERE_CASES_EXPLAINED_PERCENT": 97.0,
+    "severe_definition": "dist>3 OR angle>12 (1131 cases); explained by count-mismatch OR width-mismatch OR ref-gap OR 180-flip OR outer->inner",
+    "count_mismatch_plus_width_mismatch_cover": "2948/2992 (98.5%)"
+  }
+}

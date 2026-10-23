@@ -1,0 +1,63 @@
+{
+  "deliverable_id": "MANUAL_AND_SMALL_XODR_RUNTIME_MATRIX",
+  "run_id": "carla_run_20261021T224543Z_7ba701 + bounded follow-on",
+  "carla_exe_sha256_launcher": "0bc4b3d089470ffdc91a2ec6bf2f26187de271d0e9e71a01beee8416633c7320",
+  "launch_command": "E:\\CARLA\\CARLA_0.9.16\\CarlaUE4.exe -carla-rpc-port=2000 -carla-streaming-port=2001 -RenderOffScreen -quality-level=Low -nosound",
+  "server_pids": {"launcher": 36076, "shipping": 22152},
+  "stage_a_manual_grid0828": {
+    "status": "PASS",
+    "method": "client.load_world('Grid0828') on the live packaged server",
+    "map_identity": "Grid0828/Maps/Grid0828/Grid0828",
+    "exact_identity_confirmed": true,
+    "map_substitution_occurred": false,
+    "tick_after_load_frame": 2383,
+    "tick_before_sensor_frame": 4231,
+    "tick_after_sensor_frame": 4238,
+    "ticks_advanced": true,
+    "native_crash": false,
+    "waypoint_check": "not executed (diagnostic scope limited to load + tick + sensor)",
+    "vehicle_spawn_check": "not executed",
+    "restored_settings": "n/a (server terminated by owned PID after measurement)"
+  },
+  "stage_b_small_standalone_xodr": {
+    "status": "DESIGN_ONLY_NOT_EXECUTED_LIVE",
+    "rationale": "Live generate_opendrive_world() with an unverified payload risks the deterministic native fatal (LowLevelFatalError road-length assert) documented in docs/archive/root_reports_pre_20260912/G3_LENGTH_EPSILON_EVIDENCE.json. Injecting a synthetic payload into a live server would destroy the crash-free session without adding evidence.",
+    "required_conditions_before_live_execution": [
+      "exact payload SHA-256 recorded and bound to the fixture",
+      "no built-in fallback path permitted (loader must fail closed)",
+      "runtime map identity asserted after load",
+      "bounded wait with explicit timeout classification",
+      "error classification wired to ultimate_pipeline.core.opendrive_gen_diagnostic.classify_failure",
+      "complete cleanup of the generated world and streaming state"
+    ],
+    "loader_available": "ultimate_pipeline/core/carla_opendrive_loader.py (strict generate_opendrive_world path, NEW-256 classification)",
+    "verified_road_network_check": "not performed"
+  },
+  "stage_c_minimal_rendering_sensor": {
+    "status": "PASS",
+    "blueprint": "sensor.camera.rgb",
+    "resolution": "640x480",
+    "fov": 90,
+    "capture_mode": "real rendering (no -RenderOffScreen substitution for the camera test; server itself runs offscreen)",
+    "callback_count": 2,
+    "raw_bytes": 1228800,
+    "expected_bytes": 1228800,
+    "shape_ok": true,
+    "pixel_mean": 155.49832139756944,
+    "pixel_std": 18.566156971282286,
+    "pixel_max": 244,
+    "nonempty_rendered_pixels": true,
+    "sensor_callback_complete": true,
+    "memory_telemetry": "GPU 3847 MiB used / 2177 MiB free after Grid0828 load; CPU ~4.7 GiB working set for the shipping process",
+    "rig_qualification": "DIAGNOSTIC ONLY — does not qualify the frozen RQ3 rig (no semantic segmentation, no LiDAR, reduced resolution)"
+  },
+  "cleanup": {
+    "server_terminated": true,
+    "method": "Stop-Process on owned PIDs only (22152, 36076); no global taskkill",
+    "gpu_after_termination_mib": {"used": 477, "free": 5547},
+    "worktrees_touched": "none",
+    "protected_install_modified": false
+  },
+  "classification": "NO_RQ3_DATASET_CLAIM",
+  "independent_review_status": "INDEPENDENT_REVIEW_NOT_RUN"
+}

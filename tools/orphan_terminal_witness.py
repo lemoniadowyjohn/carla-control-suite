@@ -32,24 +32,17 @@ INFINITE = 0xFFFFFFFF
 WAIT_OBJECT_0 = 0x00000000
 STILL_ACTIVE = 259
 
-_k = ctypes.WinDLL("kernel32", use_last_error=True)
-_k.OpenProcess.argtypes = [ctypes.c_uint32, ctypes.c_bool, ctypes.c_uint32]
-_k.OpenProcess.restype = ctypes.c_void_p
-_k.WaitForSingleObject.argtypes = [ctypes.c_void_p, ctypes.c_uint32]
-_k.WaitForSingleObject.restype = ctypes.c_uint32
-_k.GetExitCodeProcess.argtypes = [ctypes.c_void_p,
-                                  ctypes.POINTER(ctypes.c_uint32)]
-_k.GetExitCodeProcess.restype = ctypes.c_bool
+
+def _require_kernel32() -> None:
+    """Raise if kernel32 handle is unavailable (non-Windows or stripped ctypes)."""
+    if _k is None:
+        raise OSError(f"_require_kernel32 requires Windows: ctypes.WinDLL unavailable on {sys.platform}")
 
 
+# ctypes.Structure classes: platform-independent (used in annotations only
+# until the guarded _k paths are taken at call time).
 class _FT(ctypes.Structure):
     _fields_ = [("lo", ctypes.c_uint32), ("hi", ctypes.c_uint32)]
-
-
-_k.GetProcessTimes.argtypes = [ctypes.c_void_p,
-                               ctypes.POINTER(_FT), ctypes.POINTER(_FT),
-                               ctypes.POINTER(_FT), ctypes.POINTER(_FT)]
-_k.GetProcessTimes.restype = ctypes.c_bool
 
 
 class _IO(ctypes.Structure):
@@ -59,9 +52,27 @@ class _IO(ctypes.Structure):
         "WriteTransferCount", "OtherTransferCount")]
 
 
-_k.GetProcessIoCounters.argtypes = [ctypes.c_void_p,
-                                     ctypes.POINTER(_IO)]
-_k.GetProcessIoCounters.restype = ctypes.c_bool
+# GAP-055: ctypes.WinDLL exists only on Windows. Import-time WinDLL would abort
+# collection/usage on Linux; bind only on win32, else _k stays None and any
+# actual use fails loudly at call time.
+if sys.platform == "win32":
+    _k = ctypes.WinDLL("kernel32", use_last_error=True)
+    _k.OpenProcess.argtypes = [ctypes.c_uint32, ctypes.c_bool, ctypes.c_uint32]
+    _k.OpenProcess.restype = ctypes.c_void_p
+    _k.WaitForSingleObject.argtypes = [ctypes.c_void_p, ctypes.c_uint32]
+    _k.WaitForSingleObject.restype = ctypes.c_uint32
+    _k.GetExitCodeProcess.argtypes = [ctypes.c_void_p,
+                                      ctypes.POINTER(ctypes.c_uint32)]
+    _k.GetExitCodeProcess.restype = ctypes.c_bool
+    _k.GetProcessTimes.argtypes = [ctypes.c_void_p,
+                                   ctypes.POINTER(_FT), ctypes.POINTER(_FT),
+                                   ctypes.POINTER(_FT), ctypes.POINTER(_FT)]
+    _k.GetProcessTimes.restype = ctypes.c_bool
+    _k.GetProcessIoCounters.argtypes = [ctypes.c_void_p,
+                                        ctypes.POINTER(_IO)]
+    _k.GetProcessIoCounters.restype = ctypes.c_bool
+else:
+    _k = None
 
 
 def _utcnow() -> str:
@@ -120,6 +131,8 @@ def main() -> int:
     ap.add_argument("--log-path", default="")
     ap.add_argument("--importsettings-path", default="")
     args = ap.parse_args()
+
+    _require_kernel32()
 
     out = Path(args.out_dir)
     out.mkdir(parents=True, exist_ok=True)

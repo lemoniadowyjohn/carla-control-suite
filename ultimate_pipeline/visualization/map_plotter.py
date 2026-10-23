@@ -125,6 +125,12 @@ class MapPlotter:
         x0, y0 = xs[idx], ys[idx]
         x1, y1 = xs[idx + 1], ys[idx + 1]
 
+        # Guard degenerate zero-length arrow segments (prevents matplotlib divide-by-zero)
+        dx = x1 - x0
+        dy = y1 - y0
+        if dx * dx + dy * dy < 1e-12:  # tolerance for floating-point zero
+            return
+
         arrow = FancyArrowPatch(
             (x0, y0), (x1, y1),
             arrowstyle=ArrowStyle.Simple(head_length=4, head_width=2),

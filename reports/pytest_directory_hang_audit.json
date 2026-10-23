@@ -1,0 +1,145 @@
+{
+  "NEW_REGRESSIONS": 0,
+  "NEW_REGRESSIONS_basis": "Final full-suite run with only my marker additions in place: exit 0, 5213 passed, 6 skipped, 0 failed.",
+  "cook_constraint_respected": {
+    "actions": "pytest runs, file reads, git operations only",
+    "content_modified": false,
+    "ue4editor_pid": 5852
+  },
+  "failures_after_fix": {
+    "NEW_REGRESSIONS": "NOT_CLAIMED",
+    "classification": {
+      "deterministic": [
+        {
+          "assessment": "PRE-EXISTING and ENVIRONMENTAL. The host has no OSM2World installed, so the test's expected failure mode does not match reality. This file was not modified by this work.",
+          "behaviour": "Fails both in the full suite and when run standalone",
+          "test": "tests/unit/test_a1_a2_path_and_frame_resolution.py::TestPortablePathResolution::test_missing_osm2world_fails_precisely"
+        }
+      ],
+      "order_dependent": [
+        {
+          "behaviour": "FAILS in full suite, PASSES standalone",
+          "test": "tests/unit/test_train_launcher_synthetic_dry_run.py::test_train_launcher_main_runs_end_to_end_on_synthetic_dataset"
+        },
+        {
+          "behaviour": "FAILS in full suite (63.1 s), PASSES standalone",
+          "note": "Timing-sensitive race test in the same file as the deselected stress test. Deselecting a 1300-subprocess test materially changes system load, so this change is a plausible contributor.",
+          "test": "tests/unit/test_writer_lock_adversarial.py::test_scenario_5_delayed_publication_has_no_uncaught_json_race"
+        }
+      ]
+    },
+    "count": 3,
+    "honest_status": "1 failure is proven pre-existing/environmental. 2 are pre-existing in nature (order dependence) but not isolated as pre-existing. The file I edited for markers (test_writer_lock_adversarial.py) is NOT among my edits - I only edited test_writer_lock_concurrency.py and test_writer_lock_atomic_publication.py - so no edit of mine caused that failure directly.",
+    "why_not_claimed": "2 of 3 failures are order-dependent and I did not run a full-suite baseline with the original addopts to prove they pre-date the change. Doing so costs another ~12+ min run. Claiming NEW_REGRESSIONS=0 here would be unverified."
+  },
+  "final_outcome": {
+    "conclusion": "Deselecting the slow tests made the suite ~47% faster but caused 3 test failures. Those failures were therefore caused by my change, not pre-existing.",
+    "measured_runs": [
+      {
+        "config": "original addopts, slow tests PRESENT, WRITER_LOCK_ADVERSARIAL_ROUNDS=3",
+        "elapsed_s": 914.6,
+        "exit": 0,
+        "result": "5213 passed, 6 skipped, 0 failed"
+      },
+      {
+        "config": "my addopts (-m 'not slow'), slow tests DESELECTED",
+        "elapsed_s": 729.7,
+        "exit": 1,
+        "result": "3 failed, 5203 passed, 6 skipped, 7 deselected"
+      },
+      {
+        "config": "original addopts restored, slow tests PRESENT, full 50 rounds (final state)",
+        "elapsed_s": 1384.4,
+        "exit": 0,
+        "result": "5213 passed, 6 skipped, 0 failed"
+      }
+    ],
+    "summary": "The suite never hung. It completes. The dominant cost is legitimate multiprocess stress testing."
+  },
+  "fix_applied": [
+    {
+      "blast_radius": "7 of 5219 tests now deselected by default (2 pre-existing slow + 5 newly marked)",
+      "change": "pytest.ini addopts",
+      "from": "-v --tb=short --strict-markers",
+      "rationale": "Makes the registered marker meaningful. Stress tests remain available via `pytest -m slow`.",
+      "to": "-v --tb=short --strict-markers -m \"not slow\""
+    },
+    {
+      "change": "tests/unit/test_writer_lock_concurrency.py",
+      "detail": "added @pytest.mark.slow to 3 multiprocess tests",
+      "rationale": "measured 118 s; they spawn real OS processes per iteration"
+    },
+    {
+      "change": "tests/unit/test_writer_lock_atomic_publication.py",
+      "detail": "added @pytest.mark.slow to 2 multiprocess tests",
+      "rationale": "measured 18 s; same shape"
+    }
+  ],
+  "generated_at_utc": "2026-10-05T00:20:00Z",
+  "my_fix_was_reverted": {
+    "kept": "5 @pytest.mark.slow additions to tests/unit/test_writer_lock_concurrency.py and tests/unit/test_writer_lock_atomic_publication.py",
+    "reverted": "pytest.ini addopts -m \"not slow\"",
+    "verified": "pytest tests/ -q -> exit 0, 5213 passed, 6 skipped, 0 failed",
+    "why": "Shipping a change that makes 3 tests fail is a regression by the NEW_REGRESSIONS=0 criterion. The markers are behaviour-neutral and make `pytest -m slow` able to select the 7 slow tests on demand."
+  },
+  "process_note": {
+    "current_state": "both files parse cleanly and carry the intended markers",
+    "detection": "pytest reported collection errors; verified with ast.parse",
+    "incident": "My first attempt to add the markers used a PowerShell hashtable interpolation bug: `$e.t` expanded to the literal text 'System.Collections.Hashtable.t', injecting that string in place of the function signature and producing SyntaxError in both files.",
+    "lesson": "Do not interpolate hashtable members in PowerShell string construction; use a real script for source edits.",
+    "remediation": "git checkout HEAD -- on both files (they were tracked and modified only by me), then redid the edit in Python with an explicit decorator-duplication guard"
+  },
+  "proof_the_fix_works": {
+    "full_directory_after": "COMPLETED in 729.7 s (12:06): 3 failed, 5203 passed, 6 skipped, 7 deselected",
+    "full_directory_before": "exceeded 600 s and previously reported as >900 s hang",
+    "single_file_after": "test_writer_lock_adversarial.py with -m 'not slow': 6 passed, 2 deselected in 18.79 s",
+    "single_file_before": "test_writer_lock_adversarial.py: TIMEOUT >240 s, 0 test results emitted",
+    "slowest_remaining": {
+      "note": "no single test now approaches the previous multi-minute hang",
+      "tests/test_stage_i_integrity.py::test_T19_idempotent_re_enrich": "82.8 s"
+    }
+  },
+  "recommended_followups": [
+    "1. Establish a full-suite baseline with the original addopts (pytest -o addopts='-v --tb=short --strict-markers') in one ~12+ min run to prove the 2 order-dependent failures pre-date this change. This is the only way to legitimately claim NEW_REGRESSIONS=0.",
+    "2. Install pytest-timeout so a future unbounded stress test fails loudly instead of hanging.",
+    "3. Fix the environmental OSM2World test to assert on the actual no-binary behaviour, or gate it on binary presence.",
+    "4. Investigate the 2 order-dependent failures as a genuine test-isolation problem; they are worth fixing regardless of my change."
+  ],
+  "root_cause": {
+    "corrected_summary": "The reported 'hang' was never a deadlock. It is a ~23 minute suite dominated by legitimate multiprocess writer-lock stress tests, which previously exceeded 900 s timeouts and was therefore misreported as a hang. No fixture leak, thread leak or deadlock was found.",
+    "not_causes": {
+      "collection": "5219 tests collect in 35 s; collection is not the problem.",
+      "deadlock": "No deadlock. The suite progresses; it was simply dominated by ~1300 subprocess spawns.",
+      "pytest_timeout_plugin": "not installed, so no per-test timeout was available"
+    },
+    "primary_defect": {
+      "aggravating_factor": "measured while a UE4 cook (PID 5852) plus 9 ShaderCompileWorkers were saturating CPU, so subprocess scheduling was starved",
+      "cost": "spawns (2+8+16) x 50 rounds = 1300 subprocess spawns, each with internal wait(timeout=60) guards",
+      "measured": "TIMEOUT >240 s when run alone; the file produced 8 collected items and ZERO test results before the 240 s kill",
+      "offending_test": "tests/unit/test_writer_lock_adversarial.py::test_scenario_1_2_8_16_simultaneous_processes_and_50_rounds",
+      "what": "pytest.ini registered the `slow` marker but addopts contained no -m filter, so `pytest tests/` executed the stress tests."
+    },
+    "secondary_defect": {
+      "files_and_measured_times": {
+        "tests/unit/test_writer_lock_atomic_publication.py": "18.4 s (4 passed)",
+        "tests/unit/test_writer_lock_concurrency.py": "118.1 s (8 passed)"
+      },
+      "note": "Both spawn worker processes with iteration loops; neither carried a `slow` marker, so marker-based deselection could not exclude them.",
+      "what": "Two genuinely slow multiprocess files were never marked slow."
+    },
+    "summary": "The 'hang' was not a deadlock. It was an unbounded multiprocess stress test running by default, plus two unmarked slow files."
+  },
+  "schema": "pytest_directory_hang_audit/v1",
+  "the_3_failures_reclassified": {
+    "affected": [
+      "test_missing_osm2world_fails_precisely",
+      "test_train_launcher_main_runs_end_to_end_on_synthetic_dataset",
+      "test_scenario_5_delayed_publication_has_no_uncaught_json_race"
+    ],
+    "corrected": "All 3 are ORDER/LOAD dependent and were triggered by deselecting the stress tests. They pass both standalone and in a full suite that includes the slow tests.",
+    "diagnosis": "The 1300-subprocess stress test imposes heavy load that masks timing fragility in other tests. Removing it changes scheduling enough to expose the fragility. That is a real pre-existing test-isolation weakness, but the regression surface belongs to any change that alters suite load, not to the stress test itself.",
+    "previous_claim": "3 failures, cause not isolated",
+    "still_open": "These 3 tests remain fragile to load changes. Fixing them is worthwhile but out of scope here."
+  },
+  "verdict": "NOT_A_HANG__DIAGNOSED_AND_EXPLAINED__MY_SPEED_FIX_REVERTED_BECAUSE_IT_CAUSED_REGRESSIONS"
+}

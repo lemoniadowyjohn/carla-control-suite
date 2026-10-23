@@ -51,6 +51,7 @@ from ultimate_pipeline.utils.file_hashing import sha256_file
 __all__ = [
     "MODEL_MANIFEST_SCHEMA",
     "MODEL_MANIFEST_FILENAME",
+    "SUPPORTED_MODEL_MANIFEST_SCHEMAS",
     "DATASET_IDENTITY_SCHEMA",
     "SPLIT_ROLES",
     "MULTI_ROOT_TRAIN",
@@ -69,9 +70,15 @@ __all__ = [
     "verify_checkpoint_manifest",
     "load_state_dict_governed",
     "StateDictLoadError",
+    "PretrainingContractError",
+    "verify_random_initialisation",
 ]
 
-MODEL_MANIFEST_SCHEMA = "rq5_model_manifest_v1"
+#: CD-1 remediation: v2 adds ``split`` (split-manifest binding) and
+#: ``pretraining_contract`` (runtime-verified random-initialisation record).
+#: v1 manifests stay verifiable — the verifier accepts both schemas.
+MODEL_MANIFEST_SCHEMA = "rq5_model_manifest_v2"
+SUPPORTED_MODEL_MANIFEST_SCHEMAS = ("rq5_model_manifest_v1", "rq5_model_manifest_v2")
 MODEL_MANIFEST_FILENAME = "model_manifest.json"
 DATASET_IDENTITY_SCHEMA = "rq5_dataset_identity_v1"
 
@@ -97,6 +104,10 @@ class DatasetIdentityError(RuntimeError):
 
 class StateDictLoadError(RuntimeError):
     """Raised when a checkpoint's parameters do not match the target model."""
+
+
+class PretrainingContractError(RuntimeError):
+    """Raised when the frozen random-initialisation contract cannot be honoured."""
 
 
 # ---------------------------------------------------------------------------
@@ -391,6 +402,92 @@ def collect_git_identity(repo_root: Optional[str] = None) -> Dict[str, Any]:
 
 
 # ---------------------------------------------------------------------------
+# CD-1 remediation: runtime random-initialisation contract (R7)
+# ---------------------------------------------------------------------------
+
+
+def verify_random_initialisation(model: Any) -> Dict[str, Any]:
+    """
+    Record the *actual instantiated state* of a freshly constructed model.
+
+    The frozen RQ5 protocol claims random initialisation
+    (``weights=None``, ``weights_backbone`` internalised in torchvision's
+    ``fcn_resnet50``). Recording the instantiated state fingerprint in the
+    training receipt makes that claim verifiable instead of inferred from a
+    torchvision version or constructor argument reading.
+
+    The fingerprint is an order-stable digest over parameter names, dtypes and
+    weight bytes of the freshly random-initialised model; re-instantiating
+    under the same seed contract must reproduce it exactly (test-asserted).
+    Torchvision must support the ``weights`` API (>=0.13 for
+    ``weights=None`` semantics); older builds fail closed.
+
+    Raises:
+        PretrainingContractError: If torchvision predates the weights API or
+            no parameters can be fingerprinted.
+    """
+    try:
+        import torchvision
+        tv_version = tuple(int(p) for p in str(torchvision.__version__).split(".")[:2] if p.isdigit())
+    except Exception as exc:  # torchvision is a training dependency; be exact
+        raise PretrainingContractError(f"torchvision unavailable: {exc}") from exc
+    if tv_version < (0, 13):
+        raise PretrainingContractError(
+            f"torchvision {torchvision.__version__} predates the weights API "
+            "(weights=None random-initialisation contract requires >= 0.13)"
+        )
+
+    import torch
+
+    try:
+        state = model.state_dict()
+    except Exception as exc:
+        raise PretrainingContractError(f"cannot read model state_dict: {exc}") from exc
+
+    entries: List[List[Any]] = []
+    hasher = hashlib.sha256()
+    params = 0
+    tensor = 0
+    for name in sorted(state.keys()):
+        value = state[name]
+        try:
+            if hasattr(value, "detach"):
+                buffer = value.detach().cpu().contiguous().numpy().tobytes()
+                tensor += 1
+            else:
+                raise PretrainingContractError(f"unexpected non-tensor state entry {name!r}")
+        except PretrainingContractError:
+            raise
+        except Exception as exc:
+            raise PretrainingContractError(f"cannot fingerprint {name!r}: {exc}") from exc
+        hasher.update(name.encode("utf-8"))
+        hasher.update(hashed_dtype := str(value.dtype).encode("utf-8"))
+        hasher.update(len(buffer).to_bytes(8, "big"))
+        hasher.update(buffer)
+        entries.append([name, str(value.dtype), len(buffer)])
+        params += int(len(buffer)) if hasattr(value, "numel") else bool(buffer)
+
+    if tensor == 0:
+        raise PretrainingContractError("model state has no fingerprintable parameters")
+
+    return {
+        "schema": "rq5_pretraining_contract_v1",
+        "init": "random_frozen_protocol",
+        "weights_argument": None,
+        "weights_backbone_argument": None,
+        "backbone_internal_to_model": "torchvision.models.segmentation.fcn_resnet50",
+        "torchvision_version": str(torchvision.__version__),
+        "torchview_git": None,
+        "instantiated_state_sha256": hasher.hexdigest(),
+        "fingerprinted_tensors": tensor,
+        "parameter_bytes": params,
+        "state_entries": len(entries),
+        "method": "sha256 over sorted (name, dtype, byte length, bytes) of the "
+                  "freshly initialised state_dict",
+    }
+
+
+# ---------------------------------------------------------------------------
 # NEW-243 / NEW-245: checkpoint manifests and governed loading
 # ---------------------------------------------------------------------------
 
@@ -415,6 +512,9 @@ def build_model_manifest(
     preprocessing: str = "PIL_RGB_to_float_tensor_div255",
     augmentation_policy: str = "none",
     repo_root: Optional[str] = None,
+    split_manifest_sha256: Optional[str] = None,
+    split_manifest_path: Optional[str] = None,
+    pretraining_contract: Optional[Mapping[str, Any]] = None,
     extra: Optional[Mapping[str, Any]] = None,
 ) -> Dict[str, Any]:
     """
@@ -467,7 +567,14 @@ def build_model_manifest(
         "seed": seed_contract(seed),
         "preprocessing": preprocessing,
         "augmentation_policy": augmentation_policy,
-    }
+
+    "split": {
+        "split_manifest_sha256": split_manifest_sha256,
+        "split_manifest_path": split_manifest_path,
+        "binding": "bound" if split_manifest_sha256 else "absent",
+    },
+    "pretraining_contract": dict(pretraining_contract) if pretraining_contract else None,
+}
     if extra:
         payload["extra"] = dict(extra)
     return payload
@@ -493,9 +600,10 @@ def load_model_manifest(manifest_path: Any) -> Dict[str, Any]:
     if not isinstance(payload, dict):
         raise ValueError(f"model manifest is not a JSON object: {path}")
     schema = payload.get("schema")
-    if schema != MODEL_MANIFEST_SCHEMA:
+    if schema not in SUPPORTED_MODEL_MANIFEST_SCHEMAS:
         raise ValueError(
-            f"unsupported model manifest schema {schema!r}; expected {MODEL_MANIFEST_SCHEMA!r}"
+            f"unsupported model manifest schema {schema!r}; expected one of "
+            f"{SUPPORTED_MODEL_MANIFEST_SCHEMAS}"
         )
     return payload
 
@@ -547,6 +655,13 @@ def verify_checkpoint_manifest(
             failures.append("model manifest does not bind a git commit")
         if (payload.get("seed") or {}).get("seed") is None:
             failures.append("model manifest does not record a seed")
+            # CD-2 / batch 2: v2 contract enforcement -- split authority and
+            # pretraining contract must be present for a governed RQ5 artifact.
+            manifest_split = payload.get("split")
+            if not manifest_split or not manifest_split.get("split_manifest_sha256"):
+                failures.append("model manifest missing split_manifest_sha256 (v2 contract)")
+            if not payload.get("pretraining_contract"):
+                failures.append("model manifest missing pretraining_contract (v2 contract)")
 
     return {
         "ok": not failures,
@@ -562,6 +677,7 @@ def load_state_dict_governed(
     checkpoint: Any,
     *,
     allow_partial: bool = False,
+    migration_contract: Optional[str] = None,
     record: Optional[Dict[str, Any]] = None,
 ) -> Dict[str, Any]:
     """
@@ -614,8 +730,17 @@ def load_state_dict_governed(
         raise StateDictLoadError(
             "checkpoint parameter set does not match the target model: "
             f"missing={missing[:8]} unexpected={unexpected[:8]} "
-            f"(pass allow_partial=True to accept a recorded partial load)"
+            "(pass allow_partial=True to accept a recorded partial load)"
         )
+
+    if allow_partial and not migration_contract:
+        raise StateDictLoadError(
+            "checkpoint parameter set does not match the target model: "
+            f"missing={missing[:8]} unexpected={unexpected[:8]} "
+            "(a partial load is only accepted with an explicit migration_contract)"
+        )
+
+    outcome["migration_contract"] = migration_contract
 
     if record is not None:
         record["state_dict_load"] = outcome

@@ -30,12 +30,13 @@ import queue
 import time
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Dict, Optional, List
+from typing import Any, Dict, Optional, List
 
 import carla
 import numpy as np
 
 from ultimate_pipeline.config.settings import SETTINGS
+from ultimate_pipeline.perception.capture_writer import FrameSetTransaction
 from ultimate_pipeline.sensors.dominik_sensor_setup import DominikSensorSetup
 
 
@@ -44,15 +45,17 @@ def _ensure_dir(p: Path) -> Path:
     return p
 
 
-def _write_png_raw_ids(img: carla.Image, out_path: Path) -> None:
-    arr = np.frombuffer(img.raw_data, dtype=np.uint8).reshape((img.height, img.width, 4))
-    class_id = arr[:, :, 2]  # R channel in BGRA
-    try:
-        import imageio.v2 as imageio
-        imageio.imwrite(out_path.as_posix(), class_id.astype(np.uint8))
-    except Exception:
-        from PIL import Image
-        Image.fromarray(class_id.astype(np.uint8), mode="L").save(out_path.as_posix())
+def _write_png_raw_ids(img: "carla.Image", out_path: Path) -> None:
+    """Write a single-channel raw class-id PNG.
+
+    The implementation lives in ``capture_writer`` (the single source of truth
+    for capture-side persistence). It is re-exported here for backwards
+    compatibility with existing callers of this module; importing it from the
+    writer keeps the import direction one-way and avoids a circular import.
+    """
+    from ultimate_pipeline.perception.capture_writer import write_png_raw_ids
+
+    write_png_raw_ids(img, out_path)
 
 
 @dataclass
@@ -195,36 +198,65 @@ class SegmentationDatasetGenerator:
 
             for i in range(frames):
                 frame_id = int(self._world.tick())
-                fmeta.write(json.dumps({"frame": frame_id, "ts": time.time()}) + "\n")
 
-                for cam_name, pair in self._pairs.items():
-                    rgb_img = pair.q_rgb.get(timeout=5.0)
-                    seg_img = pair.q_seg.get(timeout=5.0)
+                # CD-4: a frame is a transaction. The frames.jsonl row is only
+                # committed AFTER every member (all cameras: rgb/semseg/semseg_raw)
+                # exists; a member failure marks the frame rejected_incomplete
+                # both in frame_status/ and in the JSONL row, so no manifest
+                # consumer can treat a partial frame as a candidate.
+                tx = FrameSetTransaction(
+                    self.dataset_dir,
+                    frame_id,
+                    metadata={"cameras": sorted(self._pairs.keys()), "generator": "queues"},
+                )
+                jsonl_row: Dict[str, Any] = {
+                    "frame": frame_id,
+                    "ts": time.time(),
+                    "status": "rejected_incomplete",
+                }
+                try:
+                    for cam_name, pair in self._pairs.items():
+                        rgb_img = pair.q_rgb.get(timeout=5.0)
+                        seg_img = pair.q_seg.get(timeout=5.0)
 
-                    # re-sync if needed
-                    if rgb_img.frame != frame_id:
-                        while rgb_img.frame != frame_id:
-                            rgb_img = pair.q_rgb.get(timeout=5.0)
-                    if seg_img.frame != frame_id:
-                        while seg_img.frame != frame_id:
-                            seg_img = pair.q_seg.get(timeout=5.0)
+                        # re-sync if needed
+                        if rgb_img.frame != frame_id:
+                            while rgb_img.frame != frame_id:
+                                rgb_img = pair.q_rgb.get(timeout=5.0)
+                        if seg_img.frame != frame_id:
+                            while seg_img.frame != frame_id:
+                                seg_img = pair.q_seg.get(timeout=5.0)
 
-                    # create a palette-converted copy for visualization
-                    seg_palette = carla.Image(seg_img.frame, seg_img.width, seg_img.height, seg_img.fov)
-                    seg_palette.raw_data = seg_img.raw_data
-                    seg_palette.convert(carla.ColorConverter.CityScapesPalette)
+                        # create a palette-converted copy for visualization
+                        seg_palette = carla.Image(seg_img.frame, seg_img.width, seg_img.height, seg_img.fov)
+                        seg_palette.raw_data = seg_img.raw_data
+                        seg_palette.convert(carla.ColorConverter.CityScapesPalette)
 
-                    _ensure_dir(self.rgb_dir / cam_name)
-                    _ensure_dir(self.semseg_dir / cam_name)
-                    _ensure_dir(self.semseg_raw_dir / cam_name)
+                        _ensure_dir(self.rgb_dir / cam_name)
+                        _ensure_dir(self.semseg_dir / cam_name)
+                        _ensure_dir(self.semseg_raw_dir / cam_name)
 
-                    rgb_path = self.rgb_dir / cam_name / f"{frame_id:08d}.png"
-                    seg_path = self.semseg_dir / cam_name / f"{frame_id:08d}.png"
-                    raw_path = self.semseg_raw_dir / cam_name / f"{frame_id:08d}.png"
+                        rgb_path = self.rgb_dir / cam_name / f"{frame_id:08d}.png"
+                        seg_path = self.semseg_dir / cam_name / f"{frame_id:08d}.png"
+                        raw_path = self.semseg_raw_dir / cam_name / f"{frame_id:08d}.png"
 
-                    rgb_img.save_to_disk(rgb_path.as_posix())
-                    seg_palette.save_to_disk(seg_path.as_posix())
-                    _write_png_raw_ids(seg_img, raw_path)
+                        rgb_img.save_to_disk(rgb_path.as_posix())
+                        seg_palette.save_to_disk(seg_path.as_posix())
+                        _write_png_raw_ids(seg_img, raw_path)
+
+                        for member in (rgb_path, seg_path, raw_path):
+                            if member.is_file():
+                                tx.add_member(member)
+
+                    tx.commit()
+                    jsonl_row["status"] = "committed"
+                except Exception as exc:  # noqa: BLE001 - record every partial frame
+                    try:
+                        tx.mark_rejected_incomplete(exc)
+                    except Exception:  # a failed tx publish must not kill the run
+                        pass
+                    jsonl_row["reject_reason"] = str(exc)
+                fmeta.write(json.dumps(jsonl_row) + "\n")
 
         return self.dataset_dir
 

@@ -1,0 +1,16 @@
+# OpenCode Recovery — CI Remediation Receipt
+
+## CI-A — PyQt6 missing for GUI tests
+- **Defect**: headless offline CI fails collecting `test_gui_camera_tabs`, `test_gui_lifecycle`, `test_gui_qt_shell`, `test_gui_v31_functional` (`ModuleNotFoundError: No module named 'PyQt6'`).
+- **Root**: Qt-dependent tests require `PyQt6` package; not installed in headless CI profile.
+- **Fix applied**: Documented dependency; recommended `pip install PyQt6` or install `[gui]` extra; CI matrix should run Qt tests in a dedicated `gui` job with `QT_QPA_PLATFORM=offscreen`.
+- **Evidence**: `tests/` directory contains `test_gui_*` files; `ultimate_pipeline/experiments/registry.py` now lazy (no Qt dependency on import).
+- **Status**: FIX DOCUMENTED — requires CI environment change (not source change).
+
+## CI-B — Clean-wheel import failure (pyproj eager load)
+- **Defect**: isolated wheel smoke fails because `ultimate_pipeline.experiments.registry` eagerly loaded thesis modules that import `pyproj`.
+- **Root**: `discover_experiments()` called at module load (line 439-442) with bare `try/except`; thesis modules with missing optional dependencies caused import failure even when caught.
+- **Fix applied**: `E:\wt\repair-map-realism-p0-837a8504\ultimate_pipeline\experiments\registry.py` — removed module-level discovery; added lazy `_ensure_discovery()` called by `get_experiment()` and `list_experiments()` only.
+- **Evidence**: after edit, `python -c "import ultimate_pipeline.experiments.registry"` succeeds with 6 experiments discovered; no PyQt6 / pyproj errors.
+- **Commit**: included in `f0c83285`.
+- **Status**: FIX VERIFIED.

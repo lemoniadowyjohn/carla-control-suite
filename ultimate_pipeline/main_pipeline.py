@@ -50,6 +50,7 @@ import subprocess
 import statistics
 import sys
 import traceback
+import uuid
 import xml.etree.ElementTree as ET
 from datetime import datetime, timezone
 from pathlib import Path
@@ -574,6 +575,15 @@ from ultimate_pipeline.core.odr_io import (
 )
 from ultimate_pipeline.core.validation_report import ValidationReport
 from ultimate_pipeline.core.run_manifest import update_run_manifest
+from ultimate_pipeline.core.terminal_authority import (
+    revoke_stale_success,
+    generate_run_id,
+    generate_run_started_at,
+    compute_settings_digest,
+    get_source_sha,
+    get_effective_profile,
+    write_run_identity,
+)
 from ultimate_pipeline.utils.file_hashing import safe_md5_file
 from ultimate_pipeline.core.carla_utils import (
     ensure_carla_ready,
@@ -901,11 +911,19 @@ class MainPipeline:
         self.out_dir = self.settings.output_dir()
         ensure_dir(self.out_dir)
 
+        # Terminal run identity (generated once at admission)
+        self._run_id = generate_run_id()
+        self._run_started_at = generate_run_started_at()
+        self._source_sha = get_source_sha()
+        self._profile = get_effective_profile(self.settings)
+        self._settings_digest = compute_settings_digest(self.settings)
+        write_run_identity(self.out_dir, self._run_id, self._source_sha, self._profile, self._settings_digest, self._run_started_at)
+
         # Optional preanchoring provenance (opt-in; default OFF)
         self._preanchor_manifest: dict = {"applied": False}
         self._sumo_repair_meta: dict = {"enabled": False}
 
-        self.vreport = ValidationReport()
+        self.vreport = ValidationReport(run_id=self._run_id)
         self.qgate = QualityGateManager(self.vreport, logs_dir=self.settings.logs_dir())
 
         # 🚗 CARLA client (reliable, with recovery)
@@ -955,6 +973,44 @@ class MainPipeline:
     def _mark_stage(self, stage: str, *, message: str | None = None) -> None:
         self._run_stage = str(stage)
         self._write_run_status(status="running", stage=self._run_stage, message=message)
+
+# -----------------------------------------------------
+    # 🏷️ TERMINAL RUN IDENTITY & STALE SUCCESS REVOCATION
+    # -----------------------------------------------------
+    def _revoke_stale_success(self) -> None:
+        """Detect and revoke any pre-existing SUCCESS.txt before a new run mutates state.
+
+        Delegates to the standalone utility for testability and reuse.
+        """
+        revoke_stale_success(self.out_dir)
+
+    def _get_source_sha(self) -> str:
+        """Return the current Git commit SHA, or a deterministic placeholder."""
+        return get_source_sha()
+
+    def _get_effective_profile(self) -> str:
+        """Resolve the effective release profile from settings or environment."""
+        return get_effective_profile(self.settings)
+
+    def _compute_settings_digest(self) -> str:
+        """Compute a deterministic SHA-256 of the effective settings snapshot."""
+        return compute_settings_digest(self.settings)
+
+    def _write_run_identity(self) -> None:
+        """Write run_identity.json at admission time."""
+        write_run_identity(
+            self.out_dir,
+            self._run_id,
+            self._source_sha,
+            self._profile,
+            self._settings_digest,
+            self._run_started_at,
+        )
+
+    def _find_final_xodr(self) -> str:
+        """Return the path to the final XODR artifact for this run."""
+        s = self.settings
+        return str(s.stage_path("08_final"))
 
     # -----------------------------------------------------
     # 🚀 MAIN ENTRY
@@ -1364,6 +1420,45 @@ class MainPipeline:
             and (not auto_info["params_complete"])
             and self._offset_large(offset)
         )
+
+        # P0-E: governed georeference upgrade. When the final map still carries
+        # the bare Osm2Odr `+proj=tmerc` (no absolute origin) and its header
+        # offset matches the pinned frame-contract rebase, re-express that SAME
+        # rebase inside the projection (x_0/y_0) so the file becomes physically
+        # invertible (truthful GNSS) without touching any coordinate value.
+        # Opt out with UP_DISABLE_GEOF_ABSOLUTE_AUTOPIN=1 (legacy reproduction).
+        contract_georef = ""
+        embed_contract = False
+        embed_block_reason = ""
+        try:
+            from ultimate_pipeline.core.georef_utils import (
+                has_embedded_georef_origin,
+            )
+            from ultimate_pipeline.geometry.coordinate_frame_contract import (
+                REBASE_DX,
+                REBASE_DY,
+                open_drive_georeference,
+            )
+
+            contract_georef = open_drive_georeference()
+            if float(offset.get("x", 0.0)) == 0.0 and float(offset.get("y", 0.0)) == 0.0:
+                embed_block_reason = "offset_zero_or_missing"
+            elif abs(float(offset.get("x", 0.0)) - REBASE_DX) > 1e-3 or (
+                abs(float(offset.get("y", 0.0)) - REBASE_DY) > 1e-3
+            ):
+                embed_block_reason = "offset_not_pinned_rebase"
+            elif has_embedded_georef_origin(auto_info["norm"]):
+                embed_block_reason = "auto_georef_already_embeds_origin"
+            elif os.getenv("UP_DISABLE_GEOF_ABSOLUTE_AUTOPIN", "").strip().lower() in (
+                "1", "true", "yes", "on",
+            ):
+                embed_block_reason = "embed_autopin_disabled_by_env"
+            else:
+                embed_contract = True
+        except Exception as exc:
+            embed_block_reason = f"contract_unavailable:{exc.__class__.__name__}"
+            contract_georef = ""
+
         provenance = {
             "action": "skipped",
             "reason": "",
@@ -1393,18 +1488,38 @@ class MainPipeline:
                 tree.write(final_out, encoding="utf-8", xml_declaration=True)
                 provenance["action"] = "applied"
                 provenance["reason"] = "auto_georef_incomplete_and_offset_large"
+            elif embed_contract:
+                geo.text = normalize_georeference(contract_georef)
+                tree.write(final_out, encoding="utf-8", xml_declaration=True)
+                provenance["action"] = "embed_rebase_autopin"
+                provenance["reason"] = (
+                    "bare_georef_missing_absolute_origin;_pinned_rebase_embedded_in_proj_params;_no_coordinate_mutation"
+                )
+                provenance["contract_georef"] = contract_georef
+                provenance["rebase_embedded"] = {
+                    "x_0": -float(offset.get("x", 0.0)),
+                    "y_0": -float(offset.get("y", 0.0)),
+                }
             else:
                 if auto_info["norm"]:
                     geo.text = normalize_georeference(auto_info["norm"])
                     tree.write(final_out, encoding="utf-8", xml_declaration=True)
                 if not manual_present:
                     provenance["reason"] = "manual_xodr_missing"
+                    if embed_block_reason:
+                        provenance["reason"] += f";_embed_blocked:{embed_block_reason}"
                 elif not manual_info["valid"]:
                     provenance["reason"] = "manual_georef_invalid"
+                    if embed_block_reason:
+                        provenance["reason"] += f";_embed_blocked:{embed_block_reason}"
                 elif auto_info["params_complete"]:
                     provenance["reason"] = "auto_georef_complete"
+                    if embed_block_reason:
+                        provenance["reason"] += f";_embed_blocked:{embed_block_reason}"
                 else:
                     provenance["reason"] = "offset_small_or_missing"
+                    if embed_block_reason:
+                        provenance["reason"] += f";_embed_blocked:{embed_block_reason}"
         except Exception as exc:
             provenance["action"] = "failed"
             provenance["reason"] = f"exception:{exc.__class__.__name__}"
@@ -1627,6 +1742,9 @@ if str(_repo_root) not in sys.path:
         - on success: returns self.out_dir
         - on failure: writes crash artifacts into self.out_dir and re-raises
         """
+        # Revoke any stale SUCCESS from a previous run before mutating state.
+        self._revoke_stale_success()
+
         try:
             settings_blob = json.dumps(
                 {
@@ -1644,14 +1762,48 @@ if str(_repo_root) not in sys.path:
             self._mark_stage("start")
             self._validate_stage_capability_contract()
             self._run_internal()
-            try:
-                from ultimate_pipeline.quality.pipeline_health_summary import (
-                    write_pipeline_health_summary,
+
+            # ── TERMINAL CHAIN (strict ordering) ──────────────────────
+            # 1. Pipeline health (must succeed; not fail-open)
+            from ultimate_pipeline.quality.pipeline_health_summary import (
+                write_pipeline_health_summary,
+            )
+            from ultimate_pipeline.signals.registry import expected_health_gates
+            write_pipeline_health_summary(
+                self.out_dir, expected_gates=expected_health_gates()
+            )
+
+            # 2. Final run verdict (uses actual profile & settings)
+            from ultimate_pipeline.signals.verdict import write_final_run_verdict
+            final_xodr_path = self._find_final_xodr()
+            write_final_run_verdict(
+                self.out_dir,
+                profile=self._profile,
+                settings=self.settings,
+                final_xodr=final_xodr_path,
+            )
+
+            # 3. Registry-derived mandatory pack finalization
+            from ultimate_pipeline.signals.registry import mandatory_pack_artifacts
+            from ultimate_pipeline.utils.finalize_run_pack import (
+                finalize_run_pack,
+                verify_run_pack,
+            )
+            mandatory = mandatory_pack_artifacts(
+                self._profile,
+                final_xodr_path,
+                settings=self.settings,
+            )
+            finalize_run_pack(self.out_dir, mandatory, emit_success=True)
+
+            # 4. Post-publication verification
+            verify_result = verify_run_pack(self.out_dir)
+            if verify_result.get("status") != "PASS":
+                raise RuntimeError(
+                    f"Terminal pack verification failed: {verify_result.get('problems', [])}"
                 )
 
-                write_pipeline_health_summary(self.out_dir)
-            except Exception as e:
-                print(f"⚠️ Pipeline health summary skipped: {e}")
+            # 5. Terminal run status (only after full chain passes)
             self._write_run_status(status="ok", stage="done")
             return self.out_dir
         except Exception as e:
@@ -3814,36 +3966,6 @@ if str(_repo_root) not in sys.path:
             )
         return verdict
 
-    def _finalize_run_pack_gated(self, key_paths, *, mandatory=None,
-                                 summary: str = "") -> dict:
-        """Finalize the run pack, emitting the success marker only on PASS.
-
-        This is the production producer declared by
-        ``ultimate_pipeline/signals/registry.py`` for the ``SUCCESS_MARKER``
-        hard-gate signal. It enforces the registry invariant: the success
-        marker may only be published when the final run verdict is PASS. The
-        verdict is produced first, so a failing or unwritable verdict fails
-        closed and no success marker can appear.
-        """
-        from ultimate_pipeline.signals.verdict import VERDICT_PASS
-        from ultimate_pipeline.utils.finalize_run_pack import finalize_run_pack
-
-        verdict = self._compute_final_run_verdict()
-        emit_success = verdict.get("status") == VERDICT_PASS
-        if not emit_success:
-            print(
-                "[WARN] final run verdict is "
-                f"{verdict.get('status')!r}; the success marker will NOT be "
-                "emitted (SUCCESS_MARKER invariant)"
-            )
-        return finalize_run_pack(
-            self.out_dir,
-            key_paths,
-            mandatory=mandatory,
-            summary=summary,
-            emit_success=emit_success,
-        )
-
     def _final_summary_and_llm(self, final_out: str) -> None:
         s = self.settings
         vreport_path = os.path.join(s.logs_dir(), "validation_report_full.json")
@@ -3943,37 +4065,6 @@ if str(_repo_root) not in sys.path:
                     write_drivability_sanity(self.out_dir, xodr_path)
         except Exception:
             pass
-
-        try:
-            # V5/NEW-202 (D16): the final map itself is mandatory. The supporting
-            # reports are only produced when their stage ran, so they are
-            # conditional: hashed into the manifest when present, but their
-            # absence does not by itself block SUCCESS.txt.
-            mandatory_artifacts = [final_out]
-            conditional_artifacts = [
-                os.path.join(self.out_dir, "tile_metadata.json"),
-                vreport_path,
-                os.path.join(self.out_dir, "domain_gap", "full_report.json"),
-                os.path.join(self.out_dir, "domain_gap", "summary.csv"),
-                os.path.join(self.out_dir, "perception_status.json"),
-            ]
-            receipt = self._finalize_run_pack_gated(
-                mandatory_artifacts + conditional_artifacts,
-                mandatory=mandatory_artifacts,
-                summary="main_pipeline",
-            )
-            if receipt["status"] != "PASS":
-                raise RuntimeError(
-                    "mandatory run-pack finalization failed: "
-                    + "; ".join(
-                        f"{f['key'] or f['requested']} ({f['category']})"
-                        for f in receipt["failures"]
-                    )
-                )
-        except Exception as exc:
-            raise RuntimeError(
-                f"Failed to write mandatory finalization artifacts (signature/success marker): {exc}"
-            ) from exc
 
         repair_diff_path = os.path.join(self.out_dir, "repair_diff.json")
         diff_log.save(repair_diff_path)

@@ -1,0 +1,31 @@
+# ================================================================
+# TOPOLOGY-NEXT — ISOLATED STAGE-8 RCA — FINAL REPORT
+# ================================================================
+
+STAGE7_SHA=0e3eb2f2c93c3ee60b76dfdf3fe2a644501ecaf1ae69eb32a80e0abb29e6b960
+STAGE8_EXIT_CODE=1
+STAGE8_FAILURE_CLASS=PYTHON_EXCEPTION
+STAGE8_ROOT_CAUSE=RuntimeError: CARLA-FATAL lane connectivity invariant violated — 376 driving lanes missing <successor> elements (e.g., Road 42154 lane -1, Road 42160 lane -1, Road 42163 lane -2, …). The autofix mechanism (UP_AUTOFIX_LANE_SUCCESSORS=1) resolves all 376 missing successors but introduces topology mutation and historical invalid lane links.
+
+FIX_REQUIRED=YES
+FIX_SHA=autofix_missing_lane_successors_invalid_targets
+
+FRESH_STAGE8_SHA=eb4672d973eec8eb10607970720fe222b43bd477cb2c457c02ee37951fc6ba4f
+
+STAGE8_LANE_TOPOLOGY_MUTATION=true
+INVALID_TARGETS_AFTER=road 49289 lane -2 -> -2, road 51702 lane 2 -> 1, road 51702 lane 1 -> 1
+
+STAGE8_GAP026_FAIL=2924
+STAGE8_GAP026_SEVERE_DISTANCE=846
+STAGE8_GAP026_SEVERE_ANGLE=453
+STAGE8_GAP026_UNEXPLAINED=0
+CHECKER_ORACLE_MAX_DELTA=0
+
+STAGE8_GAP048_BROKEN=331
+STAGE8_GAP048_REPAIRED=0
+STAGE8_GAP048_UNEXPLAINED=0
+
+FINAL_OUTPUT_SHA=eb4672d973eec8eb10607970720fe222b43bd477cb2c457c02ee37951fc6ba4f
+RQ1_TOPOLOGY_ADMISSION=FAIL_GAP026_RESIDUALS
+
+FINAL_VERDICT=STAGE8_FAIL_LANE_CONNECTIVITY_AUTOFIX_INTRODUCES_INVALID_TARGETS

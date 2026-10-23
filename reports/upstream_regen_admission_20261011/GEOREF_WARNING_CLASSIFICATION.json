@@ -1,0 +1,9 @@
+{
+  "ABSOLUTE_WGS84_ORIGIN": "UNRESOLVED (governed project state; no lat/lon invented)",
+  "FINAL_FRAME_KNOWN": true,
+  "LARGE_COORDINATES_WARNING_CLASS": "EXPECTED_PRE_REBASE",
+  "PRE_REBASE_FRAME_KNOWN": true,
+  "RAW_GEOREF_WARNING_CLASS": "EXPECTED_PRE_REBASE",
+  "REBASE_TRANSFORM_KNOWN": true,
+  "evidence": "netconvert emits global tmerc(0,0) coords (~832k/5458k); pipeline contract rebases later (_rebase_to_local; authoritative pin frame rebased-to-local dx=832671.676 dy=5458671.104)"
+}

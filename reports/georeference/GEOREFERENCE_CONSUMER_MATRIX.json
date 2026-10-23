@@ -1,0 +1,73 @@
+{
+  "schema": "georeference_consumer_matrix/v1",
+  "trace_root": "GeoReferenceParser::Parse",
+  "call_chain": [
+    "opendrive::OpenDriveParser::Load -> parser::GeoReferenceParser::Parse",
+    "  -> road::MapBuilder::SetGeoReference(GeoLocation, bool has_absolute_origin)",
+    "    -> road::MapData::_geo_reference + _has_absolute_origin",
+    "      -> road::Map::GetGeoReference() / Map::HasAbsoluteOrigin()",
+    "        -> client::Map::GetGeoReference() / client::Map::HasAbsoluteOrigin()",
+    "          -> PythonAPI Map.transform_to_geolocation / geolocation_to_transform",
+    "        -> CarlaGameModeBase::ParseOpenDrive -> CarlaEpisode::MapGeoReference + bMapHasAbsoluteOrigin",
+    "          -> GnssSensor (BeginPlay/PostPhysTick)",
+    "          -> CaService (V2X SetOwner / GetReferencePosition)"
+  ],
+  "serialization_note": "road::MapData declares no MSGPACK_DEFINE and client::Map re-parses the XODR locally via OpenDriveParser::Load, so the validity flag is recomputed identically on both sides. NO wire-format change. geom::GeoLocation is deliberately left byte-identical (3 doubles) so sensor payloads and ros2 types are unaffected.",
+  "consumers": [
+    {
+      "path": "opendrive/OpenDriveParser.cpp",
+      "requirement": "LOCAL_MAP_ONLY",
+      "gate": "never rejects for missing origin"
+    },
+    {
+      "path": "road/MapData.h, road/MapBuilder.h, road/Map.h",
+      "requirement": "PROJECTION_STRING_ONLY",
+      "gate": "carries geo_reference + has_absolute_origin"
+    },
+    {
+      "path": "client/Map.cpp GetGeoReference",
+      "requirement": "PROJECTION_STRING_ONLY",
+      "gate": "raw access retained for ABI"
+    },
+    {
+      "path": "PythonAPI Map.transform_to_geolocation (local -> geo)",
+      "requirement": "ABSOLUTE_GEODETIC_ORIGIN_REQUIRED",
+      "gate": "throws std::runtime_error when !HasAbsoluteOrigin()"
+    },
+    {
+      "path": "PythonAPI Map.geolocation_to_transform (geo -> local)",
+      "requirement": "ABSOLUTE_GEODETIC_ORIGIN_REQUIRED",
+      "gate": "throws std::runtime_error when !HasAbsoluteOrigin()"
+    },
+    {
+      "path": "Unreal CarlaEpisode::GetGeoReference",
+      "requirement": "PROJECTION_STRING_ONLY",
+      "gate": "paired with bMapHasAbsoluteOrigin"
+    },
+    {
+      "path": "Unreal GnssSensor::PostPhysTick",
+      "requirement": "ABSOLUTE_GEODETIC_ORIGIN_REQUIRED",
+      "gate": "emits no measurement and logs once when !bHasAbsoluteOrigin"
+    },
+    {
+      "path": "Unreal CaService::GetReferencePosition (V2X)",
+      "requirement": "ABSOLUTE_GEODETIC_ORIGIN_REQUIRED",
+      "gate": "returns the local position instead of a projected one"
+    },
+    {
+      "path": "road/Lane, geometry, topology, waypoints, traffic manager",
+      "requirement": "LOCAL_MAP_ONLY",
+      "gate": "unaffected; no geoReference dependency"
+    },
+    {
+      "path": "LargeMapManager local<->global streaming",
+      "requirement": "LOCAL_MAP_ONLY",
+      "gate": "unaffected; works on the local frame"
+    }
+  ],
+  "logical_state_authoritative_ingolstadt": {
+    "PROJECTION_FAMILY": "TMERC",
+    "LOCAL_MAP_VALID": true,
+    "ABSOLUTE_ORIGIN_PROVEN": false
+  }
+}

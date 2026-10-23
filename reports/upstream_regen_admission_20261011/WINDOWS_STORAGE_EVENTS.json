@@ -1,0 +1,12 @@
+{
+  "C_fs_error": "NO_EVIDENCE",
+  "G_disconnect_reset_delayed_write_fs_error": "NO_EVIDENCE",
+  "disk_154_LBA0_hw_error": {
+    "attribution": "phantom Disk 3 (no such disk in Get-Disk; volumes are C=Disk1,G=Disk2,E/F=Disk0)",
+    "count_in_window": 7,
+    "relevance_to_cook": "NONE_PROVEN"
+  },
+  "ntfs_storahci_kernel_pnp_whea_app_error": "none in window",
+  "paging_errors_51_52_55": "none in window",
+  "window": "2026-10-11 12:50-14:00 local"
+}

@@ -1,0 +1,132 @@
+{
+  "aggregate": {
+    "all_suites_exit_zero": true,
+    "total_errors": 0,
+    "total_failed": 0,
+    "total_passed": 99
+  },
+  "generated_at": "2026-10-21",
+  "suites": {
+    "builder_regression": {
+      "command": "py -m pytest ultimate_pipeline/tests/unit/test_rq3_builder_false_pass_regression.py -q --tb=line",
+      "duration_s": 1.05,
+      "errors": 0,
+      "exit_code": 0,
+      "failed": 0,
+      "passed": 12,
+      "skipped": 0,
+      "summary_line": "============================= 12 passed in 0.42s ==============================",
+      "tail": [
+        "ultimate_pipeline\\tests\\unit\\test_rq3_builder_false_pass_regression.py . [  8%]",
+        "...........                                                              [100%]",
+        "============================= 12 passed in 0.42s =============================="
+      ]
+    },
+    "canonical_runner_integration": {
+      "command": "py -m pytest ultimate_pipeline/tests/unit/test_canonical_runner_integration.py -q --tb=line",
+      "duration_s": 0.88,
+      "errors": 0,
+      "exit_code": 0,
+      "failed": 0,
+      "passed": 3,
+      "skipped": 0,
+      "summary_line": "============================== 3 passed in 0.28s ==============================",
+      "tail": [
+        "collected 3 items",
+        "ultimate_pipeline\\tests\\unit\\test_canonical_runner_integration.py ...    [100%]",
+        "============================== 3 passed in 0.28s =============================="
+      ]
+    },
+    "capture_transaction_rollback": {
+      "command": "py -m pytest ultimate_pipeline/tests/unit/test_capture_transaction_rollback.py -q --tb=line",
+      "duration_s": 0.92,
+      "errors": 0,
+      "exit_code": 0,
+      "failed": 0,
+      "passed": 19,
+      "skipped": 0,
+      "summary_line": "============================= 19 passed in 0.34s ==============================",
+      "tail": [
+        "ultimate_pipeline\\tests\\unit\\test_capture_transaction_rollback.py ...... [ 31%]",
+        ".............                                                            [100%]",
+        "============================= 19 passed in 0.34s =============================="
+      ]
+    },
+    "cross_arm_task1_2": {
+      "command": "py -m pytest ultimate_pipeline/tests/unit/test_task1_2_cross_arm_sync.py -q --tb=line",
+      "duration_s": 7.72,
+      "errors": 0,
+      "exit_code": 0,
+      "failed": 0,
+      "passed": 23,
+      "skipped": 0,
+      "summary_line": "============================= 23 passed in 7.13s ==============================",
+      "tail": [
+        "ultimate_pipeline\\tests\\unit\\test_task1_2_cross_arm_sync.py ............ [ 52%]",
+        "...........                                                              [100%]",
+        "============================= 23 passed in 7.13s =============================="
+      ]
+    },
+    "frame_set": {
+      "command": "py -m pytest ultimate_pipeline/tests/unit/test_rq3_frame_set.py -q --tb=line",
+      "duration_s": 0.96,
+      "errors": 0,
+      "exit_code": 0,
+      "failed": 0,
+      "passed": 23,
+      "skipped": 0,
+      "summary_line": "============================= 23 passed in 0.38s ==============================",
+      "tail": [
+        "ultimate_pipeline\\tests\\unit\\test_rq3_frame_set.py ..................... [ 91%]",
+        "..                                                                       [100%]",
+        "============================= 23 passed in 0.38s =============================="
+      ]
+    },
+    "manifest_negative_controls": {
+      "command": "py -m pytest ultimate_pipeline/tests/unit/test_experiment_manifest_negative_controls.py -q --tb=line",
+      "duration_s": 0.9,
+      "errors": 0,
+      "exit_code": 0,
+      "failed": 0,
+      "passed": 8,
+      "skipped": 0,
+      "summary_line": "============================== 8 passed in 0.33s ==============================",
+      "tail": [
+        "ultimate_pipeline\\tests\\unit\\test_experiment_manifest_negative_controls.py . [ 12%]",
+        ".......                                                                  [100%]",
+        "============================== 8 passed in 0.33s =============================="
+      ]
+    },
+    "strict_runner_integration": {
+      "command": "py -m pytest ultimate_pipeline/tests/unit/test_strict_runner_integration.py -q --tb=line",
+      "duration_s": 0.91,
+      "errors": 0,
+      "exit_code": 0,
+      "failed": 0,
+      "passed": 1,
+      "skipped": 0,
+      "summary_line": "============================== 1 passed in 0.30s ==============================",
+      "tail": [
+        "collected 1 item",
+        "ultimate_pipeline\\tests\\unit\\test_strict_runner_integration.py .         [100%]",
+        "============================== 1 passed in 0.30s =============================="
+      ]
+    },
+    "terminal_adversarial": {
+      "command": "py -m pytest ultimate_pipeline/tests/unit/test_rq3_terminal_adversarial_tests.py -q --tb=line",
+      "duration_s": 0.96,
+      "errors": 0,
+      "exit_code": 0,
+      "failed": 0,
+      "passed": 10,
+      "skipped": 0,
+      "summary_line": "============================= 10 passed in 0.32s ==============================",
+      "tail": [
+        "ultimate_pipeline\\tests\\unit\\test_rq3_terminal_adversarial_tests.py .... [ 40%]",
+        "......                                                                   [100%]",
+        "============================= 10 passed in 0.32s =============================="
+      ]
+    }
+  },
+  "worktree": "E:\\wt\\repair-map-realism-p0-837a8504"
+}

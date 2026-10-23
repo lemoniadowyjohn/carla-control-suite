@@ -1,0 +1,219 @@
+{
+  "schema": "geometry_hardening_status/v2",
+  "verdict": "ROOT_CAUSE_IDENTIFIED_FIXED_AND_VERIFIED_BY_EXECUTION__UE4_IMPORT_STILL_PENDING",
+
+  "correction_to_v1": {
+    "what_v1_claimed": "Blender 4.3 and Unreal Engine 4.26 are not installed in this environment; the fix is specified and unit-tested but not executed.",
+    "why_that_was_wrong": "The check that produced that claim only tested whether 'blender' was on PATH and whether 'C:\\Program Files\\Blender Foundation' existed. It never tested the E: drive, and it never queried the registry. Both tools are in fact installed and both were then verified by execution.",
+    "actual_tooling": {
+      "blender": "E:\\Program Files\\Blender Foundation\\Blender 4.3\\blender.exe (Blender 4.3.0, build 2024-11-19). This is already the first entry in _BLENDER_CANDIDATE_PATHS, so DEFAULT_BLENDER_EXE resolved to it correctly all along; only my environment probe was wrong.",
+      "unreal": "G:\\UnrealEngine_4.26_CARLA\\Engine\\Binaries\\Win64\\UE4Editor.exe (running as PID 35332 at time of check)",
+      "carla": "E:\\CARLA\\CARLA_0.9.16\\CarlaUE4\\Binaries\\Win64\\CarlaUE4-Win64-Shipping.exe (running as PID 10840)"
+    },
+    "consequence": "Every v1 statement of the form 'NOT RUN - Blender unavailable' or 'INCOMPLETE' for the Blender stages was incorrect and has been superseded by real execution evidence below."
+  },
+
+  "headline": "The UE4 tangent / bi-normal / smoothing-group warnings are NOT caused by degenerate triangles. Measured on the real production tiles, geometry is clean (0 degenerate, 0 zero-area, 0 sliver faces in 18,708 triangles). The cause was that the FBX files carried no UV channel and no smoothing groups, so every face necessarily had a degenerate tangent basis under MikkTSpace. The fix has now been executed in Blender 4.3 and verified: both layers are present in the regenerated FBX, with byte-verified channel deltas and exact geometry parity.",
+
+  "root_cause": [
+    {
+      "id": "RC-UV-MISSING",
+      "defect": "No UV channel anywhere in the pipeline output.",
+      "measured_evidence_before": [
+        "OBJ (OSM2World output): 0 'vt' records in both tiles",
+        "FBX: LayerElementUV node count == 0 (tile 10-9: 0, tile 6-6: 0)",
+        "Blender manifest: uv_layers == 0 on all 303 (tile 10-9) and 263 (tile 6-6) objects",
+        "blender_convert.py: use_tspace=False, so no explicit tangents were exported either"
+      ],
+      "consequence": "UE4 must derive tangents with MikkTSpace from UVs. With zero parametric area on every face, all 18,708 faces had a degenerate tangent basis and a near-zero bi-normal.",
+      "maps_to_warnings": [
+        "has degenerate tangent bases which will result in incorrect shading",
+        "has some nearly zero bi-normals"
+      ],
+      "verified_fix": "LayerElementUV went 0 -> 1132 across the two regenerated tiles (606 for tile 10-9, 526 for tile 6-6), matching the object counts exactly."
+    },
+    {
+      "id": "RC-SMOOTHING-MISSING",
+      "defect": "No smoothing groups in the FBX, because mesh_smooth_type='OFF' writes no LayerElementSmoothing node.",
+      "measured_evidence_before": [
+        "OBJ: 0 's' (smoothing) records in both tiles",
+        "FBX: LayerElementSmoothing node count == 0"
+      ],
+      "maps_to_warnings": ["missing smoothing group information"],
+      "note": "Fully independent of the UV problem.",
+      "verified_fix": "LayerElementSmoothing went 0 -> 1132 across the two regenerated tiles after switching mesh_smooth_type to 'FACE'."
+    }
+  ],
+
+  "tangents_deliberately_not_exported": {
+    "LayerElementTangent_before": 0,
+    "LayerElementTangent_after": 0,
+    "why": "Governed policy is not to export tangents that cannot be independently validated offline. Shipping unvalidated tangents would trade the current warning for a different one. UE4/MikkTSpace derives them from the now-valid normals and the newly generated UV channel, which is the documented-correct path.",
+    "note": "use_tspace=False was never the defect; the defect was the absent UV channel, which MikkTSpace needs regardless of whether tangents are imported."
+  },
+
+  "verification_by_execution": {
+    "regeneration": {
+      "command": "BlenderRunner(obj_path=<tile>.obj, output_dir=<tmp>, name_prefix=Ingolstadt_Tile_<t>).run()",
+      "tile_10_9": {
+        "status": "ok", "exit_code": 0, "objects": 303, "gate": "PASS",
+        "faces_removed": 0, "repaired_objects": 0, "rejected_objects": 0,
+        "degenerate_triangles": 0, "uv_degenerate_triangles": 0,
+        "sharp_edges": 8657, "uv_layers_total": 303,
+        "faces": 8443, "vertices": 5544
+      },
+      "tile_6_6": {
+        "status": "ok", "exit_code": 0, "objects": 263, "gate": "PASS",
+        "faces_removed": 0, "repaired_objects": 0, "rejected_objects": 0,
+        "degenerate_triangles": 0, "uv_degenerate_triangles": 0,
+        "sharp_edges": 10248, "uv_layers_total": 263,
+        "faces": 10265, "vertices": 6508
+      },
+      "fbx_channel_delta": {
+        "LayerElementNormal": "1132 -> 1132 (+0)",
+        "LayerElementUV": "0 -> 1132 (+1132)",
+        "LayerElementSmoothing": "0 -> 1132 (+1132)",
+        "LayerElementTangent": "0 -> 0 (+0)",
+        "LayerElementBinormal": "0 -> 0 (+0)",
+        "size_bytes": "tile_10_9 818284 -> 1155628; tile_6_6 772028 -> 1094348"
+      }
+    },
+    "geometry_parity": {
+      "claim": "the fix added vertex channels without altering geometry",
+      "tile_10_9": "faces 8443 -> 8443, vertices 5544 -> 5544 (exact match vs baseline manifest)",
+      "tile_6_6": "faces 10265 -> 10265, vertices 6508 -> 6508 (exact match vs baseline manifest)",
+      "faces_removed": "0 on both tiles, as predicted, because the source geometry was already clean",
+      "significance": "This is the strongest safety property of the change: no silhouette, no vertex count and no triangle count moved."
+    },
+    "fbx_roundtrip": {
+      "command": "run_fbx_roundtrip(fbx_path, output_dir, DEFAULT_BLENDER_EXE, source_manifest)",
+      "tile_10_9": {"ok": true, "verdict": "ROUNDTRIP_PASS", "objects_source": 303, "objects_roundtrip": 303, "missing_objects": [], "extra_objects": [], "field_differences": []},
+      "tile_6_6": {"ok": true, "verdict": "ROUNDTRIP_PASS", "objects_source": 263, "objects_roundtrip": 263, "missing_objects": [], "extra_objects": [], "field_differences": []},
+      "significance": "The regenerated FBX re-imports into a clean Blender with a byte-for-byte identical inventory, so the new UV and smoothing layers did not corrupt the file."
+    },
+    "smoothing_policy_independently_recomputed": {
+      "tile_10_9": {
+        "blender_reported": "8657 sharp / 13686 edges (63.25%)",
+        "recomputed_from_obj": "8655 sharp / 13684 edges (63.25%)",
+        "delta": "2 (from Blender's distance-based vertex merging on import)",
+        "coplanar_edges_left_smooth": 5022,
+        "sub_degree_edges_wrongly_hardened": 0
+      },
+      "significance": "The 63% sharp ratio is genuine, not blanket-sharpening: all 5022 sub-degree (coplanar) edges were correctly left smooth, so hard edges appear only at real corners."
+    },
+    "negative_control_fail_closed": {
+      "why": "A governance claim that unrepairable geometry is rejected is worthless unless exercised.",
+      "clean_40_faces": {"gate": "PASS", "fbx_written": true, "exit_code": 0},
+      "stray_1_of_121_faces_degenerate": {"gate": "REPAIRED", "faces_removed": 1, "fbx_written": true, "exit_code": 0},
+      "amputate_10_of_50_faces_degenerate": {"gate": "REJECTED", "faces_removed": 10, "fbx_written": false, "exit_code": 2},
+      "verdict": "PASS - the three-state gate behaves correctly end to end"
+    }
+  },
+
+  "bug_found_and_fixed_during_verification": {
+    "id": "GATE-COLLAPSED-REPAIRED-INTO-PASS",
+    "severity": "governance",
+    "found_by": "the negative control, after the tools turned out to be available",
+    "description": "sanitize_mesh runs before validate_mesh and deletes unrepairable faces. Because validation then saw nothing wrong, the gate reported PASS even when faces had been removed. The governed policy requires PASS / REPAIRED / REJECTED, so an altered mesh was indistinguishable from a pristine one, and the 660 s-class failure mode of 'repair quietly amputates a building' was unguarded.",
+    "fix": [
+      "validate_mesh now returns PASS / REPAIRED / REJECTED based on what was changed, not only on what survived.",
+      "Added MAX_REPAIR_FRACTION = 0.02: if more than 2% of faces were removed, escalate to REJECTED so heavy deletion can never be laundered as a repair.",
+      "Dormant edge dissolution alone also yields REPAIRED.",
+      "Aggregate run gate uses precedence REJECTED > REPAIRED > PASS.",
+      "REPAIRED is logged as QUALITY_REPAIRED so it is visible in stdout, not only in the manifest.",
+      "Every verdict now records gate_reasons for provenance."
+    ],
+    "regression_tests_added": "tests/unit/test_blender_geometry_contract.py::TestGateIsExecutable executes the emitted decision logic directly (5 cases) in addition to 8 source-level assertions.",
+    "note": "Before this fix the earlier unit tests passed while the real behaviour was wrong: they asserted on source text rather than on the executed verdict."
+  },
+
+  "hypotheses_tested_and_refuted": [
+    {
+      "hypothesis": "Degenerate or zero-area triangles cause the warnings.",
+      "refuted_by": "18,708 measured triangles: 0 repeated-index, 0 zero-area, 0 collinear, 0 sliver. Minimum face area 1.9e-3 m^2. Confirmed a second time by the Blender run: faces_removed = 0 and degenerate_triangles = 0.",
+      "consequence": "No triangle-repair heuristics were tuned, because there is nothing to repair."
+    },
+    {
+      "hypothesis": "float32 FBX precision collapses vertices and creates degenerate geometry.",
+      "refuted_by": "GEOMETRY_PRECISION_AUDIT.json: the float32 round trip merges 16 duplicate vertices but creates 0 zero-area and 0 collapsed triangles; minimum area moves only from 1.9218e-3 to 1.9211e-3 m^2.",
+      "note": "The first draft of that audit reported RISK because it counted merged duplicate vertices. That metric was wrong: OBJ legitimately emits the same corner from several faces. The audit was corrected to measure triangle degeneracy."
+    },
+    {
+      "hypothesis": "OSM source rings need repair.",
+      "refuted_by": "OSM_BUILDING_REPAIR_REPORT.json: all 5,711 pinned elements are geometrically valid, 0 defects of any class, 5,711 placed and 0 unplaceable.",
+      "validation_of_the_audit": "The detector was checked against 5 synthetic defective rings (consecutive duplicates, self-touching, two distinct vertices, collinear, unclosed) and flagged every one, so the clean result is not vacuous."
+    }
+  ],
+
+  "fix": {
+    "principle": "Generator stage only. No warning suppression, no MikkTSpace disabling, no road topology change, no tile-membership change, no final-artifact cosmetic mutation.",
+    "location": "ultimate_pipeline/enrichment/blender_runner.py :: CONVERSION_SCRIPT_TEMPLATE",
+    "stages": [
+      "sanitize_mesh: delete only unrepairable faces (<3 verts or area <= 1e-12 m^2); dissolve edges < 1e-6 m. Slivers are kept and counted.",
+      "recompute_normals: every vertex gets a usable unit normal. Tangents are still not exported.",
+      "generate_uvs: per-object box projection - the actual fix for the tangent/bi-normal warnings.",
+      "apply_smoothing: smooth all faces, mark edges sharp above a 30 degree dihedral angle plus all boundary edges.",
+      "validate_mesh: re-measure geometric and UV triangle areas with the offline gate's thresholds and return PASS / REPAIRED / REJECTED."
+    ],
+    "export_option_changed": "mesh_smooth_type 'OFF' -> 'FACE'",
+    "export_option_deliberately_unchanged": "use_tspace=False",
+    "provenance_added": "manifest.quality_policy and manifest.geometry_quality, including per-object quality detail with gate and gate_reasons"
+  },
+
+  "still_pending": {
+    "ue4_import": "NOT RUN. UE4Editor is installed and running, but no import of the regenerated FBX has been performed, so no before/after warning logs exist.",
+    "items_still_absent": [
+      "reports/geometry/UE4_IMPORT_WARNING_BASELINE.json",
+      "reports/geometry/UE4_IMPORT_WARNING_AFTER.json",
+      "reports/geometry/UE4_IMPORT_WARNING_DELTA.json",
+      "reports/geometry/UE4_IMPORT_GEOMETRY_WARNING_SUMMARY.json",
+      "reports/geometry/UE4_DISTANCE_FIELD_PERFORMANCE.json",
+      "reports/geometry/INGOLSTADT_MESH_QUALITY_FINAL.json"
+    ],
+    "explicitly_not_claimed": "The required >=95% warning reduction, 0 smoothing-group warnings, no fatal errors, and no new warning category are NOT claimed. They are unproven until the after-import actually runs in the editor.",
+    "full_20_tile_regeneration": "NOT RUN. Only tiles 6-6 and 10-9 were regenerated, as the two representative tiles. The remaining 18 tiles are unverified.",
+    "controlled_subset": "Tiles 6-6, 6-9 and 10-9 including Building192/203/207 have not been imported. Per-object attribution of the warnings to those specific buildings is still NOT established; the root cause is established at whole-tile granularity from artifact bytes.",
+    "distance_field": "The ~660 s async distance-field stalls were not investigated. Plausibly related to mesh complexity, but nothing was measured, so no claim is made.",
+    "namespace": "reports/ue4/PRIMARY_ASSET_ID_NAMESPACE_AUDIT.json not produced. 'Duplicate PrimaryAssetID' is an asset-namespace issue and must not be fixed through geometry changes."
+  },
+
+  "tests": {
+    "command": "python -m pytest tests/unit/test_mesh_quality.py tests/unit/test_blender_geometry_contract.py tests/unit/test_tile_fbx_generator.py ultimate_pipeline/tests/unit/test_building_extruder.py -q",
+    "result": "87 passed",
+    "breakdown": {
+      "tests/unit/test_mesh_quality.py": "30 passed (new)",
+      "tests/unit/test_blender_geometry_contract.py": "28 passed (new; includes 5 that execute the emitted gate logic)",
+      "tests/unit/test_tile_fbx_generator.py": "29 passed (pre-existing, unchanged)",
+      "ultimate_pipeline/tests/unit/test_building_extruder.py": "5 passed (pre-existing, unchanged)"
+    },
+    "full_suite": "NOT RUN TO COMPLETION. 'python -m pytest tests/unit ultimate_pipeline/tests/unit -q' exceeded a 600 s timeout. No full-suite pass is claimed.",
+    "bugs_found_by_tests": [
+      "analyze_mesh crashed with IndexError on out-of-range face indices (now clamped after being counted as degenerate)",
+      "evaluate_gate returned REJECTED for a legitimately empty mesh (now PASS with an explanatory note)",
+      "three of my own test expectations were wrong: synthetic meshes omitted normals, the 'sliver' triangle was outside the sliver band, and UV groups are per-face not per-object",
+      "the gate's REPAIRED state was unreachable and unreachable-by-construction, which the Blender negative control exposed"
+    ]
+  },
+
+  "safety_and_governance": {
+    "road_topology": "untouched - no OpenDRIVE file was modified",
+    "tile_membership": "untouched and re-verified: 5,711 elements placed, 0 unplaceable, partition complete and disjoint",
+    "coordinate_frame_contract": "untouched - ultimate_pipeline/geometry/__init__.py re-exports preserved; new exports are purely additive (29 insertions, 0 deletions)",
+    "geometry_unchanged": "exact vertex and face parity on both regenerated tiles",
+    "warning_suppression": "none - no log filtering, no import-setting change, no MikkTSpace disablement",
+    "tolerance_raising": "none - the 30 degree smoothing threshold is a semantic choice about building corners, independent of the 1e-12 m^2 fail-closed degeneracy threshold; the 2% repair tolerance escalates to REJECTED rather than permitting a pass",
+    "historical_artifacts": "none overwritten - the regenerated FBX were written to a scratch directory, and all report paths are new",
+    "incidents": [
+      "An earlier step overwrote ultimate_pipeline/geometry/__init__.py, which re-exports the governed coordinate frame contract. Detected via git status, restored with git checkout HEAD, re-applied additively, contract exports verified present.",
+      "v1 of this report asserted Blender and UE4 were not installed, based on an inadequate probe. Corrected in v2 after verifying both by execution."
+    ]
+  },
+
+  "next_steps_to_close": [
+    "1. Regenerate the remaining 18 tiles and confirm geometry_quality.gate == 'PASS' with faces_removed == 0 on each.",
+    "2. Import the regenerated tiles in the running UE4.26 editor and capture before/after logs for the controlled subset (tiles 6-6, 6-9, 10-9 including Building192/203/207).",
+    "3. Evaluate the >=95% reduction and 0 smoothing-group-warning gates only after that import, and record UE4_IMPORT_WARNING_DELTA.json.",
+    "4. Measure the async distance-field timing before and after; it is the one remaining unexplained symptom.",
+    "5. Audit PrimaryAssetID duplication separately; do not couple it to geometry."
+  ]
+}

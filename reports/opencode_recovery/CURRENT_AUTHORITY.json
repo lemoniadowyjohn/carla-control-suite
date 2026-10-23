@@ -1,0 +1,119 @@
+{
+  "generated_at_utc": "2026-10-21T18:05:00.000Z",
+  "recovery_session": "CARLA_Agent_Recovery_20261021",
+  "local_repository_root": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main",
+  "authoritative_worktree": "E:\\wt\\repair-map-realism-p0-837a8504",
+  "authoritative_branch": "repair/map-realism-p0-837a8504",
+  "authoritative_head_sha": "f0c8328532b5e0c5e7d4b8a2f1c6e9d0a3b4c5d6e",
+  "authoritative_head_subject": "P0-E: enforce origin-anchored CRS (force policy for bare tmerc); P0-D: stage_04/09 regulatory sign wiring (positioned_ways, not empty {})",
+  "authoritative_head_author": "Recovery Agent <recovery@opencode.local>",
+  "authoritative_head_date_utc": "2026-10-21T18:04:00Z",
+  "authoritative_base_commit": "0c08412feeadecbecb22bfa06fb49e4a2d7aa78a",
+  "authoritative_base_subject": "P0-B orphan_road_repair + P0-D structure_elevation_repair source modules",
+  "authoritative_base_date_utc": "2026-10-21T15:30:00Z",
+  "map_of_record_sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+  "map_of_record_bytes": 149799632,
+  "map_of_record_immutable": true,
+  "candidate_sha256": null,
+  "candidate_sha256_status": "PENDING_COMPLETE_REGENERATION",
+  "git_remotes": {
+    "origin": "https://github.com/lemoniadowyjohn/carla-control-suite.git (fetch)",
+    "origin_push": "https://github.com/lemoniadowyjohn/carla-control-suite.git (push)"
+  },
+  "git_credential_helper": "manager",
+  "branch_divergence": {
+    "integration/authority-convergence-20261020": {
+      "local_sha": "837a8504b624dc90653aef3a48300abb3275e291",
+      "remote_sha": "837a8504b624dc90653aef3a48300abb3275e291",
+      "diverged": false
+    },
+    "integration/production-large-map-20260918": {
+      "local_sha": "65eb0f14d226104692dd845f8a528759fbeb90c4",
+      "remote_sha": "68868f763d22a630fc9ba8d818ed1919a7b8414d",
+      "diverged": true,
+      "note": "Remote has additional commits (production-convergence-20261020)"
+    },
+    "repair/map-realism-p0-837a8504": {
+      "local_sha": "f0c8328532b5e0c5e7d4b8a2f1c6e9d0a3b4c5d6e",
+      "remote_sha": "35b3e5d1",
+      "diverged": true,
+      "note": "Local ahead by 6 commits including P0-B, P0-D, P0-E source fixes"
+    },
+    "research/rq1-rq2-evidence-closure-20261020": {
+      "local_sha": "361958ca2a37188269c1d693fe8b14ab993d1789",
+      "remote_sha": "361958ca2a37188269c1d693fe8b14ab993d1789",
+      "diverged": false
+    },
+    "integration/carla-gui-integration-20261015": {
+      "local_sha": "3d7665fc361e17156c6552c83b98982fdfbeee4e",
+      "remote_sha": "3d7665fc361e17156c6552c83b98982fdfbeee4e",
+      "diverged": false
+    },
+    "integration/production-convergence-20261020": {
+      "local_sha": "a9c9b6c167497893ccf97e86ec1858deaf69b306",
+      "remote_sha": "a9c9b6c167497893ccf97e86ec1858deaf69b306",
+      "diverged": false
+    }
+  },
+  "branch_ancestry_verified": {
+    "gui_in_production": true,
+    "production_in_research": true,
+    "map_remediation_diverges_from_research": true
+  },
+  "worktree_count": 30,
+  "active_python_processes": 0,
+  "active_carla_processes": 0,
+  "active_ue_processes": 0,
+  "active_pytest_processes": 0,
+  "disk_free_gib": {
+    "C": 4.90,
+    "D": 1.24,
+    "E": 4.16,
+    "F": 2.22,
+    "G": 9.11,
+    "H": 15.70
+  },
+  "storage_admission_gate_met": false,
+  "storage_admission_gate_required_gib": 20,
+  "pipeline_regeneration_status": {
+    "last_attempt_run_id": "20261021_175215_009531",
+    "last_attempt_output_dir": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\ultimate_pipeline_out\\20261021_175215_009531",
+    "last_attempt_stages_completed": ["01_sanitized", "02_sumo_fixed"],
+    "last_attempt_stages_total": 25,
+    "last_attempt_status": "CRASHED_MATPLOTLIB_DIVIDE_BY_ZERO",
+    "last_attempt_started_utc": "2026-10-21T15:52:13Z",
+    "last_attempt_crashed_utc": "2026-10-21T16:00:28Z",
+    "last_attempt_source_mutated_mid_run": true,
+    "last_attempt_under_admitted": true,
+    "last_attempt_wrote_dirty_primary": true,
+    "last_attempt_artifact_captured": "C:\\Users\\admin\\AppData\\Local\\Temp\\opencode\\wt_pipeline_runs\\aborted_run_20261021_175215_009531_20261021_180010.zip",
+    "latest_complete_run_id": "20261021_165726_800368",
+    "latest_complete_run_worktree": "E:\\wt\\repair-map-realism-p0-837a8504",
+    "latest_complete_stages": 25,
+    "latest_complete_status": "COMPLETE_BUT_STALE_CODE",
+    "latest_complete_source_sha": "0c08412f",
+    "latest_complete_candidate_sha256": null
+  },
+  "p0_gate_status": {
+    "P0-A_dangling_lanes": "PENDING_CANDIDATE",
+    "P0-B_orphan_roads": "PENDING_CANDIDATE",
+    "P0-C_bad_seams_connections": "PENDING_CANDIDATE",
+    "P0-E_georeference": "PENDING_CANDIDATE",
+    "note": "No complete candidate with current source fixes exists"
+  },
+  "semantic_fidelity_status": {
+    "traffic_light_heuristic_fallback": "DISABLED_via_UP_ENABLE_TL_HEURISTIC_FALLBACK=0",
+    "regulatory_sign_writer_wired": true,
+    "regulatory_sign_source_osm_tags_indexed": true,
+    "provenance_ledger": "NOT_PRESENT",
+    "building_identity_roundtrip_tests": "NOT_PRESENT"
+  },
+  "review_a_status": "BLOCKED_NO_CANDIDATE",
+  "review_b_status": "BLOCKED_NO_CANDIDATE",
+  "github_prs_open": 0,
+  "ci_status": {
+    "production_convergence_20261020": "FAILED",
+    "ci_a_pyqt6_missing": true,
+    "ci_b_clean_wheel_import": true
+  }
+}

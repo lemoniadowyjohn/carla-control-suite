@@ -1,0 +1,32 @@
+{
+  "failure_log_path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Saved\\Logs\\CarlaUE4.log",
+  "failure_log_timestamp": "2026-10-07T21:20:19.597Z",
+  "failure_log_exact_message": "LogModuleManager: Warning: ModuleManager: Unable to load module 'ExampleDeviceProfileSelector' - 0 instances of that module name found.",
+  "all_occurrences": [
+    {
+      "timestamp": "2026-10-07T21:20:19.597Z",
+      "line": 383,
+      "message": "LogModuleManager: Warning: ModuleManager: Unable to load module 'ExampleDeviceProfileSelector' - 0 instances of that module name found."
+    },
+    {
+      "timestamp": "2026-10-07T21:20:52.140Z",
+      "line": 556,
+      "message": "LogModuleManager: Warning: ModuleManager: Unable to load module 'ExampleDeviceProfileSelector' - 0 instances of that module name found."
+    },
+    {
+      "timestamp": "2026-10-07T21:30:57.195Z",
+      "line": 7370,
+      "message": "LogInit: Display: LogModuleManager: Warning: ModuleManager: Unable to load module 'ExampleDeviceProfileSelector' - 0 instances of that module name found."
+    }
+  ],
+  "windows_loader_error": "N/A - This is not a Windows loader error (DLL not found). The Unreal ModuleManager cannot find the module in its registered module list because the module was never compiled/registered.",
+  "context_before_failure": [
+    "LogInit: Display: LogPluginManager: Mounting plugin ExampleDeviceProfileSelector",
+    "LogPluginManager: Warning: Plugin 'ExampleDeviceProfileSelector' was not found in the project's plugin list, but was found in the engine's plugin list. It will not be loaded."
+  ],
+  "context_after_failure": [
+    "LogModuleManager: Warning: ModuleManager: Unable to load module 'ExampleDeviceProfileSelector' - 0 instances of that module name found.",
+    "LogInit: Display: LogPluginManager: Warning: Plugin 'ExampleDeviceProfileSelector' failed to load because module 'ExampleDeviceProfileSelector' could not be found. Please ensure the plugin is properly installed, otherwise consider disabling the plugin for this project."
+  ],
+  "root_cause_from_logs": "The plugin descriptor is found in the engine plugin list, but the module is not in the project's plugin list (disabled in uproject). The engine tries to load it because EnabledByDefault=true in .uplugin, but the module was never compiled (no DLL, no registration in UE4Editor.modules)."
+}

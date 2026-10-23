@@ -1,0 +1,29 @@
+{
+  "schema": "MATERIAL_AUTHORITY_FINAL/v1",
+  "OBSERVED_MATERIAL_COUNT": 8,
+  "EXPECTED_MATERIAL_COUNT": 0,
+  "EXPECTED_MATERIAL_COUNT_basis": "The only material-binding mechanism in the tile pipeline is PrepareAssetsForCookingCommandlet.cpp:225-267, which assigns 7 fixed /Game/Carla/... instances selected by RoadRunner SSTag substrings in the ASSET NAME. 0 of 5711 canonical names contain any SSTag because the tree is buildings-only, so zero MAT_N_M assets are expected. '8 exists' is not accepted as justification for 8.",
+  "MISSING_MATERIALS": 0,
+  "UNEXPECTED_MATERIALS": 8,
+  "UNEXPECTED_MATERIALS_detail": "All 8 MAT_N_M are unreferenced import-era artifacts dated 2026-10-04T14:27-14:28Z, two days before run003. run003's log contains no MAT_ save record. No producer was found in CARLA or UE 4.26.2 source.",
+  "MATERIAL_PRODUCER": "NOT_TILE_PIPELINE__NO_PRODUCER_FOUND",
+  "MATERIAL_RUNTIME_ROLE": "VALID_BUT_UNUSED",
+  "MATERIALS_REACHABLE_FROM_TILE_COOK_ROOT": "FALSE",
+  "MATERIAL_ASSET_PROVENANCE": "STALE",
+  "STATICMESH_MATERIAL_INTERFACE_BINDING": "NONE_BOUND",
+  "UNIQUE_IMPORTED_MATERIAL_SLOTS": [
+    "MAT_0",
+    "MAT_1"
+  ],
+  "UNIQUE_RESOLVED_MATERIAL_INTERFACES": [],
+  "DYNAMIC_MATERIAL_LOOKUP": "REFUTED",
+  "DEFAULT_MATERIAL_BINDINGS": 0,
+  "NULL_MATERIAL_BINDINGS": "5711 meshes x 2 slots unbound",
+  "UNEXPECTED_FALLBACK_BINDINGS": 0,
+  "MISSING_MATERIAL_TEXTURE_DEPENDENCIES": 0,
+  "MATERIAL_BINDING_BLOCKS_COOK": false,
+  "MATERIAL_BINDING_BLOCKS_COOK_reasoning": "Cook does not require material interfaces to be bound; an unbound slot substitutes a default at render time and cooks successfully. MAT_N_M are referenced by nothing and are therefore in no cook dependency graph, so they cannot be missing dependencies. No fallback material asset is referenced, so UNEXPECTED_FALLBACK_BINDINGS is 0.",
+  "SEPARATE_BLOCKER_NOT_A_COOK_GATE": "Every building mesh has two FBX material slots (MAT_0, MAT_1) with no interface bound. For CARLA semantic segmentation this is very likely a real runtime defect, because semantic tags are carried by materials. It is recorded here and must be resolved before any perception work, but it does not block the cook process itself.",
+  "6116_reference_receipt": "NOT_REVERIFIED_THIS_BATCH",
+  "xodr_authority": "370ABBBB... byte exact, reverified this batch"
+}

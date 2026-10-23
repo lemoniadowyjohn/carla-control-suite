@@ -1,0 +1,70 @@
+{
+  "CASE08_SUPERVISOR_DEATH": "PASS",
+  "CASE10_PID_REUSE_PROTECTION": "PASS",
+  "KILL_ON_JOB_CLOSE_MINIMAL_CONTROL": "PASS",
+  "WINDOWS_PROCESS_IDENTITY_CONTRACT": {
+    "identity_matches": "pid AND creation_time equality",
+    "is_process_alive": "WaitForSingleObject(SYNCHRONIZE) == WAIT_TIMEOUT",
+    "is_process_in_job": "IsProcessInJob (membership only)",
+    "not_collapsed": true
+  },
+  "cases": [
+    {
+      "b_inherit_handles": false,
+      "case": "08_supervisor_death",
+      "child_alive_after_kill": false,
+      "child_alive_before_kill": true,
+      "child_assigned_flag_from_holder": true,
+      "child_creation_time": "2026-10-06T09:24:10.4558430Z",
+      "child_dead_at": "2026-10-06T09:24:12.198494Z",
+      "child_in_job_before_kill": true,
+      "child_known": true,
+      "child_pid": 23360,
+      "child_terminated_after_supervisor_kill": true,
+      "controller_retains_job_handle": false,
+      "extra_job_handle_owners": 0,
+      "final_job_handle_owner": "HOLDER_PROCESS",
+      "holder_alive_before_kill": true,
+      "holder_creation_time": "2026-10-06T09:24:10.3082900Z",
+      "holder_cwd": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main",
+      "holder_killed_at": "2026-10-06T09:24:11.943706Z",
+      "holder_pid": 14532,
+      "holder_script": "C:\\Users\\admin\\AppData\\Local\\Temp\\case08_i8hp_pu1\\holder_e5b1279a.py",
+      "kill_on_close_policy": "JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE",
+      "launcher": "subprocess.Popen with captured stdout/stderr",
+      "result": "PASS",
+      "stage_timeline": [
+        {
+          "child_pid": 23360,
+          "cwd": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main",
+          "holder_pid": 37848,
+          "stage": "READY_FOR_SUPERVISOR_KILL",
+          "ts": 1791278650.4708476
+        }
+      ]
+    },
+    {
+      "case": "minimal_kill_on_close",
+      "child_alive_after_holder_exit": false,
+      "child_pid": 27944,
+      "holder_exited_naturally": true,
+      "meaning": "isolates JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE from all control-plane and test-harness logic",
+      "result": "PASS"
+    },
+    {
+      "JOB_ACCOUNTING_STATE": "STILL_ACCOUNTED",
+      "OLD_PROCESS_ALIVE": false,
+      "case": "10_pid_reuse_protection",
+      "contract": "PROCESS_LIVENESS, JOB_ACCOUNTING_MEMBERSHIP and PROCESS_IDENTITY are independent predicates. Ownership matching uses (pid, creation_time); a recycled PID with a different creation time cannot impersonate the owner.",
+      "identity_reuse_rejected": true,
+      "in_job_before_kill": true,
+      "old_creation_time": "2026-10-06T09:24:12.4227420Z",
+      "old_pid": 21852,
+      "result": "PASS"
+    }
+  ],
+  "ctypes_abi_audit": "PASS",
+  "generated_utc": "2026-10-06T09:24:14.353912Z",
+  "schema": "CASE08_SUPERVISOR_DEATH_RECEIPT/v1",
+  "schema_version": 1
+}

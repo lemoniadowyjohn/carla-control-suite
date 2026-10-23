@@ -1,0 +1,42 @@
+{
+  "canonical_code_sha": "22cf39ab72bb7f6f74b11955143c0ff41705d3d8",
+  "canonical_settings_sha": "7b48fc5c40fd326148b4f8a11597cb1f42e0ff810273c6ccb956904d971da247",
+  "osm_sha": "b9e074656f744c31e6aabb0a16e6b2246824ca74e202ea2c316ff7f22364f24f",
+  "python_version": "3.12.2",
+  "sumo_version": "1.19.0",
+  "proj_version": "9.4.1",
+  "input_xodr_sha": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+  "authoritative_stage6_input_sha": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+  "first_divergence_stage": "Stage7",
+  "first_divergence_cause": "Code commit divergence (717ea543 vs 22cf39ab) in lane_successor_topology.py generator logic",
+  "authoritative_rebuild": true,
+  "authoritative_autofix": false,
+  "authoritative_strict_gates": true,
+  "authoritative_profile": "DEVELOPMENT",
+  "authoritative_expected_gap026_population": {
+    "fail": 2924,
+    "severe_distance": 846,
+    "severe_angle": 453,
+    "unexplained": 0
+  },
+  "authoritative_expected_gap048_population": {
+    "broken": 331,
+    "repaired": 0,
+    "true_multi_target": 261,
+    "no_lanelink": 115,
+    "no_successor": 0
+  },
+  "current_citable_gap026_result": {
+    "fail": 2924,
+    "severe_distance": 846,
+    "severe_angle": 453,
+    "unexplained": 0,
+    "checker_oracle_max_delta": 0
+  },
+  "current_citable_gap048_result": {
+    "broken": 331,
+    "repaired": 0,
+    "unexplained": 0
+  },
+  "final_verdict": "TOPOLOGY_AUTHORITY_RECONCILED"
+}

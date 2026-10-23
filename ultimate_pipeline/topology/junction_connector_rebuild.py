@@ -564,6 +564,7 @@ def rebuild_displaced_junction_connectors_on_root(
     root: ET.Element,
     *,
     start_gap_threshold_m: float = 2.0,
+    heading_threshold_deg: float = 10.0,
     max_after_gap_m: float = 0.5,
     max_abs_curvature: float = 1.0,
     max_examples: int = 25,
@@ -585,6 +586,7 @@ def rebuild_displaced_junction_connectors_on_root(
         "schema": "junction_connector_rebuild_v1",
         "checked_at_utc": datetime.now(timezone.utc).isoformat(),
         "start_gap_threshold_m": float(start_gap_threshold_m),
+        "heading_threshold_deg": float(heading_threshold_deg),
         "max_after_gap_m": float(max_after_gap_m),
         "max_abs_curvature": float(max_abs_curvature),
         "total_connectors": 0,
@@ -728,7 +730,17 @@ def rebuild_displaced_junction_connectors_on_root(
             if before_record["end_gap_issue"]:
                 stats["end_gap_over_tolerance_before"] += 1
 
-            if start_gap_before <= float(start_gap_threshold_m):
+            # Compute heading error at the junction connection point
+            # connector_attach_before is the connector's pose at the junction connection point
+            # incoming_anchor is the target pose on the incoming road
+            heading_error_rad = ConnectorValidator._angle_error(
+                float(connector_attach_before.hdg), float(incoming_anchor.hdg))
+            heading_error_deg = math.degrees(heading_error_rad)
+
+            # Skip if BOTH position gap AND heading error are within thresholds
+            # (only attempt rebuild if EITHER position gap OR heading error exceeds threshold)
+            if (start_gap_before <= float(start_gap_threshold_m)
+                    and heading_error_deg <= float(heading_threshold_deg)):
                 stats["skipped"] += 1
                 after_records.append(before_record)
                 continue
@@ -932,6 +944,7 @@ def rebuild_displaced_junction_connectors_in_file(
     report_path: str | Path | None = None,
     risk_report_path: str | Path | None = None,
     start_gap_threshold_m: float = 2.0,
+    heading_threshold_deg: float = 10.0,
     max_after_gap_m: float = 0.5,
     max_abs_curvature: float = 1.0,
     allow_straight_chord_fallback: bool = False,
@@ -943,6 +956,7 @@ def rebuild_displaced_junction_connectors_in_file(
     report = rebuild_displaced_junction_connectors_on_root(
         root,
         start_gap_threshold_m=start_gap_threshold_m,
+        heading_threshold_deg=heading_threshold_deg,
         max_after_gap_m=max_after_gap_m,
         max_abs_curvature=max_abs_curvature,
         allow_straight_chord_fallback=allow_straight_chord_fallback,
@@ -1019,6 +1033,12 @@ def _parse_args(argv: List[str]) -> argparse.Namespace:
         default=1.0,
         help="Maximum absolute curvature accepted for paramPoly3-to-arc rebuilds",
     )
+    parser.add_argument(
+        "--heading-threshold-deg",
+        type=float,
+        default=10.0,
+        help="Also attempt rebuild when heading error at junction exceeds this threshold (degrees)",
+    )
     return parser.parse_args(argv)
 
 
@@ -1030,6 +1050,7 @@ def main(argv: List[str] | None = None) -> int:
         report_path=args.report,
         risk_report_path=args.risk_report,
         start_gap_threshold_m=args.start_gap_threshold_m,
+        heading_threshold_deg=args.heading_threshold_deg,
         max_after_gap_m=args.max_after_gap_m,
         max_abs_curvature=args.max_abs_curvature,
     )

@@ -31,10 +31,34 @@ def _load_root() -> ET.Element:
     return ET.fromstring(_JUNCTION_XODR)
 
 
-def test_infer_and_insert_emits_object_and_paired_signal():
+def test_default_mode_inserts_nothing_without_source_or_fallback():
+    """P0 signal authority: no OSM source + disabled fallback => 0 signals."""
     root = _load_root()
+    import os as _os
 
-    count = TrafficLightInferer.infer_and_insert(root)
+    saved = _os.environ.pop("UP_OSM_SIGNALS_SOURCE", None)
+    saved_fb = _os.environ.pop("UP_ENABLE_TL_HEURISTIC_FALLBACK", None)
+    try:
+        count = TrafficLightInferer.infer_and_insert(root)
+    finally:
+        if saved is not None:
+            _os.environ["UP_OSM_SIGNALS_SOURCE"] = saved
+        if saved_fb is not None:
+            _os.environ["UP_ENABLE_TL_HEURISTIC_FALLBACK"] = saved_fb
+
+    assert count == 0
+    assert root.findall(".//signal") == []
+    stats = TrafficLightInferer.last_run_stats
+    assert stats["osm_mapped"] == 0
+    assert stats["heuristic_fallback_enabled"] is False
+
+
+def test_heuristic_fallback_requires_explicit_opt_in():
+    """Heuristic signals exist only when explicitly enabled (inferred bucket)."""
+    root = _load_root()
+    count = TrafficLightInferer.infer_and_insert(
+        root, allow_heuristic_fallback=True
+    )
 
     assert count == 3
     objects = root.findall(".//object[@type='traffic_light']")
@@ -42,11 +66,15 @@ def test_infer_and_insert_emits_object_and_paired_signal():
 
     signals = root.findall(".//signal")
     assert len(signals) == 3, "each traffic_light object must have a paired <signal>"
+    for sig in signals:
+        prov = sig.find("./userData/provenance")
+        assert prov is not None
+        assert prov.get("confidence") == "inferred"
 
 
 def test_traffic_light_signals_are_functional_not_props():
     root = _load_root()
-    TrafficLightInferer.infer_and_insert(root)
+    TrafficLightInferer.infer_and_insert(root, allow_heuristic_fallback=True)
 
     signals = root.findall(".//signal")
     assert signals, "expected at least one <signal>"
@@ -60,7 +88,7 @@ def test_traffic_light_signals_are_functional_not_props():
 
 def test_traffic_light_signals_grouped_under_junction_controller():
     root = _load_root()
-    TrafficLightInferer.infer_and_insert(root)
+    TrafficLightInferer.infer_and_insert(root, allow_heuristic_fallback=True)
 
     controllers = root.findall(".//controller")
     assert controllers, "expected at least one <controller> grouping the junction's signals"
@@ -75,15 +103,15 @@ def test_traffic_light_signals_grouped_under_junction_controller():
     assert controlled_ids.issubset(all_signal_ids)
 
 
-def test_infer_and_insert_is_idempotent_for_signals():
+def test_heuristic_insert_is_idempotent_for_signals():
     root = _load_root()
-    TrafficLightInferer.infer_and_insert(root)
+    TrafficLightInferer.infer_and_insert(root, allow_heuristic_fallback=True)
     first_signal_count = len(root.findall(".//signal"))
 
     # Re-running against a junction whose roads already carry signals must
     # not silently duplicate them (mirrors the existing <object> id reuse
     # pattern -- object ids are deterministic "tl_<junction>_<idx>").
-    TrafficLightInferer.infer_and_insert(root)
+    TrafficLightInferer.infer_and_insert(root, allow_heuristic_fallback=True)
     second_signal_count = len(root.findall(".//signal"))
 
     assert second_signal_count == first_signal_count
@@ -91,16 +119,29 @@ def test_infer_and_insert_is_idempotent_for_signals():
 
 def test_junction_coverage_stats_reports_full_coverage_for_qualifying_junction():
     root = _load_root()
-    TrafficLightInferer.infer_and_insert(root)
+    TrafficLightInferer.infer_and_insert(root, allow_heuristic_fallback=True)
 
     stats = TrafficLightInferer.junction_coverage_stats(root)
 
     assert stats["total_junctions"] == 1
     assert stats["roundabout_junctions"] == 0
     assert stats["eligible_junctions"] == 1
-    assert stats["eligible_junctions_with_inferred_signal"] == 1
+    assert stats["eligible_junctions_with_signal"] == 1
+    assert stats["eligible_junctions_with_heuristic_signal"] == 1
+    assert stats["eligible_junctions_with_osm_signal"] == 0
     assert stats["eligible_junction_coverage_fraction"] == 1.0
-    assert stats["total_inferred_signals"] == 3
+    assert stats["total_signals"] == 3
+
+
+def test_junction_coverage_stats_zero_when_no_signals_inserted():
+    root = _load_root()
+    TrafficLightInferer.infer_and_insert(root)  # governed default: no source
+
+    stats = TrafficLightInferer.junction_coverage_stats(root)
+    assert stats["eligible_junctions"] == 1
+    assert stats["eligible_junctions_with_signal"] == 0
+    assert stats["eligible_junction_coverage_fraction"] == 0.0
+    assert "zero inserted" in stats["provenance"]
 
 
 def test_junction_coverage_stats_excludes_roundabouts_and_sub_threshold_junctions():
@@ -115,13 +156,13 @@ def test_junction_coverage_stats_excludes_roundabouts_and_sub_threshold_junction
     assert stats["total_junctions"] == 2
     assert stats["roundabout_junctions"] == 1
     assert stats["eligible_junctions"] == 0
-    assert stats["eligible_junctions_with_inferred_signal"] == 0
+    assert stats["eligible_junctions_with_signal"] == 0
     assert stats["eligible_junction_coverage_fraction"] == 0.0
 
 
 def test_validate_signal_references_accepts_generated_signal_references():
     root = _load_root()
-    TrafficLightInferer.infer_and_insert(root)
+    TrafficLightInferer.infer_and_insert(root, allow_heuristic_fallback=True)
 
     bad_refs = TrafficLightInferer.validate_signal_references(root)
     assert bad_refs == []

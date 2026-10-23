@@ -1,0 +1,236 @@
+{
+  "schema": "AUDITOR_FINDINGS/v1",
+  "campaign": "map-realism-p0-repair-837a8504",
+  "auditor": "independent auditor session (read-only per user assignment)",
+  "base_sha": "837a8504b624dc90653aef3a48300abb3275e291",
+  "reviewed_through": "e2ce6252a395f0342f288f6ca0ab40935f5a2f89 (pushed to origin)",
+  "review_type": "pre-Review-A technical audit of implementer commits",
+  "verdict_policy": "AUDITOR DOES NOT ISSUE REVIEW-A/B VERDICTS. Findings + evidence only.",
+  "map_of_record_integrity": {
+    "sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+    "verified_at": "2026-10-21 (this review)",
+    "result": "BYTE-IDENTICAL - not modified in place by any audited commit"
+  },
+
+  "commit_reviews": {
+    "3c9ec84c_phase_L_fail_closed": {
+      "tests": "tests/unit/test_phase_l_fail_closed.py - 13 mutation tests verified by this auditor reading the assertions: producer-absent yields status=NOT_RUN, synchronization_status != PASS, per-sensor status NOT_RUN_NO_SENSOR_RIG, gnss_agreement None, no CAPTURED/PASS emission anywhere.",
+      "finding": "Sound. Fail-closed contract enforced by tests.",
+      "open_item": "Historical fabricated artifacts at reports/post_audit_hardening/2026080*/L9_sensor_validation.json are NOT tracked at 837a8504 (verified: not in worktree tree); the implementer's RETIRED_FALSE_PASS.json exists; this session's independent fingerprint record of the 5 historical files (with sha256 of the on-disk main-checkout copies) is preserved at reports/map_realism_p0_repair/P0_F_REVOCATION_RECORD.json (untracked, auditor-owned). Implementer should confirm its RETIRED_FALSE_PASS.json names the same 5 files+hashes or adopt the auditor fingerprint list."
+    },
+    "6bcc1112_georef": {
+      "tests": "16 unit tests PASSED under project venv python 3.12.2 (independent of implementer's py3.14 claim).",
+      "finding_g1_carla_gnss_null_island": {
+        "severity": "HIGH - blocks truth-of-GNSS acceptance claim",
+        "evidence": [
+          "Committed string: +proj=tmerc +lat_0=0 +lon_0=0 +k=1 +x_0=-832671.676 +y_0=-5458671.104 +datum=WGS84 +units=m +no_defs (build_local_rebased_georeference)",
+          "CARLA 0.9.16 consumes ONLY +lat_0/+lon_0 as GNSS origin (GeoReferenceParser.cpp, fallback (42.0,2.0) if absent); x_0/y_0 are never read; GnssSensor applies equirectangular linear-meters transform.",
+          "Empirical CARLA-formula computation (this auditor): WP1 local (7467.0398, 6252.9018) -> GNSS reading (0.056171degN, 0.067078degE); true WP1 = (48.747103, 11.434291); great-circle error 5351.7 km. Map local (0,0) anchors exactly at (0,0) Null Island."
+        ],
+        "repository_test_pressure": "tests/unit/test_georeference_absolute_authority.py:97-98 asserts '+lat_0=0' and '+lon_0=0' ARE in the emitted string - the suite enshrines the Null-Island origin. This is not a repair of the runtime GNSS truth contract; it fixes spec/pyproj invertibility only.",
+        "proposed_resolution_paths": [
+          "A: origin-anchored string +lat_0=48.70193666037281 +lon_0=11.322197314492136 +x_0=0 +y_0=0 - CARLA-consumable, equirect-vs-tmerc edge error documented (max 27981.9 m measured at far NE corner; linear-in-meters approximation, no k=1 disagreement) - BUT breaks the exact x_0=-rebase spec-encoding and its tests.",
+          "B: keep committed string for OpenDRIVE/proj consumers and ADD a documented CARLA-consumer warning + acceptance-matrix row that explicitly reports GNSS-origin error 5351.7 km (cannot be called PASS).",
+          "C: dual-anchor claim inversion is impossible in one string (lat_0/lon_0 and x_0/y_0 encode contradictory anchors); a single consistent CRS cannot satisfy both consumers exactly."
+        ],
+        "requires_decision": "USER + IMPLEMENTER. Either path must be reflected in the acceptance matrix; a GNSS-truth claim of PASS is not supportable under the committed string."
+      },
+      "other_notes": "WP1 forward anchor bit-exact via pyproj verified in commit message and tests; sanitizer default wired; applies to regenerated candidates only (map-of-record georef scan still reports has_absolute_origin=False, correctly)."
+    },
+    "ab2e5037_signals_osm_first": {
+      "tests": "test_traffic_light_osm_authority.py (7) + rewritten test_traffic_light_signals.py (10).",
+      "finding": "Directionally correct (OSM-first governed dispatcher, heuristic demoted behind explicit opt-in flag in stage_04 corruption review). NOT YET AUDITED IN DEPTH by this session - pending items: confirm heuristic fallback cannot silently re-engage in the production profile, confirm OSM-missing behavior is fail-closed (no signals is rejected or clearly documented as reduced coverage), confirm pinned-map number regression (21163 heuristic signals BEFORE) is re-measured with identical definition after OSM-first runs."
+    },
+    "7ef22233_oracle_and_baselines": {
+      "finding": "BEFORE evidence committed (p0_before_oracle.json). Superseded by v3 in 8d3fc821."
+    },
+    "b60125d2_lane_T_taxonomy": {
+      "finding": "No-fallback pairing (GAP-048 policy) preserved: unlinked driving lanes get classified, never cross-sign/cross-edge guessed; failure taxonomy INCOMING_LANE_NO_WIDTH / CONNECTOR_SIDE_NO_DRIVING_LANES / COUNT_MISMATCH_INNER_FIRST_EXHAUSTED / CONNECTOR_MISSING_INTERFACE_SECTION / INCOMING_MISSING_EDGE_SECTION captured in last_failure_report; degenerate zero-length terminal sections filtered. Consistent with frozen contract.",
+      "P0_A_semantics_adjudication": {
+        "observation": "Oracle P0-A now delegates to find_broken_lanes_detailed(allow_dead_ends=True) and reports dangling=0 on BEFORE.",
+        "stage8_gate_semantics": "stage_08_integrity.py:650 runs assert_all_lanes_have_successors(allow_dead_ends=True) - the GAP-048 frozen gate - and raises only in strict profiles (_strict_lane_successors_required) when THAT (relaxed) assertion fails. So dangling=0 BEFORE is TRUE for the operative gate.",
+        "risk": "The strict audit population (allow_dead_ends=False = 331 broken lanes on 326 dead-end roads) is the P0-A defect population from MAP_REALISM_AUDIT_837a8504. The oracle's headline 'dangling_mandatory=0 BEFORE' does not measure it. If the AFTER acceptance matrix quotes only the gate metric, P0-A repair would appear pre-achieved on the unrepaired map - a denominator/definition hazard.",
+        "resolution_required": "Acceptance matrix MUST carry both rows with frozen definitions: (row 1) stage-8 gate metric allow_dead_ends=True (BEFORE 0 -> AFTER 0, definition identical); (row 2) strict P0-A defect metric allow_dead_ends=False (BEFORE 331 -> AFTER target consistent with repair, definition identical). Terminal ledger classes (210 VALID_TERMINAL_SOURCE / 86 SOURCE_CONTINUATION / 28 JUNCTION_MAPPING_DEFECT / 7 UNMAPPED per corrected reciprocal-branch ledger run) supply the repair decomposition. No row swapping between BEFORE and AFTER."
+      }
+    },
+    "8d3fc821_before_v3": {
+      "finding": "Connector numbers INDEPENDENTLY MATCH this session's pre-campaign measurements exactly: 45178 interfaces (=2x22589, exact audit denominator), 739 bad connections, 776 laneLink seams, worst 2.4184 m (junction 3033, connector 68410). Orphans 326 (junction-exit dead-end diagnostic population). Georef scan on pinned map reports has_absolute_origin=False, lat_0/lon_0 absent - correctly reflects unrepaired map-of-record.",
+      "structure_scan": "Canonical structure scan: 240 classified structure roads (bridge 10 / elevated 162 / tunnel 68), 136 violations (8/71/57), worst -2.629 m / +3.653 m. Audit's 17/38 reconciled as its own sampling variant; canonical classifier is operative per this session's verification."
+    },
+    "e2ce6252_lane_Z": {
+      "finding": "Reconciler semantics look correct: junction-facing boundary anchoring precedence, conflict fail-closed skip, minimal mutation (already-continuous untouched), profile order, closed-loop post-write verification claiming 743 rewritten / 0 skipped / max_abs_dz_after 0.0 over 22589 connectors.",
+      "provenance_gap": {
+        "severity": "MEDIUM",
+        "observation": "stage8_rca_output/p0_z_reconciler_probe_record.json contains NO input-map path or sha256 pin. It reports connectors_seen=22589 which matches the PINNED MAP connection count - if the probe ran over the map-of-record in a write mode it would violate map immutability; verified map sha256 remains 370abbb... AFTER this commit, so the pinned map file was not mutated. But the record cannot prove from WHICH map the numbers come (probe input could be any map with identical connection count).",
+        "resolution_required": "Re-audit the probe input (identifiable from the implementer session's own command history or a rerun); ALL subsequent Lane Z run records MUST carry input_map_path + input_map_sha256 + output path per the campaign provenance rule."
+      }
+    }
+  },
+
+  "negative_control_coverage_matrix": {
+    "P0_F_fabricated_gnss": "PRESENT (13 mutation tests, verified)",
+    "georef": "PARTIAL - tests pin emitted string shape incl. +lat_0=0/+lon_0=0; NO test asserts CARLA-runtime GNSS origin truth (the 5351.7 km defect is untested and untested-against)",
+    "lane_T_lanelink": "PRESENT IN COMMIT MESSAGE (taxonomy fixtures; auditor spot-checked test file exists with documented fixture taxonomy; deep run pending)",
+    "connector_dz_reconciler": "PARTIAL - 7 fixtures exist (hermite/boundary/mutation/order; auditor has not executed them yet)",
+    "signals_osm_first": "PENDING DEEP AUDIT (test files exist)",
+    "orphan/structure/materials/buildings lanes": "NOT YET IMPLEMENTED by implementer - coverage expectation deferred to their upcoming commits"
+  },
+
+  "pending_auditor_work": [
+    "Execute Lane T and Lane Z test suites under project venv (read-only) for independent replication",
+    "Deep-audit signals OSM-first dispatcher fail-closed behavior + before/after signal-count definition",
+    "Track negative controls for upcoming lanes (orphan reconciliation, structure gates, buildings 5711, materials 11422)",
+    "Confirm origin push used non-force push and production-large-map-20260918 was not touched (not verifiable read-side without remote fetch)"
+  ],
+  "third_sweep_ADDITIVE_AUDITOR_REMEDIATION_compliance": {
+    "item1_georef_acceptance": "GEOREFERENCE_STATUS=FAIL, GNSS_TRUTH_STATUS=FAIL recorded by auditor (Null-Island origin empirically pinned, 5351.7 km at WP1). Binding on acceptance matrix until repaired; no GNSS claim weakening permitted.",
+    "item6_test_replication": {
+      "executed_under": "C:/Users/admin/PycharmProjects/gpt4/pythonProject3/.venv/Scripts/python.exe (venv 3.12.2), worktree E:/wt/repair-map-realism-p0-837a8504, 2026-10-21",
+      "battery_1_focus_suites": {
+        "files": ["test_lanelink_builder.py", "test_connector_elevation_reconciler.py", "test_phase_l_fail_closed.py", "test_georeference_absolute_authority.py", "test_traffic_light_osm_authority.py", "test_traffic_light_signals.py", "test_fix_b_import_namespace.py"],
+        "passed": 65, "failed": 0, "skipped": 0, "xfailed": 0
+      },
+      "battery_2_gate_topo_suites": {
+        "files": ["test_final_map_readiness_gate.py", "test_topology_certification.py", "test_junction_connector_boundary_gate.py", "test_lane_successor_topology.py", "test_junction_connector_classifier.py", "test_stage05_connector_snap_wiring.py", "test_junction_connector_rebuild.py"],
+        "first_run": "81 passed, 8 ERRORS (all in test_final_map_readiness_gate.py)",
+        "error_normalization": "file alone: 35 passed; every pairwise combination with the 7 battery-1 suites: passed; identical full battery rerun: 89 passed, 0 errors -> transient host condition (candidate regen in flight), NOT deterministic cross-contamination",
+        "rerun": { "passed": 89, "failed": 0, "skipped": 0, "xfailed": 0 }
+      },
+      "grand_total_this_sweep": { "passed": 154, "failed": 0, "skipped": 0, "xfailed": 0, "non_reproducible_errors_observed_once": 8 },
+      "signal_dispatcher_fail_closed_inspection": "PASSED (chain: arg -> UP_OSM_SIGNALS_SOURCE env -> SETTINGS.OSM_FILE -> empty -> zero signals, no fabrication; provenance prefixes osm_traffic_signals:node/* vs retired traffic_light_infer:*)",
+      "caveat": "georef suite's 16 passes INCLUDE the enshrined +lat_0=0/+lon_0=0 assertion (file line 97-98) which directive item 2 requires to be deleted/replaced with a Null-Island negative control."
+    },
+    "item4_331_vs_326_reconciliation": {
+      "auditor_confirmed_baseline": {
+        "strict_mandatory_dangling_lanes": 331,
+        "distinct_dead_end_roads": 326,
+        "unit_difference": "lane-record count vs road count",
+        "lane_id_distribution": { "-1": 326, "-2": 3, "-3": 2 },
+        "explanation": "find_broken_lanes_detailed(allow_dead_ends=False) on the record map per-lane-record basis: every one of the 326 junction-exit dead-end roads contributes exactly one -1 (first right-hand driving lane) record; 5 wider roads additionally contribute a -2 or -3 record (3 roads x 1 extra -2 record, 2 roads x 1 extra -3 record). 326 + 5 = 331.",
+        "map_sha": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+        "population_definition": "driving-lane records at the terminal (no-successor) road END lacking a mandatory lane-level successor, lane-section-aware, allow_dead_ends=False",
+        "terminal_lane_policy": "OSM-authoritative terminal ledger: 210 VALID_TERMINAL_SOURCE (cul-de-sac/spur/boundary-truth), 86 SOURCE_CONTINUATION, 28 JUNCTION_MAPPING_DEFECT, 7 UNMAPPED (121 defect-direction records) - defect classes are the repairable set; VALID_TERMINAL_SOURCE records are deliberate map features and may not be 'passed' by relabeling",
+        "frozen_gate": { "definition": "find_broken_lanes_detailed(allow_dead_ends=True) in stage_08_integrity.py:650", "before": 0 },
+        "acceptance_matrix_status": [
+          "| Frozen GAP-048 dangling | 0 | (pending candidate) |",
+          "| Strict mandatory dangling | 331 lane-records / 326 roads | (pending candidate; target 0 defect-class; VALID_TERMINAL_SOURCE handled by ledger, not by zeroing) |",
+          "| Junction dz >0.5 m | 866/45,178 | (pending SHA-bound reproduction) |",
+          "| Lane-Z receipt input SHA bound | NO | |",
+          "| Absolute georeference mathematically valid | NO | |",
+          "| Null-Island negative control | FAIL/ABSENT | |",
+          "| True-world independent control points | 0 | |",
+          "| GNSS truthful | NO | |",
+          "| Candidate generated from final repair SHA | NO | |"
+        ]
+      }
+    },
+    "item2_georef_contract_determination": {
+      "status": "AUDITOR DETERMINATION PUBLISHED - implementer to implement, auditor to verify",
+      "consumers": {
+        "C1_opendrive_proj_reader": "applies geoReference CRS to ABSOLUTE coords = local + header <offset>(rebase); requires the CRS whose axes reproduce the native frame (tmerc lat_0=0 lon_0=0 k=1) anchored via x_0=-832671.676 y_0=-5458671.104 (committed string; exact, verified)",
+        "C2_carla_gnss_0_9_16": "reads ONLY +lat_0/+lon_0 as world-origin geodetic point, then treats UE world/local meters as equirectangular linear offsets (GeoReferenceParser.cpp + GnssSensor.cpp); ignores x_0/y_0 entirely"
+      },
+      "inconsistency_statement": "One PROJ string cannot encode both: C1's axis origin (lat_0/lon_0=0, k=1 tangent about CM 0 with false offsets) and C2's origin (lat_0/lon_0=rebase-origin geodetic with zero false offsets). Confirmed. Do not attempt to satisfy both in the string.",
+      "selected_architecture": "A: geoReference string optimized for the RUNTIME consumer C2 (origin-anchored: +lat_0=48.70193666037281 +lon_0=11.322197314492136 +k=1 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs), PLUS separately documented local/projected transform metadata for C1: local = native_tmerc(lat_0=0,lon_0=0,k=1) - (832671.676, 5458671.104); abs = local + rebase (already declared in header <offset>). NO additional hidden translation; internal coordinate chain preserved bit-exactly.",
+      "required_test_chain": [
+        "T1 WGS84->local via documented native chain: WP1 (11.434291,48.747103) -> (7467.0398, 6252.9018), tol <= 1e-3 m (currently bit-exact)",
+        "T2 local->geoReference inverse (pyproj, origin-anchored CRS): resulting (lat,lon) at WP1 must be documented numerically; tolerance set = measured max angular deviation of the anchored tmerc frame vs native frame over the map bbox, recorded in a tolerance envelope artifact BEFORE the gate is registered",
+        "T3 CARLA equirect formula from origin-anchored string: lat=lat_0+y/R, lon=lon_0+x/(R cos lat_0) at map bbox corners vs T2 truth; max absolute deviation documented as the CARLA-consumer projection-semantics envelope (previous session measurement: 27,981.9 m at far NE corner)",
+        "T4 NEGATIVE CONTROL: injected +lat_0=0 +lon_0=0 variant at WP1 must FAIL the GNSS truth gate (>= 100 km error); the test asserts gate-FAIL",
+        "T5 C1 metadata chain: WGS84->native (bit-exact, tol <= 1e-9 m), native->local exact by subtraction, local->abs exact by re-addition"
+      ],
+      "test_hygiene": "Delete/replace test_georeference_absolute_authority.py lines 97-98 assertions requiring +lat_0=0/+lon_0=0 in the emitted string; replace with the origin-anchored string assertion AND the T4 negative control."
+    },
+    "item3_true_world_placement": "GEOREFERENCE_MATHEMATICALLY_VALID (may PASS after item 2) must remain SEPARATE from TRUE_WORLD_PLACEMENT_VERIFIED = NO (0 independent real-world control points). CRS roundtrip consistency alone never upgrades true-world placement.",
+    "item5_laneZ_receipt_bindings": "Implemented by implementer; auditor verifies: every future Lane-Z receipt must carry input_map_path, input_map_sha256, source_git_sha, connector_population, interfaces_checked, interfaces_rewritten, before_bad_count, after_bad_count, worst_before_dz, worst_after_dz. Target reference numbers (45178/866->0/743) accepted ONLY on a SHA-bound reproduction.",
+    "item7_candidate_lineage": "Implementer action; auditor verifies before any promotion: candidate producer_git_sha must contain 6bcc1112+e2ce6252+all later repair commits as ancestors; SUPERSEDED_DIAGNOSTIC_CANDIDATE otherwise (inspection only, never promotion); lineage binding = producer_git_sha, OSM SHA (b9e07465...), building SHA (f3e82001...), DEM SHA (3cfa665d...), config SHA, result XODR SHA.",
+    "item8_review_A_requirements": "Auditor adopts the checklist as the Review-A gate list verbatim; allowed verdicts STATIC_MAP_REMEDIATION_PASS|FAIL only; no cook on FAIL.",
+    "item9_host_governed_ue": "PYTHON_REMEDIATION_PASS / UE_IMPORT_NOT_EXECUTED / COOK_NOT_EXECUTED / RUNTIME_NOT_EXECUTED must remain distinct rows; no collapse into a single PASS.",
+    "item10_matrix_rows": "Auditor-supplied BEFORE-column values embedded in item4's acceptance_matrix_status; AFTER column remains implementer-owned pending SHA-bound candidate evidence."
+  },
+
+  "fourth_sweep_CROSS_LAYER_P0_RECONCILIATION": {
+    "source_audit": "SYSTEM_DEEP_AUDIT_SYNTHESIS_c69b60d2 (+ SOURCE_RUNTIME_SEMANTIC_FIDELITY_AUDIT_c69b60d2), historical SHAs c69b60d2fe4a..., tree F:/wt/verify-c69b60d2",
+    "current_head_at_revalidation": "35b3e5d1 (all findings revalidated against HEAD, not hist counts)",
+    "classification_matrix": {
+      "A1_traffic_lights_21163_heuristic": {
+        "classification": "ALREADY_FIXED(code) + STILL_PRESENT_CURRENT(record-map artifact + provenance-ledger absent)",
+        "evidence": [
+          "HEAD ab2e5037: infer_and_insert(root, osm_source_path=None, allow_heuristic_fallback=None) - OSM-first, heuristic ONLY on explicit env/arg opt-in, zero-signal fail-closed when no source; provenance prefixes osm_traffic_signals:node/* vs retired traffic_light_infer:*",
+          "SOURCE TRUTH (this sweep): pinned ingolstadt_authoritative.osm has highway=traffic_signals NODES = 0 (crossing=traffic_signals ways = 44). Regenerations under OSM-first MUST produce 0 junction signals - recorded as UNSUPPORTED-by-source, NOT as count approximation",
+          "PRE-REPAIR record map (respawned counts this sweep): <signal count 21163; <object types = lamp_post 24792, guard_rail 21740, trash_bin 2288, bench 1122 - NO traffic_light objects, NO regulatory sign objects, NO crosswalk objects on the immutable record map"
+        ],
+        "bound_rule": "Implementer must NOT retain heuristic lights (or a subset tuned to any historical runtime count). 0 is the source-truth count; the 44 signalized pedestrian-crossing ways are a distinct class, not junction lights.",
+        "open": "Full provenance ledger (object_id, source_osm_id, source_tag/relation, generated_road/junction, placement, orientation, generation_rule, source_class) does NOT exist at HEAD - STILL_PRESENT; required for every semantic object class."
+      },
+      "A2_regulatory_signs_529_to_0": {
+        "classification": "STILL_PRESENT_CURRENT (coverage) + DUPLICATE_ROOT_CAUSE(partial: catalog breadth)",
+        "evidence": [
+          "HEAD code exists and is stage-wired (apply_regulatory_signs in stage_04_enrichment:276/307 + stage_09_positional_semantics:175/208; EXACT/HIGH correspondence mode + name-index fallback with documented many-to-many caveat)",
+          "PINNED OSM TRUTH (this sweep): traffic_sign ways ~530 with values DE:238/239/240/244.1/245/250-family - ZERO occurrences of any SIGN_TABLE key (de:205/206/274-*). 0 signs were and remain generatable under the current catalog",
+          "DEEPER REALITY: sampled qualifying ways are on footway/path infra (way 23043009 DE:238 'Reitergaessl', way 23043061 DE:240, both highway=path) - these are ped/cycler space-classification signs, effectively ZERO vehicular junction-control regulatory signs exist in the source extract",
+          "Record map contains 0 sign objects (counted this sweep)"
+        ],
+        "requirement": "Catalog expansion + per-way UNSUPPORTED ledger entries (NOT silent drops); do not fabricate junction control signs that the source does not contain."
+      },
+      "A3_GAP001_lane_hardcoding": {
+        "classification": "ALREADY_FIXED(architecture at HEAD) with bounded残留 residual",
+        "evidence": [
+          "HEAD lane_width_policy.driving_lane_counts: lanes:forward/backward -> (conf 1.0), lanes total split -> (conf 0.9), fallback 1/1 -> conf 0.0 (explicit bounded fallback, docstring stamped)",
+          "HEAD lane_generator: EXACT/HIGH OSM association gating (line ~509), turn:lanes directional authority (_turn_patterns, _TURN_VALUES), per-lane provenance embedded as lane_count_confidence in lane user_data",
+          "PINNED OSM TRUTH (this sweep): lanes=2879 ways, lanes:forward=849, lanes:backward=734, turn:lanes=333, oneway=2216 of 17250 total ways - a first-order semantic population now source-derived instead of hardcoded"
+        ],
+        "residuals": [
+          "1-lane fallback persists with conf 0.0 (bounded, documented) - roads lacking any lane tags remain 1/1: classify BOUNDED_HEURISTIC rows in the per-road ledger",
+          "Per-road 4-class vocabulary (SOURCE_DERIVED/BOUNDED_HEURISTIC/PROCEDURAL_VISUAL_ONLY/UNSUPPORTED) not yet materialized as the directive's exact enum - only source/confidence strings exist",
+          "Negative controls for source-vs-default conflicts not yet present as tests (directive C)"
+        ]
+      },
+      "A4_building_osm_id_dropped": {
+        "classification": "STILL_PRESENT_CURRENT",
+        "evidence": [
+          "HEAD overpass_to_osm_xml.py docstring: node/way ids synthetic negative (-1,-2,...; offset way-id range); original tags (building,height,levels,name) preserved BUT source OSM id is neither the id nor a tag; converter returns counts-only stats (no id-map sidecar)",
+          "Pinned buildings export verifiable: ingolstadt_buildings_overpass.json element count 5712; first building way 24991503 (addr+building+name tags); first multipolygon relation 105073",
+          "Lane B FIX-B' (1e1b090c) pins Util/BuildTools/Import.py maps_dest namespace patch - it does NOT bind building OSM ids into UE asset identity; distinct root cause, not duplicate"
+        ],
+        "requirement": "B-lane work: durable source identity (tag e.g. ref:osm_way_id on synthetic ways + roundtrip tests proving selected building IDs survive OSM->XML->XODR->asset naming), array position never used."
+      },
+      "B_building_identity_tests": {
+        "classification": "STILL_PRESENT_CURRENT (no roundtrip tests exist)",
+        "evidence": "no test asserts selected building way/relation ids survive serialization at HEAD"
+      },
+      "C_lane_policy_per_road": {
+        "classification": "PARTIAL at HEAD (see A3); negative-control tests missing"
+      },
+      "E_footways": {
+        "classification": "PRESERVED: historical '3,737 unmatched footways' = CONTRADICTED; c69 evidence = 5,431/5,431 accounted (CROSSING=179, FOOTWAY=2719, PATH=1954, SIDEWALK=398, PEDESTRIAN_STREET=78, PLATFORM=103 + areas). Not reopened.",
+        "distinct_defect_kept": "Per-footway provenance traceability (5,247 footways -> 17,392 sidewalk lanes with no per-footway mapping ledger) remains an open P1 provenance defect, independent of the PARITAS contradicted claim."
+      }
+    },
+    "counterexamples_D": {
+      "worst_traffic_light": "ALL 21,163 record-map <signal> elements have 0% source authority (pinned OSM = 0 signal nodes); post-regen junction-light population = 0 (UNSUPPORTED); the 44 crossing=traffic_signals ways (e.g. way 26677871 'Ungernederstrasse' footway crossing) are separate ped-crossing class with no runtime signal identity at HEAD",
+      "source_sign_dropped": "way 23043061 (traffic_sign=DE:240, highway=path) and way 23043009 (DE:238, 'Reitergaessl') - unmatched, unclassified; same for the full ~530-way population (e.g. DE:245 x105, DE:240 x172)",
+      "lane_hardcoding_semantics": "849 directional lanes:forward / 734 lanes:backward / 2,216 oneway / 333 turn:lanes ways change semantics at regen vs the historical 1-lane/side behavior; concrete XODR-road pairing evidence owed by implementer (input seeded: sample way 4058141 motorway_link lanes=1)",
+      "building_identity_lost": "way 24991503 / relation 105073 -> synthetic negative xml ids, counts-only provenance, asset names without OSM id (code-verified at HEAD; runtime asset probe UMKNOWN_RUNTIME_REQUIRED)"
+    },
+    "promotion_rule_E": "Lanes (849/734/333/2216 way populations) and traffic-control semantics (21163->0) change: training labels + traffic-control meaning -> at least P1, escalating to P0 for any RQ3 arm that captures on the candidate. Static topology review need not wait for visual perfection, but the semantic provenance ledger + UNSUPPORTED classifications must exist BEFORE any label evidence chain is published.",
+    "out_of_scope_note": "RQ-related findings of the c69 synthesis (CD-1/CD-3/CD-4 split/eval/checkpoint chains, lease liveness, OOM, GUI) are NOT part of this map campaign per directive; recorded for the campaign registry owner; no work started on RQ3/RQ5 by this session.",
+    "current_classification": "SEMANTIC_FIDELITY_CURRENT_PARTIAL (static pipeline partially fixed at HEAD; pending: provenance ledger, sign catalog/ledger, building identity roundtrip, lane negative controls, candidate regen receipts; runtime rows UNKNOWN_RUNTIME_REQUIRED and structurally blocked - separate)"
+  },
+
+  "second_sweep_20261021_after_1e1b090c_35b3e5d1": {
+    "lane_T_Z_replication": "14/14 PASSED independently under project venv (test_lanelink_builder 7 + test_connector_elevation_reconciler 7)",
+    "MOR_STAGE8_SIM_FINDING_audit": "VERIFIED: subject map sha pinned (370abbb...), sim output out-of-tree (E:/wtTmp_sim/mor_stage8_sim.xodr), record map never written; repair_and_assert(strict=True) PASS with 4 repairs / 0 failures; post-sim find_broken=0. Reconciliation of audit's 376/6-orphan populations to the 20261008/20261014 CLOSURE-18 chain is consistent with this session's independent reconciliation. Stage-8 sim + record-map immutability both hold.",
+    "acceptance_matrix_scaffold": "SOUND: status legend fail-open-proof (INCOMPLETE tolerated as incomplete, never scored pass), BEFORE row definitions fixed, runtime rungs pre-registered BLOCKED_EXTERNAL, rubric pre-registered. Standing requirement restated: candidate gates must ALSO report the strict P0-A/terminal-ledger population (21163-era strict 331-class; ledger 210/86/28/7) with identical definitions as BEFORE, not only the gate-metric row (0->0 trivially).",
+    "signals_deep_audit": "FAIL-CLOSED CHAIN VERIFIED: infer_and_insert(osm_source_path=None) -> UP_OSM_SIGNALS_SOURCE env -> SETTINGS.OSM_FILE -> if none resolved_path empty -> ZERO signals inserted (no fabrication), provenance vocabulary osm_traffic_signals:node/* vs retired traffic_light_infer:*. RISK FLAG for regen: if neither env nor SETTINGS.OSM_FILE is set during the candidate regen, the candidate gets ZERO signals -> signal population 21163 (heuristic BEFORE) -> 0 collapse. That is honest (not false-pass) but the OSM-authority row would read INCOMPLETE, not PASS. Implementer should pin UP_OSM_SIGNALS_SOURCE (or SETTINGS.OSM_FILE) in the regen env and record the resolved source path + resulting functional_signals_count in the candidate receipt.",
+    "P0_F_union_check": "IMPLEMENTER RETIRED_FALSE_PASS.json NAMES ALL 5 AUDITOR PATHS AND ALL 5 HASHES - complete union, no divergence between revocation records.",
+    "FIX_B_authority_check": "pins PRE_IMPORT_PY_SHA256=af0f05f1... + 47515 bytes, fail-closed identity-mismatch raise, --check/--dry-run implemented; test_fix_b_import_namespace fixtures present (not yet re-run by auditor).",
+    "regen_health_observation": "No candidate-regen python process visible in the host process table at sweep time (only the do-not-touch RQ processes on port-swept campaigns). If the regen is supposed to be live, implementer should confirm it is still running or re-launch with resumable state; no interference from this session."
+  },
+  "binding_constraints_reiterated": [
+    "No threshold weakening; no denominator manipulation; identical definitions BEFORE vs AFTER per row",
+    "Implementer must not self-certify Review A/B",
+    "Historical artifacts immutable; map-of-record sha 370abbb... must remain unchanged",
+    "GAP-026 cannot be 'fixed' by raising tolerance"
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "MESH_DUPLICATE_TREE": false,
+  "RETRACTED_MEASUREMENT_ERROR": {
+    "cause": "per-directory shell counts were read without cross-checking against the total; Maps/Ingolstadt actually contains 8 materials, not tile meshes",
+    "correct_counts": {
+      "Maps/Ingolstadt": 8,
+      "Static/Terrain/Ingolstadt": 5711,
+      "total": 5719
+    },
+    "evidence_preserved": true,
+    "invalidated_conclusions": [
+      "1:1 duplicate mesh namespace",
+      "blind MoveAssets collision risk",
+      "5719 staging meshes awaiting MoveAssets",
+      "duplicate-pair reconciliation requirement",
+      "RUN_MOVEASSETS_THEN_PREPARE rationale"
+    ],
+    "old_claim": "5719 freshly staged tile meshes present under Maps/ alongside 5711 canonical meshes in Static/Terrain, implying a duplicate-mesh tree and a blind-MoveAssets collision",
+    "supersedes": [
+      "PRE_SALVAGE_DUPLICATE_MATRIX.json",
+      "MAPS_STATIC_COUNT_DELTA.json"
+    ]
+  },
+  "generated_utc": "2026-10-06T10:01:07.437718Z",
+  "schema": "IMPORT_NAMESPACE_MEASUREMENT_CORRECTION/v1",
+  "schema_version": 1
+}

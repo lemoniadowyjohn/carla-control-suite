@@ -1,0 +1,326 @@
+{
+  "NEW_CREDENTIAL_COUNT": 0,
+  "NEW_REDACTION_BLOCKERS": 0,
+  "NEW_SECRET_COUNT": 0,
+  "all_secret_like_findings": [
+    {
+      "file": "ultimate_pipeline/tests/adversarial/test_v5_adversarial_matrix.py",
+      "is_new": false,
+      "kind": "GITHUB_TOKEN"
+    },
+    {
+      "file": "ultimate_pipeline/tests/unit/test_run_provenance_strict.py",
+      "is_new": false,
+      "kind": "GITHUB_TOKEN"
+    }
+  ],
+  "captured_utc": "2026-10-05T13:23:25.118529+00:00",
+  "historical_classification": "HISTORICAL_ALREADY_PUBLIC (no history rewrite in this batch)",
+  "historical_files_with_path_findings": 625,
+  "historical_path_metadata_summary": {
+    "APPDATA_PATH": 16,
+    "EMAIL": 126,
+    "E_CARLA_PATH": 86,
+    "G_CARLA_PATH": 13,
+    "LOCALHOST_URL": 1,
+    "LOCAL_USER_PATH": 447,
+    "TEMP_PATH": 16,
+    "USERNAME_ADMIN": 3420
+  },
+  "history_rewritten": false,
+  "method": "regex sweep of tracked + untracked candidates under reports/tools/scripts/ultimate_pipeline/tests/docs; binary and >4MB files skipped",
+  "new_absolute_path_findings": [
+    {
+      "count": 48,
+      "file": "reports/distance_field/DISTANCE_FIELD_ALL_27_FORENSICS.json",
+      "is_new": true,
+      "kind": "USERNAME_ADMIN"
+    },
+    {
+      "count": 6,
+      "file": "reports/geometry/AFFECTED_MESH_DIAGNOSTICS.json",
+      "is_new": true,
+      "kind": "USERNAME_ADMIN"
+    },
+    {
+      "count": 2,
+      "file": "reports/geometry/AFFECTED_MESH_DIAGNOSTICS.md",
+      "is_new": true,
+      "kind": "LOCAL_USER_PATH"
+    },
+    {
+      "count": 2,
+      "file": "reports/geometry/AFFECTED_MESH_DIAGNOSTICS.md",
+      "is_new": true,
+      "kind": "USERNAME_ADMIN"
+    },
+    {
+      "count": 1,
+      "file": "reports/repository/FIFTH_WORKTREE_RESTORE.json",
+      "is_new": true,
+      "kind": "USERNAME_ADMIN"
+    },
+    {
+      "count": 13,
+      "file": "reports/repository/P0_WORKTREE_PROCESS_AUDIT.json",
+      "is_new": true,
+      "kind": "USERNAME_ADMIN"
+    },
+    {
+      "count": 3,
+      "file": "reports/repository/P0_WORKTREE_RECOVERY.json",
+      "is_new": true,
+      "kind": "USERNAME_ADMIN"
+    },
+    {
+      "count": 1,
+      "file": "reports/repository/REPOSITORY_CLOSURE_AUDIT.json",
+      "is_new": true,
+      "kind": "LOCAL_USER_PATH"
+    },
+    {
+      "count": 11,
+      "file": "reports/repository/REPOSITORY_CLOSURE_AUDIT.json",
+      "is_new": true,
+      "kind": "USERNAME_ADMIN"
+    },
+    {
+      "count": 18,
+      "file": "reports/repository/WORKTREE_INVENTORY.json",
+      "is_new": true,
+      "kind": "LOCAL_USER_PATH"
+    },
+    {
+      "count": 18,
+      "file": "reports/repository/WORKTREE_INVENTORY.json",
+      "is_new": true,
+      "kind": "USERNAME_ADMIN"
+    },
+    {
+      "count": 5,
+      "file": "reports/repository/WORKTREE_INVENTORY.json",
+      "is_new": true,
+      "kind": "APPDATA_PATH"
+    },
+    {
+      "count": 5,
+      "file": "reports/repository/WORKTREE_INVENTORY.json",
+      "is_new": true,
+      "kind": "TEMP_PATH"
+    },
+    {
+      "count": 18,
+      "file": "reports/repository/WORKTREE_INVENTORY_POST_RECOVERY.json",
+      "is_new": true,
+      "kind": "LOCAL_USER_PATH"
+    },
+    {
+      "count": 19,
+      "file": "reports/repository/WORKTREE_INVENTORY_POST_RECOVERY.json",
+      "is_new": true,
+      "kind": "USERNAME_ADMIN"
+    },
+    {
+      "count": 5,
+      "file": "reports/repository/WORKTREE_INVENTORY_POST_RECOVERY.json",
+      "is_new": true,
+      "kind": "APPDATA_PATH"
+    },
+    {
+      "count": 5,
+      "file": "reports/repository/WORKTREE_INVENTORY_POST_RECOVERY.json",
+      "is_new": true,
+      "kind": "TEMP_PATH"
+    },
+    {
+      "count": 4,
+      "file": "reports/repository/WORKTREE_INVENTORY_POST_RECOVERY_FOUR.json",
+      "is_new": true,
+      "kind": "LOCAL_USER_PATH"
+    },
+    {
+      "count": 4,
+      "file": "reports/repository/WORKTREE_INVENTORY_POST_RECOVERY_FOUR.json",
+      "is_new": true,
+      "kind": "USERNAME_ADMIN"
+    },
+    {
+      "count": 4,
+      "file": "reports/repository/WORKTREE_INVENTORY_POST_RECOVERY_FOUR.json",
+      "is_new": true,
+      "kind": "APPDATA_PATH"
+    },
+    {
+      "count": 4,
+      "file": "reports/repository/WORKTREE_INVENTORY_POST_RECOVERY_FOUR.json",
+      "is_new": true,
+      "kind": "TEMP_PATH"
+    },
+    {
+      "count": 2,
+      "file": "reports/rq1b_runs/run_00/run_00/rq1b_full/rq1b_run00/georeference_provenance.json",
+      "is_new": true,
+      "kind": "USERNAME_ADMIN"
+    },
+    {
+      "count": 4,
+      "file": "reports/rq1b_runs/run_00/run_00/rq1b_full/rq1b_run00/run_manifest.json",
+      "is_new": true,
+      "kind": "USERNAME_ADMIN"
+    },
+    {
+      "count": 5,
+      "file": "reports/rq1b_runs/run_00/run_00/rq1b_full/rq1b_run00/settings_snapshot.json",
+      "is_new": true,
+      "kind": "USERNAME_ADMIN"
+    },
+    {
+      "count": 1,
+      "file": "reports/ue4_hardening/IMPORT_BASELINE_METRICS.md",
+      "is_new": true,
+      "kind": "G_CARLA_PATH"
+    },
+    {
+      "count": 2,
+      "file": "reports/ue4_hardening/SYSTEM_RESOURCE_BASELINE.json",
+      "is_new": true,
+      "kind": "USERNAME_ADMIN"
+    },
+    {
+      "count": 8,
+      "file": "scripts/ue4_import_baseline.py",
+      "is_new": true,
+      "kind": "G_CARLA_PATH"
+    },
+    {
+      "count": 2,
+      "file": "scripts/ue4_import_baseline.py",
+      "is_new": true,
+      "kind": "E_CARLA_PATH"
+    },
+    {
+      "count": 1,
+      "file": "tests/test_import_supervision.py",
+      "is_new": true,
+      "kind": "G_CARLA_PATH"
+    },
+    {
+      "count": 1,
+      "file": "tools/ue4_import_log_analysis.py",
+      "is_new": true,
+      "kind": "G_CARLA_PATH"
+    }
+  ],
+  "new_absolute_path_findings_count": 30,
+  "new_secret_findings": [],
+  "oversized_tracked_candidates": [
+    {
+      "bytes": 767582495,
+      "file": "reports/rq1b_runs/run_00/run_00/rq1b_full/rq1b_run00/stage6_containment_runtime.json"
+    },
+    {
+      "bytes": 149799632,
+      "file": "reports/rq1b_runs/run_00/run_00/rq1b_full/rq1b_run00/01_sanitized_rq1b_run00.xodr"
+    },
+    {
+      "bytes": 138932131,
+      "file": "reports/rq1b_runs/run_00/run_00/rq1b_full/rq1b_run00/03_topology_rq1b_run00.xodr"
+    },
+    {
+      "bytes": 138932131,
+      "file": "reports/rq1b_runs/run_00/run_00/rq1b_full/rq1b_run00/05_planview_rq1b_run00.xodr"
+    },
+    {
+      "bytes": 138932131,
+      "file": "reports/rq1b_runs/run_00/run_00/rq1b_full/rq1b_run00/06_continuity_rq1b_run00.xodr"
+    },
+    {
+      "bytes": 138053197,
+      "file": "reports/rq1b_runs/run_00/run_00/rq1b_full/rq1b_run00/02_sumo_fixed_rq1b_run00.xodr"
+    },
+    {
+      "bytes": 109250965,
+      "file": "reports/post_audit_hardening/20260804T050000Z/candidate_h_signal_enrichment.xodr"
+    },
+    {
+      "bytes": 109109235,
+      "file": "reports/post_audit_hardening/20260804T030000Z/candidate_g7_roadmarks.xodr"
+    },
+    {
+      "bytes": 108802803,
+      "file": "reports/post_audit_hardening/20260804T020000Z/candidate_g6_junction_lanelinks.xodr"
+    },
+    {
+      "bytes": 108793871,
+      "file": "reports/post_audit_hardening/20260804T000000Z/candidate_g5_lane_types.xodr"
+    },
+    {
+      "bytes": 107198816,
+      "file": "reports/post_audit_hardening/20260803T170000Z/candidate_f6_seam_repaired.xodr"
+    },
+    {
+      "bytes": 106774483,
+      "file": "reports/post_audit_hardening/20260803T150000Z/candidate_f4_piecewise_profiles.xodr"
+    },
+    {
+      "bytes": 106774483,
+      "file": "reports/post_audit_hardening/20260803T160000Z/_f5_work_copy.xodr"
+    },
+    {
+      "bytes": 106774483,
+      "file": "reports/post_audit_hardening/20260803T160000Z/candidate_f5_bounded_offsets.xodr"
+    },
+    {
+      "bytes": 106774483,
+      "file": "reports/post_audit_hardening/20260803T170000Z/_f6_work_copy.xodr"
+    },
+    {
+      "bytes": 89206190,
+      "file": "reports/ingolstadt_map_quality_v2/work_package_02_connectivity/candidate_connectivity_repaired.xodr"
+    },
+    {
+      "bytes": 82589778,
+      "file": "reports/post_audit_hardening/20260807T000000Z/perception_governed/governed_payload.xodr"
+    },
+    {
+      "bytes": 82589221,
+      "file": "reports/post_audit_hardening/20260807T000000Z/candidate_crosswalk_enriched.xodr"
+    },
+    {
+      "bytes": 82556067,
+      "file": "reports/post_audit_hardening/20260807T000000Z/candidate_g_semantic_enriched.xodr"
+    },
+    {
+      "bytes": 81007419,
+      "file": "reports/post_audit_hardening/20260809T000000Z_C1_GENERATION/candidate_crosswalk_enriched.xodr"
+    },
+    {
+      "bytes": 81007405,
+      "file": "reports/post_audit_hardening/20260809T000000Z_C2_3DPACKAGE/perception_governed/governed_payload.xodr"
+    },
+    {
+      "bytes": 81006029,
+      "file": "reports/ingolstadt_map_quality_v2/work_package_01_coordinate_truth/candidates/candidate_actual_reprojection.xodr"
+    },
+    {
+      "bytes": 80974291,
+      "file": "reports/post_audit_hardening/20260807T000000Z/governed_payload.xodr"
+    },
+    {
+      "bytes": 80685080,
+      "file": "reports/ingolstadt_map_quality_v2/work_package_01_coordinate_truth/candidates/candidate_correct_georeference.xodr"
+    },
+    {
+      "bytes": 80685011,
+      "file": "reports/ingolstadt_map_quality_v2/work_package_01_coordinate_truth/candidates/candidate_metadata_only.xodr"
+    }
+  ],
+  "oversized_tracked_candidates_count": 58,
+  "redaction_examples": {
+    "C:\\Users\\admin\\...": "<LOCAL_WORKSPACE>\\...",
+    "E:\\CARLA\\...": "<CARLA_RUNTIME>\\...",
+    "G:\\CARLA\\...": "<CARLA_WORKSPACE>\\..."
+  },
+  "repo_visibility": "PUBLIC (lemoniadowyjohn/carla-control-suite)",
+  "schema": "publication_safety_audit/v1"
+}

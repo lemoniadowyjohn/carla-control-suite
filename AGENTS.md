@@ -40,6 +40,37 @@ with file references and commands run.
 For a complex task, ask agents to divide work by ownership boundary, not by
 arbitrary file count. Wait for all read-only findings before starting a write.
 
+### OpenCode (free-model pool, `opencode.json`)
+
+The same roles exist as OpenCode subagents, all on free models. Each role has
+a primary on OpenCode Zen and an `_alt` on OpenRouter (separate quota). On a
+rate-limit/provider error, re-dispatch the same task to the `_alt` agent; do
+not retry the primary in a loop. Probed 2026-10-14 (chat + read-tool call).
+
+| Role | Primary (`opencode/…`) | Fallback (`openrouter/…`) |
+| --- | --- | --- |
+| `scout` | `nemotron-3.5-lightning-free` | `nvidia/nemotron-3.5-lightning:free` |
+| `test_triage` | `space-bunny-free` | `cohere/north-mini-code:free` |
+| `evidence_auditor` | `nemotron-3-ultra-free` | `nvidia/nemotron-3-ultra-550b-a55b:free` |
+| `reviewer` / `reviewer_alt` | `step-5-preview-free` | `poolside/laguna-s-2.1:free` (also the L4 second reviewer) |
+| `report_reader` | `muse-spark-1.3-contributor-free` | `thinkingmachines/inkling:free` |
+| `implementer` (single writer) | `big-pickle` | none — never run two writers |
+| built-in `explore` / `general` | `mimo-v2.6-flash-free` / `longcat-2.5-preview-free` | — |
+| `small_model` (titles/summaries) | `cat-jam-free` | — |
+
+- The reviewer must never use the implementer's model (`big-pickle`).
+- Read-only roles have `edit: deny`, `task: deny` (no nested delegation), and
+  deny push/commit/reset/checkout/merge/stash/`rm` and CarlaUE4 launches.
+- Reserve (working, not yet assigned): `openrouter/nvidia/nemotron-3-super-120b-a12b:free`,
+  `thinkingmachines/inkling-small:free`, `dots-studio/dots-3-note-preview:free`,
+  `openrouter/free` (auto-router). Unusable on 2026-10-14: `poolside/laguna-xs-2.1:free`
+  (rate-limited), `google/gemma-4-*:free` (upstream rate-limited),
+  `nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free` (failed the tool-call probe).
+- Non-free providers are currently unusable from OpenCode: `github-copilot/*`
+  rejects the `GITHUB_TOKEN` PAT (needs `opencode auth login` → GitHub Copilot),
+  and `openai/*` has no API credits. Free-model output carries the same evidence
+  bar as any other: no PASS without executed commands.
+
 ## Project-Specific Rules
 
 - Use `integration/production-large-map-20260918` as the authoritative working branch, NOT `main` (`main` is a disconnected 1-commit stub, confirmed not an ancestor of any real work -- see `docs/archive/BRANCH_ARCHIVAL_PLAN.md`, written in this same checkpoint, which correctly identifies this); feature branches only via PR

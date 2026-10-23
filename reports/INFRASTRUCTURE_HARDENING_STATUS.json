@@ -1,0 +1,163 @@
+{
+  "ACTIVE_OWNERSHIP": {
+    "mutating_operations": 1,
+    "operations": [
+      {
+        "effect": "Mutates Content/, Saved/, cook_out",
+        "identity_key": "12312|2026-10-05T18:38:44.1538360Z",
+        "operation": "UE_COMMANDLET:ImportAssets",
+        "started_utc": "2026-10-05T18:38:44.1538360Z"
+      }
+    ],
+    "processes_stopped_by_this_batch": 0,
+    "watched_processes": 6
+  },
+  "ARTIFACT_AUTHORITY": "PASS__REGISTRY_ONLY",
+  "ASSET_NAMESPACE_UNIQUENESS": "PARTIAL__STOCK_ALIASES_ALLOWLISTED",
+  "BACKUP_DURABILITY": "PASS",
+  "BRANCH_AUTHORITY": "PASS__REGISTRY_ONLY__NONE_SELECTED",
+  "CONFIGURATION_DRIFT_GATE": "DENY_GOVERNED_RUN",
+  "CONTENT_MUTATION_GUARD": "NOT_IMPLEMENTED",
+  "DDC_INTEGRITY": "NOT_IMPLEMENTED",
+  "DDC_PAGEFILE_CONTENTION": "NOT_RUN",
+  "ENVIRONMENT_FINGERPRINT": "PASS",
+  "ENVIRONMENT_FINGERPRINT_SHA256": "8eb6b2074b4bdd12129871f191cf8604d8d35e3ffea0ae44d75d1c633e2e9258",
+  "EVIDENCE_INDEX": "PASS",
+  "FAILURE_INJECTION": "PASS__COMPONENT_LEVEL",
+  "FINAL_VERDICT": "PARTIAL_WITH_EXACT_BLOCKERS",
+  "FRAME_SYNC": "NOT_IMPLEMENTED",
+  "HANDLE_LEAK": "NOT_IMPLEMENTED",
+  "INFRASTRUCTURE_HARDENED": false,
+  "ITERATIVE_RESUME_GUARD": "PASS",
+  "LFS_INTEGRITY": "PASS",
+  "LOG_RETENTION": "NOT_IMPLEMENTED",
+  "MAP_LOAD_BUDGET": "NOT_RUN",
+  "NEW_REGRESSIONS": 0,
+  "PORT_LEASES": "NOT_IMPLEMENTED",
+  "PROCESS_TREE_SUPERVISION": "PARTIAL__JOB_OBJECT_NOT_IMPLEMENTED",
+  "PUBLICATION_GATE": "PASS__CREDS_ONLY__PATHS_PENDING",
+  "REBOOT_RECOVERY": "PARTIAL__JOURNAL_ONLY",
+  "REGISTERED_WORKTREES_UNDER_TEMP": 0,
+  "REPARSE_POINT_AUDIT": "PASS",
+  "RUNTIME_HEALTH": "NOT_IMPLEMENTED",
+  "RUNTIME_SOAK": "NOT_RUN",
+  "RUN_JOURNAL": "PASS",
+  "SCHEMA_VERSIONING": "PASS",
+  "SENSOR_STARTUP": "NOT_IMPLEMENTED",
+  "SIGNAL_SCALE_BUDGET": "NOT_RUN",
+  "SINGLE_WRITER_LOCK": "PASS",
+  "STALE_EVIDENCE_GATE": "PASS",
+  "STORAGE_RESERVATION": "PASS",
+  "STORAGE_TOPOLOGY_AUTHORITY": "PASS",
+  "TERMINATION_RECEIPTS": "PASS",
+  "TEST_ISOLATION": "NOT_REMEDIATED",
+  "TYPE_SAFETY": "PASS",
+  "WORKTREE_LIFECYCLE": "PASS",
+  "findings": {
+    "backup_copies_found": 50,
+    "backup_distinct_hashes": 9,
+    "config_drift_unknown": [
+      {
+        "config": "DefaultGame.ini",
+        "reason": "no approved hash recorded"
+      },
+      {
+        "config": "Import.py",
+        "reason": "no approved hash recorded"
+      }
+    ],
+    "critical_paths_on_usb": [
+      {
+        "bus_type": "USB",
+        "drive": "G:",
+        "path": "G:\\CARLA\\carla_source_probe",
+        "role": "carla_source"
+      },
+      {
+        "bus_type": "USB",
+        "drive": "G:",
+        "path": "G:\\UnrealEngine_4.26_CARLA",
+        "role": "ue_source"
+      },
+      {
+        "bus_type": "USB",
+        "drive": "G:",
+        "path": "G:\\UnrealEngine_4.26_CARLA\\Engine\\DerivedDataCache",
+        "role": "ddc_current"
+      },
+      {
+        "bus_type": "USB",
+        "drive": "G:",
+        "path": "G:\\CARLA\\cook_out",
+        "role": "cook_output"
+      },
+      {
+        "bus_type": "USB",
+        "drive": "G:",
+        "path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content",
+        "role": "unreal_content"
+      }
+    ],
+    "evidence_index": {
+      "items": 1359,
+      "stale": 8,
+      "unreadable": 2
+    },
+    "lfs": {
+      "available": true,
+      "missing_objects": [],
+      "pointer_files": 0
+    },
+    "reparse_allowlisted_stock": {},
+    "reparse_unexplained_aliasing": {}
+  },
+  "generated_utc": "2026-10-05T21:27:06.064283Z",
+  "regression_detail": {
+    "duration_sec": 1912.71,
+    "failed": 0,
+    "hardening_tests": 80,
+    "note": "tests/unit, full ordered run",
+    "passed": 2862,
+    "skipped": 2
+  },
+  "release_gate": {
+    "ARTIFACT_AUTHORITY": false,
+    "BRANCH_AUTHORITY": false,
+    "CONTENT_MUTATION_GUARD": false,
+    "DDC_INTEGRITY": false,
+    "ENVIRONMENT_FINGERPRINT": true,
+    "FAILURE_INJECTION": false,
+    "ITERATIVE_RESUME_GUARD": true,
+    "LFS_INTEGRITY": true,
+    "NEW_REGRESSIONS": true,
+    "PROCESS_TREE_SUPERVISION": false,
+    "PUBLICATION_GATE": false,
+    "REPARSE_POINT_AUDIT": true,
+    "RUNTIME_HEALTH": false,
+    "RUN_JOURNAL": true,
+    "SENSOR_PREFLIGHT": false,
+    "SINGLE_WRITER_LOCK": true,
+    "STALE_EVIDENCE_GATE": true,
+    "STORAGE_AUTHORITY": true,
+    "TYPE_SAFETY": true,
+    "WORKTREE_POLICY": true
+  },
+  "release_gate_failed": [
+    "ARTIFACT_AUTHORITY",
+    "BRANCH_AUTHORITY",
+    "CONTENT_MUTATION_GUARD",
+    "DDC_INTEGRITY",
+    "FAILURE_INJECTION",
+    "PROCESS_TREE_SUPERVISION",
+    "PUBLICATION_GATE",
+    "RUNTIME_HEALTH",
+    "SENSOR_PREFLIGHT"
+  ],
+  "schema": "INFRASTRUCTURE_HARDENING_STATUS/v1",
+  "schema_validation": {
+    "ACTIVE_OPERATION_OWNERSHIP.json": "OK",
+    "EVIDENCE_INDEX.json": "OK",
+    "WORKTREE_LIFECYCLE.json": "OK"
+  },
+  "schema_version": 1
+}

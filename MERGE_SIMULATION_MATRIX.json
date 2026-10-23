@@ -1,0 +1,22 @@
+{
+  "fix/gap048-source-stage-closure-20261013": {
+    "status": "OK",
+    "commit": "ence-20261014 24181bc1] Merge GAP048 source-stage closure (fix/gap048-source-stage-closure-20261013)"
+  },
+  "fix/gap026-inner-first-lanelink-20261013": {
+    "status": "OK",
+    "commit": "l-convergence-20261014 cafd20a1] Merge GAP026 inner-first (fix/gap026-inner-first-lanelink-20261013)"
+  },
+  "fix/gap026-connector-hermite-20261014": {
+    "status": "OK",
+    "commit": "20261014 a97f5aea] Merge GAP026 hermite (supersedes tangent) (fix/gap026-connector-hermite-20261014)"
+  },
+  "fix/gap049-package-write-poller-delta-only-20261011": {
+    "status": "OK",
+    "commit": "261014 3342984b] Merge GAP049 cook diagnostics (fix/gap049-package-write-poller-delta-only-20261011)"
+  },
+  "GAP052_INIT": {
+    "status": "OK",
+    "output": "[integration/carla-final-convergence-20261014 03638a53] GAP052: export worktree_lock and common_git_lock from single_writer package\n 1 file changed, 21 insertions(+), 18 deletions(-)"
+  }
+}

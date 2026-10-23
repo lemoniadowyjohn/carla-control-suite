@@ -1,0 +1,10 @@
+{
+  "issues": [],
+  "n_issues": 0,
+  "ok": true,
+  "tolerances": {
+    "lane_offset_eps": 0.05,
+    "lane_width_eps": 0.1
+  },
+  "xodr_path": "E:\\wt\\repair-map-realism-p0-837a8504\\campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_map_of_record_20260916_232831.xodr"
+}

@@ -1,0 +1,165 @@
+{
+  "freeze_timestamp_utc": "2026-10-11T13:41:00Z",
+  "schema_version": 1,
+  "authority": "M0_THESIS_CLOSURE_AUTHORITY",
+  "mode": "READ_ONLY_FREEZE",
+  "git_refs": {
+    "production_branch": "integration/production-large-map-20260918",
+    "production_sha": "65eb0f14d226104692dd845f8a528759fbeb90c4",
+    "consolidation_branch": "consolidation",
+    "consolidation_sha": "b6a6726ae81c37d6c0613c319b12918bb99d4337",
+    "gap055_branch": "fix/gap055-ci-windll-import-safety-20261009",
+    "gap055_sha": "56c749b458c51565ed37332ed259d0896b0fc67f",
+    "gap048_branch": "fix/gap048-through-junction-20261009",
+    "gap048_sha": "ef3003c2a97f838360aff94812fee9cc1dd79ca6",
+    "rq2_authority_branch": "rq2-authority",
+    "rq2_authority_sha": "2159a358feff585be5646a7757b96257dd935d82",
+    "rq5_readiness_branch": "rq5-readiness",
+    "rq5_readiness_sha": "7a2310c217800e6b4b68c67957b9a253c8c76b2a"
+  },
+  "research_questions": {
+    "RQ1": {
+      "title": "DETERMINISM",
+      "question": "Does the OSM\u2192OpenDRIVE pipeline preserve stable structural and topological signatures under fixed inputs, and where does byte-level nondeterminism arise?",
+      "required_inputs": [
+        "pinned auto_map_of_record (C13 registry: auto_map_of_record sha256=370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8)",
+        "frozen OSM input snapshot",
+        "frozen osm2odr + pipeline code state at production SHA",
+        "timestamp-normalized hash fixtures (portable CI artifacts)"
+      ],
+      "required_code_state": "ultimate_pipeline at integration/production-large-map-20260918 (SHA 65eb0f14)",
+      "required_experiment": "Three repeated Osm2Odr runs under fixed inputs; raw hash + normalized hash + structural signature comparison",
+      "required_metrics": [
+        "raw_hash_repeatability",
+        "normalized_hash_repeatability",
+        "structural_signature_repeatability",
+        "byte_nondeterminism_source"
+      ],
+      "required_falsification": "Any single run producing a different structural signature (road/junction/length topology) under identical pinned inputs",
+      "current_state": "AUTHORITATIVE for structural repeatability and raw byte non-repeatability; BOUNDED for timestamp-normalized byte equality. Three runs confirm structural stability; timestamp metadata identified as byte-level source. Large-artifact re-gen pending clean clone.",
+      "blockers": []
+    },
+    "RQ2": {
+      "title": "STRUCTURAL DOMAIN GAP",
+      "question": "How do automatically generated OSM-based CARLA maps differ structurally from a manually modeled CARLA map of the same region?",
+      "required_inputs": [
+        "pinned auto_map_of_record (C13 registry)",
+        "pinned manual_grid0828 (C13 registry: manual_grid0828 sha256=5eaece230e02f6c1b2075db851894870790e86ac64710abb3465bcfc533e9b0c)",
+        "local_registration.py (hull-footprint methodology)",
+        "frechet_gap.py (Fréchet distance methodology)"
+      ],
+      "required_code_state": "ultimate_pipeline at integration/production-large-map-20260918 (SHA 65eb0f14); local_registration.py and frechet_gap.py pinned to registry-resolved auto map",
+      "required_experiment": "Local hull-footprint structural comparison (road length, junction, road count ratios, curvature, lane width, building density, Fréchet distance) auto vs manual within manual map footprint",
+      "required_metrics": [
+        "lane_width_gap",
+        "curvature_gap",
+        "curvature_wasserstein_gap",
+        "road_count_ratio",
+        "road_length_ratio",
+        "junction_ratio",
+        "building_density_gap",
+        "frechet_distance",
+        "connectivity_gap",
+        "semantic_object_gap"
+      ],
+      "required_falsification": "Local hull-footprint road-length ratio reverting to uncropped whole-map scale (>10x) or Fréchet distance exceeding prior recomputed bounds under same pinned maps",
+      "current_state": "BOUNDED with corrected local (manual-map-footprint) comparison as primary result. Hull footprint ratios: road-length 2.683x, junction 3.782x, road-count 3.561x. Fréchet: mean 58.18m, median 36.13m, p90 140.48m (894 pairs). Re-verified 2026-09-17 against current map-of-record pin.",
+      "blockers": []
+    },
+    "RQ3": {
+      "title": "PERCEPTUAL DOMAIN GAP",
+      "question": "How do those structural differences shift perception outputs when an identical sensor rig and route protocol are used?",
+      "required_inputs": [
+        "pinned auto_map_of_record (C13 registry)",
+        "pinned manual_grid0828 (C13 registry)",
+        "working CARLA runtime (Grid0828 cooked package + manual Grid0828 cooked package)",
+        "rq3_capture_contract.py (paired capture protocol, frame/rig mismatch fixed)",
+        "identical sensor rig + route protocol"
+      ],
+      "required_code_state": "ultimate_pipeline at integration/production-large-map-20260918 (SHA 65eb0f14); rq3_capture_contract.py with frame/rig parity",
+      "required_experiment": "Paired perceptual capture: identical sensor rig + route on auto-map vs manual-map; camera/LiDAR/semantic distribution shift measurement",
+      "required_metrics": [
+        "paired_camera_distribution_shift",
+        "paired_lidar_distribution_shift",
+        "semantic_sensor_distribution_shift",
+        "paired_sensor_domain_metrics"
+      ],
+      "required_falsification": "Paired capture producing non-null metrics under identical protocol",
+      "current_state": "DEFERRED_RUNTIME. No generated/manual paired Ingolstadt evidence exists. Two distinct CARLA initialization hangs block runtime: (1) GPU-driver adapter-creation stall (nvwgf2umx.dll), (2) -nullrhi busy-spin livelock. Paired-capture protocol mismatch fixed (capture_config.py).",
+      "blockers": [
+        "CARLA runtime initialization hang (GPU driver adapter stall in render path)",
+        "CARLA runtime initialization hang (-nullrhi busy-spin livelock)",
+        "No working CARLA binary on this GPU/driver combination"
+      ]
+    },
+    "RQ4": {
+      "title": "STRUCTURAL VARIABILITY AND LATENT REPRESENTATION",
+      "question": "Does repeated automatic generation from the same pinned inputs introduce measurable structural variability, and can a latent representation of that variability support robustness analysis?",
+      "required_inputs": [
+        "pinned auto_map_of_record (C13 registry)",
+        "5-seed GNN ensemble (seeds 42-46, 562 union tiles, 50 epochs, batch 16, lr 1e-4, CPU)",
+        "leak-free provenance audit (exclude_source_hashes mechanism)",
+        "explicit domain randomization wiring"
+      ],
+      "required_code_state": "ultimate_pipeline at integration/production-large-map-20260918 (SHA 65eb0f14); run_gnn_pipeline.py with leak exclusion active",
+      "required_experiment": "5-seed GNN retrain with leak-exclusion; cosine distance + bootstrap CI; pre-training and post-hoc leakage audits; k-sweep; explicit DR wiring verification",
+      "required_metrics": [
+        "structural_coefficient_of_variation",
+        "natural_structural_variability",
+        "GNN_latent_distance",
+        "GNN_collapse_diagnostics",
+        "k_sweep",
+        "explicit_domain_randomization"
+      ],
+      "required_falsification": "Leakage audit FAIL on any seed checkpoint, or cosine_distance CI including zero",
+      "current_state": "AUTHORITATIVE (leak-free, 2026-09-24). 5-seed ensemble: cosine_distance mean 0.9207 (95% CI [0.845, 0.976]), CI excludes zero across all 5 seeds. Pre-training and post-hoc leakage audits PASS (eval_pair_hash_overlap=[] for all seeds). Explicit DR wiring confirmed.",
+      "blockers": []
+    },
+    "RQ5A": {
+      "title": "GENERALIZATION AND TRANSFER (a) generated-train / manual-test",
+      "question": "To what extent do perception models trained on automatically generated maps generalize to a manually simulated map?",
+      "required_inputs": [
+        "valid RQ3 paired perceptual datasets (auto + manual)",
+        "perception training pipeline",
+        "pinned manual_grid0828 as test target"
+      ],
+      "required_code_state": "ultimate_pipeline at integration/production-large-map-20260918 (SHA 65eb0f14); perception training code",
+      "required_experiment": "Train perception model on auto-map data; evaluate on manual-map data; measure transfer degradation",
+      "required_metrics": [
+        "generated_train_generated_test_accuracy",
+        "generated_train_manual_test_accuracy",
+        "mIoU_transfer_degradation",
+        "per_class_target_IoU"
+      ],
+      "required_falsification": "Generated-train/manual-test accuracy measurable and non-zero",
+      "current_state": "DEFERRED_RUNTIME. Depends on valid RQ3 datasets (which require working CARLA runtime).",
+      "blockers": [
+        "CARLA runtime initialization hang (blocks RQ3 data collection)",
+        "No R3 paired datasets exist"
+      ]
+    },
+    "RQ5B": {
+      "title": "GENERALIZATION AND TRANSFER (b) real-world transfer",
+      "question": "To what extent do perception models trained on automatically generated maps generalize to unlabeled real-world data?",
+      "required_inputs": [
+        "real-world Ingolstadt dataset (unlabeled)",
+        "trained perception model (from RQ5A or generated-only)",
+        "domain adaptation / shift measurement protocol (CORAL, MMD)"
+      ],
+      "required_code_state": "ultimate_pipeline at integration/production-large-map-20260918 (SHA 65eb0f14)",
+      "required_experiment": "Measure distribution shift between generated-map features and real-world features; evaluate model transfer if labeled real data available",
+      "required_metrics": [
+        "real_world_model_transfer_evaluation",
+        "domain_adaptation_coral_mmd",
+        "real_unlabeled_shift_metrics"
+      ],
+      "required_falsification": "Real-world Ingolstadt dataset available and measurable shift computed",
+      "current_state": "DEFERRED_EXTERNAL_DATA. No real-world Ingolstadt dataset exists on this machine. Unlabeled shift/CORAL/MMD are not model-generalization accuracy.",
+      "blockers": [
+        "No real-world Ingolstadt dataset available (external dependency)"
+      ]
+    }
+  },
+  "critical_rule": "A newly found issue becomes thesis-blocking ONLY if at least one is true: (1) it can materially change an RQ result; (2) it can cause the wrong artifact/map/dataset/model to be evaluated; (3) it can make an experiment non-reproducible; (4) it prevents required execution; (5) it invalidates provenance or train/test separation. Everything else becomes POST_THESIS_TECH_DEBT.",
+  "scope_freeze": true
+}

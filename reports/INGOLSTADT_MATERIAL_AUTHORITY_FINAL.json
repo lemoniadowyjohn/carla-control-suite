@@ -1,0 +1,60 @@
+{
+  "schema": "INGOLSTADT_MATERIAL_AUTHORITY_FINAL/v1",
+  "MATERIAL_COUNT": 8,
+  "materials": [
+    {
+      "name": "MAT_0_0.uasset",
+      "size": 4100
+    },
+    {
+      "name": "MAT_1_0.uasset",
+      "size": 4100
+    },
+    {
+      "name": "MAT_2_0.uasset",
+      "size": 4100
+    },
+    {
+      "name": "MAT_3_0.uasset",
+      "size": 4100
+    },
+    {
+      "name": "MAT_4_0.uasset",
+      "size": 4100
+    },
+    {
+      "name": "MAT_5_0.uasset",
+      "size": 4100
+    },
+    {
+      "name": "MAT_6_0.uasset",
+      "size": 4100
+    },
+    {
+      "name": "MAT_7_0.uasset",
+      "size": 4100
+    }
+  ],
+  "mtime_utc": "2026-10-04T14:27-14:28Z (all 8 identical batch)",
+  "producer": "NOT the run003 ImportAssets run. run003 imported StaticMeshes from FBX and its log contains no material creation; the 8 MAT_* packages predate run003 by ~1 day.",
+  "relationship_to_current_content": {
+    "referenced_by_canonical_meshes_sampled_400": {},
+    "referenced_by_main_world_Ingolstadt.umap": {},
+    "note": "canonical meshes reference MAT_0 and MAT_1 from their original /Game/Ingolstadt/Maps/Ingolstadt namespace, which is where the 8 materials still live, so no material relocation occurred"
+  },
+  "is_8_expected": "consistent with 8 observed slots; not independently derived from a spec in this batch",
+  "MATERIAL_ASSET_PROVENANCE": "UNPROVEN",
+  "MATERIAL_ASSET_PROVENANCE_basis": "Present and consistent in count (8), all written in a single 2026-10-04T14:27-14:28Z batch that predates run003, which is expected because run003 imported meshes only. However NO consumer binding was demonstrated: 0 of 21 tile .umap packages and 0 of 300 sampled canonical meshes contain any MAT_N_M package reference. The meshes store only the FBX slot names MAT_0 and MAT_1, which are slot labels rather than paths to the 8 on-disk materials. Any binding must therefore occur at cook or prepare time (e.g. a LoadAssetMaterials pass), which was not traced in this batch. Classification is UNPROVEN, not CURRENT_VALID.",
+  "consumer_binding_evidence": {
+    "tile_umaps_with_material_package_refs": 0,
+    "tile_umaps_scanned": 21,
+    "canonical_meshes_with_material_package_refs": 0,
+    "canonical_meshes_sampled": 300,
+    "meshes_store_fbx_slot_names_only": [
+      "MAT_0",
+      "MAT_1"
+    ],
+    "maps_namespace_hits_are_self_references_only": true,
+    "unresolved": "the mechanism that binds MAT_0_0..MAT_7_0 to tile worlds at cook time was not traced"
+  }
+}

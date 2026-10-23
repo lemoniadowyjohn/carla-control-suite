@@ -1,0 +1,2286 @@
+{
+  "branch_count": 455,
+  "branches": [
+    {
+      "branch": "F-Drive-Audit",
+      "committed_utc": "2026-09-23T02:38:53+02:00",
+      "sha": "6b3b96273c287390132881169c7de668a2de5647"
+    },
+    {
+      "branch": "R-040-restore-streaming-preflight",
+      "committed_utc": "2026-02-26T16:17:03+01:00",
+      "sha": "ab04477af7662ad7566ef98ec4d0240191fe810c"
+    },
+    {
+      "branch": "R-040-restore-streaming-preflight-failure-classification",
+      "committed_utc": "2026-02-27T10:11:17+01:00",
+      "sha": "aaf58e7617e0fef539138b590e20d376fc725187"
+    },
+    {
+      "branch": "_oc35_work",
+      "committed_utc": "2026-09-23T17:59:19+02:00",
+      "sha": "bef1d510a3971126a5e3dbf198d1c40eec33acbb"
+    },
+    {
+      "branch": "_oc41_work",
+      "committed_utc": "2026-09-23T17:59:50+02:00",
+      "sha": "2391350421414ee3271731d88b0295a968323f1b"
+    },
+    {
+      "branch": "_oc42_work",
+      "committed_utc": "2026-09-23T18:00:14+02:00",
+      "sha": "2e463532d48f42670a74f5b4666cda34e02f22ae"
+    },
+    {
+      "branch": "_vap_work",
+      "committed_utc": "2026-09-23T21:28:33+02:00",
+      "sha": "bdf76d65fd422afc052a513318811bf9ab546c1f"
+    },
+    {
+      "branch": "agent-work-large-map-staging",
+      "committed_utc": "2026-09-17T20:18:14+02:00",
+      "sha": "c75fd8c9fa9a6c3c0a21a564f0c85b9be6785da7"
+    },
+    {
+      "branch": "architecture/production-map-quality-20260906",
+      "committed_utc": "2026-09-14T14:07:32+02:00",
+      "sha": "5ca5e14d14cdbd6b45799815e8d08e47a0438f4a"
+    },
+    {
+      "branch": "audit/cache-input-identity-v1",
+      "committed_utc": "2026-09-18T17:52:03+02:00",
+      "sha": "9b30862a488d157fcf4ada7f5b587a5ff71f2ddc"
+    },
+    {
+      "branch": "audit/dem-crs-elevation-v2",
+      "committed_utc": "2026-09-15T23:33:38+02:00",
+      "sha": "7f6d8efabed5e9ef9eefea938d56dee05f02973b"
+    },
+    {
+      "branch": "audit/domain-gap-gnn-scientific-v2",
+      "committed_utc": "2026-09-15T23:34:03+02:00",
+      "sha": "d7f740ac878046b24ad6412c248a1a35aa8f994d"
+    },
+    {
+      "branch": "audit/evidence-integrity-v2",
+      "committed_utc": "2026-09-15T23:44:37+02:00",
+      "sha": "3f7f6f5cec9c86f97695eb34adcf99c7ad6263d5"
+    },
+    {
+      "branch": "audit/full-map-drivability-verification",
+      "committed_utc": "2026-05-16T18:59:45+02:00",
+      "sha": "c91807bba62a35c767028fc2f351fee6d1572e80"
+    },
+    {
+      "branch": "audit/gap-writer-lock-semantic-diff-20260923",
+      "committed_utc": "2026-09-23T20:56:29+02:00",
+      "sha": "252432aa70ec646fb0ac73476c440c589ff14898"
+    },
+    {
+      "branch": "audit/gemini31pro-audit",
+      "committed_utc": "2026-07-28T21:12:11+02:00",
+      "sha": "ee561c6c27d9ada8f0e843ee1bb01e76d66f91b0"
+    },
+    {
+      "branch": "audit/gemini31pro-roadrunner-recovery",
+      "committed_utc": "2026-07-28T17:20:58+02:00",
+      "sha": "352260f14273ca010c3818954b940c9a17efa4f3"
+    },
+    {
+      "branch": "audit/geometry-topology-oracle-v2-20260915",
+      "committed_utc": "2026-09-15T22:58:40+02:00",
+      "sha": "46208a389abc495728f12b0d3a37335d28d6515d"
+    },
+    {
+      "branch": "audit/hardcoded-tool-paths-v1",
+      "committed_utc": "2026-09-18T17:05:42+02:00",
+      "sha": "3a865d3435d5a775371934fb25b9a931d1a20cc0"
+    },
+    {
+      "branch": "audit/production-closure-offline-v2-20260918",
+      "committed_utc": "2026-09-18T17:18:16+02:00",
+      "sha": "f5333f3ae623194809350afa3bc212f53c3577d6"
+    },
+    {
+      "branch": "audit/quality-exception-swallowing-v1",
+      "committed_utc": "2026-09-18T17:41:13+02:00",
+      "sha": "9adb2f1a7859b64aee5590ee018c3f940f5e0f3b"
+    },
+    {
+      "branch": "audit/repository-lineage-governance-v1",
+      "committed_utc": "2026-09-18T17:50:31+02:00",
+      "sha": "b51a5d496342f8eeb54d0eccb302d8d715bb100e"
+    },
+    {
+      "branch": "audit/roadrunner-branch-recovery",
+      "committed_utc": "2026-07-28T21:44:42+02:00",
+      "sha": "369559609681e0d570e5af7d2ed5d88791f2721e"
+    },
+    {
+      "branch": "audit/stale-map-sha-references-v1",
+      "committed_utc": "2026-09-18T17:22:56+02:00",
+      "sha": "53da148ebcc32c776390aa60e6253ee0925457ee"
+    },
+    {
+      "branch": "b15-placement",
+      "committed_utc": "2026-10-02T23:21:15+02:00",
+      "sha": "a7a2a0a2d1d4a9b54509d4c064ab8c6633ee7888"
+    },
+    {
+      "branch": "b15-rq1b",
+      "committed_utc": "2026-10-03T20:49:08+02:00",
+      "sha": "543ddac634cffc7959d6257fd4381ac3a9151e92"
+    },
+    {
+      "branch": "b15-rq4",
+      "committed_utc": "2026-10-03T20:49:16+02:00",
+      "sha": "4649f709761a2ad963fc3343140f2fa30c3bfb56"
+    },
+    {
+      "branch": "b15-rq4-forensics",
+      "committed_utc": "2026-10-03T22:23:15+02:00",
+      "sha": "41e2b7cd9389a0da069f9e3caec5bf583eafc824"
+    },
+    {
+      "branch": "backup/20260226_2317_e6618026",
+      "committed_utc": "2026-02-26T16:17:03+01:00",
+      "sha": "ab04477af7662ad7566ef98ec4d0240191fe810c"
+    },
+    {
+      "branch": "backup/20260226_e6618026",
+      "committed_utc": "2026-02-26T16:17:03+01:00",
+      "sha": "ab04477af7662ad7566ef98ec4d0240191fe810c"
+    },
+    {
+      "branch": "backup/_",
+      "committed_utc": "2026-02-26T16:17:03+01:00",
+      "sha": "ab04477af7662ad7566ef98ec4d0240191fe810c"
+    },
+    {
+      "branch": "backup/fv-baseline-20260729-ff00099",
+      "committed_utc": "2026-07-29T22:33:26+02:00",
+      "sha": "29360034171dbe84d340334b5f6ce38e760c71f6"
+    },
+    {
+      "branch": "backup/pre-R-040",
+      "committed_utc": "2026-02-26T16:17:03+01:00",
+      "sha": "ab04477af7662ad7566ef98ec4d0240191fe810c"
+    },
+    {
+      "branch": "backup/pre-R-040-20260226_183348",
+      "committed_utc": "2026-02-26T16:17:03+01:00",
+      "sha": "ab04477af7662ad7566ef98ec4d0240191fe810c"
+    },
+    {
+      "branch": "backup/pre-R-040-split-issue",
+      "committed_utc": "2026-02-26T16:17:03+01:00",
+      "sha": "ab04477af7662ad7566ef98ec4d0240191fe810c"
+    },
+    {
+      "branch": "backup/r040-tip-",
+      "committed_utc": "2026-02-27T10:11:17+01:00",
+      "sha": "aaf58e7617e0fef539138b590e20d376fc725187"
+    },
+    {
+      "branch": "backup/r040-tip-20260227_104706",
+      "committed_utc": "2026-02-27T10:11:17+01:00",
+      "sha": "aaf58e7617e0fef539138b590e20d376fc725187"
+    },
+    {
+      "branch": "backup/wip-20260302_120000",
+      "committed_utc": "2026-03-02T08:01:34+01:00",
+      "sha": "4db502ef3918a2d26c7c7781ccf7f92584cd7258"
+    },
+    {
+      "branch": "backup/wip-20260302_144822",
+      "committed_utc": "2026-03-02T08:01:34+01:00",
+      "sha": "4db502ef3918a2d26c7c7781ccf7f92584cd7258"
+    },
+    {
+      "branch": "backup_2026-02-01",
+      "committed_utc": "2026-02-01T12:31:54+01:00",
+      "sha": "1ecfb0f111354b9e9828e80f04fef2516be11305"
+    },
+    {
+      "branch": "baseline-regression-20261003",
+      "committed_utc": "2026-10-03T21:13:35+02:00",
+      "sha": "7801f5528823cb5a79e2c4bb686aeea68b1d3c2a"
+    },
+    {
+      "branch": "baseline/production-integration-20260918",
+      "committed_utc": "2026-09-18T16:21:50+02:00",
+      "sha": "4825ec8268e2732154077d59a771544f247d00e0"
+    },
+    {
+      "branch": "batch9-integration",
+      "committed_utc": "2026-10-02T13:26:54+02:00",
+      "sha": "542b82e93b6bb866dc05e085480eecb3ceffbcc1"
+    },
+    {
+      "branch": "carla_opem_maps",
+      "committed_utc": "2025-12-21T23:05:08+01:00",
+      "sha": "50a4bb0d830ac265454f639b3353ab6e8aacee06"
+    },
+    {
+      "branch": "chore/codex-harness-upgrade-20260923",
+      "committed_utc": "2026-09-23T18:00:14+02:00",
+      "sha": "2e463532d48f42670a74f5b4666cda34e02f22ae"
+    },
+    {
+      "branch": "chore/deprecated-layout-20260906",
+      "committed_utc": "2026-09-07T22:30:09+02:00",
+      "sha": "047a7c5d0149d35665f14197f252899dbe83d0c7"
+    },
+    {
+      "branch": "chore/disk-audit-20260923",
+      "committed_utc": "2026-09-22T14:30:47+02:00",
+      "sha": "da7e02ac1e1446e3e2246a5fe0285fd4197fa306"
+    },
+    {
+      "branch": "chore/disk-audit-v2-20260923",
+      "committed_utc": "2026-09-23T18:16:59+02:00",
+      "sha": "5b0a11342ec8985644266d8c860316cf59396a63"
+    },
+    {
+      "branch": "chore/git-lfs-policy-implementation-v1-20260916",
+      "committed_utc": "2026-09-16T14:48:15+02:00",
+      "sha": "3b834d499b1e132ec18239ac0cd0e7321223d9d7"
+    },
+    {
+      "branch": "chore/production-engineering-20260906",
+      "committed_utc": "2026-09-15T14:36:51+02:00",
+      "sha": "1dfe80cbce6131bc6b8ae8c6a0cba56cf1b045ce"
+    },
+    {
+      "branch": "chore/production-engineering-shell-v2-20260915",
+      "committed_utc": "2026-09-15T23:26:34+02:00",
+      "sha": "f43bf84c8532c7da77654c9b84227908a510373b"
+    },
+    {
+      "branch": "chore/retire-orphaned-docs-20260907",
+      "committed_utc": "2026-09-07T22:36:01+02:00",
+      "sha": "57c02a31f942a68f1b07d44c543c70957dfaacbb"
+    },
+    {
+      "branch": "ci-verify-throwaway",
+      "committed_utc": "2026-09-02T14:07:54+02:00",
+      "sha": "5ee3e13bbb78dd0a381c6a3e5c68e5b7514ab54b"
+    },
+    {
+      "branch": "codex-clean",
+      "committed_utc": "2026-01-14T20:30:17+01:00",
+      "sha": "13ca95d3d6c379c4fdb72b07b0cdacd0f0f1f188"
+    },
+    {
+      "branch": "codex-review",
+      "committed_utc": "2026-01-06T14:59:01+01:00",
+      "sha": "ecf112d581ead057dcfbad1b124b4585a5e124b7"
+    },
+    {
+      "branch": "consolidation",
+      "committed_utc": "2025-11-05T09:26:44+01:00",
+      "sha": "b6a6726ae81c37d6c0613c319b12918bb99d4337"
+    },
+    {
+      "branch": "coordinator/bookkeeping-20260922",
+      "committed_utc": "2026-09-22T13:30:58+02:00",
+      "sha": "ebefd200839ca85e925bd0a765bfbe06d3a6238d"
+    },
+    {
+      "branch": "coordinator/close-gap011-packagei-20260923",
+      "committed_utc": "2026-09-23T10:38:32+02:00",
+      "sha": "5d4ea9129966faaa91a05e9ae17409db1c081286"
+    },
+    {
+      "branch": "coordinator/close-gap012-016-20260922",
+      "committed_utc": "2026-09-22T16:41:23+02:00",
+      "sha": "cc82a2ea24f69a4b1bf50f191ef969623f0e2ae5"
+    },
+    {
+      "branch": "coordinator/close-gap013-014-20260923",
+      "committed_utc": "2026-09-23T15:09:25+02:00",
+      "sha": "07802c45e7f6292488200fb4ca9f33ff8f1cccca"
+    },
+    {
+      "branch": "coordinator/gap013-014-interim-20260923",
+      "committed_utc": "2026-09-22T23:16:48+02:00",
+      "sha": "9fa418a98702a25b3badafaed5b661c8d664d586"
+    },
+    {
+      "branch": "coordinator/gap017-018-update-20260923",
+      "committed_utc": "2026-09-23T01:26:13+02:00",
+      "sha": "77b6bbfe4fd155196f7f18e1fdf774db239c0b82"
+    },
+    {
+      "branch": "coordinator/master-plan-20260923",
+      "committed_utc": "2026-09-22T22:23:57+02:00",
+      "sha": "a5a2a5da9a4429ac0ebfed2100a9f9f2db4b2418"
+    },
+    {
+      "branch": "coordinator/plan-update-cook-20260923",
+      "committed_utc": "2026-09-22T22:55:20+02:00",
+      "sha": "a3f1e0e8ccc762a6ca6977752adbbbb691444fa5"
+    },
+    {
+      "branch": "coordinator/plan-update-rq1-20260923",
+      "committed_utc": "2026-09-22T22:48:47+02:00",
+      "sha": "ccd74cb85e73eac251bfda4aafbd101c29720f57"
+    },
+    {
+      "branch": "coordinator/plan-update-rq2-20260923",
+      "committed_utc": "2026-09-22T22:35:08+02:00",
+      "sha": "817d902c8f07d00cca598548a0fb87488a797b57"
+    },
+    {
+      "branch": "dead-signal-hardening-334-349",
+      "committed_utc": "2026-10-01T03:30:47+02:00",
+      "sha": "f897e0eb747ac827941ac4883170a5181a603111"
+    },
+    {
+      "branch": "deepseek-observability-integration-verification",
+      "committed_utc": "2026-07-29T20:35:19+02:00",
+      "sha": "3279cd3c369cc69632f0778b139df532fcaf7237"
+    },
+    {
+      "branch": "docs/dem-availability-check-v1-20260916",
+      "committed_utc": "2026-09-16T16:53:51+02:00",
+      "sha": "bb4e39a2639cf4b1ae61ae38dec9d3480dc8fa11"
+    },
+    {
+      "branch": "docs/gap-register-update-2-20260922",
+      "committed_utc": "2026-09-22T12:53:41+02:00",
+      "sha": "65eb0f14d226104692dd845f8a528759fbeb90c4"
+    },
+    {
+      "branch": "docs/gap-register-update-20260922",
+      "committed_utc": "2026-09-22T12:36:48+02:00",
+      "sha": "f35e0454d2e023e3ef5d7051baae4280bafe4d9c"
+    },
+    {
+      "branch": "docs/gap008-geometry-consolidation-plan-20260923",
+      "committed_utc": "2026-09-23T22:28:27+02:00",
+      "sha": "c7dc7539659dcfd71c167a13604b22f85dfae7f1"
+    },
+    {
+      "branch": "docs/gap011-partb-status-20260923",
+      "committed_utc": "2026-09-23T10:38:32+02:00",
+      "sha": "5d4ea9129966faaa91a05e9ae17409db1c081286"
+    },
+    {
+      "branch": "docs/gap011-partc-status-20260923",
+      "committed_utc": "2026-09-23T16:11:08+02:00",
+      "sha": "29497a84f3c4d283c1c96520918ebb520bad147c"
+    },
+    {
+      "branch": "docs/gap013-014-final-verification-20260923",
+      "committed_utc": "2026-09-23T10:38:32+02:00",
+      "sha": "5d4ea9129966faaa91a05e9ae17409db1c081286"
+    },
+    {
+      "branch": "docs/gap015-status-20260923",
+      "committed_utc": "2026-09-23T19:36:03+02:00",
+      "sha": "fe7a6ec6c3b2801fb1ceff950c3c598dd146f3ca"
+    },
+    {
+      "branch": "docs/gap017-audiomixer-investigation-20260924",
+      "committed_utc": "2026-09-24T02:11:33+02:00",
+      "sha": "730d506c02eb2137727ff05bae60c60bc2185b94"
+    },
+    {
+      "branch": "docs/gap020-update-20260923",
+      "committed_utc": "2026-09-23T16:12:09+02:00",
+      "sha": "cd1ac2ac0d00c434a43b65fbf9955633d417f508"
+    },
+    {
+      "branch": "docs/gap036-037-policy-proposals-20260929",
+      "committed_utc": "2026-09-30T23:26:58+02:00",
+      "sha": "a6c46055983203e683bfa6c5c591debf83ef14cf"
+    },
+    {
+      "branch": "docs/mark-stale-comparison-doc-v1-20260917",
+      "committed_utc": "2026-09-17T16:12:45+02:00",
+      "sha": "601216bff5718bbb1c23f6c5a696aeedfa8cda81"
+    },
+    {
+      "branch": "docs/master-prompt-triage-20260923",
+      "committed_utc": "2026-09-23T20:42:32+02:00",
+      "sha": "f343ea33f931457fc28da482b152828457e927a5"
+    },
+    {
+      "branch": "docs/new196-199-resolution-20260930",
+      "committed_utc": "2026-09-30T02:28:43+02:00",
+      "sha": "050f4f5ff1fed509da8744c773468cb3e44f5313"
+    },
+    {
+      "branch": "docs/phase17-rq2-current-map-verification-20260924",
+      "committed_utc": "2026-09-24T13:38:42+02:00",
+      "sha": "cfa393726b645241f4eb3305090d69b8330e027e"
+    },
+    {
+      "branch": "docs/phase4-writerlock-adversarial-review-20260924",
+      "committed_utc": "2026-09-24T13:38:42+02:00",
+      "sha": "cfa393726b645241f4eb3305090d69b8330e027e"
+    },
+    {
+      "branch": "docs/phase8-coordinate-frame-seam-review-20260924",
+      "committed_utc": "2026-09-24T13:38:42+02:00",
+      "sha": "cfa393726b645241f4eb3305090d69b8330e027e"
+    },
+    {
+      "branch": "docs/readme-changelog-sync-20260924",
+      "committed_utc": "2026-09-24T10:49:57+02:00",
+      "sha": "2e7571269bbe7705595e50ae608de741b2e256c6"
+    },
+    {
+      "branch": "docs/regen-frechet-distance-v1-20260917",
+      "committed_utc": "2026-09-17T13:45:24+02:00",
+      "sha": "cee99d0ff1ad2a04208b5fe2acfc6dd559d9f4f2"
+    },
+    {
+      "branch": "docs/regen-stale-rq-tables-v1-20260917",
+      "committed_utc": "2026-09-17T13:37:46+02:00",
+      "sha": "18d0f272f4e8173d1120528764dbada6c452cbd0"
+    },
+    {
+      "branch": "docs/rq1-extended-determinism-coverage-20260924",
+      "committed_utc": "2026-09-24T06:15:15+02:00",
+      "sha": "b86d11701868d17b94c8087efe88e0cb937a874c"
+    },
+    {
+      "branch": "docs/rq1-reverification-20260923",
+      "committed_utc": "2026-09-22T22:46:57+02:00",
+      "sha": "497a87b4ac058e0476679d8ad5388ad9914df35b"
+    },
+    {
+      "branch": "docs/rq2-reverification-20260923",
+      "committed_utc": "2026-09-22T22:32:21+02:00",
+      "sha": "c44ae832c26891a0845bd4dfe985c6a5f7e7b5e9"
+    },
+    {
+      "branch": "docs/stale-branch-survey-20260923",
+      "committed_utc": "2026-09-23T18:44:06+02:00",
+      "sha": "518c1c5752f1220ccbb848851b2f64f2bd37e8e4"
+    },
+    {
+      "branch": "docs/sync-rq3-carla-diagnosis-v1-20260917",
+      "committed_utc": "2026-09-17T16:09:01+02:00",
+      "sha": "f6ad8b5d2b93f0ed70561c93305b12809c3902e3"
+    },
+    {
+      "branch": "docs/tile-based-ue4-cooking-design-v1-20260915",
+      "committed_utc": "2026-09-15T14:42:29+02:00",
+      "sha": "150b2eb9fdec6c097abb1d7fda41ef98d2dcf7af"
+    },
+    {
+      "branch": "docs/verify-o1-o19-release-provenance-20260929",
+      "committed_utc": "2026-09-29T05:00:37+02:00",
+      "sha": "15f03801c7d0ef266f65594a7382e2aba60caa29"
+    },
+    {
+      "branch": "docs/verify-o10-o11-gap026-20260929",
+      "committed_utc": "2026-09-29T05:02:59+02:00",
+      "sha": "ecb7b83517e800714aae71b80c967d06bf2fafad"
+    },
+    {
+      "branch": "docs/verify-o14-fullsuite-20260929",
+      "committed_utc": "2026-09-29T09:36:11+02:00",
+      "sha": "d51ca635143f69b8b9fbd5c89ae0883f110de52e"
+    },
+    {
+      "branch": "docs/verify-o15-o18-rq-claims-20260929",
+      "committed_utc": "2026-09-29T05:02:42+02:00",
+      "sha": "38b2f5a1c05325502251ae6ea4b5104e4574e411"
+    },
+    {
+      "branch": "docs/verify-o3-tile-frame-fullgrid-cook-20260929",
+      "committed_utc": "2026-09-29T05:08:13+02:00",
+      "sha": "9e02b2f44960877e15435b3ecac164c8e4933a57"
+    },
+    {
+      "branch": "docs/verify-o5-o9-carla-runtime-20260929",
+      "committed_utc": "2026-09-29T05:03:19+02:00",
+      "sha": "1d2c2a2901dfcea3a274c0e42eaf264d80873847"
+    },
+    {
+      "branch": "docs/verify-writerlock-stale-artifact-20260929",
+      "committed_utc": "2026-09-29T09:55:45+02:00",
+      "sha": "bdc72aaf5f7a5e70fcb3f4745c3e25ea6a5c588a"
+    },
+    {
+      "branch": "feat/fbx-roundtrip-metadata-hardening-v1",
+      "committed_utc": "2026-09-18T16:58:12+02:00",
+      "sha": "9dcec13d0959e424b2a37198c4ade95d83e325a6"
+    },
+    {
+      "branch": "feat/lane-count-classification-v1-20260918",
+      "committed_utc": "2026-09-18T16:54:33+02:00",
+      "sha": "e2befc36276308e88f69f3b164a704f9bdb2d47f"
+    },
+    {
+      "branch": "feat/lane-count-transition-classification-v1",
+      "committed_utc": "2026-09-18T16:51:15+02:00",
+      "sha": "3151c47293bdaf174abea2b17334b81005fa5e83"
+    },
+    {
+      "branch": "feat/offline-cooking-pipeline-integration-v1-20260916",
+      "committed_utc": "2026-09-16T14:52:52+02:00",
+      "sha": "334760f727a74d47136490f20c3015a05ef44b3e"
+    },
+    {
+      "branch": "feat/pipeline-stage-dependency-contract-v1-20260917",
+      "committed_utc": "2026-09-17T20:19:37+02:00",
+      "sha": "e99ec35b5c2bb7ee3013cb9d5d6f5ecb10401866"
+    },
+    {
+      "branch": "feat/promote-map-of-record-and-reverify-rq2-v1-20260917",
+      "committed_utc": "2026-09-17T11:30:09+02:00",
+      "sha": "c3915130b064d1f01c736e75d40d6c73bcb00ad1"
+    },
+    {
+      "branch": "feat/repromote-map-of-record-and-reverify-rq2-v1-20260916",
+      "committed_utc": "2026-09-16T16:54:40+02:00",
+      "sha": "f778d98eb13196e7417282a3ef53e8f37f32410d"
+    },
+    {
+      "branch": "feat/strict-large-map-package-mode-v1",
+      "committed_utc": "2026-09-18T16:31:43+02:00",
+      "sha": "48cfd65fefa09d61f54919f8c8c4f4021cf05117"
+    },
+    {
+      "branch": "feat/strict-map-acceptance-policy-v1",
+      "committed_utc": "2026-09-18T16:21:50+02:00",
+      "sha": "4825ec8268e2732154077d59a771544f247d00e0"
+    },
+    {
+      "branch": "feat/visual-asset-production-preflight-v1",
+      "committed_utc": "2026-09-18T17:18:42+02:00",
+      "sha": "38aa890b09f8755a7bf803fe4180654d7ba2f9d2"
+    },
+    {
+      "branch": "feat/visual-production-config-guard-v1",
+      "committed_utc": "2026-09-18T17:11:52+02:00",
+      "sha": "28190cb5cab2d4711f1ee54cc7cc6f1b112f4b4f"
+    },
+    {
+      "branch": "feature/FINAL_CARLA-PIPELINE",
+      "committed_utc": "2026-01-06T14:59:01+01:00",
+      "sha": "ecf112d581ead057dcfbad1b124b4585a5e124b7"
+    },
+    {
+      "branch": "feature/FINAL_CARLA_OPENSTREET_MAPS",
+      "committed_utc": "2025-12-21T23:05:08+01:00",
+      "sha": "50a4bb0d830ac265454f639b3353ab6e8aacee06"
+    },
+    {
+      "branch": "feature/building-road-residual-offset-contract-v1-20260915",
+      "committed_utc": "2026-09-15T09:12:31+02:00",
+      "sha": "e7c7c5a2203a6852b5ba3b9b1405f4f973e00e50"
+    },
+    {
+      "branch": "feature/building-road-residual-offset-v1-20260914",
+      "committed_utc": "2026-09-14T21:09:09+02:00",
+      "sha": "b3b1d834db4a9476220fc3c226e94a831fd14dac"
+    },
+    {
+      "branch": "feature/candidate-regression-gate-v1-20260912",
+      "committed_utc": "2026-09-12T14:11:24+02:00",
+      "sha": "bcb3a39a8736c08d5813224fd980261cdb775e0b"
+    },
+    {
+      "branch": "feature/codex-multi-agent-harness-20260908",
+      "committed_utc": "2026-09-08T08:56:33+02:00",
+      "sha": "23b051af0f54412dd278d02ab820d015e134c94b"
+    },
+    {
+      "branch": "feature/confirm-then-fix-batch-20260907",
+      "committed_utc": "2026-09-07T14:12:34+02:00",
+      "sha": "bd59f3d0360896cf6be6709a955fca851b22e930"
+    },
+    {
+      "branch": "feature/confirmed-hygiene-gaps-v1-20260914",
+      "committed_utc": "2026-09-14T14:31:32+02:00",
+      "sha": "2561ea348c435c59f46d8ea05942b81ef82703a8"
+    },
+    {
+      "branch": "feature/connector-pose-validation-v1-20260907",
+      "committed_utc": "2026-09-08T09:15:10+02:00",
+      "sha": "b53af3cdc0f234a77fbdfc9f86f28824cb935ad3"
+    },
+    {
+      "branch": "feature/connector-snap-wiring-f195-v1-20260912",
+      "committed_utc": "2026-09-12T18:30:25+02:00",
+      "sha": "42b8c51b90d2ff8812c6b18a9ceba884110aa081"
+    },
+    {
+      "branch": "feature/connector-snap-wiring-v1-20260912",
+      "committed_utc": "2026-09-12T13:30:18+02:00",
+      "sha": "5da5dba2e9823cc5019c9d568ca786ce1af65fe8"
+    },
+    {
+      "branch": "feature/crosswalk-match-distance-f195-v1-20260912",
+      "committed_utc": "2026-09-12T18:24:20+02:00",
+      "sha": "0aae6091c8811270668821894a3a067673fd06e2"
+    },
+    {
+      "branch": "feature/crosswalk-match-distance-v1-20260912",
+      "committed_utc": "2026-09-12T12:12:18+02:00",
+      "sha": "13e95db23b0017f00a76e015116e1e1b4258ab3e"
+    },
+    {
+      "branch": "feature/crosswalk-writer-audit-v1-20260912",
+      "committed_utc": "2026-09-12T11:13:22+02:00",
+      "sha": "55e00cf7be66fc7c147f3a3f79db0fadd6f0ca2f"
+    },
+    {
+      "branch": "feature/crosswalk-writer-idempotency-v1-20260914",
+      "committed_utc": "2026-09-14T14:21:00+02:00",
+      "sha": "e18f0609cafb701413834fd8414b29c732752ca0"
+    },
+    {
+      "branch": "feature/deprecate-old-connector-tool-20260907",
+      "committed_utc": "2026-09-07T14:03:49+02:00",
+      "sha": "0c98d59eb3f8a197b7318a0814be0aa15e259853"
+    },
+    {
+      "branch": "feature/deterministic-alignment-offset-contract-v1-20260914",
+      "committed_utc": "2026-09-14T21:01:00+02:00",
+      "sha": "06b23f83165406527c79ed15f32cc00bfccc7146"
+    },
+    {
+      "branch": "feature/docs-deprecation-migration-20260907",
+      "committed_utc": "2026-09-07T14:09:39+02:00",
+      "sha": "c5d75e4e5664001128719bb1fc8f6512cc228810"
+    },
+    {
+      "branch": "feature/f5-elevation-solver-v1-20260911",
+      "committed_utc": "2026-09-11T10:59:30+02:00",
+      "sha": "badc56e917cceaa3d75ec1c918a730eeda12dc16"
+    },
+    {
+      "branch": "feature/fbx-regen-current-pin-v1-20260915",
+      "committed_utc": "2026-09-15T13:08:11+02:00",
+      "sha": "c8108ecab2f2a75c941b83217650806f15f21bcb"
+    },
+    {
+      "branch": "feature/fresh-domain-gap-current-pin-v1-20260915",
+      "committed_utc": "2026-09-14T21:09:09+02:00",
+      "sha": "b3b1d834db4a9476220fc3c226e94a831fd14dac"
+    },
+    {
+      "branch": "feature/fresh-domain-gap-regen-v1-20260915",
+      "committed_utc": "2026-09-15T18:53:27+02:00",
+      "sha": "418fd0238d79afd02807d7b3044e89176cd68511"
+    },
+    {
+      "branch": "feature/full-grid-tile-fbx-cook-v1-20260915",
+      "committed_utc": "2026-09-15T20:33:56+02:00",
+      "sha": "bb0af0af9dbfefa2b3f6e40bb557929957767d0f"
+    },
+    {
+      "branch": "feature/g3-cross-section-coverage-v1-20260912",
+      "committed_utc": "2026-09-12T11:00:27+02:00",
+      "sha": "291e801e334ce6978ca0cb83602c4738f4d0147a"
+    },
+    {
+      "branch": "feature/g3-length-epsilon-v1-20260912",
+      "committed_utc": "2026-09-12T12:40:04+02:00",
+      "sha": "c3cd212e332a4b87f1c5339c0c5a2aab5a48eee4"
+    },
+    {
+      "branch": "feature/g5-lane-type-validation-v1-20260912",
+      "committed_utc": "2026-09-12T11:04:57+02:00",
+      "sha": "5480510c8ba2f692ce342e5e4e1a40d1e525a6df"
+    },
+    {
+      "branch": "feature/g6-coverage-wiring-f195-v1-20260912",
+      "committed_utc": "2026-09-12T18:32:34+02:00",
+      "sha": "ec80a1e58ba57a79f16e7ec21e7b4146833be975"
+    },
+    {
+      "branch": "feature/g6-coverage-wiring-v1-20260912",
+      "committed_utc": "2026-09-12T13:57:15+02:00",
+      "sha": "46796ab920298c6bdb5a29def354ee7b20d0eb21"
+    },
+    {
+      "branch": "feature/g6-lane-coverage-repair-v1-20260911",
+      "committed_utc": "2026-09-11T11:14:19+02:00",
+      "sha": "94cb1e191b1c5dfb61ce56c4954b97b5e8e29103"
+    },
+    {
+      "branch": "feature/g7-roadmark-semantics-v1-20260912",
+      "committed_utc": "2026-09-12T10:50:44+02:00",
+      "sha": "7317ac1636296b1387beb8c1c8918d4313001103"
+    },
+    {
+      "branch": "feature/gap-018-tangent-reversal-20260909",
+      "committed_utc": "2026-09-09T23:05:22+02:00",
+      "sha": "a96ece69ba8274e6afe8f19af9941c66eb851509"
+    },
+    {
+      "branch": "feature/gap-024-heading-smoothing-20260909",
+      "committed_utc": "2026-09-09T22:08:20+02:00",
+      "sha": "1878433b9c98301b0a1b29b92ff7254761a90cd1"
+    },
+    {
+      "branch": "feature/gemini-grid0828-runtime-probe",
+      "committed_utc": "2026-03-15T20:06:43+01:00",
+      "sha": "58cf522814bcd53fe3c5362df447ccacb2e03773"
+    },
+    {
+      "branch": "feature/geometry-kernel-v1-20260907",
+      "committed_utc": "2026-09-07T13:59:48+02:00",
+      "sha": "1868ed36cfd3d9f391f0f041dd1b13d2bb915d2b"
+    },
+    {
+      "branch": "feature/grid-unstable-map-mitigation-tests-v1-20260915",
+      "committed_utc": "2026-09-15T14:45:19+02:00",
+      "sha": "10c7c237e87605c8269f03fd7d1b93e3262378cf"
+    },
+    {
+      "branch": "feature/junction-lanelink-geometry-v1-20260907",
+      "committed_utc": "2026-09-08T10:06:52+02:00",
+      "sha": "0929f7d22b6f7404f7922d8d76d815f9797c3412"
+    },
+    {
+      "branch": "feature/lane-count-change-gate-v1-20260908",
+      "committed_utc": "2026-09-09T09:29:46+02:00",
+      "sha": "8a02e0f1b74d3fca14d556885fb347f68ecc9b81"
+    },
+    {
+      "branch": "feature/lane-count-from-osm-v1-20260907",
+      "committed_utc": "2026-09-07T14:07:12+02:00",
+      "sha": "6bf85f1aeb0d3885addf149eea34d68a55588c93"
+    },
+    {
+      "branch": "feature/lane-successor-hardening-v1-20260912",
+      "committed_utc": "2026-09-12T11:36:08+02:00",
+      "sha": "5e211d13322a1ad87cf09841dc0d7da442c438a7"
+    },
+    {
+      "branch": "feature/lanelink-turn-restriction-awareness-v1-20260908",
+      "committed_utc": "2026-09-08T10:31:08+02:00",
+      "sha": "14733611ab7daa9b63cb0cb7ebce320a655b4275"
+    },
+    {
+      "branch": "feature/micro-stub-detection-f195-v1-20260912",
+      "committed_utc": "2026-09-12T18:33:13+02:00",
+      "sha": "593775b57ae879639bb89a9f2125091ec42ea7eb"
+    },
+    {
+      "branch": "feature/micro-stub-detection-v1-20260912",
+      "committed_utc": "2026-09-12T13:02:46+02:00",
+      "sha": "f84e85ca193a1d3ec4cde67d971dafff7ef155ec"
+    },
+    {
+      "branch": "feature/native-signal-enrichment-v1-20260911",
+      "committed_utc": "2026-09-11T11:23:05+02:00",
+      "sha": "ef8bb4739a779efc922eb213cac2a79a274e41ef"
+    },
+    {
+      "branch": "feature/new-branch-name",
+      "committed_utc": "2025-12-21T23:05:08+01:00",
+      "sha": "50a4bb0d830ac265454f639b3353ab6e8aacee06"
+    },
+    {
+      "branch": "feature/osm-access-metadata-v1-20260911",
+      "committed_utc": "2026-09-11T11:48:18+02:00",
+      "sha": "18ce5da4af69f9978571d9c7e2e0db16eee6b235"
+    },
+    {
+      "branch": "feature/osm-access-restrictions-v1-20260908",
+      "committed_utc": "2026-09-08T10:19:50+02:00",
+      "sha": "beb23924c9718abd39a9649f124292089711ac9a"
+    },
+    {
+      "branch": "feature/osm-correspondence-engine-v1-20260907",
+      "committed_utc": "2026-09-07T19:17:51+02:00",
+      "sha": "6889ffdb54d89239edb908d616b00e27f66e37bc"
+    },
+    {
+      "branch": "feature/osm-road-link-topology-crosscheck-v1-20260914",
+      "committed_utc": "2026-09-14T20:37:16+02:00",
+      "sha": "7e36adda43daa519e75dbb89cc00dc3f3fa7a270"
+    },
+    {
+      "branch": "feature/osm2world-building-source-fix-v1-20260915",
+      "committed_utc": "2026-09-15T15:00:20+02:00",
+      "sha": "c59c390d3606efcf4df7c5e71de1072c447d6ae1"
+    },
+    {
+      "branch": "feature/parampoly3-blind-spot-sweep-v1-20260914",
+      "committed_utc": "2026-09-14T13:05:26+02:00",
+      "sha": "a20e8d37084c1b5a754aa582a74107d73a983589"
+    },
+    {
+      "branch": "feature/phase-g-lane-qa-survey-v1-20260911",
+      "committed_utc": "2026-09-11T11:33:39+02:00",
+      "sha": "f11eb48e5c6e2de9d6b2e0c422465a4c884d1d5d"
+    },
+    {
+      "branch": "feature/phase-j-wiring-v1-20260909",
+      "committed_utc": "2026-09-10T19:51:56+02:00",
+      "sha": "80eee9ab010a6ebe14a6c66e2ce053b4b2a9a945"
+    },
+    {
+      "branch": "feature/quality-gate-fixes-20260907",
+      "committed_utc": "2026-09-07T15:20:37+02:00",
+      "sha": "cb82079f9f36932ba20a7839a13f0cde3e1d7930"
+    },
+    {
+      "branch": "feature/regulatory-precedence-v1-20260912",
+      "committed_utc": "2026-09-12T11:22:34+02:00",
+      "sha": "75d7110917581af0e0786cd4a50106e1b3c10e67"
+    },
+    {
+      "branch": "feature/regulatory-sign-catalog-audit-v1-20260912",
+      "committed_utc": "2026-09-12T10:48:04+02:00",
+      "sha": "5819d50139325ef55fbe85605d0d05abd777e8c0"
+    },
+    {
+      "branch": "feature/roundabout-reconstruction-v2-20260907",
+      "committed_utc": "2026-09-07T12:00:22+02:00",
+      "sha": "1746c5dd6bf2e3566574d141895fc61e80ed8ff6"
+    },
+    {
+      "branch": "feature/roundabout-v2-materialization-v1-20260914",
+      "committed_utc": "2026-09-14T12:46:26+02:00",
+      "sha": "b907849418722d3e73eec8cc725299d768115d31"
+    },
+    {
+      "branch": "feature/roundabout-v2-real-map-validation-v1-20260913",
+      "committed_utc": "2026-09-13T21:14:08+02:00",
+      "sha": "f38d4da815508ce714a2cc51805040d679683b04"
+    },
+    {
+      "branch": "feature/roundabout-v2-source-aware-detection-v1-20260913",
+      "committed_utc": "2026-09-13T22:58:51+02:00",
+      "sha": "dd528a8a2c790d1ee6c502e083b59937447f7a7c"
+    },
+    {
+      "branch": "feature/runtime-tile-subset-v1-20260914",
+      "committed_utc": "2026-09-14T22:14:44+02:00",
+      "sha": "9e36cea1f9babe44f9b3ca54872c6809fa8b61b6"
+    },
+    {
+      "branch": "feature/semantic-completeness-metric-v1-20260912",
+      "committed_utc": "2026-09-12T10:27:00+02:00",
+      "sha": "ddf1f32507dccc385e65f71b7892348e1fb80186"
+    },
+    {
+      "branch": "feature/semantic-overlap-strict-fix-20260909",
+      "committed_utc": "2026-09-09T09:33:04+02:00",
+      "sha": "f81d21f47dfa8185282e1d7e9b03b2ce097c86b3"
+    },
+    {
+      "branch": "feature/semantic-overlap-wiring-20260907",
+      "committed_utc": "2026-09-07T14:15:55+02:00",
+      "sha": "affd2b4244436039b96c4184331fd92da9032e90"
+    },
+    {
+      "branch": "feature/settings-audit-v1-20260912",
+      "committed_utc": "2026-09-12T17:59:26+02:00",
+      "sha": "d4b909af5024e71b34f703eda06f18f86338a177"
+    },
+    {
+      "branch": "feature/sidewalk-no-fix-20260907",
+      "committed_utc": "2026-09-07T13:54:15+02:00",
+      "sha": "cd3a6a4b0f12a47fde66341a92d89630bbf148fb"
+    },
+    {
+      "branch": "feature/speed-limit-writer-audit-v1-20260912",
+      "committed_utc": "2026-09-06T18:21:18+02:00",
+      "sha": "f195ba0b5d6df3f085573c5e996ff9d0f11a975f"
+    },
+    {
+      "branch": "feature/stage-context-migration-v1-20260908",
+      "committed_utc": "2026-09-12T10:20:53+02:00",
+      "sha": "1c64739abb2eead39c36ea8d939cc7bf01989179"
+    },
+    {
+      "branch": "feature/stale-comment-fixes-20260907",
+      "committed_utc": "2026-09-07T14:26:21+02:00",
+      "sha": "ac49f1d040474efdade90dcc1df492c4512b522d"
+    },
+    {
+      "branch": "feature/structure-elevation-crs-blocker-v1-20260913",
+      "committed_utc": "2026-09-13T21:29:24+02:00",
+      "sha": "0dd4343946aed70572c913053edbfd174467a1be"
+    },
+    {
+      "branch": "feature/structure-elevation-remediation-v1-20260913",
+      "committed_utc": "2026-09-13T23:31:08+02:00",
+      "sha": "3ed22a97732d4e7ce8c1d44f10e8bf6f43219866"
+    },
+    {
+      "branch": "feature/structure-elevation-v1-20260907",
+      "committed_utc": "2026-09-11T11:59:00+02:00",
+      "sha": "0f8968a6a7d753f450a00e55b7499635370cd5b6"
+    },
+    {
+      "branch": "feature/thesis-quarantine-protocol",
+      "committed_utc": "2026-01-27T20:01:16+01:00",
+      "sha": "18d6b56d4598162951694e3449ac54f7552262f7"
+    },
+    {
+      "branch": "feature/tile-based-fbx-generation-v1-20260915",
+      "committed_utc": "2026-09-15T19:30:06+02:00",
+      "sha": "9038f42c35da9812107640356769b9c0d5629e9f"
+    },
+    {
+      "branch": "feature/traffic-light-ground-truth-audit-v1-20260912",
+      "committed_utc": "2026-09-12T10:44:27+02:00",
+      "sha": "b31a1245fa01f696bd39b83dacc70561a461e5aa"
+    },
+    {
+      "branch": "feature/turn-cycle-lanes-v1-20260908",
+      "committed_utc": "2026-09-08T09:56:54+02:00",
+      "sha": "ea6567edee561c42547233c4a8453a649dcff5b8"
+    },
+    {
+      "branch": "feature/ue4-large-map-production-v2",
+      "committed_utc": "2026-09-16T00:20:38+02:00",
+      "sha": "8b7d7bb3aff6a11cb6f0f96af55e2d0ad6f239e0"
+    },
+    {
+      "branch": "feature/wire-junction-coverage-20260907",
+      "committed_utc": "2026-09-07T13:59:22+02:00",
+      "sha": "7bff88462184791eb0331a618412dd02b8005858"
+    },
+    {
+      "branch": "feature/z-fighting-detector-20260907",
+      "committed_utc": "2026-09-07T14:19:41+02:00",
+      "sha": "7bfbe96142df17ca637e6700afd3ce0e61af654c"
+    },
+    {
+      "branch": "fix/agents-md-false-main-claim-20260929",
+      "committed_utc": "2026-09-29T09:42:29+02:00",
+      "sha": "8cca74c6086138618cfdbf710efc34d3b81b483e"
+    },
+    {
+      "branch": "fix/artifact-locator-staleness-resolution-v1-20260916",
+      "committed_utc": "2026-09-16T11:58:11+02:00",
+      "sha": "4643396fbdf42547e097adab116a59746047545b"
+    },
+    {
+      "branch": "fix/artifact-transaction-integrity-v1-20260921",
+      "committed_utc": "2026-09-21T21:16:02+02:00",
+      "sha": "1e2ea41ba0697f2401d66bbc4ddf84aa735fcfbc"
+    },
+    {
+      "branch": "fix/artifact-transaction-integrity-v2-20260923",
+      "committed_utc": "2026-09-23T15:51:44+02:00",
+      "sha": "e10e6f5812d845de7b64417727bfa157fae3cbbf"
+    },
+    {
+      "branch": "fix/blender-conversion-integrity-v1",
+      "committed_utc": "2026-09-23T02:10:37+02:00",
+      "sha": "4989c1b2d453ba0d7dee74c0c7b15d11b62179f8"
+    },
+    {
+      "branch": "fix/blender-conversion-integrity-v2-20260923",
+      "committed_utc": "2026-09-23T16:10:20+02:00",
+      "sha": "7e54f20bc406e0e594175199694238bb9e9de23f"
+    },
+    {
+      "branch": "fix/building-multipolygon-fidelity-v1",
+      "committed_utc": "2026-09-18T16:38:05+02:00",
+      "sha": "c58382932d60465cf83408c1650e578c42802b79"
+    },
+    {
+      "branch": "fix/building-multipolygon-fidelity-v1-20260919",
+      "committed_utc": "2026-09-22T12:16:24+02:00",
+      "sha": "c9c64ccd9d2b32f927e2be8b5516a75d7ad9f21b"
+    },
+    {
+      "branch": "fix/building-multipolygon-fidelity-v2-20260923",
+      "committed_utc": "2026-09-23T10:02:44+02:00",
+      "sha": "21238f187dc719491620aff44a1c34846958bcbd"
+    },
+    {
+      "branch": "fix/building-multipolygon-fidelity-v3-split-20260923",
+      "committed_utc": "2026-09-23T16:10:27+02:00",
+      "sha": "3748a6715056254b03f4ab7877ccdfd22c7b8605"
+    },
+    {
+      "branch": "fix/c10-map-hygiene",
+      "committed_utc": "2026-08-16T21:04:38+02:00",
+      "sha": "d908b2442aa132a756b5473a139803455f90bdd8"
+    },
+    {
+      "branch": "fix/c11-reproducibility",
+      "committed_utc": "2026-08-16T21:19:55+02:00",
+      "sha": "0a33bc16a962edf028f01b6a8bdd11fa1439fdd3"
+    },
+    {
+      "branch": "fix/c6-geometric-continuity-checker",
+      "committed_utc": "2026-08-16T15:14:47+02:00",
+      "sha": "5562b6d17d880bff750b99a6baca383c968ccc8a"
+    },
+    {
+      "branch": "fix/c7-enrichment-completeness",
+      "committed_utc": "2026-08-16T21:29:09+02:00",
+      "sha": "5c9597b60e592822c364ac3b1f11749c319a800e"
+    },
+    {
+      "branch": "fix/c8-perception-dataset-correctness",
+      "committed_utc": "2026-08-16T15:25:00+02:00",
+      "sha": "10ec3e8d08e615dccbf12d50440d93c49c073857"
+    },
+    {
+      "branch": "fix/c9-tail-gate-controls",
+      "committed_utc": "2026-08-16T21:13:34+02:00",
+      "sha": "832caa6e0fa4b5769adc6b00df6d94067b7f41cb"
+    },
+    {
+      "branch": "fix/canonical-geometry-authority-v1-20260918",
+      "committed_utc": "2026-09-18T16:41:30+02:00",
+      "sha": "fab0f8c783cd7bbe245ceaf8dfde080d4ca33a8b"
+    },
+    {
+      "branch": "fix/canonical-regen-preconditions-v1",
+      "committed_utc": "2026-09-22T12:48:59+02:00",
+      "sha": "617f4b734c5b5bd076436545980faa451a95bfd8"
+    },
+    {
+      "branch": "fix/canonical-regen-preconditions-v2",
+      "committed_utc": "2026-09-22T14:10:54+02:00",
+      "sha": "d06995ec15ee07b9bfcc6671580394c3a5b03691"
+    },
+    {
+      "branch": "fix/ci-closure-blender-writerlock-20260924",
+      "committed_utc": "2026-09-24T13:38:42+02:00",
+      "sha": "cfa393726b645241f4eb3305090d69b8330e027e"
+    },
+    {
+      "branch": "fix/claude-hooks-lock-governance-20260730",
+      "committed_utc": "2026-07-30T18:15:04+02:00",
+      "sha": "73d531d828a5d8d6c4c8b6072664dff985c03f3d"
+    },
+    {
+      "branch": "fix/collision-lod-validator-basics-v1",
+      "committed_utc": "2026-09-18T16:25:15+02:00",
+      "sha": "1319597ab7daa0a2a5e81fb5bd852d5b0e4a4c27"
+    },
+    {
+      "branch": "fix/collision-validator-native-crs-v1",
+      "committed_utc": "2026-09-18T23:19:25+02:00",
+      "sha": "745feb52f0b5b523797987a07e6f0ca78ca2a33d"
+    },
+    {
+      "branch": "fix/coordinate-control-full-map-coverage-v1",
+      "committed_utc": "2026-09-19T12:26:03+02:00",
+      "sha": "e3a20bf45b1576de39d73b2871e8dac5d95d51e8"
+    },
+    {
+      "branch": "fix/coordinate-osm-consistency-audit-20260924",
+      "committed_utc": "2026-09-24T06:03:41+02:00",
+      "sha": "b47ca62fcb6243ffb8cf2d0390986d7df2dcd8e9"
+    },
+    {
+      "branch": "fix/declared-link-rate-gap-v1-20260916",
+      "committed_utc": "2026-09-16T16:38:21+02:00",
+      "sha": "946228f9207d2b32c69b3594c566f854c7577db2"
+    },
+    {
+      "branch": "fix/deepseek-observability-integration-verification",
+      "committed_utc": "2026-07-30T01:21:37+02:00",
+      "sha": "6b915a3083b9be4e50f893320bcf27b547aeee64"
+    },
+    {
+      "branch": "fix/deepseek-osm2world-elevation-topology-verification",
+      "committed_utc": "2025-10-14T11:10:35+02:00",
+      "sha": "5be88babfb0c9f9c81b21cd4f42285b3ac7f0e77"
+    },
+    {
+      "branch": "fix/deepseek-pipeline-observability",
+      "committed_utc": "2025-10-14T11:10:35+02:00",
+      "sha": "5be88babfb0c9f9c81b21cd4f42285b3ac7f0e77"
+    },
+    {
+      "branch": "fix/dem-elevation-canonical-sampling-v1-20260921",
+      "committed_utc": "2026-09-23T01:53:19+02:00",
+      "sha": "9d9017205c8d2462717aad6fdf97d751b5c3588e"
+    },
+    {
+      "branch": "fix/dem-elevation-canonical-sampling-v2-20260923",
+      "committed_utc": "2026-09-23T10:02:53+02:00",
+      "sha": "c6803f400759db3b76f8682bb28a1c1941c353f9"
+    },
+    {
+      "branch": "fix/disable-destructive-planview-mutations",
+      "committed_utc": "2026-05-16T16:44:16+02:00",
+      "sha": "1d35174d78cabfca1d6ee2badecfbabf4bdeacf8"
+    },
+    {
+      "branch": "fix/domain-gap-measurement-authority-v3-20260921",
+      "committed_utc": "2026-09-21T16:30:57+02:00",
+      "sha": "308046f404d8a7a4e28d08b8a6c31b7c7257236f"
+    },
+    {
+      "branch": "fix/elevation-and-final-quality-gate-closure",
+      "committed_utc": "2026-05-16T16:44:16+02:00",
+      "sha": "1d35174d78cabfca1d6ee2badecfbabf4bdeacf8"
+    },
+    {
+      "branch": "fix/enrichment-semantic-integrity",
+      "committed_utc": "2026-05-16T16:44:16+02:00",
+      "sha": "1d35174d78cabfca1d6ee2badecfbabf4bdeacf8"
+    },
+    {
+      "branch": "fix/final-artifact-authority-v1-20260918",
+      "committed_utc": "2026-09-18T17:04:45+02:00",
+      "sha": "22e3811cefca6dfa14340be0a2acab2c33d1ad01"
+    },
+    {
+      "branch": "fix/final-evidence-ordering-guard-v1",
+      "committed_utc": "2026-09-18T16:21:50+02:00",
+      "sha": "4825ec8268e2732154077d59a771544f247d00e0"
+    },
+    {
+      "branch": "fix/final-readiness-evidence-binding-v1",
+      "committed_utc": "2026-09-22T12:43:15+02:00",
+      "sha": "40a8af093393574e620094817f17e60bb592f2cc"
+    },
+    {
+      "branch": "fix/final-readiness-evidence-binding-v2",
+      "committed_utc": "2026-09-23T00:01:23+02:00",
+      "sha": "d1ff567ccd022d8f22b5a8e09a868c7754c029cd"
+    },
+    {
+      "branch": "fix/final-xodr-hygiene-test-rewrite-v1-20260922",
+      "committed_utc": "2026-09-22T13:53:22+02:00",
+      "sha": "6e9fb06473be0510e6a96e53d83974ff09c74d03"
+    },
+    {
+      "branch": "fix/final-xodr-static-verification-v1",
+      "committed_utc": "2026-09-22T12:24:10+02:00",
+      "sha": "57688a82fe16b34ad7aa01a04e90160a8a05a61a"
+    },
+    {
+      "branch": "fix/final-xodr-static-verification-v2",
+      "committed_utc": "2026-09-22T23:58:50+02:00",
+      "sha": "6b57e56b95248e81376be91722fc5ba74f5b9895"
+    },
+    {
+      "branch": "fix/full-map-quality-and-enrichment",
+      "committed_utc": "2026-05-16T16:44:16+02:00",
+      "sha": "1d35174d78cabfca1d6ee2badecfbabf4bdeacf8"
+    },
+    {
+      "branch": "fix/gap-016-receipt-authority-20260922",
+      "committed_utc": "2026-09-22T13:26:35+02:00",
+      "sha": "219c451500cd3505e8a0e264af07196d7b05738d"
+    },
+    {
+      "branch": "fix/gap-writer-lock-semantic-diff-audit-20260923",
+      "committed_utc": "2026-09-23T20:56:29+02:00",
+      "sha": "252432aa70ec646fb0ac73476c440c589ff14898"
+    },
+    {
+      "branch": "fix/gap010-rq4-leakage-complete-20260923",
+      "committed_utc": "2026-09-23T15:29:56+02:00",
+      "sha": "8f8d0c52d3f8ecd1739565481e0c73c44f7643cf"
+    },
+    {
+      "branch": "fix/gap010-rq4-leakfree-retrain-20260924",
+      "committed_utc": "2026-09-24T11:48:16+02:00",
+      "sha": "fce9d794605666cd62c6f27a9579217012af06db"
+    },
+    {
+      "branch": "fix/gap011-oc51-58-59-restoration-20260923",
+      "committed_utc": "2026-09-23T01:59:04+02:00",
+      "sha": "467b977b1351fb44a529cd3f3178d4638324dace"
+    },
+    {
+      "branch": "fix/gap013-gap014-test-isolation-20260923",
+      "committed_utc": "2026-09-23T00:15:06+02:00",
+      "sha": "afe7850124be403d2346bb850f06b9eec6151c29"
+    },
+    {
+      "branch": "fix/gap017-018-carla-compile-20260930",
+      "committed_utc": "2026-09-30T14:44:42+02:00",
+      "sha": "86c658c8152ec87f5acb8b78c3cfbba8dc06269b"
+    },
+    {
+      "branch": "fix/gap017-018-carla-project-compile-20260929",
+      "committed_utc": "2026-09-29T19:50:39+02:00",
+      "sha": "2df5d6c6401d7b765babfed62c144571f91e78d2"
+    },
+    {
+      "branch": "fix/gap017-compile-gap031-tile-seam-20260929",
+      "committed_utc": "2026-09-29T17:57:35+02:00",
+      "sha": "975a7de1ee43ea25b81ff42b47c951ee93ca797c"
+    },
+    {
+      "branch": "fix/gap021-proj-string-crs-authority-20260923",
+      "committed_utc": "2026-09-23T20:54:40+02:00",
+      "sha": "870c56a2d032d11e2cef399fcd78eae3af1d18f4"
+    },
+    {
+      "branch": "fix/gap022-perception-evidence-binding-20260923",
+      "committed_utc": "2026-09-23T22:59:45+02:00",
+      "sha": "5f7d58bb9587930ee4890f13d86591aaca5208c1"
+    },
+    {
+      "branch": "fix/gap023-mtime-authority-settings-20260923",
+      "committed_utc": "2026-09-24T02:11:01+02:00",
+      "sha": "b09fd6e3669dd6e591fb3a6488696442173e748c"
+    },
+    {
+      "branch": "fix/gap024-writer-lock-atomic-acquire-20260923",
+      "committed_utc": "2026-09-23T23:03:27+02:00",
+      "sha": "b396191f1517f819a65c66196a416dcb5d0f0317"
+    },
+    {
+      "branch": "fix/gap034-rq5b-claim-boundary-20260929",
+      "committed_utc": "2026-09-29T19:04:46+02:00",
+      "sha": "a1c702b9649830faa946f591b067d3de6e768ac3"
+    },
+    {
+      "branch": "fix/gate-aggregate-waiver-precedence-v1",
+      "committed_utc": "2026-09-23T00:05:51+02:00",
+      "sha": "b582d23e8cfd95729c015fddd753ae86837f9933"
+    },
+    {
+      "branch": "fix/geometry-crs-dem-correctness-v1-20260915",
+      "committed_utc": "2026-09-15T23:21:13+02:00",
+      "sha": "bc6381b2120ebb466fc07dd69fb6b7fcd2047920"
+    },
+    {
+      "branch": "fix/geometry-freeze-missing-fingerprint-v1",
+      "committed_utc": "2026-09-18T23:32:42+02:00",
+      "sha": "480baf31c622981746e9642d5f1393cbd48bf656"
+    },
+    {
+      "branch": "fix/geometry-topology-closure-batch",
+      "committed_utc": "2026-05-16T18:59:45+02:00",
+      "sha": "c91807bba62a35c767028fc2f351fee6d1572e80"
+    },
+    {
+      "branch": "fix/governed-map-release-gate-wiring-cleaned-v1-20260917",
+      "committed_utc": "2026-09-17T18:11:22+02:00",
+      "sha": "9dc31ce21c4a9fcdf1555389197aff5db44ddd63"
+    },
+    {
+      "branch": "fix/grid08210828-runtime-rca-v3",
+      "committed_utc": "2026-09-16T00:58:47+02:00",
+      "sha": "375946b3661c6fca7dd6c3e1f22772e7c6b90714"
+    },
+    {
+      "branch": "fix/hardcoded-map-pin-sweep-v1-20260917",
+      "committed_utc": "2026-09-17T13:07:44+02:00",
+      "sha": "fd25e039ad2239a2f5ffb4f8a6136415ba68763d"
+    },
+    {
+      "branch": "fix/lanelink-fbx-readiness-audit-20260924",
+      "committed_utc": "2026-09-24T06:03:32+02:00",
+      "sha": "3f29a74029bf8d5806fb6a2c8198e38cda0423f6"
+    },
+    {
+      "branch": "fix/large-map-offline-hardening-v1-20260915",
+      "committed_utc": "2026-09-15T22:43:28+02:00",
+      "sha": "37c40d1855f4ca8ca5f12ea0c08f6bfceaee8f4d"
+    },
+    {
+      "branch": "fix/legacy-geometry-kernel-delegation-v1",
+      "committed_utc": "2026-09-18T16:27:45+02:00",
+      "sha": "810383d5f8e18db89be1cd5e1a6d42bcbef45f17"
+    },
+    {
+      "branch": "fix/literal-topology-certification-v1-20260918",
+      "committed_utc": "2026-09-18T17:07:17+02:00",
+      "sha": "398193d4fc3cfb4164daf805438168813ae36aec"
+    },
+    {
+      "branch": "fix/literal-topology-certification-v2-20260919",
+      "committed_utc": "2026-09-19T13:42:01+02:00",
+      "sha": "da75a0319b25c1605f7d095485ec7b152c93bff9"
+    },
+    {
+      "branch": "fix/literal-topology-evidence-provenance-v1",
+      "committed_utc": "2026-09-23T02:34:16+02:00",
+      "sha": "8cad9889532d346e39fc02785b04d71e4ef4b137"
+    },
+    {
+      "branch": "fix/literal-topology-evidence-provenance-v2",
+      "committed_utc": "2026-09-23T02:10:44+02:00",
+      "sha": "39efeb219a17be250a49b76e2868ae0fe8275b37"
+    },
+    {
+      "branch": "fix/literal-topology-evidence-provenance-v2-20260923",
+      "committed_utc": "2026-09-23T15:11:58+02:00",
+      "sha": "74a94cbbada5662a09fbe83263fe5f0228b36c3b"
+    },
+    {
+      "branch": "fix/malformed-xodr-attr-hardening-v1-20260916",
+      "committed_utc": "2026-09-16T03:41:00+02:00",
+      "sha": "40620722ff9846ca20b4fee9bb620770439b6d15"
+    },
+    {
+      "branch": "fix/malformed-xodr-attrs-v2",
+      "committed_utc": "2026-09-16T03:48:17+02:00",
+      "sha": "d03f3e3138e44e3fac07d10ea31997d443f3ea4b"
+    },
+    {
+      "branch": "fix/malformed-xodr-attrs-v3-20260916",
+      "committed_utc": "2026-09-16T05:18:55+02:00",
+      "sha": "0e8ac63fb70b090d4d58426e328995314ce38589"
+    },
+    {
+      "branch": "fix/map-quality-perception-hardening-20260728",
+      "committed_utc": "2026-07-28T15:56:20+02:00",
+      "sha": "0ea5a1d8b5491857fd09cefefc509dcfaf9c1d5e"
+    },
+    {
+      "branch": "fix/map-registry-integrity-v1-20260921",
+      "committed_utc": "2026-09-19T12:26:03+02:00",
+      "sha": "e3a20bf45b1576de39d73b2871e8dac5d95d51e8"
+    },
+    {
+      "branch": "fix/mechanical-xodr-quality-hardening",
+      "committed_utc": "2026-05-16T16:44:16+02:00",
+      "sha": "1d35174d78cabfca1d6ee2badecfbabf4bdeacf8"
+    },
+    {
+      "branch": "fix/mtime-authority-run-alignment-v1-20260922",
+      "committed_utc": "2026-09-22T13:54:00+02:00",
+      "sha": "f541c74546a1f7e3752149fbc9668fbb78f17d98"
+    },
+    {
+      "branch": "fix/nan-length-geometry-regression-v1-20260916",
+      "committed_utc": "2026-09-16T11:41:13+02:00",
+      "sha": "fd43bfd880a399e5e2112d0ce3171fbca857b5d8"
+    },
+    {
+      "branch": "fix/new271-292-repairs-20261001",
+      "committed_utc": "2026-10-01T00:14:03+02:00",
+      "sha": "e894586abd01d4339403ba9fc12017b7675c1fdf"
+    },
+    {
+      "branch": "fix/new316-333-perception-environment-20261001",
+      "committed_utc": "2026-10-01T10:30:08+02:00",
+      "sha": "278968f9cfcbe2a26fd1249cadabeb1ef40d50be"
+    },
+    {
+      "branch": "fix/o4-preflight-failopen-20260929",
+      "committed_utc": "2026-09-29T05:09:09+02:00",
+      "sha": "04a907b51afbb486b3c9d7dc76cb94e3a0deecb0"
+    },
+    {
+      "branch": "fix/osm2world-cache-integrity-v1",
+      "committed_utc": "2026-09-18T23:28:08+02:00",
+      "sha": "d5f2eb5d4106b9e50c2964b5380735c50f869fb3"
+    },
+    {
+      "branch": "fix/p0-c-receipt-authority-20260919",
+      "committed_utc": "2026-09-23T15:32:08+02:00",
+      "sha": "51badaf88225cc765d579c6e9d3d9528f4b62464"
+    },
+    {
+      "branch": "fix/p0-c-receipt-authority-rebased-20260923",
+      "committed_utc": "2026-09-22T23:28:09+02:00",
+      "sha": "e1bfacca473b7cb586e0444ab34c0f240db8698a"
+    },
+    {
+      "branch": "fix/p0-coord-frame-tile-placement-authority-20261001",
+      "committed_utc": "2026-10-02T10:25:17+02:00",
+      "sha": "fb6c5e1899a844ba1d38444fc82e6d04e98db468"
+    },
+    {
+      "branch": "fix/p0-coordinate-frame-tile-placement-authority-20261001",
+      "committed_utc": "2026-10-01T03:30:47+02:00",
+      "sha": "f897e0eb747ac827941ac4883170a5181a603111"
+    },
+    {
+      "branch": "fix/p0-runtime-server-certification-authority-20261001",
+      "committed_utc": "2026-10-01T21:32:20+02:00",
+      "sha": "233e452ff16db3d35ca717d0bf02e4779e86b258"
+    },
+    {
+      "branch": "fix/package-d-semantic-authority-20260919",
+      "committed_utc": "2026-09-19T13:49:14+02:00",
+      "sha": "86cc56f5a8284000300e68b3ec5d63cd2212338d"
+    },
+    {
+      "branch": "fix/package-descriptor-single-authority-v1",
+      "committed_utc": "2026-09-18T17:14:12+02:00",
+      "sha": "2fea0780a76b5d11da66985763d1960c34b03d13"
+    },
+    {
+      "branch": "fix/per-tile-domain-gap-timeout-v1-20260916",
+      "committed_utc": "2026-09-16T16:52:47+02:00",
+      "sha": "35f29a4c65debdca3fe739a89d0e99b6226a39f9"
+    },
+    {
+      "branch": "fix/perception_stability",
+      "committed_utc": "2026-01-18T16:09:51+01:00",
+      "sha": "54659eafb8c8feed50543dc6b75f5245b0832b67"
+    },
+    {
+      "branch": "fix/phase-d-sanitization-semantics-topology",
+      "committed_utc": "2026-08-03T09:43:24+02:00",
+      "sha": "7f6f9bb3b6336d8337ca243704d96b02014bb7d4"
+    },
+    {
+      "branch": "fix/post-audit-hardening-20260730",
+      "committed_utc": "2026-07-31T14:36:33+02:00",
+      "sha": "168d6ab72d7b09f1d6bc98b0a60bdffd24586bc8"
+    },
+    {
+      "branch": "fix/post-audit-phase-e-hardening",
+      "committed_utc": "2026-08-03T09:58:02+02:00",
+      "sha": "875cc1a3e54954a097a44fac0d72410cc5508a98"
+    },
+    {
+      "branch": "fix/post-audit-phase-e-junctions-roundabouts-20260803",
+      "committed_utc": "2026-09-06T11:45:56+02:00",
+      "sha": "b059a9d04ebb91c827224ca89406d16b0fe61d5e"
+    },
+    {
+      "branch": "fix/post-audit-production-hardening-20260801",
+      "committed_utc": "2026-08-03T03:32:27+02:00",
+      "sha": "fe2b0053428c11eeb732b1726a30fd303ba3a428"
+    },
+    {
+      "branch": "fix/production-strict-lane-successors-v1",
+      "committed_utc": "2026-09-18T17:32:18+02:00",
+      "sha": "4e0ab4bbb97e881ba79a219994bf90de81bfd3e0"
+    },
+    {
+      "branch": "fix/quality-gate-manager-report-contract-v1",
+      "committed_utc": "2026-09-23T00:36:32+02:00",
+      "sha": "dc7e63440eaa3b4b876e3adebd9546424267de15"
+    },
+    {
+      "branch": "fix/reconciled-p0-fixes-v1-20260916",
+      "committed_utc": "2026-09-16T00:46:24+02:00",
+      "sha": "f66d6df640b1f5061bd6f7452f42d41cf23e0aeb"
+    },
+    {
+      "branch": "fix/rq1-matrix-integrity-20261001",
+      "committed_utc": "2026-10-01T14:43:57+02:00",
+      "sha": "d12a03145793ae89d03a40f9ebf500ec59f3c761"
+    },
+    {
+      "branch": "fix/rq3-paired-capture-authority-v1-20260919",
+      "committed_utc": "2026-09-19T12:26:03+02:00",
+      "sha": "e3a20bf45b1576de39d73b2871e8dac5d95d51e8"
+    },
+    {
+      "branch": "fix/rq3-paired-capture-protocol-mismatch-v1-20260916",
+      "committed_utc": "2026-09-16T18:30:46+02:00",
+      "sha": "02427de91a26b2977301135e9d7fae9f17463e9e"
+    },
+    {
+      "branch": "fix/rq4-gnn-experimental-provenance-v1-20260919",
+      "committed_utc": "2026-09-19T12:26:03+02:00",
+      "sha": "e3a20bf45b1576de39d73b2871e8dac5d95d51e8"
+    },
+    {
+      "branch": "fix/rq4-gnn-experimental-provenance-v1-20260921",
+      "committed_utc": "2026-09-22T13:00:22+02:00",
+      "sha": "fb24a3b740db65b6437488ce76a3a75d5246a4b3"
+    },
+    {
+      "branch": "fix/rq4-gnn-provenance-leakage-v1-20260922",
+      "committed_utc": "2026-09-22T13:15:04+02:00",
+      "sha": "811008a38184178a221a2ca0f4c92b3cc2d776d1"
+    },
+    {
+      "branch": "fix/rq4-leakage-complete-20260923",
+      "committed_utc": "2026-09-22T16:11:55+02:00",
+      "sha": "95d63b8a1848296361e2a6105afdd54b6cc8ff89"
+    },
+    {
+      "branch": "fix/rq5-thesis-evidence-governance-v1-20260919",
+      "committed_utc": "2026-09-22T13:00:54+02:00",
+      "sha": "194fc13f979c64070b36bff4db1f148c3a7d419a"
+    },
+    {
+      "branch": "fix/runtime-tile-referential-integrity-v1",
+      "committed_utc": "2026-09-23T01:46:20+02:00",
+      "sha": "b4aa07a23be27675447e3dcd64b7ad3da1314aff"
+    },
+    {
+      "branch": "fix/runtime-tile-referential-integrity-v2",
+      "committed_utc": "2026-09-22T23:44:31+02:00",
+      "sha": "ff79361bb380726d9328e3ac3cee78c8b7c2f1c6"
+    },
+    {
+      "branch": "fix/runtime-tile-referential-integrity-v2-20260923",
+      "committed_utc": "2026-09-23T14:49:49+02:00",
+      "sha": "af4e0020320db260abe61e11d0c13e033974d4d9"
+    },
+    {
+      "branch": "fix/semantic-classification-container-model-v1-20260919",
+      "committed_utc": "2026-09-18T17:07:17+02:00",
+      "sha": "398193d4fc3cfb4164daf805438168813ae36aec"
+    },
+    {
+      "branch": "fix/semantic-classification-determinism-v1",
+      "committed_utc": "2026-09-18T22:24:00+02:00",
+      "sha": "9899802e836e5baadafe9e4c3903d0cd3638ed69"
+    },
+    {
+      "branch": "fix/standalone-xodr-smoke-evidence-boundary-v1",
+      "committed_utc": "2026-09-18T16:42:02+02:00",
+      "sha": "177a6c4f4e5c875589fe8850e919fa8e10d33c11"
+    },
+    {
+      "branch": "fix/step7-empty-planview-degenerate-connectors-v1-20260916",
+      "committed_utc": "2026-09-16T21:33:28+02:00",
+      "sha": "a13efd91f5439dd1be6c803906c5e6b708a76090"
+    },
+    {
+      "branch": "fix/strict-visual-input-resolution-v1",
+      "committed_utc": "2026-09-18T16:45:57+02:00",
+      "sha": "418729d9e3b9f3951f147cec658ff2e3f56d13cb"
+    },
+    {
+      "branch": "fix/structure-freeze-semantics-v1-20260918",
+      "committed_utc": "2026-09-18T17:07:17+02:00",
+      "sha": "398193d4fc3cfb4164daf805438168813ae36aec"
+    },
+    {
+      "branch": "fix/tile-grid-canonical",
+      "committed_utc": "2026-01-31T20:09:06+01:00",
+      "sha": "49bdd2a7815d58059186a0e67e8f3f2d4ffb1ea3"
+    },
+    {
+      "branch": "fix/tile-grid-spec-authority-v1",
+      "committed_utc": "2026-09-18T17:52:03+02:00",
+      "sha": "9b30862a488d157fcf4ada7f5b587a5ff71f2ddc"
+    },
+    {
+      "branch": "fix/tile-ownership-adjacency-geometry-v1",
+      "committed_utc": "2026-09-18T19:12:26+02:00",
+      "sha": "dd3c750eee9759f6c99962d051c2a0188d247d2c"
+    },
+    {
+      "branch": "fix/tile-probe-test-hygiene-20260924",
+      "committed_utc": "2026-09-24T06:03:23+02:00",
+      "sha": "498f2b9c555bc871ce70530a15774c8343719bc2"
+    },
+    {
+      "branch": "fix/tile-run-completeness-vocabulary-v1",
+      "committed_utc": "2026-09-18T17:37:01+02:00",
+      "sha": "5ec78228934f0bb244146d2ad635f7fecd812feb"
+    },
+    {
+      "branch": "fix/tileset-visual-package-authority-v1-20260919",
+      "committed_utc": "2026-09-23T00:33:37+02:00",
+      "sha": "e2be5928228f89818f7d096a4b67da9ab2a31c48"
+    },
+    {
+      "branch": "fix/tiling-full-road-cross-section-envelope-v1",
+      "committed_utc": "2026-09-18T19:03:27+02:00",
+      "sha": "c5aac6ec5c9a9993a73daa2c2875565bd423f7d0"
+    },
+    {
+      "branch": "fix/topology-component-hardening-v1-20260915",
+      "committed_utc": "2026-09-16T00:10:42+02:00",
+      "sha": "829c04ff5095fd8a86358c8b195a1264c8ed9358"
+    },
+    {
+      "branch": "fix/ue4-large-map-production-audit-v3",
+      "committed_utc": "2026-09-16T01:08:58+02:00",
+      "sha": "10cebf045c786763c8b495af7596d04e6adb15c6"
+    },
+    {
+      "branch": "fix/v2-lineage-verified-integration-v1-20260916",
+      "committed_utc": "2026-09-16T01:38:37+02:00",
+      "sha": "83326d10ca3b84046755f9054ae5d5dcc34ea36f"
+    },
+    {
+      "branch": "fix/verification-and-roadrunner-quality-closure",
+      "committed_utc": "2026-05-16T18:59:45+02:00",
+      "sha": "c91807bba62a35c767028fc2f351fee6d1572e80"
+    },
+    {
+      "branch": "fix/xodr-rebase-coordinate-coverage-v1",
+      "committed_utc": "2026-09-23T00:38:03+02:00",
+      "sha": "75bb0b037963b870cf0941495bd56aa52a31674d"
+    },
+    {
+      "branch": "fix/xodr-rebase-coordinate-coverage-v2",
+      "committed_utc": "2026-09-22T23:27:17+02:00",
+      "sha": "7660372db67b32fd162c54fc4ba0bd63f322b8d9"
+    },
+    {
+      "branch": "fix/xodr-validated-capability-v1-20260922",
+      "committed_utc": "2026-09-22T13:52:44+02:00",
+      "sha": "f51db269e2350b5a1548da7c897270937262dd00"
+    },
+    {
+      "branch": "fix/xodr-validator-convergence-v1-20260921",
+      "committed_utc": "2026-09-22T12:15:44+02:00",
+      "sha": "f245540f120fd0310a82e3305cac97b1337702e5"
+    },
+    {
+      "branch": "hardening/final-gap-closure-20260930",
+      "committed_utc": "2026-09-30T18:45:02+02:00",
+      "sha": "a702df882eaa85811439c13defe487dfd095a4b7"
+    },
+    {
+      "branch": "hardening/new225-233-gap040-048-20261001",
+      "committed_utc": "2026-10-01T10:55:37+02:00",
+      "sha": "f3a996f7d539677357b2fa8ba3cabc27f02be66f"
+    },
+    {
+      "branch": "hardening/new293-301-route-rig-20261001",
+      "committed_utc": "2026-10-01T11:02:40+02:00",
+      "sha": "f5668a9e6ad69a22b010852ac78364fba0d41185"
+    },
+    {
+      "branch": "hardening/perception-final-operational-20260930",
+      "committed_utc": "2026-09-30T22:57:33+02:00",
+      "sha": "f7f6787b193cc0f9b6e8b1b1bbd98f6c44bb8851"
+    },
+    {
+      "branch": "hardening/rq3-domain-gap-authority",
+      "committed_utc": "2026-09-30T20:35:34+02:00",
+      "sha": "b8ee6f5ddae30c1a8e908d165f16cfe76a0c562e"
+    },
+    {
+      "branch": "hardening/v5-incremental-20260929",
+      "committed_utc": "2026-09-29T19:50:39+02:00",
+      "sha": "2df5d6c6401d7b765babfed62c144571f91e78d2"
+    },
+    {
+      "branch": "improvement/ingolstadt-map-quality-v2-202608",
+      "committed_utc": "2026-08-03T03:15:49+02:00",
+      "sha": "98e09de0af38d35aa3430ca841b07ead80acb9a2"
+    },
+    {
+      "branch": "integrate_recover0954_with_main",
+      "committed_utc": "2026-02-26T16:17:03+01:00",
+      "sha": "ab04477af7662ad7566ef98ec4d0240191fe810c"
+    },
+    {
+      "branch": "integration-batch-20260922",
+      "committed_utc": "2026-09-22T13:56:12+02:00",
+      "sha": "1c8caa2cf05604a756859ba4fa0b98693cc26e07"
+    },
+    {
+      "branch": "integration-gap010-20260923",
+      "committed_utc": "2026-09-23T15:30:25+02:00",
+      "sha": "4c2f0feb34bd45159992fafaeecba1496c1fa082"
+    },
+    {
+      "branch": "integration-gap011-packagei-20260923",
+      "committed_utc": "2026-09-23T10:23:10+02:00",
+      "sha": "c68a1059020561d1d2e1495254045735b8c1e816"
+    },
+    {
+      "branch": "integration-gap020-011c-20260923",
+      "committed_utc": "2026-09-23T16:53:57+02:00",
+      "sha": "7cba715b9e6b3e264cbd25b6fb1dad646fb6b9f3"
+    },
+    {
+      "branch": "integration-gap024-20260923",
+      "committed_utc": "2026-09-24T01:04:13+02:00",
+      "sha": "bc382d507a29109b3f7755756313c9288a11dfc5"
+    },
+    {
+      "branch": "integration-oc36-oc38-20260923",
+      "committed_utc": "2026-09-22T23:28:09+02:00",
+      "sha": "e1bfacca473b7cb586e0444ab34c0f240db8698a"
+    },
+    {
+      "branch": "integration-oc39-20260923",
+      "committed_utc": "2026-10-01T03:30:47+02:00",
+      "sha": "f897e0eb747ac827941ac4883170a5181a603111"
+    },
+    {
+      "branch": "integration-offline",
+      "committed_utc": "2026-10-02T21:55:42+02:00",
+      "sha": "24a8e4fbb5dd16faca328107a2792c9c9079a2cd"
+    },
+    {
+      "branch": "integration-rq1-20260923",
+      "committed_utc": "2026-09-22T22:47:56+02:00",
+      "sha": "b0d134c75b67391daffd83f33457acc642bbc602"
+    },
+    {
+      "branch": "integration-rq2-20260923",
+      "committed_utc": "2026-09-22T22:33:39+02:00",
+      "sha": "9d4d182b9b53f69cb2209363ff7564ddcf1a3352"
+    },
+    {
+      "branch": "integration-waveA-a7",
+      "committed_utc": "2026-10-03T01:49:04+02:00",
+      "sha": "e73703a86c92f85db44ffc49e93b908b50dfbcd9"
+    },
+    {
+      "branch": "integration/governed-map-quality-20260729",
+      "committed_utc": "2026-08-02T02:00:16+02:00",
+      "sha": "36efceab248553efd3fe35c75d052dc76384ded7"
+    },
+    {
+      "branch": "integration/o1-o20-rebased-20260929",
+      "committed_utc": "2026-09-29T19:53:33+02:00",
+      "sha": "078b2f40287ab917081ba9c65ccb7d6a6286b33d"
+    },
+    {
+      "branch": "integration/opencode-runtime-rig-environment-closure-20261001",
+      "committed_utc": "2026-10-01T19:51:04+02:00",
+      "sha": "692b42391c29457fef30e19857352e3ef74be9b2"
+    },
+    {
+      "branch": "integration/production-large-map-20260918",
+      "committed_utc": "2026-09-22T12:53:41+02:00",
+      "sha": "65eb0f14d226104692dd845f8a528759fbeb90c4"
+    },
+    {
+      "branch": "integration/production-map-quality-v1-20260912",
+      "committed_utc": "2026-09-13T16:02:01+02:00",
+      "sha": "3dcd7d6020efc4dcc93e6368cdd01928752e73ea"
+    },
+    {
+      "branch": "integration/production-readiness-v2",
+      "committed_utc": "2026-09-16T00:10:25+02:00",
+      "sha": "ecd6f0dfd7ae7a3533c1f2f0c210310fc5f36a23"
+    },
+    {
+      "branch": "integration/session-batch1-20260912",
+      "committed_utc": "2026-09-17T18:12:53+02:00",
+      "sha": "1a42cd89bbaaeca95e6f326225afa5a4c23e707d"
+    },
+    {
+      "branch": "integration/session-batch1-20260912-final-20260916",
+      "committed_utc": "2026-09-16T02:32:35+02:00",
+      "sha": "93144dce13b5bca0e309702e9f4dcad0069e25a0"
+    },
+    {
+      "branch": "integration/session-batch1-20260912-integrate",
+      "committed_utc": "2026-09-16T01:26:45+02:00",
+      "sha": "d73b6aeb804b48bd49c536b6fa9ac7a111f086f0"
+    },
+    {
+      "branch": "integration/unreal-fixture-cooking-20260802",
+      "committed_utc": "2026-08-02T02:46:37+02:00",
+      "sha": "b4da6dcb1bb9f075d96b32df6a69c50b5bf02f88"
+    },
+    {
+      "branch": "last_working_2026-02-01",
+      "committed_utc": "2026-02-01T12:31:54+01:00",
+      "sha": "1ecfb0f111354b9e9828e80f04fef2516be11305"
+    },
+    {
+      "branch": "list",
+      "committed_utc": "2026-10-02T12:16:30+02:00",
+      "sha": "167b12fd4c1db7a7b76663acdb6901f2f786d501"
+    },
+    {
+      "branch": "main",
+      "committed_utc": "2026-01-08T09:04:23+01:00",
+      "sha": "e0aa1aab232129cac131bd61bf882e7115ea97c4"
+    },
+    {
+      "branch": "master",
+      "committed_utc": "2025-10-12T23:32:02+02:00",
+      "sha": "eb7f9a571d634705cb114aafe4ad46e85941f319"
+    },
+    {
+      "branch": "mcp_check_0954",
+      "committed_utc": "2026-01-27T20:01:16+01:00",
+      "sha": "18d6b56d4598162951694e3449ac54f7552262f7"
+    },
+    {
+      "branch": "mcp_check_0959",
+      "committed_utc": "2026-01-27T20:01:16+01:00",
+      "sha": "18d6b56d4598162951694e3449ac54f7552262f7"
+    },
+    {
+      "branch": "merge-v5-20260929",
+      "committed_utc": "2026-09-29T22:00:33+02:00",
+      "sha": "38bb7c7904794e621b60ba60283958c223e40af8"
+    },
+    {
+      "branch": "o1-cook-provenance-chain",
+      "committed_utc": "2026-09-24T13:14:49+02:00",
+      "sha": "f7934c13ae055d3446770120dc505a2824d3b430"
+    },
+    {
+      "branch": "o10-gap026-severe-tail-fixtures",
+      "committed_utc": "2026-09-24T14:26:02+02:00",
+      "sha": "20981f53564e0e19dc0053d8a765343b48ff4c76"
+    },
+    {
+      "branch": "o11-gap026-checker-bias-matrix",
+      "committed_utc": "2026-09-24T14:29:47+02:00",
+      "sha": "b5d30ddfaeba65731899a262cb11e695c3f62bb9"
+    },
+    {
+      "branch": "o12-current-map-static-release-matrix",
+      "committed_utc": "2026-09-24T14:00:54+02:00",
+      "sha": "4972b6852076b7acb7bb7f408076d4f9e549045c"
+    },
+    {
+      "branch": "o13-configuration-authority-audit",
+      "committed_utc": "2026-09-24T14:32:26+02:00",
+      "sha": "7dca6dd11749a66912b37b7e3ccc6a57f2ac611b"
+    },
+    {
+      "branch": "o14-clean-clone-offline-audit",
+      "committed_utc": "2026-09-24T14:34:04+02:00",
+      "sha": "dbc70314b859ebde15360b041478f910c0e270e6"
+    },
+    {
+      "branch": "o15-rq1-five-run-determinism",
+      "committed_utc": "2026-09-24T14:36:26+02:00",
+      "sha": "fac400c53be728d9f38312edebaed54a338aad33"
+    },
+    {
+      "branch": "o16-rq3-pairing-preflight",
+      "committed_utc": "2026-09-24T14:38:34+02:00",
+      "sha": "dc62419c459480c9656bfff00b891a304d329c78"
+    },
+    {
+      "branch": "o17-rq3-dataset-manifest-verifier",
+      "committed_utc": "2026-09-24T14:39:50+02:00",
+      "sha": "4ad1ee082d66c9fbbd806c0d8da11cc47dca44f7"
+    },
+    {
+      "branch": "o18-rq5-contract-static-audit",
+      "committed_utc": "2026-09-24T14:43:29+02:00",
+      "sha": "36ffcf1b728f07532f43b92de0fcdc881861e092"
+    },
+    {
+      "branch": "o19-final-release-receipt-schema",
+      "committed_utc": "2026-09-24T14:47:12+02:00",
+      "sha": "6f9da5a9c917b9c6b3a8880e39cf3255f9d7554b"
+    },
+    {
+      "branch": "o2-large-map-package-contract-audit",
+      "committed_utc": "2026-09-24T13:32:04+02:00",
+      "sha": "f8e900c24d53b59f921a84a70121789e771f201d"
+    },
+    {
+      "branch": "o20-failure-recovery-resume-audit",
+      "committed_utc": "2026-09-29T04:38:14+02:00",
+      "sha": "a189c1e6404c4850a93fc12ed0b1605e35c97bd4"
+    },
+    {
+      "branch": "o3-tile-frame-consistency",
+      "committed_utc": "2026-09-24T14:10:25+02:00",
+      "sha": "4d51b357628b2943c3860b4bfa5d129ba819d386"
+    },
+    {
+      "branch": "o4-import-package-preflight",
+      "committed_utc": "2026-09-24T13:47:26+02:00",
+      "sha": "2f67676ee4e32ce47a4fe897a9b0e002eab8a0cf"
+    },
+    {
+      "branch": "o5-unreal-cook-resource-preflight",
+      "committed_utc": "2026-09-24T14:14:15+02:00",
+      "sha": "9829b726ef662a1a10e08dbbbaa57094432beedc"
+    },
+    {
+      "branch": "o6-carla-source-build-receipt",
+      "committed_utc": "2026-09-24T14:19:10+02:00",
+      "sha": "3857d24e0e0883ddfc6a79584487aeee1a059290"
+    },
+    {
+      "branch": "o7-rpc-startup-instrumentation",
+      "committed_utc": "2026-09-24T14:19:10+02:00",
+      "sha": "3857d24e0e0883ddfc6a79584487aeee1a059290"
+    },
+    {
+      "branch": "o8-runtime-map-qa",
+      "committed_utc": "2026-09-24T14:20:46+02:00",
+      "sha": "b3b8a8d092185d2ccd056b8532125c532f58c1d2"
+    },
+    {
+      "branch": "o9-runtime-route-generator",
+      "committed_utc": "2026-09-24T14:24:14+02:00",
+      "sha": "6fa1f9ecccec9f24aef1ed48fce5e43bd27f08ec"
+    },
+    {
+      "branch": "opencode/batch10-rq2-authority-20261002",
+      "committed_utc": "2026-10-02T23:32:59+02:00",
+      "sha": "ce47c1c1cdd669ea924437dafbcea429640e6da6"
+    },
+    {
+      "branch": "opencode/batch11-rq4-repro-20261002",
+      "committed_utc": "2026-10-02T20:48:33+02:00",
+      "sha": "75f19438ad932a8c8ebcbef2f32aec9ca104418a"
+    },
+    {
+      "branch": "opencode/batch12-rq5-readiness-20261002",
+      "committed_utc": "2026-10-02T23:24:09+02:00",
+      "sha": "7085347d7ba10980f6507b4f1d50fc0cd03cd92b"
+    },
+    {
+      "branch": "opencode/p1-runtime-capture-20261001",
+      "committed_utc": "2026-10-02T13:26:54+02:00",
+      "sha": "542b82e93b6bb866dc05e085480eecb3ceffbcc1"
+    },
+    {
+      "branch": "parking/r040-wip-",
+      "committed_utc": "2026-02-27T11:13:33+01:00",
+      "sha": "869bdc7b93251951b8961be32660dc02f2dfea60"
+    },
+    {
+      "branch": "parking/r040-wip-20260227_104706",
+      "committed_utc": "2026-02-27T11:13:33+01:00",
+      "sha": "869bdc7b93251951b8961be32660dc02f2dfea60"
+    },
+    {
+      "branch": "phase5-test-boundary-audit-20260924",
+      "committed_utc": "2026-09-24T13:38:42+02:00",
+      "sha": "cfa393726b645241f4eb3305090d69b8330e027e"
+    },
+    {
+      "branch": "preserve/worktree-shim-migration",
+      "committed_utc": "2026-04-14T20:48:15+02:00",
+      "sha": "d765763987084e253a025f7961e3875ff1f95d4c"
+    },
+    {
+      "branch": "quarantine/r040-dirty-20260309",
+      "committed_utc": "2026-03-09T10:42:57+01:00",
+      "sha": "3b4d73d310e5f31e6bc5ad52a6956cc1c9ed6423"
+    },
+    {
+      "branch": "rca/manual-grid-0821-0828-v2",
+      "committed_utc": "2026-09-16T00:20:23+02:00",
+      "sha": "29fe131d25fdc1a7b1c422c76f29517ee021f66a"
+    },
+    {
+      "branch": "reconcile-governance-handoff",
+      "committed_utc": "2026-03-15T20:23:02+01:00",
+      "sha": "7e25081e4045d98edf3ce350f547d686ad88f2ba"
+    },
+    {
+      "branch": "recover_0954",
+      "committed_utc": "2026-01-31T20:06:10+01:00",
+      "sha": "58694882702b4701f6dbc859ff87b62766e31939"
+    },
+    {
+      "branch": "recovered-ci-and-correspondence-fixes-116042ec",
+      "committed_utc": "2026-09-15T22:42:18+02:00",
+      "sha": "116042ec30d782e25969602f242ae9ec4635c59f"
+    },
+    {
+      "branch": "recovered-large-map-offline-hardening-f43bf84c",
+      "committed_utc": "2026-09-15T23:26:34+02:00",
+      "sha": "f43bf84c8532c7da77654c9b84227908a510373b"
+    },
+    {
+      "branch": "recovery/roadrunner-capability-integration",
+      "committed_utc": "2026-07-28T23:15:43+02:00",
+      "sha": "b576a331bf3b711469faf47c1677ad256b0b7721"
+    },
+    {
+      "branch": "replay/full-replay-domain-gap-20260802T081541Z",
+      "committed_utc": "2026-08-02T02:00:16+02:00",
+      "sha": "36efceab248553efd3fe35c75d052dc76384ded7"
+    },
+    {
+      "branch": "restore-oc51-58-59-v1",
+      "committed_utc": "2026-09-22T23:53:22+02:00",
+      "sha": "9acbf756f55181000ed46e87156c592f82e98fd7"
+    },
+    {
+      "branch": "review/carla-final-convergence-20261003",
+      "committed_utc": "2026-10-03T22:24:42+02:00",
+      "sha": "4e7a913d7fec89eca09ffae0f0678d4d37f1e7d5"
+    },
+    {
+      "branch": "review/carla-final-offline-closure-20261003",
+      "committed_utc": "2026-10-04T00:28:56+02:00",
+      "sha": "f6b983efd972ef47b2bff233711c17dfa2ea656d"
+    },
+    {
+      "branch": "review/carla-offline-closure-20261001",
+      "committed_utc": "2026-10-01T21:32:20+02:00",
+      "sha": "233e452ff16db3d35ca717d0bf02e4779e86b258"
+    },
+    {
+      "branch": "review/carla-production-convergence-20261002",
+      "committed_utc": "2026-10-05T16:20:12+02:00",
+      "sha": "a78c423ab754905db09645fcb2ff93ea9228297f"
+    },
+    {
+      "branch": "review/carla-research-integration-20261002",
+      "committed_utc": "2026-10-03T13:24:53+02:00",
+      "sha": "8f02c34984090e9a54130f5c2b49728e31ee682f"
+    },
+    {
+      "branch": "review/claude-independent-audit-20260906",
+      "committed_utc": "2026-09-06T18:08:03+02:00",
+      "sha": "2e020d9b8ed5e21ae0a2e4a93ef1e71116082eef"
+    },
+    {
+      "branch": "review/codex-patch-salvage",
+      "committed_utc": "2026-03-09T10:42:57+01:00",
+      "sha": "3b4d73d310e5f31e6bc5ad52a6956cc1c9ed6423"
+    },
+    {
+      "branch": "rq1-determinism-matrix-update",
+      "committed_utc": "2026-10-01T09:28:27+02:00",
+      "sha": "024dbb133cc9b934dd4ba09f65b04dd9d1d32f34"
+    },
+    {
+      "branch": "rq1-integration",
+      "committed_utc": "2026-10-02T11:41:39+02:00",
+      "sha": "082bc1369a77930386e008ab26ab77e9fc611106"
+    },
+    {
+      "branch": "rq1a-execution",
+      "committed_utc": "2026-10-02T21:09:06+02:00",
+      "sha": "7437ee53c74231a0c5a358849218e0cd279d599b"
+    },
+    {
+      "branch": "rq2-authority",
+      "committed_utc": "2026-10-02T21:22:03+02:00",
+      "sha": "56a82a355d554be95e2484c5fd38f5c10265841a"
+    },
+    {
+      "branch": "rq4-reproducibility",
+      "committed_utc": "2026-10-02T21:29:48+02:00",
+      "sha": "c3031ad9d9c5815fe5769a00da7150eb93d4dd4c"
+    },
+    {
+      "branch": "rq5-readiness",
+      "committed_utc": "2026-10-02T21:47:58+02:00",
+      "sha": "9474894f5fd10d25f7aae4b058ed52c4aaddf026"
+    },
+    {
+      "branch": "rr-adversarial-nemotron",
+      "committed_utc": "2026-07-28T17:20:58+02:00",
+      "sha": "352260f14273ca010c3818954b940c9a17efa4f3"
+    },
+    {
+      "branch": "rr-contracts-gpt55",
+      "committed_utc": "2026-07-28T22:08:08+02:00",
+      "sha": "1437a06b276003dd3659520f6069fde591acb98e"
+    },
+    {
+      "branch": "rr-tests-north",
+      "committed_utc": "2026-07-28T17:20:58+02:00",
+      "sha": "352260f14273ca010c3818954b940c9a17efa4f3"
+    },
+    {
+      "branch": "safety/pre-codex-clean-handoff-20260427",
+      "committed_utc": "2026-05-16T18:59:45+02:00",
+      "sha": "c91807bba62a35c767028fc2f351fee6d1572e80"
+    },
+    {
+      "branch": "sensor-integration",
+      "committed_utc": "2025-12-11T19:05:36+01:00",
+      "sha": "a5c4615ff4782b5f552849b1a78e42de31b5933b"
+    },
+    {
+      "branch": "sensor-integration_final_consolidation",
+      "committed_utc": "2025-12-21T23:05:08+01:00",
+      "sha": "50a4bb0d830ac265454f639b3353ab6e8aacee06"
+    },
+    {
+      "branch": "sensor-integration_finar",
+      "committed_utc": "2025-12-11T19:05:36+01:00",
+      "sha": "a5c4615ff4782b5f552849b1a78e42de31b5933b"
+    },
+    {
+      "branch": "stabilize/research-release-20260905",
+      "committed_utc": "2026-09-06T16:30:25+02:00",
+      "sha": "33d5d815b1d7cec9052157cb03ef2f7c9a7204dc"
+    },
+    {
+      "branch": "stable/research-pipeline-2026",
+      "committed_utc": "2026-09-06T16:30:25+02:00",
+      "sha": "33d5d815b1d7cec9052157cb03ef2f7c9a7204dc"
+    },
+    {
+      "branch": "submit-merge",
+      "committed_utc": "2026-05-16T16:44:16+02:00",
+      "sha": "1d35174d78cabfca1d6ee2badecfbabf4bdeacf8"
+    },
+    {
+      "branch": "test/artifact-locator-and-tile-classify-edge-cases-v1-20260916",
+      "committed_utc": "2026-09-16T17:15:49+02:00",
+      "sha": "6d593a3095d56e61f4604053ec278d25a6180e3d"
+    },
+    {
+      "branch": "test/artifact-locator-tile-classify-edge-cases-v2-20260916",
+      "committed_utc": "2026-09-16T18:25:50+02:00",
+      "sha": "635a3396420165e8fe28fbbd605fe53d3351e19c"
+    },
+    {
+      "branch": "test/fix-cosmetic-self-pair-skips-v1-20260917",
+      "committed_utc": "2026-09-17T15:13:02+02:00",
+      "sha": "df75cfa422334cdd1674aadb6c41e538e86fe98f"
+    },
+    {
+      "branch": "test/rq5a-training-launcher-synthetic-dry-run-v1-20260916",
+      "committed_utc": "2026-09-16T18:27:22+02:00",
+      "sha": "70862f3b193bb5cc32313695295a81619b71afe1"
+    },
+    {
+      "branch": "test/runtime-tile-builder-edge-cases-v1-20260916",
+      "committed_utc": "2026-09-16T02:17:20+02:00",
+      "sha": "7745fd6faa8616beb40902fe0482ebfb5f3c3c5b"
+    },
+    {
+      "branch": "test/semantic-organizer-edge-cases-v1-20260916",
+      "committed_utc": "2026-09-16T02:25:57+02:00",
+      "sha": "17da7dbb68c86d6755f73835d3a435c51cd29361"
+    },
+    {
+      "branch": "test/semantic-organizer-edge-cases-v2-clean-20260916",
+      "committed_utc": "2026-09-16T11:26:12+02:00",
+      "sha": "56c86481bc91b233804e4f50ec7d78402f1458f9"
+    },
+    {
+      "branch": "thesis-lock-wip",
+      "committed_utc": "2026-01-27T20:01:16+01:00",
+      "sha": "18d6b56d4598162951694e3449ac54f7552262f7"
+    },
+    {
+      "branch": "verification/map-quality-hardening-20260729",
+      "committed_utc": "2026-07-30T00:08:41+02:00",
+      "sha": "d925df32eaabc2531d480e6c8c11e7b96121787d"
+    },
+    {
+      "branch": "wip/gemini-xodr-validator-sequencing-20260922",
+      "committed_utc": "2026-09-22T14:51:10+02:00",
+      "sha": "b49e59441173bdfb7f76e7b0b5de32e979f00775"
+    },
+    {
+      "branch": "wip/governed-map-release-gate-wiring-recovery-v1-20260917",
+      "committed_utc": "2026-09-17T16:35:20+02:00",
+      "sha": "aa2f0ecacf8fe5c0b479ed5dafda342e3880fc57"
+    },
+    {
+      "branch": "work-integration/production-large-map-20260918",
+      "committed_utc": "2026-10-01T12:18:19+02:00",
+      "sha": "db2b32476b270913b85b09b3ba4137641537dc5b"
+    },
+    {
+      "branch": "work/claude-grid0828-review",
+      "committed_utc": "2026-03-15T16:37:36+01:00",
+      "sha": "249dabe23ab8a49fa5ee050698bcf5a803247c5d"
+    },
+    {
+      "branch": "work/codex-full-pipeline-rerun-20260427",
+      "committed_utc": "2026-04-27T11:31:34+02:00",
+      "sha": "692faf92ead3c71d919dbf3885b0525a0b03aee7"
+    },
+    {
+      "branch": "work/codex-grid0828-batch-sync-001",
+      "committed_utc": "2026-03-20T01:12:37+01:00",
+      "sha": "99a3b66005db1470242b07cc6984a5536f9856f6"
+    },
+    {
+      "branch": "work/codex-jsnap-20260428",
+      "committed_utc": "2026-04-28T12:09:07+02:00",
+      "sha": "272a54176fff990e7e4ae59928be753973c4a382"
+    },
+    {
+      "branch": "work/codex-master-fix-rerun-20260427",
+      "committed_utc": "2026-04-27T10:49:20+02:00",
+      "sha": "fda434fcc4656ce4cff20c4ba71fabe34401f7cc"
+    },
+    {
+      "branch": "work/codex-thesis-parity-001",
+      "committed_utc": "2026-03-19T13:10:43+01:00",
+      "sha": "7eff9e95eddd63cd272f0ce28a61a3fd3db17073"
+    },
+    {
+      "branch": "work/gemini-governance-normalize-20260315",
+      "committed_utc": "2026-03-15T23:42:41+01:00",
+      "sha": "24d570ccd37d7bc43f78cd0733983148bcc8d967"
+    },
+    {
+      "branch": "work/gemini-grid-runbook-001",
+      "committed_utc": "2026-04-26T14:25:36+02:00",
+      "sha": "09bf89953fe612e6793d722b8a8057283a08c4d5"
+    },
+    {
+      "branch": "work/r040-clean-",
+      "committed_utc": "2026-02-27T10:11:17+01:00",
+      "sha": "aaf58e7617e0fef539138b590e20d376fc725187"
+    },
+    {
+      "branch": "work/r040-clean-20260227_104706",
+      "committed_utc": "2026-03-15T00:08:11+01:00",
+      "sha": "1a2cd063fa5ecbf59e19825b7126c42cb4de1b1b"
+    },
+    {
+      "branch": "worktree-agent-a0fee9ded2eb063a6",
+      "committed_utc": "2026-01-08T09:04:23+01:00",
+      "sha": "e0aa1aab232129cac131bd61bf882e7115ea97c4"
+    },
+    {
+      "branch": "worktree-agent-a241ac91f503ca382",
+      "committed_utc": "2026-01-08T09:04:23+01:00",
+      "sha": "e0aa1aab232129cac131bd61bf882e7115ea97c4"
+    },
+    {
+      "branch": "worktree-agent-a5ce1d29f092c24a1",
+      "committed_utc": "2026-01-08T09:04:23+01:00",
+      "sha": "e0aa1aab232129cac131bd61bf882e7115ea97c4"
+    },
+    {
+      "branch": "worktree-agent-a601acc34bd5e6126",
+      "committed_utc": "2026-01-08T09:04:23+01:00",
+      "sha": "e0aa1aab232129cac131bd61bf882e7115ea97c4"
+    },
+    {
+      "branch": "worktree-agent-a840f75a693e18c46",
+      "committed_utc": "2026-01-08T09:04:23+01:00",
+      "sha": "e0aa1aab232129cac131bd61bf882e7115ea97c4"
+    },
+    {
+      "branch": "worktree-agent-a9677fdcd7c1172ea",
+      "committed_utc": "2026-01-08T09:04:23+01:00",
+      "sha": "e0aa1aab232129cac131bd61bf882e7115ea97c4"
+    },
+    {
+      "branch": "worktree-agent-a9fc8e5c17bbafcaa",
+      "committed_utc": "2026-01-08T09:04:23+01:00",
+      "sha": "e0aa1aab232129cac131bd61bf882e7115ea97c4"
+    },
+    {
+      "branch": "worktree-agent-aa65313a2c849f5c8",
+      "committed_utc": "2026-08-16T15:26:19+02:00",
+      "sha": "a5ec2647fb8f20d4db909a91db957e61a6921027"
+    },
+    {
+      "branch": "worktree-agent-aa946912352046633",
+      "committed_utc": "2026-01-08T09:04:23+01:00",
+      "sha": "e0aa1aab232129cac131bd61bf882e7115ea97c4"
+    },
+    {
+      "branch": "worktree-agent-ab8a38a344ee63277",
+      "committed_utc": "2026-01-08T09:04:23+01:00",
+      "sha": "e0aa1aab232129cac131bd61bf882e7115ea97c4"
+    },
+    {
+      "branch": "worktree-agent-ad11e645667d7aa20",
+      "committed_utc": "2026-01-08T09:04:23+01:00",
+      "sha": "e0aa1aab232129cac131bd61bf882e7115ea97c4"
+    },
+    {
+      "branch": "worktree-agent-ad67575cb5606ceae",
+      "committed_utc": "2026-01-08T09:04:23+01:00",
+      "sha": "e0aa1aab232129cac131bd61bf882e7115ea97c4"
+    },
+    {
+      "branch": "worktree-agent-af5353811c5f8836c",
+      "committed_utc": "2026-01-08T09:04:23+01:00",
+      "sha": "e0aa1aab232129cac131bd61bf882e7115ea97c4"
+    },
+    {
+      "branch": "worktree-agent-af5ba6d33f63d0be3",
+      "committed_utc": "2026-01-08T09:04:23+01:00",
+      "sha": "e0aa1aab232129cac131bd61bf882e7115ea97c4"
+    }
+  ],
+  "canonical_selected": false,
+  "canonical_selected_reason": "Not selected in this batch: branch convergence is gated on build, publication and regression gates that are not all green.",
+  "generated_utc": "2026-10-05T20:47:41.001679Z",
+  "policy": "The canonical branch is an explicit recorded decision. It is never inferred from the current checkout or from the most recently modified branch name.",
+  "schema": "BRANCH_AUTHORITY/v1",
+  "schema_version": 1
+}

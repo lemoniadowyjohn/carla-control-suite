@@ -1,0 +1,158 @@
+{
+  "schema": "C_EMERGENCY_PYTEST_CLEANUP_RECEIPT/v1",
+  "schema_version": 1,
+  "authorization_basis": {
+    "live_pytest_processes": 0,
+    "samples_taken": 2,
+    "tree_byte_delta_over_30s": 0,
+    "root_mtime_utc": "2026-10-06T20:05:35Z",
+    "basis_type": "OWNERSHIP_AND_IDLE, not age"
+  },
+  "PYTEST_WRITER_IDENTITY": "UNPROVEN_NO_WRITER_PRESENT",
+  "termination_required": false,
+  "termination_performed": false,
+  "termination_note": "no pytest process existed to terminate, so the authorized termination path was never used. Nothing was killed at any point.",
+  "root": "C:\\Users\\admin\\AppData\\Local\\Temp\\pytest-of-admin",
+  "bytes_before": 15095909054,
+  "bytes_after": 6403689450,
+  "reclaimed_bytes": 7222673403,
+  "reclaimed_gb": 7.22,
+  "dirs_deleted": 11,
+  "dirs_failed": 13,
+  "failed_detail": [
+    {
+      "name": "garbage-2ec0e4f5-2091-48f9-b066-1bb8fe072f5b",
+      "error": "[WinError 5] Access is denied: 'C:\\\\Users\\\\admin\\\\AppData\\\\Local\\\\Temp\\\\pytest-of-admin\\\\garbage-2ec0e4f5-2091-48f9-b066-1bb8fe072f5b\\\\test_candidate_id_must_be_path0\\\\candidate.xodr'",
+      "classification": "UNKNOWN_PRESERVE"
+    },
+    {
+      "name": "pytest-1698",
+      "error": "[WinError 5] Access is denied: 'C:\\\\Users\\\\admin\\\\AppData\\\\Local\\\\Temp\\\\pytest-of-admin\\\\pytest-1698\\\\.lock'",
+      "classification": "UNKNOWN_PRESERVE"
+    },
+    {
+      "name": "pytest-1699",
+      "error": "[WinError 5] Access is denied: 'C:\\\\Users\\\\admin\\\\AppData\\\\Local\\\\Temp\\\\pytest-of-admin\\\\pytest-1699\\\\.lock'",
+      "classification": "UNKNOWN_PRESERVE"
+    },
+    {
+      "name": "pytest-1700",
+      "error": "[WinError 5] Access is denied: 'C:\\\\Users\\\\admin\\\\AppData\\\\Local\\\\Temp\\\\pytest-of-admin\\\\pytest-1700\\\\.lock'",
+      "classification": "UNKNOWN_PRESERVE"
+    },
+    {
+      "name": "pytest-1701",
+      "error": "[WinError 5] Access is denied: 'C:\\\\Users\\\\admin\\\\AppData\\\\Local\\\\Temp\\\\pytest-of-admin\\\\pytest-1701\\\\.lock'",
+      "classification": "UNKNOWN_PRESERVE"
+    },
+    {
+      "name": "pytest-1708",
+      "error": "[WinError 5] Access is denied: 'C:\\\\Users\\\\admin\\\\AppData\\\\Local\\\\Temp\\\\pytest-of-admin\\\\pytest-1708\\\\.lock'",
+      "classification": "UNKNOWN_PRESERVE"
+    },
+    {
+      "name": "pytest-1709",
+      "error": "[WinError 5] Access is denied: 'C:\\\\Users\\\\admin\\\\AppData\\\\Local\\\\Temp\\\\pytest-of-admin\\\\pytest-1709\\\\.lock'",
+      "classification": "UNKNOWN_PRESERVE"
+    },
+    {
+      "name": "pytest-1711",
+      "error": "[WinError 5] Access is denied: 'C:\\\\Users\\\\admin\\\\AppData\\\\Local\\\\Temp\\\\pytest-of-admin\\\\pytest-1711\\\\.lock'",
+      "classification": "UNKNOWN_PRESERVE"
+    },
+    {
+      "name": "pytest-2735",
+      "error": "[WinError 5] Access is denied: 'C:\\\\Users\\\\admin\\\\AppData\\\\Local\\\\Temp\\\\pytest-of-admin\\\\pytest-2735\\\\test_b01_wrong_cwd_does_not_bi0\\\\repo\\\\.git\\\\objects\\\\87\\\\32b6b96024d7c0b78ce1a43e92f526f473fef5'",
+      "classification": "UNKNOWN_PRESERVE"
+    },
+    {
+      "name": "pytest-2736",
+      "error": "[WinError 5] Access is denied: 'C:\\\\Users\\\\admin\\\\AppData\\\\Local\\\\Temp\\\\pytest-of-admin\\\\pytest-2736\\\\test_b01_wrong_cwd_does_not_bi0\\\\repo\\\\.git\\\\objects\\\\76\\\\c77573481def7ce5305347025016beb7b037e6'",
+      "classification": "UNKNOWN_PRESERVE"
+    },
+    {
+      "name": "pytest-2743",
+      "error": "[WinError 5] Access is denied: 'C:\\\\Users\\\\admin\\\\AppData\\\\Local\\\\Temp\\\\pytest-of-admin\\\\pytest-2743\\\\test_negative_dirty_tree0\\\\repo\\\\.git\\\\objects\\\\0c\\\\4ef53184f7e932e765e73dd02f4b81b002e862'",
+      "classification": "UNKNOWN_PRESERVE"
+    },
+    {
+      "name": "pytest-2747",
+      "error": "[WinError 5] Access is denied: 'C:\\\\Users\\\\admin\\\\AppData\\\\Local\\\\Temp\\\\pytest-of-admin\\\\pytest-2747\\\\test_negative_dirty_tree0\\\\repo\\\\.git\\\\objects\\\\0c\\\\4ef53184f7e932e765e73dd02f4b81b002e862'",
+      "classification": "UNKNOWN_PRESERVE"
+    },
+    {
+      "name": "pytest-2750",
+      "error": "[WinError 5] Access is denied: 'C:\\\\Users\\\\admin\\\\AppData\\\\Local\\\\Temp\\\\pytest-of-admin\\\\pytest-2750\\\\test_negative_dirty_tree0\\\\repo\\\\.git\\\\objects\\\\0c\\\\4ef53184f7e932e765e73dd02f4b81b002e862'",
+      "classification": "UNKNOWN_PRESERVE"
+    }
+  ],
+  "deleted_detail": [
+    {
+      "name": "pytest-2739",
+      "bytes": 3320583337,
+      "classification": "INACTIVE_TEST_SCRATCH"
+    },
+    {
+      "name": "pytest-2740",
+      "bytes": 275139503,
+      "classification": "INACTIVE_TEST_SCRATCH"
+    },
+    {
+      "name": "pytest-2744",
+      "bytes": 3320582162,
+      "classification": "INACTIVE_TEST_SCRATCH"
+    },
+    {
+      "name": "pytest-2748",
+      "bytes": 271521181,
+      "classification": "INACTIVE_TEST_SCRATCH"
+    },
+    {
+      "name": "pytest-2767",
+      "bytes": 58341,
+      "classification": "INACTIVE_TEST_SCRATCH"
+    },
+    {
+      "name": "pytest-2769",
+      "bytes": 36238,
+      "classification": "INACTIVE_TEST_SCRATCH"
+    },
+    {
+      "name": "pytest-2770",
+      "bytes": 51463,
+      "classification": "INACTIVE_TEST_SCRATCH"
+    },
+    {
+      "name": "pytest-2772",
+      "bytes": 31800,
+      "classification": "INACTIVE_TEST_SCRATCH"
+    },
+    {
+      "name": "pytest-2773",
+      "bytes": 782,
+      "classification": "INACTIVE_TEST_SCRATCH"
+    },
+    {
+      "name": "pytest-2774",
+      "bytes": 18404,
+      "classification": "INACTIVE_TEST_SCRATCH"
+    },
+    {
+      "name": "pytest-2775",
+      "bytes": 34650192,
+      "classification": "INACTIVE_TEST_SCRATCH"
+    }
+  ],
+  "C_FREE_MB_BEFORE": 19605.8,
+  "C_FREE_MB_AFTER": 28306.6,
+  "C_FREE_GB_AFTER": 28.31,
+  "opencode_bytes_before": 8471928170,
+  "opencode_bytes_after": 8471928170,
+  "TEMP_OPENCODE_PRESERVED": true,
+  "scope_guard": "only direct children of Temp\\pytest-of-admin were enumerated; Temp\\opencode and all other Temp siblings were never deletion candidates",
+  "P0_caches_touched": false,
+  "P0_note": "not required: reclaiming the inactive pytest scratch alone exceeds the 20 GB minimum, so no npm/pip/CrashDumps deletion was performed and no new broad deletion was attempted",
+  "worktrees_touched": false,
+  "source_touched": false,
+  "evidence_touched": false
+}

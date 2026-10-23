@@ -1,0 +1,186 @@
+{
+  "schema": "building_mesh_pipeline_trace/v1",
+  "generated_at_utc": "2026-10-04T00:00:00Z",
+  "pipeline_stages": [
+    {
+      "stage": "1_osm_building_loading",
+      "description": "Load OSM building footprints from Overpass JSON",
+      "source_module": "ultimate_pipeline.tiling.tile_fbx_generator",
+      "entry_function": "load_buildings_from_overpass_json",
+      "input": "Overpass 'out geom' JSON (way + relation elements with embedded geometry)",
+      "output": "List[TileBuilding] with BuildingPolygon parts (outer + inner rings)",
+      "key_functions": [
+        "load_buildings_from_overpass_json",
+        "_geom_to_lonlat",
+        "_point_in_polygon",
+        "_ring_centroid_lonlat"
+      ],
+      "data_structures": {
+        "TileBuilding": {
+          "source_id": "string",
+          "source_type": "way|relation",
+          "tags": "dict",
+          "parts": "List[BuildingPolygon]",
+          "relation_diagnostics": "dict"
+        },
+        "BuildingPolygon": {
+          "outer": "Sequence[Tuple[float, float]]  # (lon, lat) closed ring",
+          "inners": "Tuple[Sequence[Tuple[float, float]], ...]"
+        }
+      },
+      "validation": [
+        "skip ways with < 3 vertices",
+        "close rings if not closed",
+        "multipolygon relation assembly with role=outer/inner",
+        "point-in-polygon for inner ring assignment",
+        "diagnostics for invalid relations"
+      ],
+      "producer_config_sha": "tile_fbx_generator.py sha256"
+    },
+    {
+      "stage": "2_building_tile_assignment",
+      "description": "Assign each building to exactly one tile by footprint centroid",
+      "source_module": "ultimate_pipeline.tiling.tile_fbx_generator",
+      "entry_function": "assign_buildings_to_tiles",
+      "input": "List[TileBuilding] + TileGridSpec",
+      "output": "TileAssignment { tiles: Dict[(tx,ty), List[TileBuilding]], unplaceable: List[TileBuilding] }",
+      "key_functions": [
+        "TileBuilding.centroid_local",
+        "TileGridSpec.cell_index",
+        "assign_buildings_to_tiles"
+      ],
+      "algorithm": "Area-weighted centroid of (outer - inners) per part, projected to XODR-local frame via _FWD_TRANSFORMER (bare tmerc). Cell index = floor((local_x - origin_x) / tile_size). Half-open upper bound on cells.",
+      "validation": [
+        "placed + unplaceable == total buildings",
+        "no building in two cells",
+        "centroid rule for straddling buildings"
+      ],
+      "producer_config_sha": "tile_fbx_generator.py sha256"
+    },
+    {
+      "stage": "3_tile_osm_emission",
+      "description": "Emit per-tile OSM XML with whole buildings (no mid-polygon cuts)",
+      "source_module": "ultimate_pipeline.tiling.tile_fbx_generator",
+      "entry_function": "write_tile_osm_xml",
+      "input": "Sequence[TileBuilding]",
+      "output": "OSM XML file with nodes/ways/relations + stats dict",
+      "key_functions": [
+        "write_tile_osm_xml",
+        "_node (coordinate deduplication via rounded coords)",
+        "node/way/relation emission"
+      ],
+      "key_features": [
+        "whole buildings only (no mid-polygon clipping)",
+        "coordinate deduplication by rounded lat/lon (1e-7 precision)",
+        "negative synthetic IDs (nodes -1.., ways -1e9.., relations -1e9-1e6)",
+        "simple way for single-part no-holes; multipolygon relation for multi-part or holes",
+        "member ways carry no tags; tags on relation for multipolygons"
+      ],
+      "producer_config_sha": "tile_fbx_generator.py sha256"
+    },
+    {
+      "stage": "4_osm2world_osm_to_obj",
+      "description": "OSM2World converts tile OSM XML to OBJ (visual clutter only)",
+      "source_module": "ultimate_pipeline.enrichment.osm2world_runner",
+      "entry_class": "OSM2WorldRunner",
+      "config": {
+        "excludeWorldModule": "RoadModule;RailwayModule;AerowayModule;ParkingModule",
+        "useBuildingColors": true,
+        "excludeWorldModule": "roads owned by CARLA/OpenDRIVE (AG03A)",
+        "treesPerSquareMeter": 0.02,
+        "lodDistances": "100,500,2000"
+      },
+      "output": "OBJ file + optional GLB/PNG",
+      "tool_chain": "Java JAR (OSM2World) invoked via subprocess",
+      "producer_config_sha": "osm2world_runner.py sha256"
+    },
+    {
+      "stage": "5_blender_obj_to_fbx",
+      "description": "Blender imports OBJ, exports FBX for UE4/CARLA",
+      "source_module": "ultimate_pipeline.enrichment.blender_runner",
+      "entry_class": "BlenderRunner",
+      "conversion_script": "blender_runner.py CONVERSION_SCRIPT_TEMPLATE",
+      "key_export_options": {
+        "axis_forward": "-Z",
+        "axis_up": "Y",
+        "global_scale": 1.0,
+        "apply_unit_scale": true,
+        "apply_scale_options": "FBX_SCALE_NONE",
+        "use_tspace": false,
+        "mesh_smooth_type": "OFF",
+        "use_mesh_edges": false,
+        "global_scale": 1.0
+      },
+      "blender_operations": [
+        "wm.read_factory_settings(use_empty=True)",
+        "wm.obj_import / import_scene.obj",
+        "preferences.addon_enable('io_scene_fbx')",
+        "export_scene.fbx with export_options"
+      ],
+      "manifest_generation": "J3 manifest with object inventory, hashes, export options",
+      "fbx_roundtrip": "Re-import in clean Blender to validate inventory integrity",
+      "producer_config_sha": "blender_runner.py sha256"
+    },
+    {
+      "stage": "6_fbx_roundtrip_validation",
+      "description": "Re-import FBX in clean Blender, compare inventory to original manifest",
+      "source_module": "ultimate_pipeline.enrichment.fbx_roundtrip",
+      "entry_function": "run_fbx_roundtrip",
+      "comparison": "compare_inventories(source_manifest, roundtrip_manifest)",
+      "checks": [
+        "object name preservation",
+        "vertex/face/UV layer counts",
+        "material names",
+        "bounding box deviation (tolerance 0.01m)"
+      ],
+      "producer_config_sha": "fbx_roundtrip.py sha256"
+    },
+    {
+      "stage": "7_ue4_import",
+      "description": "UE4.26 Import.py loads FBX into CARLA Large Map",
+      "ue4_process": "Import.py --package <MapName> -> ImportAssets",
+      "warnings_observed": [
+        "degenerate tangent bases which will result in incorrect shading",
+        "nearly zero bi-normals",
+        "missing smoothing group information in FBX",
+        "extreme async distance-field builds (660s)",
+        "Duplicate PrimaryAssetID warnings"
+      ],
+      "ue4_version": "4.26",
+      "carla_version": "0.9.16"
+    }
+  ],
+  "coordinate_frames": {
+    "source_osm": "WGS84 (lon/lat)",
+    "osm2world_input": "WGS84 (lon/lat) via OSM XML",
+    "osm2world_output": "OBJ in global tmerc (bare +proj=tmerc +datum=WGS84 +units=m +no_defs)",
+    "blender_import": "OBJ imported as-is (no re-projection)",
+    "blender_fbx_export": "FBX in Blender local space (axis_forward=-Z, axis_up=Y, global_scale=1.0)",
+    "ue4_import": "FBX imported with CARLA coordinate conventions",
+    "critical_note": "Verified chain: OSM2World emits bare tmerc metres (verified in GEOMETRY_PRECISION_AUDIT.json: tile coordinates are large absolute map values). Blender's OBJ import preserves coordinates unchanged, and the FBX is exported with axis_forward='-Z', axis_up='Y', global_scale=1.0. The tile centroid partition, however, is computed in tile-local metres via TileGridSpec with header_offset_xy=(832671.676, 5458671.104), so the partition frame and the mesh frame differ by that fixed offset. That offset is unchanged by this work."
+  },
+  "tool_versions": {
+    "osm2world": "OSM2World JAR (java -jar)",
+    "blender": "4.3.0",
+    "python": "3.12",
+    "pyproj": "3.x",
+    "ue4": "4.26",
+    "carla": "0.9.16"
+  },
+  "known_issues": [
+    "degenerate tangent bases warnings",
+    "nearly zero bi-normals warnings",
+    "missing smoothing groups in FBX",
+    "660s async distance field builds",
+    "Duplicate PrimaryAssetID warnings"
+  ],
+  "verification_status": {
+    "stage_1_osm_loading": "VERIFIED - exercised by tests/unit/test_tile_fbx_generator.py::TestLoadPinnedSource; 5,711 elements partition completely and disjointly",
+    "stage_2_tile_assignment": "VERIFIED - tests/unit/test_tile_fbx_generator.py::TestBoundaryAssignment",
+    "stage_3_osm_emission": "VERIFIED - tests/unit/test_tile_fbx_generator.py::TestTileOsmEmission",
+    "stage_4_osm2world": "NOT RE-RUN - OSM2World is not installed on this host. Its config was verified against the emitted osm2world.properties and its OBJ output was fully analyzed.",
+    "stage_5_blender": "EXECUTED AND VERIFIED - Blender 4.3.0 at E:\\Program Files\\Blender Foundation\\Blender 4.3\\blender.exe. Tiles 6-6 and 10-9 were reconverted; both report gate=PASS, faces_removed=0, 0 degenerate and 0 UV-degenerate triangles, and the FBX channel probe shows LayerElementUV and LayerElementSmoothing going 0 -> one per object.",
+    "stage_6_roundtrip": "EXECUTED AND VERIFIED - run_fbx_roundtrip returned ROUNDTRIP_PASS for both regenerated tiles with 0 missing objects, 0 extra objects and 0 field differences.",
+    "stage_7_ue4": "NOT RUN - UE4Editor 4.26 is installed at G:\\UnrealEngine_4.26_CARLA and running, but no import of the regenerated FBX has been performed, so no before/after warning logs exist yet."
+  }
+}

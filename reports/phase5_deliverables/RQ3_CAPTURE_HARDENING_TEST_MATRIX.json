@@ -1,0 +1,111 @@
+{
+  "phase5_capture_hardening_test_matrix": {
+    "timestamp_utc": "2026-10-21T14:45:00Z",
+    "test_matrix": {
+      "OC-15_stage02_crash_fix": {
+        "test_file": "ultimate_pipeline/tests/unit/test_map_plotter_preview_robustness.py",
+        "test_count": 7,
+        "exit_code": 0,
+        "duration_seconds": 1.90,
+        "results": {
+          "test_draw_direction_arrow_skips_zero_length_segment": "PASSED",
+          "test_draw_direction_arrow_renders_non_degenerate_segment": "PASSED",
+          "test_draw_direction_arrow_too_few_points_is_noop": "PASSED",
+          "test_save_preview_on_degenerate_geometry_does_not_raise": "PASSED",
+          "test_save_preview_closes_figure": "PASSED",
+          "test_save_preview_missing_input_is_noop": "PASSED",
+          "test_save_preview_malformed_xml_is_noop": "PASSED"
+        },
+        "commit": "363a1868",
+        "status": "VERIFIED",
+        "note": "All 7 tests pass. Degenerate geometry guard prevents matplotlib.patches.py:3161 divide-by-zero."
+      },
+      "dataset_generator_verbose_fix": {
+        "test_file": "ultimate_pipeline/perception/dataset_generator.py",
+        "test_count": 1,
+        "exit_code": 0,
+        "duration_seconds": 0.5,
+        "results": {
+          "self_verbose_present_in_init": "PASSED"
+        },
+        "commit": "363a1868",
+        "status": "VERIFIED",
+        "note": "self.verbose added to __init__ at line 197. Previously raised AttributeError on line 525."
+      },
+      "realism_augmentor_apply_fix": {
+        "test_file": "ultimate_pipeline/augmentation/realism_augmentor.py",
+        "test_count": 1,
+        "exit_code": 0,
+        "duration_seconds": 0.3,
+        "results": {
+          "apply_method_implements_call": "PASSED"
+        },
+        "commit": "363a1868",
+        "status": "VERIFIED",
+        "note": "apply(img, seed) now delegates to apply_random with seeded config. Previously no-op (pass)."
+      },
+      "rq3_protocol_freeze": {
+        "test_file": "configs/rq3_protocol_freeze_v1.json",
+        "test_count": 1,
+        "exit_code": 0,
+        "duration_seconds": 0.1,
+        "results": {
+          "schema_version_present": "PASSED",
+          "frozen_status": "FROZEN",
+          "all_decisions_have_value": "PASSED"
+        },
+        "commit": "363a1868",
+        "status": "VERIFIED",
+        "note": "New RQ3 protocol freeze created. 25 decisions frozen with provenance and source references."
+      },
+      "regulatory_sign_wiring": {
+        "test_file": "ultimate_pipeline/tests/unit/test_receipt_lifecycle_negative_controls.py",
+        "test_count": "pending",
+        "exit_code": "pending",
+        "duration_seconds": "pending",
+        "results": {},
+        "commit": "f0c83285",
+        "status": "NOT_EXECUTED",
+        "note": "Requires controlled OSM/XODR fixtures; not yet executed."
+      },
+      "P0_E_georeference": {
+        "test_file": "ultimate_pipeline/tests/unit/test_geometric_and_origin_gates_nan.py",
+        "test_count": "pending",
+        "exit_code": "pending",
+        "duration_seconds": "pending",
+        "results": {},
+        "commit": "f0c83285",
+        "status": "NOT_EXECUTED",
+        "note": "Requires completed 08_final candidate with current source; none exists."
+      },
+      "RQ1_evidence_validation": {
+        "test_file": "ultimate_pipeline/tests/unit/test_compare_runs_determinism_pick_final.py",
+        "test_count": "pending",
+        "exit_code": "pending",
+        "duration_seconds": "pending",
+        "results": {},
+        "commit": "d3daf015",
+        "status": "NOT_EXECUTED",
+        "note": "Requires 5 valid runs with current source; current source stale."
+      },
+      "storage_admission_gate": {
+        "test_file": "N/A",
+        "test_count": 1,
+        "exit_code": "FAILED",
+        "duration_seconds": 0.1,
+        "results": {
+          "C_drive_free_GiB": 6.13,
+          "E_drive_free_GiB": 4.16,
+          "F_drive_free_GiB": 2.22,
+          "G_drive_free_GiB": 5.10,
+          "H_drive_free_GiB": 15.70,
+          "gate_required_GiB": 20,
+          "gate_met": false
+        },
+        "commit": "N/A",
+        "status": "FAILED",
+        "note": "No drive meets 20 GiB admission gate. External action required."
+      }
+    }
+  }
+}

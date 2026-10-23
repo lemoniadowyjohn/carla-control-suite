@@ -289,7 +289,7 @@ class RealismAugmentor:
         return out
 
     def apply(self, img, seed):
-        pass
+        return RealismAugmentor(AugmentationConfig(seed=seed)).apply_random(img)
 
 
 __all__ = ["AugmentationConfig", "RealismAugmentor"]

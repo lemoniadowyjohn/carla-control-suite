@@ -1,0 +1,20 @@
+{
+  "report": "RQ3_MAP_LOAD_IDENTITY_TESTS",
+  "date": "2026-10-21",
+  "status": "BLOCKED",
+  "tested_offline": [
+    {"test": "original_source_differs_from_payload", "command": "compare source/payload SHA", "exit_code": 0},
+    {"test": "identical_source_and_payload", "exit_code": 0},
+    {"test": "tampered_payload_rejected", "exit_code": 0},
+    {"test": "wrong_runtime_map_rejected", "exit_code": 0, "verified": true},
+    {"test": "built_in_fallback_attempt_rejected", "exit_code": 0, "verified": true},
+    {"test": "stale_reused_world_rejected", "exit_code": 0, "verified": true},
+    {"test": "missing_structural_readback_rejected", "exit_code": 0, "verified": true}
+  ],
+  "not_executed_live": ["load_world(Grid0828) with identity readback (blocked by AV crash + shader-fatal + server not running)"],
+  "map_identity_authority": "ultimate_pipeline/core/carla_opendrive_loader.py",
+  "strict_fallback_disabled": true,
+  "runtime_map_identity_binding": true,
+  "blockers": ["CARLA_SERVER_STARTUP_BLOCKED", "MANUAL_GRID0828_RUNNABLE_BLOCKED (AV crash at ALargeMapManager::OnLevelRemovedFromWorld+0x9)"],
+  "verdict": "MAP_LOAD_IDENTITY_NOT_ADMITTED (live load unverified; code gates verified)"
+}

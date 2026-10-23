@@ -25,6 +25,22 @@ def _step3_topology_repair(
     print("\n============== 🔧 STEP 3: Topology Repair ==============")
 
     tree, root = load_xodr(working_topology_input)
+
+    # P0-B source-stage fix: connect orphan roads within snap distance
+    orphan_snap_m = float(os.getenv("UP_ORPHAN_SNAP_M", "25.0"))
+    try:
+        from ultimate_pipeline.topology.orphan_road_repair import repair_orphan_roads
+        orphan_report = repair_orphan_roads(root, max_snap_m=orphan_snap_m)
+        self.vreport.add_dict("p0b_orphan_repair", orphan_report)
+        print(
+            "[STEP 3] P0-B orphan road connection repair: "
+            f"found={orphan_report['orphan_roads_found']} "
+            f"repaired={orphan_report['repaired_connections']} "
+            f"residual={orphan_report['residual_unconnected']}"
+        )
+    except Exception as e:
+        print(f"⚠️ P0-B orphan repair failed (non-fatal): {e}")
+
     TopologyRepair.run(root)
     save_xodr(tree, topo_fixed)
     print(f"✅ TopologyRepair → {topo_fixed}")

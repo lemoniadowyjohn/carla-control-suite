@@ -1,0 +1,36 @@
+{
+  "command": [
+    "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\.venv\\Scripts\\python.exe",
+    "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\t6\\owner.py"
+  ],
+  "control_plane_dir": "C:\\ProgramData\\CARLA\\control_plane",
+  "cwd": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main",
+  "generated_utc": "2026-10-06T11:09:11.688111Z",
+  "lease_path": "C:\\ProgramData\\CARLA\\control_plane\\mutation_lease.json",
+  "mutex_name": "Global\\CARLA_Mutating_Operation_Lock",
+  "owner_creation_time": "2026-10-06T11:09:11.6820820Z",
+  "owner_exit": null,
+  "owner_pid": 24336,
+  "python": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\.venv\\Scripts\\python.exe",
+  "ready": true,
+  "schema": "T6_OWNER_HOLDER_LAUNCH/v1",
+  "schema_version": 1,
+  "script_path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\t6\\owner.py",
+  "stage_timeline": [
+    {
+      "error": null,
+      "owner_creation_time": "496917114-031282563",
+      "owner_pid": 22964,
+      "stage": "IMPORTS_OK",
+      "ts": 1791284952.0382817
+    }
+  ],
+  "stages_reached": [
+    "IMPORTS_OK"
+  ],
+  "start_utc": "2026-10-06T11:09:11.680469Z",
+  "stderr": "",
+  "stderr_log": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\t6\\T6_holder.stderr.log",
+  "stdout": "STAGE BOOTSTRAP_STARTED {'python': 'C:\\\\Users\\\\admin\\\\PycharmProjects\\\\gpt4\\\\pythonProject3\\\\carla_-main\\\\.venv\\\\Scripts\\\\python.exe', 'cwd': 'C:\\\\Users\\\\admin\\\\PycharmProjects\\\\gpt4\\\\pythonProject3\\\\carla_-main'}\nSTAGE CONTROL_PLANE_IMPORTED {'control_plane_dir': 'C:\\\\ProgramData\\\\CARLA\\\\control_plane', 'lease_path': 'C:\\\\ProgramData\\\\CARLA\\\\control_plane\\\\mutation_lease.json', 'mutex_name': 'Global\\\\CARLA_Mutating_Operation_Lock'}\nSTAGE IMPORTS_OK {}\n",
+  "stdout_log": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\t6\\T6_holder.stdout.log"
+}

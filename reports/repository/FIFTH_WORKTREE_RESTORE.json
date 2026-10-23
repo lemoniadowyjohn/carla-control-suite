@@ -1,0 +1,28 @@
+{
+  "captured_utc": "2026-10-05T13:14:48.225965+00:00",
+  "files_on_disk_after": 4077,
+  "head_after": "278968f9cfcbe2a26fd1249cadabeb1ef40d50be",
+  "head_before": "278968f9cfcbe2a26fd1249cadabeb1ef40d50be",
+  "head_unchanged": true,
+  "index_touched": false,
+  "ls_files_deleted_after": 0,
+  "object_probes_before_restore": {
+    "HEAD": true,
+    "HEAD:README.md": true,
+    "HEAD:pyproject.toml": true,
+    "HEAD:reports": true,
+    "HEAD:submission": true,
+    "HEAD:tests": true,
+    "HEAD:ultimate_pipeline": true,
+    "HEAD^{tree}": true
+  },
+  "reset_hard_used": false,
+  "restore_command": "git restore --source=HEAD --worktree -- .",
+  "schema": "fifth_worktree_restore/v1",
+  "staged_changes_before": 0,
+  "status_entries_after": 34,
+  "tree_after": "12725bf0e21313557c06cfaf17a498ea64f26ab1",
+  "tree_before": "12725bf0e21313557c06cfaf17a498ea64f26ab1",
+  "tree_unchanged": true,
+  "worktree": "C:\\Users\\admin\\AppData\\Local\\Temp\\opencode\\new316-333-perception-hardening"
+}

@@ -1,0 +1,4242 @@
+{
+  "schema": "MAP_REALISM_P0_ORACLE/v1",
+  "xodr_path": "campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_perception_map_of_record_20260916_232831.xodr",
+  "xodr_sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+  "georeference": {
+    "has_geo_reference": true,
+    "geo_reference": "+proj=tmerc",
+    "has_absolute_origin": false,
+    "lat_0": null,
+    "lon_0": null,
+    "has_offset": true,
+    "offset": {
+      "x": 832671.676,
+      "y": 5458671.104,
+      "z": 0.0,
+      "hdg": 0.0
+    },
+    "duplicate_offset_in_georef": false
+  },
+  "dangling_mandatory_lane_successors": {
+    "mandatory_lanes_checked": 3,
+    "dangling_mandatory_lane_successors": 3,
+    "dangling_by_class": {
+      "VALID_AMBIGUITY": 3
+    },
+    "dangling_records": [
+      {
+        "road_id": "46620",
+        "lane_id": 1,
+        "road_length_m": 214.741,
+        "junctions_connected": [
+          "684"
+        ],
+        "candidate_connections": 3,
+        "routed": false,
+        "classification": "VALID_AMBIGUITY",
+        "candidates": [
+          [
+            "684",
+            "72849"
+          ],
+          [
+            "684",
+            "72850"
+          ],
+          [
+            "684",
+            "72851"
+          ]
+        ]
+      },
+      {
+        "road_id": "51816",
+        "lane_id": 2,
+        "road_length_m": 20.983,
+        "junctions_connected": [
+          "360"
+        ],
+        "candidate_connections": 2,
+        "routed": false,
+        "classification": "VALID_AMBIGUITY",
+        "candidates": [
+          [
+            "360",
+            "70198"
+          ],
+          [
+            "360",
+            "70199"
+          ]
+        ]
+      },
+      {
+        "road_id": "51816",
+        "lane_id": 1,
+        "road_length_m": 20.983,
+        "junctions_connected": [
+          "360"
+        ],
+        "candidate_connections": 2,
+        "routed": false,
+        "classification": "VALID_AMBIGUITY",
+        "candidates": [
+          [
+            "360",
+            "70198"
+          ],
+          [
+            "360",
+            "70199"
+          ]
+        ]
+      }
+    ]
+  },
+  "orphan_drivable_roads": {
+    "orphan_drivable_roads": 326,
+    "orphan_records": [
+      {
+        "road_id": "42335",
+        "length_m": 26.606,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "11"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "42435",
+        "length_m": 83.577,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "173"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "42471",
+        "length_m": 20.943,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "216"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "42473",
+        "length_m": 34.695,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "219"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "42584",
+        "length_m": 110.855,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "381"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "42661",
+        "length_m": 108.617,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "36"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "42671",
+        "length_m": 89.565,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "498"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "42687",
+        "length_m": 102.618,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "521"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "42694",
+        "length_m": 8.974,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "531"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "42699",
+        "length_m": 29.702,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "539"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "42703",
+        "length_m": 1466.856,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "314"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "42723",
+        "length_m": 89.889,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "571"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "42893",
+        "length_m": 114.68,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "772"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "42949",
+        "length_m": 24.378,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "842"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "43022",
+        "length_m": 12.04,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "928"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "43071",
+        "length_m": 62.402,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "985"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "43273",
+        "length_m": 48.622,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "1183"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "43319",
+        "length_m": 183.276,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "1225"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "43351",
+        "length_m": 17.537,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "1249"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "43442",
+        "length_m": 382.318,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "1326"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "43585",
+        "length_m": 19.594,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "1438"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "43620",
+        "length_m": 54.231,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "1464"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "43644",
+        "length_m": 83.685,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "1478"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "43703",
+        "length_m": 91.27,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "1523"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "43728",
+        "length_m": 38.139,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "1272"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "43772",
+        "length_m": 39.691,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "1577"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "43787",
+        "length_m": 39.806,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "1589"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "43791",
+        "length_m": 35.422,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "466"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "43864",
+        "length_m": 22.007,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "1652"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "43933",
+        "length_m": 60.391,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "463"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "43940",
+        "length_m": 28.692,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "1719"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "43960",
+        "length_m": 29.803,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "1729"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "44024",
+        "length_m": 15.417,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "1780"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "44033",
+        "length_m": 104.015,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "1756"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "44034",
+        "length_m": 147.555,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "1758"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "44035",
+        "length_m": 85.289,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "1738"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "44050",
+        "length_m": 224.879,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "1795"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "44092",
+        "length_m": 14.014,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "1820"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "44131",
+        "length_m": 735.563,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "1859"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "44318",
+        "length_m": 158.12,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "1677"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "44320",
+        "length_m": 83.186,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "2012"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "44342",
+        "length_m": 276.826,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "2019"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "44366",
+        "length_m": 119.922,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "2037"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "44367",
+        "length_m": 21.891,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "2038"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "44374",
+        "length_m": 248.16,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "2046"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "44416",
+        "length_m": 73.38,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "2075"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "44455",
+        "length_m": 633.291,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "2103"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "44457",
+        "length_m": 93.708,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "2065"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "44510",
+        "length_m": 45.482,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "2143"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "44520",
+        "length_m": 269.01,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "2150"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "44534",
+        "length_m": 131.961,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "2154"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "44541",
+        "length_m": 188.89,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "2156"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "44542",
+        "length_m": 241.913,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "2157"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "44627",
+        "length_m": 52.569,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "2210"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "44638",
+        "length_m": 35.521,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "1763"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "44730",
+        "length_m": 85.564,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "2274"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "44753",
+        "length_m": 180.377,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "469"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "44754",
+        "length_m": 15.147,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "2291"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "44766",
+        "length_m": 80.131,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "2296"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "44772",
+        "length_m": 21.796,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "2302"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "44842",
+        "length_m": 37.226,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "2351"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "44847",
+        "length_m": 148.156,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "2355"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "44861",
+        "length_m": 112.871,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "2364"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "44866",
+        "length_m": 68.233,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "649"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "44875",
+        "length_m": 226.921,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "2374"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "44878",
+        "length_m": 149.417,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "2376"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "44964",
+        "length_m": 105.261,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "2359"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "44969",
+        "length_m": 14.469,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "2437"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "44976",
+        "length_m": 82.982,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "2439"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "45015",
+        "length_m": 54.42,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "901"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "45029",
+        "length_m": 49.335,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "2470"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "45073",
+        "length_m": 21.581,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "2391"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "45080",
+        "length_m": 68.635,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "2506"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "45131",
+        "length_m": 144.299,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "2285"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "45181",
+        "length_m": 52.315,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "747"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "45297",
+        "length_m": 41.958,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "1702"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "45351",
+        "length_m": 7.263,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "2284"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "45363",
+        "length_m": 19.877,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "30"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "45429",
+        "length_m": 44.427,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "1226"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "45526",
+        "length_m": 24.92,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "1854"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "45537",
+        "length_m": 18.146,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "2745"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "45551",
+        "length_m": 0.575,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "1424"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "45560",
+        "length_m": 57.874,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "2529"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "45577",
+        "length_m": 13.616,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "2770"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "45590",
+        "length_m": 30.96,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "2634"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "45609",
+        "length_m": 86.738,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "842"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "45622",
+        "length_m": 253.418,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "687"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "45628",
+        "length_m": 54.336,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "2792"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "45635",
+        "length_m": 172.645,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "500"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "45642",
+        "length_m": 36.061,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "2800"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "45660",
+        "length_m": 99.107,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "2801"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "45672",
+        "length_m": 40.945,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "2817"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "45674",
+        "length_m": 192.467,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "1583"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "45679",
+        "length_m": 154.628,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "2803"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "45706",
+        "length_m": 86.447,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "1831"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "45708",
+        "length_m": 70.205,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "1499"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "45787",
+        "length_m": 196.23,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "797"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "45826",
+        "length_m": 60.466,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "2572"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "45833",
+        "length_m": 18.511,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "1046"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "45834",
+        "length_m": 92.173,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "1183"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "45836",
+        "length_m": 190.882,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "1158"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "45880",
+        "length_m": 140.364,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "473"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "45898",
+        "length_m": 44.166,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "1851"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "45925",
+        "length_m": 34.762,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "1794"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "45956",
+        "length_m": 40.424,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "2913"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "45959",
+        "length_m": 51.834,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "841"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "45973",
+        "length_m": 140.096,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "1249"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "46031",
+        "length_m": 82.887,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "2916"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "46056",
+        "length_m": 25.126,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "1656"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "46073",
+        "length_m": 25.791,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "2953"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "46183",
+        "length_m": 57.039,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "1841"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "46188",
+        "length_m": 267.192,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "583"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "46213",
+        "length_m": 91.088,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "275"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "46283",
+        "length_m": 286.924,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "3023"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "46386",
+        "length_m": 21.774,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "2455"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "46516",
+        "length_m": 47.964,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "3090"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "46643",
+        "length_m": 65.36,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "16"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "46700",
+        "length_m": 89.461,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "68"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "46701",
+        "length_m": 88.198,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "70"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "46740",
+        "length_m": 300.6,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "3109"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "46793",
+        "length_m": 511.498,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "185"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "46796",
+        "length_m": 60.301,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "192"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "46808",
+        "length_m": 71.143,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "201"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "46810",
+        "length_m": 49.475,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "207"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "46844",
+        "length_m": 18.438,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "239"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "46900",
+        "length_m": 432.548,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "2618"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "46903",
+        "length_m": 85.049,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "286"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "46908",
+        "length_m": 0.2,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "199"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "46919",
+        "length_m": 39.574,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "307"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "46954",
+        "length_m": 37.551,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "349"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "46974",
+        "length_m": 21.595,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "372"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "46984",
+        "length_m": 0.2,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "381"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "46993",
+        "length_m": 43.564,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "383"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "47008",
+        "length_m": 44.208,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "396"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "47023",
+        "length_m": 15.985,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "408"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "47096",
+        "length_m": 100.588,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "447"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "47195",
+        "length_m": 80.879,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "523"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "47238",
+        "length_m": 122.207,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "563"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "47255",
+        "length_m": 26.648,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "580"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "47262",
+        "length_m": 26.4,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "586"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "47263",
+        "length_m": 70.636,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "587"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "47302",
+        "length_m": 43.345,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "636"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "47328",
+        "length_m": 51.378,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "656"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "47415",
+        "length_m": 70.812,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "713"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "47428",
+        "length_m": 46.983,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "726"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "47429",
+        "length_m": 48.338,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "727"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "47469",
+        "length_m": 45.217,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "764"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "47508",
+        "length_m": 198.971,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "802"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "47573",
+        "length_m": 24.41,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "875"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "47580",
+        "length_m": 100.125,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "881"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "47630",
+        "length_m": 115.097,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "168"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "47646",
+        "length_m": 92.128,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "927"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "47663",
+        "length_m": 19.108,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "942"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "47677",
+        "length_m": 61.684,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "743"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "47700",
+        "length_m": 47.42,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "973"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "47754",
+        "length_m": 71.382,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "1005"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "47871",
+        "length_m": 40.457,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "1088"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "47886",
+        "length_m": 0.2,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "1100"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "48000",
+        "length_m": 24.658,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "1193"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "48069",
+        "length_m": 31.835,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "1247"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "48130",
+        "length_m": 25.401,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "710"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "48173",
+        "length_m": 127.352,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "1328"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "48219",
+        "length_m": 43.022,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "607"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "48235",
+        "length_m": 57.28,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "1370"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "48295",
+        "length_m": 55.562,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "1414"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "48310",
+        "length_m": 65.416,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "612"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "48358",
+        "length_m": 61.703,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "1048"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "48361",
+        "length_m": 131.244,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "1417"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "48372",
+        "length_m": 306.082,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "319"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "48411",
+        "length_m": 93.637,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "343"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "48450",
+        "length_m": 86.527,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "618"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "48451",
+        "length_m": 69.887,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "1522"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "48453",
+        "length_m": 52.189,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "1085"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "48454",
+        "length_m": 141.499,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "618"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "48457",
+        "length_m": 55.08,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "1084"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "48458",
+        "length_m": 48.031,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "1528"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "48459",
+        "length_m": 6.544,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "1171"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "48461",
+        "length_m": 43.509,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "902"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "48531",
+        "length_m": 32.188,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "1582"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "48541",
+        "length_m": 42.57,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "1590"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "48571",
+        "length_m": 8.135,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "1614"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "48592",
+        "length_m": 49.289,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "1628"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "48601",
+        "length_m": 24.666,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "1631"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "48627",
+        "length_m": 818.091,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "1662"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "48649",
+        "length_m": 23.761,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "1683"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "48666",
+        "length_m": 61.954,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "1698"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "48677",
+        "length_m": 133.855,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "1705"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "48682",
+        "length_m": 38.453,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "1706"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "48714",
+        "length_m": 124.452,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "1726"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "48822",
+        "length_m": 23.269,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "1757"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "48845",
+        "length_m": 27.344,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "1806"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "48853",
+        "length_m": 151.664,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "1816"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "48856",
+        "length_m": 96.835,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "1818"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "48888",
+        "length_m": 150.437,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "1848"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "48895",
+        "length_m": 30.618,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "1851"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "48947",
+        "length_m": 77.292,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "1898"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "48949",
+        "length_m": 96.246,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "1901"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "48981",
+        "length_m": 42.582,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "151"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "48986",
+        "length_m": 102.229,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "511"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "48998",
+        "length_m": 143.491,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "1933"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "49008",
+        "length_m": 112.362,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "1940"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "49042",
+        "length_m": 94.496,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "648"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "49089",
+        "length_m": 39.642,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "1959"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "49098",
+        "length_m": 153.724,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "457"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "49124",
+        "length_m": 83.189,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "2013"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "49147",
+        "length_m": 2.503,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "2025"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "49176",
+        "length_m": 51.586,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "2044"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "49190",
+        "length_m": 46.818,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "2056"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "49191",
+        "length_m": 57.816,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "2044"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "49195",
+        "length_m": 26.819,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "2052"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "49297",
+        "length_m": 51.814,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "2108"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "49307",
+        "length_m": 201.036,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "1121"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "49350",
+        "length_m": 361.799,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "2153"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "49383",
+        "length_m": 31.187,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "2095"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "49384",
+        "length_m": 31.616,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "2094"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "49420",
+        "length_m": 66.277,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "1193"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "49471",
+        "length_m": 4235.733,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "3448"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "49555",
+        "length_m": 70.497,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "2245"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "49577",
+        "length_m": 59.988,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "219"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "49582",
+        "length_m": 1066.954,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "464"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "49588",
+        "length_m": 102.693,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "1115"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "49594",
+        "length_m": 109.605,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "1118"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "49610",
+        "length_m": 71.976,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "2279"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "49630",
+        "length_m": 107.353,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "2292"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "49632",
+        "length_m": 95.559,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "1387"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "49633",
+        "length_m": 53.121,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "921"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "49634",
+        "length_m": 54.59,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "923"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "49635",
+        "length_m": 113.59,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "470"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "49637",
+        "length_m": 78.2,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "926"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "49667",
+        "length_m": 31.745,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "1968"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "49705",
+        "length_m": 96.913,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "2341"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "49741",
+        "length_m": 94.24,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "2357"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "49756",
+        "length_m": 30.278,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "2376"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "49767",
+        "length_m": 2509.967,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "3395"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "49824",
+        "length_m": 84.869,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "976"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "49898",
+        "length_m": 57.886,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "1149"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "49913",
+        "length_m": 34.263,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "2461"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "49933",
+        "length_m": 21.368,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "2475"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "49966",
+        "length_m": 35.213,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "1632"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "49985",
+        "length_m": 57.666,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "2469"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "50107",
+        "length_m": 23.364,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "2564"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "50125",
+        "length_m": 200.257,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "2299"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "50250",
+        "length_m": 14.415,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "2366"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "50291",
+        "length_m": 105.576,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "1163"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "50380",
+        "length_m": 37.729,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "11"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "50391",
+        "length_m": 33.498,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "968"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "50398",
+        "length_m": 126.181,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "2670"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "50443",
+        "length_m": 298.917,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "2286"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "50470",
+        "length_m": 40.426,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "2504"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "50477",
+        "length_m": 47.444,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "2706"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "50482",
+        "length_m": 63.985,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "2501"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "50492",
+        "length_m": 34.658,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "2709"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "50512",
+        "length_m": 70.608,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "2716"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "50555",
+        "length_m": 27.78,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "2741"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "50562",
+        "length_m": 114.871,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "2744"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "50563",
+        "length_m": 61.445,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "2745"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "50571",
+        "length_m": 26.221,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "2750"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "50590",
+        "length_m": 75.791,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "2759"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "50595",
+        "length_m": 43.039,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "2761"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "50615",
+        "length_m": 41.228,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "1003"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "50619",
+        "length_m": 251.011,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "2776"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "50630",
+        "length_m": 20.39,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "2750"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "50634",
+        "length_m": 20.642,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "1276"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "50646",
+        "length_m": 45.237,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "933"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "50661",
+        "length_m": 81.734,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "2791"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "50734",
+        "length_m": 64.378,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "2362"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "50761",
+        "length_m": 13.412,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "2829"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "50860",
+        "length_m": 32.088,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "2853"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "50863",
+        "length_m": 122.396,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "2802"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "50871",
+        "length_m": 44.507,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "2564"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "50910",
+        "length_m": 36.112,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "1905"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "50958",
+        "length_m": 72.736,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "1004"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "50968",
+        "length_m": 64.459,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "2841"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "50975",
+        "length_m": 142.055,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "28"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "50979",
+        "length_m": 150.221,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "709"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "50982",
+        "length_m": 42.276,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "1363"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "50986",
+        "length_m": 84.192,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "1093"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "50987",
+        "length_m": 91.903,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "2885"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "50990",
+        "length_m": 153.833,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "447"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "50994",
+        "length_m": 34.06,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "2686"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "51015",
+        "length_m": 34.798,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "2318"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "51017",
+        "length_m": 59.099,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "937"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "51020",
+        "length_m": 30.416,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "2895"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "51021",
+        "length_m": 67.246,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "2727"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "51031",
+        "length_m": 57.72,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "1693"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "51034",
+        "length_m": 26.907,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "2899"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "51035",
+        "length_m": 64.1,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "2899"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "51052",
+        "length_m": 99.195,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "1814"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "51080",
+        "length_m": 30.697,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "287"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "51099",
+        "length_m": 44.473,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "1178"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "51116",
+        "length_m": 134.297,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "556"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "51119",
+        "length_m": 192.042,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "1879"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "51140",
+        "length_m": 207.488,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "2504"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "51154",
+        "length_m": 12.434,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "2169"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "51159",
+        "length_m": 2.383,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "2853"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "51204",
+        "length_m": 83.527,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "2511"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "51205",
+        "length_m": 81.653,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "2441"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "51230",
+        "length_m": 54.522,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "1614"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "51231",
+        "length_m": 44.019,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "2952"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "51235",
+        "length_m": 219.802,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "2954"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "51242",
+        "length_m": 74.934,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "2447"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "51243",
+        "length_m": 21.086,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "2432"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "51244",
+        "length_m": 42.813,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "2430"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "51273",
+        "length_m": 4.592,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "2249"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "51298",
+        "length_m": 54.899,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "2520"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "51341",
+        "length_m": 37.051,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "766"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "51412",
+        "length_m": 77.534,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "2196"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "51562",
+        "length_m": 26.311,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "2388"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "51653",
+        "length_m": 31.767,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "2291"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "51670",
+        "length_m": 23.346,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "3060"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "51674",
+        "length_m": 16.446,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "2772"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "51675",
+        "length_m": 50.481,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "2282"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "51677",
+        "length_m": 23.601,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "1578"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "51678",
+        "length_m": 21.694,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "2754"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "51679",
+        "length_m": 25.851,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "2756"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "51681",
+        "length_m": 19.81,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "177"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "51762",
+        "length_m": 8.95,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "3075"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "51767",
+        "length_m": 65.08,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "71"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "51786",
+        "length_m": 19.124,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "3077"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "51806",
+        "length_m": 27.254,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "2949"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "51807",
+        "length_m": 63.855,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "1649"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "51843",
+        "length_m": 29.027,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "2307"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "51847",
+        "length_m": 102.643,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "1395"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "51874",
+        "length_m": 117.576,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "2049"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "51881",
+        "length_m": 183.084,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "2987"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      },
+      {
+        "road_id": "51950",
+        "length_m": 19.833,
+        "predecessor": {
+          "elementType": "junction",
+          "elementId": "531"
+        },
+        "successor": null,
+        "classification": "UNEXPLAINED"
+      }
+    ]
+  },
+  "connector_lane_interface_dz": {
+    "interface_links": 23529,
+    "connections_total": 22589,
+    "connection_interfaces": 45178,
+    "bad_seams": 776,
+    "bad_connections": 739,
+    "bad_interface_examples": [
+      {
+        "junction_id": "1",
+        "connector_road": "52025",
+        "dz_start": 0.9576,
+        "dz_end": 0.2722,
+        "classification": "REAL_SURFACE_DISCONTINUITY"
+      },
+      {
+        "junction_id": "1",
+        "connector_road": "52026",
+        "dz_start": 0.6701,
+        "dz_end": -0.0075,
+        "classification": "REAL_SURFACE_DISCONTINUITY"
+      },
+      {
+        "junction_id": "1",
+        "connector_road": "52027",
+        "dz_start": 1.0971,
+        "dz_end": 0.5412,
+        "classification": "REAL_SURFACE_DISCONTINUITY"
+      },
+      {
+        "junction_id": "1",
+        "connector_road": "52031",
+        "dz_start": 0.237,
+        "dz_end": 0.6992,
+        "classification": "REAL_SURFACE_DISCONTINUITY"
+      },
+      {
+        "junction_id": "926",
+        "connector_road": "52185",
+        "dz_start": -0.7158,
+        "dz_end": -0.361,
+        "classification": "REAL_SURFACE_DISCONTINUITY"
+      },
+      {
+        "junction_id": "926",
+        "connector_road": "52190",
+        "dz_start": -0.2225,
+        "dz_end": -0.5492,
+        "classification": "REAL_SURFACE_DISCONTINUITY"
+      },
+      {
+        "junction_id": "929",
+        "connector_road": "52204",
+        "dz_start": 0.5383,
+        "dz_end": 0.3757,
+        "classification": "REAL_SURFACE_DISCONTINUITY"
+      },
+      {
+        "junction_id": "929",
+        "connector_road": "52207",
+        "dz_start": -0.7512,
+        "dz_end": 0.0,
+        "classification": "REAL_SURFACE_DISCONTINUITY"
+      },
+      {
+        "junction_id": "949",
+        "connector_road": "52340",
+        "dz_start": -1.5814,
+        "dz_end": -0.7687,
+        "classification": "REAL_SURFACE_DISCONTINUITY"
+      },
+      {
+        "junction_id": "949",
+        "connector_road": "52342",
+        "dz_start": -0.7026,
+        "dz_end": -0.2804,
+        "classification": "REAL_SURFACE_DISCONTINUITY"
+      },
+      {
+        "junction_id": "949",
+        "connector_road": "52343",
+        "dz_start": -0.8307,
+        "dz_end": -0.1991,
+        "classification": "REAL_SURFACE_DISCONTINUITY"
+      },
+      {
+        "junction_id": "949",
+        "connector_road": "52344",
+        "dz_start": 0.5456,
+        "dz_end": -0.2231,
+        "classification": "REAL_SURFACE_DISCONTINUITY"
+      },
+      {
+        "junction_id": "93",
+        "connector_road": "52422",
+        "dz_start": 0.5876,
+        "dz_end": -0.0084,
+        "classification": "REAL_SURFACE_DISCONTINUITY"
+      },
+      {
+        "junction_id": "93",
+        "connector_road": "52423",
+        "dz_start": 0.6843,
+        "dz_end": 0.1954,
+        "classification": "REAL_SURFACE_DISCONTINUITY"
+      },
+      {
+        "junction_id": "962",
+        "connector_road": "52463",
+        "dz_start": 0.5627,
+        "dz_end": 0.4909,
+        "classification": "REAL_SURFACE_DISCONTINUITY"
+      },
+      {
+        "junction_id": "962",
+        "connector_road": "52464",
+        "dz_start": 0.6654,
+        "dz_end": 0.8238,
+        "classification": "REAL_SURFACE_DISCONTINUITY"
+      },
+      {
+        "junction_id": "962",
+        "connector_road": "52468",
+        "dz_start": -0.5107,
+        "dz_end": 0.5064,
+        "classification": "REAL_SURFACE_DISCONTINUITY"
+      },
+      {
+        "junction_id": "94",
+        "connector_road": "52525",
+        "dz_start": -0.4181,
+        "dz_end": -0.698,
+        "classification": "REAL_SURFACE_DISCONTINUITY"
+      },
+      {
+        "junction_id": "94",
+        "connector_road": "52526",
+        "dz_start": -0.8951,
+        "dz_end": -0.3429,
+        "classification": "REAL_SURFACE_DISCONTINUITY"
+      },
+      {
+        "junction_id": "94",
+        "connector_road": "52529",
+        "dz_start": 0.8611,
+        "dz_end": -0.2302,
+        "classification": "REAL_SURFACE_DISCONTINUITY"
+      },
+      {
+        "junction_id": "969",
+        "connector_road": "52541",
+        "dz_start": -0.9006,
+        "dz_end": -0.3784,
+        "classification": "REAL_SURFACE_DISCONTINUITY"
+      },
+      {
+        "junction_id": "969",
+        "connector_road": "52542",
+        "dz_start": -0.4502,
+        "dz_end": -0.603,
+        "classification": "REAL_SURFACE_DISCONTINUITY"
+      },
+      {
+        "junction_id": "969",
+        "connector_road": "52546",
+        "dz_start": 0.2392,
+        "dz_end": -0.5106,
+        "classification": "REAL_SURFACE_DISCONTINUITY"
+      },
+      {
+        "junction_id": "971",
+        "connector_road": "52548",
+        "dz_start": -0.5965,
+        "dz_end": -0.2968,
+        "classification": "REAL_SURFACE_DISCONTINUITY"
+      },
+      {
+        "junction_id": "983",
+        "connector_road": "52647",
+        "dz_start": 0.5149,
+        "dz_end": 0.259,
+        "classification": "REAL_SURFACE_DISCONTINUITY"
+      },
+      {
+        "junction_id": "983",
+        "connector_road": "52651",
+        "dz_start": -1.2752,
+        "dz_end": -0.3925,
+        "classification": "REAL_SURFACE_DISCONTINUITY"
+      },
+      {
+        "junction_id": "983",
+        "connector_road": "52652",
+        "dz_start": -1.0261,
+        "dz_end": -0.2157,
+        "classification": "REAL_SURFACE_DISCONTINUITY"
+      },
+      {
+        "junction_id": "983",
+        "connector_road": "52653",
+        "dz_start": -1.2222,
+        "dz_end": -0.8261,
+        "classification": "REAL_SURFACE_DISCONTINUITY"
+      },
+      {
+        "junction_id": "983",
+        "connector_road": "52655",
+        "dz_start": 0.752,
+        "dz_end": 0.1476,
+        "classification": "REAL_SURFACE_DISCONTINUITY"
+      },
+      {
+        "junction_id": "984",
+        "connector_road": "52656",
+        "dz_start": -0.8253,
+        "dz_end": 0.0,
+        "classification": "REAL_SURFACE_DISCONTINUITY"
+      },
+      {
+        "junction_id": "997",
+        "connector_road": "52777",
+        "dz_start": -1.1127,
+        "dz_end": -0.5784,
+        "classification": "REAL_SURFACE_DISCONTINUITY"
+      },
+      {
+        "junction_id": "997",
+        "connector_road": "52781",
+        "dz_start": -0.8087,
+        "dz_end": -0.9499,
+        "classification": "REAL_SURFACE_DISCONTINUITY"
+      },
+      {
+        "junction_id": "997",
+        "connector_road": "52782",
+        "dz_start": 0.2343,
+        "dz_end": -0.8307,
+        "classification": "REAL_SURFACE_DISCONTINUITY"
+      },
+      {
+        "junction_id": "997",
+        "connector_road": "52783",
+        "dz_start": 0.6657,
+        "dz_end": 0.3068,
+        "classification": "REAL_SURFACE_DISCONTINUITY"
+      },
+      {
+        "junction_id": "997",
+        "connector_road": "52784",
+        "dz_start": 0.6717,
+        "dz_end": 0.2481,
+        "classification": "REAL_SURFACE_DISCONTINUITY"
+      },
+      {
+        "junction_id": "998",
+        "connector_road": "52785",
+        "dz_start": 0.5758,
+        "dz_end": -0.1252,
+        "classification": "REAL_SURFACE_DISCONTINUITY"
+      },
+      {
+        "junction_id": "998",
+        "connector_road": "52789",
+        "dz_start": 0.6045,
+        "dz_end": 0.1699,
+        "classification": "REAL_SURFACE_DISCONTINUITY"
+      },
+      {
+        "junction_id": "998",
+        "connector_road": "52790",
+        "dz_start": -0.4425,
+        "dz_end": -0.6481,
+        "classification": "REAL_SURFACE_DISCONTINUITY"
+      },
+      {
+        "junction_id": "998",
+        "connector_road": "52791",
+        "dz_start": -0.6018,
+        "dz_end": 0.0,
+        "classification": "REAL_SURFACE_DISCONTINUITY"
+      },
+      {
+        "junction_id": "999",
+        "connector_road": "52793",
+        "dz_start": -0.947,
+        "dz_end": -0.477,
+        "classification": "REAL_SURFACE_DISCONTINUITY"
+      },
+      {
+        "junction_id": "999",
+        "connector_road": "52794",
+        "dz_start": -2.0648,
+        "dz_end": -0.7989,
+        "classification": "REAL_SURFACE_DISCONTINUITY"
+      },
+      {
+        "junction_id": "999",
+        "connector_road": "52796",
+        "dz_start": 1.0166,
+        "dz_end": -0.2924,
+        "classification": "REAL_SURFACE_DISCONTINUITY"
+      },
+      {
+        "junction_id": "999",
+        "connector_road": "52799",
+        "dz_start": 0.7558,
+        "dz_end": -0.1484,
+        "classification": "REAL_SURFACE_DISCONTINUITY"
+      },
+      {
+        "junction_id": "999",
+        "connector_road": "52800",
+        "dz_start": 1.1581,
+        "dz_end": 0.4289,
+        "classification": "REAL_SURFACE_DISCONTINUITY"
+      },
+      {
+        "junction_id": "1000",
+        "connector_road": "52804",
+        "dz_start": -0.2696,
+        "dz_end": 0.7055,
+        "classification": "REAL_SURFACE_DISCONTINUITY"
+      },
+      {
+        "junction_id": "1000",
+        "connector_road": "52809",
+        "dz_start": -0.6546,
+        "dz_end": -0.0,
+        "classification": "REAL_SURFACE_DISCONTINUITY"
+      },
+      {
+        "junction_id": "1000",
+        "connector_road": "52811",
+        "dz_start": -0.8619,
+        "dz_end": -0.319,
+        "classification": "REAL_SURFACE_DISCONTINUITY"
+      },
+      {
+        "junction_id": "3345",
+        "connector_road": "52814",
+        "dz_start": -0.63,
+        "dz_end": -0.1777,
+        "classification": "REAL_SURFACE_DISCONTINUITY"
+      },
+      {
+        "junction_id": "596",
+        "connector_road": "52907",
+        "dz_start": -0.556,
+        "dz_end": -0.2701,
+        "classification": "REAL_SURFACE_DISCONTINUITY"
+      },
+      {
+        "junction_id": "1020",
+        "connector_road": "52995",
+        "dz_start": -0.7152,
+        "dz_end": -0.4334,
+        "classification": "REAL_SURFACE_DISCONTINUITY"
+      }
+    ],
+    "conn_class_counts": {
+      "UNKNOWN_NO_Z": 4,
+      "VALID_GRADE_CHANGE": 21749,
+      "DEGENERATE_CONNECTOR": 97,
+      "REAL_SURFACE_DISCONTINUITY": 739
+    },
+    "bad_examples": [
+      {
+        "junction_id": "1",
+        "connector_road": "52025",
+        "connector_length_m": 21.196,
+        "from": -1,
+        "to": -1,
+        "dz_start": 0.9576,
+        "dz_end": 0.2722,
+        "classification": "REAL_SURFACE_DISCONTINUITY"
+      },
+      {
+        "junction_id": "1",
+        "connector_road": "52026",
+        "connector_length_m": 10.335,
+        "from": -1,
+        "to": -1,
+        "dz_start": 0.6701,
+        "dz_end": -0.0075,
+        "classification": "REAL_SURFACE_DISCONTINUITY"
+      },
+      {
+        "junction_id": "1",
+        "connector_road": "52027",
+        "connector_length_m": 17.187,
+        "from": -2,
+        "to": -1,
+        "dz_start": 1.0971,
+        "dz_end": 0.5412,
+        "classification": "REAL_SURFACE_DISCONTINUITY"
+      },
+      {
+        "junction_id": "1",
+        "connector_road": "52031",
+        "connector_length_m": 18.995,
+        "from": -1,
+        "to": -1,
+        "dz_start": 0.237,
+        "dz_end": 0.6992,
+        "classification": "REAL_SURFACE_DISCONTINUITY"
+      },
+      {
+        "junction_id": "926",
+        "connector_road": "52185",
+        "connector_length_m": 10.335,
+        "from": -1,
+        "to": -1,
+        "dz_start": -0.7158,
+        "dz_end": -0.361,
+        "classification": "REAL_SURFACE_DISCONTINUITY"
+      },
+      {
+        "junction_id": "926",
+        "connector_road": "52190",
+        "connector_length_m": 15.669,
+        "from": -1,
+        "to": -1,
+        "dz_start": -0.2225,
+        "dz_end": -0.5492,
+        "classification": "REAL_SURFACE_DISCONTINUITY"
+      },
+      {
+        "junction_id": "929",
+        "connector_road": "52204",
+        "connector_length_m": 12.612,
+        "from": -1,
+        "to": -1,
+        "dz_start": 0.5383,
+        "dz_end": 0.3757,
+        "classification": "REAL_SURFACE_DISCONTINUITY"
+      },
+      {
+        "junction_id": "929",
+        "connector_road": "52207",
+        "connector_length_m": 12.686,
+        "from": -1,
+        "to": -1,
+        "dz_start": -0.7512,
+        "dz_end": 0.0,
+        "classification": "REAL_SURFACE_DISCONTINUITY"
+      },
+      {
+        "junction_id": "949",
+        "connector_road": "52340",
+        "connector_length_m": 19.437,
+        "from": -1,
+        "to": -1,
+        "dz_start": -1.5814,
+        "dz_end": -0.7687,
+        "classification": "REAL_SURFACE_DISCONTINUITY"
+      },
+      {
+        "junction_id": "949",
+        "connector_road": "52342",
+        "connector_length_m": 14.749,
+        "from": -1,
+        "to": -1,
+        "dz_start": -0.7026,
+        "dz_end": -0.2804,
+        "classification": "REAL_SURFACE_DISCONTINUITY"
+      },
+      {
+        "junction_id": "949",
+        "connector_road": "52343",
+        "connector_length_m": 20.005,
+        "from": -1,
+        "to": -1,
+        "dz_start": -0.8307,
+        "dz_end": -0.1991,
+        "classification": "REAL_SURFACE_DISCONTINUITY"
+      },
+      {
+        "junction_id": "949",
+        "connector_road": "52344",
+        "connector_length_m": 10.335,
+        "from": -1,
+        "to": -1,
+        "dz_start": 0.5456,
+        "dz_end": -0.2231,
+        "classification": "REAL_SURFACE_DISCONTINUITY"
+      },
+      {
+        "junction_id": "93",
+        "connector_road": "52422",
+        "connector_length_m": 16.289,
+        "from": -1,
+        "to": -1,
+        "dz_start": 0.5876,
+        "dz_end": -0.0084,
+        "classification": "REAL_SURFACE_DISCONTINUITY"
+      },
+      {
+        "junction_id": "93",
+        "connector_road": "52423",
+        "connector_length_m": 10.335,
+        "from": -1,
+        "to": -1,
+        "dz_start": 0.6843,
+        "dz_end": 0.1954,
+        "classification": "REAL_SURFACE_DISCONTINUITY"
+      },
+      {
+        "junction_id": "962",
+        "connector_road": "52463",
+        "connector_length_m": 10.335,
+        "from": -1,
+        "to": -1,
+        "dz_start": 0.5627,
+        "dz_end": 0.4909,
+        "classification": "REAL_SURFACE_DISCONTINUITY"
+      },
+      {
+        "junction_id": "962",
+        "connector_road": "52464",
+        "connector_length_m": 16.109,
+        "from": -1,
+        "to": -1,
+        "dz_start": 0.6654,
+        "dz_end": 0.8238,
+        "classification": "REAL_SURFACE_DISCONTINUITY"
+      },
+      {
+        "junction_id": "962",
+        "connector_road": "52468",
+        "connector_length_m": 26.241,
+        "from": -1,
+        "to": -1,
+        "dz_start": -0.5107,
+        "dz_end": 0.5064,
+        "classification": "REAL_SURFACE_DISCONTINUITY"
+      },
+      {
+        "junction_id": "94",
+        "connector_road": "52525",
+        "connector_length_m": 13.135,
+        "from": -1,
+        "to": -1,
+        "dz_start": -0.4181,
+        "dz_end": -0.698,
+        "classification": "REAL_SURFACE_DISCONTINUITY"
+      },
+      {
+        "junction_id": "94",
+        "connector_road": "52526",
+        "connector_length_m": 12.905,
+        "from": -1,
+        "to": -1,
+        "dz_start": -0.8951,
+        "dz_end": -0.3429,
+        "classification": "REAL_SURFACE_DISCONTINUITY"
+      },
+      {
+        "junction_id": "94",
+        "connector_road": "52529",
+        "connector_length_m": 15.578,
+        "from": -1,
+        "to": -1,
+        "dz_start": 0.8611,
+        "dz_end": -0.2302,
+        "classification": "REAL_SURFACE_DISCONTINUITY"
+      },
+      {
+        "junction_id": "969",
+        "connector_road": "52541",
+        "connector_length_m": 10.335,
+        "from": -1,
+        "to": -1,
+        "dz_start": -0.9006,
+        "dz_end": -0.3784,
+        "classification": "REAL_SURFACE_DISCONTINUITY"
+      },
+      {
+        "junction_id": "969",
+        "connector_road": "52542",
+        "connector_length_m": 15.981,
+        "from": -1,
+        "to": -1,
+        "dz_start": -0.4502,
+        "dz_end": -0.603,
+        "classification": "REAL_SURFACE_DISCONTINUITY"
+      },
+      {
+        "junction_id": "969",
+        "connector_road": "52546",
+        "connector_length_m": 17.346,
+        "from": -1,
+        "to": -1,
+        "dz_start": 0.2392,
+        "dz_end": -0.5106,
+        "classification": "REAL_SURFACE_DISCONTINUITY"
+      },
+      {
+        "junction_id": "969",
+        "connector_road": "52546",
+        "connector_length_m": 17.346,
+        "from": -2,
+        "to": -2,
+        "dz_start": 0.2392,
+        "dz_end": -0.5106,
+        "classification": "REAL_SURFACE_DISCONTINUITY"
+      },
+      {
+        "junction_id": "971",
+        "connector_road": "52548",
+        "connector_length_m": 17.913,
+        "from": -2,
+        "to": -1,
+        "dz_start": -0.5965,
+        "dz_end": -0.2968,
+        "classification": "REAL_SURFACE_DISCONTINUITY"
+      },
+      {
+        "junction_id": "983",
+        "connector_road": "52647",
+        "connector_length_m": 17.246,
+        "from": -1,
+        "to": -1,
+        "dz_start": 0.5149,
+        "dz_end": 0.259,
+        "classification": "REAL_SURFACE_DISCONTINUITY"
+      },
+      {
+        "junction_id": "983",
+        "connector_road": "52651",
+        "connector_length_m": 17.98,
+        "from": -1,
+        "to": -1,
+        "dz_start": -1.2752,
+        "dz_end": -0.3925,
+        "classification": "REAL_SURFACE_DISCONTINUITY"
+      },
+      {
+        "junction_id": "983",
+        "connector_road": "52652",
+        "connector_length_m": 10.335,
+        "from": -1,
+        "to": -1,
+        "dz_start": -1.0261,
+        "dz_end": -0.2157,
+        "classification": "REAL_SURFACE_DISCONTINUITY"
+      },
+      {
+        "junction_id": "983",
+        "connector_road": "52653",
+        "connector_length_m": 17.98,
+        "from": -1,
+        "to": -1,
+        "dz_start": -1.2222,
+        "dz_end": -0.8261,
+        "classification": "REAL_SURFACE_DISCONTINUITY"
+      },
+      {
+        "junction_id": "983",
+        "connector_road": "52655",
+        "connector_length_m": 10.335,
+        "from": -1,
+        "to": -1,
+        "dz_start": 0.752,
+        "dz_end": 0.1476,
+        "classification": "REAL_SURFACE_DISCONTINUITY"
+      },
+      {
+        "junction_id": "984",
+        "connector_road": "52656",
+        "connector_length_m": 10.335,
+        "from": -1,
+        "to": -1,
+        "dz_start": -0.8253,
+        "dz_end": 0.0,
+        "classification": "REAL_SURFACE_DISCONTINUITY"
+      },
+      {
+        "junction_id": "997",
+        "connector_road": "52777",
+        "connector_length_m": 24.474,
+        "from": -1,
+        "to": -1,
+        "dz_start": -1.1127,
+        "dz_end": -0.5784,
+        "classification": "REAL_SURFACE_DISCONTINUITY"
+      },
+      {
+        "junction_id": "997",
+        "connector_road": "52781",
+        "connector_length_m": 10.335,
+        "from": -1,
+        "to": -1,
+        "dz_start": -0.8087,
+        "dz_end": -0.9499,
+        "classification": "REAL_SURFACE_DISCONTINUITY"
+      },
+      {
+        "junction_id": "997",
+        "connector_road": "52782",
+        "connector_length_m": 28.238,
+        "from": -1,
+        "to": -1,
+        "dz_start": 0.2343,
+        "dz_end": -0.8307,
+        "classification": "REAL_SURFACE_DISCONTINUITY"
+      },
+      {
+        "junction_id": "997",
+        "connector_road": "52783",
+        "connector_length_m": 30.836,
+        "from": -1,
+        "to": -1,
+        "dz_start": 0.6657,
+        "dz_end": 0.3068,
+        "classification": "REAL_SURFACE_DISCONTINUITY"
+      },
+      {
+        "junction_id": "997",
+        "connector_road": "52784",
+        "connector_length_m": 10.335,
+        "from": -1,
+        "to": -1,
+        "dz_start": 0.6717,
+        "dz_end": 0.2481,
+        "classification": "REAL_SURFACE_DISCONTINUITY"
+      },
+      {
+        "junction_id": "998",
+        "connector_road": "52785",
+        "connector_length_m": 13.444,
+        "from": -1,
+        "to": -1,
+        "dz_start": 0.5758,
+        "dz_end": -0.1252,
+        "classification": "REAL_SURFACE_DISCONTINUITY"
+      },
+      {
+        "junction_id": "998",
+        "connector_road": "52789",
+        "connector_length_m": 15.811,
+        "from": -1,
+        "to": -1,
+        "dz_start": 0.6045,
+        "dz_end": 0.1699,
+        "classification": "REAL_SURFACE_DISCONTINUITY"
+      },
+      {
+        "junction_id": "998",
+        "connector_road": "52790",
+        "connector_length_m": 15.811,
+        "from": -1,
+        "to": -1,
+        "dz_start": -0.4425,
+        "dz_end": -0.6481,
+        "classification": "REAL_SURFACE_DISCONTINUITY"
+      },
+      {
+        "junction_id": "998",
+        "connector_road": "52791",
+        "connector_length_m": 13.444,
+        "from": -1,
+        "to": -1,
+        "dz_start": -0.6018,
+        "dz_end": 0.0,
+        "classification": "REAL_SURFACE_DISCONTINUITY"
+      },
+      {
+        "junction_id": "999",
+        "connector_road": "52793",
+        "connector_length_m": 32.921,
+        "from": -1,
+        "to": -1,
+        "dz_start": -0.947,
+        "dz_end": -0.477,
+        "classification": "REAL_SURFACE_DISCONTINUITY"
+      },
+      {
+        "junction_id": "999",
+        "connector_road": "52794",
+        "connector_length_m": 23.684,
+        "from": -1,
+        "to": -1,
+        "dz_start": -2.0648,
+        "dz_end": -0.7989,
+        "classification": "REAL_SURFACE_DISCONTINUITY"
+      },
+      {
+        "junction_id": "999",
+        "connector_road": "52796",
+        "connector_length_m": 35.228,
+        "from": -1,
+        "to": -1,
+        "dz_start": 1.0166,
+        "dz_end": -0.2924,
+        "classification": "REAL_SURFACE_DISCONTINUITY"
+      },
+      {
+        "junction_id": "999",
+        "connector_road": "52799",
+        "connector_length_m": 10.335,
+        "from": -1,
+        "to": -1,
+        "dz_start": 0.7558,
+        "dz_end": -0.1484,
+        "classification": "REAL_SURFACE_DISCONTINUITY"
+      },
+      {
+        "junction_id": "999",
+        "connector_road": "52800",
+        "connector_length_m": 26.538,
+        "from": -1,
+        "to": -1,
+        "dz_start": 1.1581,
+        "dz_end": 0.4289,
+        "classification": "REAL_SURFACE_DISCONTINUITY"
+      },
+      {
+        "junction_id": "1000",
+        "connector_road": "52804",
+        "connector_length_m": 18.147,
+        "from": -1,
+        "to": -1,
+        "dz_start": -0.2696,
+        "dz_end": 0.7055,
+        "classification": "REAL_SURFACE_DISCONTINUITY"
+      },
+      {
+        "junction_id": "1000",
+        "connector_road": "52809",
+        "connector_length_m": 12.518,
+        "from": -2,
+        "to": -1,
+        "dz_start": -0.6546,
+        "dz_end": -0.0,
+        "classification": "REAL_SURFACE_DISCONTINUITY"
+      },
+      {
+        "junction_id": "1000",
+        "connector_road": "52811",
+        "connector_length_m": 10.335,
+        "from": -1,
+        "to": -1,
+        "dz_start": -0.8619,
+        "dz_end": -0.319,
+        "classification": "REAL_SURFACE_DISCONTINUITY"
+      },
+      {
+        "junction_id": "3345",
+        "connector_road": "52814",
+        "connector_length_m": 2.248,
+        "from": -1,
+        "to": -1,
+        "dz_start": -0.63,
+        "dz_end": -0.1777,
+        "classification": "REAL_SURFACE_DISCONTINUITY"
+      },
+      {
+        "junction_id": "596",
+        "connector_road": "52907",
+        "connector_length_m": 10.335,
+        "from": -1,
+        "to": -1,
+        "dz_start": -0.556,
+        "dz_end": -0.2701,
+        "classification": "REAL_SURFACE_DISCONTINUITY"
+      }
+    ],
+    "worst_dz": 2.4184,
+    "worst_record": {
+      "worst_dz": 2.4184,
+      "junction_id": "3033",
+      "connector_road": "68410",
+      "from": -1,
+      "to": -1,
+      "dz_start": 2.4184,
+      "dz_end": 1.0193
+    }
+  },
+  "structure_terrain_separation": {
+    "INCOMPLETE": true,
+    "error": "TypeError: exists: path should be string, bytes, os.PathLike or integer, not NoneType"
+  }
+}

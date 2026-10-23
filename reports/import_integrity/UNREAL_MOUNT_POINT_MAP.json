@@ -1,0 +1,69 @@
+{
+  "MOUNT_POINT_CONTRACT": "FAIL_WITH_EXACT_DIVERGENCE",
+  "content_root_filesystem": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content",
+  "content_root_ue": "/Game",
+  "exact_divergence": {
+    "actual": "/Game/Ingolstadt/Static/Terrain/Ingolstadt",
+    "classification": "WRONG_SUBPATH_IN_SERIALIZED_REFERENCE",
+    "differing_segment": "Static/Terrain vs Maps",
+    "reference": "/Game/Ingolstadt/Maps/Ingolstadt",
+    "same_package_root": true,
+    "same_virtual_root": "/Game/Ingolstadt"
+  },
+  "generated_at_utc": "2026-10-04T19:54:12.666622+00:00",
+  "junction_participation_in_this_failure": "NONE",
+  "junction_participation_note": "/Game/Ingolstadt is a real directory, not a junction, so the junction set cannot explain the 5711 failures. The junctions ARE implicated in the separate PrimaryAssetID duplicate families.",
+  "roots": [
+    {
+      "filesystem": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Ingolstadt",
+      "is_alias": false,
+      "kind": "REAL_DIRECTORY",
+      "ue_root": "/Game/Ingolstadt"
+    },
+    {
+      "filesystem": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Maps",
+      "is_alias": false,
+      "kind": "REAL_DIRECTORY",
+      "ue_root": "/Game/Maps"
+    },
+    {
+      "filesystem": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Static",
+      "is_alias": false,
+      "kind": "REAL_DIRECTORY",
+      "ue_root": "/Game/Static"
+    },
+    {
+      "filesystem": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Carla\\Maps",
+      "is_alias": true,
+      "kind": "JUNCTION",
+      "target": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Maps",
+      "ue_root": "/Game/Carla/Maps"
+    },
+    {
+      "filesystem": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Carla\\Static",
+      "is_alias": true,
+      "kind": "JUNCTION",
+      "target": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Static",
+      "ue_root": "/Game/Carla/Static"
+    },
+    {
+      "is_alias": true,
+      "kind": "JUNCTION",
+      "target": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Blueprints",
+      "ue_root": "/Game/Carla/Blueprints"
+    },
+    {
+      "is_alias": true,
+      "kind": "JUNCTION",
+      "target": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Config",
+      "ue_root": "/Game/Carla/Config"
+    },
+    {
+      "is_alias": true,
+      "kind": "JUNCTION",
+      "target": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\HDMaps",
+      "ue_root": "/Game/Carla/HDMaps"
+    }
+  ],
+  "schema": "unreal_mount_point_map/v1"
+}

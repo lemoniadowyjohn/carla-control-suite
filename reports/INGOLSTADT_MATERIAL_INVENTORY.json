@@ -1,0 +1,79 @@
+{
+  "schema": "INGOLSTADT_MATERIAL_INVENTORY/v1",
+  "MATERIAL_COUNT": 8,
+  "assets": [
+    {
+      "name": "MAT_0_0",
+      "virtual_package_path": "/Game/Ingolstadt/Maps/Ingolstadt/MAT_0_0",
+      "extension": ".uasset",
+      "size": 4100,
+      "mtime_utc": "2026-10-04T14:27:29Z..14:28:03Z",
+      "class": "UObject (material placeholder); exact class not decoded without opening the package in Unreal",
+      "producer": "NOT FOUND in CARLA or UE 4.26.2 source"
+    },
+    {
+      "name": "MAT_1_0",
+      "virtual_package_path": "/Game/Ingolstadt/Maps/Ingolstadt/MAT_1_0",
+      "extension": ".uasset",
+      "size": 4100,
+      "mtime_utc": "2026-10-04T14:27:29Z..14:28:03Z",
+      "class": "UObject (material placeholder); exact class not decoded without opening the package in Unreal",
+      "producer": "NOT FOUND in CARLA or UE 4.26.2 source"
+    },
+    {
+      "name": "MAT_2_0",
+      "virtual_package_path": "/Game/Ingolstadt/Maps/Ingolstadt/MAT_2_0",
+      "extension": ".uasset",
+      "size": 4100,
+      "mtime_utc": "2026-10-04T14:27:29Z..14:28:03Z",
+      "class": "UObject (material placeholder); exact class not decoded without opening the package in Unreal",
+      "producer": "NOT FOUND in CARLA or UE 4.26.2 source"
+    },
+    {
+      "name": "MAT_3_0",
+      "virtual_package_path": "/Game/Ingolstadt/Maps/Ingolstadt/MAT_3_0",
+      "extension": ".uasset",
+      "size": 4100,
+      "mtime_utc": "2026-10-04T14:27:29Z..14:28:03Z",
+      "class": "UObject (material placeholder); exact class not decoded without opening the package in Unreal",
+      "producer": "NOT FOUND in CARLA or UE 4.26.2 source"
+    },
+    {
+      "name": "MAT_4_0",
+      "virtual_package_path": "/Game/Ingolstadt/Maps/Ingolstadt/MAT_4_0",
+      "extension": ".uasset",
+      "size": 4100,
+      "mtime_utc": "2026-10-04T14:27:29Z..14:28:03Z",
+      "class": "UObject (material placeholder); exact class not decoded without opening the package in Unreal",
+      "producer": "NOT FOUND in CARLA or UE 4.26.2 source"
+    },
+    {
+      "name": "MAT_5_0",
+      "virtual_package_path": "/Game/Ingolstadt/Maps/Ingolstadt/MAT_5_0",
+      "extension": ".uasset",
+      "size": 4100,
+      "mtime_utc": "2026-10-04T14:27:29Z..14:28:03Z",
+      "class": "UObject (material placeholder); exact class not decoded without opening the package in Unreal",
+      "producer": "NOT FOUND in CARLA or UE 4.26.2 source"
+    },
+    {
+      "name": "MAT_6_0",
+      "virtual_package_path": "/Game/Ingolstadt/Maps/Ingolstadt/MAT_6_0",
+      "extension": ".uasset",
+      "size": 4100,
+      "mtime_utc": "2026-10-04T14:27:29Z..14:28:03Z",
+      "class": "UObject (material placeholder); exact class not decoded without opening the package in Unreal",
+      "producer": "NOT FOUND in CARLA or UE 4.26.2 source"
+    },
+    {
+      "name": "MAT_7_0",
+      "virtual_package_path": "/Game/Ingolstadt/Maps/Ingolstadt/MAT_7_0",
+      "extension": ".uasset",
+      "size": 4100,
+      "mtime_utc": "2026-10-04T14:27:29Z..14:28:03Z",
+      "class": "UObject (material placeholder); exact class not decoded without opening the package in Unreal",
+      "producer": "NOT FOUND in CARLA or UE 4.26.2 source"
+    }
+  ],
+  "all_identical_size": true
+}

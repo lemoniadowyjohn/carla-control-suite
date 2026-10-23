@@ -1,0 +1,14 @@
+{
+  "EXPERIMENT_ALLOWED": false,
+  "gate_effect": "ABORT_BEFORE_SENSOR_STARTUP",
+  "generated_utc": "2026-10-05T21:53:38.495365Z",
+  "gnss_sensor_created": false,
+  "has_absolute_origin": false,
+  "map": "Ingolstadt",
+  "policy": "GNSS unavailability is decided here, not by observing sensor silence later.",
+  "reason": "map geoReference declares no +lat_0/+lon_0, so GNSS cannot produce a truthful fix. Local geometry, streaming and non-geodetic sensors remain valid.",
+  "requires_gnss": true,
+  "schema": "GEOREFERENCE_PREFLIGHT/v1",
+  "schema_version": 1,
+  "status": "ABSOLUTE_GEOREFERENCE_UNAVAILABLE"
+}

@@ -38,9 +38,13 @@ jobs:
   offline-tests:
     name: offline tests
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    # Phase-2 delta 4: the hermetic Windows suite runs ~30 min; hosted runners
+    # are slower and start cold, so 60 min left too little headroom.
+    timeout-minutes: 90
     permissions:
       contents: read
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
         with:
@@ -50,6 +54,16 @@ jobs:
         with:
           python-version: "3.12"
 
+      # Import authority must be owned by CI, never inherited. An inherited
+      # repository-specific PYTHONPATH silently prepends a *different* CARLA
+      # checkout to sys.path and the suite then tests the wrong code while
+      # reporting green. Record what arrived, then neutralise it for every
+      # later step in this job.
+      - name: Record and clear inherited PYTHONPATH
+        run: |
+          echo "inherited PYTHONPATH=[${PYTHONPATH}]"
+          echo "PYTHONPATH=" >> "$GITHUB_ENV"
+
       - name: Install CPU-only torch/torchvision first
         run: |
           pip install --upgrade pip
@@ -57,15 +71,53 @@ jobs:
 
       # J10: the CI profile pins the HEADLESS OpenCV provider. The base profile
       # deliberately declares no OpenCV provider at all, so the two mutually
-      # exclusive cv2 distributions can never be co-installed here.
+      # exclusive cv2 distributions can never be co-installed here. The YOLO
+      # layer (requirements-yolo.txt) is installed with --no-deps because
+      # ultralytics hard-requires the GUI distribution `opencv-python` in its
+      # metadata; a normal install would pull it in transitively, co-install
+      # both providers and fail dependency_conflicts. Every job that installs
+      # requirements-ci.txt must do the same.
       - name: Install remaining dependencies (headless profile)
         run: pip install -r requirements-ci.txt
+
+      - name: Install YOLO layer without its transitive GUI OpenCV
+        run: pip install --no-deps -r requirements-yolo.txt
 
       - name: Install package editable for tests
         run: pip install -e .
 
+      # Phase-2 delta 1: fail closed before running any test if a repository
+      # module could be supplied by another checkout. Ordering is not accepted
+      # as proof -- if any external location can supply the module, collection
+      # order could still change which one wins.
+      - name: Import-authority preflight (fail closed)
+        run: python tools/verify_import_authority.py
+
+      # Phase-2 delta 2: -rs/-rx were absent, so CI could not report which
+      # tests skipped or xfailed. That is what made an 18-vs-16 skip
+      # discrepancy unreconcilable from the base log. `set -o pipefail` is
+      # required: without it `tee` would mask a pytest failure and the job
+      # would report green.
       - name: Run offline pytest
-        run: python -m pytest -q
+        env:
+          # `runner` context is only available at step level, not job level.
+          TMPDIR: ${{ runner.temp }}/pytest-tmp
+        run: |
+          set -o pipefail
+          mkdir -p ci-artifacts "$TMPDIR"
+          python -m pytest -q -p no:cacheprovider -rfEsx 2>&1 \
+            | tee ci-artifacts/pytest.log
+
+      # Phase-2 delta 3: retain the pytest log/summary. Previously only the
+      # repo-health packet was uploaded, so a failing offline lane left no
+      # inspectable evidence behind.
+      - name: Upload pytest log
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: pytest-log
+          path: ci-artifacts/pytest.log
+          if-no-files-found: warn
 
   package-wheel-smoke:
     name: package / wheel smoke
@@ -157,6 +209,7 @@ jobs:
           pip install --upgrade pip
           pip install torch==2.9.1 torchvision==0.24.1 --index-url https://download.pytorch.org/whl/cpu
           pip install -r requirements-ci.txt
+          pip install --no-deps -r requirements-yolo.txt
           pip install -e .
 
       - name: Run governance tests
@@ -182,6 +235,7 @@ jobs:
           pip install --upgrade pip
           pip install torch==2.9.1 torchvision==0.24.1 --index-url https://download.pytorch.org/whl/cpu
           pip install -r requirements-ci.txt
+          pip install --no-deps -r requirements-yolo.txt
           pip install -e .
 
       - name: Regenerate and audit C19 RQ tables
@@ -210,6 +264,7 @@ jobs:
           pip install --upgrade pip
           pip install torch==2.9.1 torchvision==0.24.1 --index-url https://download.pytorch.org/whl/cpu
           pip install -r requirements-ci.txt
+          pip install --no-deps -r requirements-yolo.txt
           pip install -e .
 
       - name: Validate thesis provenance
@@ -275,6 +330,7 @@ jobs:
         run: |
           pip install --upgrade pip
           pip install -r requirements-ci.txt
+          pip install --no-deps -r requirements-yolo.txt
           pip install -e .
 
       - name: Write repository health packet and resolve the offline release gate

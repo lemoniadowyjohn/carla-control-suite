@@ -1,0 +1,192 @@
+{
+  "blender_identity": {
+    "exe": "E:\\Program Files\\Blender Foundation\\Blender 4.3\\blender.exe",
+    "exists": true,
+    "sha256": "e5c09e875471aa72fc8ae7437a92bb91c150cccccbc4a0dfafa6e2d29d2fb31b",
+    "size_bytes": 87396480,
+    "version": [
+      "Blender 4.3.0",
+      "\tbuild date: 2024-11-19"
+    ]
+  },
+  "carla_identity": {
+    "git": {
+      "branch": "HEAD",
+      "describe": "0.9.16-dirty",
+      "exists": true,
+      "head": "294096eb1c38eabf246e4f3a9cdab704e33a7f4c",
+      "repo": "G:\\CARLA\\carla_source_probe"
+    },
+    "packaged_runtime": "E:\\CARLA\\CARLA_0.9.16",
+    "packaged_runtime_exists": true,
+    "source_root": "G:\\CARLA\\carla_source_probe",
+    "ue_project": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4",
+    "ue_project_git": {
+      "branch": "HEAD",
+      "describe": "0.9.16-dirty",
+      "exists": true,
+      "head": "294096eb1c38eabf246e4f3a9cdab704e33a7f4c",
+      "repo": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4"
+    }
+  },
+  "engine_identity": {
+    "UE4Editor-Cmd": {
+      "mtime_utc": "2026-10-02T22:20:03.209005Z",
+      "path": "G:\\UnrealEngine_4.26_CARLA\\Engine\\Binaries\\Win64\\UE4Editor-Cmd.exe",
+      "size_bytes": 505344
+    },
+    "build_version": {
+      "BranchName": "++UE4+Release-4.26",
+      "Changelist": 0,
+      "CompatibleChangelist": 14830424,
+      "IsLicenseeVersion": 0,
+      "IsPromotedBuild": 0,
+      "MajorVersion": 4,
+      "MinorVersion": 26,
+      "PatchVersion": 2
+    },
+    "exists": true,
+    "git": {
+      "branch": "carla",
+      "describe": "e9d9e60c8",
+      "exists": true,
+      "head": "e9d9e60c85f643e10eeb03f42f61554d18dcb30f",
+      "repo": "G:\\UnrealEngine_4.26_CARLA"
+    },
+    "root": "G:\\UnrealEngine_4.26_CARLA"
+  },
+  "file_count": 15,
+  "files": [
+    {
+      "absolute_path": "G:\\CARLA\\build_logs\\ingolstadt_import_20261003T215605Z.log",
+      "creation_time_utc": "2026-10-03T21:56:05.572571Z",
+      "filename": "ingolstadt_import_20261003T215605Z.log",
+      "modification_time_utc": "2026-10-03T21:56:05.572571Z",
+      "sha256": "5ee3a9689b1101a3ce875425f36b463fbaf4f3a4d157ae24169a05baefa9bcd8",
+      "size_bytes": 471002
+    },
+    {
+      "absolute_path": "G:\\CARLA\\build_logs\\ingolstadt_import_20261003T215605Z.log.err",
+      "creation_time_utc": "2026-10-03T21:56:05.574590Z",
+      "filename": "ingolstadt_import_20261003T215605Z.log.err",
+      "modification_time_utc": "2026-10-03T21:56:05.574590Z",
+      "sha256": "9a7efa7497dc3e8c9d5d6524605faef803c2a08c54337c1c7907b41a3b2e2139",
+      "size_bytes": 149
+    },
+    {
+      "absolute_path": "G:\\CARLA\\build_logs\\ingolstadt_import_20261004T001601Z.log",
+      "creation_time_utc": "2026-10-04T00:16:02.020240Z",
+      "filename": "ingolstadt_import_20261004T001601Z.log",
+      "modification_time_utc": "2026-10-04T17:03:56.542011Z",
+      "sha256": "f984b0b45f93bd4ec5b5e669f43446fd488aee23a1386d2abaeb33ef90856176",
+      "size_bytes": 3486128
+    },
+    {
+      "absolute_path": "G:\\CARLA\\build_logs\\ingolstadt_import_20261004T001601Z.log.err",
+      "creation_time_utc": "2026-10-04T00:16:02.021241Z",
+      "filename": "ingolstadt_import_20261004T001601Z.log.err",
+      "modification_time_utc": "2026-10-04T15:26:12.724059Z",
+      "sha256": "867c28e28ae89acfee451efc44adea4ad1cf5f8290661337988b4f97bd045976",
+      "size_bytes": 223
+    },
+    {
+      "absolute_path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Saved\\Logs\\CarlaUE4-backup-2026.10.04-00.28.41.log",
+      "creation_time_utc": "2026-10-04T00:28:44.803814Z",
+      "filename": "CarlaUE4-backup-2026.10.04-00.28.41.log",
+      "modification_time_utc": "2026-10-04T00:28:41Z",
+      "sha256": "4c399261c61da0159321aa3ed2b682ed486640dfb7c98903840b73c0d4f25cb5",
+      "size_bytes": 178256
+    },
+    {
+      "absolute_path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Saved\\Logs\\CarlaUE4-backup-2026.10.04-00.31.22.log",
+      "creation_time_utc": "2026-10-04T00:31:26.512318Z",
+      "filename": "CarlaUE4-backup-2026.10.04-00.31.22.log",
+      "modification_time_utc": "2026-10-04T00:31:22Z",
+      "sha256": "14bdea1108928b68b1181635afd92bd34a388419be214ed0437f6fb34fa0d4b4",
+      "size_bytes": 177154
+    },
+    {
+      "absolute_path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Saved\\Logs\\CarlaUE4-backup-2026.10.04-14.29.05.log",
+      "creation_time_utc": "2026-10-04T14:30:25.486947Z",
+      "filename": "CarlaUE4-backup-2026.10.04-14.29.05.log",
+      "modification_time_utc": "2026-10-04T14:29:05Z",
+      "sha256": "e9d003538c10431683604639240e3f7d9857da0b1aeedff12c4b1e6eff5a4116",
+      "size_bytes": 4968436
+    },
+    {
+      "absolute_path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Saved\\Logs\\CarlaUE4-backup-2026.10.04-14.59.11.log",
+      "creation_time_utc": "2026-10-04T14:59:12.963596Z",
+      "filename": "CarlaUE4-backup-2026.10.04-14.59.11.log",
+      "modification_time_utc": "2026-10-04T14:59:11Z",
+      "sha256": "ea20293c57df7fdb1898b23013503962a5843d0e95a5c762dd82c885e7310d5a",
+      "size_bytes": 3927083
+    },
+    {
+      "absolute_path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Saved\\Logs\\CarlaUE4-backup-2026.10.04-15.23.01.log",
+      "creation_time_utc": "2026-10-04T15:23:04.618674Z",
+      "filename": "CarlaUE4-backup-2026.10.04-15.23.01.log",
+      "modification_time_utc": "2026-10-04T15:23:01Z",
+      "sha256": "52e2101799498e4c0b14222bd3cb0e9c0cba4136421012783db9243761ecd907",
+      "size_bytes": 2388767
+    },
+    {
+      "absolute_path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Saved\\Logs\\CarlaUE4-backup-2026.10.04-15.26.07.log",
+      "creation_time_utc": "2026-10-04T15:26:35.283962Z",
+      "filename": "CarlaUE4-backup-2026.10.04-15.26.07.log",
+      "modification_time_utc": "2026-10-04T15:26:07Z",
+      "sha256": "5df0d293e1308913cbb90cadf4319bc5c154616d59dd104e4eae5fbf10ec101b",
+      "size_bytes": 224218
+    },
+    {
+      "absolute_path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Saved\\Logs\\CarlaUE4-backup-2026.10.04-15.28.45.log",
+      "creation_time_utc": "2026-10-04T15:28:47.460475Z",
+      "filename": "CarlaUE4-backup-2026.10.04-15.28.45.log",
+      "modification_time_utc": "2026-10-04T15:28:45Z",
+      "sha256": "6af997fb7c35c4319fb7e6a307a93fffb7eefb61c61d912c11e6470b2a133bff",
+      "size_bytes": 207720
+    },
+    {
+      "absolute_path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Saved\\Logs\\CarlaUE4-backup-2026.10.04-15.30.57.log",
+      "creation_time_utc": "2026-10-04T15:31:01.775508Z",
+      "filename": "CarlaUE4-backup-2026.10.04-15.30.57.log",
+      "modification_time_utc": "2026-10-04T15:30:57Z",
+      "sha256": "95e0f8a28db83568218a56f797fdfc626163a1b7139a4b4b7cc5a9e625bd0e88",
+      "size_bytes": 207559
+    },
+    {
+      "absolute_path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Saved\\Logs\\CarlaUE4-backup-2026.10.04-15.33.13.log",
+      "creation_time_utc": "2026-10-04T15:33:15.419615Z",
+      "filename": "CarlaUE4-backup-2026.10.04-15.33.13.log",
+      "modification_time_utc": "2026-10-04T15:33:13Z",
+      "sha256": "77ebd437767c0c353ed02a5582dff47ebde45ef0403ae77ba59cb38520f8f59c",
+      "size_bytes": 207514
+    },
+    {
+      "absolute_path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Saved\\Logs\\CarlaUE4-backup-2026.10.04-15.35.28.log",
+      "creation_time_utc": "2026-10-04T15:35:29.806896Z",
+      "filename": "CarlaUE4-backup-2026.10.04-15.35.28.log",
+      "modification_time_utc": "2026-10-04T15:35:28Z",
+      "sha256": "468a092c693c95ba517f271da65b972369579d6c1d2ebe59a07ca95a23b06d26",
+      "size_bytes": 207766
+    },
+    {
+      "absolute_path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Saved\\Logs\\CarlaUE4.log",
+      "creation_time_utc": "2026-10-03T21:56:08.884641Z",
+      "filename": "CarlaUE4.log",
+      "modification_time_utc": "2026-10-04T17:03:59.559254Z",
+      "sha256": "bd7703b5d2cd6e970ca57df4e505cd232ebdbd536982d7c1f051af760ed72e5d",
+      "size_bytes": 1062311
+    }
+  ],
+  "generated_at_utc": "2026-10-04T17:54:17.594831Z",
+  "host": {
+    "logical_processors": 12,
+    "machine": "AMD64",
+    "platform": "Windows-11-10.0.26300-SP0",
+    "python": "3.12.2"
+  },
+  "primary_baseline_log": "G:\\CARLA\\build_logs\\ingolstadt_import_20261004T001601Z.log",
+  "purpose": "\u00a76 baseline freeze. Historical import logs are evidence and are never modified, moved or overwritten by this work.",
+  "schema": "import_baseline_manifest/v1",
+  "total_bytes": 17714286
+}

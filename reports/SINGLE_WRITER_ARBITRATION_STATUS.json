@@ -1,0 +1,73 @@
+{
+  "ACTIVE_IMPORT_STATUS": "RUNNING__DO_NOT_TOUCH",
+  "ACTIVE_IMPORT_TERMINAL_RECEIPT": "PENDING__PROCESS_STILL_RUNNING",
+  "ACTIVE_MUTATOR_COUNT": 1,
+  "ACTIVE_MUTATOR_CREATION_TIME": "2026-10-05T18:38:44.1538360Z",
+  "ACTIVE_MUTATOR_OPERATION": "IMPORT",
+  "ACTIVE_MUTATOR_OWNER_SESSION": "OTHER_SESSION",
+  "ACTIVE_MUTATOR_PID": 12312,
+  "CONCURRENCY_SAFETY": "PASS",
+  "CONTROL_PLANE_OWNER_SESSION": "control-plane",
+  "COOK_RESUME_ALLOWED": false,
+  "CROSS_SESSION_COLLISION_PROVEN": "PROVEN",
+  "DDC_CONCURRENCY_POLICY": "DENIED",
+  "DUPLICATE_IMPORT_INCIDENT": "PROVEN",
+  "DUPLICATE_OPERATION_DETECTION": "PASS",
+  "EXECUTOR_SESSION": "EXTERNAL_SESSION_OWNING_PID_12312",
+  "FINAL_VERDICT": "ACTIVE_IMPORT_MUST_FINISH",
+  "HISTORICAL_PROCESS_DEATH_CAUSE": "MULTI_FACTOR_UNRESOLVED",
+  "IMPORT_SETTINGS_ISOLATION": "PASS",
+  "LEASE_HEARTBEAT": "PASS",
+  "LEASE_RACE_TEST": "PASS",
+  "LEASE_SCHEMA": "PASS",
+  "MUTATION_PREFLIGHT": "PASS",
+  "NEW_MUTATING_OPERATION_ALLOWED": false,
+  "OUTPUT_STAGING_ISOLATION": "PASS",
+  "PROCESS_TREE_SUPERVISION": "NOT_IMPLEMENTED",
+  "READ_ONLY_SESSIONS": [
+    "this-session"
+  ],
+  "READ_ONLY_SESSION_MODE": "PASS",
+  "SINGLE_WRITER_ARBITRATION": "PASS",
+  "SINGLE_WRITER_OS_LOCK": "PASS",
+  "STALE_LEASE_RECONCILIATION": "PASS",
+  "STORAGE_QUALIFICATION": "SEPARATE_TRACK__G_IS_USB",
+  "UNGOVERNED_MUTATOR_DETECTION": "PASS",
+  "WINDOWS_EXIT_CODE_CONTRACT": "PASS",
+  "ZERO_SIGNAL_DISCRIMINATOR": "IN_FLIGHT_OTHER_SESSION__DO_NOT_DUPLICATE",
+  "control_plane_dir_exists": false,
+  "gate": {
+    "ACTIVE_MUTATOR_COUNT_LE_1": true,
+    "DUPLICATE_OPERATION_DETECTION": true,
+    "IMPORT_SETTINGS_ISOLATION": true,
+    "LEASE_RACE_TEST": true,
+    "LEASE_SCHEMA": true,
+    "MUTATION_PREFLIGHT": true,
+    "READ_ONLY_MODE": true,
+    "SINGLE_WRITER_OS_LOCK": true,
+    "WINDOWS_PROCESS_IDENTITY": true
+  },
+  "gate_failed": [],
+  "generated_utc": "2026-10-05T23:02:16.858249Z",
+  "lease_location": "C:\\ProgramData\\CARLA\\control_plane\\mutation_lease.json",
+  "mutator_count_ok": true,
+  "mutex_name": "Global\\CARLA_Mutating_Operation_Lock",
+  "race_receipt": {
+    "acquired": 1,
+    "contenders": 10,
+    "denied": 9
+  },
+  "schema": "SINGLE_WRITER_ARBITRATION_STATUS/v1",
+  "schema_version": 1,
+  "tests_failed": 0,
+  "tests_total": 112,
+  "ungoverned_now": [
+    {
+      "command_line": "G:\\UnrealEngine_4.26_CARLA\\Engine\\Binaries\\Win64\\UE4Editor-Cmd.exe G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\CarlaUE4.uproject -run=ImportAssets -importSettings=G:\\CARLA\\carla_source_probe\\importsetting.json -nosourcecontrol -replaceexisting",
+      "identity_key": "12312|2026-10-05T18:38:44.1538360Z",
+      "name": "UE4Editor-Cmd.exe",
+      "operation_class": "IMPORT",
+      "pid": 12312
+    }
+  ]
+}

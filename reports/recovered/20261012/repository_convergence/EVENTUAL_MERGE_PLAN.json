@@ -1,0 +1,390 @@
+{
+  "report": "EVENTUAL_MERGE_PLAN",
+  "captured_at": "2026-10-12T17:27:22Z",
+  "mode": "RECOMMENDATION_ONLY_NO_MERGE_EXECUTED",
+  "CANONICAL_TOPOLOGY_SHA": "3a6f32255916b9783e41981ba284d68401294a92",
+  "dependency_order": [
+    "1. TILE_PLACEMENT / COORDINATE_FRAME foundations (fix/tile-grid-spec-authority-v1, fix/tile-ownership-adjacency-geometry-v1, fix/p0-coordinate-frame-tile-placement-authority) - geometry must settle first",
+    "2. TOPOLOGY convergence work already canonical at 3a6f3225 - no merge required",
+    "3. RQ2 authority (cherry-pick after geometry settles; its --validate-only gate depends on stable map-of-record)",
+    "4. RQ1 profiler/determinism (replay minimal patch only; stage profiler tools supersede earlier impls)",
+    "5. RQ5 batch12 readiness (REVIEW_REQUIRED - 16 test files + 16 config/report files, requires protocol freeze decision)",
+    "6. Documentation/audit branches - evidence only, never merged into implementation"
+  ],
+  "current_value_branches": 51,
+  "plan": [
+    {
+      "branch": "audit/cache-input-identity-v1",
+      "head": "9b30862a488d157fcf4ada7f5b587a5ff71f2ddc",
+      "date": "2026-09-18",
+      "action": "KEEP_AS_EVIDENCE_ONLY",
+      "executed": false
+    },
+    {
+      "branch": "audit/hardcoded-tool-paths-v1",
+      "head": "3a865d3435d5a775371934fb25b9a931d1a20cc0",
+      "date": "2026-09-18",
+      "action": "KEEP_AS_EVIDENCE_ONLY",
+      "executed": false
+    },
+    {
+      "branch": "audit/quality-exception-swallowing-v1",
+      "head": "9adb2f1a7859b64aee5590ee018c3f940f5e0f3b",
+      "date": "2026-09-18",
+      "action": "KEEP_AS_EVIDENCE_ONLY",
+      "executed": false
+    },
+    {
+      "branch": "audit/repository-lineage-governance-v1",
+      "head": "b51a5d496342f8eeb54d0eccb302d8d715bb100e",
+      "date": "2026-09-18",
+      "action": "KEEP_AS_EVIDENCE_ONLY",
+      "executed": false
+    },
+    {
+      "branch": "audit/stale-map-sha-references-v1",
+      "head": "53da148ebcc32c776390aa60e6253ee0925457ee",
+      "date": "2026-09-18",
+      "action": "KEEP_AS_EVIDENCE_ONLY",
+      "executed": false
+    },
+    {
+      "branch": "chore/deprecated-layout-20260906",
+      "head": "047a7c5d0149d35665f14197f252899dbe83d0c7",
+      "date": "2026-09-07",
+      "action": "KEEP_HISTORICAL",
+      "executed": false
+    },
+    {
+      "branch": "chore/production-engineering-20260906",
+      "head": "1dfe80cbce6131bc6b8ae8c6a0cba56cf1b045ce",
+      "date": "2026-09-15",
+      "action": "KEEP_HISTORICAL",
+      "executed": false
+    },
+    {
+      "branch": "chore/retire-orphaned-docs-20260907",
+      "head": "57c02a31f942a68f1b07d44c543c70957dfaacbb",
+      "date": "2026-09-07",
+      "action": "KEEP_HISTORICAL",
+      "executed": false
+    },
+    {
+      "branch": "feat/fbx-roundtrip-metadata-hardening-v1",
+      "head": "9dcec13d0959e424b2a37198c4ade95d83e325a6",
+      "date": "2026-09-18",
+      "action": "REVIEW_REQUIRED",
+      "executed": false
+    },
+    {
+      "branch": "feat/lane-count-transition-classification-v1",
+      "head": "3151c47293bdaf174abea2b17334b81005fa5e83",
+      "date": "2026-09-18",
+      "action": "REVIEW_REQUIRED",
+      "executed": false
+    },
+    {
+      "branch": "feat/strict-large-map-package-mode-v1",
+      "head": "48cfd65fefa09d61f54919f8c8c4f4021cf05117",
+      "date": "2026-09-18",
+      "action": "REVIEW_REQUIRED",
+      "executed": false
+    },
+    {
+      "branch": "feat/visual-asset-production-preflight-v1",
+      "head": "38aa890b09f8755a7bf803fe4180654d7ba2f9d2",
+      "date": "2026-09-18",
+      "action": "REVIEW_REQUIRED",
+      "executed": false
+    },
+    {
+      "branch": "feat/visual-production-config-guard-v1",
+      "head": "28190cb5cab2d4711f1ee54cc7cc6f1b112f4b4f",
+      "date": "2026-09-18",
+      "action": "REVIEW_REQUIRED",
+      "executed": false
+    },
+    {
+      "branch": "feature/deprecate-old-connector-tool-20260907",
+      "head": "0c98d59eb3f8a197b7318a0814be0aa15e259853",
+      "date": "2026-09-07",
+      "action": "REVIEW_REQUIRED",
+      "executed": false
+    },
+    {
+      "branch": "feature/docs-deprecation-migration-20260907",
+      "head": "c5d75e4e5664001128719bb1fc8f6512cc228810",
+      "date": "2026-09-07",
+      "action": "REVIEW_REQUIRED",
+      "executed": false
+    },
+    {
+      "branch": "feature/stale-comment-fixes-20260907",
+      "head": "ac49f1d040474efdade90dcc1df492c4512b522d",
+      "date": "2026-09-07",
+      "action": "REVIEW_REQUIRED",
+      "executed": false
+    },
+    {
+      "branch": "feature/wire-junction-coverage-20260907",
+      "head": "7bff88462184791eb0331a618412dd02b8005858",
+      "date": "2026-09-07",
+      "action": "REVIEW_REQUIRED",
+      "executed": false
+    },
+    {
+      "branch": "feature/z-fighting-detector-20260907",
+      "head": "7bfbe96142df17ca637e6700afd3ce0e61af654c",
+      "date": "2026-09-07",
+      "action": "REVIEW_REQUIRED",
+      "executed": false
+    },
+    {
+      "branch": "fix/blender-conversion-integrity-v1",
+      "head": "4989c1b2d453ba0d7dee74c0c7b15d11b62179f8",
+      "date": "2026-09-23",
+      "action": "REVIEW_REQUIRED",
+      "executed": false
+    },
+    {
+      "branch": "fix/building-multipolygon-fidelity-v1",
+      "head": "c58382932d60465cf83408c1650e578c42802b79",
+      "date": "2026-09-18",
+      "action": "REVIEW_REQUIRED",
+      "executed": false
+    },
+    {
+      "branch": "fix/collision-lod-validator-basics-v1",
+      "head": "1319597ab7daa0a2a5e81fb5bd852d5b0e4a4c27",
+      "date": "2026-09-18",
+      "action": "REVIEW_REQUIRED",
+      "executed": false
+    },
+    {
+      "branch": "fix/collision-validator-native-crs-v1",
+      "head": "745feb52f0b5b523797987a07e6f0ca78ca2a33d",
+      "date": "2026-09-18",
+      "action": "REVIEW_REQUIRED",
+      "executed": false
+    },
+    {
+      "branch": "fix/dem-elevation-canonical-sampling-v1-20260921",
+      "head": "9d9017205c8d2462717aad6fdf97d751b5c3588e",
+      "date": "2026-09-23",
+      "action": "REVIEW_REQUIRED",
+      "executed": false
+    },
+    {
+      "branch": "fix/domain-gap-measurement-authority-v3-20260921",
+      "head": "308046f404d8a7a4e28d08b8a6c31b7c7257236f",
+      "date": "2026-09-21",
+      "action": "REVIEW_REQUIRED",
+      "executed": false
+    },
+    {
+      "branch": "fix/gap046-stage-profiler-20261009",
+      "head": "0a0bff0c6381e2340bc06a958c10b812afe206f6",
+      "date": "2026-10-11",
+      "action": [
+        "CHERRY_PICK",
+        "REVIEW_REQUIRED"
+      ],
+      "executed": false
+    },
+    {
+      "branch": "fix/gap051-registry-coverage-20261008-v2",
+      "head": "ddb1903e77b9675828c1150d6d66e5c15d2f32f2",
+      "date": "2026-10-08",
+      "action": [
+        "REVIEW_REQUIRED",
+        "REVIEW_REQUIRED"
+      ],
+      "executed": false
+    },
+    {
+      "branch": "fix/geometry-freeze-missing-fingerprint-v1",
+      "head": "480baf31c622981746e9642d5f1393cbd48bf656",
+      "date": "2026-09-18",
+      "action": "REVIEW_REQUIRED",
+      "executed": false
+    },
+    {
+      "branch": "fix/large-map-offline-hardening-v1-20260915",
+      "head": "37c40d1855f4ca8ca5f12ea0c08f6bfceaee8f4d",
+      "date": "2026-09-15",
+      "action": "REVIEW_REQUIRED",
+      "executed": false
+    },
+    {
+      "branch": "fix/legacy-geometry-kernel-delegation-v1",
+      "head": "810383d5f8e18db89be1cd5e1a6d42bcbef45f17",
+      "date": "2026-09-18",
+      "action": "REVIEW_REQUIRED",
+      "executed": false
+    },
+    {
+      "branch": "fix/literal-topology-evidence-provenance-v2",
+      "head": "39efeb219a17be250a49b76e2868ae0fe8275b37",
+      "date": "2026-09-23",
+      "action": "REVIEW_REQUIRED",
+      "executed": false
+    },
+    {
+      "branch": "fix/malformed-xodr-attrs-v2",
+      "head": "d03f3e3138e44e3fac07d10ea31997d443f3ea4b",
+      "date": "2026-09-16",
+      "action": "REVIEW_REQUIRED",
+      "executed": false
+    },
+    {
+      "branch": "fix/osm2world-cache-integrity-v1",
+      "head": "d5f2eb5d4106b9e50c2964b5380735c50f869fb3",
+      "date": "2026-09-18",
+      "action": "REVIEW_REQUIRED",
+      "executed": false
+    },
+    {
+      "branch": "fix/package-descriptor-single-authority-v1",
+      "head": "2fea0780a76b5d11da66985763d1960c34b03d13",
+      "date": "2026-09-18",
+      "action": "REVIEW_REQUIRED",
+      "executed": false
+    },
+    {
+      "branch": "fix/production-strict-lane-successors-v1",
+      "head": "4e0ab4bbb97e881ba79a219994bf90de81bfd3e0",
+      "date": "2026-09-18",
+      "action": "REVIEW_REQUIRED",
+      "executed": false
+    },
+    {
+      "branch": "fix/rq4-gnn-experimental-provenance-v1-20260921",
+      "head": "fb24a3b740db65b6437488ce76a3a75d5246a4b3",
+      "date": "2026-09-22",
+      "action": "REVIEW_REQUIRED",
+      "executed": false
+    },
+    {
+      "branch": "fix/rq5-thesis-evidence-governance-v1-20260919",
+      "head": "194fc13f979c64070b36bff4db1f148c3a7d419a",
+      "date": "2026-09-22",
+      "action": "REVIEW_REQUIRED",
+      "executed": false
+    },
+    {
+      "branch": "fix/semantic-classification-determinism-v1",
+      "head": "9899802e836e5baadafe9e4c3903d0cd3638ed69",
+      "date": "2026-09-18",
+      "action": "REVIEW_REQUIRED",
+      "executed": false
+    },
+    {
+      "branch": "fix/standalone-xodr-smoke-evidence-boundary-v1",
+      "head": "177a6c4f4e5c875589fe8850e919fa8e10d33c11",
+      "date": "2026-09-18",
+      "action": "REVIEW_REQUIRED",
+      "executed": false
+    },
+    {
+      "branch": "fix/strict-visual-input-resolution-v1",
+      "head": "418729d9e3b9f3951f147cec658ff2e3f56d13cb",
+      "date": "2026-09-18",
+      "action": "REVIEW_REQUIRED",
+      "executed": false
+    },
+    {
+      "branch": "fix/tile-grid-spec-authority-v1",
+      "head": "9b30862a488d157fcf4ada7f5b587a5ff71f2ddc",
+      "date": "2026-09-18",
+      "action": [
+        "REVIEW_REQUIRED",
+        "REVIEW_REQUIRED"
+      ],
+      "executed": false
+    },
+    {
+      "branch": "fix/tile-ownership-adjacency-geometry-v1",
+      "head": "dd3c750eee9759f6c99962d051c2a0188d247d2c",
+      "date": "2026-09-18",
+      "action": [
+        "REVIEW_REQUIRED",
+        "REVIEW_REQUIRED"
+      ],
+      "executed": false
+    },
+    {
+      "branch": "fix/tile-run-completeness-vocabulary-v1",
+      "head": "5ec78228934f0bb244146d2ad635f7fecd812feb",
+      "date": "2026-09-18",
+      "action": [
+        "REVIEW_REQUIRED",
+        "REVIEW_REQUIRED"
+      ],
+      "executed": false
+    },
+    {
+      "branch": "fix/tiling-full-road-cross-section-envelope-v1",
+      "head": "c5aac6ec5c9a9993a73daa2c2875565bd423f7d0",
+      "date": "2026-09-18",
+      "action": "REVIEW_REQUIRED",
+      "executed": false
+    },
+    {
+      "branch": "fix/ue4-large-map-production-audit-v3",
+      "head": "10cebf045c786763c8b495af7596d04e6adb15c6",
+      "date": "2026-09-16",
+      "action": "REVIEW_REQUIRED",
+      "executed": false
+    },
+    {
+      "branch": "integration/rq2-authority-merge-20261009",
+      "head": "af90dd91ababd646f59ea7dc82e0b196753acb67",
+      "date": "2026-10-09",
+      "action": "CHERRY_PICK",
+      "executed": false
+    },
+    {
+      "branch": "rq1-integration",
+      "head": "082bc1369a77930386e008ab26ab77e9fc611106",
+      "date": "2026-10-02",
+      "action": "REPLAY_MINIMAL_PATCH",
+      "executed": false
+    },
+    {
+      "branch": "rq1a-execution",
+      "head": "7437ee53c74231a0c5a358849218e0cd279d599b",
+      "date": "2026-10-02",
+      "action": "REPLAY_MINIMAL_PATCH",
+      "executed": false
+    },
+    {
+      "branch": "test/artifact-locator-and-tile-classify-edge-cases-v1-20260916",
+      "head": "6d593a3095d56e61f4604053ec278d25a6180e3d",
+      "date": "2026-09-16",
+      "action": "REVIEW_REQUIRED",
+      "executed": false
+    },
+    {
+      "branch": "test/runtime-tile-builder-edge-cases-v1-20260916",
+      "head": "7745fd6faa8616beb40902fe0482ebfb5f3c3c5b",
+      "date": "2026-09-16",
+      "action": "REVIEW_REQUIRED",
+      "executed": false
+    },
+    {
+      "branch": "wip/governed-map-release-gate-wiring-recovery-v1-20260917",
+      "head": "aa2f0ecacf8fe5c0b479ed5dafda342e3880fc57",
+      "date": "2026-09-17",
+      "action": "REVIEW_REQUIRED",
+      "executed": false
+    },
+    {
+      "branch": "work-integration/production-large-map-20260918",
+      "head": "db2b32476b270913b85b09b3ba4137641537dc5b",
+      "date": "2026-10-01",
+      "action": "REVIEW_REQUIRED",
+      "executed": false
+    }
+  ],
+  "guardrail": "No merge executed. All 51 CURRENT_LIVE_VALUE branches require human review; high-risk old branches must NOT be auto-merged."
+}

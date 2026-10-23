@@ -1,0 +1,154 @@
+{
+  "report": "QUIESCENCE_RECEIPT",
+  "generated_utc": "2026-10-12T14:06:43Z",
+  "repository": "lemoniadowyjohn/carla-control-suite",
+  "audit_mode": "READ_ONLY",
+  "REPO_QUIESCENT": false,
+  "ACTIVE_WRITERS": 11,
+  "STOP_TRIGGER": "Active writers detected (Section 1). Per REPO-CONV-01 instruction, halted before any destructive action.",
+  "process_enumeration": {
+    "total_matching_processes": 30,
+    "matched_pattern": "git|python|opencode|pytest|powershell|pwsh|cmd|carla|unreal|node|claude",
+    "concurrent_opencode_sessions": 6,
+    "opencode_pids": [
+      17556,
+      24012,
+      22952,
+      5224,
+      15472,
+      22900
+    ],
+    "lock_files": {
+      "main_git_index_lock": false,
+      "main_git_packed_refs_lock": false,
+      "worktree_index_locks_found": 0,
+      "note": "No lock files were held at inspection time; absence of a lock does NOT imply absence of writers (process enumeration is the authoritative signal)."
+    },
+    "active_writers": [
+      {
+        "cmd": "pwsh -NoProfile -ExecutionPolicy Bypass -File C:\\Users\\admin\\AppData\\Local\\Temp\\opencode\\regen_bg5.ps1",
+        "name": "pwsh.exe",
+        "pid": 32468,
+        "age_min": 5,
+        "role": "regen driver"
+      },
+      {
+        "cmd": "python -u scripts/regen_map_of_record.py --allow-dirty --out-dir reports/topology_convergence/20261012T135616Z_fresh5/regen --candidate-name ingolstadt_fresh_topology_20261012T135616Z.xodr",
+        "name": "python.exe",
+        "pid": 32708,
+        "age_min": 5,
+        "role": "map regen (venv wrapper)"
+      },
+      {
+        "cmd": "python -u scripts/regen_map_of_record.py --allow-dirty ...",
+        "name": "python.exe",
+        "pid": 44948,
+        "age_min": 5,
+        "role": "map regen (worker) CPU=29.6s WS=159MB"
+      },
+      {
+        "cmd": "python -m ultimate_pipeline.run_pipeline",
+        "name": "python.exe",
+        "pid": 34136,
+        "age_min": 5,
+        "role": "pipeline launch (venv wrapper)"
+      },
+      {
+        "cmd": "python -m ultimate_pipeline.run_pipeline",
+        "name": "python.exe",
+        "pid": 40180,
+        "age_min": 5,
+        "role": "PIPELINE ACTIVE CPU=217.1s WS=1653MB"
+      },
+      {
+        "cmd": "python -m pytest -q",
+        "name": "python.exe",
+        "pid": 37380,
+        "age_min": 1014,
+        "role": "pytest -q (venv wrapper)"
+      },
+      {
+        "cmd": "python -m pytest -q",
+        "name": "python.exe",
+        "pid": 47220,
+        "age_min": 1014,
+        "role": "pytest -q (worker)"
+      },
+      {
+        "cmd": "python -m tools.cook_diagnostics.package_write_poller --package-dir G:\\CARLA\\cook_out\\Ingolstadt --output-csv ...\\reports\\production_readiness\\...",
+        "name": "python.exe",
+        "pid": 39700,
+        "age_min": 1032,
+        "role": "cook poller GAP-049"
+      },
+      {
+        "cmd": "python -m tools.cook_diagnostics.stall_watchdog --pid 46064 --package-dir G:\\CARLA\\cook_out\\Ingolstadt --stall-timeout 600 --check-interval 5 ...",
+        "name": "python.exe",
+        "pid": 37376,
+        "age_min": 1032,
+        "role": "stall watchdog"
+      },
+      {
+        "cmd": "python -m tools.cook_diagnostics.package_write_poller ...",
+        "name": "python.exe",
+        "pid": 31384,
+        "age_min": 1032,
+        "role": "cook poller (system python)"
+      },
+      {
+        "cmd": "python -m tools.cook_diagnostics.stall_watchdog ...",
+        "name": "python.exe",
+        "pid": 6172,
+        "age_min": 1032,
+        "role": "stall watchdog (system python)"
+      }
+    ],
+    "processes_killed": 0
+  },
+  "filesystem_write_evidence": {
+    "recent_repo_writes": [
+      {
+        "file": "reports/upstream_regen_admission_20261011/SUMO_GEOMETRY_WARNING_CENSUS.json",
+        "last_write": "2026-10-12T15:57:27"
+      },
+      {
+        "file": "reports/production_readiness/20260918T000000Z_PRODUCTION_CLOSURE/GAP049_COOK_DIAG_RUN_20261011_225211/dumps/stall_watchdog_log.csv",
+        "last_write": "2026-10-12T15:53:25"
+      }
+    ],
+    "writer_output_is_git_visible": true,
+    "gitignore_check": "git check-ignore reports/topology_convergence/20261012T135616Z_fresh5 -> NOT ignored; reports/.../stall_watchdog_log.csv -> NOT ignored",
+    "implication": "Writer output lands in git-visible, non-ignored paths. A quiescent git fingerprint therefore does NOT imply a quiescent repository."
+  },
+  "stability_window": {
+    "method": "T0/T1 fingerprint over worktree list --porcelain, status --porcelain=v2, show-ref (SHA256 of sorted ref map), per-worktree HEADs",
+    "T0": {
+      "tag": "T0",
+      "time": "2026-10-12T16:02:05.486605+02:00",
+      "wtCount": 33,
+      "dirty": 1,
+      "untracked": 279,
+      "refsHash": "F9905965DC2D344A",
+      "refsLines": 769,
+      "heads": "8015df6a876217cebea85af31002fb6090d2abb9,3a6f32255916b9783e41981ba284d68401294a92,ef3003c2a97f838360aff94812fee9cc1dd79ca6,3a6f32255916b9783e41981ba284d68401294a92,75371cd900f2ec4ef745bfe2db78f03eb1765642,0f3c360133eeed959dcc8a871a15e7b1f366dbf6,73cbcb3ea1d313296cf99db9fdece744231089c7,bb14b036acb2604c71803311eb49e47ed852cbcc,65eb0f14d226104692dd845f8a528759fbeb90c4,af90dd91ababd646f59ea7dc82e0b196753acb67,3a6f32255916b9783e41981ba284d68401294a92,fdc8c16600db1c7de4892ef2ad868ea49baffece,e0aa1aab232129cac131bd61bf882e7115ea97c4,e0aa1aab232129cac131bd61bf882e7115ea97c4,f6b983efd972ef47b2bff233711c17dfa2ea656d,7fbd33ffc952aaafaca199f8e4939b1757cb94d6,278968f9cfcbe2a26fd1249cadabeb1ef40d50be,d12a03145793ae89d03a40f9ebf500ec59f3c761,542b82e93b6bb866dc05e085480eecb3ceffbcc1,233e452ff16db3d35ca717d0bf02e4779e86b258,692b42391c29457fef30e19857352e3ef74be9b2,65eb0f14d226104692dd845f8a528759fbeb90c4,4d78561c9a516192d53c54ef2f7c3146ace1eb22,6e4f56e81cc86a05291415f0bea1d7246be4dee8,41e2b7cd9389a0da069f9e3caec5bf583eafc824,7437ee53c74231a0c5a358849218e0cd279d599b,2159a358feff585be5646a7757b96257dd935d82,7a2310c217800e6b4b68c67957b9a253c8c76b2a,2159a358feff585be5646a7757b96257dd935d82,68868f763d22a630fc9ba8d818ed1919a7b8414d,cfc0cd9c6ef3ad51d4fcf799e0d2fadf3af9fcc5,62f0d28859ec1dc21964cc74ec84f449d6c3a030,fb6c5e1899a844ba1d38444fc82e6d04e98db468"
+    },
+    "T1": {
+      "tag": "T1",
+      "time": "2026-10-12T16:03:35.902832+02:00",
+      "wtCount": 33,
+      "dirty": 1,
+      "untracked": 279,
+      "refsHash": "F9905965DC2D344A",
+      "refsLines": 769,
+      "heads": "8015df6a876217cebea85af31002fb6090d2abb9,3a6f32255916b9783e41981ba284d68401294a92,ef3003c2a97f838360aff94812fee9cc1dd79ca6,3a6f32255916b9783e41981ba284d68401294a92,75371cd900f2ec4ef745bfe2db78f03eb1765642,0f3c360133eeed959dcc8a871a15e7b1f366dbf6,73cbcb3ea1d313296cf99db9fdece744231089c7,bb14b036acb2604c71803311eb49e47ed852cbcc,65eb0f14d226104692dd845f8a528759fbeb90c4,af90dd91ababd646f59ea7dc82e0b196753acb67,3a6f32255916b9783e41981ba284d68401294a92,fdc8c16600db1c7de4892ef2ad868ea49baffece,e0aa1aab232129cac131bd61bf882e7115ea97c4,e0aa1aab232129cac131bd61bf882e7115ea97c4,f6b983efd972ef47b2bff233711c17dfa2ea656d,7fbd33ffc952aaafaca199f8e4939b1757cb94d6,278968f9cfcbe2a26fd1249cadabeb1ef40d50be,d12a03145793ae89d03a40f9ebf500ec59f3c761,542b82e93b6bb866dc05e085480eecb3ceffbcc1,233e452ff16db3d35ca717d0bf02e4779e86b258,692b42391c29457fef30e19857352e3ef74be9b2,65eb0f14d226104692dd845f8a528759fbeb90c4,4d78561c9a516192d53c54ef2f7c3146ace1eb22,6e4f56e81cc86a05291415f0bea1d7246be4dee8,41e2b7cd9389a0da069f9e3caec5bf583eafc824,7437ee53c74231a0c5a358849218e0cd279d599b,2159a358feff585be5646a7757b96257dd935d82,7a2310c217800e6b4b68c67957b9a253c8c76b2a,2159a358feff585be5646a7757b96257dd935d82,68868f763d22a630fc9ba8d818ed1919a7b8414d,cfc0cd9c6ef3ad51d4fcf799e0d2fadf3af9fcc5,62f0d28859ec1dc21964cc74ec84f449d6c3a030,fb6c5e1899a844ba1d38444fc82e6d04e98db468"
+    },
+    "NO_CHANGE": true,
+    "interpretation": "The 60s git-level window was stable. This is NOT sufficient evidence of quiescence: the live writers (notably run_pipeline PID 40180, 217s CPU / 1.65GB RSS, 5 min old) write to non-ignored paths on an interval longer than the window, so a quiet 60s sample does not bound their activity."
+  },
+  "counts": {
+    "WORKTREES": 33,
+    "LOCAL_BRANCHES": 515,
+    "REMOTE_BRANCHES": 236
+  },
+  "FINAL_VERDICT": "REPO_NOT_QUIESCENT"
+}

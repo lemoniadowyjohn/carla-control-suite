@@ -1,0 +1,16 @@
+{
+  "defect_original": "validate_pair_manifest discarded manifest-level invalid_reasons and echoed claim_level unchanged, so pair_valid=False could still surface PAIRED_INGOLSTADT_CAPTURE.",
+  "document_id": "RQ3_FAILURE_REASONS_PRESERVATION_20261021",
+  "evidence": [
+    "REASONS_PRESERVED=False observed before remediation (Task 3 roundtrip)",
+    "REASONS_PRESERVED=True after remediation",
+    "MUTATE_REJECT=True and MUTATE_CLAIM_NOT_PROMOTED=True",
+    "12/12 builder regression PASS (includes reason-survival-through-serialization)"
+  ],
+  "files_changed": [
+    "ultimate_pipeline/perception/rq3_capture_contract.py"
+  ],
+  "final_sha": "363a1868455cab0c33ce9584d6f4b09d594f74e3",
+  "remediation": "Manifest-level invalid_reasons are propagated into validator output before the identity checks; when full validity is false the claim is downgraded to UNPAIRED_CAPTURE and never remains PAIRED_INGOLSTADT_CAPTURE.",
+  "status": "REMEDIATED"
+}

@@ -1,0 +1,202 @@
+{
+  "timestamp_utc": "2026-10-11T00:00:00Z",
+  "artifacts": [
+    {
+      "experiment_id": "A",
+      "artifact_path": "campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_perception_map_of_record_20260916_232831.xodr",
+      "artifact_sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+      "size_bytes": 149799632,
+      "description": "Authoritative map-of-record (pinned)"
+    },
+    {
+      "experiment_id": "B",
+      "artifact_path": "reports/rq1_trial_runs_x2_verify/run_01/20261008_024449_086823/07_lanes_20261008_024449_086823.xodr",
+      "artifact_sha256": "2a188b372ed369a17464c87c1f6932841249f52e51ba8ef049d3b6ce2ab5dccb",
+      "size_bytes": 125001202,
+      "description": "RQ1 run-01 Stage-7 BEFORE artifact"
+    },
+    {
+      "experiment_id": "C",
+      "artifact_path": "reports/gap048/07_lanes_GAP048_AFTER.xodr",
+      "artifact_sha256": "0e3eb2f2c93c3ee60b76dfdf3fe2a644501ecaf1ae69eb32a80e0abb29e6b960",
+      "size_bytes": 125265882,
+      "description": "GAP-048 AFTER (ef3003c2 module)"
+    },
+    {
+      "experiment_id": "D",
+      "artifact_path": "reports/gap048/07_lanes_GAP048_STAGE8_SIM.xodr",
+      "artifact_sha256": "d8dca1d9316e227ffe436a138bcf12df5f6049cdf4fbeb767b457f5f3a29e4c2",
+      "size_bytes": 125266233,
+      "description": "GAP-048 Stage-8 simulation"
+    },
+    {
+      "experiment_id": "E",
+      "artifact_path": "C:/temp/m2_gap026_regenerated.xodr",
+      "artifact_sha256": "548ccd12d3293dc1b1d45b281fd9f05565b08d4d6a2850bda2e3ab3f7407d4a0",
+      "size_bytes": 125000000,
+      "description": "M2 GAP026 regenerated artifact"
+    }
+  ],
+  "modules": [
+    {
+      "module_path": "ultimate_pipeline/enrichment/lane_successor_topology.py",
+      "code_sha": "ef3003c2",
+      "module_sha256": "b16652e1d72facc84bc19efb79517b8f363e39fee290adbd37c6a9dbda712d62",
+      "version": "GAP-048 strategy 3",
+      "notes": "Source-stage through-junction repair"
+    },
+    {
+      "module_path": "ultimate_pipeline/enrichment/lane_successor_topology.py",
+      "code_sha": "working_tree",
+      "module_sha256": "7ee02c0215c05661f89c8e00ef22f29d2882a3eb4f933d5466e0f695eed30e76",
+      "version": "Divergent untracked",
+      "notes": "Not committed, differs from ef3003c2"
+    },
+    {
+      "module_path": "ultimate_pipeline/lanes/junction_lane_width_harmonizer.py",
+      "code_sha": "0f3c3601",
+      "module_sha256": "ca6195612111a12a461919971517853b1b6ca0d7f018f54a23681e610ba89d91",
+      "version": "GAP-026 fix",
+      "notes": "Lane-width harmonizer"
+    },
+    {
+      "module_path": "ultimate_pipeline/lanes/lanelink_builder.py",
+      "code_sha": "0f3c3601",
+      "module_sha256": "b2a54e3a3e15bdf66911f8dfd2e40a2e8ab898da29e859531b00144cd22dea12",
+      "version": "GAP-026 fix",
+      "notes": "Regeneration + outer->inner guard"
+    },
+    {
+      "module_path": "ultimate_pipeline/lanes/lanelink_builder.py",
+      "code_sha": "working_tree",
+      "module_sha256": "e7a56037ee569ee71877ad6c68a556ca39c717094d3e8affc62dbb21166af3bb",
+      "version": "Current production",
+      "notes": "Includes Stage-8 call"
+    },
+    {
+      "module_path": "ultimate_pipeline/pipeline_stages/stage_07_lanes.py",
+      "code_sha": "0f3c3601",
+      "module_sha256": "9253c3203f86c625bfcf40bf01e273d8936f29f18121b6401e4eb8017126848b",
+      "version": "GAP-026 integration",
+      "notes": "Calls harmonizer"
+    },
+    {
+      "module_path": "ultimate_pipeline/pipeline_stages/stage_07_lanes.py",
+      "code_sha": "working_tree",
+      "module_sha256": "49b3ad1ef3df0e8eac2ca6ffebbd4c03e647890e3cfefc93815a878550726ef4",
+      "version": "Current production",
+      "notes": "Calls lane_successor_topology"
+    }
+  ],
+  "checkers_oracles": [
+    {
+      "name": "production_checker",
+      "code_sha": "0f3c3601 / working_tree",
+      "module_sha256": "part of lanelink_builder",
+      "description": "LaneLinkBuilder.sanitize_junction_lane_links"
+    },
+    {
+      "name": "independent_oracle",
+      "code_sha": "working_tree",
+      "module_sha256": "7fbf4ecb3fcc8f14b7284c5a6f1fc06de1ec0f1bda1b977da2a4ec74dc961c38",
+      "description": "gap026_oracle.py (dual geometry authorities)"
+    }
+  ],
+  "experiment_results": [
+    {
+      "experiment_id": "baseline_no_regen",
+      "input_artifact_sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+      "code_sha": "68868f76",
+      "stage_range": "map-of-record",
+      "module_sha256": "e7a56037ee569ee71877ad6c68a556ca39c717094d3e8affc62dbb21166af3bb",
+      "checker_sha256": "e7a56037ee569ee71877ad6c68a556ca39c717094d3e8affc62dbb21166af3bb",
+      "oracle_sha256": "7fbf4ecb3fcc8f14b7284c5a6f1fc06de1ec0f1bda1b977da2a4ec74dc961c38",
+      "reported_total": 23529,
+      "reported_fail": 2992,
+      "reported_repaired": 0,
+      "reported_residual": 2992,
+      "notes": "Map-of-record, no regeneration"
+    },
+    {
+      "experiment_id": "simple_regen",
+      "input_artifact_sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+      "code_sha": "68868f76",
+      "stage_range": "map-of-record + regen",
+      "module_sha256": "e7a56037ee569ee71877ad6c68a556ca39c717094d3e8affc62dbb21166af3bb",
+      "checker_sha256": "e7a56037ee569ee71877ad6c68a556ca39c717094d3e8affc62dbb21166af3bb",
+      "oracle_sha256": "7fbf4ecb3fcc8f14b7284c5a6f1fc06de1ec0f1bda1b977da2a4ec74dc961c38",
+      "reported_total": 23403,
+      "reported_fail": 2315,
+      "reported_repaired": 677,
+      "reported_residual": 2315,
+      "notes": "Original lanelink_builder.regenerate"
+    },
+    {
+      "experiment_id": "m2_regen",
+      "input_artifact_sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+      "code_sha": "0f3c3601",
+      "stage_range": "map-of-record + regen + harmonize",
+      "module_sha256": "b2a54e3a3e15bdf66911f8dfd2e40a2e8ab898da29e859531b00144cd22dea12 + ca6195612111a12a461919971517853b1b6ca0d7f018f54a23681e610ba89d91",
+      "checker_sha256": "b2a54e3a3e15bdf66911f8dfd2e40a2e8ab898da29e859531b00144cd22dea12",
+      "oracle_sha256": "7fbf4ecb3fcc8f14b7284c5a6f1fc06de1ec0f1bda1b977da2a4ec74dc961c38",
+      "reported_total": 23403,
+      "reported_fail": 513,
+      "reported_repaired": 2479,
+      "reported_residual": 513,
+      "notes": "M2 lanelink_builder + harmonizer"
+    },
+    {
+      "experiment_id": "gap048_ef3003c2",
+      "input_artifact_sha256": "2a188b372ed369a17464c87c1f6932841249f52e51ba8ef049d3b6ce2ab5dccb",
+      "code_sha": "ef3003c2",
+      "stage_range": "Stage-7 only",
+      "module_sha256": "b16652e1d72facc84bc19efb79517b8f363e39fee290adbd37c6a9dbda712d62",
+      "checker_sha256": "N/A",
+      "oracle_sha256": "N/A",
+      "reported_total": 10563,
+      "reported_fail": 0,
+      "reported_repaired": 10180,
+      "reported_residual": 376,
+      "notes": "Strategy 3 (unambiguous only)"
+    },
+    {
+      "experiment_id": "gap048_stage8_sim",
+      "input_artifact_sha256": "0e3eb2f2c93c3ee60b76dfdf3fe2a644501ecaf1ae69eb32a80e0abb29e6b960",
+      "code_sha": "ef3003c2",
+      "stage_range": "Stage-8 sim",
+      "module_sha256": "b16652e1d72facc84bc19efb79517b8f363e39fee290adbd37c6a9dbda712d62",
+      "checker_sha256": "N/A",
+      "oracle_sha256": "N/A",
+      "reported_total": 383,
+      "reported_fail": 0,
+      "reported_repaired": 7,
+      "reported_residual": 376,
+      "notes": "Stage-8 intra-road repair"
+    }
+  ],
+  "discrepancies": {
+    "gap026_fail_after_regen": {
+      "narrative_a_m2": 513,
+      "narrative_b_simple_regen": 2315,
+      "difference": 1802,
+      "explanation": "M2 includes lane-width harmonizer (19807 harmonized) + outer->inner mispair prune guard"
+    },
+    "gap026_angle_severe": {
+      "before": 451,
+      "after_simple_regen": 0,
+      "after_m2_regen": 0,
+      "explanation": "Both eliminate angle severe via regeneration fixing heading mismatches"
+    },
+    "gap026_dist_severe": {
+      "before": 832,
+      "after_simple_regen": 206,
+      "after_m2_regen": 192,
+      "explanation": "M2 reduces further via lane-width harmonization"
+    },
+    "gap048_331_excluded": {
+      "historic_broken": 10563,
+      "m3_claims_excluded": 331,
+      "status": "NEEDS_RECOMPUTATION_FROM_FROZEN_BASELINE"
+    }
+  ]
+}

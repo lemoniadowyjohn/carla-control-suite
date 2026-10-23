@@ -1,0 +1,154 @@
+{
+  "content_census_now": {
+    "bytes": 191668244,
+    "map_files": {
+      "Ingolstadt.umap": {
+        "bytes": 25828,
+        "mtime_utc": "2026-10-04T15:20:59Z"
+      }
+    },
+    "newest_umap": {
+      "mtime_utc": "2026-10-04T15:20:59Z",
+      "path": "Ingolstadt.umap"
+    },
+    "tile_umaps": 0,
+    "uassets": 5711,
+    "umaps": 1
+  },
+  "dll_holder_check": {
+    "dll": "UE4Editor-Carla.dll",
+    "holder_pids": [
+      12312
+    ]
+  },
+  "generated_utc": "2026-10-05T21:43:24.792225Z",
+  "parent_python": {
+    "alive": true,
+    "cpu_s": 0.22,
+    "handles": 196,
+    "pid": 10224,
+    "private_mb": 15.5,
+    "responding": true,
+    "start": "2026-10-05T18:35:33.2913156Z",
+    "threads": 1,
+    "ws_mb": 15
+  },
+  "policy": "READ_ONLY__NO_INTERFERENCE",
+  "progress_signals": {
+    "content_bytes_delta": 0,
+    "cpu_advancing": true,
+    "cpu_delta_seconds": 359.09,
+    "interval_sec": 45,
+    "log_grew": false,
+    "tile_umap_count_delta": 0,
+    "uasset_count_delta": 0,
+    "umap_count_delta": 0
+  },
+  "samples": [
+    {
+      "at_utc": "2026-10-05T21:40:26.153572Z",
+      "content": {
+        "bytes": 191668244,
+        "map_files": {
+          "Ingolstadt.umap": {
+            "bytes": 25828,
+            "mtime_utc": "2026-10-04T15:20:59Z"
+          }
+        },
+        "newest_umap": {
+          "mtime_utc": "2026-10-04T15:20:59Z",
+          "path": "Ingolstadt.umap"
+        },
+        "tile_umaps": 0,
+        "uassets": 5711,
+        "umaps": 1
+      },
+      "logs": [
+        {
+          "bytes": 1208572,
+          "mtime_utc": "2026-10-05T21:30:43.5986026Z",
+          "path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Saved\\Logs\\CarlaUE4.log"
+        },
+        {
+          "bytes": 1081,
+          "mtime_utc": "2026-10-05T18:38:44.1639089Z",
+          "path": "G:\\CARLA\\carla_source_probe\\Util\\BuildTools\\_import_supervision\\20261005T183844152807Z_ImportAssets_003.supervision.json"
+        },
+        {
+          "bytes": 0,
+          "mtime_utc": "2026-10-05T18:38:44.1528078Z",
+          "path": "G:\\CARLA\\carla_source_probe\\Util\\BuildTools\\_import_supervision\\20261005T183844152807Z_ImportAssets_003.stdout.log"
+        }
+      ],
+      "target": {
+        "alive": true,
+        "cpu_s": 78793.14,
+        "handles": 1988,
+        "pid": 12312,
+        "private_mb": 2897.5,
+        "responding": true,
+        "start": "2026-10-05T18:38:44.1538366Z",
+        "threads": 69,
+        "ws_mb": 1462.4
+      }
+    },
+    {
+      "at_utc": "2026-10-05T21:41:14.823344Z",
+      "content": {
+        "bytes": 191668244,
+        "map_files": {
+          "Ingolstadt.umap": {
+            "bytes": 25828,
+            "mtime_utc": "2026-10-04T15:20:59Z"
+          }
+        },
+        "newest_umap": {
+          "mtime_utc": "2026-10-04T15:20:59Z",
+          "path": "Ingolstadt.umap"
+        },
+        "tile_umaps": 0,
+        "uassets": 5711,
+        "umaps": 1
+      },
+      "logs": [
+        {
+          "bytes": 1208572,
+          "mtime_utc": "2026-10-05T21:30:43.5986026Z",
+          "path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Saved\\Logs\\CarlaUE4.log"
+        },
+        {
+          "bytes": 1081,
+          "mtime_utc": "2026-10-05T18:38:44.1639089Z",
+          "path": "G:\\CARLA\\carla_source_probe\\Util\\BuildTools\\_import_supervision\\20261005T183844152807Z_ImportAssets_003.supervision.json"
+        },
+        {
+          "bytes": 0,
+          "mtime_utc": "2026-10-05T18:38:44.1528078Z",
+          "path": "G:\\CARLA\\carla_source_probe\\Util\\BuildTools\\_import_supervision\\20261005T183844152807Z_ImportAssets_003.stdout.log"
+        }
+      ],
+      "target": {
+        "alive": true,
+        "cpu_s": 79152.23,
+        "handles": 1988,
+        "pid": 12312,
+        "private_mb": 2901.6,
+        "responding": true,
+        "start": "2026-10-05T18:38:44.1538366Z",
+        "threads": 69,
+        "ws_mb": 1467
+      }
+    }
+  ],
+  "schema": "ACTIVE_IMPORT_STATUS/v1",
+  "schema_version": 1,
+  "status": "IMPORT_ACTIVE_PROGRESSING",
+  "status_reason": "CPU and/or content and/or log deltas are non-zero over the sampling interval",
+  "target": {
+    "alive_first_sample": true,
+    "alive_second_sample": true,
+    "command_line": "G:\\UnrealEngine_4.26_CARLA\\Engine\\Binaries\\Win64\\UE4Editor-Cmd.exe G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\CarlaUE4.uproject -run=ImportAssets -importSettings=G:\\CARLA\\carla_source_probe\\importsetting.json -nosourcecontrol -replaceexisting",
+    "pid": 12312,
+    "ppid": 10224
+  }
+}

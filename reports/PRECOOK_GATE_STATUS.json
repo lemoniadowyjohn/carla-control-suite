@@ -1,0 +1,47 @@
+{
+  "schema": "PRECOOK_GATE_STATUS/v1",
+  "PHASE_A_GATE": "PASS",
+  "PHASE_A_conditions": {
+    "STATIC_TREE_CURRENT_INPUT_AUTHORITY": "PROVEN_EXACT_CURRENT_INPUT",
+    "MATERIAL_BINDING_BLOCKS_COOK": false,
+    "UNEXPECTED_FALLBACK_BINDINGS": 0,
+    "MISSING_MATERIAL_TEXTURE_DEPENDENCIES": 0,
+    "tile_worlds_present": "20/20",
+    "canonical_meshes_present": 5711,
+    "xodr_authority": "370ABBBB byte exact",
+    "PROCESS_TREE_SUPERVISION": "PASS",
+    "6116_reference_receipt": "NOT_REVERIFIED_THIS_BATCH (prior receipt; reverification requires launching Unreal)"
+  },
+  "PHASE_B_GATE": "FAIL",
+  "PHASE_B_blockers": [
+    {
+      "gate": "B2 mutator census",
+      "blocker": "orphaned unsupervised UE4Editor.exe PID 396 (creation 2026-10-06T12:30:44.7613250Z) on the target project",
+      "class": "UNKNOWN_PRESERVE"
+    },
+    {
+      "gate": "B3/D4 storage capacity",
+      "blocker": "all volumes <=6.2% free; C: 9.8 GB (2.1%), F: 41.5 GB (6.2%); cold DDC plus bounded cook output plus reserve does not fit",
+      "class": "DDC_TARGET_CAPACITY=FAIL"
+    }
+  ],
+  "stages_not_reached": {
+    "B4_COOK_INPUT_FINGERPRINT_V3": "NOT_RUN (blocked by B2/B3)",
+    "B5_TILE_WORLD_EDITOR_LOAD": "NOT_RUN (requires launching Unreal while an unsupervised Unreal process already holds the project)",
+    "B6_MAIN_LARGEMAP_WORLD_VALIDATION": "NOT_RUN",
+    "B7_PRECOOK_LARGEMAP_DISCOVERY": "PARTIAL_PRIOR_RECEIPT_ONLY",
+    "B8_SERVE_FIRST_TILE_PROOF": "NOT_RUN",
+    "C_RHI_CONFIG_PROMOTION": "NOT_RUN (config mutation not authorized before admission)",
+    "D_DDC_MIGRATION": "NOT_RUN (capacity FAIL; do not migrate)",
+    "E_SCW_QUALIFICATION": "NOT_RUN",
+    "F_BOUNDED_COOK_SELECTION": "NOT_RUN",
+    "G_RESOURCE_BASELINE": "NOT_RUN",
+    "H_BOUNDED_COOK_EXECUTE": "NOT_RUN",
+    "I_COOK_OUTPUT_ACCEPTANCE": "NOT_RUN",
+    "J_SCW_FAILURE_INJECTION": "NOT_RUN",
+    "K_FULL_PRODUCTION_COOK_ADMISSION": "NOT_AUTHORIZED"
+  },
+  "cook_executed": false,
+  "content_mutated": false,
+  "policy_note": "The prompt instructs stopping immediately on an unknown active mutator and on unsafe DDC capacity, and forbids continuing to gather results after a hard gate fails. Both conditions are present, so Phase B was not entered."
+}

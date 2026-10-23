@@ -1,0 +1,77 @@
+{
+  "overall_pass": true,
+  "producer_commit": "167b12fd4c1db7a7b76663acdb6901f2f786d501",
+  "schema": "optimization_semantic_equivalence/v1",
+  "tests": [
+    {
+      "errors": [],
+      "metrics": {
+        "lane_centerline_s0.0_hdg_diff": 0.0,
+        "lane_centerline_s0.0_x_diff": 0.0,
+        "lane_centerline_s0.0_y_diff": 0.0,
+        "lane_centerline_s10.0_hdg_diff": 0.0,
+        "lane_centerline_s10.0_x_diff": 0.0,
+        "lane_centerline_s10.0_y_diff": 0.0,
+        "lane_centerline_s25.0_hdg_diff": 0.0,
+        "lane_centerline_s25.0_x_diff": 0.0,
+        "lane_centerline_s25.0_y_diff": 0.0,
+        "lane_centerline_s50.0_hdg_diff": 0.0,
+        "lane_centerline_s50.0_x_diff": 0.0,
+        "lane_centerline_s50.0_y_diff": 0.0,
+        "lane_centerline_s75.0_hdg_diff": 0.0,
+        "lane_centerline_s75.0_x_diff": 0.0,
+        "lane_centerline_s75.0_y_diff": 0.0,
+        "lane_centerline_s99.9_hdg_diff": 0.0,
+        "lane_centerline_s99.9_x_diff": 0.0,
+        "lane_centerline_s99.9_y_diff": 0.0,
+        "sample_at_s0.0_hdg_diff": 0.0,
+        "sample_at_s0.0_x_diff": 0.0,
+        "sample_at_s0.0_y_diff": 0.0,
+        "sample_at_s10.0_hdg_diff": 0.0,
+        "sample_at_s10.0_x_diff": 0.0,
+        "sample_at_s10.0_y_diff": 0.0,
+        "sample_at_s25.0_hdg_diff": 0.0,
+        "sample_at_s25.0_x_diff": 0.0,
+        "sample_at_s25.0_y_diff": 0.0,
+        "sample_at_s50.0_hdg_diff": 0.0,
+        "sample_at_s50.0_x_diff": 0.0,
+        "sample_at_s50.0_y_diff": 0.0,
+        "sample_at_s75.0_hdg_diff": 0.0,
+        "sample_at_s75.0_x_diff": 0.0,
+        "sample_at_s75.0_y_diff": 0.0,
+        "sample_at_s99.9_hdg_diff": 0.0,
+        "sample_at_s99.9_x_diff": 0.0,
+        "sample_at_s99.9_y_diff": 0.0
+      },
+      "optimized_implementation": "ultimate_pipeline.geometry.vectorized.RoadGeometry",
+      "pass": true,
+      "reference_implementation": "pure_python_math",
+      "test": "vectorized_geometry"
+    },
+    {
+      "errors": [],
+      "metrics": {},
+      "optimized_implementation": "ultimate_pipeline.geometry.spatial_index.SpatialIndex",
+      "pass": true,
+      "reference_implementation": "brute_force",
+      "test": "spatial_index"
+    },
+    {
+      "errors": [],
+      "metrics": {},
+      "optimized_implementation": "ultimate_pipeline.cache.stage_cache.ContentAddressedCache",
+      "pass": true,
+      "reference_implementation": "direct_execution",
+      "test": "cache_equivalence"
+    },
+    {
+      "errors": [],
+      "metrics": {},
+      "optimized_implementation": "ultimate_pipeline.parallel.resource_aware.parallel_map",
+      "pass": true,
+      "reference_implementation": "serial_execution",
+      "test": "parallel_execution"
+    }
+  ],
+  "timestamp": "2026-10-02T16:06:27Z"
+}

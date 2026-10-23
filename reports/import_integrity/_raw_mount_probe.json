@@ -1,0 +1,587 @@
+{
+  "content_root": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content",
+  "reparse_points": [
+    {
+      "canonical_target": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Blueprints",
+      "is_junction_or_symlink": true,
+      "link_name": "Blueprints",
+      "link_path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Carla\\Blueprints",
+      "relative_to_content": "Carla\\Blueprints",
+      "target_raw": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Blueprints",
+      "ue_virtual_path": "/Carla/Blueprints"
+    },
+    {
+      "canonical_target": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Config",
+      "is_junction_or_symlink": true,
+      "link_name": "Config",
+      "link_path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Carla\\Config",
+      "relative_to_content": "Carla\\Config",
+      "target_raw": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Config",
+      "ue_virtual_path": "/Carla/Config"
+    },
+    {
+      "canonical_target": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\HDMaps",
+      "is_junction_or_symlink": true,
+      "link_name": "HDMaps",
+      "link_path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Carla\\HDMaps",
+      "relative_to_content": "Carla\\HDMaps",
+      "target_raw": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\HDMaps",
+      "ue_virtual_path": "/Carla/HDMaps"
+    },
+    {
+      "canonical_target": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Maps",
+      "is_junction_or_symlink": true,
+      "link_name": "Maps",
+      "link_path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Carla\\Maps",
+      "relative_to_content": "Carla\\Maps",
+      "target_raw": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Maps",
+      "ue_virtual_path": "/Carla/Maps"
+    },
+    {
+      "canonical_target": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Static",
+      "is_junction_or_symlink": true,
+      "link_name": "Static",
+      "link_path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Carla\\Static",
+      "relative_to_content": "Carla\\Static",
+      "target_raw": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Static",
+      "ue_virtual_path": "/Carla/Static"
+    }
+  ],
+  "top_level_layout": [
+    {
+      "kind": "dir",
+      "name": "AUTO_COOK_RECEIPT",
+      "size_bytes": null,
+      "ue_virtual_path": "/Game/AUTO_COOK_RECEIPT"
+    },
+    {
+      "kind": "dir",
+      "name": "Blueprints",
+      "size_bytes": null,
+      "ue_virtual_path": "/Game/Blueprints"
+    },
+    {
+      "kind": "dir",
+      "name": "Carla",
+      "size_bytes": null,
+      "ue_virtual_path": "/Game/Carla"
+    },
+    {
+      "kind": "dir",
+      "name": "Collections",
+      "size_bytes": null,
+      "ue_virtual_path": "/Game/Collections"
+    },
+    {
+      "kind": "dir",
+      "name": "Config",
+      "size_bytes": null,
+      "ue_virtual_path": "/Game/Config"
+    },
+    {
+      "kind": "dir",
+      "name": "Developers",
+      "size_bytes": null,
+      "ue_virtual_path": "/Game/Developers"
+    },
+    {
+      "kind": "dir",
+      "name": "HDMaps",
+      "size_bytes": null,
+      "ue_virtual_path": "/Game/HDMaps"
+    },
+    {
+      "kind": "dir",
+      "name": "hooks",
+      "size_bytes": null,
+      "ue_virtual_path": "/Game/hooks"
+    },
+    {
+      "kind": "dir",
+      "name": "HoudiniEngine",
+      "size_bytes": null,
+      "ue_virtual_path": "/Game/HoudiniEngine"
+    },
+    {
+      "kind": "dir",
+      "name": "IMPORT_MANIFEST",
+      "size_bytes": null,
+      "ue_virtual_path": "/Game/IMPORT_MANIFEST"
+    },
+    {
+      "kind": "dir",
+      "name": "Ingolstadt",
+      "size_bytes": null,
+      "ue_virtual_path": "/Game/Ingolstadt"
+    },
+    {
+      "kind": "dir",
+      "name": "Ingolstadt.large_map_package",
+      "size_bytes": null,
+      "ue_virtual_path": "/Game/Ingolstadt.large_map_package"
+    },
+    {
+      "kind": "dir",
+      "name": "Ingolstadt.stage_and_validate",
+      "size_bytes": null,
+      "ue_virtual_path": "/Game/Ingolstadt.stage_and_validate"
+    },
+    {
+      "kind": "file",
+      "name": "LICENSE",
+      "size_bytes": 251,
+      "ue_virtual_path": "/Game/LICENSE"
+    },
+    {
+      "kind": "dir",
+      "name": "Maps",
+      "size_bytes": null,
+      "ue_virtual_path": "/Game/Maps"
+    },
+    {
+      "kind": "dir",
+      "name": "MDL",
+      "size_bytes": null,
+      "ue_virtual_path": "/Game/MDL"
+    },
+    {
+      "kind": "dir",
+      "name": "road_xodr",
+      "size_bytes": null,
+      "ue_virtual_path": "/Game/road_xodr"
+    },
+    {
+      "kind": "dir",
+      "name": "Static",
+      "size_bytes": null,
+      "ue_virtual_path": "/Game/Static"
+    }
+  ],
+  "uasset_inventory": {
+    "count": 4000,
+    "ingolstadt_samples": [],
+    "truncated": true
+  },
+  "uasset_samples": [
+    {
+      "filesystem_path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Blueprints\\Game\\CarlaGameMode.uasset",
+      "name": "CarlaGameMode.uasset",
+      "relative_to_content": "Blueprints\\Game\\CarlaGameMode.uasset",
+      "size_bytes": 19496,
+      "ue_virtual_path": "/Game/Blueprints/Game/CarlaGameMode.uasset"
+    },
+    {
+      "filesystem_path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Blueprints\\Game\\CarlaParameters.uasset",
+      "name": "CarlaParameters.uasset",
+      "relative_to_content": "Blueprints\\Game\\CarlaParameters.uasset",
+      "size_bytes": 1682,
+      "ue_virtual_path": "/Game/Blueprints/Game/CarlaParameters.uasset"
+    },
+    {
+      "filesystem_path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Blueprints\\Game\\Spectator.uasset",
+      "name": "Spectator.uasset",
+      "relative_to_content": "Blueprints\\Game\\Spectator.uasset",
+      "size_bytes": 354736,
+      "ue_virtual_path": "/Game/Blueprints/Game/Spectator.uasset"
+    },
+    {
+      "filesystem_path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Blueprints\\LevelDesign\\BP_Building.uasset",
+      "name": "BP_Building.uasset",
+      "relative_to_content": "Blueprints\\LevelDesign\\BP_Building.uasset",
+      "size_bytes": 42015,
+      "ue_virtual_path": "/Game/Blueprints/LevelDesign/BP_Building.uasset"
+    },
+    {
+      "filesystem_path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Blueprints\\LevelDesign\\BP_BuildingConverterToCode.uasset",
+      "name": "BP_BuildingConverterToCode.uasset",
+      "relative_to_content": "Blueprints\\LevelDesign\\BP_BuildingConverterToCode.uasset",
+      "size_bytes": 179410,
+      "ue_virtual_path": "/Game/Blueprints/LevelDesign/BP_BuildingConverterToCode.uasset"
+    },
+    {
+      "filesystem_path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Blueprints\\LevelDesign\\BP_GuardRail.uasset",
+      "name": "BP_GuardRail.uasset",
+      "relative_to_content": "Blueprints\\LevelDesign\\BP_GuardRail.uasset",
+      "size_bytes": 238750,
+      "ue_virtual_path": "/Game/Blueprints/LevelDesign/BP_GuardRail.uasset"
+    },
+    {
+      "filesystem_path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Blueprints\\LevelDesign\\BP_Procedural_Bulding.uasset",
+      "name": "BP_Procedural_Bulding.uasset",
+      "relative_to_content": "Blueprints\\LevelDesign\\BP_Procedural_Bulding.uasset",
+      "size_bytes": 5497888,
+      "ue_virtual_path": "/Game/Blueprints/LevelDesign/BP_Procedural_Bulding.uasset"
+    },
+    {
+      "filesystem_path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Blueprints\\LevelDesign\\BP_Procedural_WindowPieces.uasset",
+      "name": "BP_Procedural_WindowPieces.uasset",
+      "relative_to_content": "Blueprints\\LevelDesign\\BP_Procedural_WindowPieces.uasset",
+      "size_bytes": 2634616,
+      "ue_virtual_path": "/Game/Blueprints/LevelDesign/BP_Procedural_WindowPieces.uasset"
+    },
+    {
+      "filesystem_path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Blueprints\\LevelDesign\\BP_Prop.uasset",
+      "name": "BP_Prop.uasset",
+      "relative_to_content": "Blueprints\\LevelDesign\\BP_Prop.uasset",
+      "size_bytes": 31958,
+      "ue_virtual_path": "/Game/Blueprints/LevelDesign/BP_Prop.uasset"
+    },
+    {
+      "filesystem_path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Blueprints\\LevelDesign\\BP_RepSpline.uasset",
+      "name": "BP_RepSpline.uasset",
+      "relative_to_content": "Blueprints\\LevelDesign\\BP_RepSpline.uasset",
+      "size_bytes": 356227,
+      "ue_virtual_path": "/Game/Blueprints/LevelDesign/BP_RepSpline.uasset"
+    },
+    {
+      "filesystem_path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Blueprints\\LevelDesign\\BP_River.uasset",
+      "name": "BP_River.uasset",
+      "relative_to_content": "Blueprints\\LevelDesign\\BP_River.uasset",
+      "size_bytes": 266038,
+      "ue_virtual_path": "/Game/Blueprints/LevelDesign/BP_River.uasset"
+    },
+    {
+      "filesystem_path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Blueprints\\LevelDesign\\BP_Spline.uasset",
+      "name": "BP_Spline.uasset",
+      "relative_to_content": "Blueprints\\LevelDesign\\BP_Spline.uasset",
+      "size_bytes": 304490,
+      "ue_virtual_path": "/Game/Blueprints/LevelDesign/BP_Spline.uasset"
+    },
+    {
+      "filesystem_path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Blueprints\\LevelDesign\\BP_StreetLight.uasset",
+      "name": "BP_StreetLight.uasset",
+      "relative_to_content": "Blueprints\\LevelDesign\\BP_StreetLight.uasset",
+      "size_bytes": 117241,
+      "ue_virtual_path": "/Game/Blueprints/LevelDesign/BP_StreetLight.uasset"
+    },
+    {
+      "filesystem_path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Blueprints\\LevelDesign\\BP_Terrain.uasset",
+      "name": "BP_Terrain.uasset",
+      "relative_to_content": "Blueprints\\LevelDesign\\BP_Terrain.uasset",
+      "size_bytes": 229460,
+      "ue_virtual_path": "/Game/Blueprints/LevelDesign/BP_Terrain.uasset"
+    },
+    {
+      "filesystem_path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Blueprints\\LevelDesign\\BP_TunnelLight.uasset",
+      "name": "BP_TunnelLight.uasset",
+      "relative_to_content": "Blueprints\\LevelDesign\\BP_TunnelLight.uasset",
+      "size_bytes": 120130,
+      "ue_virtual_path": "/Game/Blueprints/LevelDesign/BP_TunnelLight.uasset"
+    },
+    {
+      "filesystem_path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Blueprints\\LevelDesign\\BP_Vegetation.uasset",
+      "name": "BP_Vegetation.uasset",
+      "relative_to_content": "Blueprints\\LevelDesign\\BP_Vegetation.uasset",
+      "size_bytes": 32088,
+      "ue_virtual_path": "/Game/Blueprints/LevelDesign/BP_Vegetation.uasset"
+    },
+    {
+      "filesystem_path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Blueprints\\LevelDesign\\BP_Wall.uasset",
+      "name": "BP_Wall.uasset",
+      "relative_to_content": "Blueprints\\LevelDesign\\BP_Wall.uasset",
+      "size_bytes": 195164,
+      "ue_virtual_path": "/Game/Blueprints/LevelDesign/BP_Wall.uasset"
+    },
+    {
+      "filesystem_path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Blueprints\\LevelDesign\\BuildingMaster.uasset",
+      "name": "BuildingMaster.uasset",
+      "relative_to_content": "Blueprints\\LevelDesign\\BuildingMaster.uasset",
+      "size_bytes": 656795,
+      "ue_virtual_path": "/Game/Blueprints/LevelDesign/BuildingMaster.uasset"
+    },
+    {
+      "filesystem_path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Blueprints\\LevelDesign\\BuildingSpawnableItems.uasset",
+      "name": "BuildingSpawnableItems.uasset",
+      "relative_to_content": "Blueprints\\LevelDesign\\BuildingSpawnableItems.uasset",
+      "size_bytes": 7083,
+      "ue_virtual_path": "/Game/Blueprints/LevelDesign/BuildingSpawnableItems.uasset"
+    },
+    {
+      "filesystem_path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Blueprints\\LevelDesign\\BuildingStruct.uasset",
+      "name": "BuildingStruct.uasset",
+      "relative_to_content": "Blueprints\\LevelDesign\\BuildingStruct.uasset",
+      "size_bytes": 4768,
+      "ue_virtual_path": "/Game/Blueprints/LevelDesign/BuildingStruct.uasset"
+    },
+    {
+      "filesystem_path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Blueprints\\LevelDesign\\BuildingStructTest.uasset",
+      "name": "BuildingStructTest.uasset",
+      "relative_to_content": "Blueprints\\LevelDesign\\BuildingStructTest.uasset",
+      "size_bytes": 4784,
+      "ue_virtual_path": "/Game/Blueprints/LevelDesign/BuildingStructTest.uasset"
+    },
+    {
+      "filesystem_path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Blueprints\\LevelDesign\\DecalAtlasGenerator.uasset",
+      "name": "DecalAtlasGenerator.uasset",
+      "relative_to_content": "Blueprints\\LevelDesign\\DecalAtlasGenerator.uasset",
+      "size_bytes": 284378,
+      "ue_virtual_path": "/Game/Blueprints/LevelDesign/DecalAtlasGenerator.uasset"
+    },
+    {
+      "filesystem_path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Blueprints\\LevelDesign\\DecalsReductor.uasset",
+      "name": "DecalsReductor.uasset",
+      "relative_to_content": "Blueprints\\LevelDesign\\DecalsReductor.uasset",
+      "size_bytes": 690796,
+      "ue_virtual_path": "/Game/Blueprints/LevelDesign/DecalsReductor.uasset"
+    },
+    {
+      "filesystem_path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Blueprints\\LevelDesign\\PipesStrcuture.uasset",
+      "name": "PipesStrcuture.uasset",
+      "relative_to_content": "Blueprints\\LevelDesign\\PipesStrcuture.uasset",
+      "size_bytes": 5391,
+      "ue_virtual_path": "/Game/Blueprints/LevelDesign/PipesStrcuture.uasset"
+    },
+    {
+      "filesystem_path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Blueprints\\LevelDesign\\ResidentialStruct.uasset",
+      "name": "ResidentialStruct.uasset",
+      "relative_to_content": "Blueprints\\LevelDesign\\ResidentialStruct.uasset",
+      "size_bytes": 4860,
+      "ue_virtual_path": "/Game/Blueprints/LevelDesign/ResidentialStruct.uasset"
+    },
+    {
+      "filesystem_path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Blueprints\\LevelDesign\\ResidentialStructMASTER.uasset",
+      "name": "ResidentialStructMASTER.uasset",
+      "relative_to_content": "Blueprints\\LevelDesign\\ResidentialStructMASTER.uasset",
+      "size_bytes": 3976,
+      "ue_virtual_path": "/Game/Blueprints/LevelDesign/ResidentialStructMASTER.uasset"
+    },
+    {
+      "filesystem_path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Blueprints\\LevelDesign\\RoadPaintDecals.uasset",
+      "name": "RoadPaintDecals.uasset",
+      "relative_to_content": "Blueprints\\LevelDesign\\RoadPaintDecals.uasset",
+      "size_bytes": 5344,
+      "ue_virtual_path": "/Game/Blueprints/LevelDesign/RoadPaintDecals.uasset"
+    },
+    {
+      "filesystem_path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Blueprints\\LevelDesign\\RoadPainter.uasset",
+      "name": "RoadPainter.uasset",
+      "relative_to_content": "Blueprints\\LevelDesign\\RoadPainter.uasset",
+      "size_bytes": 1510549,
+      "ue_virtual_path": "/Game/Blueprints/LevelDesign/RoadPainter.uasset"
+    },
+    {
+      "filesystem_path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Blueprints\\LevelDesign\\RoadPainterPreset.uasset",
+      "name": "RoadPainterPreset.uasset",
+      "relative_to_content": "Blueprints\\LevelDesign\\RoadPainterPreset.uasset",
+      "size_bytes": 461766,
+      "ue_virtual_path": "/Game/Blueprints/LevelDesign/RoadPainterPreset.uasset"
+    },
+    {
+      "filesystem_path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Blueprints\\LevelDesign\\RoadPaintMeshes.uasset",
+      "name": "RoadPaintMeshes.uasset",
+      "relative_to_content": "Blueprints\\LevelDesign\\RoadPaintMeshes.uasset",
+      "size_bytes": 5022,
+      "ue_virtual_path": "/Game/Blueprints/LevelDesign/RoadPaintMeshes.uasset"
+    },
+    {
+      "filesystem_path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Blueprints\\LevelDesign\\ST_ActorClassWithWeight.uasset",
+      "name": "ST_ActorClassWithWeight.uasset",
+      "relative_to_content": "Blueprints\\LevelDesign\\ST_ActorClassWithWeight.uasset",
+      "size_bytes": 4678,
+      "ue_virtual_path": "/Game/Blueprints/LevelDesign/ST_ActorClassWithWeight.uasset"
+    },
+    {
+      "filesystem_path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Blueprints\\LevelDesign\\ST_StaticMeshWithWeight.uasset",
+      "name": "ST_StaticMeshWithWeight.uasset",
+      "relative_to_content": "Blueprints\\LevelDesign\\ST_StaticMeshWithWeight.uasset",
+      "size_bytes": 4627,
+      "ue_virtual_path": "/Game/Blueprints/LevelDesign/ST_StaticMeshWithWeight.uasset"
+    },
+    {
+      "filesystem_path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Blueprints\\LevelDesign\\Thumbnail.uasset",
+      "name": "Thumbnail.uasset",
+      "relative_to_content": "Blueprints\\LevelDesign\\Thumbnail.uasset",
+      "size_bytes": 3666,
+      "ue_virtual_path": "/Game/Blueprints/LevelDesign/Thumbnail.uasset"
+    },
+    {
+      "filesystem_path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Blueprints\\LevelDesign\\ThumbnailDetailMeshesWidget.uasset",
+      "name": "ThumbnailDetailMeshesWidget.uasset",
+      "relative_to_content": "Blueprints\\LevelDesign\\ThumbnailDetailMeshesWidget.uasset",
+      "size_bytes": 219737,
+      "ue_virtual_path": "/Game/Blueprints/LevelDesign/ThumbnailDetailMeshesWidget.uasset"
+    },
+    {
+      "filesystem_path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Blueprints\\LevelDesign\\ThumbnailMaterialWidget.uasset",
+      "name": "ThumbnailMaterialWidget.uasset",
+      "relative_to_content": "Blueprints\\LevelDesign\\ThumbnailMaterialWidget.uasset",
+      "size_bytes": 96967,
+      "ue_virtual_path": "/Game/Blueprints/LevelDesign/ThumbnailMaterialWidget.uasset"
+    },
+    {
+      "filesystem_path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Blueprints\\LevelDesign\\ThumbnailMeshesWidget.uasset",
+      "name": "ThumbnailMeshesWidget.uasset",
+      "relative_to_content": "Blueprints\\LevelDesign\\ThumbnailMeshesWidget.uasset",
+      "size_bytes": 164673,
+      "ue_virtual_path": "/Game/Blueprints/LevelDesign/ThumbnailMeshesWidget.uasset"
+    },
+    {
+      "filesystem_path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Blueprints\\LevelDesign\\ThumbnailPipeWidget.uasset",
+      "name": "ThumbnailPipeWidget.uasset",
+      "relative_to_content": "Blueprints\\LevelDesign\\ThumbnailPipeWidget.uasset",
+      "size_bytes": 249441,
+      "ue_virtual_path": "/Game/Blueprints/LevelDesign/ThumbnailPipeWidget.uasset"
+    },
+    {
+      "filesystem_path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Blueprints\\LevelDesign\\ThumbnailWidget.uasset",
+      "name": "ThumbnailWidget.uasset",
+      "relative_to_content": "Blueprints\\LevelDesign\\ThumbnailWidget.uasset",
+      "size_bytes": 127647,
+      "ue_virtual_path": "/Game/Blueprints/LevelDesign/ThumbnailWidget.uasset"
+    },
+    {
+      "filesystem_path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Blueprints\\LevelDesign\\ThumbnailWireWidget.uasset",
+      "name": "ThumbnailWireWidget.uasset",
+      "relative_to_content": "Blueprints\\LevelDesign\\ThumbnailWireWidget.uasset",
+      "size_bytes": 250584,
+      "ue_virtual_path": "/Game/Blueprints/LevelDesign/ThumbnailWireWidget.uasset"
+    },
+    {
+      "filesystem_path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Blueprints\\LevelDesign\\WD_ProceduralBuilding.uasset",
+      "name": "WD_ProceduralBuilding.uasset",
+      "relative_to_content": "Blueprints\\LevelDesign\\WD_ProceduralBuilding.uasset",
+      "size_bytes": 1900674,
+      "ue_virtual_path": "/Game/Blueprints/LevelDesign/WD_ProceduralBuilding.uasset"
+    },
+    {
+      "filesystem_path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Blueprints\\LevelDesign\\WD_ProceduralBuilding_DetailMeshMode.uasset",
+      "name": "WD_ProceduralBuilding_DetailMeshMode.uasset",
+      "relative_to_content": "Blueprints\\LevelDesign\\WD_ProceduralBuilding_DetailMeshMode.uasset",
+      "size_bytes": 7797,
+      "ue_virtual_path": "/Game/Blueprints/LevelDesign/WD_ProceduralBuilding_DetailMeshMode.uasset"
+    },
+    {
+      "filesystem_path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Blueprints\\LevelDesign\\WD_ProceduralBuilding_MeshMode.uasset",
+      "name": "WD_ProceduralBuilding_MeshMode.uasset",
+      "relative_to_content": "Blueprints\\LevelDesign\\WD_ProceduralBuilding_MeshMode.uasset",
+      "size_bytes": 5006,
+      "ue_virtual_path": "/Game/Blueprints/LevelDesign/WD_ProceduralBuilding_MeshMode.uasset"
+    },
+    {
+      "filesystem_path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Blueprints\\LevelDesign\\WD_SpawnActors.uasset",
+      "name": "WD_SpawnActors.uasset",
+      "relative_to_content": "Blueprints\\LevelDesign\\WD_SpawnActors.uasset",
+      "size_bytes": 1318153,
+      "ue_virtual_path": "/Game/Blueprints/LevelDesign/WD_SpawnActors.uasset"
+    },
+    {
+      "filesystem_path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Blueprints\\LevelDesign\\WiresStructure.uasset",
+      "name": "WiresStructure.uasset",
+      "relative_to_content": "Blueprints\\LevelDesign\\WiresStructure.uasset",
+      "size_bytes": 5391,
+      "ue_virtual_path": "/Game/Blueprints/LevelDesign/WiresStructure.uasset"
+    },
+    {
+      "filesystem_path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Blueprints\\LevelDesign\\BuildingBlockGeneratorAssets\\BlockDefinition.uasset",
+      "name": "BlockDefinition.uasset",
+      "relative_to_content": "Blueprints\\LevelDesign\\BuildingBlockGeneratorAssets\\BlockDefinition.uasset",
+      "size_bytes": 7277,
+      "ue_virtual_path": "/Game/Blueprints/LevelDesign/BuildingBlockGeneratorAssets/BlockDefinition.uasset"
+    },
+    {
+      "filesystem_path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Blueprints\\LevelDesign\\BuildingBlockGeneratorAssets\\BuildingBlockGenerator.uasset",
+      "name": "BuildingBlockGenerator.uasset",
+      "relative_to_content": "Blueprints\\LevelDesign\\BuildingBlockGeneratorAssets\\BuildingBlockGenerator.uasset",
+      "size_bytes": 745126,
+      "ue_virtual_path": "/Game/Blueprints/LevelDesign/BuildingBlockGeneratorAssets/BuildingBlockGenerator.uasset"
+    },
+    {
+      "filesystem_path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Blueprints\\LevelDesign\\BuildingBlockGeneratorAssets\\BuildingCategories.uasset",
+      "name": "BuildingCategories.uasset",
+      "relative_to_content": "Blueprints\\LevelDesign\\BuildingBlockGeneratorAssets\\BuildingCategories.uasset",
+      "size_bytes": 17445,
+      "ue_virtual_path": "/Game/Blueprints/LevelDesign/BuildingBlockGeneratorAssets/BuildingCategories.uasset"
+    },
+    {
+      "filesystem_path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Blueprints\\LevelDesign\\BuildingBlockGeneratorAssets\\BuildingPosition.uasset",
+      "name": "BuildingPosition.uasset",
+      "relative_to_content": "Blueprints\\LevelDesign\\BuildingBlockGeneratorAssets\\BuildingPosition.uasset",
+      "size_bytes": 2701,
+      "ue_virtual_path": "/Game/Blueprints/LevelDesign/BuildingBlockGeneratorAssets/BuildingPosition.uasset"
+    },
+    {
+      "filesystem_path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Blueprints\\LevelDesign\\BuildingBlockGeneratorAssets\\FilteringSystemEnum.uasset",
+      "name": "FilteringSystemEnum.uasset",
+      "relative_to_content": "Blueprints\\LevelDesign\\BuildingBlockGeneratorAssets\\FilteringSystemEnum.uasset",
+      "size_bytes": 3200,
+      "ue_virtual_path": "/Game/Blueprints/LevelDesign/BuildingBlockGeneratorAssets/FilteringSystemEnum.uasset"
+    },
+    {
+      "filesystem_path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Blueprints\\LevelDesign\\BuildingBlockGeneratorAssets\\StandarMesh_StandarInstance_HierarchicalInstance.uasset",
+      "name": "StandarMesh_StandarInstance_HierarchicalInstance.uasset",
+      "relative_to_content": "Blueprints\\LevelDesign\\BuildingBlockGeneratorAssets\\StandarMesh_StandarInstance_HierarchicalInstance.uasset",
+      "size_bytes": 3228,
+      "ue_virtual_path": "/Game/Blueprints/LevelDesign/BuildingBlockGeneratorAssets/StandarMesh_StandarInstance_HierarchicalInstance.uasset"
+    },
+    {
+      "filesystem_path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Blueprints\\LevelDesign\\CameraRenderTexture\\Atlas_Albedo.uasset",
+      "name": "Atlas_Albedo.uasset",
+      "relative_to_content": "Blueprints\\LevelDesign\\CameraRenderTexture\\Atlas_Albedo.uasset",
+      "size_bytes": 3448656,
+      "ue_virtual_path": "/Game/Blueprints/LevelDesign/CameraRenderTexture/Atlas_Albedo.uasset"
+    },
+    {
+      "filesystem_path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Blueprints\\LevelDesign\\CameraRenderTexture\\Atlas_Normal.uasset",
+      "name": "Atlas_Normal.uasset",
+      "relative_to_content": "Blueprints\\LevelDesign\\CameraRenderTexture\\Atlas_Normal.uasset",
+      "size_bytes": 3824035,
+      "ue_virtual_path": "/Game/Blueprints/LevelDesign/CameraRenderTexture/Atlas_Normal.uasset"
+    },
+    {
+      "filesystem_path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Blueprints\\LevelDesign\\CameraRenderTexture\\Atlas_ORM.uasset",
+      "name": "Atlas_ORM.uasset",
+      "relative_to_content": "Blueprints\\LevelDesign\\CameraRenderTexture\\Atlas_ORM.uasset",
+      "size_bytes": 3520168,
+      "ue_virtual_path": "/Game/Blueprints/LevelDesign/CameraRenderTexture/Atlas_ORM.uasset"
+    },
+    {
+      "filesystem_path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Blueprints\\LevelDesign\\CameraRenderTexture\\Atlas_test.uasset",
+      "name": "Atlas_test.uasset",
+      "relative_to_content": "Blueprints\\LevelDesign\\CameraRenderTexture\\Atlas_test.uasset",
+      "size_bytes": 7493587,
+      "ue_virtual_path": "/Game/Blueprints/LevelDesign/CameraRenderTexture/Atlas_test.uasset"
+    },
+    {
+      "filesystem_path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Blueprints\\LevelDesign\\RoadPainterAssets\\Delete.uasset",
+      "name": "Delete.uasset",
+      "relative_to_content": "Blueprints\\LevelDesign\\RoadPainterAssets\\Delete.uasset",
+      "size_bytes": 1429567,
+      "ue_virtual_path": "/Game/Blueprints/LevelDesign/RoadPainterAssets/Delete.uasset"
+    },
+    {
+      "filesystem_path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Blueprints\\LevelDesign\\RoadPainterAssets\\DeleteSection_.uasset",
+      "name": "DeleteSection_.uasset",
+      "relative_to_content": "Blueprints\\LevelDesign\\RoadPainterAssets\\DeleteSection_.uasset",
+      "size_bytes": 162406,
+      "ue_virtual_path": "/Game/Blueprints/LevelDesign/RoadPainterAssets/DeleteSection_.uasset"
+    },
+    {
+      "filesystem_path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Blueprints\\LevelDesign\\RoadPainterAssets\\DeleteTarget.uasset",
+      "name": "DeleteTarget.uasset",
+      "relative_to_content": "Blueprints\\LevelDesign\\RoadPainterAssets\\DeleteTarget.uasset",
+      "size_bytes": 3694,
+      "ue_virtual_path": "/Game/Blueprints/LevelDesign/RoadPainterAssets/DeleteTarget.uasset"
+    },
+    {
+      "filesystem_path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Blueprints\\LevelDesign\\RoadPainterAssets\\MaskColor.uasset",
+      "name": "MaskColor.uasset",
+      "relative_to_content": "Blueprints\\LevelDesign\\RoadPainterAssets\\MaskColor.uasset",
+      "size_bytes": 3291,
+      "ue_virtual_path": "/Game/Blueprints/LevelDesign/RoadPainterAssets/MaskColor.uasset"
+    },
+    {
+      "filesystem_path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Blueprints\\LevelDesign\\RoadPainterAssets\\M_Delete.uasset",
+      "name": "M_Delete.uasset",
+      "relative_to_content": "Blueprints\\LevelDesign\\RoadPainterAssets\\M_Delete.uasset",
+      "size_bytes": 102161,
+      "ue_virtual_path": "/Game/Blueprints/LevelDesign/RoadPainterAssets/M_Delete.uasset"
+    },
+    {
+      "filesystem_path": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Content\\Blueprints\\LevelDesign\\RoadPainterAssets\\RenderTexture.uasset",
+      "name": "RenderTexture.uasset",
+      "relative_to_content": "Blueprints\\LevelDesign\\RoadPainterAssets\\RenderTexture.uasset",
+      "size_bytes": 3838,
+      "ue_virtual_path": "/Game/Blueprints/LevelDesign/RoadPainterAssets/RenderTexture.uasset"
+    }
+  ]
+}

@@ -1,0 +1,161 @@
+{
+  "schema": "COOK_620e51db_TERMINAL_RECONCILIATION/v1",
+  "schema_version": 1,
+  "run_id": "COOK_620e51db",
+
+  "LIVE_COOK_HEALTH": "PROGRESSING",
+  "health_evidence": {
+    "90s_window": "cooked 1585->1585, remain 81->81, shaders 7958->7938, files 3464->3464, cpu +178.4s, SCW 4, log mtime advanced",
+    "interpretation": "package count was static while shaders continued to compile and the log advanced; per the run's own stall rule (30 min with no package progress AND no log growth AND no SCW CPU delta AND no meaningful IO) package stasis alone never triggers, so this is the shader phase, not a stall",
+    "overall": "1585 of 1666 packages cooked; 81 remain"
+  },
+  "COOK_TERMINAL": false,
+  "COOK_EXIT_CODE": null,
+  "COOK_TERMINATION_CLASS": "NOT_TERMINAL",
+  "COOK_DESCENDANTS_ALIVE": 4,
+  "COOK_DESCENDANTS_NOTE": "4 ShaderCompileWorker children still alive; expected while compiling",
+
+  "SUPERVISED_UE_RUN_SOURCE": "OTHER_WORKTREE_PROVEN",
+  "supervisor_source_detail": {
+    "branch": "control/writer-lock-semantic-diff-20261006",
+    "commit": "08e3284b48ff908afc5bf82b76490d1ad927a0b2",
+    "path": "carla-control-plane/tools/supervised_ue_run.py",
+    "sha256_prefix": "DA06616289C879D0"
+  },
+
+  "PRODUCER_RECEIPT_TERMINAL": false,
+  "PRODUCER_RECEIPT_EXISTS": true,
+  "PRODUCER_RECEIPT_SHA256": "8628326E77C1AA4BB437116452ECED7348A59586065601FFB85EE7AF7814DCB2",
+  "PRODUCER_RECEIPT_BYTES": 686,
+  "PRODUCER_RECEIPT_LAST_WRITE_UTC": "2026-10-06T16:59:43Z",
+  "PRODUCER_RECEIPT_PRESERVED_UNMODIFIED": true,
+  "PRODUCER_RECEIPT_ROOT_MATCH": true,
+  "PRODUCER_RECEIPT_ROOT_MATCH_BASIS": "receipt launcher_pid 29972 equals the live cook PID, and receipt start_utc 2026-10-06T16:59:33.393750Z matches the observed process creation 2026-10-06T16:59:33.3967880Z within 3 ms",
+  "PRODUCER_RECEIPT_ROOT_CREATION_TIME_FIELD": "ABSENT",
+  "PRODUCER_RECEIPT_ROOT_CREATION_TIME_DEFECT": "the receipt records launcher_pid but no creation time, so root identity is PID-only and cannot be uniquely validated if the PID is ever recycled",
+  "PRODUCER_RECEIPT_EXECUTOR_MATCH": false,
+  "RECEIPT_EXECUTOR_PID_ROOT_CAUSE": "STALE_PROCESS_ID",
+  "RECEIPT_EXECUTOR_PID_BASIS": [
+    "supervisor source line 96: executor = job_supervision.resolve_executor_pid(job, proc.pid, timeout_s=120)",
+    "supervisor source line 98: receipt['executor_pid'] = executor.get('executor_pid')",
+    "the recorded value 34196 is dead while the persistent root 29972 is alive",
+    "the field therefore records a resolved job member that is not the durable logical owner, so the value is unresolvable after the fact"
+  ],
+  "receipt_contract_gaps_proven": [
+    "executor_pid is recorded without executor_creation_time, so it cannot be validated once the PID is gone",
+    "launcher_pid is recorded without launcher creation time",
+    "no owner identity record (root_pid plus root_creation_time) is written into the receipt",
+    "the lease heartbeat claim is stringly-typed prose rather than a durable field"
+  ],
+
+  "COOK_LEASE_HISTORY": "STALE_OR_UNRELATED",
+  "lease_store_correction": {
+    "wrong_store_checked_first": "%ProgramData%\\CARLA\\control_plane (published control_plane.SingleWriterLease)",
+    "actual_store_used_by_this_harness": "C:\\ProgramData\\carla-ops\\leases (ultimate_pipeline.governance.single_writer.lease_store)",
+    "note": "two independent lease systems exist; the earlier LIVE_COOK_LEASE_VALID=false conclusion was drawn from the wrong store and is retracted",
+    "retracted_claim": "that no lease record existed for this run"
+  },
+  "lease_evidence": {
+    "path": "C:\\ProgramData\\carla-ops\\leases\\current_lease.json",
+    "schema": "carla_ops_lease/v1",
+    "run_id": "COOK_620e51db",
+    "operation": "COOK",
+    "state": "RUNNING",
+    "start_utc": "2026-10-06T12:20:34.868329Z",
+    "heartbeat_utc_observed": "2026-10-06T18:55:45Z",
+    "end_utc": "",
+    "terminal_state": "",
+    "lease_root_pid": 28436,
+    "lease_root_creation_time": "2026-10-06T12:20:34.602992Z",
+    "lease_executor_pid": 0,
+    "lease_executor_creation_time": "",
+    "operation_fingerprint": "00e559a3b5f1bd857111c31e64bade3cf119e7411861009eec87e031fd9bd320",
+    "mutation_domains": ["DOMAIN_UNREAL_CONTENT", "DOMAIN_DDC", "DOMAIN_SAVED_INTERMEDIATE", "DOMAIN_COOK_OUTPUT"]
+  },
+  "lease_identity_defect": {
+    "lease_root_pid_alive": false,
+    "cook_pid": 29972,
+    "cook_creation_time": "2026-10-06T16:59:33.3967880Z",
+    "lease_root_creation_time": "2026-10-06T12:20:34.602992Z",
+    "creation_time_match": false,
+    "gap_hours": 4.65,
+    "finding": "a lease bearing this run_id is being actively heartbeated, but its root identity (28436 @ 12:20:34Z) belongs to a dead process from roughly 4.65 hours earlier and does not identify the cook it purports to cover",
+    "lease_executor_pid_empty": "executor_pid is 0 and executor_creation_time is blank in the lease as well"
+  },
+  "LEASE_HEARTBEAT_IMPLEMENTED": true,
+  "LEASE_HEARTBEAT_EVIDENCE_COUNT": 2,
+  "LEASE_HEARTBEAT_EVIDENCE": "heartbeat_utc advanced 2026-10-06T18:55:15Z -> 18:55:45Z across a 20 s observation, consistent with the declared 60 s cadence",
+  "RECEIPT_HEARTBEAT_CLAIM_VALID": "PARTIALLY",
+  "RECEIPT_HEARTBEAT_CLAIM_DETAIL": "the heartbeat is genuinely implemented and running, so the prose claim is not fabricated; however the lease it maintains carries a root identity that does not match the supervised process, so the claim of heartbeat COVERAGE is not valid even though the heartbeat itself is real",
+
+  "COOK_JOB_SUPERVISION_AUTHORITY": "ASSIGNMENT_CODEPATH_PROVEN",
+  "COOK_JOB_SUPERVISION_BASIS": {
+    "code_evidence": [
+      "supervisor source line 69: job = job_supervision.create_job()",
+      "line 74-76: subprocess.Popen with creationflags SUSPENDED|BREAKAWAY (0x00000004 | 0x01000000)",
+      "line 78-80: AssignProcessToJobObject(job.handle, proc._handle) with an explicit raise on failure",
+      "line 88: resume_primary_thread(proc.pid) after assignment",
+      "line 118: wait_for_drain(job, timeout_s=300)",
+      "line 136: receipt records job_members_final = job.member_pids()"
+    ],
+    "runtime_membership": "NOT PROVEN. Sysinternals handle.exe is not installed, so live job membership of PID 29972 cannot be read. Codepath evidence is deliberately NOT upgraded to runtime evidence.",
+    "supports": "the assign-then-resume ordering that prevents a child escaping the job"
+  },
+
+  "ITERATIVE_BASELINE_SOURCE": "EMPTY_BASELINE",
+  "RETIRED_COOK_METADATA_CONSUMED": false,
+  "iterative_baseline_evidence": [
+    "output root F:\\CARLA\\cook_bounded\\COOK_620e51db was created fresh at cook start",
+    "no Metadata directory, no OpenOrder file and no .uptnl artefact has been produced",
+    "zero log references to cook_out, 2975, 3558 or Saved/Cooked",
+    "retired output G:\\CARLA\\cook_out\\Ingolstadt exists (7155 files, 4.9 GB) but is a different path and is not named in the command",
+    "residual uncertainty: iterative metadata is emitted at cook finalisation, which has not occurred"
+  ],
+  "STDOUT_FLAG_FOR_THIS_COOK": "SAFE",
+  "stdout_flag_scope": "applies specifically to UE4Editor -run=cook; explicitly NOT generalised to source-tree game launches",
+  "stdout_flag_evidence": "zero SECURE CRT / CRT initialization / abnormal program termination / _CRT_ / Fatal / Assertion / Error: occurrences; stderr 0 bytes; process stable for hours",
+
+  "TECHNICAL_COOK_RESULT": "INDETERMINATE",
+  "TECHNICAL_COOK_RESULT_BASIS": "cook is non-terminal; no completion marker present (Cook complete / Engine exit requested both 0 occurrences), so completeness cannot be judged yet",
+  "technical_indicators_to_date": {
+    "Error:": 0, "Fatal": 0, "Assertion": 0,
+    "LogShaderCompilers: Error": 0, "SCW_ALL_WORKERS_LOST": 0,
+    "Cook failed": 0, "Error Summary": 0
+  },
+  "COOK_OUTPUT_AUTHORITY": "INDETERMINATE",
+  "COOK_OUTPUT_AUTHORITY_BASIS": "two axes kept separate: technical validity is not yet determinable because the cook has not terminated, and governance is already defective via the stale lease root identity and the unresolvable executor_pid",
+
+  "RECONCILIATION_RECEIPT_CREATED": false,
+  "RECONCILIATION_RECEIPT_WHY_NOT": "a POST_HOC_RECONCILIATION receipt is premature while the producer receipt may still be updated at terminal state by the supervisor; creating one now could contradict the producer's own terminal record. It should be created only after the cook terminates.",
+
+  "SUPERVISOR_RECEIPT_REGRESSION": "NOT_RUN",
+  "LEASE_HEARTBEAT_REGRESSION": "NOT_RUN",
+  "JOB_SUPERVISION_REGRESSION": "NOT_RUN",
+  "harness_repair_deferred_reason": "Phase 9 repair was not attempted while a live cook depends on the current harness; editing the supervisor mid-run risks the running operation. Candidate defects are recorded above for repair after terminal state.",
+
+  "F_FREE_GB": 34.49,
+  "F_DDC_SIZE_GB": 5.53,
+  "F_COOK_OUTPUT_SIZE_GB": 1.39,
+  "F_WORKTREES_GB": 3.84,
+  "F_DDC_CAPACITY": "MARGINAL",
+  "F_DDC_CAPACITY_BASIS": "F: has 34.49 GB free with 5.53 GB DDC and 1.39 GB cook output already present. Performance qualified (0 slow warnings) is not capacity qualified. A second bounded cook plus further DDC growth from a full production cook would not fit comfortably. No DDC relocation was attempted.",
+
+  "C_FREE_GB": 13.25,
+  "C_STORAGE_ADMISSION": "FAIL",
+  "C_STORAGE_ADMISSION_BASIS": "C: is at 2.78% free against the established 20-30 GB operating range. No cleanup was performed because live tooling still owns candidate paths while the cook runs.",
+
+  "ACTIVE_CONFLICTING_MUTATORS": 1,
+  "ACTIVE_CONFLICTING_MUTATORS_DETAIL": "live bounded cook PID 29972 plus 4 ShaderCompileWorkers, owned by another session",
+
+  "RQ1_OSM_PREFLIGHT_TESTS": "7/7 PASS",
+  "CONFIRMATION_TRIAL_RUN": false,
+  "OSM_NETWORK_FETCH_ATTEMPTED": false,
+  "DEM_STAGE_PASSED": "NOT_ASSESSED",
+  "STAGE_04_REACHED": false,
+  "STAGE_05_REACHED": false,
+  "FULL_N5_RUN_STARTED": false,
+
+  "ACTIONS_TAKEN": "read-only observation and receipt writing only; the live cook was never touched, interrupted, or competed with, and no cleanup or new Unreal process was started",
+
+  "FINAL_VERDICT": "COOK_GOVERNANCE_REPAIR_REQUIRED"
+}

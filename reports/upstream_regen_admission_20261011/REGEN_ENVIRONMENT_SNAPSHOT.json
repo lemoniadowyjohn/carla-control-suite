@@ -1,0 +1,24 @@
+{
+  "FRESH_REGEN_CRS_ENVIRONMENT": "INVALID_OR_UNPROVEN (attempts 1-2b ran with cleared PROJ_LIB; pj_obj_create warnings throughout)",
+  "NETCONVERT_VERSION": "1.24.0",
+  "PROJ_DATA": null,
+  "PROJ_LIB": "C:/Users/admin/PycharmProjects/gpt4/pythonProject3/.venv/Lib/site-packages/pyproj/proj_dir/share/proj (foreign: belongs to a different venv; cleared for attempts 2/2b, set to pyproj-own dir for attempt 5/6)",
+  "PROJ_VERSION": "9.8.1",
+  "PYPROJ_VERSION": "3.8.0",
+  "REGEN_CANDIDATE_PATH": "campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_fresh_topology_<RUN>.xodr (never emitted; all attempts died first)",
+  "REGEN_CANDIDATE_SHA256": null,
+  "REGEN_CODE_SHA": "3a6f32255916b9783e41981ba284d68401294a92",
+  "REGEN_COMMAND": "python scripts/regen_map_of_record.py --allow-dirty --out-dir reports/topology_convergence/<RUN_ID>/regen --candidate-name ingolstadt_fresh_topology_<RUN>.xodr",
+  "REGEN_OUTPUT_ROOT": "reports/topology_convergence/<RUN_ID>/regen (in worktree)",
+  "REGEN_RUN_ID": "20261011T200905Z_fresh (+20261012T135616Z_fresh5)",
+  "REGEN_WORKTREE": "C:/Users/admin/AppData/Local/Temp/wt-topo-conv (detached HEAD)",
+  "SUMO_VERSION": "netconvert 1.24.0 (C:/Sumo/sumo-win64extra-1.24.0/sumo-1.24.0/bin/netconvert.exe)",
+  "attempts": {
+    "attempt1": "proj-guard fail-closed (correct behavior); no artifacts",
+    "attempt2": "seed 93842170 + 01_sanitized then silent death ~22:12:45, ENOSPC (C: ~3.18GB -> 0)",
+    "attempt2b": "seed + 01_sanitized, died stage-03 save with ENOSPC traceback (proven)",
+    "attempt3_other_actor": "contaminated shared out_dir; partial traceback ending at logfile.write; seed abfb5533",
+    "attempt5": "died at startup: ultimate_pipeline_out missing (launcher lacked mkdir)",
+    "attempt6": "running with mkdir fix + PROJ_LIB=pyproj-own dir + python -u; stages 01,02,03 written"
+  }
+}

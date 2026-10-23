@@ -1,0 +1,51 @@
+{
+  "timestamp_utc": "2026-10-11T15:03:00Z",
+  "preservation_authority": "M2.5_TOPOLOGY_CONVERGENCE",
+  "m2_local_commit": {
+    "full_sha": "0f3c360133eeed959dcc8a871a15e7b1f366dbf6",
+    "short_sha": "0f3c3601",
+    "parent_sha": "68868f763d22a630fc9ba8d818ed1919a7b8414d",
+    "tree_sha": "986573cf5281b075680dd23af14c5ef2359d0dd6",
+    "branch": "fix/gap026-junction-lanelink-generator-20261011",
+    "author": "Gemini Agent <gemini-agent@example.com>",
+    "date": "2026-10-11T16:45:32+02:00",
+    "message": "fix(gap026): junction lane-width harmonizer + outer->inner mispair prune guard (source-stage only)\n\nStage 7 connector lanes inherit matched incoming width (fixes 0.25m\ntier discontinuity); Stage-8 guard prunes severe outer->inner mispairs\nto explicit residuals. Thresholds unchanged, no final-XODR patch.\nAdversarial tests: 16 passed.",
+    "changed_files": [
+      "ultimate_pipeline/lanes/junction_lane_width_harmonizer.py",
+      "ultimate_pipeline/lanes/lanelink_builder.py",
+      "ultimate_pipeline/pipeline_stages/stage_07_lanes.py",
+      "tests/unit/test_gap026_junction_lanelink_generator.py"
+    ],
+    "insertions": 494,
+    "deletions": 0,
+    "patch_id": "7ab06d9a8880667ad0038dc6b0d9fce358bfc09f",
+    "dirty_status": "CLEAN_COMMIT",
+    "remote_visibility": "NOT_ON_REMOTE",
+    "preserved": true,
+    "preservation_note": "This commit exists only locally. DO NOT LOSE IT. Preserved here before any validation determines whether this exact commit remains a valid candidate."
+  },
+  "divergent_gap048_module": {
+    "ef3003c2_committed_version": {
+      "file": "ultimate_pipeline/enrichment/lane_successor_topology.py",
+      "commit": "ef3003c2a97f838360aff94812fee9cc1dd79ca6",
+      "sha256": "40900d7cd329a80c2ec7892e0f97954dc72c711a6cdc15a382b9099a8de6a7a0",
+      "status": "COMMITTED"
+    },
+    "working_tree_untracked_version": {
+      "file": "ultimate_pipeline/enrichment/lane_successor_topology.py",
+      "sha256": "7ee02c0215c05661f89c8e00ef22f29d2882a3eb4f933d5466e0f695eed30e76",
+      "status": "UNTRACKED"
+    },
+    "submission_infrastructure_mirror": {
+      "file": "submission/infrastructure/ultimate_pipeline/enrichment/lane_successor_topology.py",
+      "sha256": "7ee02c0215c05661f89c8e00ef22f29d2882a3eb4f933d5466e0f695eed30e76",
+      "status": "MATCHES_UNTRACKED"
+    },
+    "divergence": {
+      "ef3003c2_vs_working_tree": "DIFFERENT",
+      "submission_mirror_vs_ef3003c2": "DIFFERENT",
+      "submission_mirror_vs_working_tree": "IDENTICAL",
+      "explanation": "The working tree untracked file and submission/infrastructure mirror are identical (sha256 7ee02c02...). The committed ef3003c2 version differs (sha256 40900d7c...). The divergent implementation in the working tree was used for GAP-048 reporting but never committed."
+    }
+  }
+}

@@ -1,0 +1,48 @@
+{
+  "deliverable_id": "POST_P0_TEST_BASELINE_CLASSIFICATION",
+  "evaluation_utc": "2026-10-21",
+  "interpreter": "C:\\temp\\py312_venv\\Scripts\\python.exe (Python 3.12.2, pytest 9.1.1)",
+  "worktree": "E:\\wt\\repair-map-realism-p0-837a8504",
+  "first_measured_run": {
+    "command_scope": "13 RQ3-targeted test files",
+    "passed": 112,
+    "failed": 18,
+    "exit_code": 1
+  },
+  "classification_after_diagnosis": {
+    "category_A_regression_from_P0_3_builder_change": {
+      "count": 9,
+      "tests": ["test_03_mismatched_weather_rejected", "test_04_wrong_timing_rejected", "test_05_invalid_route_rejected", "test_06_incomplete_frames_rejected", "test_07_failed_terminal_execution_rejected", "test_08_missing_dataset_sha_rejected", "test_09_tampered_manifest_rejected", "test_10_asserted_positive_pair_valid_not_honoured", "test_11_failure_reasons_survive_serialization", "test_12_validator_downgrades_claim_when_invalid"],
+      "root_cause": "NameError: name 'derived_pair_valid' is not defined -- the P0-3 builder edit referenced the derived predicate but the assignment was omitted. Defect present in reviewed SHA 9e777a27.",
+      "status": "FIXED in commit 67d3b357 (separate commit; 9e777a27 preserved unmodified)",
+      "verification_after_fix": "53/53 PASS (builder regression 12 + paired capture contract 25 + terminal adversarial 10 + final artifact receipt 6)",
+      "affects": ["strict RQ3 execution", "dataset admission", "scientific provenance"],
+      "status_after_fix": "RESOLVED"
+    },
+    "category_B_test_authoring_defect_in_new_P0_4_test": {
+      "count": 1,
+      "test": "test_rq3_artifact_content_verification.py::test_artifact_integrity_checks",
+      "root_cause": "Test-side path/assertion defects (artifact path resolution to deliverables dir; duplicate-identity case reused a mutated artifact list). Production code under test (rq3_evidence_gate.verify_artifact_set) behaved correctly.",
+      "affects": ["artifact content verification"],
+      "status_after_fix": "PARTIALLY RESOLVED -- 5 of 10 sub-checks PASS (correct digest, wrong digest, missing file, path traversal, staging uncommitted, modified-after-manifest); duplicate-identity sub-check still failing on test-harness state reuse"
+    },
+    "category_C_pre_existing_out_of_scope_import_failures": {
+      "count": 4,
+      "tests": ["test_receipt_lifecycle_negative_controls.py (4 tests)"],
+      "root_cause": "ImportError: cannot import name 'build_final_receipt' from 'ultimate_pipeline.contracts.release_acceptance' -- the contract module lacks this symbol; test file was written against a contract API that does not exist in the tracked source.",
+      "affects": ["none of: strict RQ3 execution, CARLA init, runtime map identity, sensor capture, dataset admission, scientific provenance -- it targets the release-acceptance receipt contract, not RQ3 capture"],
+      "status": "OPEN_OUT_OF_SCOPE -- not a regression from this campaign (symbol absent before 9e777a27 as well); left untouched to avoid unrelated cleanup"
+    },
+    "category_D_pre_existing_geometry_test_failures": {
+      "count": 3,
+      "tests": ["test_rq3_route_rig_hardening.py::test_new295_coordinate_frame_binding", "test_rq3_route_rig_hardening.py::test_new295_wrong_crs_fails", "test_frame_set_intersection.py::test_frame_set_consistency_basic"],
+      "root_cause": "CRS/frame-binding assertions (NEW-295 origin-anchored CRS policy) and frame-count consistency expectations; these are pre-existing repository conditions, not introduced by the P0 campaign (same failures observed before the P0-3 edit when the builder aborted earlier in the file)",
+      "affects": ["frame-set consistency is adjacent to dataset admission; needs owner review before any dataset admission claim"],
+      "status": "OPEN_PRE_EXISTING"
+    }
+  },
+  "rq3_campaign_attributable_regressions_after_fix": 0,
+  "independent_verification_of_9e777a27": "NOT_DONE -- reviewed SHA 9e777a27 contains the NameError; Codex review must cover 9e777a27 AND fix commit 67d3b357. The reviewed implementation SHA and the evidence/report commit SHA remain distinct.",
+  "claim_admission_status": "RQ3_PAIRED_DATASET_NOT_ADMITTED",
+  "independent_review_status": "INDEPENDENT_REVIEW_NOT_RUN"
+}

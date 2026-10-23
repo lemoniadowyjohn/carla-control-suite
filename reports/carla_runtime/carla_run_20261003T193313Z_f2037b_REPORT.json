@@ -1,0 +1,38 @@
+{
+  "blocker": "RuntimeError: time-out of 60000ms while waiting for the simulator, make sure the simulator is ready and connected to 127.0.0.1:2002",
+  "carla_exe": "E:\\CARLA\\CARLA_0.9.16\\CarlaUE4.exe",
+  "carla_exe_bytes": 191488,
+  "carla_exe_present": true,
+  "carla_exe_sha256": "0bc4b3d089470ffdc91a2ec6bf2f26187de271d0e9e71a01beee8416633c7320",
+  "carla_version_target": "0.9.16",
+  "generated_at_utc": "2026-10-03T19:33:15.002185Z",
+  "launch_command": null,
+  "owned_pid": null,
+  "owned_pid_creation_time": null,
+  "pre_existing_carla_pids": [
+    30448,
+    17760,
+    33268
+  ],
+  "pre_existing_not_killed": true,
+  "probe_only": true,
+  "rpc": {
+    "client_import_ok": true,
+    "error": "RuntimeError: time-out of 60000ms while waiting for the simulator, make sure the simulator is ready and connected to 127.0.0.1:2002",
+    "get_available_maps_count": null,
+    "get_server_version": null,
+    "snapshot_frame": null,
+    "snapshot_timestamp": null,
+    "world_get_map": null
+  },
+  "rpc_port": 2002,
+  "rpc_port_listening": true,
+  "run_id": "carla_run_20261003T193313Z_f2037b",
+  "runtime_ready": false,
+  "schema": "carla_runtime_launch/v2",
+  "stderr_log": "reports\\carla_runtime\\carla_run_20261003T193313Z_f2037b_stderr.log",
+  "stdout_log": "reports\\carla_runtime\\carla_run_20261003T193313Z_f2037b_stdout.log",
+  "streaming_port": 2003,
+  "streaming_port_listening": true,
+  "verdict": "BLOCKED_ENVIRONMENT"
+}

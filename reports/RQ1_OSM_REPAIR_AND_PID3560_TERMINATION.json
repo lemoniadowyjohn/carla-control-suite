@@ -1,0 +1,137 @@
+{
+  "schema": "RQ1_OSM_REPAIR_AND_PID3560_TERMINATION/v1",
+  "schema_version": 1,
+
+  "PID3560_IDENTITY_MATCH": true,
+  "PID3560_IDENTITY_DETAIL": {
+    "pid": 3560,
+    "creation_time_utc": "2026-10-06T15:28:37.4647190Z",
+    "expected_creation_time_utc": "2026-10-06T15:28:37.4647190Z",
+    "exact_match": true,
+    "executable": "G:\\UnrealEngine_4.26_CARLA\\Engine\\Binaries\\Win64\\UE4Editor.exe",
+    "command_line": "UE4Editor.exe G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\CarlaUE4.uproject -nullrhi -unattended -executecmds=quit",
+    "parent_pid": 3904,
+    "parent_alive": false,
+    "pre_kill_private_mb": 13803,
+    "pre_kill_threads": 115,
+    "pre_kill_accumulated_cpu_s": 43211
+  },
+  "PID3560_TERMINATED": true,
+  "PID3560_DESCENDANTS_ALIVE": 0,
+  "PID3560_TERMINATION_MECHANISM": "Stop-Process -Id 3560 -Force, executed only after re-reading Win32_Process and confirming the creation time still matched to the microsecond. No image-name termination, no wildcard.",
+  "PID3560_DESCENDANTS_OBSERVED": [
+    {"pid": 18580, "name": "DeploymentServerLauncher.exe"},
+    {"pid": 11332, "name": "conhost.exe"}
+  ],
+  "POST_TERMINATION_CENSUS": "0 Unreal-family processes; confirmed by both Get-Process and Win32_Process after teardown settled",
+  "SIDE_EFFECT_MEASURED": "C: free space rose from 6.83 GB to 9.99 GB after termination, consistent with the terminated process having been a significant C: consumer.",
+
+  "ORPHAN_PROBE_LAUNCHER": "UNKNOWN_EXTERNAL_UNGOVERNED_HARNESS",
+  "ORPHAN_PROBE_LAUNCHER_EVIDENCE": {
+    "ruled_out": [
+      "scheduled tasks: no task references UE4Editor or CarlaUE4; running tasks are all benign OS tasks",
+      "this repository: the only files containing '-nullrhi -unattended -executecmds=quit' are this session's own audit receipts, which RECORD the observed command line rather than launching it",
+      "git worktrees, G:\\CARLA\\tools, .claude, and the opencode temp store: no launcher found"
+    ],
+    "strong_circumstantial_finding": {
+      "process": "python PID 11096 (launcher 33864) running 'tools/supervised_ue_run.py --label BoundedCook_6_8 --run-id COOK_620e51db ... --timeout-s 14400 -- UE4Editor.exe ... -run=cook -map=/Game/Ingolstadt/Maps/Ingolstadt/Ingolstadt_Tile_6_8 -targetplatform=WindowsNoEditor -OutputDir=F:\\CARLA\\cook_bounded\\COOK_620e51db -iterate -cooksinglepackage -unattended -NoLogTimes -UTF8Output -stdout'",
+      "critical_gap": "tools/supervised_ue_run.py is ABSENT from the repository. The running supervisor references a script that does not exist on disk, so it cannot be audited, version-controlled, or reproduced.",
+      "governance_concerns": [
+        "uses -stdout, which prior policy explicitly prohibited",
+        "uses -iterate, which can consume stale iterative metadata; the old 2975/3558 state was declared permanently retired and must never be consumed",
+        "receipt reports/control_plane/BOUNDED_COOK_6_8_RECEIPT.json is still absent, so the run is currently unsupervised by any durable receipt"
+      ],
+      "explains_prior_anomaly": "This harness is the most plausible source of the F: free-space decline (41.50 -> 35.42 GB) and plausibly of the earlier orphan probe pattern."
+    },
+    "not_concluded": "Whether this harness produced PID 396 and PID 3560 specifically is NOT proven. Its current invocation is a cook, not a probe. Classified UNKNOWN rather than asserting a causal link."
+  },
+
+  "ACTIVE_CONFLICTING_MUTATORS": 1,
+  "ACTIVE_CONFLICTING_MUTATORS_DETAIL": {
+    "concurrent_unreal_cook_in_progress": {
+      "cook_pid": 29972,
+      "created": "2026-10-06T18:59:33",
+      "run_id": "COOK_620e51db",
+      "map": "/Game/Ingolstadt/Maps/Ingolstadt/Ingolstadt_Tile_6_8",
+      "target_platform": "WindowsNoEditor",
+      "output_dir": "F:\\CARLA\\cook_bounded\\COOK_620e51db",
+      "shader_compile_workers": 4,
+      "output_so_far": "2001 files, 0.93 GB",
+      "ownership": "another live opencode session (PID 8280, created 18:30:05); NOT this session",
+      "action_taken": "NONE. Not terminated, not interfered with. It is not this session's process and no authorisation covers it."
+    },
+    "implication": "Phase 0 quiescence is false. No RQ1 confirmation trial may run concurrently with a live cook on the same project."
+  },
+
+  "OSM_FILE_CONFIG_SOURCE": "ultimate_pipeline/config/settings.py",
+  "OSM_FILE_CONFIGURED_PATH": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\cities\\ingolstadt\\osm\\ingolstadt.osm",
+  "CONFIGURED_PATH_EXISTS": false,
+
+  "GOVERNED_OSM_PATH": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\campaigns\\ingolstadt_cooked_perception_v1\\source\\ingolstadt_authoritative.osm",
+  "GOVERNED_OSM_SIZE": 11154738,
+  "GOVERNED_OSM_SHA256": "b9e074656f744c31e6aabb0a16e6b2246824ca74e202ea2c316ff7f22364f24f",
+  "GOVERNED_OSM_HASH_MATCH": true,
+  "INPUTS_MANIFEST_STILL_PINS_SAME": true,
+
+  "UP_OSM_FILE_BEFORE": null,
+  "UP_OSM_FILE_AFTER": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\campaigns\\ingolstadt_cooked_perception_v1\\source\\ingolstadt_authoritative.osm",
+  "OSM_CONFIG_REPAIR_METHOD": "ENV_OVERRIDE",
+  "OSM_CONFIG_REPAIR_SCOPE": "process-local environment of this diagnostic session only; not exported to the OS, not persisted, does not affect any other process or session",
+  "CONFIG_CHANGED": false,
+  "files_modified": [],
+  "settings_py_modified": false,
+  "inputs_manifest_modified": false,
+  "osm_downloaded": false,
+  "osm_fabricated": false,
+
+  "EFFECTIVE_OSM_FILE_MATCH": true,
+  "EFFECTIVE_OSM_FILE_EXISTS": true,
+  "ENABLE_OSM_DOWNLOAD": true,
+  "gate_weakening": "NONE. ENABLE_OSM_DOWNLOAD remains True; the repair makes the governed local path resolve so the remote fallback is never reached, rather than suppressing it.",
+
+  "RQ1_OSM_PREFLIGHT_TESTS": "7/7 PASS",
+  "RQ1_OSM_PREFLIGHT_REQUIRED_CASES": "5/5 PASS",
+  "RQ1_OSM_PREFLIGHT_ARTIFACTS": {
+    "module": "tools/rq1_osm_preflight.py",
+    "tests": "tests/unit/test_rq1_osm_preflight.py",
+    "cases": [
+      "1 correct path + correct hash -> PASS",
+      "2 missing path -> FAIL before network",
+      "3 wrong file hash -> FAIL",
+      "4 UP_OSM_FILE unset -> FAIL",
+      "5 alternate unpinned .osm (correct bytes, wrong path) -> FAIL",
+      "extra: no socket is ever created during preflight",
+      "extra: expected digest is sourced from INPUTS_MANIFEST, not a constant"
+    ],
+    "generic_pipeline_behaviour_changed": false
+  },
+
+  "C_FREE_GB": 9.99,
+  "C_FREE_PERCENT": 2.10,
+  "F_FREE_GB": 35.42,
+  "RQ1_CONFIRMATION_STORAGE_ADMISSION": "FAIL",
+  "RQ1_CONFIRMATION_STORAGE_ADMISSION_REASON": "C: sits at 2.10% free (9.99 GB), well below the 20-30 GB operating range established in the prior storage batch. C: backs TEMP, pagefile and tooling, so a long confirmation trial there is not defensible. F: is also declining under the concurrent cook.",
+
+  "CONFIRMATION_TRIAL_RUN": false,
+  "OSM_NETWORK_FETCH_ATTEMPTED": false,
+  "OSM_NETWORK_FETCH_ATTEMPTED_BASIS": "No pipeline stage was executed. The preflight is proven offline by a socket guard in the test suite.",
+
+  "DEM_STAGE_PASSED": "NOT_ASSESSED",
+  "STAGE_04_REACHED": false,
+  "STAGE_05_REACHED": false,
+  "STAGE_SEMANTICS_NOTE": "DEM stage 04/05 definitions were not derived from production code in this batch; no stage inventory was established, so no stage claim is made.",
+
+  "CONFIRMATION_TRIAL_TERMINATION": "NOT_RUN",
+  "CONFIRMATION_TRIAL_NEXT_BLOCKER": "Two independent gates fail: (1) a live bounded cook (PID 29972 + 4 ShaderCompileWorkers, run COOK_620e51db) owned by another session is writing to F:, so ACTIVE_CONFLICTING_MUTATORS != 0; (2) C: free space is 2.10%, below the established safe operating range.",
+
+  "EXTERNAL_ACQUISITION_REQUIRED": false,
+  "FULL_N5_RUN_STARTED": false,
+  "PRODUCTION_CONTENT_MUTATED": false,
+  "COOK_LAUNCHED_BY_THIS_SESSION": false,
+
+  "BUILDING_MATERIAL_VISUAL_DEFECT": "OPEN",
+  "BUILDING_VISUAL_DEFECT_BLOCKS_COOK": false,
+  "SEMANTIC_SEGMENTATION_IMPACT": "UNPROVEN",
+
+  "FINAL_VERDICT": "RQ1_OSM_REPAIR_COMPLETE_TRIAL_BLOCKED_BY_STORAGE"
+}

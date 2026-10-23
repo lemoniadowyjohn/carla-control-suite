@@ -1,0 +1,18 @@
+{
+  "ATTRIBUTED_C_GROWTH_GB": 0.3,
+  "UNATTRIBUTED_C_GROWTH_GB": 5.8,
+  "components": {
+    "gap049_evidence_dir": "2.3 MB (preserved)",
+    "poller_csv_273mb": "HISTORICAL (discarded before freeze; current signal-only CSV 1.65MB)",
+    "regen_stage_files": "~84 MB per stage artifact (4 attempts x seed+01_sanitized \u2248 0.7 GB, mine, documented)",
+    "temp_harness_pytest_opencode_worktrees": ">40 GB CURRENTLY in C:/Users/admin/AppData/Local/Temp but accumulated over days by harness/pytest/OneDrive; NOT attributable to the 22-min cook window without mtime-bounded measurement"
+  },
+  "recovery_event_14gb": "UNATTRIBUTED (3.18 -> 17.43 GB freed by unknown actor/process between regen death and now; not claimed as my recovery)",
+  "trajectory_gb_free": {
+    "cook_end_approx": 3.18,
+    "cook_start_approx": 9.3,
+    "during_attempt2b": 0.0,
+    "now": 17.43,
+    "regen_attempt2": 3.18
+  }
+}

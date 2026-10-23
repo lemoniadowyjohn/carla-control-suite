@@ -1,0 +1,44 @@
+{
+  "acknowledged_by_session": "ctl",
+  "prior_record": {
+    "content_root": null,
+    "ddc_mutation_concurrency": "DENIED",
+    "domains": [
+      "DOMAIN_UNREAL_CONTENT",
+      "DOMAIN_IMPORT_SETTINGS",
+      "DOMAIN_DDC",
+      "DOMAIN_SAVED_INTERMEDIATE"
+    ],
+    "engine_root": null,
+    "heartbeat_utc": "2026-10-06T12:04:04.719999Z",
+    "mutex_name": "Local\\CARLA_T6_c55702683f",
+    "mutex_verdict": "ACQUIRED",
+    "operation": "IMPORT",
+    "operation_fingerprint": {
+      "content_root": null,
+      "engine_root": null,
+      "fingerprint": "3d9eefe17379dafef991c340e266d53fe24009bb5a072f5ea28dbd9a11779ab3",
+      "import_settings_sha256": null,
+      "operation": "IMPORT",
+      "output_root": null,
+      "package_identity": "",
+      "project_root": null
+    },
+    "parent_pid": 34832,
+    "prior_lease_state": null,
+    "project_root": null,
+    "root_creation_time": "2026-10-06T12:04:03.0954120Z",
+    "root_pid": 15468,
+    "run_id": "3385205e56694061806ea1ab84851416",
+    "schema": "CARLA_MUTATION_LEASE/v1",
+    "schema_version": 1,
+    "session_id": "owner-sess",
+    "start_utc": "2026-10-06T12:04:04.719999Z",
+    "status": "ACQUIRED"
+  },
+  "prior_state": "STALE",
+  "reason": "t6",
+  "reconciled_utc": "2026-10-06T12:04:09.470823Z",
+  "schema": "CARLA_LEASE_RECONCILIATION/v1",
+  "schema_version": 1
+}

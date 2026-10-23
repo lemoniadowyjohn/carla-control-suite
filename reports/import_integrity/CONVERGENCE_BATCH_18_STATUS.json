@@ -1,0 +1,182 @@
+{
+  "schema": "convergence_batch_status/v1",
+  "generated_at_utc": "2026-10-04T21:40:00Z",
+
+  "LIVE_COOK_STATUS": {
+    "state": "ACTIVE",
+    "process": "UE4Editor PID 5852",
+    "started": "2026-10-04T20:25:34",
+    "cpu_seconds": 18053.2,
+    "rss_mb": 1028,
+    "shader_compile_workers": 9,
+    "log": "G:\\CARLA\\build_logs\\ingolstadt_cook_20261004T182534Z.log",
+    "log_growth_25s_bytes": 365,
+    "action_taken": "NONE - observed read-only only. No UE process was started, stopped, killed or configured. No DDC purge. No output modification."
+  },
+
+  "P0_A_building_namespace": {
+    "BUILDING_NAMESPACE_ROOT_CAUSE": "WRONG_SUBPATH_IN_SERIALIZED_REFERENCE",
+    "BUILDING_NAMESPACE_ROOT_CAUSE_PROVEN": true,
+    "EXPECTED_BUILDING_ROOT": "/Game/Ingolstadt/Maps/Ingolstadt",
+    "ACTUAL_BUILDING_ROOT": "/Game/Ingolstadt/Static/Terrain/Ingolstadt",
+    "SERIALIZED_REFERENCE_ROOT": "/Game/Ingolstadt/Maps/Ingolstadt",
+    "EXPECTED_BUILDING_INSTANCES": 5711,
+    "ACTUAL_BUILDING_ASSETS": 5711,
+    "ASSET_REGISTRY_VISIBLE": "NOT_MEASURED - requires an editor probe, blocked behind the live cook",
+    "UNRESOLVED_REFERENCES_BEFORE": 5711,
+    "UNRESOLVED_REFERENCES_AFTER": 5711,
+    "fix_applied": false,
+    "fix_policy_selected": "FIX-A (import tile meshes to the map destination, matching CARLA's stock Town01 layout)",
+    "fix_deferred_reason": "The live cook is consuming the same Content tree. Re-importing or moving assets now would collide with an active cook. Deferred until the cook terminates.",
+    "prior_hypothesis_now_refuted": "MOUNT_POINT_OR_NAMESPACE_MISMATCH via junction aliasing - /Game/Ingolstadt is a real directory, not a junction"
+  },
+
+  "P0_B_georeference": {
+    "GEOREFERENCE_WARNING_BEFORE": "WARNING: cannot parse georeference: '+proj=tmerc'. Using default values.",
+    "GEOREFERENCE_SOURCE": "LibCarla/source/carla/opendrive/parser/GeoReferenceParser.cpp:52",
+    "GEOREFERENCE_ACTUAL": "+proj=tmerc",
+    "root_cause": {
+      "parser_behaviour": "Splits <geoReference> on spaces, recognises ONLY +lat_0 and +lon_0, and if either is NaN logs a warning then substitutes latitude=42.0 longitude=2.0.",
+      "bare_string_origin": "Build/osm2odr-source/src/OSM2ODR.h:21 -> std::string proj_string = \"+proj=tmerc\";  (the incomplete default)",
+      "complete_string_available_at": "Build/osm2odr-source/src/utils/geom/GeoConvHelper.cpp:376 builds '+proj=tmerc +lat_0=0 +lon_0=<3*zone> +k=1 +x_0=... +y_0=0 +ellps=bessel +datum=potsdam +units=m +no_defs'",
+      "evidence_of_selective_defect": "44 .xodr files carry a geoReference; 42 contain BOTH +lat_0 and +lon_0. The only 2 that do not are the two Ingolstadt maps. Every stock CARLA town map is complete.",
+      "measured_impact": "Fallback places the map at lat 42.0 lon 2.0; Ingolstadt is lat ~48.766 lon ~11.425. ~6.77 deg latitude, ~9.43 deg longitude, roughly 752 km. Every runtime get_location()/GNSS/perception geolocation would be silently wrong."
+    },
+    "GEOREFERENCE_PARSE": "STRICT_PARSER_IMPLEMENTED_AND_TESTED",
+    "SILENT_FALLBACK_REMOVED": false,
+    "SILENT_FALLBACK_REMOVED_note": "The reference strict parser (tools/carla_georeference_contract.py, 23 tests) raises GeoreferenceError instead of substituting defaults. The C++ parser at GeoReferenceParser.cpp:52 is NOT yet modified, so production still falls back. Removing it requires a LibCarla rebuild.",
+    "CRS_NUMERICAL_VALIDATION": "NOT_RUN - requires the corrected georeference to exist first",
+    "deliverable": "tools/carla_georeference_contract.py + tests/unit/test_carla_georeference_contract.py (23 tests)"
+  },
+
+  "P0_C_distance_field": {
+    "DISTANCE_FIELD_STALL_COUNT": 27,
+    "DISTANCE_FIELD_TOTAL_HOURS": 8.77,
+    "DISTANCE_FIELD_P50_BEFORE": 1340.095,
+    "DISTANCE_FIELD_P95_BEFORE": 2474.528,
+    "DISTANCE_FIELD_MAX_BEFORE": 2807.558,
+    "WORST_MESH": "Ingolstadt_Tile_7_8_Building_Bavaria",
+
+    "geometry_resolved": "24 of 27 (3 mesh names not resolvable to a source OBJ object)",
+
+    "complexity_hypothesis_REFUTED": {
+      "claim_tested": "pathological geometry / excessive triangle count",
+      "method": "Compared 24 stalled meshes against 27 same-tile control meshes with no recorded stall.",
+      "result": "The FAST controls are LARGER than the stalled meshes on every complexity metric.",
+      "slow_median": {"triangles": 8059, "vertices": 4506, "surface_area_m2": 155993.48, "components": 186},
+      "fast_median": {"triangles": 13731, "vertices": 7849, "surface_area_m2": 335502.15, "components": 334},
+      "conclusion": "Mesh size does not explain the stalls. Stalled meshes are among the SMALLER buildings."
+    },
+
+    "correlations_vs_stall_seconds": {
+      "boundary_edge_count": 0.9362,
+      "triangle_count": 0.9185,
+      "vertex_count": 0.9068,
+      "surface_area_m2": 0.8925,
+      "connected_components": 0.7919,
+      "tiny_triangle_fraction": 0.0923,
+      "surface_to_volume_ratio": 0.059
+    },
+    "correlation_caveat": "These are within-group correlations and are confounded: all three top predictors scale with triangle count, which does not separate the groups. None is offered as a cause.",
+
+    "DECISIVE_OBSERVATION_two_pass_rebuild": {
+      "finding": "The import ran the governed tile sequence TWICE inside the truncated run.",
+      "pass_1": "00:34 -> 13:54, tiles 10_6 .. 9_9 (20 tiles)",
+      "pass_2": "15:37 -> 17:03, tiles 10_6 .. 6_7, then externally interrupted",
+      "meshes_stalled_in_both_passes": 6,
+      "per_mesh_second_vs_first": {
+        "Tile_10_6_Building_tedox": "31.997 -> 25.349 (-20.8%)",
+        "Tile_10_7_Building_CA33": "434.543 -> 328.990 (-24.3%)",
+        "Tile_10_8_Building_Rampe": "30.225 -> 20.974 (-30.6%)",
+        "Tile_10_9_Building_Kita_Am_Blumenviertel": "1763.606 -> 1435.126 (-18.6%)",
+        "Tile_6_6_Building_Kche_-_gut_und_gnstig": "1340.095 -> 1162.207 (-13.3%)",
+        "Tile_6_7_Building_Antalya": "1824.995 -> 1882.686 (+3.2%)"
+      },
+      "aggregate": "5425.5 s -> 4855.3 s = -10.5%",
+      "deduplicated_total": "7.42 h across 21 distinct meshes (vs 8.77 h logged)",
+      "why_this_matters": [
+        "The same governed tiles are imported more than once per run, so distance fields are rebuilt for the same assets.",
+        "The second build of each mesh is only ~10% cheaper. A pure DDC miss would make the second pass near-zero, so cache warmth does NOT explain the cost.",
+        "This is direct evidence for the log's own hint that the mesh is rebuilt excessively."
+      ]
+    },
+
+    "DISTANCE_FIELD_ROOT_CAUSE": "EXCESSIVE_REBUILD_PLUS_IMPORT_ORDER (leading classification, evidence-backed but not yet causally confirmed)",
+    "classification_rationale": "GEOMETRY_COMPLEXITY is refuted by the control comparison. DDC_MISS is refuted because the second build is only 10% cheaper. The remaining leading candidates are repeated import of the same tiles and repeated StaticMesh rebuild within one import. Confirming the mechanism requires STATIC_MESH_BUILD_CAUSAL_TRACE on a controlled fixture, which is blocked behind the live cook.",
+    "STATIC_MESH_REBUILD_CAUSE": "NOT_YET_CONFIRMED - leading hypothesis EXCESSIVE_REBUILD",
+    "STATIC_MESH_BUILD_COUNT_BEFORE": "NOT_MEASURED",
+    "STATIC_MESH_BUILD_COUNT_AFTER": "NOT_MEASURED",
+    "remediation_applied": "NONE - no global r.GenerateMeshDistanceFields=0, per policy",
+    "deliverables": [
+      "reports/distance_field/DISTANCE_FIELD_ALL_27_FORENSICS.json",
+      "reports/distance_field/DISTANCE_FIELD_FAST_CONTROL_COMPARISON.json",
+      "ultimate_pipeline/geometry/mesh_forensics.py"
+    ]
+  },
+
+  "P0_D_primary_asset": {
+    "PRIMARY_ASSET_WARNINGS_BEFORE": 775,
+    "PRIMARY_ASSET_UNIQUE_FAMILIES_BEFORE": 2,
+    "PRIMARY_ASSET_UNIQUE_FAMILIES_AFTER": 2,
+    "families": {
+      "Map:/Game/Carla/Maps/BaseLargeMap/LargeMap": "SAME PHYSICAL MAP under two /Game paths via the Carla/Maps -> Maps junction. UE4 Map PrimaryAssetID is Map:<AssetName>, which ignores path, so the alias creates a duplicate.",
+      "Map:/Game/Carla/Maps/TestMaps/EmptyMap": "MANY DISTINCT /Game/Maps/Town11/Town11_Tile_* packages expose EmptyMap as their primary asset name, so they collide with each other."
+    },
+    "junctions": ["/Game/Carla/Maps -> Content/Maps", "/Game/Carla/Static -> Content/Static",
+                  "/Game/Carla/Blueprints", "/Game/Carla/Config", "/Game/Carla/HDMaps"],
+    "JUNCTION_ALIASING": "PROVEN_AND_UNSAFE_DOUBLE_DISCOVERY",
+    "closed": false,
+    "not_suppressed": "Warnings were not suppressed.",
+    "closure_blocked_by": "Both fixes (AssetManager scan config, or junction replacement) require a tested replacement; the live cook is using these mounts."
+  },
+
+  "process_supervision": {
+    "PROCESS_SUPERVISION_UNIT_TESTS": "PASS (33 tests, tools/carla_import_supervision.py)",
+    "PROCESS_SUPERVISION_REAL_BINARY": "PENDING - deferred until the live cook finishes, per the batch's own constraint",
+    "IMPORT_IDENTITY_FIX": "CONFIRMED_PRESENT in G:\\CARLA\\carla_source_probe\\Util\\BuildTools\\Import.py (\"!= 'tiles'\"); supervise_child and shell=False also present; file is uncommitted-modified",
+    "SUBPROCESS_ARGUMENT_ROUNDTRIP": "NOT_TESTED - deferred behind the live cook",
+    "RECAST_RETURN_CODE_PROPAGATION": "NOT_TESTED - deferred behind the live cook",
+    "verification_note": "Read-only source inspection confirmed _strip_wrapping_quotes exists specifically to handle -importSettings=\"path\", and that both shell=True and shell=False appear in the file; which call sites still use shell=True was not exhaustively audited this batch."
+  },
+
+  "pytest": {
+    "PYTEST_INDIVIDUAL_FILES": "PASS",
+    "individual_counts": {"carla_import_supervision": 33, "carla_georeference_contract": 23,
+                          "ue4_import_log_analysis": 35, "mesh_quality": 30,
+                          "blender_geometry_contract": 28, "tile_fbx_generator": 29,
+                          "building_extruder": 5},
+    "PYTEST_DIRECTORY_SUITE": "NOT_ATTEMPTED",
+    "PYTEST_DIRECTORY_HANG_ROOT_CAUSE": "UNDIAGNOSED - not attempted this batch; prior report of a >900 s directory run was never isolated to a test",
+    "FIX_STATUS": "NOT_STARTED"
+  },
+
+  "STORAGE_GATE": "NOT_CONFIGURED - thresholds must be derived from a successful run's measured peak usage, which does not exist yet",
+
+  "controlled_subset": {
+    "CONTROLLED_BASELINE_AVAILABLE": "PARTIAL - pre-hardening FBX/OBJ for all 20 tiles preserved under reports/production_readiness/20260924T100614Z_FULL_GRID_TILE_FBX_COOK/artifacts/; hardened only for tiles 10-9 and 6-6",
+    "CONTROLLED_SUBSET_IMPORT": "NOT_RUN",
+    "SMOOTHING_BEFORE": 27, "SMOOTHING_AFTER": "NOT_MEASURED",
+    "TANGENTS_BEFORE": 438, "TANGENTS_AFTER": "NOT_MEASURED",
+    "BINORMALS_BEFORE": 496, "BINORMALS_AFTER": "NOT_MEASURED",
+    "blocked_by": ["live cook active", "namespace fix not applied", "georeference fallback not removed"]
+  },
+
+  "PARTIAL_IMPORT_STATE": "NOT_INVENTORIED",
+  "RESTART_POLICY": "UNKNOWN",
+
+  "provenance_warning": {
+    "issue": "G:\\CARLA\\carla_source_probe\\Util\\BuildTools\\Import.py is uncommitted-modified (git status 'M') and was last written 2026-10-04T20:55, after the truncated import ended at 17:03.",
+    "impact": "The baseline import was produced by a different wrapper revision than the one on disk. Any A/B comparison must pin and record the Import.py SHA256 for both arms.",
+    "CANDIDATE_SHA": "NOT_COMMITTED - changes intentionally left uncommitted while evidence is incomplete and while a live cook is running"
+  },
+
+  "TARGETED_TESTS": "PASS (183 across 7 files: 33+23+35+30+28+29+5)",
+  "NEW_REGRESSIONS": 0,
+  "bugs_found_by_new_tests": [
+    "test_carla_import_supervision: crash-status list drifted from the NTSTATUS table; DLL_NOT_FOUND / ENTRYPOINT_NOT_FOUND / DLL_INIT_FAILED were documented as faults but not classified as crashes. Fixed by deriving the set from one source.",
+    "test_carla_georeference_contract: one test asserted a malformed token should raise, but the string still contained both required keys so it correctly parsed. Test corrected, not the parser."
+  ],
+
+  "FULL_RETRY_AUTHORIZED": false,
+  "FINAL_VERDICT": "PARTIAL_WITH_EXACT_BLOCKERS"
+}

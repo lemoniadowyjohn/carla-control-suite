@@ -117,6 +117,42 @@ def _step7_lanes_sidewalks(self, cont_out: str, lanes_out: str) -> str:
     else:
         print("[STEP 7] All roads already had driving lanes.")
 
+    # --- Source-stage lane structure normalization (moved from Stage 8) ---
+    # Driving lanes with id=0 are illegal for CARLA; every driving lane needs
+    # a <link> node for the topology repairs below. Both are structural
+    # prerequisites repaired HERE so Stage 8 stays validation-only.
+    import xml.etree.ElementTree as _ET
+
+    _parent_map = {child: parent for parent in root.iter() for child in list(parent)}
+    _removed_zero = 0
+    for _lane in root.findall(".//lane[@type='driving'][@id='0']"):
+        _parent = _parent_map.get(_lane)
+        if _parent is not None:
+            _parent.remove(_lane)
+            _removed_zero += 1
+    if _removed_zero:
+        print(f"[STEP 7] Removed {_removed_zero} illegal driving lane(s) with id=0")
+    _created_links = 0
+    for _lane in root.findall(".//lane[@type='driving']"):
+        if _lane.find("link") is None:
+            _ET.SubElement(_lane, "link")
+            _created_links += 1
+    if _created_links:
+        print(f"[STEP 7] Added missing <link> nodes to {_created_links} driving lanes")
+    self.vreport.add_dict(
+        "lane_structure_normalization",
+        {"removed_id_zero_driving_lanes": _removed_zero, "created_link_nodes": _created_links},
+    )
+
+    # NOTE (GAP-048 closure): lane-successor inference moved LATE in Stage 7
+    # (after lane-width invariants, just before the semantic overlap gate).
+    # An early inference here validated against lane sets that later stages
+    # still mutate (LaneRepair.standardize, sidewalks, width invariants),
+    # leaving lanes added/changed afterwards without successors (e.g. fresh
+    # regen roads 74521/74526/74531/74536 lane -1: road successor existed but
+    # the target lane post-dated the inference). See the topology-finalization
+    # segment below.
+
     # --- Optional ML-based lane refinement (non-destructive) ---
     if getattr(SETTINGS, "ENABLE_LANE_GNN_REFINER", False):
         print("🧠 LaneGNNRefiner: running ML-based lane sanity pass...")
@@ -206,6 +242,54 @@ def _step7_lanes_sidewalks(self, cont_out: str, lanes_out: str) -> str:
     CrossSectionRepair.enforce(root)
     LaneWidthClamp.clamp(root)
 
+    # --- GAP-026: harmonize junction connector lane widths (source stage) ---
+    # Inherits each linked connector lane's width from its matched incoming
+    # lane. Geometry, contactPoint, from/to mapping, and thresholds untouched.
+    try:
+        from ultimate_pipeline.lanes.junction_lane_width_harmonizer import (
+            harmonize_junction_lane_widths,
+        )
+
+        gap026_width_report = harmonize_junction_lane_widths(root)
+        self.vreport.add_dict("gap026_width_harmonization", gap026_width_report)
+        print(
+            "[STEP 7] GAP-026 width harmonization: "
+            f"checked={gap026_width_report.get('checked_lane_links', 0)} "
+            f"harmonized={gap026_width_report.get('harmonized_widths', 0)} "
+            f"skipped={gap026_width_report.get('skipped_missing', 0)}"
+        )
+    except Exception as e:
+        print(f"⚠️ GAP-026 width harmonization failed (non-fatal): {e}")
+
+    # --- GAP-026: inner-first junction laneLink remap (source stage) ---
+    # Junction <laneLink> sets arrive from the SUMO import and are never
+    # regenerated (Stage 8 is VALIDATION_ONLY for lane topology).  This is
+    # POSITIVE construction: a connection is rewritten only when the
+    # deterministic inner-first pairing strictly reduces failing links under
+    # the production checker's own (unchanged) tolerances.  An empty
+    # inner-first set never replaces a non-empty original, so no connection
+    # is driven to zero laneLinks.  No tolerance, oracle, or Stage-8 check
+    # is modified.
+    try:
+        from ultimate_pipeline.lanes.junction_lanelink_inner_first import (
+            repair_outer_to_inner_mispaired_lane_links,
+        )
+
+        gap026_lanelink_report = repair_outer_to_inner_mispaired_lane_links(
+            root, verbose=True
+        )
+        self.vreport.add_dict("gap026_lanelink_inner_first", {
+            k: v for k, v in gap026_lanelink_report.items() if k != "remap_log"
+        })
+        print(
+            "[STEP 7] GAP-026 inner-first laneLink remap: "
+            f"evaluated={gap026_lanelink_report.get('evaluated_connections', 0)} "
+            f"remapped={gap026_lanelink_report.get('remapped_connections', 0)} "
+            f"kept={gap026_lanelink_report.get('kept_connections', 0)}"
+        )
+    except Exception as e:
+        print(f"⚠️ GAP-026 inner-first laneLink remap failed (non-fatal): {e}")
+
     save_xodr(tree, lanes_out)
     print(f"✅ Lane & cross-section repaired → {lanes_out}")
     if s.QA_AUTOVIS and not s.ENABLE_CARLA_TEST_EARLY:
@@ -291,6 +375,72 @@ def _step7_lanes_sidewalks(self, cont_out: str, lanes_out: str) -> str:
             "❌ Lane width invariant enforcement failed (missing widths found but not fixed). "
             f"See report: {lw_report_path}"
         )
+
+    # --- Topology finalization: intra-road repair, then lane-successor
+    # inference (both moved here from early-Stage-7 / Stage-8) ---
+    # Order matters and is load-bearing:
+    #   1. intra-road repair first: fixes non-terminal section successors
+    #      AND reclassifies linked none/restricted lanes to driving (which
+    #      may create new driving lanes needing successors below);
+    #   2. lane-successor inference second: validates against the FINAL lane
+    #      sets (an early inference validated stale sets and missed lanes
+    #      added by LaneRepair/sidewalks/invariants, e.g. fresh-regen roads
+    #      74521/74526/74531/74536 lane -1).
+    # Both run HERE at source stage so Stage 8 stays validation-only.
+    from ultimate_pipeline.quality.check_lane_section_successors import (
+        repair_and_assert_lane_section_successors,
+    )
+
+    intraroad_report = repair_and_assert_lane_section_successors(
+        xodr_path=lanes_out,
+        out_path=lanes_out,
+        lane_types=("driving",),
+        strict=True,
+    )
+    self.vreport.add_dict("lane_section_successor_repair", intraroad_report)
+    print(
+        "[STEP 7] Intra-road laneSection successor repair: "
+        f"repairs={intraroad_report.get('repairs', 0)} "
+        f"failures={len(intraroad_report.get('failures', []))} "
+        f"reclassified={intraroad_report.get('reclassified_none_or_restricted_lanes', 0)}"
+    )
+
+    # --- P0-A source-stage fix: regenerate junction laneLinks from topology ---
+    # LaneLinkBuilder runs HERE at source stage (Stage 7), before lane-successor
+    # inference, so that `infer_lane_successors_from_topology` sees fully
+    # populated junction laneLinks.  GAP-048: no fallback pairing — unlinked
+    # incoming lanes are classified as residuals (never guessed).
+    # This replaces the earlier GAP-026 remap which only PRUNED mispaired
+    # links but never generated missing ones.
+    tree, root = load_xodr(lanes_out)
+    try:
+        from ultimate_pipeline.lanes.lanelink_builder import LaneLinkBuilder
+        LaneLinkBuilder.regenerate_lane_links(root, verbose=True)
+        ll_report = LaneLinkBuilder.last_failure_report
+        self.vreport.add_dict("lane_link_regenerate", ll_report)
+        print(
+            "[STEP 7] LaneLinkBuilder.regenerate_lane_links: "
+            f"connections={ll_report.get('connections_total', 0)} "
+            f"laneLinks={ll_report.get('lane_links_emitted', 0)} "
+            f"unlinked={sum(v for k, v in ll_report.get('summary', {}).items() if not k.endswith('_for') or True) or 'see report'}"
+        )
+    except Exception as e:
+        print(f"⚠️ LaneLinkBuilder.regenerate_lane_links failed (non-fatal): {e}")
+
+    # --- Infer lane-level successors from road topology (generator stage) ---
+    # Runs HERE at source stage using now-populated junction laneLinks.
+    # Unique-proof only (terminal sections for junction targets); ambiguous
+    # or unproven cases stay unresolved and are reported (never guessed).
+    from ultimate_pipeline.enrichment.lane_successor_topology import infer_lane_successors_from_topology
+    successor_report = infer_lane_successors_from_topology(root)
+    print(
+        f"[STEP 7] Lane successors from topology: inferred={successor_report['inferred_count']} "
+        f"through_junction={successor_report['through_junction_count']} "
+        f"junction_mapped={successor_report['junction_mapped_count']} "
+        f"no_topology={successor_report['lanes_without_topology']}"
+    )
+    self.vreport.add_dict("lane_successor_topology", successor_report)
+    save_xodr(tree, lanes_out)
 
     # semantic overlap gate
     tree, root = load_xodr(lanes_out)

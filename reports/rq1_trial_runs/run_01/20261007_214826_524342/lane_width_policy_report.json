@@ -1,0 +1,217 @@
+{
+  "examples": [
+    {
+      "highway": "tertiary",
+      "lane_id": "-1",
+      "new_width_m": 3.667,
+      "old_width_m": 3.67,
+      "road_id": "45247",
+      "source": "osm_width_per_lane"
+    },
+    {
+      "highway": "tertiary",
+      "lane_id": "-1",
+      "new_width_m": 3.667,
+      "old_width_m": 3.67,
+      "road_id": "46093",
+      "source": "osm_width_per_lane"
+    },
+    {
+      "highway": "tertiary",
+      "lane_id": "-1",
+      "new_width_m": 3.667,
+      "old_width_m": 3.67,
+      "road_id": "46197",
+      "source": "osm_width_per_lane"
+    },
+    {
+      "highway": "tertiary",
+      "lane_id": "-1",
+      "new_width_m": 3.667,
+      "old_width_m": 3.67,
+      "road_id": "46479",
+      "source": "osm_width_per_lane"
+    },
+    {
+      "highway": "tertiary",
+      "lane_id": "-2",
+      "new_width_m": 3.667,
+      "old_width_m": 3.67,
+      "road_id": "46479",
+      "source": "osm_width_per_lane"
+    },
+    {
+      "highway": "tertiary",
+      "lane_id": "-3",
+      "new_width_m": 3.667,
+      "old_width_m": 3.67,
+      "road_id": "46479",
+      "source": "osm_width_per_lane"
+    },
+    {
+      "highway": "tertiary",
+      "lane_id": "-1",
+      "new_width_m": 3.667,
+      "old_width_m": 3.67,
+      "road_id": "47735",
+      "source": "osm_width_per_lane"
+    },
+    {
+      "highway": "tertiary",
+      "lane_id": "-1",
+      "new_width_m": 3.667,
+      "old_width_m": 3.67,
+      "road_id": "47834",
+      "source": "osm_width_per_lane"
+    },
+    {
+      "highway": "tertiary",
+      "lane_id": "-1",
+      "new_width_m": 3.667,
+      "old_width_m": 3.67,
+      "road_id": "50250",
+      "source": "osm_width_per_lane"
+    },
+    {
+      "highway": "tertiary",
+      "lane_id": "-1",
+      "new_width_m": 3.667,
+      "old_width_m": 3.67,
+      "road_id": "50378",
+      "source": "osm_width_per_lane"
+    },
+    {
+      "highway": null,
+      "lane_id": "-1",
+      "new_width_m": 3.5,
+      "old_width_m": 3.25,
+      "road_id": "51808",
+      "source": "fallback"
+    },
+    {
+      "highway": null,
+      "lane_id": "-1",
+      "new_width_m": 3.5,
+      "old_width_m": 3.25,
+      "road_id": "51809",
+      "source": "fallback"
+    },
+    {
+      "highway": null,
+      "lane_id": "-1",
+      "new_width_m": 3.5,
+      "old_width_m": 3.25,
+      "road_id": "51810",
+      "source": "fallback"
+    },
+    {
+      "highway": null,
+      "lane_id": "-1",
+      "new_width_m": 3.5,
+      "old_width_m": 3.0,
+      "road_id": "51821",
+      "source": "fallback"
+    },
+    {
+      "highway": null,
+      "lane_id": "-1",
+      "new_width_m": 3.5,
+      "old_width_m": 3.0,
+      "road_id": "51822",
+      "source": "fallback"
+    },
+    {
+      "highway": null,
+      "lane_id": "-1",
+      "new_width_m": 3.5,
+      "old_width_m": 3.0,
+      "road_id": "51823",
+      "source": "fallback"
+    },
+    {
+      "highway": null,
+      "lane_id": "-1",
+      "new_width_m": 3.5,
+      "old_width_m": 3.25,
+      "road_id": "51824",
+      "source": "fallback"
+    },
+    {
+      "highway": null,
+      "lane_id": "-1",
+      "new_width_m": 3.5,
+      "old_width_m": 3.25,
+      "road_id": "51825",
+      "source": "fallback"
+    },
+    {
+      "highway": null,
+      "lane_id": "-1",
+      "new_width_m": 3.5,
+      "old_width_m": 3.25,
+      "road_id": "51826",
+      "source": "fallback"
+    },
+    {
+      "highway": null,
+      "lane_id": "-1",
+      "new_width_m": 3.5,
+      "old_width_m": 3.25,
+      "road_id": "51827",
+      "source": "fallback"
+    },
+    {
+      "highway": null,
+      "lane_id": "-1",
+      "new_width_m": 3.5,
+      "old_width_m": 3.0,
+      "road_id": "51828",
+      "source": "fallback"
+    },
+    {
+      "highway": null,
+      "lane_id": "-1",
+      "new_width_m": 3.5,
+      "old_width_m": 3.0,
+      "road_id": "51829",
+      "source": "fallback"
+    },
+    {
+      "highway": null,
+      "lane_id": "-1",
+      "new_width_m": 3.5,
+      "old_width_m": 3.0,
+      "road_id": "51830",
+      "source": "fallback"
+    },
+    {
+      "highway": null,
+      "lane_id": "-1",
+      "new_width_m": 3.5,
+      "old_width_m": 3.25,
+      "road_id": "51831",
+      "source": "fallback"
+    },
+    {
+      "highway": null,
+      "lane_id": "-1",
+      "new_width_m": 3.5,
+      "old_width_m": 3.25,
+      "road_id": "51832",
+      "source": "fallback"
+    }
+  ],
+  "ok": true,
+  "totals": {
+    "driving_lanes_checked": 34300,
+    "driving_widths_updated": 19817,
+    "missing_widths_added": 0,
+    "six_meter_placeholders_found": 0,
+    "source_counts": {
+      "fallback": 23440,
+      "osm_highway": 8447,
+      "osm_width": 305,
+      "osm_width_per_lane": 74
+    }
+  }
+}

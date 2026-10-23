@@ -30,8 +30,18 @@ NEW-234: multi-root training (RQ5 K-sweep):
 NEW-244: every run is seed-governed via ``--seed`` (see rq5_provenance.seed_everything).
 
 NEW-243: on success a ``model_manifest.json`` is written next to the
-checkpoints, binding the checkpoint SHA-256 to the dataset identities, git SHA,
-architecture, optimizer, learning rate and seed.
+    checkpoints, binding the checkpoint SHA-256 to the dataset identities, git SHA,
+    architecture, optimizer, learning rate and seed.
+
+NEW-277: DATASET_ACCEPTANCE is enforced fail-closed before any model is built.
+    Every root must contain ``rgb/<camera>`` and ``semseg_raw/<camera>`` and must
+    contribute at least one *paired* frame; the union must be non-empty after
+    ``--limit``. Previously ``SegDataset`` (``SemanticSegDataset``) yielded zero
+    items for an empty or half-populated ``rgb/<camera>``, so the epoch loop ran
+    zero batches and the launcher still emitted a checkpoint and a NEW-243
+    ``model_manifest.json`` -- authoritative-looking provenance for a model
+    trained on nothing. There is no override flag by design. The verdict is
+    recorded in the manifest under ``extra.dataset_acceptance``.
 
 Typical HPC (single node, multi-GPU) with torchrun:
     torchrun --standalone --nproc_per_node=4 -m ultimate_pipeline.perception.train_launcher \\
@@ -64,6 +74,7 @@ from ultimate_pipeline.perception.min_train_segmentation import (
     MultiRootSegDataset,
     SemanticSegDataset,
 )
+from ultimate_pipeline.perception.semantic_classes import validate_num_classes
 from ultimate_pipeline.perception.rq5_provenance import (
     MULTI_ROOT_TRAIN,
     build_model_manifest,
@@ -71,9 +82,142 @@ from ultimate_pipeline.perception.rq5_provenance import (
     dataset_content_identity,
     seed_everything,
     write_model_manifest,
+    verify_random_initialisation,
+    PretrainingContractError,
+)
+from ultimate_pipeline.perception.training_failure_guard import (
+    assert_finite_loss,
+    require_free_disk,
+    atomic_torch_save,
+    classify_exception,
+    TrainingFailure,
 )
 
 DEFAULT_SEED = 1337
+
+
+class DatasetAcceptanceError(RuntimeError):
+    """Raised when a dataset root fails DATASET_ACCEPTANCE (NEW-277).
+
+    This is deliberately a distinct exception type so a caller can tell an
+    acceptance rejection apart from an incidental I/O or decoding failure.
+    """
+
+
+def evaluate_dataset_acceptance(
+    roots: List[Path], camera: str, limit: Optional[int] = None
+) -> dict:
+    """DATASET_ACCEPTANCE (NEW-277): decide whether these roots may be trained on.
+
+    Returns a machine-readable report with ``accepted`` plus the evidence that
+    produced the verdict. Never raises for a merely-unacceptable dataset; the
+    caller decides whether to enforce.
+
+    Criteria (all must hold):
+
+    1. every root contains both ``rgb/<camera>`` and ``semseg_raw/<camera>``;
+    2. every root contributes at least one rgb/semseg frame *pair* -- a frame
+       name present in one directory but not the other is unusable, because
+       the label is resolved by name at ``__getitem__`` time;
+    3. the union across roots is non-empty after ``limit`` is applied.
+
+    Rationale: without this, ``SegDataset`` (``SemanticSegDataset``) happily
+    yields zero items for an empty or half-populated ``rgb/<camera>``, the
+    epoch loop executes zero batches, and the launcher still writes a
+    checkpoint plus a NEW-243 ``model_manifest.json``. That produces
+    authoritative-looking provenance for a model trained on nothing, which is
+    precisely the false-confidence failure this gate exists to prevent.
+    """
+    per_root: List[dict] = []
+    reasons: List[str] = []
+
+    for root in roots:
+        rgb_dir = Path(root) / "rgb" / camera
+        lab_dir = Path(root) / "semseg_raw" / camera
+        entry: dict = {
+            "root": Path(root).as_posix(),
+            "camera": camera,
+            "rgb_dir": rgb_dir.as_posix(),
+            "label_dir": lab_dir.as_posix(),
+            "rgb_dir_present": rgb_dir.is_dir(),
+            "label_dir_present": lab_dir.is_dir(),
+            "rgb_frames": 0,
+            "label_frames": 0,
+            "paired_frames": 0,
+            "unpaired_rgb": [],
+            "unpaired_labels": [],
+        }
+
+        if not entry["rgb_dir_present"] or not entry["label_dir_present"]:
+            missing = []
+            if not entry["rgb_dir_present"]:
+                missing.append(f"rgb/{camera}")
+            if not entry["label_dir_present"]:
+                missing.append(f"semseg_raw/{camera}")
+            entry["error"] = "missing required dataset directory: " + ", ".join(missing)
+            reasons.append(f"{entry['root']}: {entry['error']}")
+            per_root.append(entry)
+            continue
+
+        rgb_names = {p.name for p in rgb_dir.glob("*.png")}
+        lab_names = {p.name for p in lab_dir.glob("*.png")}
+        paired = rgb_names & lab_names
+        entry["rgb_frames"] = len(rgb_names)
+        entry["label_frames"] = len(lab_names)
+        entry["paired_frames"] = len(paired)
+        entry["unpaired_rgb"] = sorted(rgb_names - lab_names)
+        entry["unpaired_labels"] = sorted(lab_names - rgb_names)
+
+        if not paired:
+            entry["error"] = (
+                "no paired rgb/semseg_raw frames "
+                f"(rgb={len(rgb_names)}, semseg_raw={len(lab_names)})"
+            )
+            reasons.append(f"{entry['root']}: {entry['error']}")
+        per_root.append(entry)
+
+    total_paired = sum(int(e["paired_frames"]) for e in per_root)
+    effective = total_paired if not (limit and limit > 0) else min(total_paired, int(limit))
+
+    if not reasons and effective <= 0:
+        reasons.append(
+            "no trainable frames remain after applying --limit "
+            f"(paired={total_paired}, limit={limit})"
+        )
+
+    return {
+        "accepted": not reasons,
+        "camera": camera,
+        "limit": limit,
+        "total_paired_frames": total_paired,
+        "effective_frames": effective,
+        "per_root": per_root,
+        "reasons": reasons,
+        "criteria": [
+            "every root has rgb/<camera> and semseg_raw/<camera>",
+            "every root has >=1 paired rgb/semseg frame",
+            "union is non-empty after --limit",
+        ],
+    }
+
+
+def enforce_dataset_acceptance(
+    roots: List[Path], camera: str, limit: Optional[int] = None
+) -> dict:
+    """DATASET_ACCEPTANCE (NEW-277): fail closed unless every root is acceptable.
+
+    Raises ``DatasetAcceptanceError`` with the full rejection evidence. There is
+    deliberately no override flag: an escape hatch would restore the exact
+    false-confidence hole this gate closes.
+    """
+    report = evaluate_dataset_acceptance(roots, camera, limit=limit)
+    if report["accepted"]:
+        return report
+    raise DatasetAcceptanceError(
+        "DATASET_ACCEPTANCE rejected this training set; refusing to train and "
+        "refusing to write a checkpoint or model_manifest.json.\n"
+        + "\n".join(f"  - {r}" for r in report["reasons"])
+    )
 
 
 def _resolve_out_dir(out_dir: str) -> Path:
@@ -84,6 +228,33 @@ def _resolve_out_dir(out_dir: str) -> Path:
         p = root / p
     p.mkdir(parents=True, exist_ok=True)
     return p
+
+
+def _write_training_failure_receipt(out_dir: Path, status: str, failure: Dict[str, Any]) -> None:
+    """Persist a failure receipt that overrides any stale SUCCESS for the run."""
+    import json
+    from datetime import datetime, timezone
+    receipt = {
+        "schema": "training_failure_receipt_v1",
+        "status": status,
+        "failure": failure,
+        "created_utc": datetime.now(timezone.utc).isoformat(),
+    }
+    target = Path(out_dir) / "training_failure.json"
+    tmp = target.with_suffix(target.suffix + ".tmp")
+    tmp.write_text(json.dumps(receipt, indent=2, sort_keys=True), encoding="utf-8")
+    tmp.replace(target)
+    print(f"❌ Wrote training failure receipt → {target}")
+
+
+def _revoke_stale_success(out_dir: Path) -> None:
+    """Remove any pre-existing SUCCESS.txt so failure cannot look like success."""
+    try:
+        success_path = Path(out_dir) / "SUCCESS.txt"
+        if success_path.is_file():
+            success_path.unlink()
+    except Exception:
+        pass
 
 
 def _find_latest_dataset(base: Path) -> Optional[Path]:
@@ -119,9 +290,25 @@ def _init_ddp(enabled: bool) -> tuple[bool, int, int]:
     return True, rank, world_size
 
 
-def _build_model(num_classes: int) -> nn.Module:
+def _build_model(num_classes: int) -> Tuple[nn.Module, Dict[str, Any]]:
+    """
+    Build the segmentation model under the frozen random-initialisation contract.
+
+    The thesis protocol requires ``weights=None`` (random initialisation), but an
+    argument alone is not proof: the previous code constructed the model and
+    trusted the call site. The contract is now *verified at runtime*:
+
+    * torchvision must expose the ``weights`` API (>= 0.13); older builds fail
+      closed instead of silently loading pretrained weights.
+    * the instantiated parameter set is fingerprinted, and the fingerprint is
+      recorded in the training receipt (``model_manifest.json``), so the claim
+      is auditable after the fact rather than inferred.
+
+    Returns the model plus the recorded pretraining contract.
+    """
     model = models.segmentation.fcn_resnet50(weights=None, num_classes=int(num_classes))
-    return model
+    contract = verify_random_initialisation(model)
+    return model, contract
 
 
 def _resolve_dataset_roots(args: argparse.Namespace) -> List[Path]:
@@ -215,12 +402,40 @@ def main() -> int:
         default=0,
         help="Optional cap on files digested per dataset root when computing content identity (0 = no cap)",
     )
+    parser.add_argument(
+        "--min-free-disk-mb",
+        type=int,
+        default=512,
+        help="Minimum free disk space (MiB) required before each checkpoint write (CD-4 failure guard)",
+    )
     args = parser.parse_args()
 
     dataset_roots = _resolve_dataset_roots(args)
     multi_root = len(dataset_roots) > 1
 
+    # NEW-277 (DATASET_ACCEPTANCE): fail closed BEFORE any model construction,
+    # checkpoint or manifest is produced. This must precede the dataset build so
+    # an unacceptable set cannot yield a signed manifest for an untrained model.
+    acceptance = enforce_dataset_acceptance(
+        dataset_roots, args.camera, limit=(args.limit if args.limit > 0 else None)
+    )
+    print(
+        f"✅ DATASET_ACCEPTANCE: {acceptance['total_paired_frames']} paired frame(s) "
+        f"across {len(dataset_roots)} root(s) for camera={args.camera}"
+    )
+
+    # Validate num_classes against CARLA semantic class policy (same as
+    # min_train_segmentation.py does) so a too-small --num-classes fails
+    # fast with a clear message instead of a confusing "out of bounds" error
+    # deep in the loss function.
+    args.num_classes = validate_num_classes(args.num_classes)
+
     out_dir = _resolve_out_dir(args.out_dir)
+
+    # CD-4: remove any pre-existing SUCCESS.txt so a later "success" cannot be
+    # interpreted as evidence that this run completed without failures.
+    if is_main:
+        _revoke_stale_success(out_dir)
 
     ddp_enabled, rank, world_size = _init_ddp(args.ddp)
     is_main = (rank == 0)
@@ -273,7 +488,13 @@ def main() -> int:
         generator=generator,
     )
 
-    model = _build_model(args.num_classes).to(device)
+    try:
+        model, pretraining_contract = _build_model(args.num_classes)
+        model = model.to(device)
+        pretraining_contract_record = pretraining_contract
+    except PretrainingContractError as exc:
+        print(f"[FATAL] pretraining contract violation: {exc}", file=os.stderr)
+        return 1
     if ddp_enabled:
         local_rank = int(os.environ.get("LOCAL_RANK", "0"))
         if device.type == "cuda":
@@ -315,22 +536,40 @@ def main() -> int:
 
     model.train()
     last_ckpt: Optional[Path] = None
+    training_status = "TRAINING_COMPLETED"
+    training_failure: Optional[Dict[str, Any]] = None
     for epoch in range(int(args.epochs)):
         if ddp_enabled:
             assert sampler is not None
             sampler.set_epoch(epoch)
 
         running = 0.0
-        for x, y in dl:
-            x = x.to(device, non_blocking=True)
-            y = y.to(device, non_blocking=True)
+        epoch_failed = False
+        for step, (x, y) in enumerate(dl):
+            try:
+                x = x.to(device, non_blocking=True)
+                y = y.to(device, non_blocking=True)
 
-            optimizer.zero_grad(set_to_none=True)
-            out = model(x)["out"]
-            loss = criterion(out, y)
-            loss.backward()
-            optimizer.step()
-            running += float(loss.item())
+                optimizer.zero_grad(set_to_none=True)
+                out = model(x)["out"]
+                loss = criterion(out, y)
+                # CD-4: a NaN/Inf loss must abort the run *before* it can be
+                # written into an authoritative-looking checkpoint.
+                assert_finite_loss(loss, epoch=epoch + 1, step=step)
+                loss.backward()
+                optimizer.step()
+                running += float(loss.item())
+            except BaseException as exc:  # noqa: BLE001 - classified below
+                failure = classify_exception(exc, epoch=epoch + 1)
+                training_status = failure.status
+                training_failure = failure.to_dict()
+                epoch_failed = True
+                if is_main:
+                    print(f"[FAIL] {failure.status}: {failure.message}", file=sys.stderr)
+                break
+
+        if epoch_failed:
+            break
 
         if is_main:
             avg = running / max(1, len(dl))
@@ -339,9 +578,29 @@ def main() -> int:
             ckpt = out_dir / f"seg_fcn_epoch{epoch+1:03d}.pt"
             # unwrap DDP
             state = model.module.state_dict() if hasattr(model, "module") else model.state_dict()
-            torch.save(state, ckpt)
+            try:
+                # CD-4: check the disk *before* writing and write atomically, so
+                # a full disk or a crashed write can never leave a truncated
+                # checkpoint that still loads.
+                require_free_disk(ckpt, min_free_disk_bytes=int(args.min_free_disk_mb) * 1024 * 1024)
+                atomic_torch_save(state, ckpt)
+            except TrainingFailure as failure:
+                training_status = failure.status
+                training_failure = failure.to_dict()
+                print(f"[FAIL] {failure.status}: {failure.message}", file=sys.stderr)
+                break
             last_ckpt = ckpt
             print(f"✅ Saved {ckpt}")
+
+    if training_failure is not None:
+        # CD-4: an unresolved failure is never published as a successful run.
+        _write_training_failure_receipt(out_dir, training_status, training_failure)
+        if ddp_enabled:
+            try:
+                torch.distributed.destroy_process_group()
+            except Exception:
+                pass
+        return 1
 
     # NEW-243: bind the final checkpoint to the run that produced it.
     if is_main and last_ckpt is not None and not args.no_manifest:
@@ -373,6 +632,8 @@ def main() -> int:
             batch_size=int(args.batch),
             seed=int(args.seed),
             augmentation_policy="none",
+            split_manifest_sha256=None,
+            pretraining_contract=pretraining_contract_record,
             extra={
                 "multi_root": bool(multi_root),
                 "train_frame_count": len(ds),
@@ -382,6 +643,10 @@ def main() -> int:
                 "seed_applied": seed_record,
                 "ddp": bool(ddp_enabled),
                 "world_size": int(world_size),
+                # NEW-277: bind the acceptance verdict into the manifest so a
+                # consumer can see the training set was admitted by an explicit
+                # gate rather than merely discovered.
+                "dataset_acceptance": acceptance,
             },
         )
         manifest_path = write_model_manifest(out_dir, manifest)

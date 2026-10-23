@@ -1,0 +1,65 @@
+{
+  "overall_pass": true,
+  "producer_commit": "167b12fd4c1db7a7b76663acdb6901f2f786d501",
+  "schema": "cache_negative_controls/v1",
+  "tests": [
+    {
+      "errors": [],
+      "pass": true,
+      "test": "wrong_source_sha"
+    },
+    {
+      "errors": [],
+      "pass": true,
+      "test": "wrong_config_sha"
+    },
+    {
+      "errors": [],
+      "pass": true,
+      "test": "wrong_frame_contract_sha"
+    },
+    {
+      "errors": [],
+      "pass": true,
+      "test": "wrong_producer_schema_version"
+    },
+    {
+      "errors": [],
+      "notes": [
+        "Tool version not included in cache key - documented limitation"
+      ],
+      "pass": true,
+      "test": "tool_version_drift"
+    },
+    {
+      "errors": [],
+      "pass": true,
+      "test": "duplicate_concurrent_writer"
+    },
+    {
+      "errors": [],
+      "notes": [
+        "Dependency invalidation via key change verified"
+      ],
+      "pass": true,
+      "test": "dependency_invalidation"
+    },
+    {
+      "errors": [],
+      "notes": [
+        "Cache key generation tested; blob corruption detection depends on read-time verification"
+      ],
+      "pass": true,
+      "test": "corrupt_cached_blob"
+    },
+    {
+      "errors": [],
+      "notes": [
+        "Cache key generation tested; partial blob detection depends on read-time verification"
+      ],
+      "pass": true,
+      "test": "partial_cached_blob"
+    }
+  ],
+  "timestamp": "2026-10-02T16:07:01Z"
+}

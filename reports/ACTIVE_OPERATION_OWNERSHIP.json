@@ -1,0 +1,266 @@
+{
+  "schema": "active_operation_ownership/v1",
+  "schema_version": 1,
+  "generated_utc": "2026-10-05T20:37:49Z",
+  "policy": "READ_ONLY__NO_PROCESS_STOPPED",
+  "identity_note": "PID alone is not an identity on Windows because PIDs are reused. Every record carries identity_key = pid|process_creation_time.",
+  "watched_process_count": 6,
+  "mutating_process_count": 1,
+  "process_name_index": {
+    "CMD.EXE": [
+      "14360|2026-10-05T10:47:25.9172690Z"
+    ],
+    "PYTHON.EXE": [
+      "10224|2026-10-05T18:35:33.2913150Z",
+      "20272|2026-10-05T20:37:39.9898510Z",
+      "22332|2026-10-05T18:35:32.9667430Z",
+      "26760|2026-10-05T20:37:40.0703590Z"
+    ],
+    "UE4EDITOR-CMD.EXE": [
+      "12312|2026-10-05T18:38:44.1538360Z"
+    ]
+  },
+  "mutating_operations": [
+    {
+      "operation_type": "UE_COMMANDLET:ImportAssets",
+      "identity_key": "12312|2026-10-05T18:38:44.1538360Z",
+      "command_line": "G:\\UnrealEngine_4.26_CARLA\\Engine\\Binaries\\Win64\\UE4Editor-Cmd.exe G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\CarlaUE4.uproject -run=ImportAssets -importSettings=G:\\CARLA\\carla_source_probe\\importsetting.json -nosourcecontrol -replaceexisting",
+      "started_utc": "2026-10-05T18:38:44.1538360Z",
+      "cpu_seconds": 49489.31,
+      "working_set_mb": 900,
+      "effect": "Mutates Content/, Saved/, cook_out"
+    }
+  ],
+  "processes": [
+    {
+      "identity": {
+        "pid": 12312,
+        "creation_date_utc": "2026-10-05T18:38:44.1538360Z",
+        "identity_key": "12312|2026-10-05T18:38:44.1538360Z"
+      },
+      "ppid": 10224,
+      "name": "UE4Editor-Cmd.exe",
+      "executable": "G:\\UnrealEngine_4.26_CARLA\\Engine\\Binaries\\Win64\\UE4Editor-Cmd.exe",
+      "command_line": "G:\\UnrealEngine_4.26_CARLA\\Engine\\Binaries\\Win64\\UE4Editor-Cmd.exe G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\CarlaUE4.uproject -run=ImportAssets -importSettings=G:\\CARLA\\carla_source_probe\\importsetting.json -nosourcecontrol -replaceexisting",
+      "cpu_seconds": 49489.31,
+      "working_set_mb": 900,
+      "private_mb": 2429.6,
+      "threads": 69,
+      "handles": 1988,
+      "responding": true,
+      "operation_type": "UE_COMMANDLET:ImportAssets",
+      "mutates_pipeline_state": true,
+      "effect": "Mutates Content/, Saved/, cook_out",
+      "ancestry": [
+        {
+          "pid": 12312,
+          "name": "UE4Editor-Cmd.exe",
+          "watched": true
+        },
+        {
+          "pid": 10224,
+          "name": "python.exe",
+          "watched": true
+        },
+        {
+          "pid": 22332,
+          "name": "python.exe",
+          "watched": true
+        },
+        {
+          "pid": 30988,
+          "name": null,
+          "watched": false
+        }
+      ],
+      "run_receipt": null,
+      "owner": null,
+      "created_by_this_batch": false
+    },
+    {
+      "identity": {
+        "pid": 22332,
+        "creation_date_utc": "2026-10-05T18:35:32.9667430Z",
+        "identity_key": "22332|2026-10-05T18:35:32.9667430Z"
+      },
+      "ppid": 30988,
+      "name": "python.exe",
+      "executable": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\.venv\\Scripts\\python.exe",
+      "command_line": "\"C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\.venv\\Scripts\\python.exe\" G:\\CARLA\\carla_source_probe\\Util\\BuildTools\\Import.py --package IngolstadtNoSig",
+      "cpu_seconds": 0.03,
+      "working_set_mb": 3.8,
+      "private_mb": 0.7,
+      "threads": 1,
+      "handles": 65,
+      "responding": true,
+      "operation_type": "ORCHESTRATOR:Import.py",
+      "mutates_pipeline_state": false,
+      "effect": "Runs Import.py / build wrappers",
+      "ancestry": [
+        {
+          "pid": 22332,
+          "name": "python.exe",
+          "watched": true
+        },
+        {
+          "pid": 30988,
+          "name": null,
+          "watched": false
+        }
+      ],
+      "run_receipt": null,
+      "owner": null,
+      "created_by_this_batch": false
+    },
+    {
+      "identity": {
+        "pid": 10224,
+        "creation_date_utc": "2026-10-05T18:35:33.2913150Z",
+        "identity_key": "10224|2026-10-05T18:35:33.2913150Z"
+      },
+      "ppid": 22332,
+      "name": "python.exe",
+      "executable": "C:\\Users\\admin\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+      "command_line": "\"C:\\Users\\admin\\AppData\\Local\\Programs\\Python\\Python312\\python.exe\" G:\\CARLA\\carla_source_probe\\Util\\BuildTools\\Import.py --package IngolstadtNoSig",
+      "cpu_seconds": 0.22,
+      "working_set_mb": 14.9,
+      "private_mb": 15.5,
+      "threads": 1,
+      "handles": 196,
+      "responding": true,
+      "operation_type": "ORCHESTRATOR:Import.py",
+      "mutates_pipeline_state": false,
+      "effect": "Runs Import.py / build wrappers",
+      "ancestry": [
+        {
+          "pid": 10224,
+          "name": "python.exe",
+          "watched": true
+        },
+        {
+          "pid": 22332,
+          "name": "python.exe",
+          "watched": true
+        },
+        {
+          "pid": 30988,
+          "name": null,
+          "watched": false
+        }
+      ],
+      "run_receipt": null,
+      "owner": null,
+      "created_by_this_batch": false
+    },
+    {
+      "identity": {
+        "pid": 20272,
+        "creation_date_utc": "2026-10-05T20:37:39.9898510Z",
+        "identity_key": "20272|2026-10-05T20:37:39.9898510Z"
+      },
+      "ppid": 16040,
+      "name": "python.exe",
+      "executable": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\.venv\\Scripts\\python.exe",
+      "command_line": "\"C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\.venv\\Scripts\\python.exe\" scripts\\ownership_discovery.py",
+      "cpu_seconds": 0.02,
+      "working_set_mb": 4.2,
+      "private_mb": 0.8,
+      "threads": 3,
+      "handles": 64,
+      "responding": true,
+      "operation_type": "ORCHESTRATOR:generic",
+      "mutates_pipeline_state": false,
+      "effect": "Runs Import.py / build wrappers",
+      "ancestry": [
+        {
+          "pid": 20272,
+          "name": "python.exe",
+          "watched": true
+        },
+        {
+          "pid": 16040,
+          "name": null,
+          "watched": false
+        }
+      ],
+      "run_receipt": null,
+      "owner": null,
+      "created_by_this_batch": false
+    },
+    {
+      "identity": {
+        "pid": 26760,
+        "creation_date_utc": "2026-10-05T20:37:40.0703590Z",
+        "identity_key": "26760|2026-10-05T20:37:40.0703590Z"
+      },
+      "ppid": 20272,
+      "name": "python.exe",
+      "executable": "C:\\Users\\admin\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+      "command_line": "\"C:\\Users\\admin\\AppData\\Local\\Programs\\Python\\Python312\\python.exe\" scripts\\ownership_discovery.py",
+      "cpu_seconds": 0.2,
+      "working_set_mb": 19.6,
+      "private_mb": 10.9,
+      "threads": 5,
+      "handles": 186,
+      "responding": true,
+      "operation_type": "ORCHESTRATOR:generic",
+      "mutates_pipeline_state": false,
+      "effect": "Runs Import.py / build wrappers",
+      "ancestry": [
+        {
+          "pid": 26760,
+          "name": "python.exe",
+          "watched": true
+        },
+        {
+          "pid": 20272,
+          "name": "python.exe",
+          "watched": true
+        },
+        {
+          "pid": 16040,
+          "name": null,
+          "watched": false
+        }
+      ],
+      "run_receipt": null,
+      "owner": null,
+      "created_by_this_batch": false
+    },
+    {
+      "identity": {
+        "pid": 14360,
+        "creation_date_utc": "2026-10-05T10:47:25.9172690Z",
+        "identity_key": "14360|2026-10-05T10:47:25.9172690Z"
+      },
+      "ppid": 7348,
+      "name": "cmd.exe",
+      "executable": "C:\\Windows\\system32\\cmd.exe",
+      "command_line": "\"cmd\" /c \"\"C:\\Users\\admin\\AppData\\Local\\Programs\\Lenovo\\Lenovo Service Bridge\\LSB.exe\" -tag entry=LSBUpdater.exe,info={entry=unknown,afterupdate=no}\"",
+      "cpu_seconds": 0.05,
+      "working_set_mb": 0.9,
+      "private_mb": 5.1,
+      "threads": 1,
+      "handles": 117,
+      "responding": true,
+      "operation_type": "WRAPPER",
+      "mutates_pipeline_state": false,
+      "effect": "Launches build.bat and command chains",
+      "ancestry": [
+        {
+          "pid": 14360,
+          "name": "cmd.exe",
+          "watched": true
+        },
+        {
+          "pid": 7348,
+          "name": null,
+          "watched": false
+        }
+      ],
+      "run_receipt": null,
+      "owner": null,
+      "created_by_this_batch": false
+    }
+  ]
+}

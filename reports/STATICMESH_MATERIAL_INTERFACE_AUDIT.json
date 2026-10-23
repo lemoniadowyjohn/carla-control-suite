@@ -1,0 +1,17 @@
+{
+  "schema": "STATICMESH_MATERIAL_INTERFACE_AUDIT/v1",
+  "method": "read-only byte inspection of persisted packages; presence of an object path implies a serialized reference, absence of any material path implies no interface is bound",
+  "UNIQUE_IMPORTED_MATERIAL_SLOTS": [
+    "MAT_0",
+    "MAT_1"
+  ],
+  "RESOLVED_MATERIAL_SLOT_COUNT": 0,
+  "UNRESOLVED_MATERIAL_SLOT_COUNT": 2,
+  "canonical_meshes_sampled": 300,
+  "meshes_with_any_MAT_N_M_reference": 0,
+  "meshes_with_any_Carla_semantic_material_reference": 0,
+  "meshes_with_any_default_or_fallback_material_reference": 0,
+  "STATICMESH_MATERIAL_INTERFACE_BINDING": "NONE_BOUND",
+  "finding": "Each imported building mesh declares two material slots named MAT_0 and MAT_1 (FBX slot names) but no material interface is bound to either. No MAT_N_M, no /Game/Carla material, and no fallback material path appears in any sampled package.",
+  "consequence": "Buildings will render with the engine default surface material. This is a VISUAL QUALITY defect, not a cook blocker: cooking a StaticMesh with unbound material interfaces succeeds and substitutes a default at render time."
+}

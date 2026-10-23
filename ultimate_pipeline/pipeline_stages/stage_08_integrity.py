@@ -430,11 +430,6 @@ def _step8c_spawn_validation(self, final_out: str) -> None:
 # ---------------- 8) 🔗 MARKINGS + INTEGRITY ----------------
 
 
-def _unsafe_lanelink_regen_enabled(settings_obj) -> bool:
-    from ultimate_pipeline.contracts.release_profile import unsafe_lanelink_regen_enabled
-    return unsafe_lanelink_regen_enabled(settings_obj)
-
-
 def _enforce_final_length_invariant(final_out: str, out_dir: str) -> None:
     _inject_main_pipeline_globals()
     from ultimate_pipeline.tools.crash_safe_length_repair import (
@@ -522,41 +517,14 @@ def _step8_markings_and_integrity(self, lanes_out: str, final_out: str) -> str:
     self._assert_geometry_frozen(root, "STEP 8")
 
     # ---------------------------------------------------------
-    # 🛠️ HARD NORMALIZATION (pre-LaneLinkBuilder)
+    # Lane-topology normalization moved to Stage 7 (source stage):
+    # id=0 driving-lane removal, missing-<link> creation, intra-road
+    # laneSection successor repair, and LaneLinkBuilder regeneration all run
+    # in Stage 7 now. Stage 8 is VALIDATION_ONLY for lane topology --
+    # it must never add/change/delete lane predecessor/successor links.
+    # (GAP-048 closure: Stage-8 lane-topology mutation removed.)
     # ---------------------------------------------------------
-    # Build parent lookup once (ElementTree has no getparent()).
-    # NOTE: This map is valid for the current tree snapshot; we only use it for removals below.
-    parent_map = {child: parent for parent in root.iter() for child in list(parent)}
-
-    # 1) Driving lanes with id=0 are illegal for CARLA (and can break link logic)
-    removed_zero = 0
-    for lane in root.findall(".//lane[@type='driving'][@id='0']"):
-        parent = parent_map.get(lane)
-        if parent is not None:
-            parent.remove(lane)
-            removed_zero += 1
-
-    if removed_zero:
-        print(f"⚠️ Removed {removed_zero} illegal driving lane(s) with id=0")
-
-    # 2) Ensure every driving lane has a <link> node (LaneLinkBuilder expects it)
-    created_links = 0
-    for lane in root.findall(".//lane[@type='driving']"):
-        if lane.find("link") is None:
-            ET.SubElement(lane, "link")
-            created_links += 1
-
-    if created_links:
-        print(f"⚠️ Added missing <link> nodes to {created_links} driving lanes")
-
-    # ---------------------------------------------------------
-    # Build LaneLinks + Markings (final topology/semantics here)
-    # ---------------------------------------------------------
-    if _unsafe_lanelink_regen_enabled(s):
-        LaneLinkBuilder.regenerate(root)
-    else:
-        print("⏭️ LaneLinkBuilder.regenerate disabled (ENABLE_LANELINK_REGEN=0). "
-              "Existing lane links preserved.")
+    # Junction laneLink sanity below is read-only validation (no mutation).
     junction_lanelink_sanity = LaneLinkBuilder.sanitize_junction_lane_links(
         root, verbose=True
     )
@@ -584,21 +552,9 @@ def _step8_markings_and_integrity(self, lanes_out: str, final_out: str) -> str:
     shutil.copyfile(final_out, semantic_out)
     print(f"🧠 Semantic final saved → {semantic_out}")
 
-    # ---------------------------------------------------------
-    # 🔧 NEW: Repair + assert laneSection successor resolvability
-    # (prevents CARLA MapBuilder.cpp asserts)
-    # ---------------------------------------------------------
-    fixed_out = final_out.replace(".xodr", "_laneSectionFixed.xodr")
-    rep = repair_and_assert_lane_section_successors(
-        xodr_path=final_out,
-        out_path=fixed_out,
-        lane_types=("driving",),  # strict CARLA-relevant lanes
-        strict=True,  # fail if non-repairable discontinuities exist
-    )
-    print(
-        f"✅ LaneSection successor repair: repairs={rep.get('repairs', 0)} "
-        f"failures={len(rep.get('failures', []))}"
-    )
+    # NOTE: intra-road laneSection successor repair moved to Stage 7
+    # (source stage). Stage 8 must not mutate lane topology.
+    # (GAP-048 closure: Stage-8 lane-topology mutation removed.)
 
     # Advisory-only first: direct road-to-road lane targets are not covered
     # by the intra-road laneSection repair above.  elementType=junction links
@@ -634,13 +590,9 @@ def _step8_markings_and_integrity(self, lanes_out: str, final_out: str) -> str:
     except Exception as e:
         print(f"⚠️ Ordinary road lane-link advisory skipped: {e}")
 
-    # 🎯 AUTHORITATIVE MAP SWITCH
-    final_out = fixed_out
-    try:
-        shutil.copyfile(final_out, semantic_out)
-        print(f"Semantic final refreshed -> {semantic_out}")
-    except Exception as e:
-        print(f"⚠️ WARNING: Failed to refresh semantic XODR: {e}")
+    # NOTE: no AUTHORITATIVE MAP SWITCH here anymore: with lane-topology
+    # repair moved to Stage 7 there is no _laneSectionFixed variant to
+    # switch to. final_out (and its semantic copy above) stay authoritative.
     # ---------------------------------------------------------
     # 🛡️ HARD CARLA INVARIANT ENFORCEMENT (SINGLE AUTHORITY PASS)
     # - No driving lane may exist without a valid driving successor
@@ -699,169 +651,39 @@ def _step8_markings_and_integrity(self, lanes_out: str, final_out: str) -> str:
         print("✅ CARLA successor invariant satisfied (dead-ends allowed).")
     except RuntimeError as e:
         # ---------------------------------------------
-        # 🔧 AUTOFIX LANE SUCCESSORS (optional):
-        # Try to infer and add missing lane successors from road links.
-        #
-        # Enable via env: UP_AUTOFIX_LANE_SUCCESSORS=1
+        # 🔍 VALIDATION ONLY — no topology mutation at Stage 8
+        # Topology repair is done upstream at Stage 7 (GAP-048 + GAP-026).
+        # Stage 8 is VALIDATION_ONLY per topology convergence policy.
         # ---------------------------------------------
-        env_autofix_successors = str(
-            os.getenv("UP_AUTOFIX_LANE_SUCCESSORS", "0")
-        ).strip().lower() in ("1", "true", "yes", "on")
-
-        if env_autofix_successors:
-            print(
-                "[lane_connectivity] UP_AUTOFIX_LANE_SUCCESSORS enabled → attempting repair..."
-            )
-            fixed_out_path = final_out.replace(
-                ".xodr", "_lane_successor_fixed.xodr"
-            )
-            report_path = os.path.join(
-                self.out_dir, "lane_successor_autofix_report.json"
-            )
-
-            repair_report = autofix_missing_lane_successors(
-                xodr_path=final_out,
-                allow_dead_ends=True,
-                output_path=fixed_out_path,
-            )
-
-            # Add pipeline run context to report
-            repair_report["pipeline_run_dir"] = self.out_dir
-
-            # Write the report
-            with open(report_path, "w", encoding="utf-8") as f:
-                json.dump(repair_report, f, indent=2, ensure_ascii=True)
-            print(f"[lane_connectivity] Autofix report → {report_path}")
-            print(
-                f"[lane_connectivity] Fixed {repair_report['fixed_count']}/{repair_report['broken_before_count']} broken lanes"
-            )
-
-            if repair_report["still_broken_count"] > 0:
-                print(
-                    f"[lane_connectivity] ⚠️ WARNING: {repair_report['still_broken_count']} lanes still broken after autofix"
+        print(
+            "[lane_connectivity] Stage-8 VALIDATION_ONLY: topology repair moved upstream to Stage 7. "
+            "Failing with evidence; no autofix/downgrade mutation applied."
+        )
+        
+        # Record failure evidence
+        fail_json = os.path.join(
+            self.out_dir, "lane_successor_final_fail.json"
+        )
+        try:
+            with open(fail_json, "w", encoding="utf-8") as f:
+                json.dump(
+                    {"error": str(e), "stage": 8, "policy": "VALIDATION_ONLY"},
+                    f, indent=2, ensure_ascii=True
                 )
-
-            # Use the fixed XODR
-            final_out = fixed_out_path
-
-            # Re-check to ensure the output is CARLA-safe
-            try:
-                assert_all_lanes_have_successors(final_out, allow_dead_ends=True)
-                print(
-                    "✅ CARLA successor invariant satisfied after autofix (dead-ends allowed)."
-                )
-            except RuntimeError as e2:
-                # Autofix didn't fully resolve. For thesis stability, we can optionally
-                # downgrade only the broken driving lanes to type=none so CARLA can still load.
-                strict = _strict_lane_successors_required(self.settings)
-                if strict:
-                    print(
-                        f"[lane_connectivity] Strict mode enabled → failing: {e2}"
-                    )
-                    raise e2
-                print(
-                    "[lane_connectivity] Autofix incomplete → applying downgrade fallback for remaining broken lanes"
-                )
-                fixed_out2 = final_out.replace(
-                    ".xodr", "_autofix_missingSuccessorDowngraded.xodr"
-                )
-                try:
-                    rep2 = downgrade_broken_driving_lanes_to_none(
-                        xodr_in=final_out,
-                        xodr_out=fixed_out2,
-                        allow_dead_ends=True,
-                        out_json=fixed_out2.replace(
-                            ".xodr", "_autofix_report.json"
-                        ),
-                    )
-                    print(
-                        f"[lane_connectivity] Downgrade fallback complete. Output → {fixed_out2}"
-                    )
-                    final_out = fixed_out2
-                    # Re-check; downgrade should remove the fatal condition
-                    assert_all_lanes_have_successors(
-                        final_out, allow_dead_ends=True
-                    )
-                    print(
-                        "✅ CARLA successor invariant satisfied after downgrade fallback (dead-ends allowed)."
-                    )
-                except Exception as e3:
-                    print(f"[lane_connectivity] Downgrade fallback failed: {e3}")
-                    raise e2
-
-        # ---------------------------------------------
-        # 🔄 FALLBACK: DOWNGRADE MODE (optional):
-        # Convert only *broken* driving lanes to type=none so CARLA can load the map.
-        #
-        # Enable via:
-        #   - settings: AUTOFIX_MISSING_LANE_SUCCESSORS = True
-        #   - or env:  UP_AUTOFIX_MISSING_LANE_SUCCESSORS=1
-        # ---------------------------------------------
-        elif _strict_lane_successors_required(self.settings):
-            # Release/cook profiles preserve failed topology as an explicit
-            # failure; changing driving lanes to none would mask it.
+            print(f"[lane_connectivity] Failure evidence → {fail_json}")
+        except Exception as _exc:
+            print(f"[lane_connectivity] Could not write failure evidence: {_exc}")
+        
+        # In strict mode (release/cook profiles), raise the error
+        strict = _strict_lane_successors_required(self.settings)
+        if strict:
             raise e
-        elif bool(
-            getattr(self.settings, "AUTOFIX_MISSING_LANE_SUCCESSORS", False)
-        ) or str(
-            os.getenv("UP_AUTOFIX_MISSING_LANE_SUCCESSORS", "0")
-        ).strip().lower() in ("1", "true", "yes", "on"):
-            fixed_out2 = final_out.replace(
-                ".xodr", "_autofix_missingSuccessorDowngraded.xodr"
-            )
-            rep = downgrade_broken_driving_lanes_to_none(
-                xodr_in=final_out,
-                xodr_out=fixed_out2,
-                allow_dead_ends=True,
-                out_json=fixed_out2.replace(".xodr", "_autofix_report.json"),
-            )
-
-            # Use downgraded XODR
-            final_out = fixed_out2
-
-            # Re-check; if still broken, decide strict vs continue.
-            strict = _strict_lane_successors_required(self.settings)
-            try:
-                assert_all_lanes_have_successors(final_out, allow_dead_ends=True)
-                print(
-                    "✅ CARLA successor invariant satisfied after downgrade (dead-ends allowed)."
-                )
-            except RuntimeError as e3:
-                # Record failure evidence and either raise (strict) or continue.
-                fail_json = os.path.join(
-                    self.out_dir, "lane_successor_final_fail.json"
-                )
-                try:
-                    with open(fail_json, "w", encoding="utf-8") as f:
-                        json.dump(
-                            {"error": str(e3)}, f, indent=2, ensure_ascii=True
-                        )
-                    print(
-                        f"[lane_connectivity] Final lane successor invariant still broken; evidence -> {fail_json}"
-                    )
-                except Exception as _exc:
-                    print(
-                        f"[lane_connectivity] Could not write failure evidence: {_exc}"
-                    )
-                if strict:
-                    raise
-                else:
-                    print(
-                        "[lane_connectivity] Continuing despite lane successor invariant violation (non-strict mode)."
-                    )
-
-            print(
-                f"[lane_connectivity] Applied fallback autofix: downgraded {rep.get('downgraded_count', 0)} driving lanes; output: {fixed_out2}"
-            )
-            final_out = fixed_out2
-
-            # Re-check to ensure the output is CARLA-safe.
-            assert_all_lanes_have_successors(final_out, allow_dead_ends=True)
-            print(
-                "✅ CARLA successor invariant satisfied after downgrade autofix (dead-ends allowed)."
-            )
         else:
-            raise e
+            # Non-strict: record evidence but don't mutate topology
+            print(
+                "[lane_connectivity] Non-strict mode: continuing despite lane successor invariant violation. "
+                "Topology repair must be fixed at source (Stage 7)."
+            )
 
     self._run_geometric_continuity_gate(final_out, "after_lane_successor_repair")
 

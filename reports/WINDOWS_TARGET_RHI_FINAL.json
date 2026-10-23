@@ -1,0 +1,20 @@
+{
+  "schema": "windows_target_rhi_final/v1",
+  "engine_ini": "G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\Config\\DefaultEngine.ini",
+  "engine_ini_sha256": "a29b289a289d64fec961ee577da4fd6b6b13365cbcf5bc54cc5b71c63a7ebc92",
+  "windows_targeted_rhis": [
+    "PCD3D_SM5",
+    "SF_VULKAN_SM5"
+  ],
+  "PCD3D_ES31_ENABLED": false,
+  "forbidden_rhis_present": [],
+  "required_rhis_present": [
+    "PCD3D_SM5",
+    "SF_VULKAN_SM5"
+  ],
+  "required_rhis_missing": [],
+  "default_graphics_rhi": "DefaultGraphicsRHI_DX12",
+  "PASS": true,
+  "REQUIRED_RUNTIME_SHADER_FAILURES": 0,
+  "evidence": "Cook log ingolstadt_cook_20261005T105458Z.log recorded repeated 'Failed to compile Material Instance ... for platform PCD3D_ES31' and 'ShadingModel MSM_Hair not supported in feature level ES3_1'; that class of failure is now unreachable on the Windows target."
+}

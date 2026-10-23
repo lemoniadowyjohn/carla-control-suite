@@ -1,0 +1,13 @@
+{
+  "CXX_COMPILED": false,
+  "CXX_SOURCE_MODIFIED": true,
+  "CXX_TESTED": false,
+  "PYTHON_REFERENCE_ONLY": true,
+  "exists": true,
+  "git_status": "M LibCarla/source/carla/opendrive/parser/GeoReferenceParser.cpp",
+  "path": "G:\\CARLA\\carla_source_probe\\LibCarla\\source\\carla\\opendrive\\parser\\GeoReferenceParser.cpp",
+  "schema": "georeference_local_state/v1",
+  "sha256": "8d641ace2cafd42d1f371549ae1e9966b86fa630262f254797f9359c5503c7c8",
+  "still_has_silent_fallback": false,
+  "still_substitutes_42_2": true
+}

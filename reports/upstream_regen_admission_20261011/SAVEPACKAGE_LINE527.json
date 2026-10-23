@@ -1,0 +1,8 @@
+{
+  "SAVEPACKAGE_LINE527_WRITE_CLASS": "DIRECT_G",
+  "callchain": "AsyncWriteFile -> WriteToFile -> CreateFileWriter(Filename)",
+  "line_527": "else-branch of WriteToFile: CreateFileWriter(*Filename) returned nullptr",
+  "meaning": "target file could not be OPENED (short-write path is line 522 Could not save to)",
+  "source": "G:/UnrealEngine_4.26_CARLA/Engine/Source/Runtime/CoreUObject/Private/UObject/SavePackage/SavePackageUtilities.cpp (1791 lines)",
+  "target": "G:/CARLA/cook_out/Ingolstadt/CarlaUE4/Content/Carla/Static/Pedestrian/Materials/MH_microdetail/T_Fabric_15_R.ubulk (114 chars; dir exists; siblings cooked 13:16)"
+}

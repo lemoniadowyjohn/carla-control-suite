@@ -1,0 +1,103 @@
+{
+  "IMPORT_BASELINE_STATUS": "TRUNCATED_NONTERMINAL_RUN",
+  "IMPORT_TERMINATION_CAUSE": "PROCESS_EXTERNALLY_TERMINATED",
+  "IMPORT_TERMINATION_CAUSE_DETAIL": "Console control event (Ctrl+C / Ctrl+Break) propagated to the child process. The commandlet exited with Windows status 0xC000013A (STATUS_CONTROL_C_EXIT) and the Python wrapper's subprocess.check_call then raised CalledProcessError.",
+  "baseline_log": "G:\\CARLA\\build_logs\\ingolstadt_import_20261004T001601Z.log",
+  "collateral_defects_found_in_stderr": [
+    {
+      "code": "if key is not 'tiles':",
+      "file": "Util/BuildTools/Import.py",
+      "impact": "Identity comparison against a string literal. Works only by CPython interning accident; a genuine logic defect.",
+      "issue": "SyntaxWarning: \"is not\" with 'str' literal. Did you mean \"!=\"?",
+      "line": 343,
+      "status": "NOT_FIXED_IN_THIS_BATCH"
+    },
+    {
+      "file": "Util/BuildTools/Import.py",
+      "impact": "The map georeference could not be parsed, so DEFAULT georeference values were silently substituted. This is a correctness defect for map placement and is independent of the termination cause.",
+      "issue": "WARNING: cannot parse georeference: '+proj=tmerc'. Using default values.",
+      "line": 627,
+      "status": "NOT_FIXED_IN_THIS_BATCH_P0_CANDIDATE"
+    }
+  ],
+  "command_line_observed": {
+    "absent_arguments": [
+      "-unattended",
+      "-nop4",
+      "-nullrhi",
+      "-stdout",
+      "-abslog",
+      "-nosplash"
+    ],
+    "arguments": [
+      "<project.uproject>",
+      "-run=ImportAssets",
+      "-importSettings=<...>/importsetting.json",
+      "-nosourcecontrol",
+      "-replaceexisting"
+    ],
+    "executable": "G:\\UnrealEngine_4.26_CARLA\\Engine\\Binaries\\Win64\\UE4Editor",
+    "note": "The wrapper invokes UE4Editor.exe, NOT UE4Editor-Cmd.exe, with -run=ImportAssets. This is why 'no UE4Editor-Cmd child exists' was expected behaviour rather than evidence of disappearance."
+  },
+  "generated_at_utc": "2026-10-04T18:30:00.403610Z",
+  "not_evaluated": [
+    "PYTHON_WRAPPER_FAILURE (wrapper did raise, but as a consequence)"
+  ],
+  "policy": "Termination is classified from a named artifact and an exit-status decode, never inferred from log truncation alone. The absence of a crash artifact is reported as absence, not as proof of no crash.",
+  "primary_evidence": {
+    "control_c_marker_in_stderr": "^C",
+    "exit_code_decimal": 3221225786,
+    "exit_code_hex": "0xC000013A",
+    "exit_code_meaning": "STATUS_CONTROL_C_EXIT",
+    "source": "G:\\CARLA\\build_logs\\ingolstadt_import_20261004T001601Z.log.err",
+    "stderr_excerpt": "^C\nTraceback (most recent call last):\n  File \"...Util\\BuildTools\\Import.py\", line 201, in invoke_commandlet\n    subprocess.check_call(command, shell=True)\nsubprocess.CalledProcessError: Command '[... 'UE4Editor', '...CarlaUE4.uproject', '-run=ImportAssets', '-importSettings=...', '-nosourcecontrol', '-replaceexisting']' returned non-zero exit status 3221225786."
+  },
+  "process_state_observed": {
+    "interactive_editor_pid": 35332,
+    "interactive_editor_role": "UE4Editor.exe opened manually by the operator. NOT the import commandlet and NOT parent/child of the import. Must not be used as evidence that an import is active.",
+    "python_wrapper_cpu_seconds": 0.015,
+    "python_wrapper_pid": 23136,
+    "python_wrapper_rss_bytes": 4009984,
+    "wrapper_interpretation": "The wrapper is a zombie: it used 0.015 s CPU because the real work was always in the child. Its low CPU is NOT evidence of progress and must never be used as a liveness signal."
+  },
+  "ruled_in": [
+    {
+      "classification": "PROCESS_EXTERNALLY_TERMINATED",
+      "confidence": "HIGH",
+      "evidence": "Exit code 0xC000013A is the documented Windows status for a process terminated by a console control event, and a literal ^C is present in stderr immediately before the wrapper traceback. Both signals agree."
+    }
+  ],
+  "ruled_out": [
+    {
+      "classification": "COMMANDLET_CRASH",
+      "confidence": "MEDIUM",
+      "evidence": "No UE4 Saved/Crashes artifact, no CrashReportClient report, no WER ReportArchive/ReportQueue entry for UE4Editor-Cmd. A crash would normally leave one of these. Recorded as ABSENCE of evidence, not proof of no crash."
+    },
+    {
+      "classification": "COMMANDLET_FATAL_ERROR",
+      "confidence": "HIGH",
+      "evidence": "No 'Fatal' verbosity lines and no 'Fatal error' text in the log or stderr."
+    },
+    {
+      "classification": "SYSTEM_RESOURCE_TERMINATION",
+      "confidence": "MEDIUM",
+      "evidence": "No OOM event records; RAM 47.75 GB total / 20.7 GB free at probe time; exit status is a control event, not an OOM status."
+    },
+    {
+      "classification": "DISK_OR_IO_FAILURE",
+      "confidence": "MEDIUM",
+      "evidence": "Disk space is critically low (C: 13.4 GB, E: 6.2 GB, H: 16.6 GB) so this remains a real RISK for future runs, but an IO failure would not produce STATUS_CONTROL_C_EXIT."
+    },
+    {
+      "classification": "COMMANDLET_NONZERO_EXIT",
+      "confidence": "HIGH",
+      "evidence": "Technically true but subsumed: the nonzero exit IS the control event. Recorded so it is not double counted."
+    },
+    {
+      "classification": "SYSTEM_REBOOT",
+      "confidence": "LOW",
+      "evidence": "Not evaluated; the machine has been up continuously (editor running since prior day)."
+    }
+  ],
+  "schema": "import_termination_forensics/v1"
+}

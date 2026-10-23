@@ -1,0 +1,16 @@
+{
+  "CURRENT_COOK_USED_PCD3D_ES31": false,
+  "HISTORICAL_ES31_MITIGATION_RELEVANT": false,
+  "PCD3D_ES31_COUNT": 0,
+  "TargetedRHIs_verbatim": [
+    "-TargetedRHIs=SF_VULKAN_SM5",
+    "-TargetedRHIs=GLSL_430",
+    "+TargetedRHIs=SF_VULKAN_SM5",
+    "+TargetedRHIs=GLSL_430",
+    "-TargetedRHIs=PCD3D_SM5",
+    "+TargetedRHIs=PCD3D_SM5",
+    "+TargetedRHIs=SF_VULKAN_SM5"
+  ],
+  "cook_target_platform": "WindowsNoEditor (from preserved log; full UE log with shader-platform lines not preserved)",
+  "source_tree_ini": "G:/CARLA/carla_source_probe/Unreal/CarlaUE4/Config/DefaultEngine.ini"
+}

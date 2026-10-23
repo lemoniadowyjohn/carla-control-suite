@@ -1,0 +1,28 @@
+{
+  "schema": "remote_durability/v1",
+  "producer_commit": "167b12fd4c1db7a7b76663acdb6901f2f786d501",
+  "timestamp": "2026-10-02T11:30:00Z",
+  "branch": "review/carla-production-convergence-20261002",
+  "commit_sha": "167b12fd4c1db7a7b76663acdb6901f2f786d501",
+  "tree_sha": "2aa895a7e5a6e095558f7def254a3002834e2386",
+  "parent_lineage": [
+    "167b12fd4c1db7a7b76663acdb6901f2f786d501 feat(tooling): add RQ1/RQ3 offline tools, evidence freshness gate, and perception environment hardening",
+    "41c872c6 feat(placement): true_placement_verification.py - canonical coordinate chain verification",
+    "0e92f053 fix(rq3): map pair authority with SHA-based identity, Grid0828 only manual reference",
+    "f4a2f4a8 feat(rq1): fix receipt schema, split RQ1A/RQ1B, add determinism authority",
+    "5a5e1214 fix(large-map): P0-4 reconstruction broke a committed provenance contract",
+    "7e744811 feat(recorder): exact frame-id authority, visible backpressure, bounded drain",
+    "78eff7d7 feat(tm): correct hybrid API, single-owner identity, evidence-derived claims, transactional walkers",
+    "cafd3d7a fix(p0): reconstruct the five P0 repairs lost to an accidental repo-wide checkout",
+    "5fd75aac Add RQ1 complete receipt generator (rq1_run_receipt/v1 schema)",
+    "0ed3af4a Add optimization infrastructure (cache, parallel, geometry) and coordinate authority",
+    "233e452ff16db3d35ca717d0bf02e4779e86b258 Merge branch 'integration/opencode-runtime-rig-environment-closure-20261001' into fix/p0-runtime-server-certification-authority-20261001"
+  ],
+  "clean_status": true,
+  "remote_head": "167b12fd4c1db7a7b76663acdb6901f2f786d501",
+  "remote_head_verified": true,
+  "local_head": "167b12fd4c1db7a7b76663acdb6901f2f786d501",
+  "local_head_equals_remote": true,
+  "push_timestamp": "2026-10-02T11:25:00Z",
+  "fetch_verification_timestamp": "2026-10-02T11:26:00Z"
+}

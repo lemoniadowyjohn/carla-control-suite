@@ -14,6 +14,7 @@ from torch_geometric.data import Batch
 from .map_encoder import MapEncoder, MapEncoderConfig
 from .latent_gap_utils import combine_latent_gaps
 from .graph_builder import MapGraphBuilder
+from .collapse_guard_wire import collapse_verdict, collapsed_payload
 
 
 def parse_args():
@@ -41,6 +42,17 @@ def list_xodr_files(directory: str):
 def main():
     args = parse_args()
     os.makedirs(args.out_dir, exist_ok=True)
+
+    # RQ4: FIRST check if the encoder has collapsed; if so, output NOT_RUN.
+    cv = collapse_verdict(args.checkpoint)
+    if collapse_verdict.get("verdict") == "COLLAPSED":
+        out_json = os.path.join(args.out_dir, "per_tile_latent_gap.json")
+        payload = collapsed_payload(args.checkpoint)
+        payload["collapse_verdict"] = collapse_verdict
+        with open(out_json, "w", encoding="utf-8") as f:
+            json.dump(payload, f, indent=2)
+        print(f"COLLAPSED DETECTED -> NOT_RUN, wrote {out_json}")
+        return
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model = load_encoder(args.checkpoint).to(device)

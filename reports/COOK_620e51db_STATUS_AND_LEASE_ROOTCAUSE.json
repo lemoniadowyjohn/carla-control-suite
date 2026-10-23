@@ -1,0 +1,137 @@
+{
+  "schema": "COOK_620e51db_STATUS_AND_LEASE_ROOTCAUSE/v1",
+  "schema_version": 1,
+  "run_id": "COOK_620e51db",
+
+  "COOK_TERMINAL": false,
+  "COOK_EXIT_CODE": null,
+  "COOK_TERMINATION_CLASS": "NOT_TERMINAL",
+  "COOK_DESCENDANTS_ALIVE": 4,
+
+  "LIVE_COOK_HEALTH": "PROGRESSING",
+  "monitoring_evidence": {
+    "window_150s": {
+      "cooked_packages": "1585 -> 1585 (static)",
+      "shaders_left": "7878 -> 7848 (-30)",
+      "log_bytes": "367756 -> 370130 (+2374)",
+      "cpu_advancing": true,
+      "handles": "4293 -> 4293 (delta 0)",
+      "scw": 4
+    },
+    "handle_growth_retracted":
+      "an earlier sample showed handles rising 3784 -> 4293 (+509). A subsequent 150 s window measured delta 0, so that step was a one-time increase and is NOT classified as a leak. Recorded as a non-finding rather than silently dropped.",
+    "package_stasis_interpretation":
+      "package count has been static at 1585 across several windows while shaders continue to drain and the log grows. The run's own stall rule requires 30 minutes with no package progress AND no log growth AND no SCW CPU delta AND no meaningful IO; none of those hold, so this is the shader phase, not a stall."
+  },
+
+  "TIMEOUT_RISK_ASSESSMENT": {
+    "supervisor_timeout_s": 14400,
+    "cook_start_utc": "2026-10-06T16:59:33.3967880Z",
+    "timeout_boundary_utc": "2026-10-06T20:59:33Z",
+    "observed_shader_drain_rate_per_min": "12-13",
+    "shaders_remaining_at_assessment": 7848,
+    "estimated_minutes_to_drain_at_current_rate": 628,
+    "assessment": "HIGH RISK OF SUPERVISOR TIMEOUT",
+    "reasoning":
+      "At 12-13 shaders per minute, 7848 remaining shaders need roughly 10.5 hours, while the supervisor's 14400 s budget expires about 4 hours after cook start. Unless the drain rate accelerates materially as workers finish large batches, the cook is unlikely to complete before its own deadline.",
+    "predicted_terminal_class_if_it_expires": "TERMINATED_BY_SUPERVISOR",
+    "not_yet_observed": true
+  },
+
+  "FINAL_COOKED_COUNT": 1585,
+  "FINAL_EXPECTED_COUNT": 1666,
+  "FINAL_SHADER_FAILURE_COUNT": 0,
+
+  "RETIRED_COOK_METADATA_CONSUMED": false,
+  "TECHNICAL_COOK_RESULT": "INDETERMINATE",
+  "TECHNICAL_COOK_RESULT_BASIS":
+    "cook is non-terminal; no completion marker present. Zero Error:/Fatal/Assertion/SCW-failure/Cook-failed occurrences so far, but completeness cannot be judged before terminal state.",
+
+  "PRODUCER_RECEIPT_TERMINAL": false,
+  "PRODUCER_RECEIPT_ROOT_MATCH": true,
+  "PRODUCER_RECEIPT_EXECUTOR_RESOLVABLE": false,
+  "PRODUCER_RECEIPT_SHA256": "8628326E77C1AA4BB437116452ECED7348A59586065601FFB85EE7AF7814DCB2",
+  "PRODUCER_RECEIPT_PRESERVED_UNMODIFIED": true,
+
+  "LEASE_HEARTBEAT_IMPLEMENTED": true,
+  "LEASE_HEARTBEAT_VALID": true,
+  "LEASE_PROCESS_BINDING_VALID": false,
+  "LEASE_TERMINAL_STATE": "RUNNING (still heartbeating; cook non-terminal)",
+
+  "LEASE_STALE_ROOT_ROOT_CAUSE": "HARNESS_NEVER_BINDS_LEASE_TO_MUTATION_ROOT__AND_HEARTBEAT_IS_TIMESTAMP_ONLY",
+
+  "LEASE_STALE_ROOT_EVIDENCE": {
+    "lease_path": "C:\\ProgramData\\carla-ops\\leases\\current_lease.json",
+    "lease_run_id": "COOK_620e51db",
+    "lease_root_pid": 28436,
+    "lease_root_creation_time": "2026-10-06T12:20:34.602992Z",
+    "lease_root_alive": false,
+    "actual_cook_root_pid": 29972,
+    "actual_cook_root_creation_time": "2026-10-06T16:59:33.3967880Z",
+    "supervisor_never_acquires_a_lease": {
+      "evidence": "supervised_ue_run.py lines 105-107 do cur = lease_store.read_current() then lease_store.heartbeat(cur). There is no acquire() call anywhere in the file.",
+      "consequence": "the harness adopts whatever lease happens to exist instead of creating one bound to the process it supervises, so there is no lease-to-mutation-root binding step at all"
+    },
+    "heartbeat_does_not_validate_owner": {
+      "code": "def heartbeat(lease): lease.heartbeat_utc = _utcnow(); if lease.state == 'ACQUIRED': lease.state = 'RUNNING'; cur = read_current(); if cur is not None and cur.run_id == lease.run_id: _write_current(lease); return lease",
+      "file": "ultimate_pipeline/governance/single_writer/lease_store.py lines 250-257",
+      "finding": "heartbeat refreshes the timestamp and promotes ACQUIRED to RUNNING, then writes back whenever run_id matches. It never calls owner_alive() or lease_owner_alive().",
+      "available_but_unused": "lease_store DOES define owner_alive(root_pid, root_creation_time) at line 137 and lease_owner_alive(lease) at line 151, and lease_owner_alive would correctly return False here because the lease has executor_pid 0 so it falls back to root_pid 28436 which is dead. heartbeat simply never consults it."
+    },
+    "mechanism":
+      "a lease whose recorded owner PID is dead is nonetheless refreshed every 60 s and stays state=RUNNING indefinitely, because heartbeat gates only on run_id equality and never on owner liveness.",
+    "unresolved_detail":
+      "why the lease pairs run_id COOK_620e51db with a root_pid created at 12:20:34Z, roughly 4.65 hours before the cook it names, is NOT established. The supervisor does not acquire, so the acquiring caller is unidentified. No speculative explanation is offered."
+  },
+
+  "COOK_JOB_SUPERVISION_AUTHORITY": "ASSIGNMENT_CODEPATH_PROVEN",
+  "COOK_JOB_SUPERVISION_NOTE":
+    "runtime membership deliberately not claimed; handle.exe unavailable. Codepath proves create_job, Popen with SUSPENDED|BREAKAWAY, AssignProcessToJobObject with raise on failure, resume only after assignment, wait_for_drain, and job_members_final recorded.",
+
+  "ITERATIVE_BASELINE_SOURCE": "EMPTY_BASELINE",
+  "STDOUT_FLAG_FOR_THIS_COOK": "SAFE",
+  "STDOUT_FLAG_SCOPE": "applies specifically to UE4Editor -run=cook; the separate source-tree GAME-launch -stdout warning is unaffected",
+
+  "RECONCILIATION_RECEIPT_CREATED": false,
+  "RECONCILIATION_RECEIPT_WHY_NOT":
+    "withheld while the cook is live; the producer may still write terminal fields, and emitting a POST_HOC_RECONCILIATION receipt now could contradict it",
+  "COOK_OUTPUT_AUTHORITY": "INDETERMINATE",
+
+  "PROCESS_IDENTITY_CONTRACT_V2": "NOT_WRITTEN",
+  "LEASE_IDENTITY_REGRESSION": "NOT_RUN",
+  "RECEIPT_IDENTITY_REGRESSION": "NOT_RUN",
+  "JOB_SUPERVISION_REGRESSION": "NOT_RUN",
+  "harness_repair_blocked_reason":
+    "Phase 9-15 repairs are deferred by explicit instruction and by prudence: the live cook depends on the current harness, and editing supervised_ue_run.py, lease_store or receipt handling mid-run risks the running operation. Only read-only root-cause analysis was performed.",
+
+  "EXISTING_IDENTITY_TESTS": "15/15 PASS (unchanged, not re-run this batch)",
+  "JOB_MATRIX": "not re-run this batch",
+  "JOB_STRESS": "not re-run this batch",
+  "T6": "not re-run this batch",
+  "LEASE_JOB_COUPLING": "not re-run this batch",
+  "HARNESS_REPAIR_BRANCH": null,
+  "HARNESS_REPAIR_SHA": null,
+
+  "F_FREE_GB": 34.49,
+  "F_DDC_SIZE_GB": 5.53,
+  "F_FINAL_COOK_OUTPUT_SIZE_GB": 1.39,
+  "F_DDC_CAPACITY": "MARGINAL",
+
+  "C_FREE_GB": 13.25,
+  "C_STORAGE_ADMISSION": "FAIL",
+
+  "AUTHORITATIVE_BOUNDED_COOK_RERUN_REQUIRED": "UNDETERMINED_PENDING_TECHNICAL_RESULT",
+  "ACTIVE_CONFLICTING_MUTATORS": 1,
+
+  "RQ1_OSM_PREFLIGHT_TESTS": "7/7 PASS",
+  "CONFIRMATION_TRIAL_RUN": false,
+  "OSM_NETWORK_FETCH_ATTEMPTED": false,
+  "DEM_STAGE_PASSED": "NOT_ASSESSED",
+  "STAGE_04_REACHED": false,
+  "STAGE_05_REACHED": false,
+  "FULL_N5_RUN_STARTED": false,
+
+  "ACTIONS_TAKEN": "read-only monitoring and root-cause reading of lease_store plus the supervisor; no process terminated, no supervision code patched, no cleanup, no new Unreal process",
+
+  "FINAL_VERDICT": "PARTIAL_WITH_EXACT_BLOCKERS"
+}

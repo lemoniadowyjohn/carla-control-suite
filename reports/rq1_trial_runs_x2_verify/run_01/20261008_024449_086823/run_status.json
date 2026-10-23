@@ -1,0 +1,8 @@
+{
+  "status": "failed",
+  "stage": "final_integrity",
+  "message": null,
+  "error": "\n\u274c CARLA-FATAL: lane connectivity invariant violated\n\nCARLA requires every driving lane to have a successor.\nThe following lanes are invalid:\n\nRoad 42130 lane -1: missing <successor>\nRoad 42131 lane -1: missing <successor>\nRoad 42132 lane -1: missing <successor>\nRoad 42132 lane -2: missing <successor>\nRoad 42133 lane -1: missing <successor>\nRoad 42134 lane -1: missing <successor>\nRoad 42136 lane -1: missing <successor>\nRoad 42137 lane -1: missing <successor>\nRoad 42138 lane -1: missing <successor>\nRoad 42139 lane -1: missing <successor>\nRoad 42140 lane -1: missing <successor>\nRoad 42141 lane -1: missing <successor>\nRoad 42142 lane -1: missing <successor>\nRoad 42143 lane -1: missing <successor>\nRoad 42144 lane -1: missing <successor>\nRoad 42145 lane -1: missing <successor>\nRoad 42146 lane -1: missing <successor>\nRoad 42147 lane -1: missing <successor>\nRoad 42148 lane -1: missing <successor>\nRoad 42149 lane -1: missing <successor>\n\nTotal broken lanes: 10556\n\nFix lane links BEFORE CARLA load.\n",
+  "out_dir": "reports\\rq1_trial_runs_x2_verify\\run_01\\20261008_024449_086823",
+  "timestamp": "2026-10-08T10:41:25.182387"
+}

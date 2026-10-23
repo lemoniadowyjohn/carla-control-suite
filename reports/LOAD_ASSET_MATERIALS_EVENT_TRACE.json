@@ -1,0 +1,20 @@
+{
+  "schema": "LOAD_ASSET_MATERIALS_EVENT_TRACE/v1",
+  "log": "CarlaUE4-backup-2026.10.06-11.55.39.log",
+  "log_sha_note": "session 11:53:29Z-11:55:39Z, command line -run=LoadAssetMaterials -PackageName=Ingolstadt",
+  "commandlet_class": "/Script/Carla.LoadAssetMaterialsCommandlet",
+  "executed_at": "2026.10.06-11.53.40Z",
+  "engine_exit": "2026.10.06-11.55.31Z (result 0)",
+  "LogSavePackage_records": 0,
+  "SavePackage_records": 0,
+  "DecalActor_records": 0,
+  "RoadDecal_records": 0,
+  "SpawnActor_records": 0,
+  "LogStaticMesh_records": 11423,
+  "errors": "none substantive; the 2 raw 'Error' substring hits were benign text (RenderDoc library notice)",
+  "warning_profile": "60x duplicate PrimaryAssetID for stock Carla test maps, 14x Walker blueprint AssetLog, 5x null world context, 3x ExampleDeviceProfileSelector, 3x streaming pool size. All stock noise.",
+  "LOAD_ASSET_MATERIALS_ASSIGNMENT_COUNT": 0,
+  "LOAD_ASSET_MATERIALS_SAVED_PACKAGE_COUNT": 0,
+  "interpretation": "Expected no-op, not a silent failure. Ingolstadt.Package.json lists only the 25KB main world, which contains no StaticMeshActor named Road/Roads, so HasRoadMesh is false, ApplyRoadPainterMaterials is never called, and SaveDirtyPackages has nothing dirty to write. Exit 0 here does NOT mean materials were applied.",
+  "prior_claim_corrected": "A prior pipeline receipt recorded 'LoadAssetMaterials=PASS'. PASS reflects only process exit 0. This trace shows the commandlet performed zero assignments and saved zero packages."
+}

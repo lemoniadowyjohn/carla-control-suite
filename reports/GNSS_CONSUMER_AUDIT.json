@@ -1,0 +1,92 @@
+{
+  "GNSS_NO_ORIGIN_BEHAVIOR": "SILENT_NO_DATA_PLUS_FABRICATED_PASS",
+  "PASS": false,
+  "consumer_count": 4,
+  "consumers": [
+    {
+      "aborts_on_timeout": false,
+      "consumer": "phase_q.protocols / resource_profiles sensor-rate spec",
+      "detail": "consumer never blocks on GNSS data",
+      "outcome": "SAFE",
+      "role": "declares gnss rate 10 Hz",
+      "timeout_sec": null,
+      "treats_missing_as_optional": false,
+      "waits_for_first_frame": false
+    },
+    {
+      "aborts_on_timeout": false,
+      "consumer": "phase_l_validation.step_l9_sensor_validation",
+      "detail": "consumer never blocks on GNSS data",
+      "outcome": "SAFE",
+      "role": "L9 sensor validation reported in evidence manifests",
+      "timeout_sec": null,
+      "treats_missing_as_optional": false,
+      "waits_for_first_frame": false
+    },
+    {
+      "aborts_on_timeout": false,
+      "consumer": "phase_l_validation.step_l10_performance",
+      "detail": "consumer never blocks on GNSS data",
+      "outcome": "SAFE",
+      "role": "L10 performance reported in evidence manifests",
+      "timeout_sec": null,
+      "treats_missing_as_optional": false,
+      "waits_for_first_frame": false
+    },
+    {
+      "aborts_on_timeout": false,
+      "consumer": "phase_l_validation.step_l11_old_vs_new",
+      "detail": "consumer never blocks on GNSS data",
+      "outcome": "SAFE",
+      "role": "L11 comparison reported in evidence manifests",
+      "timeout_sec": null,
+      "treats_missing_as_optional": false,
+      "waits_for_first_frame": false
+    }
+  ],
+  "fabricated_pass_findings": [
+    {
+      "defect": "FABRICATED_SENSOR_VALIDATION",
+      "detail": "Accepts a live client, calls get_world(), then hardcodes status CAPTURED for rgb/depth/semantic/lidar/gnss/imu, synchronization_status PASS, and gnss_agreement PASS. It subscribes to no sensor and receives no frame.",
+      "impact": "On a map with no absolute origin GNSS emits nothing, yet this still records gnss status CAPTURED and agreement PASS, so any gate reading L9 sees a false success.",
+      "location": "phase_l_validation.py:346-357 step_l9_sensor_validation",
+      "severity": "CRITICAL"
+    },
+    {
+      "defect": "FABRICATED_PERFORMANCE_MEASUREMENT",
+      "detail": "fps=0, p95_frame_time_ms=0, ram_usage_mb=0, vram_usage_mb=0, rpc_timeouts=0 are all hardcoded while performance_status is reported as PASS.",
+      "location": "phase_l_validation.py:361-382 step_l10_performance",
+      "severity": "HIGH"
+    },
+    {
+      "defect": "UNCOMPUTED_COMPARISON_REPORTED_AS_PASS",
+      "detail": "comparison_status PASS with no comparison performed.",
+      "location": "phase_l_validation.py:385-391 step_l11_old_vs_new",
+      "severity": "HIGH"
+    }
+  ],
+  "generated_utc": "2026-10-05T21:53:38.483067Z",
+  "outcomes": {
+    "CAN_DEADLOCK": 0,
+    "FAILS_EXPLICITLY": 0,
+    "SAFE": 4,
+    "SILENT_DATA_LOSS": 0,
+    "TIMES_OUT": 0,
+    "UNKNOWN": 0
+  },
+  "persisted_fabricated_evidence": {
+    "note": "Fabricated PASS evidence is referenced from a certification manifest inside a directory named GITHUB_SHIP. Any prior runtime PASS derived from these files is void.",
+    "occurrences": 5,
+    "pattern": "reports/post_audit_hardening/*/L9_sensor_validation.json",
+    "referenced_by": [
+      "reports/post_audit_hardening/*/PHASE_L_RUNTIME_VALIDATION.json",
+      "reports/post_audit_hardening/20260805T141616Z_GITHUB_SHIP/A00_LOCAL_REMOTE_RECONCILIATION.md",
+      "reports/post_audit_hardening/20260805T141616Z_N_CERTIFICATION/EVIDENCE_MANIFEST.json"
+    ],
+    "severity": "CRITICAL"
+  },
+  "rationale": "Emitting no GNSS measurement is truthful, but silence is indistinguishable from sensor or network failure downstream. Every consumer must either fail fast or declare GNSS optional up front; none may wait indefinitely.",
+  "schema": "GNSS_CONSUMER_AUDIT/v1",
+  "schema_version": 1,
+  "unsafe_consumers": []
+}

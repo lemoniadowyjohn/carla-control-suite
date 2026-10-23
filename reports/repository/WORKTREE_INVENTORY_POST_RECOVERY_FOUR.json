@@ -1,0 +1,58 @@
+{
+  "rq1-matrix-fix": {
+    "cached_changes": "(empty)",
+    "dirs_present": {
+      "reports": true,
+      "submission": true,
+      "tests": true,
+      "ultimate_pipeline": true
+    },
+    "fs_files": 4100,
+    "ls_files_deleted": 0,
+    "path": "C:/Users/admin/AppData/Local/Temp/opencode/rq1-matrix-fix",
+    "pyproject": true,
+    "readme": true
+  },
+  "wt-p1": {
+    "cached_changes": "(empty)",
+    "dirs_present": {
+      "reports": true,
+      "submission": true,
+      "tests": true,
+      "ultimate_pipeline": true
+    },
+    "fs_files": 4170,
+    "ls_files_deleted": 0,
+    "path": "C:/Users/admin/AppData/Local/Temp/opencode/wt-p1",
+    "pyproject": true,
+    "readme": true
+  },
+  "wt-p1-base": {
+    "cached_changes": "(empty)",
+    "dirs_present": {
+      "reports": true,
+      "submission": true,
+      "tests": true,
+      "ultimate_pipeline": true
+    },
+    "fs_files": 4128,
+    "ls_files_deleted": 0,
+    "path": "C:/Users/admin/AppData/Local/Temp/opencode/wt-p1-base",
+    "pyproject": true,
+    "readme": true
+  },
+  "wt-runtime-rig": {
+    "cached_changes": "(empty)",
+    "dirs_present": {
+      "reports": true,
+      "submission": true,
+      "tests": true,
+      "ultimate_pipeline": true
+    },
+    "fs_files": 4115,
+    "ls_files_deleted": 0,
+    "path": "C:/Users/admin/AppData/Local/Temp/opencode/wt-runtime-rig",
+    "pyproject": true,
+    "readme": true
+  }
+}

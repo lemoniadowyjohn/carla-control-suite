@@ -1,0 +1,36 @@
+{
+  "carla_exe": "E:\\CARLA\\CARLA_0.9.16\\CarlaUE4.exe",
+  "carla_exe_bytes": 191488,
+  "carla_exe_present": true,
+  "carla_exe_sha256": "0bc4b3d089470ffdc91a2ec6bf2f26187de271d0e9e71a01beee8416633c7320",
+  "carla_version_target": "0.9.16",
+  "generated_at_utc": "2026-10-03T21:42:45.879674Z",
+  "launch_command": null,
+  "owned_pid": null,
+  "owned_pid_creation_time": null,
+  "pre_existing_carla_pids": [
+    42088,
+    10840
+  ],
+  "pre_existing_not_killed": true,
+  "probe_only": true,
+  "rpc": {
+    "client_import_ok": true,
+    "error": "",
+    "get_available_maps_count": 15,
+    "get_server_version": "0.9.16",
+    "snapshot_frame": 904,
+    "snapshot_timestamp": 104.81855026260018,
+    "world_get_map": "Grid0828/Maps/Grid0828/Grid0828"
+  },
+  "rpc_port": 2002,
+  "rpc_port_listening": true,
+  "run_id": "carla_run_20261003T214244Z_b0df4e",
+  "runtime_ready": true,
+  "schema": "carla_runtime_launch/v2",
+  "stderr_log": "reports\\carla_runtime\\carla_run_20261003T214244Z_b0df4e_stderr.log",
+  "stdout_log": "reports\\carla_runtime\\carla_run_20261003T214244Z_b0df4e_stdout.log",
+  "streaming_port": 2003,
+  "streaming_port_listening": true,
+  "verdict": "RUNTIME_READY"
+}

@@ -1,0 +1,22 @@
+{
+  "method": "set-level only (per task: correlation, not causation; no netconvert option changed)",
+  "namespace_test": {
+    "sumo_edge_id_sample": [
+      "1063717066",
+      "116391315",
+      "23009002 (OSM way IDs, 8-10 digits)"
+    ],
+    "xodr_road_id_sample": [
+      "42330-42339 (pipeline-renumbered small ints)"
+    ],
+    "overlap": "0/29 sampled SUMO edge IDs present in pin road namespace",
+    "consequence": "direct ID join between SUMO warnings and GAP-026 residuals is impossible at available artifacts; mapping would require seed-stage OSM-way->road table + fresh Stage-7 residuals, neither available (regen never reached Stage 7)"
+  },
+  "GAP026_RESIDUALS_WITH_SUMO_WARNING": "UNDETERMINED (no fresh residuals measured; HEAD-claimed 513 never reproduced on a fresh artifact per Sec 4 rule)",
+  "GAP026_RESIDUALS_WITHOUT_SUMO_WARNING": "UNDETERMINED (same reason)",
+  "SEVERE_WITH_SMOOTH_SHAPE_FAILURE": "UNDETERMINED",
+  "SEVERE_WITH_SHARP_TURN": "UNDETERMINED",
+  "SEVERE_WITH_JUNCTION_SHAPE_WARNING": "UNDETERMINED",
+  "SEVERE_WITH_NO_RELEVANT_WARNING": "UNDETERMINED",
+  "class_level_observation": "174 smooth-shape laneLink failures + 29 edge failures + 23 sharp turns + 12 large angles exist in fresh SUMO output; IF the 192-claimed severe lateral residuals reproduce, junction-adjacent connector geometry is the prime suspect class. Not a finding until fresh residuals exist."
+}

@@ -1,0 +1,82 @@
+{
+  "FINAL_CODE_SHA": "65eb0f14d226104692dd845f8a528759fbeb90c4",
+  "FINAL_SETTINGS_SHA": "c729b3e6088b992efc554725839d624d05c48cf4439eeacb442cee5d11ddc831",
+  "FINAL_OSM_SHA": "b9e074656f744c31e6aabb0a16e6b2246824ca74e202ea2c316ff7f22364f24f",
+
+  "STAGE7_SHA": "9d550394fe395f92d4203c063ea6b2fecb5cee950c3251008316ae74ce2c599b",
+  "STAGE8_SHA": "36967962531f07c0dccd3155b09c87c834c0702b2cefd139a8a9a549bc408ff8",
+
+  "GAP026_FAIL": 1882,
+  "GAP026_SEVERE_DISTANCE": 441,
+  "GAP026_SEVERE_ANGLE": 516,
+  "GAP026_UNEXPLAINED": 156,
+
+  "GAP048_BROKEN": 647,
+  "GAP048_REPAIRED": 0,
+  "GAP048_UNEXPLAINED": 0,
+
+  "STAGE8_LANE_TOPOLOGY_MUTATION": "post_hygiene_repair",
+  "INVALID_TARGETS": 56,
+  "ORPHAN_INVALID": 0,
+  "ORPHAN_UNEXPLAINED": 0,
+
+  "RQ1_TOPOLOGY_ADMISSION": "BLOCKED_GAP026",
+
+  "FINAL_VERDICT": "TOPOLOGY_BOUNDED_EXACT_BLOCKERS",
+
+  "details": {
+    "gap026": {
+      "kernel_oracle_checked": 2002,
+      "kernel_oracle_passed": 60,
+      "kernel_oracle_failed": 1942,
+      "production_checker_checked": 2002,
+      "production_checker_failed": 1882,
+      "max_distance_m": 418.22,
+      "max_angle_deg": 180.00,
+      "failures_dist_gt_10m": 441,
+      "failures_angle_gt_10deg": 516,
+      "oracle_only_failures": 108,
+      "prod_only_failures": 48,
+      "intersection_failures": 1834,
+      "unexplained_delta": 156
+    },
+    "gap048": {
+      "stage7_artifact": "regen_20261013T000000Z/pipeline_out/07_lanes_20261013_151358_716604.xodr",
+      "stage7_sha256": "9d550394fe395f92d4203c063ea6b2fecb5cee950c3251008316ae74ce2c599b",
+      "broken_total": 647,
+      "partition_ok": true,
+      "through_junction_candidates": 622,
+      "through_junction_unambiguous": 459,
+      "through_junction_ambiguous": 48,
+      "through_junction_no_candidate": 56,
+      "strategy1_applicable": 25,
+      "strategy1_lane_exists": 16,
+      "strategy1_lane_absent": 9
+    },
+    "invalid_targets": {
+      "dropped_count": 56,
+      "affected_roads": 20,
+      "details_saved": "invalid_target_test.xodr"
+    },
+    "orphan_roads": {
+      "total_roads": 991,
+      "orphan_count": 0,
+      "junction_connected": 725,
+      "normal": 266,
+      "orphan_unexplained": 0
+    },
+    "final_artifact": {
+      "path": "regen_20261013T000000Z/pipeline_out/08h4_lane_width_discontinuities_repaired.xodr",
+      "sha256": "36967962531f07c0dccd3155b09c87c834c0702b2cefd139a8a9a549bc408ff8",
+      "bytes": 57124190,
+      "capabilities_held": [
+        "final_artifact_published",
+        "geometry_frozen",
+        "hygiene_complete",
+        "lanes_final",
+        "lanes_generated",
+        "structure_frozen"
+      ]
+    }
+  }
+}

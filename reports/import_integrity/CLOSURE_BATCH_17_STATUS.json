@@ -1,0 +1,233 @@
+{
+  "schema": "closure_batch_status/v1",
+  "batch_objective": "Close the blockers preventing a safe full 20-tile retry",
+  "headline": "The 5711 building-reference failure is now PROVEN and my earlier hypothesis is REFUTED. It is not a mount-point or junction problem: all 5711 meshes exist on disk with correct tile-prefixed names, but in /Game/Ingolstadt/Static/Terrain/Ingolstadt while the tile map serializes references to /Game/Ingolstadt/Maps/Ingolstadt. The package root is identical; the reference simply omits the 'Static/Terrain' segment.",
+
+  "p0_namespace_root_cause": {
+    "MOUNT_POINT_ROOT_CAUSE": "WRONG_SUBPATH_IN_SERIALIZED_REFERENCE",
+    "MOUNT_POINT_ROOT_CAUSE_PROVEN": true,
+    "BUILDING_REFERENCE_PATH_ROOT": "/Game/Ingolstadt/Maps/Ingolstadt",
+    "ACTUAL_BUILDING_ASSET_ROOT": "/Game/Ingolstadt/Static/Terrain/Ingolstadt",
+    "UNRESOLVED_REFERENCES_BEFORE": 5711,
+    "UNRESOLVED_REFERENCES_AFTER": 5711,
+    "proof": {
+      "meshes_on_disk": 5711,
+      "unique_references": 5711,
+      "WRONG_PACKAGE_ROOT": 5711,
+      "MISSING": 0,
+      "WRONG_OBJECT_NAME": 0,
+      "orphans_on_disk_not_referenced": 0,
+      "references_matching_a_real_uasset_name": 5711,
+      "interpretation": "Object naming and asset creation are both correct. Only the package sub-path is wrong."
+    },
+    "hypothesis_refuted": {
+      "hypothesis": "MOUNT_POINT_OR_NAMESPACE_MISMATCH via junction aliasing",
+      "verdict": "REFUTED",
+      "reason": "/Game/Ingolstadt is a REAL directory, not a junction. The five junctions (Carla/Maps->Maps, Carla/Static->Static, Carla/Blueprints, Carla/Config, Carla/HDMaps) are real but do not participate in this failure."
+    },
+    "decisive_filesystem_evidence": {
+      "map_folder": "/Game/Ingolstadt/Maps/Ingolstadt contains Ingolstadt.umap, MAT_*.uasset, OpenDrive/, TM/ and ZERO building meshes",
+      "static_folder": "/Game/Ingolstadt/Static/Terrain/Ingolstadt contains all 5711 Ingolstadt_Tile_*_Building*.uasset",
+      "conclusion": "The buildings were imported through the props channel, not the map channel that the references assume."
+    },
+    "producer_evidence": {
+      "import_settings_file": "G:\\CARLA\\carla_source_probe\\importsetting.json",
+      "declared_DestinationPath": "/Game/package/Maps/Ingolstadt",
+      "declared_file_count": 20,
+      "note": "DestinationPath is the literal template '/Game/package/...'. CARLA substitutes PackageName at commandlet runtime, giving /Game/Ingolstadt/Maps/Ingolstadt, which matches the serialized reference exactly. So the import DESTINATION was correct; the meshes simply are not there.",
+      "static_mesh_import_data": {
+        "bRemoveDegenerates": 1, "bAutoGenerateCollision": 1, "bConvertSceneUnit": 1,
+        "bForceVerticesRelativeToTile": 1, "TileSize": 1000.0, "bCombineMeshes": 0
+      }
+    },
+    "candidate_fixes": [
+      {"id": "FIX-A", "preferred": true,
+       "action": "Import the tile FBX meshes into the map destination /Game/Ingolstadt/Maps/Ingolstadt so meshes sit beside the .umap, matching CARLA's stock Town01 layout.",
+       "risk": "Changes the asset namespace; requires re-import and re-cook.",
+       "status": "NOT_APPLIED_IN_THIS_BATCH"},
+      {"id": "FIX-B",
+       "action": "Rewrite the map's serialized references to /Game/Ingolstadt/Static/Terrain/Ingolstadt/<Name>.",
+       "risk": "Requires editing serialized .umap or the reference producer; diverges from CARLA's stock layout.",
+       "status": "NOT_APPLIED_IN_THIS_BATCH"}
+    ]
+  },
+
+  "junction_audit": {
+    "junction_count": 5,
+    "junctions": [
+      {"ue_path": "/Game/Carla/Maps", "target": "Content/Maps"},
+      {"ue_path": "/Game/Carla/Static", "target": "Content/Static"},
+      {"ue_path": "/Game/Carla/Blueprints", "target": "Content/Blueprints"},
+      {"ue_path": "/Game/Carla/Config", "target": "Content/Config"},
+      {"ue_path": "/Game/Carla/HDMaps", "target": "Content/HDMaps"}
+    ],
+    "classification": "UNSAFE_DOUBLE_DISCOVERY",
+    "JUNCTION_ALIASING": "PROVEN_AND_UNSAFE",
+    "explains_primary_asset_duplicates": true,
+    "explains_building_reference_failure": false,
+    "removal": "NOT_REMOVED - no tested replacement exists; removing them would break editor initialization"
+  },
+
+  "primary_asset_id": {
+    "PRIMARY_ASSET_WARNINGS_BEFORE": 775,
+    "PRIMARY_ASSET_UNIQUE_COLLISIONS_BEFORE": 2,
+    "families": {
+      "Map:/Game/Carla/Maps/BaseLargeMap/LargeMap": {
+        "root_cause": "SAME PHYSICAL MAP REACHABLE THROUGH TWO /Game PATHS",
+        "mechanism": "/Game/Carla/Maps is a junction to /Game/Maps, so /Game/Carla/Maps/BaseLargeMap/LargeMap and /Game/Maps/BaseLargeMap/LargeMap are the same file. UE4 Map PrimaryAssetID is Map:<AssetName>, which ignores path, so the alias produces a duplicate ID."
+      },
+      "Map:/Game/Carla/Maps/TestMaps/EmptyMap": {
+        "root_cause": "MANY DISTINCT TILE PACKAGES RESOLVING TO ONE PRIMARY ASSET NAME",
+        "mechanism": "Multiple /Game/Maps/Town11/Town11_Tile_* packages contain a map whose primary asset name is EmptyMap, so all of them collide with the EmptyMap identity."
+      }
+    },
+    "PRIMARY_ASSET_UNIQUE_COLLISIONS_AFTER": 2,
+    "collisions_closed": false,
+    "reason_not_closed": "Fixing these requires either editing CARLA's AssetManager scan configuration or removing the junctions. Both need a tested replacement, which this batch did not build."
+  },
+
+  "georeference": {
+    "GEOREFERENCE_WARNING_BEFORE": "WARNING: cannot parse georeference: '+proj=tmerc'. Using default values.",
+    "GEOREFERENCE_SOURCE": "UNLOCATED_IN_THIS_BATCH",
+    "search_performed": "Full-tree search of Util/ and CarlaUE4/Source/ for 'cannot parse georeference', 'georeference' and 'geoReference'",
+    "search_result": "ZERO matches",
+    "interpretation": "The string is not present in the current CARLA source tree. Either it lives outside the searched roots, or Import.py was edited after the run and the message removed.",
+    "DEFAULT_GEOREFERENCE_FALLBACK": "NOT_REMOVED",
+    "CRS_IDENTITY_PRESERVED": "UNKNOWN",
+    "blocker": "Cannot fix a parser that cannot be located. Locating it is the next action."
+  },
+
+  "provenance_defect": {
+    "issue": "The baseline run is no longer reproducible from the working tree",
+    "evidence": {
+      "git_status": "M Util/BuildTools/Import.py (uncommitted)",
+      "git_HEAD": "294096eb1c38eabf246e4f3a9cdab704e33a7f4c",
+      "import_py_size_bytes": 36273,
+      "import_py_mtime": "2026-10-04T20:55:10",
+      "baseline_run_ended": "2026-10-04T17:03:54"
+    },
+    "impact": "Import.py was modified AFTER the truncated run and is uncommitted. The baseline was produced by a different version of the wrapper than the one on disk, so any before/after comparison must pin the wrapper hash explicitly.",
+    "requirement": "Any controlled A/B must record the Import.py SHA256 for both arms."
+  },
+
+  "python_identity_bug": {
+    "PYTHON_IDENTITY_BUG_FIXED": "NOT_PRESENT_IN_CURRENT_FILE",
+    "original": "Import.py:343 SyntaxWarning: \"is not\" with 'str' literal. Did you mean \"!=\"?  ->  if key is not 'tiles':",
+    "current_state": "A full scan of the current Import.py (929 lines) finds no 'is not <literal>' comparison and line 343 is now a docstring.",
+    "cause": "The file changed after the run (see provenance_defect). The defect is therefore absent, but by modification rather than by a verified fix.",
+    "defect_class_prevented": "The supervision module exports state names as module constants precisely so callers compare against symbols instead of re-typing literals."
+  },
+
+  "process_supervision": {
+    "PROCESS_SUPERVISION": "IMPLEMENTED_AND_TESTED",
+    "module": "tools/carla_import_supervision.py",
+    "tests": "tests/unit/test_carla_import_supervision.py (33 tests, all passing)",
+    "capabilities": [
+      "classify_exit_status: 0xC000013A/0xC000003A -> EXTERNALLY_INTERRUPTED, explicitly not CRASH and not SUCCESS",
+      "detect_process_role: distinguishes UE4Editor.exe -run= (COMMANDLET) from plain UE4Editor.exe (INTERACTIVE_EDITOR), so the interactive editor can never be used as import evidence",
+      "ImportState: atomic writes, validated transitions, full history, terminal states have no outgoing edges so a stale RUNNING state cannot occur",
+      "run_supervised: writes COMMANDLET_EXECUTION_RECEIPT.json on every path including KeyboardInterrupt",
+      "StorageGate: fails closed on unmeasurable volumes and invents no thresholds"
+    ],
+    "STALE_RUNNING_STATE_PREVENTED": true,
+    "stale_prevention_mechanism": "INTERRUPTED and CHILD_FAILED are terminal in the transition table; any further transition raises IllegalTransition"
+  },
+
+  "ctrl_c_handling": {
+    "CTRL_C_STATUS_CLASSIFICATION": "PASS",
+    "prior_run_status": 3221225786,
+    "decoded": "0xC000013A STATUS_CONTROL_C_EXIT",
+    "now_classified_as": "EXTERNALLY_INTERRUPTED",
+    "wrapper_behaviour_defined": "On interruption the wrapper records INTERRUPTED, stops launching further tile jobs, writes a receipt, and returns nonzero. It never kills unrelated interactive UE4Editor sessions because role detection separates them."
+  },
+
+  "storage": {
+    "C_FREE_GB": 13.37,
+    "E_FREE_GB": 6.17,
+    "G_FREE_GB": 50.91,
+    "H_FREE_GB": 16.63,
+    "STORAGE_GATE": "IMPLEMENTED_NOT_CONFIGURED",
+    "gate_behaviour": "Fails closed on unmeasurable volumes and refuses to invent thresholds; the caller must supply MIN_FREE_*_GB derived from measured prior output.",
+    "thresholds_derived": false,
+    "blocker": "Deriving honest thresholds needs measured peak usage from a successful run, which does not yet exist."
+  },
+
+  "distance_field": {
+    "DISTANCE_FIELD_STALL_COUNT": 27,
+    "DISTANCE_FIELD_MAX_SECONDS_BEFORE": 2807.558,
+    "DISTANCE_FIELD_P95_SECONDS_BEFORE": 2474.528,
+    "DISTANCE_FIELD_P50_SECONDS_BEFORE": 1340.095,
+    "WORST_DISTANCE_FIELD_MESH": "Ingolstadt_Tile_7_8_Building_Bavaria",
+    "DISTANCE_FIELD_ROOT_CAUSE": "UNRESOLVED",
+    "not_attempted_reason": "Requires per-mesh forensics across all 27 stalls plus 27 controls, which needs the extended mesh metrics and a full import telemetry run. Not started in this batch.",
+    "hypothesis_not_claimed": "The log's own 'rebuilt excessively' hint is a suggestion, not evidence. No StaticMesh rebuild count has been measured, so rebuild excess remains neither proven nor ruled out."
+  },
+
+  "static_mesh_rebuild": {
+    "STATIC_MESH_REBUILD_ROOT_CAUSE": "UNRESOLVED",
+    "STATIC_MESH_BUILD_COUNT_BEFORE": "NOT_MEASURED",
+    "STATIC_MESH_BUILD_COUNT_AFTER": "NOT_MEASURED",
+    "REBUILD_EXCESS_PROVEN": false
+  },
+
+  "controlled_subset": {
+    "CONTROLLED_BASELINE_AVAILABLE": "PARTIAL",
+    "what_exists": "Preserved pre-hardening FBX/OBJ for all 20 tiles under reports/production_readiness/20260924T100614Z_FULL_GRID_TILE_FBX_COOK/artifacts/",
+    "hardened_exists": "Tiles 10-9 and 6-6 only, in a scratch directory outside the repo",
+    "CONTROLLED_SUBSET_IMPORT": "NOT_RUN",
+    "reason": "A before/after would be measured against a truncated 16.76 h baseline whose wrapper version no longer matches the working tree, and the reference-path defect means any imported tile map would serialize broken references regardless of FBX quality. Fixing the namespace first is a prerequisite, not a preference.",
+    "SMOOTHING_WARNINGS_BEFORE": 27,
+    "SMOOTHING_WARNINGS_AFTER": "NOT_MEASURED",
+    "TANGENT_WARNINGS_BEFORE": 438,
+    "TANGENT_WARNINGS_AFTER": "NOT_MEASURED",
+    "BINORMAL_WARNINGS_BEFORE": 496,
+    "BINORMAL_WARNINGS_AFTER": "NOT_MEASURED"
+  },
+
+  "partial_import_residue": {
+    "PARTIAL_IMPORT_STATE": "NOT_INVENTORIED",
+    "known_residue": "5711 building .uasset files exist under Static/Terrain/Ingolstadt from the props channel; the map folder holds a .umap and materials only. Whether these .uasset files are reusable cannot be judged without a loadability probe.",
+    "default_policy": "Do not reuse partial outputs by default."
+  },
+
+  "restart_policy": {
+    "RESTART_POLICY": "UNKNOWN",
+    "reason": "Requires a controlled interrupt-then-rerun experiment, which is blocked behind the namespace fix."
+  },
+
+  "tests": {
+    "TARGETED_TESTS": "PASS",
+    "counts": {
+      "tests/unit/test_carla_import_supervision.py": 33,
+      "tests/unit/test_ue4_import_log_analysis.py": 35,
+      "tests/unit/test_mesh_quality.py": 30,
+      "tests/unit/test_blender_geometry_contract.py": 28,
+      "tests/unit/test_tile_fbx_generator.py": 29,
+      "ultimate_pipeline/tests/unit/test_building_extruder.py": 5
+    },
+    "total": 155,
+    "NEW_REGRESSIONS": 0,
+    "bugs_found_by_the_new_tests": [
+      "carla_import_supervision kept two lists of NTSTATUS codes and they drifted: DLL_NOT_FOUND, ENTRYPOINT_NOT_FOUND and DLL_INIT_FAILED were documented as faults but not classified as crashes. Fixed by deriving CRASH_STATUSES from NTSTATUS so there is one source of truth."
+    ]
+  },
+
+  "full_retry_gate": {
+    "MOUNT_POINT_ROOT_CAUSE": "PROVEN",
+    "BUILDING_REFERENCE_PATHS": "NOT_FIXED",
+    "UNRESOLVED_REFERENCE_COUNT_SUBSET": "NOT_MEASURED",
+    "GEOREFERENCE": "PARSER_NOT_LOCATED",
+    "ASSET_REGISTRY": "NOT_MEASURED (needs editor probe)",
+    "PRIMARY_ASSET_COLLISIONS": "2_UNRESOLVED",
+    "DISTANCE_FIELD_ROOT_CAUSE": "UNIDENTIFIED",
+    "STATIC_MESH_REBUILD_CAUSE": "UNIDENTIFIED",
+    "PROCESS_SUPERVISION": "PASS",
+    "CTRL_C_CLASSIFICATION": "PASS",
+    "STORAGE_GATE": "NOT_CONFIGURED",
+    "CONTROLLED_SUBSET": "NOT_RUN",
+    "RESTART_POLICY": "UNKNOWN",
+    "FULL_RETRY_AUTHORIZED": false
+  },
+
+  "FINAL_VERDICT": "PARTIAL_WITH_EXACT_BLOCKERS"
+}

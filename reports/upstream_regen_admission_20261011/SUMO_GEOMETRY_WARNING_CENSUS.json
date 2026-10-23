@@ -1,0 +1,168 @@
+{
+  "source_log": "regen_console_attempt2b.log (attempt 2 seed conversion; Osm2Odr/netconvert stderr)",
+  "note": "first-occurrence detail lines + netconvert summary totals; full per-occurrence stream is not logged by netconvert",
+  "summary_totals_from_netconvert": {
+    "Ambiguity in turnarounds computation at junction '%'": 18,
+    "Could not compute smooth shape for edge '%'": 29,
+    "Could not compute smooth shape from lane '%' to lane '%'. Use option 'junctions.scurve-stretch' or increase radius of junction '%' to fix this": 174,
+    "Discarding unknown compound '%' in type '%' (first occurrence for edge '%')": 25,
+    "Discarding unusable type '%' (first occurrence for edge '%')": 6,
+    "Found angle of % degrees at edge '%', segment %": 12,
+    "Found sharp turn with radius % at the end of edge '%'": 11,
+    "Found sharp turn with radius % at the start of edge '%'": 12,
+    "Intersecting left turns at junction '%' from lane '%' and lane '%' (increase junction radius to avoid this)": 10,
+    "Not joining junctions % (%)": 61,
+    "Reducing junction cluster % (%)": 6,
+    "Shape for junction '%' has distance % to its given position": 12,
+    "Speed of % connection '%' reduced by % due to turning radius of % (length=%, angle=%)": 75,
+    "Uneven stop line at lane '%' (dist=%) cannot be represented in OpenDRIVE": 111
+  },
+  "classes": {
+    "TURNAROUND_AMBIGUITY": {
+      "detail_line_count": 5,
+      "sample": [
+        "Warning: Ambiguity in turnarounds computation at junction '1226536917'.",
+        "Warning: Ambiguity in turnarounds computation at junction '2151151385'.",
+        "Warning: Ambiguity in turnarounds computation at junction '236728550'.",
+        "Warning: Ambiguity in turnarounds computation at junction '2427087579'.",
+        "Warning: Ambiguity in turnarounds computation at junction '249547330'."
+      ]
+    },
+    "SHARP_TURN_START": {
+      "detail_line_count": 5,
+      "sample": [
+        "Warning: Found sharp turn with radius 8.74 at the start of edge '-1166115279'.",
+        "Warning: Found sharp turn with radius 7.88 at the start of edge '-23622140#0'.",
+        "Warning: Found sharp turn with radius 2.68 at the start of edge '-28329446#0'.",
+        "Warning: Found sharp turn with radius 7.78 at the start of edge '-792465280#0'.",
+        "Warning: Found sharp turn with radius 7.65 at the start of edge '-792465280#1'."
+      ],
+      "radius_m": {
+        "max": 8.74,
+        "count_with_magnitude": 5
+      }
+    },
+    "SHARP_TURN_END": {
+      "detail_line_count": 5,
+      "sample": [
+        "Warning: Found sharp turn with radius 5.12 at the end of edge '-26642301#0'.",
+        "Warning: Found sharp turn with radius 7.90 at the end of edge '-792465280#1'.",
+        "Warning: Found sharp turn with radius 3.19 at the end of edge '-816845131#1'.",
+        "Warning: Found sharp turn with radius 8.02 at the end of edge '-987493081'.",
+        "Warning: Found sharp turn with radius 8.74 at the end of edge '1166115279'."
+      ],
+      "radius_m": {
+        "max": 8.74,
+        "count_with_magnitude": 5
+      }
+    },
+    "LARGE_SEGMENT_ANGLE": {
+      "detail_line_count": 5,
+      "sample": [
+        "Warning: Found angle of 112.60 degrees at edge '-1411096333', segment 0.",
+        "Warning: Found angle of 112.60 degrees at edge '-23067149', segment 0.",
+        "Warning: Found angle of 114.70 degrees at edge '-23781468#3', segment 2.",
+        "Warning: Found angle of 108.84 degrees at edge '-27101016#1', segment 0.",
+        "Warning: Found angle of 99.31 degrees at edge '-34909818', segment 0."
+      ],
+      "angle_deg": {
+        "max": 114.7,
+        "count_with_magnitude": 5
+      }
+    },
+    "JUNCTION_SHAPE_DISPLACEMENT": {
+      "detail_line_count": 5,
+      "sample": [
+        "Warning: Shape for junction '1614581582' has distance 22.60 to its given position.",
+        "Warning: Shape for junction '17203179' has distance 31.21 to its given position.",
+        "Warning: Shape for junction '2108948319' has distance 57.82 to its given position.",
+        "Warning: Shape for junction '21521680' has distance 20.08 to its given position.",
+        "Warning: Shape for junction '2298277598' has distance 38.59 to its given position."
+      ],
+      "displacement_m": {
+        "max": 57.82,
+        "count_with_magnitude": 5
+      }
+    },
+    "INTERSECTING_LEFT_TURNS": {
+      "detail_line_count": 5,
+      "sample": [
+        "Warning: Intersecting left turns at junction 'cluster_1716919028_1716919033' from lane '591913953#0_1' and lane '-387031635#2_1' (increase junction radius to avoid this).",
+        "Warning: Intersecting left turns at junction 'cluster_1850135891_276189889_5940839984' from lane '1301558566#0_1' and lane '-25344713_1' (increase junction radius to avoid this).",
+        "Warning: Intersecting left turns at junction 'cluster_253641056_253641058' from lane '-25623139_1' and lane '-25366186#0_1' (increase junction radius to avoid this).",
+        "Warning: Intersecting left turns at junction 'cluster_257677585_358045893' from lane '51993874#3_1' and lane '-51993874#5_1' (increase junction radius to avoid this).",
+        "Warning: Intersecting left turns at junction 'cluster_298285321_8277769217' from lane '-890643433_1' and lane '-33152127#0_1' (increase junction radius to avoid this)."
+      ]
+    },
+    "SMOOTH_SHAPE_EDGE_FAILURE": {
+      "detail_line_count": 5,
+      "sample": [
+        "Warning: Could not compute smooth shape for edge '-116391315#1'.",
+        "Warning: Could not compute smooth shape for edge '-201238724#3'.",
+        "Warning: Could not compute smooth shape for edge '-35417465#3'.",
+        "Warning: Could not compute smooth shape for edge '-41142978#0'.",
+        "Warning: Could not compute smooth shape for edge '-52028060#2'."
+      ]
+    },
+    "SMOOTH_SHAPE_LANE_FAILURE": {
+      "detail_line_count": 5,
+      "sample": [
+        "Warning: Could not compute smooth shape from lane '1371847391_1' to lane '1371847390_1'. Use option 'junctions.scurve-stretch' or increase radius of junction '1166984259' to fix this.",
+        "Warning: Could not compute smooth shape from lane '1371847391_3' to lane '138002148_2'. Use option 'junctions.scurve-stretch' or increase radius of junction '1166984259' to fix this.",
+        "Warning: Could not compute smooth shape from lane '1269164997_1' to lane '145069311#0_1'. Use option 'junctions.scurve-stretch' or increase radius of junction '11787969715' to fix this.",
+        "Warning: Could not compute smooth shape from lane '893961299#2_1' to lane '-893961299#0_1'. Use option 'junctions.scurve-stretch' or increase radius of junction '12056333149' to fix this.",
+        "Warning: Could not compute smooth shape from lane '893961299#2_1' to lane '893961299#1_1'. Use option 'junctions.scurve-stretch' or increase radius of junction '12056333149' to fix this."
+      ]
+    },
+    "UNEQUAL_STOP_LINE": {
+      "detail_line_count": 5,
+      "sample": [
+        "Warning: Uneven stop line at lane '-115881039_1' (dist=1.45) cannot be represented in OpenDRIVE.",
+        "Warning: Uneven stop line at lane '-1182776443_1' (dist=0.25) cannot be represented in OpenDRIVE.",
+        "Warning: Uneven stop line at lane '-1203541489#1_1' (dist=0.00) cannot be represented in OpenDRIVE.",
+        "Warning: Uneven stop line at lane '-126446062#2_1' (dist=0.39) cannot be represented in OpenDRIVE.",
+        "Warning: Uneven stop line at lane '-126446062#2_2' (dist=0.83) cannot be represented in OpenDRIVE."
+      ]
+    },
+    "JUNCTION_CLUSTER_NOT_JOINED": {
+      "detail_line_count": 5,
+      "sample": [
+        "Warning: Not joining junctions 2270940976,257675478,257675506 (parallel incoming -23781285#0,986559721#1).",
+        "Warning: Not joining junctions 1051308709,274591084,3797172236 (not compact (maxEdge=90587321#0 length=8.92)).",
+        "Warning: Not joining junctions 39732732,432411761 (parallel incoming -969816148#0,136728366).",
+        "Warning: Not joining junctions 11422590102,252122080,310445767 (long edge).",
+        "Warning: Not joining junctions 11630824387,308989417,308989441,476075007,476075018 (parallel incoming -726514453#0,266507554)."
+      ]
+    },
+    "JUNCTION_CLUSTER_REDUCED": {
+      "detail_line_count": 5,
+      "sample": [
+        "Warning: Reducing junction cluster 30503255,335525526,335525528,8261848041 (parallel outgoing 1286768661#0,30399319#0).",
+        "Warning: Reducing junction cluster 1401628179,1401628195,26423900,26423901,479277606,479277632,7409073862,89170579 (parallel incoming -126446062#0,834006803#1).",
+        "Warning: Reducing junction cluster 1585223844,1585223845,1585223847,1690490369 (not compact (maxEdge=145069270#2 length=7.37)).",
+        "Warning: Reducing junction cluster 2066866347,2066866359,96733352 (not compact (maxEdge=196346347 length=7.31)).",
+        "Warning: Reducing junction cluster 2108981649,2108981652,30926657 (parallel incoming 201771333,89479602#3)."
+      ]
+    },
+    "SPEED_REDUCED_TURN": {
+      "detail_line_count": 5,
+      "sample": [
+        "Warning: Speed of straight connection '109586290_0->-109586276_0' reduced by 9.68 due to turning radius of 28.61 (length=7.85, angle=31.21).",
+        "Warning: Speed of straight connection '121466402_0->-200936417_0' reduced by 5.27 due to turning radius of 52.24 (length=6.39, angle=22.13).",
+        "Warning: Speed of straight connection '109586279_0->159086916_0' reduced by 9.76 due to turning radius of 28.22 (length=4.24, angle=23.89).",
+        "Warning: Speed of straight connection '110435735#0_1->-914485584#1_1' reduced by 5.42 due to turning radius of 13.05 (length=15.98, angle=90.20).",
+        "Warning: Speed of straight connection '506236916_0->-859037746_0' reduced by 6.87 due to turning radius of 17.44 (length=3.83, angle=28.25)."
+      ]
+    },
+    "OTHER": {
+      "detail_line_count": 18,
+      "sample": [
+        "Warning: Value of key 'zone:maxspeed' is not numeric ('DE30') in edge '24634511'.",
+        "Warning: Value of key 'layer' is not numeric ('0-1') in edge '1063717066'.",
+        "Warning: Discarding unknown compound 'cycleway.track' in type 'cycleway.track|highway.tertiary' (first occurrence for edge '22727412').",
+        "Warning: Discarding unknown compound 'cycleway.opposite_lane' in type 'cycleway.opposite_lane|highway.residential' (first occurrence for edge '23009002').",
+        "Warning: Discarding unknown compound 'railway.abandoned' in type 'highway.path|railway.abandoned' (first occurrence for edge '23050120')."
+      ]
+    }
+  }
+}

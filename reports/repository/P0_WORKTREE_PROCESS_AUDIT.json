@@ -1,0 +1,102 @@
+{
+  "generated_at_utc": "2026-10-05T12:07:54.748118+00:00",
+  "needles_searched": [
+    "opencode",
+    "worktree",
+    "git clean",
+    "Remove-Item",
+    "rmdir",
+    "rd /s",
+    "rmtree",
+    "os.remove",
+    "unlink",
+    "git reset",
+    "git checkout",
+    "git restore",
+    "cleanup",
+    "prune",
+    "Temp",
+    "worktrees"
+  ],
+  "policy": "UE processes are enumerated for awareness only and are never candidates for termination.",
+  "schema": "p0_worktree_process_audit/v1",
+  "suspects": [
+    {
+      "CmdLine": "\"C:\\Users\\admin\\AppData\\Roaming\\npm\\node_modules\\opencode-ai\\bin\\opencode.exe\"",
+      "Created": "/Date(1791197204368)/",
+      "ExePath": "C:\\Users\\admin\\AppData\\Roaming\\npm\\node_modules\\opencode-ai\\bin\\opencode.exe",
+      "Name": "opencode.exe",
+      "PID": 26724,
+      "PPID": 4316,
+      "matched": [
+        "opencode"
+      ]
+    },
+    {
+      "CmdLine": "\"C:\\Users\\admin\\AppData\\Roaming\\npm\\node_modules\\opencode-ai\\bin\\opencode.exe\"",
+      "Created": "/Date(1791197209898)/",
+      "ExePath": "C:\\Users\\admin\\AppData\\Roaming\\npm\\node_modules\\opencode-ai\\bin\\opencode.exe",
+      "Name": "opencode.exe",
+      "PID": 27052,
+      "PPID": 13040,
+      "matched": [
+        "opencode"
+      ]
+    },
+    {
+      "CmdLine": "\"C:\\Users\\admin\\AppData\\Roaming\\npm\\node_modules\\opencode-ai\\bin\\opencode.exe\"",
+      "Created": "/Date(1791197214956)/",
+      "ExePath": "C:\\Users\\admin\\AppData\\Roaming\\npm\\node_modules\\opencode-ai\\bin\\opencode.exe",
+      "Name": "opencode.exe",
+      "PID": 3196,
+      "PPID": 17000,
+      "matched": [
+        "opencode"
+      ]
+    },
+    {
+      "CmdLine": "\"C:\\Program Files\\PowerShell\\7\\pwsh.EXE\" -NoLogo -NoProfile -NonInteractive -Command \"python C:\\Users\\admin\\AppData\\Local\\Temp\\opencode\\p0_process_audit.py 2>&1 | Select-Object -First 50\"",
+      "Created": "/Date(1791202071801)/",
+      "ExePath": "C:\\Program Files\\PowerShell\\7\\pwsh.EXE",
+      "Name": "pwsh.exe",
+      "PID": 24564,
+      "PPID": 26724,
+      "matched": [
+        "opencode"
+      ]
+    },
+    {
+      "CmdLine": "\"C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\.venv\\Scripts\\python.exe\" C:\\Users\\admin\\AppData\\Local\\Temp\\opencode\\p0_process_audit.py",
+      "Created": "/Date(1791202072698)/",
+      "ExePath": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\.venv\\Scripts\\python.exe",
+      "Name": "python.exe",
+      "PID": 34952,
+      "PPID": 24564,
+      "matched": [
+        "opencode"
+      ]
+    },
+    {
+      "CmdLine": "\"C:\\Users\\admin\\AppData\\Local\\Programs\\Python\\Python312\\python.exe\" C:\\Users\\admin\\AppData\\Local\\Temp\\opencode\\p0_process_audit.py",
+      "Created": "/Date(1791202072713)/",
+      "ExePath": "C:\\Users\\admin\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+      "Name": "python.exe",
+      "PID": 31408,
+      "PPID": 34952,
+      "matched": [
+        "opencode"
+      ]
+    }
+  ],
+  "total_processes": 380,
+  "ue_processes_protected": [
+    {
+      "CmdLine": "G:\\UnrealEngine_4.26_CARLA\\Engine\\Binaries\\Win64\\UE4Editor.exe  G:\\CARLA\\carla_source_probe\\Unreal\\CarlaUE4\\CarlaUE4.uproject -run=cook -map=/Game/Ingolstadt/Maps/Ingolstadt/Ingolstadt -targetplatform=WindowsNoEditor -OutputDir=G:\\CARLA\\cook_out\\Ingolstadt -iterate -cooksinglepackage -unattended -NoLogTimes -UTF8Output -stdout",
+      "Created": "/Date(1791197699123)/",
+      "ExePath": "G:\\UnrealEngine_4.26_CARLA\\Engine\\Binaries\\Win64\\UE4Editor.exe",
+      "Name": "UE4Editor.exe",
+      "PID": 5344,
+      "PPID": 28804
+    }
+  ]
+}

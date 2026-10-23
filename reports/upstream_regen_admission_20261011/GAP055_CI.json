@@ -1,0 +1,18 @@
+{
+  "CI_COLLECTION_ERRORS": 0,
+  "CI_FAILURES": ">=1 (bulk pytest exit 1)",
+  "CI_RUN_ID": 38169269072,
+  "CI_TESTS_EXECUTED": "bulk suite (exact count needs log auth)",
+  "GAP055_STATUS": "CI_FAILING (real bulk execution on exact SHA; not collection-only, not inferred)",
+  "branch": "fix/topology-convergence-gap026-gap048-20261011",
+  "head_sha": "3a6f32255916b9783e41981ba284d68401294a92",
+  "jobs": {
+    "governance integrity": "success",
+    "offline evidence graph / freshness": "success",
+    "offline release gate": "skipped",
+    "offline tests": "FAILURE (11.5 min bulk pytest, exit 1; failing test names need log auth)",
+    "package / wheel smoke": "success",
+    "research provenance": "success",
+    "thesis RQ contract": "success"
+  }
+}

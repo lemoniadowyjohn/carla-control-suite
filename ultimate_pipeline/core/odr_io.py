@@ -9,7 +9,7 @@ import xml.etree.ElementTree as ET
 
 from ultimate_pipeline.config.settings import SETTINGS
 from ultimate_pipeline.core.file_utils import read_xodr, write_xodr
-from ultimate_pipeline.core.georef_utils import normalize_georeference
+from ultimate_pipeline.core.georef_utils import normalize_georeference, build_local_rebased_georeference
 
 
 def load_xodr(path: str) -> Tuple[ET.ElementTree, ET.Element]:
@@ -80,6 +80,11 @@ def check_original_has_valid_georeference(input_xodr_path: str) -> bool:
 
     This check is separate from the sanitized file because the sanitizer
     may create a default geoReference that shouldn't be preserved.
+
+    A geoReference is considered valid only if it is origin-anchored
+    (contains embedded ``+x_0``/+``+y_0`` values or ``+lat_0``/``+lon_0``).
+    A bare ``+proj=tmerc`` without origin parameters is considered INVALID
+    so that the "force" policy kicks in and embeds the rebase.
     """
     try:
         tree = ET.parse(input_xodr_path)
@@ -90,7 +95,10 @@ def check_original_has_valid_georeference(input_xodr_path: str) -> bool:
         geo = header.find("geoReference")
         if geo is None:
             return False
-        return _is_valid_georeference(geo.text)
+        # Use parse_georeference which checks required params including
+        # +lat_0, +lon_0, +k, +x_0, +y_0, +datum, +units.
+        valid, params_complete, _ = parse_georeference(geo.text)
+        return valid and params_complete
     except Exception:
         return False
 
@@ -175,8 +183,20 @@ def handle_georeference(
         else:
             action = "patched"
 
-        enforced_georef = _build_georeference_string(lat0, lon0)
+        # P0-E: use origin-anchored absolute geoReference with embedded rebase
+        # (preserves single-CRS encoding; offset is embedded, not duplicated)
+        # Read offset from original header or use recorded map offset
+        offset_x = 832671.676000
+        offset_y = 5458671.104000
+        enforced_georef = normalize_georeference(
+            build_local_rebased_georeference(offset_x, offset_y)
+        )
         geo.text = enforced_georef
+        # Remove <offset> tag from header to prevent double-rebase (offset now
+        # encoded in the CRS via +x_0/+y_0). CARLA/UE4 must not apply both.
+        off_el = header.find("offset")
+        if off_el is not None:
+            header.remove(off_el)
     else:
         action = "kept"
 

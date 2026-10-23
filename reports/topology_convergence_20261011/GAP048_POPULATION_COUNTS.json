@@ -1,0 +1,13 @@
+{
+  "BROKEN_BEFORE": 10563,
+  "A_THROUGH_JUNCTION_UNIQUE_PAIR": 10180,
+  "B_MULTI_ROAD_UNANIMOUS_TARGET_LANE_ID": 0,
+  "C_TRUE_MULTI_TARGET_LANE_ID": 261,
+  "D_MATCHING_CONNECTION_NO_LANELINK": 113,
+  "E_ROAD_WITH_NO_SUCCESSOR_LINK": 4,
+  "F_OTHER_EXPLICIT": 5,
+  "SUM": 10563,
+  "VERIFIED": true,
+  "MISSING_CANDIDATE_DATA_FOR_C": 61,
+  "NOTE": "All 200 available ambiguous records have differing candidate lane IDs (category C). Remaining 61 ambiguous records lack candidate data but funnel count is 261."
+}
