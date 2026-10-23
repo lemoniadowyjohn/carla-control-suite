@@ -35,7 +35,7 @@ def test_artifact_integrity_checks():
     for name, mod in files:
         a = {
             "path": f"reports/phase5_deliverables/{name}",
-            "sha256": _sha(ROOT / name),
+            "sha256": _sha(DELIV / name),
             "modality": mod,
             "committed": True,
             "session_id": "s1",
@@ -57,20 +57,20 @@ def test_artifact_integrity_checks():
 
     # 3. Missing file rejects
     artifacts[0]["path"] = "nonexistent_file_12345.json"
-    artifacts[0]["sha256"] = _sha(ROOT / "RQ3_PATCH_MANIFEST.json")
+    artifacts[0]["sha256"] = _sha(DELIV / "RQ3_PATCH_MANIFEST.json")
     ok, reasons, _ = verify_artifact_set(artifacts, root=ROOT, approved_roots=[ROOT])
     assert ok is False and any("unresolved" in r for r in reasons), f"missing file accepted: {reasons}"
     print("PASS: missing_file")
 
     # 4. Path traversal rejects
-    artifacts[0] = {"path": "../../../etc/passwd", "sha256": _sha(ROOT / "RQ3_PATCH_MANIFEST.json"),
+    artifacts[0] = {"path": "../../../etc/passwd", "sha256": _sha(DELIV / "RQ3_PATCH_MANIFEST.json"),
                     "modality": "rgb", "committed": True, "session_id": "s1", "member_id": "trav"}
     ok, reasons, _ = verify_artifact_set(artifacts, root=ROOT, approved_roots=[ROOT])
     assert ok is False and any("unresolved" in r for r in reasons), f"traversal accepted: {reasons}"
     print("PASS: path_traversal")
 
     # 5. Uncommitted staging rejects
-    artifacts[0] = {"path": "reports/phase5_deliverables/RQ3_PATCH_MANIFEST.json", "sha256": _sha(ROOT / "RQ3_PATCH_MANIFEST.json"),
+    artifacts[0] = {"path": "reports/phase5_deliverables/RQ3_PATCH_MANIFEST.json", "sha256": _sha(DELIV / "RQ3_PATCH_MANIFEST.json"),
                     "modality": "rgb", "committed": False, "session_id": "s1", "member_id": "staging"}
     ok, reasons, _ = verify_artifact_set(artifacts, root=ROOT, approved_roots=[ROOT])
     assert ok is False and any("staging_uncommitted" in r for r in reasons), f"staging accepted: {reasons}"
@@ -96,14 +96,14 @@ def test_artifact_integrity_checks():
 
     # 7. Duplicate identity different content
     dup = {"path": "reports/phase5_deliverables/RQ3_BUILDER_FALSE_PASS_REMEDIATION.json",
-           "sha256": _sha(ROOT / "RQ3_PATCH_MANIFEST.json"),
+           "sha256": _sha(DELIV / "RQ3_PATCH_MANIFEST.json"),
            "modality": "semantic", "committed": True, "session_id": "s1", "member_id": "dup"}
     ok, reasons, _ = verify_artifact_set(artifacts + [dup], root=ROOT, approved_roots=[ROOT])
     assert ok is False and any("duplicate_identity" in r for r in reasons), f"dup id accepted: {reasons}"
     print("PASS: duplicate_identity_different_content")
 
     # 8. Stale session id
-    artifacts = [{"path": "reports/phase5_deliverables/RQ3_PATCH_MANIFEST.json", "sha256": _sha(ROOT / "RQ3_PATCH_MANIFEST.json"),
+    artifacts = [{"path": "reports/phase5_deliverables/RQ3_PATCH_MANIFEST.json", "sha256": _sha(DELIV / "RQ3_PATCH_MANIFEST.json"),
                   "modality": "rgb", "committed": True, "session_id": "OTHER_SESSION", "member_id": "stale"}]
     ok, reasons, _ = verify_artifact_set(artifacts, root=ROOT, approved_roots=[ROOT], expected_session_id="S1")
     assert ok is False and any("stale_session_id" in r for r in reasons), f"stale session accepted: {reasons}"
