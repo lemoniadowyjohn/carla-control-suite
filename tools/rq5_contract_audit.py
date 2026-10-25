@@ -61,10 +61,21 @@ def _audit_frozen_contract(contract_path: Path) -> dict[str, Any]:
 
 
 def audit(repo: Path, contract: Path | None = None) -> dict[str, Any]:
-    candidate = contract or (repo / "configs" / "rq5_protocol_freeze_v1.json")
+    # B3/CHAT-09: if --contract is explicitly provided, it must exist.
+    # No silent fallback to DEFAULT_CONTRACT or legacy audit.
+    if contract is not None:
+        if not contract.is_file():
+            raise FileNotFoundError(
+                f"Explicit --contract path does not exist: {contract}. "
+                "Refusing to fall back silently; provide a valid contract or omit --contract."
+            )
+        return _audit_frozen_contract(contract)
+
+    # No explicit contract: try repo-local, then DEFAULT_CONTRACT, then legacy.
+    candidate = repo / "configs" / "rq5_protocol_freeze_v1.json"
     if candidate.is_file():
         return _audit_frozen_contract(candidate)
-    if DEFAULT_CONTRACT.is_file() and DEFAULT_CONTRACT != candidate:
+    if DEFAULT_CONTRACT.is_file():
         return _audit_frozen_contract(DEFAULT_CONTRACT)
     return _audit_legacy(repo)
 
