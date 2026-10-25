@@ -49,26 +49,68 @@ def _ddp_initialization_line(main):
     raise AssertionError("main() does not initialize DDP rank ownership")
 
 
-def test_rank_ownership_precedes_stale_success_revocation():
-    """Rank must be established before the rank-zero-only SUCCESS cleanup."""
+def test_proven_rank_ownership_precedes_stale_success_revocation():
+    """A proven owner must exist before the rank-zero-only SUCCESS cleanup."""
     main = _main_function()
-    ddp_line = _ddp_initialization_line(main)
-    assignment_line = _is_main_assignment_line(main)
+    preinit_lines = [
+        node.lineno
+        for node in ast.walk(main)
+        if isinstance(node, ast.Call)
+        and isinstance(node.func, ast.Name)
+        and node.func.id == "_preinit_artifact_rank"
+    ]
 
-    revoke_if_lines = []
-    for node in ast.walk(main):
-        if not isinstance(node, ast.If):
-            continue
-        if not isinstance(node.test, ast.Name) or node.test.id != "is_main":
-            continue
-        if any(
-            isinstance(child, ast.Call)
-            and isinstance(child.func, ast.Name)
-            and child.func.id == "_revoke_stale_success"
-            for child in ast.walk(node)
-        ):
-            revoke_if_lines.append(node.lineno)
+    revoke_lines = [
+        node.lineno
+        for node in ast.walk(main)
+        if isinstance(node, ast.Call)
+        and isinstance(node.func, ast.Name)
+        and node.func.id == "_revoke_stale_success"
+    ]
 
-    assert len(revoke_if_lines) == 1
-    assert ddp_line < assignment_line
-    assert assignment_line < revoke_if_lines[0]
+    assert len(preinit_lines) == 1
+    assert len(revoke_lines) == 2
+    assert preinit_lines[0] < min(revoke_lines)
+
+
+def test_preinit_cleanup_uses_rank_not_local_rank_and_precedes_admission():
+    """Early failures cannot retain SUCCESS when rank-zero ownership is known."""
+    source = _LAUNCHER.read_text(encoding="utf-8")
+    main = _main_function()
+    preinit_calls = [
+        node.lineno
+        for node in ast.walk(main)
+        if isinstance(node, ast.Call)
+        and isinstance(node.func, ast.Name)
+        and node.func.id == "_preinit_artifact_rank"
+    ]
+    acceptance_calls = [
+        node.lineno
+        for node in ast.walk(main)
+        if isinstance(node, ast.Call)
+        and isinstance(node.func, ast.Name)
+        and node.func.id == "enforce_dataset_acceptance"
+    ]
+    assert len(preinit_calls) == 1
+    assert len(acceptance_calls) == 1
+    assert preinit_calls[0] < acceptance_calls[0]
+    helper = source[source.index("def _preinit_artifact_rank"):source.index("def _build_model")]
+    assert 'os.environ.get("LOCAL_RANK")' not in helper
+
+
+def test_ddp_initialization_failure_cleans_up_an_initialized_group():
+    """A partial process-group initialization must be torn down before raise."""
+    tree = ast.parse(_LAUNCHER.read_text(encoding="utf-8"))
+    init_ddp = next(
+        node
+        for node in tree.body
+        if isinstance(node, ast.FunctionDef) and node.name == "_init_ddp"
+    )
+    cleanup_calls = [
+        node
+        for node in ast.walk(init_ddp)
+        if isinstance(node, ast.Call)
+        and isinstance(node.func, ast.Attribute)
+        and node.func.attr == "destroy_process_group"
+    ]
+    assert cleanup_calls

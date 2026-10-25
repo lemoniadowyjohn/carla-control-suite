@@ -286,8 +286,36 @@ def _init_ddp(enabled: bool) -> tuple[bool, int, int]:
     if world_size <= 1:
         return False, 0, 1
 
-    torch.distributed.init_process_group(backend="nccl" if torch.cuda.is_available() else "gloo")
+    try:
+        torch.distributed.init_process_group(
+            backend="nccl" if torch.cuda.is_available() else "gloo"
+        )
+    except Exception:
+        # A backend may have created a process group before reporting an
+        # initialization error.  Do not leave it alive for a failed run.
+        if torch.distributed.is_initialized():
+            torch.distributed.destroy_process_group()
+        raise
     return True, rank, world_size
+
+
+def _preinit_artifact_rank(ddp_requested: bool) -> Optional[int]:
+    """Return a proven artifact owner before DDP initialization, if any.
+
+    A single-process invocation owns its artifacts.  A distributed invocation
+    is allowed to clean rank-zero artifacts before initialization only when
+    the launcher supplied the authoritative ``RANK`` variable; ``LOCAL_RANK``
+    is intentionally never used for this decision.
+    """
+    if not ddp_requested:
+        return 0
+    raw_rank = os.environ.get("RANK")
+    if raw_rank is None:
+        return None
+    try:
+        return int(raw_rank)
+    except ValueError as exc:
+        raise RuntimeError("RANK must be an integer for --ddp artifact ownership") from exc
 
 
 def _build_model(num_classes: int) -> Tuple[nn.Module, Dict[str, Any]]:
@@ -410,6 +438,16 @@ def main() -> int:
     )
     args = parser.parse_args()
 
+    out_dir = _resolve_out_dir(args.out_dir)
+
+    # Clear stale success evidence before any fail-closed admission or DDP
+    # initialization path, but only when this process has proven rank-zero
+    # ownership.  This avoids both stale success on early failure and writes
+    # by nonzero ranks.
+    preinit_rank = _preinit_artifact_rank(args.ddp)
+    if preinit_rank == 0:
+        _revoke_stale_success(out_dir)
+
     dataset_roots = _resolve_dataset_roots(args)
     multi_root = len(dataset_roots) > 1
 
@@ -430,14 +468,12 @@ def main() -> int:
     # deep in the loss function.
     args.num_classes = validate_num_classes(args.num_classes)
 
-    out_dir = _resolve_out_dir(args.out_dir)
-
     ddp_enabled, rank, world_size = _init_ddp(args.ddp)
     is_main = (rank == 0)
 
     # CD-4: remove any pre-existing SUCCESS.txt so a later "success" cannot be
     # interpreted as evidence that this run completed without failures.
-    if is_main:
+    if is_main and preinit_rank is None:
         _revoke_stale_success(out_dir)
 
     device = torch.device(args.device if (args.device != "cuda" or torch.cuda.is_available()) else "cpu")
