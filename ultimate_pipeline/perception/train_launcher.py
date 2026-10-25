@@ -280,8 +280,17 @@ def _init_ddp(enabled: bool) -> tuple[bool, int, int]:
     if not torch.distributed.is_available():
         raise RuntimeError("torch.distributed not available in this PyTorch build.")
 
-    world_size = int(os.environ.get("WORLD_SIZE", "1"))
-    rank = int(os.environ.get("RANK", "0"))
+    raw_world_size = os.environ.get("WORLD_SIZE")
+    raw_rank = os.environ.get("RANK")
+    if raw_world_size is None and raw_rank is None:
+        return False, 0, 1
+    if raw_world_size is None or raw_rank is None:
+        raise RuntimeError("--ddp requires both WORLD_SIZE and RANK")
+
+    world_size = int(raw_world_size)
+    rank = int(raw_rank)
+    if world_size < 1 or rank < 0 or rank >= world_size:
+        raise RuntimeError("RANK must satisfy 0 <= RANK < WORLD_SIZE for --ddp")
 
     if world_size <= 1:
         return False, 0, 1
@@ -384,7 +393,7 @@ def _resolve_dataset_roots(args: argparse.Namespace) -> List[Path]:
     return roots
 
 
-def main() -> int:
+def _main_impl() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--dataset", type=str, default=None, help="Single dataset root directory")
     parser.add_argument(
@@ -692,6 +701,22 @@ def main() -> int:
         torch.distributed.destroy_process_group()
 
     return 0
+
+
+def main() -> int:
+    """Run training and release any DDP group on every exit path."""
+    try:
+        return _main_impl()
+    finally:
+        # Keep an earlier training exception authoritative; a best-effort
+        # cleanup failure must not rewrite its cause.
+        original_failure = sys.exc_info()[0] is not None
+        try:
+            if torch.distributed.is_available() and torch.distributed.is_initialized():
+                torch.distributed.destroy_process_group()
+        except Exception:
+            if not original_failure:
+                raise
 
 
 if __name__ == "__main__":

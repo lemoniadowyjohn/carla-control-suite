@@ -24,7 +24,7 @@ def _main_function():
     return next(
         node
         for node in tree.body
-        if isinstance(node, ast.FunctionDef) and node.name == "main"
+        if isinstance(node, ast.FunctionDef) and node.name == "_main_impl"
     )
 
 
@@ -114,3 +114,28 @@ def test_ddp_initialization_failure_cleans_up_an_initialized_group():
         and node.func.attr == "destroy_process_group"
     ]
     assert cleanup_calls
+
+
+def test_ddp_environment_is_coherent_and_main_always_cleans_up():
+    """Distributed ownership is validated and the public entrypoint has a finally."""
+    tree = ast.parse(_LAUNCHER.read_text(encoding="utf-8"))
+    init_ddp = next(
+        node
+        for node in tree.body
+        if isinstance(node, ast.FunctionDef) and node.name == "_init_ddp"
+    )
+    public_main = next(
+        node
+        for node in tree.body
+        if isinstance(node, ast.FunctionDef) and node.name == "main"
+    )
+    source = _LAUNCHER.read_text(encoding="utf-8")
+    assert "--ddp requires both WORLD_SIZE and RANK" in source
+    assert any(isinstance(node, ast.Try) and node.finalbody for node in public_main.body)
+    assert any(
+        isinstance(node, ast.Call)
+        and isinstance(node.func, ast.Attribute)
+        and node.func.attr == "destroy_process_group"
+        for node in ast.walk(public_main)
+    )
+    assert any(isinstance(node, ast.Raise) for node in ast.walk(init_ddp))
