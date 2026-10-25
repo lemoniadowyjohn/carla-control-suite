@@ -1,26 +1,30 @@
 #!/usr/bin/env python3
-"""P0-B orphan connection repair (fail-closed, deterministic) - L1/L2 fixed.
+"""P0-B orphan connection repair (fail-closed, deterministic).
 
 Finds fully-disconnected drivable roads (ORPHAN_FULLY_DISCONNECTED per
-CLOSURE-18) and attempts to connect them through nearby junctions or road
-links when geometric proximity supports a connection.  Residuals that
-cannot be connected are reported (evidence) — never hidden.
+CLOSURE-18) and attempts to connect them to nearby junction-connected
+roads when geometric proximity AND orientation support a connection.
+Residuals that cannot be connected are reported (evidence) — never hidden
+unless strict mode is enabled, in which case residuals raise.
 
-Does NOT invent synthetic lane topology; only connects via existing
-junction elements when the orphan's endpoint is within 5.0 m of a
-junction's boundary, or connects directly to the nearest connected
-road endpoint when both endpoints are within 5.0 m.
+Behaviour (L1/L2, reviewed):
+- Endpoints are derived from planView; XODR hdg is already radians (never
+  re-converted). Zero-curvature <arc> is treated as a straight line.
+- Cross-side continuations (orphan-end <-> target-start or orphan-start
+  <-> target-end) need near-EQUAL headings; same-side meetings
+  (start<->start, end<->end) need near-OPPOSITE headings. Heights must
+  match within tolerance. Duplicate/overlapping same-direction roads are
+  therefore rejected.
+- Reciprocal road->road links are written with ASAM contactPoint
+  semantics (contactPoint names the contact on the LINKED element).
+- A predecessor/successor slot that is already occupied is never
+  overwritten; the pairing is refused and counted as a residual.
+- <link> is inserted as the first child of <road> (XODR schema order).
+- Targets are roads participating in at least one junction connection;
+  the orphan itself must not be a junction member.
 
-L1/L2 fixes:
-- Heading is already in radians in XODR (no double math.radians)
-- Correct link type (predecessor/successor based on orphan endpoint)
-- Adds contactPoint on both sides
-- Adds reciprocal link on target road
-- Refuses junction roads and roads already linked to junctions
-- Heading difference check (configurable, default 30 deg)
-- Height difference check (configurable, default 1.0 m)
-- Default threshold back to 5.0 m
-- Fail-closed: errors raise instead of silent logging
+This module does NOT invent synthetic lane topology and does not route
+links through junction internals; it only creates road-to-road links.
 """
 from __future__ import annotations
 import xml.etree.ElementTree as ET
@@ -66,8 +70,9 @@ def _road_endpoints(road: ET.Element) -> List[Point]:
         curv = _safe_float(arc.get("curvature"), 0.0)
         if abs(curv) > 1e-12:
             hdg += curv * length
-        else:
-            hdg += length  # approximate (straight line)
+        # L1-L2 review fix: zero-curvature arc is geometrically a straight
+        # line; the previous `hdg += length` branch corrupted headings by
+        # 1 radian per metre and is removed.
     out.append((
         x0 + length * math.cos(hdg),
         y0 + length * math.sin(hdg),
@@ -113,28 +118,45 @@ def _link_exists(road: ET.Element, target_id: str, element_type: str = "road") -
     link = road.find("link")
     if link is None:
         return False
-    for pred in link.findall("predecessor"):
-        if pred.get("elementId") == target_id and pred.get("elementType") == element_type:
+    for pred_elem in link.findall("predecessor"):
+        if pred_elem.get("elementId") == target_id and pred_elem.get("elementType") == element_type:
             return True
-    for succ in link.findall("successor"):
-        if succ.get("elementId") == target_id and pred.get("elementType") == element_type:
+    for succ_elem in link.findall("successor"):
+        # L1-L2 review fix: must test succ_elem, not pred_elem (an
+        # UnboundLocalError-free, direction-correct existence test).
+        if succ_elem.get("elementId") == target_id and succ_elem.get("elementType") == element_type:
             return True
     return False
 
 
-def _add_road_link(road: ET.Element, target_id: str, contact_point: str, link_type: str) -> None:
-    """Add predecessor or successor link to road with contactPoint."""
+def _link_slot_occupied(road: ET.Element, link_type: str) -> bool:
+    """True if road already carries a predecessor/successor element of link_type.
+
+    L1-L2 review fix: any existing element blocks the slot.  XODR allows at
+    most one predecessor and one successor element per road link, so
+    overwriting an existing one would silently destroy a real connection
+    (observed as a destroyed junction link in review probe BLOCKER-2).
+    """
     link = road.find("link")
     if link is None:
-        link = ET.SubElement(road, "link")
-    if link_type == "predecessor":
-        elem = link.find("predecessor")
-        if elem is None:
-            elem = ET.SubElement(link, "predecessor")
-    else:  # successor
-        elem = link.find("successor")
-        if elem is None:
-            elem = ET.SubElement(link, "successor")
+        return False
+    return link.find(link_type) is not None
+
+
+def _add_road_link(road: ET.Element, target_id: str, contact_point: str, link_type: str) -> None:
+    """Add predecessor or successor link to road with contactPoint.
+
+    L1-L2 review fix: the caller must guarantee the slot is free
+    (_link_slot_occupied == False); this function creates NEW elements only.
+    """
+    link = road.find("link")
+    if link is None:
+        # L1-L2 review fix: XODR schema order -> <link> must precede
+        # <planView>; append-at-end produced planView, lanes, link (invalid
+        # sequence).  Insert as the first child of <road>.
+        link = ET.Element("link")
+        road.insert(0, link)
+    elem = ET.SubElement(link, link_type)
     elem.set("elementType", "road")
     elem.set("elementId", target_id)
     elem.set("contactPoint", contact_point)
@@ -264,29 +286,36 @@ def repair_orphan_roads(
                     if d_sq >= best_dist_sq:
                         continue
 
-                    # L1: heading difference check
+                    # L1: heading difference check, direction-aware.
+                    # Cross-side continuation (orphan-end <-> target-start or
+                    # orphan-start <-> target-end): headings must be near equal.
+                    # Same-side meeting (start <-> start or end <-> end):
+                    # roads meet head-to-head/tail-to-tail, so headings must be
+                    # near OPPOSITE.  The previous single rule accepted two
+                    # overlapping same-direction roads as valid neighbours.
+                    same_side = (orphan_idx == 0) == (target_idx == 0)
                     hdg_diff = abs((orphan_hdg - target_hdg + math.pi) % (2 * math.pi) - math.pi)
-                    if math.degrees(hdg_diff) > max_heading_diff_deg:
-                        continue
+                    if same_side:
+                        opposite_gap = abs(math.pi - hdg_diff)
+                        if math.degrees(opposite_gap) > max_heading_diff_deg:
+                            continue
+                    else:
+                        if math.degrees(hdg_diff) > max_heading_diff_deg:
+                            continue
 
                     # L1: height difference check
                     if abs(orphan_z - target_z) > max_height_diff_m:
                         continue
 
-                    # L1: avoid linking to a road that already has a link at this endpoint
-                    # Check if target already has a predecessor/successor at this contactPoint
-                    target_link = target_road.find("link")
-                    target_has_link_at_end = False
-                    if target_link is not None:
-                        if target_is_start:
-                            pred = target_link.find("predecessor")
-                            if pred is not None and pred.get("contactPoint") == "start":
-                                target_has_link_at_end = True
-                        else:
-                            succ = target_link.find("successor")
-                            if succ is not None and succ.get("contactPoint") == "end":
-                                target_has_link_at_end = True
-                    if target_has_link_at_end:
+                    # L1-L2 review fix: occupancy is a slot-level test.  XODR
+                    # permits one predecessor and one successor per road link,
+                    # so refuse any pairing that would need to overwrite an
+                    # existing element instead of mutating it silently.
+                    orphan_link_type_needed = "predecessor" if orphan_idx == 0 else "successor"
+                    target_link_type_needed = "predecessor" if target_idx == 0 else "successor"
+                    if _link_slot_occupied(orphan_road, orphan_link_type_needed):
+                        continue
+                    if _link_slot_occupied(target_road, target_link_type_needed):
                         continue
 
                     # All checks passed
@@ -309,35 +338,46 @@ def repair_orphan_roads(
             target_is_start = best_target_is_start
 
             if orphan_is_start and target_is_start:
-                # orphan start to target start: orphan predecessor <- target, target predecessor <- orphan
+                # orphan start to target start (head-to-head):
+                # orphan predecessor -> linked target touched at its start;
+                # target predecessor -> linked orphan touched at its start.
                 orphan_link_type = "predecessor"
                 target_link_type = "predecessor"
                 orphan_contact = "start"
                 target_contact = "start"
             elif orphan_is_start and not target_is_start:
-                # orphan start to target end: orphan predecessor <- target, target successor <- orphan
+                # orphan start to target end (chain head-to-tail):
+                # L1-L2 review fix: contactPoint names the contact point on the
+                # LINKED element (ASAM OpenDRIVE 10.3).  Orphan predecessor
+                # points at the target and touches it at target's END; target
+                # successor points at the orphan and touches it at orphan's
+                # START.  The previous values were inverted.
                 orphan_link_type = "predecessor"
                 target_link_type = "successor"
-                orphan_contact = "start"
-                target_contact = "end"
-            elif not orphan_is_start and target_is_start:
-                # orphan end to target start: orphan successor -> target, target predecessor <- orphan
-                orphan_link_type = "successor"
-                target_link_type = "predecessor"
                 orphan_contact = "end"
                 target_contact = "start"
+            elif not orphan_is_start and target_is_start:
+                # orphan end to target start (chain tail-to-head):
+                # L1-L2 review fix: orphan successor touches the target at its
+                # START; target predecessor touches the orphan at its END.
+                # The previous values were inverted.
+                orphan_link_type = "successor"
+                target_link_type = "predecessor"
+                orphan_contact = "start"
+                target_contact = "end"
             else:  # not orphan_is_start and not target_is_start
-                # orphan end to target end: orphan successor -> target, target successor -> orphan
+                # orphan end to target end (tail-to-tail):
+                # orphan successor -> linked target touched at its end;
+                # target successor -> linked orphan touched at its end.
                 orphan_link_type = "successor"
                 target_link_type = "successor"
                 orphan_contact = "end"
                 target_contact = "end"
 
-            # L1: Check if link already exists (idempotent)
-            if _link_exists(orphan_road, best_target):
-                residuals += 1
-                continue
-            if _link_exists(target_road, rid):
+            # Re-check occupancy right before mutation in case an earlier loop
+            # iteration consumed one of the slots after selection.
+            if _link_slot_occupied(orphan_road, orphan_link_type) or \
+                    _link_slot_occupied(target_road, target_link_type):
                 residuals += 1
                 continue
 
@@ -350,9 +390,13 @@ def repair_orphan_roads(
             # No nearby connection possible within threshold
             residuals += 1
 
-    if strict and residuals > 0 and repaired == 0:
+    if strict and residuals > 0:
+        # L1-L2 review fix: strict means ZERO residual orphans, regardless of
+        # how many were repaired; the old `repaired == 0` condition reported
+        # success with orphans still unconnected.
         raise RuntimeError(
             f"P0-B orphan repair: {residuals} residual unconnected orphans, "
+            f"repaired={repaired}, "
             f"max_snap_m={max_snap_m}, max_heading_diff_deg={max_heading_diff_deg}, "
             f"max_height_diff_m={max_height_diff_m}"
         )
