@@ -27,19 +27,26 @@ def _step3_topology_repair(
     tree, root = load_xodr(working_topology_input)
 
     # P0-B source-stage fix: connect orphan roads within snap distance
-    orphan_snap_m = float(os.getenv("UP_ORPHAN_SNAP_M", "25.0"))
-    try:
-        from ultimate_pipeline.topology.orphan_road_repair import repair_orphan_roads
-        orphan_report = repair_orphan_roads(root, max_snap_m=orphan_snap_m)
-        self.vreport.add_dict("p0b_orphan_repair", orphan_report)
-        print(
-            "[STEP 3] P0-B orphan road connection repair: "
-            f"found={orphan_report['orphan_roads_found']} "
-            f"repaired={orphan_report['repaired_connections']} "
-            f"residual={orphan_report['residual_unconnected']}"
-        )
-    except Exception as e:
-        print(f"⚠️ P0-B orphan repair failed (non-fatal): {e}")
+    # L1/L2: strict mode raises on residual orphans; settings control thresholds
+    orphan_snap_m = float(getattr(s, "ORPHAN_SNAP_M", 5.0))
+    orphan_heading_deg = float(getattr(s, "ORPHAN_MAX_HEADING_DEG", 30.0))
+    orphan_height_m = float(getattr(s, "ORPHAN_MAX_HEIGHT_M", 1.0))
+    orphan_strict = bool(getattr(s, "ORPHAN_STRICT", False))
+    from ultimate_pipeline.topology.orphan_road_repair import repair_orphan_roads
+    orphan_report = repair_orphan_roads(
+        root,
+        max_snap_m=orphan_snap_m,
+        max_heading_diff_deg=orphan_heading_deg,
+        max_height_diff_m=orphan_height_m,
+        strict=orphan_strict,
+    )
+    self.vreport.add_dict("p0b_orphan_repair", orphan_report)
+    print(
+        "[STEP 3] P0-B orphan road connection repair: "
+        f"found={orphan_report['orphan_roads_found']} "
+        f"repaired={orphan_report['repaired_connections']} "
+        f"residual={orphan_report['residual_unconnected']}"
+    )
 
     TopologyRepair.run(root)
     save_xodr(tree, topo_fixed)

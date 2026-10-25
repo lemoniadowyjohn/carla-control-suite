@@ -287,6 +287,11 @@ class Settings:
         "ENABLE_JUNCTION_LINK_PATCH",
         "ENABLE_PLANVIEW_SEAM_AUTO_REPAIR",
         "PLANVIEW_SEAM_AUTO_REPAIR_MAX_M",
+        # --- P0-B Orphan Road Repair ---
+        "ORPHAN_SNAP_M",
+        "ORPHAN_MAX_HEADING_DEG",
+        "ORPHAN_MAX_HEIGHT_M",
+        "ORPHAN_STRICT",
         # --- Domain Gap ---
         "ENABLE_DOMAIN_GAP",
         "MANUAL_MAP_XODR",
@@ -571,6 +576,11 @@ class Settings:
             "PLANVIEW_SEAM_AUTO_REPAIR_MAX_M": float(
                 getattr(self, "PLANVIEW_SEAM_AUTO_REPAIR_MAX_M", 0.05)
             ),
+            # --- P0-B Orphan Road Repair ---
+            "ORPHAN_SNAP_M": float(getattr(self, "ORPHAN_SNAP_M", 5.0)),
+            "ORPHAN_MAX_HEADING_DEG": float(getattr(self, "ORPHAN_MAX_HEADING_DEG", 30.0)),
+            "ORPHAN_MAX_HEIGHT_M": float(getattr(self, "ORPHAN_MAX_HEIGHT_M", 1.0)),
+            "ORPHAN_STRICT": bool(getattr(self, "ORPHAN_STRICT", False)),
             # --- Domain Gap ---
             "ENABLE_DOMAIN_GAP": self.ENABLE_DOMAIN_GAP,
             "MANUAL_MAP_XODR": self.MANUAL_MAP_XODR,
@@ -1246,6 +1256,16 @@ class Settings:
     SEAM_STATS_JSON: str = "seam_statistics.json"
     ENABLE_PLANVIEW_SEAM_AUTO_REPAIR: bool = True
     PLANVIEW_SEAM_AUTO_REPAIR_MAX_M: float = 0.05
+
+    # --- P0-B Orphan Road Repair (L1/L2) ---
+    # L1: max snap distance (default 5.0 m, was 25.0 m)
+    ORPHAN_SNAP_M: float = 5.0
+    # L1: max heading difference between orphan and target endpoints (degrees)
+    ORPHAN_MAX_HEADING_DEG: float = 30.0
+    # L1: max height difference between orphan and target endpoints (meters)
+    ORPHAN_MAX_HEIGHT_M: float = 1.0
+    # L1/L2: fail-closed mode - raise on residual orphans instead of silent log
+    ORPHAN_STRICT: bool = False
 
     ENABLE_FULL_MAP_LOAD_GATE = False
     ENABLE_TILE_ONLY_VALIDATION = True
