@@ -1022,3 +1022,37 @@ def test_allow_incomplete_flag_can_suppress_the_nonzero_exit(tmp_path, monkeypat
     assert status["experiment_status"] == "incomplete", (
         "the recorded status must stay truthful even when the exit code is suppressed"
     )
+
+
+def test_checkpoint_disk_guard_receives_supported_keyword(tmp_path, monkeypatch):
+    """RQ5-P1: the checkpoint disk guard must be called with its real keyword.
+
+    Pre-fix, ``train_launcher`` passed ``min_free_disk_bytes=`` to
+    ``require_free_disk``, whose signature only accepts ``min_free_bytes``.
+    The resulting ``TypeError`` was not a ``TrainingFailure``, so it escaped
+    the checkpoint guard and crashed real training at the first save.  The
+    autospec mock below fails on any unsupported keyword, so this test is a
+    genuine regression check rather than a re-implementation of the call.
+    """
+    from unittest import mock
+
+    from ultimate_pipeline.perception import train_launcher, training_failure_guard
+
+    root = _write_dataset(tmp_path / "gen_0", n=3, h=16, w=16, seed=5)
+    out_dir = tmp_path / "out"
+    guard = mock.create_autospec(training_failure_guard.require_free_disk)
+    monkeypatch.setattr(train_launcher, "require_free_disk", guard)
+    # Never write a real checkpoint: this test only exercises the guard call.
+    monkeypatch.setattr(train_launcher, "atomic_torch_save", lambda *a, **k: None)
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        _train_launcher_argv(out_dir, [root], extra=["--no-manifest"]),
+    )
+
+    assert train_launcher.main() == 0
+
+    # argparse default --min-free-disk-mb is 512 MiB.
+    guard.assert_called_once_with(
+        out_dir / "seg_fcn_epoch001.pt", min_free_bytes=512 * 1024 * 1024
+    )

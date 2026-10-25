@@ -627,7 +627,7 @@ def _main_impl() -> int:
                 # CD-4: check the disk *before* writing and write atomically, so
                 # a full disk or a crashed write can never leave a truncated
                 # checkpoint that still loads.
-                require_free_disk(ckpt, min_free_disk_bytes=int(args.min_free_disk_mb) * 1024 * 1024)
+                require_free_disk(ckpt, min_free_bytes=int(args.min_free_disk_mb) * 1024 * 1024)
                 atomic_torch_save(state, ckpt)
             except TrainingFailure as failure:
                 training_status = failure.status
