@@ -432,13 +432,13 @@ def main() -> int:
 
     out_dir = _resolve_out_dir(args.out_dir)
 
+    ddp_enabled, rank, world_size = _init_ddp(args.ddp)
+    is_main = (rank == 0)
+
     # CD-4: remove any pre-existing SUCCESS.txt so a later "success" cannot be
     # interpreted as evidence that this run completed without failures.
     if is_main:
         _revoke_stale_success(out_dir)
-
-    ddp_enabled, rank, world_size = _init_ddp(args.ddp)
-    is_main = (rank == 0)
 
     device = torch.device(args.device if (args.device != "cuda" or torch.cuda.is_available()) else "cpu")
 
