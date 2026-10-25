@@ -406,12 +406,16 @@ def collect_git_identity(repo_root: Optional[str] = None) -> Dict[str, Any]:
 # ---------------------------------------------------------------------------
 
 
-def verify_random_initialisation(model: Any) -> Dict[str, Any]:
+def verify_random_initialisation(
+    model: Any,
+    weights: Any = None,
+    weights_backbone: Any = None,
+) -> Dict[str, Any]:
     """
     Record the *actual instantiated state* of a freshly constructed model.
 
     The frozen RQ5 protocol claims random initialisation
-    (``weights=None``, ``weights_backbone`` internalised in torchvision's
+    (``weights=None``, ``weights_backbone=None`` internalised in torchvision's
     ``fcn_resnet50``). Recording the instantiated state fingerprint in the
     training receipt makes that claim verifiable instead of inferred from a
     torchvision version or constructor argument reading.
@@ -424,7 +428,8 @@ def verify_random_initialisation(model: Any) -> Dict[str, Any]:
 
     Raises:
         PretrainingContractError: If torchvision predates the weights API or
-            no parameters can be fingerprinted.
+            no parameters can be fingerprinted, or if weights/weights_backbone
+            indicate pretraining (non-None values).
     """
     try:
         import torchvision
@@ -435,6 +440,18 @@ def verify_random_initialisation(model: Any) -> Dict[str, Any]:
         raise PretrainingContractError(
             f"torchvision {torchvision.__version__} predates the weights API "
             "(weights=None random-initialisation contract requires >= 0.13)"
+        )
+
+    # CHAT-09 / B2: Fail closed if pretraining arguments were passed.
+    # The frozen protocol requires random initialisation; any non-None
+    # weights or weights_backbone violates the contract.
+    if weights is not None:
+        raise PretrainingContractError(
+            f"weights argument must be None for random initialisation, got {weights!r}"
+        )
+    if weights_backbone is not None:
+        raise PretrainingContractError(
+            f"weights_backbone argument must be None for random initialisation, got {weights_backbone!r}"
         )
 
     import torch
@@ -473,8 +490,8 @@ def verify_random_initialisation(model: Any) -> Dict[str, Any]:
     return {
         "schema": "rq5_pretraining_contract_v1",
         "init": "random_frozen_protocol",
-        "weights_argument": None,
-        "weights_backbone_argument": None,
+        "weights_argument": weights,
+        "weights_backbone_argument": weights_backbone,
         "backbone_internal_to_model": "torchvision.models.segmentation.fcn_resnet50",
         "torchvision_version": str(torchvision.__version__),
         "torchview_git": None,

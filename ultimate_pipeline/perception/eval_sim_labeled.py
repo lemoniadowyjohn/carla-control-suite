@@ -234,7 +234,7 @@ def evaluate_model(
         return report
 
     # NEW-245: strict load with explicit, recorded parameter-set verification.
-    model = models.segmentation.fcn_resnet50(weights=None, num_classes=num_classes)
+    model = models.segmentation.fcn_resnet50(weights=None, weights_backbone=None, num_classes=num_classes)
     try:
         load_record: Dict[str, Any] = {}
         report["state_dict_load"] = load_state_dict_governed(

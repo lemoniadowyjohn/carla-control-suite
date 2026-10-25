@@ -306,8 +306,8 @@ def _build_model(num_classes: int) -> Tuple[nn.Module, Dict[str, Any]]:
 
     Returns the model plus the recorded pretraining contract.
     """
-    model = models.segmentation.fcn_resnet50(weights=None, num_classes=int(num_classes))
-    contract = verify_random_initialisation(model)
+    model = models.segmentation.fcn_resnet50(weights=None, weights_backbone=None, num_classes=int(num_classes))
+    contract = verify_random_initialisation(model, weights=None, weights_backbone=None)
     return model, contract
 
 
