@@ -32,6 +32,10 @@ from typing import List, Dict, Any, Tuple, Optional, Set
 import math
 
 from ultimate_pipeline.core.repair_diff import diff_log
+from ultimate_pipeline.geometry.opendrive_geometry_kernel import (
+    endpoint as _kernel_endpoint,
+    pose_at_s as _kernel_pose_at_s,
+)
 
 Point = Tuple[float, float]
 
@@ -44,40 +48,34 @@ def _safe_float(x, default=0.0) -> float:
 
 
 def _road_endpoints(road: ET.Element) -> List[Point]:
-    """Return (start_x, start_y) and (end_x, end_y) from first/last geometry."""
+    """Return (start_x, start_y) and (end_x, end_y) from first/last geometry.
+
+    L1 review fix (defect A): this used to hand-roll the end-point math
+    (chord-projection along the END heading), which is only correct for a
+    straight <line>; <arc> (nonzero curvature), <spiral>, <poly3> and
+    <paramPoly3> all fell through to that same formula and were wrong (a
+    paramPoly3 curving to (100, 16.67) was reported at (100, 0), a 16.7 m
+    error). This now delegates to the canonical kernel
+    (ultimate_pipeline.geometry.opendrive_geometry_kernel), which evaluates
+    every ASAM OpenDRIVE primitive exactly.
+
+    Returns [] if planView has no geometries, or if any primitive is
+    unsupported/malformed (the kernel raises ValueError) -- callers must
+    treat that as a residual ('unsupported_geometry'), never guess an
+    endpoint.
+    """
     geoms = sorted(
         list(road.findall("./planView/geometry")),
         key=lambda g: _safe_float(g.get("s"), 0.0),
     )
-    out: List[Point] = []
     if not geoms:
-        return out
-    # Start point from first geometry s=0
-    first = geoms[0]
-    out.append((
-        _safe_float(first.get("x"), 0.0),
-        _safe_float(first.get("y"), 0.0),
-    ))
-    # End point from last geometry endpoint approximation
-    last = geoms[-1]
-    x0 = _safe_float(last.get("x"), 0.0)
-    y0 = _safe_float(last.get("y"), 0.0)
-    # L1 FIX: XODR hdg is already in radians, do NOT apply math.radians again
-    hdg = _safe_float(last.get("hdg"), 0.0)
-    length = max(0.0, _safe_float(last.get("length"), 0.0))
-    arc = last.find("arc")
-    if arc is not None:
-        curv = _safe_float(arc.get("curvature"), 0.0)
-        if abs(curv) > 1e-12:
-            hdg += curv * length
-        # L1-L2 review fix: zero-curvature arc is geometrically a straight
-        # line; the previous `hdg += length` branch corrupted headings by
-        # 1 radian per metre and is removed.
-    out.append((
-        x0 + length * math.cos(hdg),
-        y0 + length * math.sin(hdg),
-    ))
-    return out
+        return []
+    try:
+        start_pose = _kernel_pose_at_s(geoms[0], 0.0)
+        end_pose = _kernel_endpoint(geoms[-1])
+    except (ValueError, ZeroDivisionError):
+        return []
+    return [(start_pose.x, start_pose.y), (end_pose.x, end_pose.y)]
 
 
 def _road_z(road: ET.Element, s: float = 0.0) -> float:
@@ -95,38 +93,49 @@ def _road_z(road: ET.Element, s: float = 0.0) -> float:
 
 
 def _heading_at_end(road: ET.Element) -> float:
-    """Return heading (radians) at road end."""
+    """Return heading (radians) at road end via the canonical geometry
+    kernel (see _road_endpoints for the defect this replaces).
+
+    Returns 0.0 if planView has no geometries or the primitive is
+    unsupported/malformed; callers that must distinguish "no heading" from
+    "zero heading" check _road_endpoints(road) first (it returns [] in
+    exactly those cases).
+    """
     geoms = sorted(
         list(road.findall("./planView/geometry")),
         key=lambda g: _safe_float(g.get("s"), 0.0),
     )
     if not geoms:
         return 0.0
-    last = geoms[-1]
-    hdg = _safe_float(last.get("hdg"), 0.0)
-    length = max(0.0, _safe_float(last.get("length"), 0.0))
-    arc = last.find("arc")
-    if arc is not None:
-        curv = _safe_float(arc.get("curvature"), 0.0)
-        if abs(curv) > 1e-12:
-            hdg += curv * length
-    return hdg
+    try:
+        return _kernel_endpoint(geoms[-1]).heading
+    except (ValueError, ZeroDivisionError):
+        return 0.0
 
 
-def _link_exists(road: ET.Element, target_id: str, element_type: str = "road") -> bool:
-    """Check if road already has a link to target_id."""
-    link = road.find("link")
-    if link is None:
-        return False
-    for pred_elem in link.findall("predecessor"):
-        if pred_elem.get("elementId") == target_id and pred_elem.get("elementType") == element_type:
-            return True
-    for succ_elem in link.findall("successor"):
-        # L1-L2 review fix: must test succ_elem, not pred_elem (an
-        # UnboundLocalError-free, direction-correct existence test).
-        if succ_elem.get("elementId") == target_id and succ_elem.get("elementType") == element_type:
-            return True
-    return False
+def _heading_at_start(road: ET.Element) -> Optional[float]:
+    """Return heading (radians) at road start via the canonical geometry
+    kernel, or None if planView has no geometries or the primitive is
+    unsupported/malformed.
+
+    L1 review fix (defect A): the previous call sites read the first
+    geometry's raw `hdg` attribute directly, which is only the true start
+    heading for primitives with zero initial local heading (line, arc,
+    spiral, paramPoly3 with bU/bV such that atan2(bV,bU)==0); for a <poly3>
+    with nonzero `b`, the true start heading differs from `hdg` by
+    atan2(b, 1). Delegating to the kernel's pose_at_s(geom, 0) is correct
+    for every primitive.
+    """
+    geoms = sorted(
+        list(road.findall("./planView/geometry")),
+        key=lambda g: _safe_float(g.get("s"), 0.0),
+    )
+    if not geoms:
+        return None
+    try:
+        return _kernel_pose_at_s(geoms[0], 0.0).heading
+    except (ValueError, ZeroDivisionError):
+        return None
 
 
 def _link_slot_occupied(road: ET.Element, link_type: str) -> bool:
@@ -183,22 +192,18 @@ def repair_orphan_roads(
         for j in root.findall("junction")
         if j.get("id")
     }
-    # Build junction connection membership
+    # Build junction connection membership (both incomingRoad and
+    # connectingRoad ids -- a road that is a MEMBER of a junction, in
+    # either role, must not itself be treated as a repairable orphan).
     junction_roads: Set[str] = set()
-    connection_map: Dict[str, List[Dict[str, Any]]] = {}
     for junc in root.findall("junction"):
-        jid = str(junc.get("id")).strip()
-        conns = []
         for conn in junc.findall("connection"):
             inc = str(conn.get("incomingRoad") or "").strip()
             con = str(conn.get("connectingRoad") or "").strip()
             if inc:
                 junction_roads.add(inc)
-                conns.append({"type": "incoming", "road_id": inc, "contactPoint": conn.get("contactPoint", "start")})
             if con:
                 junction_roads.add(con)
-                conns.append({"type": "connecting", "road_id": con, "contactPoint": conn.get("contactPoint", "end")})
-        connection_map[jid] = conns
 
     # Identify orphans: driving lanes present but no link at all, not in junction
     orphan_ids: List[str] = []
@@ -226,6 +231,11 @@ def repair_orphan_roads(
     repaired = 0
     residuals = 0
     errors = []
+    residual_reasons: Dict[str, int] = {}
+
+    def _bump_reason(reason: str) -> None:
+        residual_reasons[reason] = residual_reasons.get(reason, 0) + 1
+
     # Connected roads = in junction_roads (have at least one junction connection)
     # Exclude roads already in junction to avoid linking to junction internals
     connected_roads: List[str] = [
@@ -241,9 +251,10 @@ def repair_orphan_roads(
         orphan_ends = _road_endpoints(orphan_road)
         if len(orphan_ends) < 2:
             residuals += 1
+            _bump_reason("unsupported_geometry")
             continue
 
-        orphan_hdg_start = _safe_float(orphan_road.find("./planView/geometry").get("hdg"), 0.0)
+        orphan_hdg_start = _heading_at_start(orphan_road) or 0.0
         orphan_hdg_end = _heading_at_end(orphan_road)
         orphan_z_start = _road_z(orphan_road, 0.0)
         orphan_z_end = _road_z(orphan_road, _safe_float(
@@ -254,17 +265,21 @@ def repair_orphan_roads(
         best_target_idx = None
         best_orphan_idx = None
         best_target_is_start = True
+        # L1 review fix (defect B): track whether a geometrically-close
+        # candidate was rejected ONLY because it is a junction-internal
+        # connector road, so the residual reason is accurate.
+        target_is_junction_internal_hit = False
 
         # Try nearest connected road endpoint
         for target_rid in connected_roads:
             target_road = road_ids.get(target_rid)
-            if not target_road:
+            if target_road is None:
                 continue
             target_ends = _road_endpoints(target_road)
             if len(target_ends) < 2:
                 continue
 
-            target_hdg_start = _safe_float(target_road.find("./planView/geometry").get("hdg"), 0.0)
+            target_hdg_start = _heading_at_start(target_road) or 0.0
             target_hdg_end = _heading_at_end(target_road)
             target_z_start = _road_z(target_road, 0.0)
             target_z_end = _road_z(target_road, _safe_float(
@@ -284,6 +299,19 @@ def repair_orphan_roads(
                     dy = op[1] - tp[1]
                     d_sq = dx * dx + dy * dy
                     if d_sq >= best_dist_sq:
+                        continue
+
+                    # L1 review fix (defect B): candidate targets come from
+                    # junction_roads, which contains BOTH incomingRoad ids
+                    # (ordinary external roads, junction=="-1") AND
+                    # connectingRoad ids (junction-internal connector
+                    # roads, junction==<junction id>). Only the former may
+                    # be a repair target -- linking an orphan straight to a
+                    # connector bypasses the junction and is topologically
+                    # wrong (reviewer-reproduced: an orphan near a
+                    # connector's far end was silently linked to it).
+                    if str(target_road.get("junction", "-1") or "-1").strip() != "-1":
+                        target_is_junction_internal_hit = True
                         continue
 
                     # L1: heading difference check, direction-aware.
@@ -379,6 +407,7 @@ def repair_orphan_roads(
             if _link_slot_occupied(orphan_road, orphan_link_type) or \
                     _link_slot_occupied(target_road, target_link_type):
                 residuals += 1
+                _bump_reason("slot_occupied_at_commit")
                 continue
 
             # L2: Add reciprocal links with contactPoint
@@ -389,6 +418,10 @@ def repair_orphan_roads(
         else:
             # No nearby connection possible within threshold
             residuals += 1
+            if target_is_junction_internal_hit:
+                _bump_reason("target_is_junction_internal")
+            else:
+                _bump_reason("no_target_within_threshold")
 
     if strict and residuals > 0:
         # L1-L2 review fix: strict means ZERO residual orphans, regardless of
@@ -407,6 +440,7 @@ def repair_orphan_roads(
         "orphan_roads_found": len(orphan_ids),
         "repaired_connections": repaired,
         "residual_unconnected": residuals,
+        "residual_reasons": residual_reasons,
         "threshold_m": max_snap_m,
         "max_heading_diff_deg": max_heading_diff_deg,
         "max_height_diff_m": max_height_diff_m,

@@ -5,13 +5,19 @@ Defect regression coverage (per adversarial review of f59212b3):
 1. Heading is NOT double-converted to radians
 2. Correct reciprocal link types and ASAM contactPoint semantics
    (contactPoint names the contact on the LINKED element)
-3. _link_exists() works on a successor-only road (UnboundLocalError + wrong
-   variable regression)
-4. Existing predecessor/successor slots are never overwritten
-5. Duplicate/overlapping same-direction roads are rejected (same-side pairs
+3. Existing predecessor/successor slots are never overwritten
+4. Duplicate/overlapping same-direction roads are rejected (same-side pairs
    require opposite headings)
-6. Default threshold is 5.0 m
-7. strict mode raises on residual orphans even when some were repaired
+5. Default threshold is 5.0 m
+6. strict mode raises on residual orphans even when some were repaired
+
+L1 follow-up review (2026-11-02): endpoint/heading math now delegates to
+the canonical opendrive_geometry_kernel (paramPoly3/spiral/nonzero-arc
+regression), candidate targets must have junction=="-1" of their own
+(reject junction-internal connectors), and the dead `_link_exists()`
+helper (only ever exercised by its own unit test, never called from
+production code -- confirmed by repo-wide grep) was removed along with
+that test.
 """
 import sys
 from pathlib import Path
@@ -22,7 +28,7 @@ import math
 
 from ultimate_pipeline.topology.orphan_road_repair import (
     repair_orphan_roads, _road_endpoints, _heading_at_end,
-    _link_exists, _link_slot_occupied,
+    _link_slot_occupied,
 )
 
 
@@ -137,17 +143,6 @@ def test_reverse_chain_contactpoints():
     print("PASS: reverse chain contactPoints")
 
 
-def test_link_exists_successor_only_no_predecessor():
-    """Regression: _link_exists used `pred.get` inside the successor loop,
-    raising UnboundLocalError when no predecessor element existed."""
-    road = _xml_road("B", 0.0, 0.0, 0.0, 10.0, with_link=[("successor", "A", "start")])
-    assert _link_exists(road, "A") is True
-    assert _link_exists(road, "Z") is False
-    road2 = _xml_road("C", 0.0, 0.0, 0.0, 10.0, with_link=[("predecessor", "A", "end")])
-    assert _link_exists(road2, "A") is True
-    print("PASS: _link_exists successor-only regression")
-
-
 def test_existing_slot_never_overwritten():
     """A target that already carries a predecessor keeps it; the pairing is
     refused (residual) instead of destroying the existing link."""
@@ -216,3 +211,144 @@ def test_zero_curvature_arc_is_straight():
     assert abs(ends[1][0] - 100.0) < 0.01, f"expected straight x=100, got {ends}"
     assert abs(ends[1][1] - 0.0) < 0.01
     print("PASS: zero-curvature arc treated as straight")
+
+
+# ---------------------------------------------------------------------------
+# L1 review follow-up (reviewer-reproduced defect A): the hand-rolled
+# endpoint/heading math in _road_endpoints/_heading_at_end falls through to
+# the straight-line formula for every non-arc primitive (paramPoly3, spiral)
+# and is even wrong for a NON-zero-curvature <arc> (it projects along the
+# chord length at the END heading instead of the true arc chord). The fix
+# delegates to the canonical kernel (opendrive_geometry_kernel.pose_at_s /
+# endpoint). These tests pin the canonical values.
+# ---------------------------------------------------------------------------
+
+def _geom(parent_planview, x, y, hdg, length, s=0.0):
+    return ET.SubElement(parent_planview, "geometry", {
+        "s": str(s), "x": str(x), "y": str(y), "hdg": str(hdg), "length": str(length),
+    })
+
+
+def test_nonzero_curvature_arc_matches_kernel_not_chord_projection():
+    """A curved <arc> (k=0.01, length=100) must use the true arc chord
+    (sin(k*s)/k, (1-cos(k*s))/k), not length*cos/sin(end_heading).
+
+    Old (buggy) formula gave (54.03, 84.15); the correct kernel chord is
+    (84.15, 45.97).
+    """
+    road = ET.Element("road", {"id": "1", "junction": "-1"})
+    planView = ET.SubElement(road, "planView")
+    geom = _geom(planView, 0.0, 0.0, 0.0, 100.0)
+    ET.SubElement(geom, "arc", {"curvature": "0.01"})
+    ends = _road_endpoints(road)
+    assert abs(ends[1][0] - 84.1470984807897) < 1e-6, f"got {ends}"
+    assert abs(ends[1][1] - 45.96976941318602) < 1e-6, f"got {ends}"
+    hdg_end = _heading_at_end(road)
+    assert abs(hdg_end - 1.0) < 1e-9
+    print("PASS: nonzero-curvature arc matches kernel chord")
+
+
+def test_param_poly3_endpoint_matches_kernel_not_straight_line():
+    """paramPoly3 curving to (100, 16.67) must not be reported at (100, 0)
+    (the straight-line fallback the old hand-rolled code used for any
+    primitive it didn't recognise)."""
+    road = ET.Element("road", {"id": "1", "junction": "-1"})
+    planView = ET.SubElement(road, "planView")
+    geom = _geom(planView, 0.0, 0.0, 0.0, 100.0)
+    ET.SubElement(geom, "paramPoly3", {
+        "pRange": "arcLength",
+        "aU": "0", "bU": "1", "cU": "0", "dU": "0",
+        "aV": "0", "bV": "0.1667", "cV": "0", "dV": "0",
+    })
+    ends = _road_endpoints(road)
+    assert abs(ends[1][0] - 100.0) < 1e-6, f"got {ends}"
+    assert abs(ends[1][1] - 16.67) < 1e-6, (
+        f"expected curved end ~(100, 16.67), got {ends} "
+        "(old code reported the straight-line point (100, 0))"
+    )
+    print("PASS: paramPoly3 endpoint matches kernel, not straight-line fallback")
+
+
+def test_spiral_endpoint_delegates_to_kernel():
+    """A clothoid/spiral has no closed form here; _road_endpoints and
+    _heading_at_end must delegate to the canonical kernel rather than
+    silently treating it as a straight line."""
+    from ultimate_pipeline.geometry.opendrive_geometry_kernel import (
+        endpoint as kernel_endpoint,
+    )
+    road = ET.Element("road", {"id": "1", "junction": "-1"})
+    planView = ET.SubElement(road, "planView")
+    geom = _geom(planView, 0.0, 0.0, 0.0, 50.0)
+    ET.SubElement(geom, "spiral", {"curvStart": "0.0", "curvEnd": "0.02"})
+    expected = kernel_endpoint(geom)
+
+    ends = _road_endpoints(road)
+    assert abs(ends[1][0] - expected.x) < 1e-6, f"got {ends}, expected {expected}"
+    assert abs(ends[1][1] - expected.y) < 1e-6, f"got {ends}, expected {expected}"
+    hdg_end = _heading_at_end(road)
+    assert abs(hdg_end - expected.heading) < 1e-6
+
+    # A straight-line fallback at this length/heading would land at (50, 0),
+    # nowhere near the true clothoid endpoint -- pin that they differ.
+    assert abs(ends[1][0] - 50.0) > 0.1 or abs(ends[1][1] - 0.0) > 0.1
+    print("PASS: spiral endpoint delegates to canonical kernel")
+
+
+def test_unsupported_geometry_primitive_refuses_not_guesses():
+    """A geometry element with no recognised primitive child must make the
+    repair record a residual with reason 'unsupported_geometry' instead of
+    silently guessing a straight-line endpoint."""
+    road = ET.Element("road", {"id": "orphanU", "junction": "-1"})
+    planView = ET.SubElement(road, "planView")
+    _geom(planView, 0.0, 0.0, 0.0, 50.0)  # no primitive child at all
+    lanes = ET.SubElement(road, "lanes")
+    laneSec = ET.SubElement(lanes, "laneSection", {"s": "0.0"})
+    right = ET.SubElement(laneSec, "right")
+    ET.SubElement(right, "lane", {"id": "1", "type": "driving", "level": "false"})
+
+    root = _root(road)
+    report = repair_orphan_roads(root, max_snap_m=5.0)
+    assert report["repaired_connections"] == 0, report
+    assert report["residual_unconnected"] == 1, report
+    assert report.get("residual_reasons", {}).get("unsupported_geometry") == 1, report
+    print("PASS: unsupported geometry primitive is a refused residual, not a guess")
+
+
+def test_target_junction_internal_connector_rejected():
+    """Defect B: a candidate target must have its OWN junction=='-1'.
+    A connectingRoad (junction-internal connector road) must never be
+    accepted as a repair target even though it appears as a
+    'connectingRoad' in a <connection>."""
+    # incoming road B (external, junction="-1") -- far away, not a candidate
+    incoming = _xml_road("B", 1000.0, 1000.0, 0.0, 10.0)
+    incoming.set("junction", "-1")
+
+    # connecting road "9" (junction-internal connector, junction="9")
+    connector = ET.Element("road", {"id": "9", "name": "connector_9", "junction": "9"})
+    cpv = ET.SubElement(connector, "planView")
+    _geom(cpv, 100.0, 0.0, 0.0, 50.0)
+    ET.SubElement(cpv.find("geometry"), "line")
+    clanes = ET.SubElement(connector, "lanes")
+    claneSec = ET.SubElement(clanes, "laneSection", {"s": "0.0"})
+    cright = ET.SubElement(claneSec, "right")
+    ET.SubElement(cright, "lane", {"id": "1", "type": "driving", "level": "false"})
+
+    # orphan placed right at the connector's far end (150, 0)
+    orphan = _xml_road("A", 150.0, 0.0, 0.0, 50.0)
+
+    root = ET.Element("OpenDRIVE")
+    for r in (incoming, connector, orphan):
+        root.append(r)
+    junction = ET.SubElement(root, "junction", {"id": "9"})
+    ET.SubElement(junction, "connection", {
+        "id": "0", "incomingRoad": "B", "connectingRoad": "9",
+        "contactPoint": "start",
+    })
+
+    report = repair_orphan_roads(root, max_snap_m=5.0)
+    assert report["repaired_connections"] == 0, report
+    assert report["residual_unconnected"] == 1, report
+    assert report.get("residual_reasons", {}).get("target_is_junction_internal") == 1, report
+    assert orphan.find("link") is None
+    assert connector.find("link") is None
+    print("PASS: junction-internal connector rejected as repair target")

@@ -44,7 +44,12 @@ def _step3_topology_repair(
     orphan_heading_deg = _orphan_float("ORPHAN_MAX_HEADING_DEG", 30.0)
     orphan_height_m = _orphan_float("ORPHAN_MAX_HEIGHT_M", 1.0)
     orphan_strict_raw = getattr(s, "ORPHAN_STRICT", False)
-    orphan_strict = orphan_strict_raw is True
+    # L1 review fix (defect C): THESIS_STRICT (default True,
+    # ultimate_pipeline/config/settings.py ~2226) must also make a repair
+    # exception propagate -- ORPHAN_STRICT alone silently swallowed a real
+    # repair defect in the default (THESIS_STRICT=True) configuration.
+    thesis_strict_raw = getattr(s, "THESIS_STRICT", True)
+    orphan_strict = (orphan_strict_raw is True) or (thesis_strict_raw is True)
     try:
         from ultimate_pipeline.topology.orphan_road_repair import repair_orphan_roads
         orphan_report = repair_orphan_roads(
