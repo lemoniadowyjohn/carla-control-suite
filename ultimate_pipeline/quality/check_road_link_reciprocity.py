@@ -19,13 +19,23 @@ Validation-only (no mutation). Checks, for every ROAD-type road-level
     is `predecessor`, "end" if it is `successor`). Reported as an
     `asymmetric` violation when it doesn't.
 
-Junction-type links are exempt from both checks here: they legitimately
-carry no contactPoint on the road-level predecessor/successor element
-(routing is resolved via the junction's own <connection> contactPoint and
-laneLinks, a separate, already-covered concern). A pair where A points at
-B but B's reciprocal slot routes through a junction (elementType !=
-"road") is also exempt -- that is a legitimate junction-mediated
-connection, not a missing direct road-to-road link.
+Junction-type links are exempt from the contactPoint-presence check: they
+legitimately carry no contactPoint on the road-level predecessor/successor
+element (routing is resolved via the junction's own <connection>
+contactPoint and laneLinks, a separate, already-covered concern).
+
+A pair where A points at B but B's reciprocal slot routes through a
+junction (elementType != "road") is exempt from the reciprocity check
+ONLY if the referenced <junction> element actually exists AND has a
+<connection> that links A and B (incomingRoad/connectingRoad naming A and
+B, in either orientation -- ASAM OpenDRIVE: a junction's connecting roads
+carry a predecessor/successor naming their incoming road, and incoming
+roads carry a road-level link naming the junction). A junction id that
+does not exist, or exists but has no <connection> tying A and B together,
+is NOT a legitimate exemption -- it is reported as a distinct
+`junction_reference_unbacked` violation (L2 review, 2026-11-02: the prior
+unconditional "elementType != road => exempt" rule let an unrelated or
+dangling junction id silently mask a missing direct link).
 
 Input: path to .xodr or an already-parsed XML root Element.
 """
@@ -42,6 +52,49 @@ _CONTACT_TO_RECIPROCAL_SLOT = {"start": "predecessor", "end": "successor"}
 # A's own link slot -> the contactPoint B's reciprocal link must carry
 # (naming the boundary of A that is touched).
 _SLOT_TO_EXPECTED_RECIPROCAL_CONTACT = {"predecessor": "start", "successor": "end"}
+
+
+def _build_junction_connection_pairs(
+    root: ET.Element,
+) -> Dict[str, List[Tuple[str, str]]]:
+    """Map junction id -> list of (incomingRoad, connectingRoad) pairs."""
+    junctions: Dict[str, List[Tuple[str, str]]] = {}
+    for junction in root.findall("./junction"):
+        junction_id = junction.get("id")
+        if not junction_id:
+            continue
+        pairs: List[Tuple[str, str]] = []
+        for conn in junction.findall("connection"):
+            incoming = conn.get("incomingRoad")
+            connecting = conn.get("connectingRoad")
+            if incoming and connecting:
+                pairs.append((incoming, connecting))
+        junctions[junction_id] = pairs
+    return junctions
+
+
+def _junction_connects_roads(
+    junctions: Dict[str, List[Tuple[str, str]]],
+    junction_id: Union[str, None],
+    road_a: str,
+    road_b: str,
+) -> bool:
+    """True iff junction_id exists and has a <connection> linking A and B.
+
+    Orientation is not assumed: incomingRoad/connectingRoad may name A and
+    B in either order (either road may be the "incoming" one from this
+    junction's point of view).
+    """
+    if not junction_id:
+        return False
+    pairs = junctions.get(junction_id)
+    if pairs is None:
+        return False
+    target = {road_a, road_b}
+    for incoming, connecting in pairs:
+        if {incoming, connecting} == target:
+            return True
+    return False
 
 
 def _load_tree_and_root(
@@ -72,19 +125,23 @@ def check_road_link_reciprocity(
                 "asymmetric_count": int,
                 "violations": int,
                 "junction_mediated_exempt": int,
+                "junction_reference_unbacked_count": int,
                 "dangling_target_skipped": int,
             },
             "contactpoint_invalid_examples": [...],  # up to max_examples
             "asymmetric_examples": [...],             # up to max_examples
+            "junction_reference_unbacked_examples": [...],  # up to max_examples
         }
     """
     _tree, root = _load_tree_and_root(xodr_or_root)
     roads: Dict[str, ET.Element] = {
         r.get("id"): r for r in root.findall("./road") if r.get("id")
     }
+    junctions = _build_junction_connection_pairs(root)
 
     contactpoint_invalid: List[Dict[str, Any]] = []
     asymmetric: List[Dict[str, Any]] = []
+    junction_reference_unbacked: List[Dict[str, Any]] = []
     road_road_links_checked = 0
     junction_mediated_exempt = 0
     dangling_target_skipped = 0
@@ -142,9 +199,32 @@ def check_road_link_reciprocity(
 
             reciprocal_element_type = reciprocal_elem.get("elementType")
             if reciprocal_element_type != "road":
-                # Junction-mediated pair: B's reciprocal link routes
-                # through a junction, not directly back to A. Legitimate.
-                junction_mediated_exempt += 1
+                # B's reciprocal link routes through a junction instead of
+                # directly back to A. Legitimate ONLY if that junction
+                # exists and actually has a <connection> linking A and B;
+                # otherwise this is an unbacked reference masquerading as
+                # a junction-mediated connection.
+                reciprocal_junction_id = reciprocal_elem.get("elementId")
+                if _junction_connects_roads(
+                    junctions, reciprocal_junction_id, road_id, target_id
+                ):
+                    junction_mediated_exempt += 1
+                else:
+                    junction_reference_unbacked.append({
+                        "road_id": road_id,
+                        "slot": slot,
+                        "target_id": target_id,
+                        "contact_point": contact,
+                        "reciprocal_slot": reciprocal_slot_name,
+                        "junction_id": reciprocal_junction_id,
+                        "reason": (
+                            f"junction {reciprocal_junction_id!r} "
+                            "referenced by target road "
+                            f"{target_id!r}'s {reciprocal_slot_name} does "
+                            "not exist or has no <connection> linking "
+                            f"{road_id!r} and {target_id!r}"
+                        ),
+                    })
                 continue
 
             reciprocal_target_id = reciprocal_elem.get("elementId")
@@ -165,7 +245,11 @@ def check_road_link_reciprocity(
                     "expected_reciprocal_contact_point": expected_reciprocal_contact,
                 })
 
-    violations = len(contactpoint_invalid) + len(asymmetric)
+    violations = (
+        len(contactpoint_invalid)
+        + len(asymmetric)
+        + len(junction_reference_unbacked)
+    )
     return {
         "ok": violations == 0,
         "totals": {
@@ -173,12 +257,14 @@ def check_road_link_reciprocity(
             "road_road_links_checked": road_road_links_checked,
             "contactpoint_invalid_count": len(contactpoint_invalid),
             "asymmetric_count": len(asymmetric),
+            "junction_reference_unbacked_count": len(junction_reference_unbacked),
             "violations": violations,
             "junction_mediated_exempt": junction_mediated_exempt,
             "dangling_target_skipped": dangling_target_skipped,
         },
         "contactpoint_invalid_examples": contactpoint_invalid[:max_examples],
         "asymmetric_examples": asymmetric[:max_examples],
+        "junction_reference_unbacked_examples": junction_reference_unbacked[:max_examples],
     }
 
 

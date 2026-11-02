@@ -101,18 +101,76 @@ def test_asymmetric_wrong_contactpoint_is_a_violation():
     assert found[0]["expected_reciprocal_contact_point"] == "end"
 
 
+def _junction(junction_id, *connections):
+    """connections: iterable of (incomingRoad, connectingRoad) pairs."""
+    junction = ET.Element("junction", {"id": junction_id})
+    for idx, (incoming, connecting) in enumerate(connections):
+        ET.SubElement(
+            junction,
+            "connection",
+            {
+                "id": str(idx),
+                "incomingRoad": incoming,
+                "connectingRoad": connecting,
+            },
+        )
+    return junction
+
+
 def test_junction_mediated_pair_is_exempt():
     # A's successor points at B@start, but B's own predecessor (B's start
     # boundary) actually routes through a junction, not directly back to
-    # A -- this is a legitimate junction-mediated connection.
+    # A -- legitimate IFF junction J1 actually has a <connection> linking
+    # A and B (ASAM: incoming roads point to the junction; connecting
+    # roads' predecessor/successor name the incoming road).
     root = ET.Element("OpenDRIVE")
     root.append(_road("A", successor=("road", "B", "start")))
     root.append(_road("B", predecessor=("junction", "J1", None)))
+    root.append(_junction("J1", ("A", "B")))
 
     report = check_road_link_reciprocity(root)
     assert report["ok"] is True, report
     assert report["totals"]["violations"] == 0, report
     assert report["totals"]["junction_mediated_exempt"] == 1, report
+    assert report["totals"]["junction_reference_unbacked_count"] == 0, report
+
+
+def test_junction_reference_without_backing_connection_is_a_violation():
+    # Repro from the L2 review: junction J1 EXISTS but has no <connection>
+    # that actually links A and B -- the old code exempted this pair just
+    # because the reciprocal elementType wasn't "road". That is now a
+    # distinct `junction_reference_unbacked` violation category.
+    root = ET.Element("OpenDRIVE")
+    root.append(_road("A", successor=("road", "B", "start")))
+    root.append(_road("B", predecessor=("junction", "J1", None)))
+    # J1 exists, but its only connection is unrelated to the A/B pair.
+    root.append(_junction("J1", ("Q", "R")))
+
+    report = check_road_link_reciprocity(root)
+    assert report["ok"] is False, report
+    assert report["totals"]["junction_mediated_exempt"] == 0, report
+    assert report["totals"]["junction_reference_unbacked_count"] == 1, report
+    assert report["totals"]["violations"] >= 1, report
+    found = [
+        ex for ex in report["junction_reference_unbacked_examples"]
+        if ex["road_id"] == "A"
+    ]
+    assert found, report
+    assert found[0]["junction_id"] == "J1"
+    assert found[0]["target_id"] == "B"
+
+
+def test_junction_reference_to_nonexistent_junction_is_a_violation():
+    # The reciprocal link names a junction id that has no <junction>
+    # element at all in the document -- clearly unbacked.
+    root = ET.Element("OpenDRIVE")
+    root.append(_road("A", successor=("road", "B", "start")))
+    root.append(_road("B", predecessor=("junction", "GHOST_J", None)))
+
+    report = check_road_link_reciprocity(root)
+    assert report["ok"] is False, report
+    assert report["totals"]["junction_mediated_exempt"] == 0, report
+    assert report["totals"]["junction_reference_unbacked_count"] == 1, report
 
 
 def test_junction_type_link_without_contactpoint_stays_fine():
