@@ -380,3 +380,87 @@ def test_crop_rejects_invalid_selection_mode():
     auto_root, manual_root = _e2e_fixture()
     with pytest.raises(ValueError):
         crop_auto_to_manual_footprint(auto_root, manual_root, selection="bogus")
+
+
+# ------------------------------------------------------------------ CLI: out-dir safety refusals
+def test_cli_refuses_out_dir_inside_campaigns(tmp_path):
+    from tools.rq3_crop_auto_to_manual_footprint import _assert_safe_out_dir, OutDirUnsafeError
+
+    repo_root = tmp_path / "repo"
+    (repo_root / "campaigns" / "sub").mkdir(parents=True)
+    with pytest.raises(OutDirUnsafeError):
+        _assert_safe_out_dir(repo_root / "campaigns" / "sub", repo_root, overwrite_scratch=False)
+
+
+def test_cli_refuses_out_dir_colliding_with_registry_pinned_path(tmp_path, monkeypatch):
+    from tools.rq3_crop_auto_to_manual_footprint import _assert_safe_out_dir, OutDirUnsafeError
+    import tools.rq3_crop_auto_to_manual_footprint as cli_mod
+
+    repo_root = tmp_path / "repo"
+    pinned_dir = repo_root / "campaigns" / "x" / "candidate"
+    pinned_dir.mkdir(parents=True)
+    fake_registry = {"auto_map_of_record": {"path": "campaigns/x/candidate/map.xodr"}}
+    monkeypatch.setattr(cli_mod, "PINNED_MAP_REGISTRY", fake_registry)
+    scratch = tmp_path / "scratch"
+    scratch.mkdir()
+    with pytest.raises(OutDirUnsafeError):
+        _assert_safe_out_dir(pinned_dir, repo_root, overwrite_scratch=False)
+
+
+def test_cli_refuses_nonempty_out_dir_without_overwrite_flag(tmp_path):
+    from tools.rq3_crop_auto_to_manual_footprint import _assert_safe_out_dir, OutDirUnsafeError
+
+    repo_root = tmp_path / "repo"
+    repo_root.mkdir()
+    out_dir = tmp_path / "scratch_out"
+    out_dir.mkdir()
+    (out_dir / "leftover.txt").write_text("x", encoding="utf-8")
+    with pytest.raises(OutDirUnsafeError):
+        _assert_safe_out_dir(out_dir, repo_root, overwrite_scratch=False)
+    # Explicit override permits it.
+    _assert_safe_out_dir(out_dir, repo_root, overwrite_scratch=True)
+
+
+def test_cli_allows_empty_or_fresh_scratch_out_dir(tmp_path):
+    from tools.rq3_crop_auto_to_manual_footprint import _assert_safe_out_dir
+
+    repo_root = tmp_path / "repo"
+    repo_root.mkdir()
+    out_dir = tmp_path / "scratch_fresh"
+    # Does not exist yet -- must be allowed without --overwrite-scratch.
+    _assert_safe_out_dir(out_dir, repo_root, overwrite_scratch=False)
+
+
+# ------------------------------------------------------------------ registry: input hash mismatch -> fail closed
+def test_registry_verify_pinned_map_fails_closed_on_content_drift(tmp_path):
+    from ultimate_pipeline.carla_tools.map_registry import verify_pinned_map, MapRegistryDriftError
+
+    bad_file = tmp_path / "map.xodr"
+    bad_file.write_bytes(b"not the pinned content")
+    fake_registry = {
+        "auto_map_of_record": {
+            "path": "map.xodr",
+            "sha256": "0" * 64,  # deliberately wrong vs. the real file's content
+            "bytes": bad_file.stat().st_size,
+            "role": "auto",
+            "frame": "test",
+        }
+    }
+    with pytest.raises(MapRegistryDriftError):
+        verify_pinned_map("auto_map_of_record", base_dir=tmp_path, registry=fake_registry)
+
+
+def test_registry_verify_pinned_map_fails_closed_on_missing_file(tmp_path):
+    from ultimate_pipeline.carla_tools.map_registry import verify_pinned_map, MapRegistryDriftError
+
+    fake_registry = {
+        "manual_grid0828": {
+            "path": "does_not_exist.xodr",
+            "sha256": "1" * 64,
+            "bytes": 123,
+            "role": "manual",
+            "frame": "test",
+        }
+    }
+    with pytest.raises(MapRegistryDriftError):
+        verify_pinned_map("manual_grid0828", base_dir=tmp_path, registry=fake_registry)
