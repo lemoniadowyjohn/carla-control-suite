@@ -314,6 +314,53 @@ def test_stage8_invalid_link_51702_lane_2_to_1_no_target():
     assert report["lanes_without_topology"] >= 1
 
 
+# --- L2 review follow-up (2026-11-02): ROAD-type link contactPoint must --
+# --- NOT be defaulted; junction-type links are unaffected. ---------------
+
+def test_road_link_missing_contactpoint_not_inferred_and_reported():
+    """A ROAD-type successor link with NO contactPoint attribute must not
+    be used to infer a lane successor (previously silently defaulted to
+    "start"), and must be counted/reported as
+    road_link_contactpoint_missing rather than assumed."""
+    root = ET.Element("OpenDRIVE")
+    road_a = ET.Element("road", {"id": "A", "junction": "-1", "length": "10.0"})
+    link = ET.SubElement(road_a, "link")
+    # Deliberately NO contactPoint attribute on this road-type link.
+    ET.SubElement(link, "successor", {"elementType": "road", "elementId": "B"})
+    lanes = ET.SubElement(road_a, "lanes")
+    lanes.append(_section([-1, -2]))
+    root.append(road_a)
+    root.append(_road("B", [-1, -2]))
+
+    report = infer_lane_successors_from_topology(root)
+    lanes_a = _lanes_by_id(root, "A")
+    assert _successor_of(lanes_a[-1]) is None
+    assert _successor_of(lanes_a[-2]) is None
+    assert report["inferred_count"] == 0
+    assert report.get("road_link_contactpoint_missing") == 2, report
+
+
+def test_junction_link_without_contactpoint_still_resolves():
+    """A road-level <successor elementType="junction"> with no
+    contactPoint attribute on itself is legitimate (the ASAM contactPoint
+    that matters for through-junction routing lives on the <connection>,
+    not on the road-level link) and must still resolve via strategy 3."""
+    root = ET.Element("OpenDRIVE")
+    road_r1 = ET.Element("road", {"id": "R1", "junction": "-1", "length": "10.0"})
+    link = ET.SubElement(road_r1, "link")
+    # No contactPoint attribute on the road-level successor element.
+    ET.SubElement(link, "successor", {"elementType": "junction", "elementId": "10"})
+    lanes = ET.SubElement(road_r1, "lanes")
+    lanes.append(_section([1]))
+    root.append(road_r1)
+    root.append(_road("C1", [-2], junction="10"))
+    root.append(_junction("10", [("R1", "C1", "start", [(1, -2)])]))
+
+    report = infer_lane_successors_from_topology(root)
+    assert _successor_of(_lanes_by_id(root, "R1")[1]) == "-2"
+    assert report["through_junction_count"] == 1
+
+
 def test_stage8_invalid_link_51702_lane_1_to_1_no_target():
     """Road 51702 lane 1 -> 1: target lane 1 does not exist on successor road."""
     root = ET.Element("OpenDRIVE")

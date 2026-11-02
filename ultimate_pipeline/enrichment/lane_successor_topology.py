@@ -24,10 +24,19 @@ import xml.etree.ElementTree as ET
 from typing import Dict, List, Optional, Tuple, Set
 
 
-def _get_road_successor(road: ET.Element) -> Optional[Tuple[str, str, str]]:
+def _get_road_successor(road: ET.Element) -> Optional[Tuple[str, str, Optional[str]]]:
     """
     Get road-level successor from explicit <link> element.
-    Returns: (elementType, elementId, contactPoint) or None
+    Returns: (elementType, elementId, contactPoint) or None.
+
+    L2 review fix: contactPoint is NOT defaulted. A ROAD-type link
+    (elementType="road") with no contactPoint attribute means the
+    topology does not unambiguously name a boundary section; the caller
+    must refuse to infer a lane successor through it (and report it as
+    road_link_contactpoint_missing), never silently assume "start".
+    Junction-type links legitimately carry no contactPoint here (routing
+    is resolved via the connection's own contactPoint/laneLink in
+    resolve_through_junction, which does not read this field).
     """
     link = road.find("link")
     if link is None:
@@ -38,12 +47,15 @@ def _get_road_successor(road: ET.Element) -> Optional[Tuple[str, str, str]]:
     return (
         succ.get("elementType"),
         succ.get("elementId"),
-        succ.get("contactPoint", "start"),
+        succ.get("contactPoint"),
     )
 
 
-def _get_road_predecessor(road: ET.Element) -> Optional[Tuple[str, str, str]]:
-    """Get road-level predecessor from explicit <link> element."""
+def _get_road_predecessor(road: ET.Element) -> Optional[Tuple[str, str, Optional[str]]]:
+    """Get road-level predecessor from explicit <link> element.
+
+    L2 review fix: contactPoint is NOT defaulted (see _get_road_successor).
+    """
     link = road.find("link")
     if link is None:
         return None
@@ -53,7 +65,7 @@ def _get_road_predecessor(road: ET.Element) -> Optional[Tuple[str, str, str]]:
     return (
         pred.get("elementType"),
         pred.get("elementId"),
-        pred.get("contactPoint", "end"),
+        pred.get("contactPoint"),
     )
 
 
@@ -216,6 +228,9 @@ def infer_lane_successors_from_topology(root: ET.Element) -> Dict:
                                             # and has been removed; see HH1)
             "roads_processed": int,
             "lanes_without_topology": int,
+            "road_link_contactpoint_missing": int,  # ROAD-type links with no
+                                            # (or invalid) contactPoint --
+                                            # never inferred through, L2 fix
         }
     """
     roads = {r.get("id"): r for r in root.findall("road") if r.get("id")}
@@ -224,6 +239,7 @@ def infer_lane_successors_from_topology(root: ET.Element) -> Dict:
     inferred_count = 0
     through_junction_count = 0
     lanes_without_topology = 0
+    road_link_contactpoint_missing = 0
 
     for road_id, road in roads.items():
         road_succ = _get_road_successor(road)
@@ -285,17 +301,24 @@ def infer_lane_successors_from_topology(root: ET.Element) -> Dict:
 
                     # Strategy 1: Road-level successor with matching lane ID at boundary
                     if road_succ and road_succ[0] == "road":
-                        target_road_id = road_succ[1]
                         target_contact = road_succ[2]
-                        target_road = roads.get(target_road_id)
+                        if target_contact not in ("start", "end"):
+                            # L2 review fix: a ROAD-type link's contactPoint
+                            # is required to name an unambiguous boundary;
+                            # missing/invalid contactPoint must be reported,
+                            # never assumed as "start".
+                            road_link_contactpoint_missing += 1
+                        else:
+                            target_road_id = road_succ[1]
+                            target_road = roads.get(target_road_id)
 
-                        if target_road is not None:
-                            target_section = _get_boundary_lane_section(target_road, target_contact)
-                            if target_section is not None:
-                                target_driving_ids = _get_driving_lane_ids(target_section)
-                                if lane_id in target_driving_ids:
-                                    successor_lane_id = str(lane_id)
-                                    inferred_count += 1
+                            if target_road is not None:
+                                target_section = _get_boundary_lane_section(target_road, target_contact)
+                                if target_section is not None:
+                                    target_driving_ids = _get_driving_lane_ids(target_section)
+                                    if lane_id in target_driving_ids:
+                                        successor_lane_id = str(lane_id)
+                                        inferred_count += 1
 
                     # Strategy 3: road successor is a junction -- resolve the
                     # unique through-junction target. Ambiguous or unproven
@@ -327,6 +350,7 @@ def infer_lane_successors_from_topology(root: ET.Element) -> Dict:
         "junction_mapped_count": 0,
         "roads_processed": len(roads),
         "lanes_without_topology": lanes_without_topology,
+        "road_link_contactpoint_missing": road_link_contactpoint_missing,
     }
 
 

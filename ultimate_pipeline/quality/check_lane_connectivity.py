@@ -411,8 +411,19 @@ def autofix_missing_lane_successors(
         # Get road-level successor link
         road_link = road.find("link")
         road_successor = road_link.find("successor") if road_link is not None else None
+        successor_element_type = road_successor.get("elementType") if road_successor is not None else None
         successor_road_id = road_successor.get("elementId") if road_successor is not None else None
-        successor_contact = road_successor.get("contactPoint", "start") if road_successor is not None else None
+        # L2 review fix: contactPoint is NOT defaulted for a ROAD-type
+        # successor link -- missing/invalid contactPoint means the
+        # topology doesn't unambiguously name a boundary section; report
+        # it, don't assume "start". Junction-type successor links are
+        # unaffected (through-junction routing is resolved via the
+        # connection's own contactPoint/laneLink elsewhere, not this
+        # field).
+        successor_contact = road_successor.get("contactPoint") if road_successor is not None else None
+        successor_contactpoint_missing = (
+            successor_element_type == "road" and successor_contact not in ("start", "end")
+        )
 
         # Iterate over all laneSections
         lane_sections = road.findall("./lanes/laneSection")
@@ -440,7 +451,11 @@ def autofix_missing_lane_successors(
                 can_fix = False
                 fix_reason = ""
 
-                if is_last_section and successor_road_id is not None:
+                if is_last_section and successor_road_id is not None and successor_contactpoint_missing:
+                    # ROAD-type successor link with missing/invalid
+                    # contactPoint: refuse and report, never assume.
+                    fix_reason = "road_link_contactpoint_missing"
+                elif is_last_section and successor_road_id is not None:
                     # Last laneSection and road has successor -> create lane successor
                     successor_elem = ET.SubElement(link, "successor")
                     successor_elem.set("id", str(lane_id))  # Same lane id on successor road

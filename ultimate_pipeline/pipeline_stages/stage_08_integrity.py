@@ -518,11 +518,17 @@ def _step8_markings_and_integrity(self, lanes_out: str, final_out: str) -> str:
 
     # ---------------------------------------------------------
     # Lane-topology normalization moved to Stage 7 (source stage):
-    # id=0 driving-lane removal, missing-<link> creation, intra-road
-    # laneSection successor repair, and LaneLinkBuilder regeneration all run
-    # in Stage 7 now. Stage 8 is VALIDATION_ONLY for lane topology --
-    # it must never add/change/delete lane predecessor/successor links.
+    # id=0 driving-lane removal, missing-<link> creation, and intra-road
+    # laneSection successor repair all run in Stage 7 now. Stage 8 is
+    # VALIDATION_ONLY for lane topology -- it must never add/change/delete
+    # lane predecessor/successor links.
     # (GAP-048 closure: Stage-8 lane-topology mutation removed.)
+    # L2 review fix (2026-11-02): the claim that "LaneLinkBuilder
+    # regeneration" also runs in Stage 7 was stale/false -- grep confirms
+    # LaneLinkBuilder is never called in stage_07_lanes.py or anywhere else
+    # in the live pipeline; sanitize_junction_lane_links() immediately below
+    # (read-only sanity check, no mutation) is LaneLinkBuilder's only call
+    # site in the whole pipeline.
     # ---------------------------------------------------------
     # Junction laneLink sanity below is read-only validation (no mutation).
     junction_lanelink_sanity = LaneLinkBuilder.sanitize_junction_lane_links(
@@ -589,6 +595,46 @@ def _step8_markings_and_integrity(self, lanes_out: str, final_out: str) -> str:
             )
     except Exception as e:
         print(f"⚠️ Ordinary road lane-link advisory skipped: {e}")
+
+    # L2 review: road->road <link> contactPoint presence + reciprocity
+    # (validation-only, no mutation; see
+    # ultimate_pipeline/quality/check_road_link_reciprocity.py). Measured
+    # baseline on the real map (reports/rq1_trial_runs/run_01/
+    # 20261007_214826_524342/07_lanes_...xodr, sha256
+    # 787870babc93644a8465cf32e29507fd5686b7650dd6a43ed0fd200fe05b6ba3,
+    # read-only, unchanged by the measurement) is ZERO violations (45176
+    # road-road links checked, all legitimately junction-mediated), so
+    # THESIS_STRICT is safe to enforce here without blocking any existing
+    # run on a pre-existing condition.
+    try:
+        from ultimate_pipeline.quality.check_road_link_reciprocity import (
+            check_road_link_reciprocity,
+        )
+
+        road_link_reciprocity_report = check_road_link_reciprocity(final_out)
+        road_link_reciprocity_path = os.path.join(
+            self.out_dir, "road_link_reciprocity_report.json"
+        )
+        with open(road_link_reciprocity_path, "w", encoding="utf-8") as handle:
+            json.dump(road_link_reciprocity_report, handle, indent=2, sort_keys=True)
+        self.vreport.add_dict(
+            "road_link_reciprocity", road_link_reciprocity_report
+        )
+        reciprocity_violations = road_link_reciprocity_report["totals"]["violations"]
+        print(
+            "[STEP 8] road_link_reciprocity: "
+            f"violations={reciprocity_violations} -> {road_link_reciprocity_path}"
+        )
+        if reciprocity_violations > 0 and bool(getattr(s, "THESIS_STRICT", True)):
+            raise RuntimeError(
+                "road_link_reciprocity: "
+                f"{reciprocity_violations} contactPoint/reciprocity violation(s) "
+                f"found (THESIS_STRICT=True); report -> {road_link_reciprocity_path}"
+            )
+    except RuntimeError:
+        raise
+    except Exception as e:
+        print(f"⚠️ Road-link reciprocity check skipped: {e}")
 
     # NOTE: no AUTHORITATIVE MAP SWITCH here anymore: with lane-topology
     # repair moved to Stage 7 there is no _laneSectionFixed variant to

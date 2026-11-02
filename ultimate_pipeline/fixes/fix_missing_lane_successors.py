@@ -12,10 +12,15 @@ from typing import Dict, List, Tuple, Optional
 from ultimate_pipeline.quality.check_lane_section_successors import _choose_best_target
 
 
-def _get_road_successor(road: ET.Element) -> Optional[Tuple[str, str, str]]:
+def _get_road_successor(road: ET.Element) -> Optional[Tuple[str, str, Optional[str]]]:
     """
     Get road-level successor.
-    Returns: (elementType, elementId, contactPoint) or None
+    Returns: (elementType, elementId, contactPoint) or None.
+
+    L2 review fix: contactPoint is NOT defaulted. A ROAD-type link with no
+    (or invalid) contactPoint does not unambiguously name a boundary
+    section; _resolve_ordinary_road_target() must report this rather than
+    assume "start".
     """
     link = road.find("link")
     if link is None:
@@ -26,7 +31,7 @@ def _get_road_successor(road: ET.Element) -> Optional[Tuple[str, str, str]]:
     return (
         succ.get("elementType"),
         succ.get("elementId"),
-        succ.get("contactPoint", "start"),
+        succ.get("contactPoint"),
     )
 
 
@@ -103,33 +108,41 @@ def _eligible_target_lane_ids(section: ET.Element) -> List[int]:
 
 def _resolve_ordinary_road_target(
     roads: Dict[str, ET.Element],
-    road_successor: Optional[Tuple[str, str, str]],
+    road_successor: Optional[Tuple[str, str, Optional[str]]],
     lane_id: str,
-) -> tuple[Optional[str], bool]:
+) -> tuple[Optional[str], bool, bool]:
     """Resolve a valid successor lane ID for an ordinary road boundary.
 
     The former implementation wrote ``lane_id`` unconditionally.  This
     helper first verifies that exact ID exists, then uses the established
     deterministic target selector, and otherwise refuses to write a
     dangling lane reference.
+
+    Returns (successor_lane_id, is_fallback, contactpoint_missing).
+
+    L2 review fix: a ROAD-type successor link with no (or invalid)
+    contactPoint must not be assumed to mean "start" -- the caller must
+    report contactpoint_missing=True instead of guessing a boundary.
     """
     if not road_successor or road_successor[0] != "road":
-        return None, False
+        return None, False, False
+    if road_successor[2] not in ("start", "end"):
+        return None, False, True
     target_road = roads.get(road_successor[1])
     if target_road is None:
-        return None, False
+        return None, False, False
     target_section = _boundary_lane_section(target_road, road_successor[2])
     if target_section is None:
-        return None, False
+        return None, False, False
     target_ids = _eligible_target_lane_ids(target_section)
     try:
         source_id = int(lane_id)
     except (TypeError, ValueError):
-        return None, False
+        return None, False, False
     if source_id in target_ids:
-        return str(source_id), False
+        return str(source_id), False, False
     fallback = _choose_best_target(source_id, target_ids)
-    return (str(fallback), True) if fallback is not None else (None, False)
+    return (str(fallback), True, False) if fallback is not None else (None, False, False)
 
 
 def fix_missing_lane_successors(
@@ -158,6 +171,7 @@ def fix_missing_lane_successors(
     fixed_count = 0
     fallback_applied = 0
     dead_ends_allowed = 0
+    road_link_contactpoint_missing = 0
     still_broken = []
 
     for road in root.findall("road"):
@@ -199,15 +213,18 @@ def fix_missing_lane_successors(
                     successor_lane_id = None
                     is_dead_end = False
                     is_fallback = False
+                    is_contactpoint_missing = False
 
                     # Strategy 1: Use road-level successor only after the
                     # target boundary lane is proven to exist.
                     if road_succ and road_succ[0] == "road":
-                        successor_lane_id, is_fallback = _resolve_ordinary_road_target(
-                            roads, road_succ, lane_id
+                        successor_lane_id, is_fallback, is_contactpoint_missing = (
+                            _resolve_ordinary_road_target(roads, road_succ, lane_id)
                         )
                         if is_fallback:
                             fallback_applied += 1
+                        if is_contactpoint_missing:
+                            road_link_contactpoint_missing += 1
 
                     # Strategy 2: Junction connection mapping
                     elif is_junction_road and road_id in junction_index:
@@ -217,17 +234,21 @@ def fix_missing_lane_successors(
                                 if ll["to"] == lane_id:
                                     # This lane receives traffic; need to check road successor
                                     if road_succ and road_succ[0] == "road":
-                                        successor_lane_id, is_fallback = _resolve_ordinary_road_target(
-                                            roads, road_succ, lane_id
+                                        successor_lane_id, is_fallback, is_contactpoint_missing = (
+                                            _resolve_ordinary_road_target(
+                                                roads, road_succ, lane_id
+                                            )
                                         )
                                         if is_fallback:
                                             fallback_applied += 1
+                                        if is_contactpoint_missing:
+                                            road_link_contactpoint_missing += 1
                                     break
                             if successor_lane_id:
                                 break
 
                     # Strategy 3: Dead-end detection
-                    if not successor_lane_id and allow_dead_ends:
+                    if not successor_lane_id and allow_dead_ends and not is_contactpoint_missing:
                         if not road_succ:
                             # Road has no successor -> legitimate dead-end
                             is_dead_end = True
@@ -236,12 +257,14 @@ def fix_missing_lane_successors(
 
                     # Strategy 4: Ordinary-road fallback.  Never write an
                     # assumed ID without a real target boundary lane.
-                    if not successor_lane_id and not is_dead_end:
-                        successor_lane_id, is_fallback = _resolve_ordinary_road_target(
-                            roads, road_succ, lane_id
+                    if not successor_lane_id and not is_dead_end and not is_contactpoint_missing:
+                        successor_lane_id, is_fallback, is_contactpoint_missing = (
+                            _resolve_ordinary_road_target(roads, road_succ, lane_id)
                         )
                         if is_fallback:
                             fallback_applied += 1
+                        if is_contactpoint_missing:
+                            road_link_contactpoint_missing += 1
 
                     # Apply fix if we determined a successor
                     if successor_lane_id:
@@ -264,7 +287,11 @@ def fix_missing_lane_successors(
                             "road_id": road_id,
                             "lane_id": lane_id,
                             "lane_type": lane_type,
-                            "reason": "cannot_infer_successor",
+                            "reason": (
+                                "road_link_contactpoint_missing"
+                                if is_contactpoint_missing
+                                else "cannot_infer_successor"
+                            ),
                             "is_junction_road": is_junction_road,
                             "has_road_successor": road_succ is not None,
                         })
@@ -277,6 +304,7 @@ def fix_missing_lane_successors(
         "still_broken": still_broken,
         "fallback_applied": fallback_applied,
         "dead_ends_allowed": dead_ends_allowed,
+        "road_link_contactpoint_missing": road_link_contactpoint_missing,
         "input_xodr": xodr_path,
         "output_xodr": output_path,
     }
