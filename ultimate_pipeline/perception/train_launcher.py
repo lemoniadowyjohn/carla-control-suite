@@ -480,9 +480,6 @@ def _main_impl() -> int:
     ddp_enabled, rank, world_size = _init_ddp(args.ddp)
     is_main = (rank == 0)
 
-    ddp_enabled, rank, world_size = _init_ddp(args.ddp)
-    is_main = (rank == 0)
-
     # CD-4: remove any pre-existing SUCCESS.txt so a later "success" cannot be
     # interpreted as evidence that this run completed without failures.
     if is_main and preinit_rank is None:
