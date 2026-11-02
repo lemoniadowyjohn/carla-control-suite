@@ -46,6 +46,7 @@ from typing import Any, Dict, Iterator, List, Mapping, Optional
 
 import numpy as np
 
+from ultimate_pipeline.perception.carla_classes import assert_label_ids_in_range
 from ultimate_pipeline.perception.semantic_classes import validate_num_classes
 
 
@@ -148,6 +149,13 @@ def write_png_raw_ids(image: Any, out_path: Path) -> None:
             from PIL import Image as PILImage
 
             PILImage.fromarray(class_id.astype(np.uint8), mode="L").save(tmp.as_posix())
+
+
+# Private alias: ``save_capture_frame`` below calls this name (module-global
+# lookup at call time), so tests can monkeypatch ``capture_writer._write_png_
+# raw_ids`` to simulate a mid-write crash without touching the public
+# ``write_png_raw_ids`` entry point that other modules import by name.
+_write_png_raw_ids = write_png_raw_ids
 
 
 def _write_viz_png(image: Any, out_path: Path) -> None:
