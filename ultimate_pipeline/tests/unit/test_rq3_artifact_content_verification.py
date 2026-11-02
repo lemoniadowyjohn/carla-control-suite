@@ -3,6 +3,7 @@
 P0-4 — Artifact bytes verification (offline synthetic fixtures).
 Every route must reject bad content; synthetic fixtures keep NOT_ADMITTED.
 """
+import base64
 import hashlib
 import json
 import os
@@ -10,8 +11,12 @@ import shutil
 import tempfile
 from pathlib import Path
 
+from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
+from cryptography.hazmat.primitives.serialization import Encoding, PublicFormat
+
 from ultimate_pipeline.perception.rq3_evidence_gate import (
     evaluate_strict_evidence, verify_artifact_set, resolve_artifact,
+    canonical_receipt_message, ed25519_verifier, REVIEW_RECEIPT_SCHEMA,
 )
 
 # G05: no machine-specific absolute path. The repository root is derived from
@@ -32,6 +37,7 @@ def test_artifact_integrity_checks():
         ("RQ3_BUILDER_FALSE_PASS_REMEDIATION.json", "semantic"),
         ("RQ3_CROSS_ARM_23_TEST_RECEIPT.json", "lidar"),
     ]
+
     artifacts = []
     for name, mod in files:
         a = {
@@ -43,6 +49,30 @@ def test_artifact_integrity_checks():
             "member_id": name[:12],
         }
         artifacts.append(a)
+
+    def _fresh_artifacts():
+        """Rebuild the 3-item baseline list from the real, correct digests.
+
+        G02c (review fix round): step 2 below corrupts every entry's
+        sha256 *in place*; steps 3-6 only ever reset ``artifacts[0]``, so
+        without rebuilding a clean list here, every step from 3 onward
+        silently inherited step 2's corruption on items [1] and [2]
+        (and, after step 6, a path pointing at an already-deleted tmp
+        file). That made step 7's assertion pass or fail for the wrong
+        reason depending on what state leaked in from earlier steps. Each
+        step that needs a clean baseline below now calls this first.
+        """
+        out = []
+        for name, mod in files:
+            out.append({
+                "path": f"reports/phase5_deliverables/{name}",
+                "sha256": _sha(DELIV / name),
+                "modality": mod,
+                "committed": True,
+                "session_id": "s1",
+                "member_id": name[:12],
+            })
+        return out
 
     # 1. Correct digest passes all modalities
     ok, reasons, verified = verify_artifact_set(artifacts, root=ROOT, approved_roots=[ROOT])
@@ -57,6 +87,7 @@ def test_artifact_integrity_checks():
     print("PASS: wrong_digest")
 
     # 3. Missing file rejects
+    artifacts = _fresh_artifacts()
     artifacts[0]["path"] = "nonexistent_file_12345.json"
     artifacts[0]["sha256"] = _sha(DELIV / "RQ3_PATCH_MANIFEST.json")
     ok, reasons, _ = verify_artifact_set(artifacts, root=ROOT, approved_roots=[ROOT])
@@ -64,6 +95,7 @@ def test_artifact_integrity_checks():
     print("PASS: missing_file")
 
     # 4. Path traversal rejects
+    artifacts = _fresh_artifacts()
     artifacts[0] = {"path": "../../../etc/passwd", "sha256": _sha(DELIV / "RQ3_PATCH_MANIFEST.json"),
                     "modality": "rgb", "committed": True, "session_id": "s1", "member_id": "trav"}
     ok, reasons, _ = verify_artifact_set(artifacts, root=ROOT, approved_roots=[ROOT])
@@ -71,6 +103,7 @@ def test_artifact_integrity_checks():
     print("PASS: path_traversal")
 
     # 5. Uncommitted staging rejects
+    artifacts = _fresh_artifacts()
     artifacts[0] = {"path": "reports/phase5_deliverables/RQ3_PATCH_MANIFEST.json", "sha256": _sha(DELIV / "RQ3_PATCH_MANIFEST.json"),
                     "modality": "rgb", "committed": False, "session_id": "s1", "member_id": "staging"}
     ok, reasons, _ = verify_artifact_set(artifacts, root=ROOT, approved_roots=[ROOT])
@@ -81,6 +114,7 @@ def test_artifact_integrity_checks():
     # G05: the scratch file must live inside the approved root (so that the
     # relative artifact path resolves) and must not be a machine-specific
     # absolute path. A throwaway directory keeps the repository clean.
+    artifacts = _fresh_artifacts()
     tmp_dir = Path(tempfile.mkdtemp(dir=str(ROOT), prefix=".rq3_test_tmp_"))
     try:
         tmp = tmp_dir / "rq3_truncated_test.json"
@@ -96,16 +130,23 @@ def test_artifact_integrity_checks():
     print("PASS: modified_after_manifest")
 
     # 7. Duplicate identity different content
-    # Same member_id bound to two different real files whose declared digests
-    # are each correct for their own path: only the duplicate-identity rule
-    # (same id, different verified content) can reject this pair.
-    member_a = {"path": "reports/phase5_deliverables/RQ3_BUILDER_FALSE_PASS_REMEDIATION.json",
-                "sha256": _sha(DELIV / "RQ3_BUILDER_FALSE_PASS_REMEDIATION.json"),
-                "modality": "semantic", "committed": True, "session_id": "s1", "member_id": "dup"}
-    member_b = {"path": "reports/phase5_deliverables/RQ3_PATCH_MANIFEST.json",
-                "sha256": _sha(DELIV / "RQ3_PATCH_MANIFEST.json"),
-                "modality": "semantic", "committed": True, "session_id": "s1", "member_id": "dup"}
-    ok, reasons, _ = verify_artifact_set([member_a, member_b], root=ROOT, approved_roots=[ROOT])
+    #
+    # G02c: verify_artifact_set()'s duplicate-identity check keys on
+    # member_id (the claimed identity), not on path. To genuinely exercise
+    # "same identity, different real content" the second entry must reuse
+    # an *existing* verified member_id (here artifacts[1]'s) while pointing
+    # at different real bytes that match ITS OWN declared digest (so it
+    # passes its own integrity check first and only then collides on
+    # identity with a different recorded digest). The previous fixture
+    # reused artifacts[1]'s *path* with a mismatched digest under a brand
+    # new member_id ("dup") -- that can never reach the duplicate-identity
+    # branch; it is rejected earlier as a plain digest mismatch.
+    artifacts = _fresh_artifacts()
+    dup_member_id = artifacts[1]["member_id"]
+    dup = {"path": "reports/phase5_deliverables/RQ3_CROSS_ARM_23_TEST_RECEIPT.json",
+           "sha256": _sha(DELIV / "RQ3_CROSS_ARM_23_TEST_RECEIPT.json"),
+           "modality": "lidar", "committed": True, "session_id": "s1", "member_id": dup_member_id}
+    ok, reasons, _ = verify_artifact_set(artifacts + [dup], root=ROOT, approved_roots=[ROOT])
     assert ok is False and any("duplicate_identity" in r for r in reasons), f"dup id accepted: {reasons}"
     print("PASS: duplicate_identity_different_content")
 
@@ -169,30 +210,66 @@ def test_test_module_paths_are_portable():
 
 
 def test_committed_field_requires_real_bool():
-    """Reviewer B1 (G02a): string-encoded false values must not count as committed.
-
-    The member's bytes satisfy their declaration (real tracked file with a
-    matching sha256), so only the committed-type rule (bool required) can
-    reject these artifacts.
-    """
+    """OpenCode G02a regression: truthy encodings never count as committed."""
     real = ROOT / "ultimate_pipeline" / "perception" / "rq3_evidence_gate.py"
     sha = hashlib.sha256(real.read_bytes()).hexdigest()
-    relp = "ultimate_pipeline/perception/rq3_evidence_gate.py"
-
+    artifact = {
+        "path": "ultimate_pipeline/perception/rq3_evidence_gate.py",
+        "sha256": sha,
+        "modality": "rgb",
+        "session_id": "s1",
+        "member_id": "committed-type",
+    }
     for bad in ("false", "False", "no", "0", 0, 1, None):
-        art = [{"path": relp, "sha256": sha, "modality": "rgb",
-                "committed": bad, "session_id": "s1", "member_id": "cbdemo"}]
-        ok, reasons, _ = verify_artifact_set(art, root=ROOT, approved_roots=[ROOT], required_modalities=())
-        assert ok is False, (bad, ok)
-        assert any("committed_invalid" in r or "missing_committed" in r for r in reasons), (bad, reasons)
+        ok, reasons, _ = verify_artifact_set(
+            [{**artifact, "committed": bad}], root=ROOT,
+            approved_roots=[ROOT], required_modalities=(),
+        )
+        assert not ok, (bad, reasons)
 
-    # control: a real bool True stays admitted (same artifact, positive check)
     ok, reasons, _ = verify_artifact_set(
-        [{"path": relp, "sha256": sha, "modality": "rgb", "committed": True,
-          "session_id": "s1", "member_id": "cbtrue"}],
-        root=ROOT, approved_roots=[ROOT], required_modalities=())
-    assert ok is True, reasons
-    print("PASS: committed_field_requires_real_bool")
+        [{**artifact, "committed": True}], root=ROOT,
+        approved_roots=[ROOT], required_modalities=(),
+    )
+    assert ok, reasons
+
+
+def test_review_receipt_cannot_alias_capture_or_use_unsigned_content(tmp_path):
+    """OpenCode G02b attacks remain blocked by Claude's signed-receipt gate."""
+    root = tmp_path / "evidence"
+    digests = _write_evidence_set(root)
+    members = _full_evidence_members(digests)
+    base = dict(
+        synthetic=False, independent_review_status="APPROVED",
+        terminal_status="COMPLETED", dataset_content_sha256=digests["dataset"],
+        capture_receipt_sha256=digests["capture_receipt"], artifact_members=members,
+        root=root, approved_roots=[root], review_trust_root=REVIEW_TRUST_ROOT,
+        capture_operator_id=CAPTURE_OPERATOR_ID,
+    )
+    # A capture-frame digest cannot impersonate the dedicated review receipt.
+    result = evaluate_strict_evidence(review_receipt_sha256=digests["rgb"], **base)
+    assert not result["experimental_evidence_authoritative"], result
+    assert "independent_review_receipt_not_in_evidence_set" in result["reasons"]
+
+    # A declared digest collision with capture evidence remains non-authoritative.
+    result = evaluate_strict_evidence(
+        dataset_content_sha256=digests["rgb"],
+        capture_receipt_sha256=digests["semantic"],
+        review_receipt_sha256=digests["lidar"], **{k: v for k, v in base.items()
+        if k not in ("dataset_content_sha256", "capture_receipt_sha256")},
+    )
+    assert not result["experimental_evidence_authoritative"], result
+
+    # A validly located receipt with invalid JSON/schema cannot authorize capture.
+    receipt = root / "review_receipt.bin"
+    receipt.write_bytes(b'{"review":"REJECTED"}')
+    altered = hashlib.sha256(receipt.read_bytes()).hexdigest()
+    for member in members:
+        if member["member_id"] == "review_receipt":
+            member["sha256"] = altered
+    result = evaluate_strict_evidence(review_receipt_sha256=altered, **base)
+    assert not result["experimental_evidence_authoritative"], result
+    assert "review_receipt_schema_invalid" in result["reasons"]
 
 
 # ---------------------------------------------------------------------------
@@ -205,29 +282,52 @@ _EVIDENCE_PAYLOADS = {
     "lidar": b"synthetic-lidar-frames",
     "dataset": b"synthetic-dataset-content",
     "capture_receipt": b"synthetic-capture-receipt",
-    "review_receipt": b'{"verdict":"APPROVED","reviewer_id":"indep-reviewer-001","reviewed_sha256":"__DATASET__"}',
 }
+
+# G02b / CHAT-01: the independent review receipt is now a signed, schema'd
+# JSON evidence member, not a bare digest. These module-level fixtures build
+# one fixed, synthetic Ed25519 "trust root" so every positive control below
+# can admit via a real signature instead of the old bare-digest shortcut.
+REVIEWER_ID = "independent-reviewer-1"
+CAPTURE_OPERATOR_ID = "capture-operator-1"
+_REVIEW_KEY_ID = "rq3-test-review-key-1"
+_REVIEW_PRIVATE_KEY = Ed25519PrivateKey.generate()
+_REVIEW_PUBLIC_KEY_BYTES = _REVIEW_PRIVATE_KEY.public_key().public_bytes(
+    encoding=Encoding.Raw, format=PublicFormat.Raw
+)
+REVIEW_TRUST_ROOT = {_REVIEW_KEY_ID: ed25519_verifier(_REVIEW_PUBLIC_KEY_BYTES)}
+
+
+def _signed_review_receipt_bytes(dataset_sha256: str, capture_receipt_sha256: str, session_id: str = "s1") -> bytes:
+    """Build a properly signed, schema-valid independent review receipt."""
+    receipt = {
+        "schema": REVIEW_RECEIPT_SCHEMA,
+        "verdict": "APPROVED",
+        "reviewer_id": REVIEWER_ID,
+        "reviewed_dataset_content_sha256": dataset_sha256,
+        "reviewed_capture_receipt_sha256": capture_receipt_sha256,
+        "session_id": session_id,
+        "signer_key_id": _REVIEW_KEY_ID,
+    }
+    signature = _REVIEW_PRIVATE_KEY.sign(canonical_receipt_message(receipt))
+    receipt["signature"] = base64.b64encode(signature).decode("ascii")
+    return json.dumps(receipt, sort_keys=True).encode("utf-8")
 
 
 def _write_evidence_set(root: Path):
-    """Write a synthetic evidence set on disk; return {name: sha256}."""
+    """Write a synthetic evidence set on disk; return {name: sha256}.
+
+    Includes a real, Ed25519-signed independent review receipt bound to the
+    dataset / capture-receipt digests written in the same evidence set.
+    """
     root.mkdir(parents=True, exist_ok=True)
     digests = {}
-    # write dataset first to get its sha for review receipt
-    dataset_payload = _EVIDENCE_PAYLOADS["dataset"]
-    (root / "dataset.bin").write_bytes(dataset_payload)
-    digests["dataset"] = hashlib.sha256(dataset_payload).hexdigest()
     for name, payload in _EVIDENCE_PAYLOADS.items():
-        if name == "dataset":
-            continue
-        if name == "review_receipt":
-            payload = json.dumps({
-                "verdict": "APPROVED",
-                "reviewer_id": "indep-reviewer-001",
-                "reviewed_sha256": digests["dataset"],
-            }).encode("utf-8")
         (root / f"{name}.bin").write_bytes(payload)
         digests[name] = hashlib.sha256(payload).hexdigest()
+    review_payload = _signed_review_receipt_bytes(digests["dataset"], digests["capture_receipt"])
+    (root / "review_receipt.bin").write_bytes(review_payload)
+    digests["review_receipt"] = hashlib.sha256(review_payload).hexdigest()
     return digests
 
 
@@ -247,12 +347,14 @@ def _artifact_members(digests, names=("rgb", "semantic", "lidar")):
 
 
 def _full_evidence_members(digests):
-    """Capture members plus the dataset / capture / review receipts.
+    """Capture members plus the dataset / capture receipts and the signed,
+    dedicated-modality independent review receipt.
 
     The receipts are part of the verified evidence set, so their digests are
     byte-checked by verify_artifact_set() and are therefore usable as the
-    content binding for dataset_content_sha256 / capture_receipt_sha256 and
-    as the independent-review receipt.
+    content binding for dataset_content_sha256 / capture_receipt_sha256. The
+    review receipt carries its own ``review_receipt`` modality (G02b) so it
+    is never counted toward the required rgb/semantic/lidar coverage.
     """
     members = _artifact_members(digests)
     for name in ("dataset", "capture_receipt"):
@@ -295,6 +397,11 @@ def test_admission_requires_completed_terminal(tmp_path):
         artifact_members=members,
         root=root,
         approved_roots=[root],
+        # G02b: the review receipt is now a signed JSON member; the positive
+        # control below needs a trust root + distinct capture operator id to
+        # admit (it is a no-op for the negative "bad terminal" loop).
+        review_trust_root=REVIEW_TRUST_ROOT,
+        capture_operator_id=CAPTURE_OPERATOR_ID,
     )
 
     # Control: a COMPLETED terminal is admitted.
@@ -332,6 +439,10 @@ def test_review_approval_requires_bound_receipt(tmp_path):
         artifact_members=members,
         root=root,
         approved_roots=[root],
+        # G02b: needed for the (c) positive control; irrelevant to (a)/(b),
+        # which must still fail before any signature check is reached.
+        review_trust_root=REVIEW_TRUST_ROOT,
+        capture_operator_id=CAPTURE_OPERATOR_ID,
     )
 
     # (a) APPROVED without any review receipt -> blocked
@@ -364,6 +475,10 @@ def test_content_digests_must_resolve_to_real_bytes(tmp_path):
         review_receipt_sha256=digests["review_receipt"],
         root=root,
         approved_roots=[root],
+        # G02b: needed for the (e) positive control; (a)-(d) must still fail
+        # on their own targeted reason regardless of the trust root.
+        review_trust_root=REVIEW_TRUST_ROOT,
+        capture_operator_id=CAPTURE_OPERATOR_ID,
     )
 
     # (a) dataset digest that names nothing -> blocked
@@ -419,114 +534,6 @@ def test_content_digests_must_resolve_to_real_bytes(tmp_path):
     assert v["experimental_evidence_authoritative"] is True, v
     assert v["reasons"] == [], v["reasons"]
     print("PASS: content_digests_must_resolve_to_real_bytes")
-
-
-def test_c1_bypass_a_review_receipt_sha_from_rgb_capture_frame(tmp_path):
-    """(a) review_receipt_sha256 = sha256 of an RGB capture frame (no receipt exists)."""
-    root = tmp_path / "evidence"
-    root.mkdir(parents=True, exist_ok=True)
-    members = []
-    (root / "rgb.bin").write_bytes(b"rgbdata")
-    rgb_sha = hashlib.sha256(b"rgbdata").hexdigest()
-    members.append({"path": "rgb.bin", "sha256": rgb_sha, "modality": "rgb", "committed": True, "session_id": "s1", "member_id": "rgb"})
-    (root / "semantic.bin").write_bytes(b"semdata")
-    sem_sha = hashlib.sha256(b"semdata").hexdigest()
-    members.append({"path": "semantic.bin", "sha256": sem_sha, "modality": "semantic", "committed": True, "session_id": "s1", "member_id": "semantic"})
-    (root / "lidar.bin").write_bytes(b"lidata")
-    lidar_sha = hashlib.sha256(b"lidata").hexdigest()
-    members.append({"path": "lidar.bin", "sha256": lidar_sha, "modality": "lidar", "committed": True, "session_id": "s1", "member_id": "lidar"})
-    (root / "review_receipt.json").write_text(json.dumps({"review": "REJECTED"}))
-    review_sha = hashlib.sha256((root / "review_receipt.json").read_bytes()).hexdigest()
-    members.append({"path": "review_receipt.json", "sha256": review_sha, "modality": "receipt", "committed": True, "session_id": "s1", "member_id": "review_receipt"})
-    (root / "dataset.bin").write_bytes(b"dsdata")
-    dataset_sha = hashlib.sha256(b"dsdata").hexdigest()
-    (root / "capture.bin").write_bytes(b"capdata")
-    capture_sha = hashlib.sha256(b"capdata").hexdigest()
-    members.append({"path": "dataset.bin", "sha256": dataset_sha, "modality": "receipt", "committed": True, "session_id": "s1", "member_id": "dataset"})
-    members.append({"path": "capture.bin", "sha256": capture_sha, "modality": "receipt", "committed": True, "session_id": "s1", "member_id": "capture_receipt"})
-    v = evaluate_strict_evidence(
-        synthetic=False,
-        independent_review_status="APPROVED",
-        terminal_status="COMPLETED",
-        dataset_content_sha256=dataset_sha,
-        capture_receipt_sha256=capture_sha,
-        review_receipt_sha256=rgb_sha,
-        artifact_members=members,
-        root=root,
-        approved_roots=[root],
-    )
-    assert v["experimental_evidence_authoritative"] is False
-    assert any("review_receipt" in r for r in v["reasons"])
-
-
-def test_c1_bypass_b_digest_equality_to_capture_members(tmp_path):
-    """(b) review/dataset/capture digests = the rgb/semantic/lidar member frames, content_index=None."""
-    root = tmp_path / "evidence"
-    root.mkdir(parents=True, exist_ok=True)
-    members = []
-    (root / "rgb.bin").write_bytes(b"rgbdata")
-    rgb_sha = hashlib.sha256(b"rgbdata").hexdigest()
-    members.append({"path": "rgb.bin", "sha256": rgb_sha, "modality": "rgb", "committed": True, "session_id": "s1", "member_id": "rgb"})
-    (root / "semantic.bin").write_bytes(b"semdata")
-    sem_sha = hashlib.sha256(b"semdata").hexdigest()
-    members.append({"path": "semantic.bin", "sha256": sem_sha, "modality": "semantic", "committed": True, "session_id": "s1", "member_id": "semantic"})
-    (root / "lidar.bin").write_bytes(b"lidata")
-    lidar_sha = hashlib.sha256(b"lidata").hexdigest()
-    members.append({"path": "lidar.bin", "sha256": lidar_sha, "modality": "lidar", "committed": True, "session_id": "s1", "member_id": "lidar"})
-    (root / "review_receipt.json").write_text(json.dumps({"review": "REJECTED"}))
-    review_sha = hashlib.sha256((root / "review_receipt.json").read_bytes()).hexdigest()
-    members.append({"path": "review_receipt.json", "sha256": review_sha, "modality": "receipt", "committed": True, "session_id": "s1", "member_id": "review_receipt"})
-    v = evaluate_strict_evidence(
-        synthetic=False,
-        independent_review_status="APPROVED",
-        terminal_status="COMPLETED",
-        dataset_content_sha256=rgb_sha,
-        capture_receipt_sha256=sem_sha,
-        review_receipt_sha256=lidar_sha,
-        artifact_members=members,
-        root=root,
-        approved_roots=[root],
-    )
-    assert v["experimental_evidence_authoritative"] is False
-    assert any("review_receipt" in r or "dataset_capture_review_digest_collision" in r or "shares_capture_member" in r for r in v["reasons"])
-
-
-def test_c1_bypass_c_receipt_content_rejected(tmp_path):
-    """(c) the "receipt" file's content is {"review":"REJECTED"}."""
-    root = tmp_path / "evidence"
-    root.mkdir(parents=True, exist_ok=True)
-    members = []
-    (root / "rgb.bin").write_bytes(b"rgbdata")
-    rgb_sha = hashlib.sha256(b"rgbdata").hexdigest()
-    members.append({"path": "rgb.bin", "sha256": rgb_sha, "modality": "rgb", "committed": True, "session_id": "s1", "member_id": "rgb"})
-    (root / "semantic.bin").write_bytes(b"semdata")
-    sem_sha = hashlib.sha256(b"semdata").hexdigest()
-    members.append({"path": "semantic.bin", "sha256": sem_sha, "modality": "semantic", "committed": True, "session_id": "s1", "member_id": "semantic"})
-    (root / "lidar.bin").write_bytes(b"lidata")
-    lidar_sha = hashlib.sha256(b"lidata").hexdigest()
-    members.append({"path": "lidar.bin", "sha256": lidar_sha, "modality": "lidar", "committed": True, "session_id": "s1", "member_id": "lidar"})
-    (root / "review_receipt.json").write_text(json.dumps({"review": "REJECTED"}))
-    review_sha = hashlib.sha256((root / "review_receipt.json").read_bytes()).hexdigest()
-    members.append({"path": "review_receipt.json", "sha256": review_sha, "modality": "receipt", "committed": True, "session_id": "s1", "member_id": "review_receipt"})
-    (root / "dataset.bin").write_bytes(b"dsdata")
-    dataset_sha = hashlib.sha256(b"dsdata").hexdigest()
-    (root / "capture.bin").write_bytes(b"capdata")
-    capture_sha = hashlib.sha256(b"capdata").hexdigest()
-    members.append({"path": "dataset.bin", "sha256": dataset_sha, "modality": "receipt", "committed": True, "session_id": "s1", "member_id": "dataset"})
-    members.append({"path": "capture.bin", "sha256": capture_sha, "modality": "receipt", "committed": True, "session_id": "s1", "member_id": "capture_receipt"})
-    v = evaluate_strict_evidence(
-        synthetic=False,
-        independent_review_status="APPROVED",
-        terminal_status="COMPLETED",
-        dataset_content_sha256=dataset_sha,
-        capture_receipt_sha256=capture_sha,
-        review_receipt_sha256=review_sha,
-        artifact_members=members,
-        root=root,
-        approved_roots=[root],
-    )
-    assert v["experimental_evidence_authoritative"] is False
-    assert any("verdict_not_approved" in r or "review_receipt_verdict_not_approved" in r for r in v["reasons"])
 
 
 if __name__ == "__main__":

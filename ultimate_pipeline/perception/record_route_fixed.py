@@ -3558,6 +3558,10 @@ def run_strict_rq3_capture(
     artifact_root=None,
     independent_review_status: str = "NOT_RUN",
     live_capture: bool = False,
+    review_receipt_sha256: str = "",
+    capture_operator_id=None,
+    review_trust_root=None,
+    revoked_key_ids=(),
 ) -> dict:
     """Strict capture adjudication using the tested RQ3 helper modules.
 
@@ -3698,10 +3702,14 @@ def run_strict_rq3_capture(
         terminal_status=terminal_status,
         dataset_content_sha256=dataset_content_sha256,
         capture_receipt_sha256=capture_completion_receipt_sha256,
+        review_receipt_sha256=review_receipt_sha256,
         artifact_members=list(artifact_members or []),
         root=Path(artifact_root) if artifact_root else Path(out_dir),
         approved_roots=None,
         session_id=session_id,
+        capture_operator_id=capture_operator_id,
+        review_trust_root=review_trust_root,
+        revoked_key_ids=revoked_key_ids,
     )
     invalid_reasons.extend(
         [f"evidence_gate:{r}" for r in evidence.get("reasons", [])]

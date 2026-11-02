@@ -1,0 +1,40 @@
+{
+  "task": "P0-RQ5-INIT-001",
+  "repository": "lemoniadowyjohn/carla-control-suite",
+  "baseline_sha": "98e0d7e56cccdffe2319007b8a846f7daf3b3b33",
+  "candidate_sha": "7bf21a23586245b3f519d434abea2fd0ff827a60",
+  "candidate_commits": [
+    "9d35e786efa751b7129cabfec8acaaef178d30b2",
+    "ae1832ff83cdab0802582374bb7a2228635798aa",
+    "7bf21a23586245b3f519d434abea2fd0ff827a60"
+  ],
+  "working_tree_clean_before_receipt": true,
+  "environment": {
+    "os": "Windows-10-10.0.26100-SP0",
+    "python": "3.14.5",
+    "torch": "NOT_INSTALLED",
+    "cpu": "Intel Core i7-8850H, 6 cores, 12 logical processors",
+    "gpu": "NVIDIA Quadro P3200 with Max-Q Design",
+    "distributed_runtime_supported": false
+  },
+  "original_failure_reproduced": "PASS_SOURCE_LEVEL",
+  "original_failure_evidence": "Baseline reads is_main before its only assignment in main().",
+  "initialization_regression": "PASS_SOURCE_LEVEL",
+  "initialization_regression_command": "py -3.14 -m pytest -q -p no:cacheprovider tests/unit/test_rq5_train_launcher_initialization.py --tb=short",
+  "initialization_regression_result": "4 passed",
+  "stale_marker_test": "NOT_RUN_NO_TORCH",
+  "rank_ownership_test": "PASS_SOURCE_LEVEL",
+  "ddp_failure_test": "PASS_SOURCE_LEVEL",
+  "dataset_rejection_test": "NOT_RUN_NO_TORCH",
+  "cpu_ddp_smoke": "NOT_RUN_NO_TORCH",
+  "full_offline_suite": "NOT_RUN_NO_TORCH",
+  "independent_review": "APPROVED_SOURCE_LEVEL",
+  "github_ci": "NOT_RUN",
+  "patch_integrity": "PASS",
+  "release_verdict": "BLOCKED",
+  "remaining_blockers": [
+    "PyTorch-capable environment required for dynamic launcher, stale-marker, rank-one, DDP-failure, dataset-rejection and CPU/Gloo validation.",
+    "Full offline suite has not run in this environment.",
+    "No GitHub Actions run exists for the unpushed candidate."
+  ]
+}

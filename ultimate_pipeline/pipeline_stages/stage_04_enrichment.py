@@ -358,8 +358,9 @@ def _step4_enrichment(self, topo_fixed: str) -> str:
             f"{access_metadata['metadata_records_written']} record(s)"
         )
     except Exception as e:
-        print(f"⚠️ OSM access metadata enrichment failed: {e}")
+        print(f"❌ OSM access metadata enrichment failed: {e}")
         self.vreport.add("osm_access_restriction_metadata", "error", str(e))
+        raise RuntimeError("access metadata enrichment failed closed") from e
 
     # Crosswalk enrichment: real OSM footway=crossing geometry, geometrically
     # matched to a road (not name/id matching -- crosswalk_writer.py, added

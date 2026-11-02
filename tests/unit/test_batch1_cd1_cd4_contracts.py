@@ -39,6 +39,7 @@ def _make_session(root: Path, frame: int = 1) -> Path:
     (root / "semseg_raw" / "cam").mkdir(parents=True, exist_ok=True)
     (root / "rgb" / "cam" / f"{frame:08d}.png").write_bytes(b"\x89PNG\r\n\x1a\n")
     (root / "semseg_raw" / "cam" / f"{frame:08d}.png").write_bytes(b"\x89PNG\r\n\x1a\n")
+    (root / "frame_status").mkdir(parents=True, exist_ok=True)
     (root / "frame_status" / f"{frame:08d}.json").write_text(
         json.dumps({"schema": "frame_set_status_v1", "frame": frame, "status": "complete", "members": []}),
         encoding="utf-8",
@@ -102,7 +103,7 @@ def test_training_failure_guard_module():
     assert is_cuda_oom(RuntimeError("CUDA out of memory"))
 
     # Classification
-    verdict = classify_exception(ValueError("oom"))
+    verdict = classify_exception(ValueError("CUDA out of memory"))
     assert verdict.status == STATUS_CUDA_OOM
 
     # Direct error
@@ -128,6 +129,7 @@ def test_load_contract_mandatory_migration():
 
     # Load with mismatched keys but NO migration contract should also fail
     fake_file = tempfile.NamedTemporaryFile(suffix=".pt", delete=False)
+    fake_file.close()
     torch.save({"state_dict": fake_state}, fake_file.name)
     try:
         try:
