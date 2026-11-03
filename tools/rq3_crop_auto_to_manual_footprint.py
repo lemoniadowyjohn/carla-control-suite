@@ -92,11 +92,6 @@ def _assert_safe_out_dir(out_dir: Path, repo_root: Path, *, overwrite_scratch: b
                 f"--out-dir {out_resolved} collides with a registry-pinned map path ({pinned}); "
                 "refusing to write there."
             )
-        if out_resolved in pinned.parents:
-            raise OutDirUnsafeError(
-                f"--out-dir {out_resolved} is an ancestor of a registry-pinned map path "
-                f"({pinned}); refusing to write there."
-            )
 
     if out_resolved.exists():
         existing = [p for p in out_resolved.iterdir()]
