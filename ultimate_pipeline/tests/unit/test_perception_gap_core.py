@@ -71,11 +71,15 @@ def test_unimplemented_evaluator_returns_status_not_number():
         predicted={}, ground_truth={"road": [], "car": []}
     )
     assert metrics.status == "NOT_IMPLEMENTED"
-    assert metrics.miou is None
+    # PerceptionMetrics normalises miou=None to an empty dict (gap code calls
+    # .miou.get), so "no number" means: no per-class IoU and no mean.
+    assert metrics.miou == {}
     assert metrics.mAP is None
     assert metrics.expected_classes == ["car", "road"]
     d = metrics.to_dict()
     assert d["status"] == "NOT_IMPLEMENTED"
+    assert d["mean_miou"] is None
+    assert d["mAP"] is None
     assert "no numeric metrics were fabricated" in d["note"]
 
 
