@@ -647,11 +647,15 @@ def _step8_markings_and_integrity(self, lanes_out: str, final_out: str) -> str:
         exit_geometry_gaps = reciprocity_totals.get(
             "junction_exit_geometry_gap_count", 0
         )
+        exit_heading_discontinuities = reciprocity_totals.get(
+            "junction_exit_heading_discontinuity_count", 0
+        )
         print(
             "[STEP 8] road_link_reciprocity: "
             f"violations={reciprocity_violations} "
             f"(junction_reference_unbacked={unbacked_junction_refs}, "
-            f"junction_exit_geometry_gap[report-only]={exit_geometry_gaps}) "
+            f"junction_exit_geometry_gap[report-only]={exit_geometry_gaps}, "
+            f"junction_exit_heading_discontinuity[report-only]={exit_heading_discontinuities}) "
             f"-> {road_link_reciprocity_path}"
         )
         if reciprocity_violations > 0 and bool(getattr(s, "THESIS_STRICT", True)):

@@ -42,6 +42,7 @@ Input: path to .xodr or an already-parsed XML root Element.
 
 from __future__ import annotations
 
+import math
 import os
 import xml.etree.ElementTree as ET
 from typing import Any, Dict, List, Tuple, Union
@@ -52,6 +53,17 @@ _CONTACT_TO_RECIPROCAL_SLOT = {"start": "predecessor", "end": "successor"}
 # A's own link slot -> the contactPoint B's reciprocal link must carry
 # (naming the boundary of A that is touched).
 _SLOT_TO_EXPECTED_RECIPROCAL_CONTACT = {"predecessor": "start", "successor": "end"}
+
+# Report-only threshold (degrees) for `junction_exit_heading_discontinuity`.
+# GAP-070 characterization (reports/production_readiness/20261103T000000Z_
+# GAP_REGISTER_ADDENDUM/GAP-070_CHARACTERIZATION.md): of 207 junction exits
+# already flagged as junction_exit_geometry_gap on the real 07_lanes map, 147
+# have a ~53 deg tangent kink at the connector->exit boundary with only
+# 0-0.25 m positional excess (i.e. the distance-only gap check catches them
+# only incidentally); 60 are pure positional offsets (0-12 deg). This value
+# is an audit-proposed default awaiting operator sign-off -- it is NOT a
+# gate and must never be tuned (raised) to reduce the reported count.
+EXIT_HEADING_DISCONTINUITY_DEG = 30.0
 
 
 def _build_junction_connection_pairs(
@@ -73,7 +85,8 @@ def _build_junction_connection_pairs(
     return junctions
 
 
-def _boundary_xy(road: ET.Element, at_end: bool) -> Union[Tuple[float, float], None]:
+def _boundary_pose(road: ET.Element, at_end: bool):
+    """The pose (x, y, heading) at a road's touching boundary, or None."""
     from ultimate_pipeline.geometry.opendrive_geometry_kernel import endpoint, pose_at_s
 
     geometries = road.findall("./planView/geometry")
@@ -81,10 +94,14 @@ def _boundary_xy(road: ET.Element, at_end: bool) -> Union[Tuple[float, float], N
         return None
     try:
         geometries.sort(key=lambda g: float(g.get("s", "0") or 0.0))
-        pose = endpoint(geometries[-1]) if at_end else pose_at_s(geometries[0], 0.0)
-        return pose.x, pose.y
+        return endpoint(geometries[-1]) if at_end else pose_at_s(geometries[0], 0.0)
     except (TypeError, ValueError, ZeroDivisionError):
         return None
+
+
+def _boundary_xy(road: ET.Element, at_end: bool) -> Union[Tuple[float, float], None]:
+    pose = _boundary_pose(road, at_end)
+    return None if pose is None else (pose.x, pose.y)
 
 
 def _carriageway_width(road: ET.Element, at_end: bool) -> float:
@@ -130,6 +147,30 @@ def _exit_geometry_gap(
     gap = ((a_xy[0] - b_xy[0]) ** 2 + (a_xy[1] - b_xy[1]) ** 2) ** 0.5
     width = _carriageway_width(a, slot_a == "successor") + _carriageway_width(b, contact_b == "end")
     return gap, width
+
+
+def _exit_heading_diff(
+    a: ET.Element, b: ET.Element, slot_a: str, contact_b: str
+) -> Union[float, None]:
+    """Wrapped absolute heading difference (degrees) at a junction exit.
+
+    Direction-aware (GAP-070): the travel direction across the boundary is
+    A leaving at its end (slot_a == "successor", natural heading) or at its
+    start (slot_a == "predecessor", heading reversed by pi -- leaving A
+    backward through its start), and B entering at its start (contact_b ==
+    "start", natural heading) or at its end (contact_b == "end", heading
+    reversed by pi -- entering B and continuing in its decreasing-s
+    direction). For a geometrically continuous (non-kinked) pair these two
+    travel-direction headings coincide.
+    """
+    a_pose = _boundary_pose(a, at_end=(slot_a == "successor"))
+    b_pose = _boundary_pose(b, at_end=(contact_b == "end"))
+    if a_pose is None or b_pose is None:
+        return None
+    a_heading = a_pose.heading if slot_a == "successor" else a_pose.heading + math.pi
+    b_heading = b_pose.heading if contact_b == "start" else b_pose.heading + math.pi
+    wrapped = math.atan2(math.sin(a_heading - b_heading), math.cos(a_heading - b_heading))
+    return abs(math.degrees(wrapped))
 
 
 def _junction_connects_roads(
@@ -215,6 +256,10 @@ def check_road_link_reciprocity(
     # Report-only: structurally backed junction exits whose carriageways do
     # not meet (or cannot be measured). Not counted in `violations`.
     junction_exit_geometry_gap: List[Dict[str, Any]] = []
+    # Report-only: structurally backed junction exits whose tangent heading
+    # kinks by more than EXIT_HEADING_DISCONTINUITY_DEG at the boundary
+    # (GAP-070). Not counted in `violations`.
+    junction_exit_heading_discontinuity: List[Dict[str, Any]] = []
     road_road_links_checked = 0
     junction_mediated_exempt = 0
     dangling_target_skipped = 0
@@ -296,6 +341,19 @@ def check_road_link_reciprocity(
                                 "reference_line_gap_m": None if measured is None else round(measured[0], 3),
                                 "carriageway_width_m": None if measured is None else round(measured[1], 3),
                             })
+                        heading_diff = _exit_heading_diff(road, target_road, slot, contact)
+                        if (
+                            heading_diff is not None
+                            and heading_diff > EXIT_HEADING_DISCONTINUITY_DEG
+                        ):
+                            junction_exit_heading_discontinuity.append({
+                                "road_id": road_id,
+                                "slot": slot,
+                                "target_id": target_id,
+                                "contact_point": contact,
+                                "junction_id": reciprocal_junction_id,
+                                "heading_diff_deg": round(heading_diff, 3),
+                            })
                 else:
                     junction_reference_unbacked.append({
                         "road_id": road_id,
@@ -349,11 +407,13 @@ def check_road_link_reciprocity(
             "junction_mediated_exempt": junction_mediated_exempt,
             "dangling_target_skipped": dangling_target_skipped,
             "junction_exit_geometry_gap_count": len(junction_exit_geometry_gap),
+            "junction_exit_heading_discontinuity_count": len(junction_exit_heading_discontinuity),
         },
         "contactpoint_invalid_examples": contactpoint_invalid[:max_examples],
         "asymmetric_examples": asymmetric[:max_examples],
         "junction_reference_unbacked_examples": junction_reference_unbacked[:max_examples],
         "junction_exit_geometry_gap_examples": junction_exit_geometry_gap[:max_examples],
+        "junction_exit_heading_discontinuity_examples": junction_exit_heading_discontinuity[:max_examples],
     }
 
 

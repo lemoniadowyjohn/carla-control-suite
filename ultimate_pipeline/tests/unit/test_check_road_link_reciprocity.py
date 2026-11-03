@@ -10,6 +10,7 @@ New validation-only checker (no mutation):
 """
 from __future__ import annotations
 
+import math
 import xml.etree.ElementTree as ET
 
 from ultimate_pipeline.quality.check_road_link_reciprocity import (
@@ -160,22 +161,22 @@ def test_junction_reference_without_backing_connection_is_a_violation():
     assert found[0]["target_id"] == "B"
 
 
-def _line(road, x, y, length=10.0):
+def _line(road, x, y, length=10.0, hdg=0.0):
     plan = ET.SubElement(road, "planView")
     ET.SubElement(plan, "geometry", {"s": "0", "x": str(x), "y": str(y),
-                                     "hdg": "0", "length": str(length)})
+                                     "hdg": str(hdg), "length": str(length)})
     ET.SubElement(plan.find("geometry"), "line")
     return road
 
 
-def _exit_layout(*, a_junction="J1", b_x=20.0):
+def _exit_layout(*, a_junction="J1", b_x=20.0, b_hdg=0.0):
     # I (0..10) -> junction J1 via connecting road A (10..20) -> exit road B.
     root = ET.Element("OpenDRIVE")
     root.append(_line(_road("I", successor=("junction", "J1", None)), 0.0, 0.0))
     root.append(_line(_road("A", junction=a_junction,
                             predecessor=("road", "I", "end"),
                             successor=("road", "B", "start")), 10.0, 0.0))
-    root.append(_line(_road("B", predecessor=("junction", "J1", None)), b_x, 0.0))
+    root.append(_line(_road("B", predecessor=("junction", "J1", None)), b_x, 0.0, hdg=b_hdg))
     root.append(_junction("J1", ("I", "A")))
     return root
 
@@ -268,3 +269,60 @@ def test_predecessor_side_reciprocity():
     report = check_road_link_reciprocity(root)
     assert report["ok"] is True, report
     assert report["totals"]["violations"] == 0, report
+
+
+# -- GAP-070: junction_exit_heading_discontinuity (report-only) -------------
+
+
+def test_junction_exit_heading_discontinuity_zero_for_straight_continuation():
+    # Base _exit_layout() is a dead-straight successor/start exit (A ends at
+    # (20,0) hdg=0, B starts at (20,0) hdg=0): no tangent kink.
+    report = check_road_link_reciprocity(_exit_layout())
+    assert report["totals"]["junction_exit_heading_discontinuity_count"] == 0, report
+    assert report["junction_exit_heading_discontinuity_examples"] == [], report
+    # Report-only: must not affect ok/violations.
+    assert report["ok"] is True, report
+    assert report["totals"]["violations"] == 0, report
+
+
+def test_junction_exit_heading_discontinuity_detected_for_kinked_boundary():
+    # Same successor/start exit, but B's reference line is rotated 53.13 deg
+    # at the touching boundary -- the GAP-070 characterization's dominant
+    # kink-exit shape (147/207 of the real map's junction_exit_geometry_gap
+    # entries). Position still coincides (b_x=20.0 unchanged), so this is
+    # NOT also a junction_exit_geometry_gap.
+    report = check_road_link_reciprocity(_exit_layout(b_hdg=math.radians(53.13)))
+    assert report["totals"]["junction_exit_geometry_gap_count"] == 0, report
+    assert report["totals"]["junction_exit_heading_discontinuity_count"] == 1, report
+    ex = report["junction_exit_heading_discontinuity_examples"][0]
+    assert (ex["road_id"], ex["target_id"], ex["junction_id"]) == ("A", "B", "J1")
+    assert abs(ex["heading_diff_deg"] - 53.13) < 0.01, report
+    # Report-only: must not affect ok/violations.
+    assert report["ok"] is True, report
+    assert report["totals"]["violations"] == 0, report
+
+
+def test_junction_exit_heading_discontinuity_predecessor_contact_end_no_false_positive():
+    # Direction-aware handling of the predecessor/contact="end" orientation
+    # (both legs get the +pi reversal in _exit_heading_diff): B (hdg=37 deg)
+    # flows straight into A's start, which is exactly where A's own
+    # predecessor names B with contactPoint="end". This is a genuinely
+    # continuous pair and must NOT be reported, exercising the reversed-slot
+    # code path rather than just the trivial successor/start case above.
+    hdg = math.radians(37.0)
+    root = ET.Element("OpenDRIVE")
+    root.append(_line(_road("B", successor=("junction", "J1", None)), 0.0, 0.0, hdg=hdg))
+    bend_x = 10.0 * math.cos(hdg)
+    bend_y = 10.0 * math.sin(hdg)
+    root.append(_line(
+        _road("A", junction="J1", predecessor=("road", "B", "end")),
+        bend_x, bend_y, hdg=hdg,
+    ))
+    root.append(_junction("J1", ("I", "A")))
+
+    report = check_road_link_reciprocity(root)
+    assert report["ok"] is True, report
+    assert report["totals"]["violations"] == 0, report
+    assert report["totals"]["junction_mediated_exempt"] == 1, report
+    assert report["totals"]["junction_exit_geometry_gap_count"] == 0, report
+    assert report["totals"]["junction_exit_heading_discontinuity_count"] == 0, report
