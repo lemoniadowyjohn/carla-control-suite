@@ -72,7 +72,7 @@ def _step9_positional_semantics(self, final_out: str) -> str:
         print("🚦 Materializing traffic lights on frozen structure…")
         try:
             n_lights = TrafficLightInferer.infer_and_insert(root)
-            self.vreport.add("positional_semantics", "traffic_lights_added", str(n_lights))
+            self.vreport.add("success", "positional_semantics", f"traffic_lights_added: {str(n_lights)}")
             self.vreport.add_dict(
                 "traffic_light_run_stats", dict(TrafficLightInferer.last_run_stats)
             )
@@ -104,7 +104,7 @@ def _step9_positional_semantics(self, final_out: str) -> str:
                 print("⚠️ These must be fixed to guarantee drivable map behavior.")
         except Exception as e:
             print(f"⚠️ Traffic light materialization failed: {e}")
-            self.vreport.add("positional_semantics", "traffic_light_error", str(e))
+            self.vreport.add("error", "positional_semantics", f"traffic_light_error: {str(e)}")
     else:
         print("⏭️ Traffic light materialization disabled.")
 
@@ -147,7 +147,7 @@ def _step9_positional_semantics(self, final_out: str) -> str:
             print(f"   → Inserted {num_buildings} buildings.")
         except Exception as e:
             print(f"⚠️ Building insertion failed: {e}")
-            self.vreport.add("positional_semantics", "building_error", str(e))
+            self.vreport.add("error", "positional_semantics", f"building_error: {str(e)}")
         # CODEX C7 (W1) fail-closed guard: deliberately OUTSIDE the try/except
         # above. Buildings are the dominant semantic class for the perception
         # domain-gap study; a load failure or a near-empty result must not be
@@ -234,7 +234,7 @@ def _step9_positional_semantics(self, final_out: str) -> str:
             )
     except Exception as e:
         print(f"⚠️ OSM meta materialization failed: {e}")
-        self.vreport.add("osm_meta_postfreeze", "error", str(e))
+        self.vreport.add("error", "osm_meta_postfreeze", str(e))
 
     # ------------------------------------------------------------------
     # Access restrictions: apply metadata with provenance
@@ -254,7 +254,7 @@ def _step9_positional_semantics(self, final_out: str) -> str:
         )
     except Exception as e:
         print(f"❌ OSM access metadata materialization failed: {e}")
-        self.vreport.add("osm_access_restriction_postfreeze", "error", str(e))
+        self.vreport.add("error", "osm_access_restriction_postfreeze", str(e))
         raise RuntimeError("access metadata materialization failed closed") from e
 
     # ------------------------------------------------------------------
@@ -287,7 +287,7 @@ def _step9_positional_semantics(self, final_out: str) -> str:
             self.vreport.add_dict("crosswalk_enrichment_postfreeze", {"osm_crossings_found": 0})
     except Exception as e:
         print(f"⚠️ Crosswalk materialization failed: {e}")
-        self.vreport.add("crosswalk_postfreeze", "error", str(e))
+        self.vreport.add("error", "crosswalk_postfreeze", str(e))
 
     # ------------------------------------------------------------------
     # Realism objects: visual clutter only
@@ -296,12 +296,12 @@ def _step9_positional_semantics(self, final_out: str) -> str:
         try:
             print("✨ Adding realism objects…")
             added = RealismModule.enrich(root)
-            self.vreport.add("realism_objects", "added", str(added))
+            self.vreport.add("success", "realism_objects", f"added: {str(added)}")
             save_xodr(tree, final_out)
             print(f"   → Inserted {added} realism objects.")
         except Exception as e:
             print(f"⚠️ Realism materialization skipped: {e}")
-            self.vreport.add("realism_objects", "error", str(e))
+            self.vreport.add("error", "realism_objects", str(e))
     else:
         print("⏭️ Realism module disabled.")
 

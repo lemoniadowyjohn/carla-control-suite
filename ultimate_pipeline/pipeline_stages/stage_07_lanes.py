@@ -109,7 +109,7 @@ def _step7_lanes_sidewalks(self, cont_out: str, lanes_out: str) -> str:
         structural_osm_meta=structural_osm_meta,
         provenance_report_path=lane_provenance_path,
     )
-    self.vreport.add("lanes", "lane_provenance_report", lane_provenance_path)
+    self.vreport.add("success", "lanes", f"lane_provenance_report: {lane_provenance_path}")
     if created_lanes:
         print(
             f"[STEP 7] LaneGenerator created driving lanes for {created_lanes} roads."
@@ -345,7 +345,7 @@ def _step7_lanes_sidewalks(self, cont_out: str, lanes_out: str) -> str:
         sidewalks_added = SidewalkBuilder.add_sidewalks(root, osm_meta=osm_meta)
         save_xodr(tree, lanes_out)
         MapPlotter.save_preview(lanes_out, self.out_dir, stage="06_sidewalks")
-        self.vreport.add("enrichment", "sidewalks_added", str(sidewalks_added))
+        self.vreport.add("success", "enrichment", f"sidewalks_added: {str(sidewalks_added)}")
         if sidewalks_added == 0:
             self.vreport.add("warning", "sidewalks", "no_sidewalks_added")
             print(

@@ -1132,8 +1132,8 @@ def _step5_dem_and_geometry(self, topo_fixed: str, elev_out: str) -> str:
         if bool(getattr(s, "FAIL_ON_FLAT_ELEVATION", True)) or bool(strict_dem):
             raise RuntimeError(msg)
         print(f"⚠️ {msg} (continuing with FAIL_ON_FLAT_ELEVATION=False)")
-        self.vreport.add("elevation_stats", "flat_dem_warning", True)
-        self.vreport.add("elevation_stats", "flat_dem_warning_reason", msg)
+        self.vreport.add("warning", "elevation_stats", f"flat_dem_warning: {True}")
+        self.vreport.add("warning", "elevation_stats", f"flat_dem_warning_reason: {msg}")
 
     # Always write the smoothed elevation first. Optional link-offset
     # correction is canonicalized inside gate_elevation_continuity() so the

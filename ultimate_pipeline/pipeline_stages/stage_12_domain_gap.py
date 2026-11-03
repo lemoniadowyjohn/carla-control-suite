@@ -132,7 +132,7 @@ def _step12_domain_gap(self, final_out: str) -> None:
     if not manual_xodr:
         print("⚠️ Domain gap ENABLED but MANUAL_MAP_XODR is not configured.")
         print("   → Skipping STEP 12. Set MANUAL_MAP_XODR in settings.py.")
-        self.vreport.add("domain_gap", "skipped", "manual_xodr_not_configured")
+        self.vreport.add("skipped", "domain_gap", "manual_xodr_not_configured")
         _write_domain_gap_stage_status(
             self,
             {
@@ -147,7 +147,7 @@ def _step12_domain_gap(self, final_out: str) -> None:
 
     if not os.path.exists(manual_xodr):
         print(f"⚠️ Manual reference XODR not found: {manual_xodr}")
-        self.vreport.add("domain_gap", "skipped", "manual_xodr_missing")
+        self.vreport.add("skipped", "domain_gap", "manual_xodr_missing")
         _write_domain_gap_stage_status(
             self,
             {
@@ -319,7 +319,7 @@ def _step12_domain_gap(self, final_out: str) -> None:
 
     except Exception as e:
         print(f"⚠️ Domain-gap analysis failed: {e}")
-        self.vreport.add("domain_gap", "error", str(e))
+        self.vreport.add("error", "domain_gap", str(e))
         _write_domain_gap_stage_status(
             self,
             {

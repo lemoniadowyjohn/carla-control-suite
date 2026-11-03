@@ -405,7 +405,7 @@ def _step8c_spawn_validation(self, final_out: str) -> None:
         print(
             f"✅ Spawn points validated — final map is drivable. (spawn_points={spawn_n})"
         )
-        self.vreport.add("drivability", "spawn_points", f"ok ({spawn_n})")
+        self.vreport.add("success", "drivability", f"spawn_points: {f"ok ({spawn_n})"}")
         return
 
     loaded, self.client = carla_load_xodr_with_restart(
@@ -425,7 +425,7 @@ def _step8c_spawn_validation(self, final_out: str) -> None:
         raise RuntimeError("❌ No valid spawn points — final map NOT drivable")
 
     print("✅ Spawn points validated — final map is drivable.")
-    self.vreport.add("drivability", "spawn_points", "ok")
+    self.vreport.add("success", "drivability", f"spawn_points: {"ok"}")
 
 # ---------------- 8) 🔗 MARKINGS + INTEGRITY ----------------
 
@@ -811,7 +811,7 @@ def _step8_markings_and_integrity(self, lanes_out: str, final_out: str) -> str:
         ok_schema, err = validate_xodr_schema(final_out, xsd_path)
         if not ok_schema:
             print(f"❌ XODR schema violation: {err}")
-            self.vreport.add("xodr_schema", "error", err)
+            self.vreport.add("error", "xodr_schema", err)
         else:
             print(
                 "✅ XODR schema validation passed."
