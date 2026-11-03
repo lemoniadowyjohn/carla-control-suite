@@ -80,6 +80,38 @@ def test_thesis_strict_fails_stage_on_reciprocity_violation(tmp_path: Path):
     )
 
 
+_UNBACKED_JUNCTION_XODR = _MISSING_CONTACTPOINT_XODR.replace(
+    '<link><successor elementType="road" elementId="B"/></link>',
+    '<link><successor elementType="road" elementId="B" contactPoint="start"/></link>',
+).replace(
+    '<road id="B" length="10.0" junction="-1">',
+    '<road id="B" length="10.0" junction="-1">'
+    '<link><predecessor elementType="junction" elementId="GHOST_J"/></link>',
+)
+
+
+def test_thesis_strict_fails_stage_on_unbacked_junction_reference(tmp_path: Path):
+    # B claims to be reached through junction GHOST_J, which does not exist.
+    # Once the exit-side false positives were removed the real map measures
+    # zero such references, so this category is gated like the others.
+    final_out = tmp_path / "final.xodr"
+    final_out.write_text(_UNBACKED_JUNCTION_XODR, encoding="utf-8")
+
+    fake_settings = mock.Mock()
+    fake_settings.THESIS_STRICT = True
+
+    fake_self = mock.Mock()
+    fake_self.settings = fake_settings
+    fake_self.out_dir = str(tmp_path)
+    fake_self.vreport = mock.Mock()
+
+    with mock.patch.multiple(stage_mod, create=True, **_common_patches()):
+        with pytest.raises(RuntimeError, match="road_link_reciprocity"):
+            stage_mod._step8_markings_and_integrity(
+                fake_self, "lanes_out.xodr", str(final_out)
+            )
+
+
 def test_non_strict_reports_violation_without_raising(tmp_path: Path):
     final_out = tmp_path / "final.xodr"
     final_out.write_text(_MISSING_CONTACTPOINT_XODR, encoding="utf-8")

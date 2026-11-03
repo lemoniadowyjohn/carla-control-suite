@@ -611,19 +611,14 @@ def _step8_markings_and_integrity(self, lanes_out: str, final_out: str) -> str:
     # non-road elementType was treated as "legitimately junction-mediated"
     # with no check that the named junction actually connects the two
     # roads). That has been tightened to require a real <connection>
-    # linking the pair; unbacked junction references are now their own
-    # `junction_reference_unbacked` category. Re-measured on the real map
-    # (reports/rq1_trial_runs/run_01/20261007_214826_524342/
-    # 07_lanes_...xodr, sha256
-    # 787870babc93644a8465cf32e29507fd5686b7650dd6a43ed0fd200fe05b6ba3,
-    # read-only, unchanged by the measurement) with the tightened checker:
-    # contactpoint_invalid=0, asymmetric=0 (unchanged, still safe to gate),
-    # but junction_reference_unbacked=22588 of 45176 road-road links -- a
-    # large PRE-EXISTING condition on this map, not introduced by this
-    # change. Gating THESIS_STRICT on that count would block every run on
-    # a pre-existing condition, which is forbidden; it is therefore
-    # measured and reported (vreport + JSON) but does not raise. The
-    # contactpoint_invalid/asymmetric categories remain gated as before.
+    # linking the pair, or the referencing road being one of that junction's
+    # connecting roads (junction exit side); anything else is its own
+    # `junction_reference_unbacked` category. The first version of that
+    # rule missed the exit side and reported 22588/45176 false positives on
+    # the real map (reports/rq1_trial_runs/run_01/20261007_214826_524342/
+    # 07_lanes_...xodr, sha256 787870babc93644a...); with the exit side
+    # recognised that map measures contactpoint_invalid=0, asymmetric=0,
+    # junction_reference_unbacked=0, so every category is gated.
     try:
         from ultimate_pipeline.quality.check_road_link_reciprocity import (
             check_road_link_reciprocity,
@@ -640,29 +635,27 @@ def _step8_markings_and_integrity(self, lanes_out: str, final_out: str) -> str:
         )
         reciprocity_totals = road_link_reciprocity_report["totals"]
         reciprocity_violations = reciprocity_totals["violations"]
-        gated_violations = reciprocity_totals.get(
-            "contactpoint_invalid_count", 0
-        ) + reciprocity_totals.get("asymmetric_count", 0)
         unbacked_junction_refs = reciprocity_totals.get(
             "junction_reference_unbacked_count", 0
         )
         print(
             "[STEP 8] road_link_reciprocity: "
             f"violations={reciprocity_violations} "
-            f"(gated={gated_violations}, "
-            f"junction_reference_unbacked[report-only]={unbacked_junction_refs}) "
+            f"(junction_reference_unbacked={unbacked_junction_refs}) "
             f"-> {road_link_reciprocity_path}"
         )
-        if gated_violations > 0 and bool(getattr(s, "THESIS_STRICT", True)):
+        if reciprocity_violations > 0 and bool(getattr(s, "THESIS_STRICT", True)):
             raise RuntimeError(
                 "road_link_reciprocity: "
-                f"{gated_violations} contactPoint/reciprocity violation(s) "
-                f"found (THESIS_STRICT=True); report -> {road_link_reciprocity_path}"
+                f"{reciprocity_violations} contactPoint/reciprocity/junction-backing "
+                f"violation(s) found (THESIS_STRICT=True); report -> "
+                f"{road_link_reciprocity_path}"
             )
     except RuntimeError:
         raise
     except Exception as e:
         print(f"⚠️ Road-link reciprocity check skipped: {e}")
+        self.vreport.add("road_link_reciprocity", "error", f"{type(e).__name__}: {e}")
 
     # NOTE: no AUTHORITATIVE MAP SWITCH here anymore: with lane-topology
     # repair moved to Stage 7 there is no _laneSectionFixed variant to

@@ -160,6 +160,26 @@ def test_junction_reference_without_backing_connection_is_a_violation():
     assert found[0]["target_id"] == "B"
 
 
+def test_junction_exit_side_is_backed_by_connecting_road_membership():
+    # Connecting road A belongs to junction J1 (incoming I -> connecting A)
+    # and leaves it into exit road B; B's predecessor names J1. No
+    # <connection> names B (connections list only incoming/connecting
+    # roads), so the pair is backed by A being one of J1's connecting
+    # roads. On the real 07_lanes map every one-way exit has this shape.
+    root = ET.Element("OpenDRIVE")
+    root.append(_road("I", successor=("junction", "J1", None)))
+    root.append(_road("A", junction="J1",
+                      predecessor=("road", "I", "end"),
+                      successor=("road", "B", "start")))
+    root.append(_road("B", predecessor=("junction", "J1", None)))
+    root.append(_junction("J1", ("I", "A")))
+
+    report = check_road_link_reciprocity(root)
+    assert report["totals"]["junction_reference_unbacked_count"] == 0, report
+    assert report["totals"]["junction_mediated_exempt"] == 2, report
+    assert report["ok"] is True, report
+
+
 def test_junction_reference_to_nonexistent_junction_is_a_violation():
     # The reciprocal link names a junction id that has no <junction>
     # element at all in the document -- clearly unbacked.

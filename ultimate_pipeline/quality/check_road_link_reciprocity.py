@@ -94,7 +94,11 @@ def _junction_connects_roads(
     for incoming, connecting in pairs:
         if {incoming, connecting} == target:
             return True
-    return False
+    # Junction exit side: A is one of this junction's connecting roads and
+    # leaves it into B, whose link names the junction. A <connection> only
+    # lists incomingRoad/connectingRoad, so a one-way exit road B never
+    # appears in one -- the backing fact is that A belongs to the junction.
+    return any(connecting == road_a for _incoming, connecting in pairs)
 
 
 def _load_tree_and_root(
