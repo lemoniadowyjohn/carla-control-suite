@@ -22,6 +22,14 @@ a) Footprint polygon: convex hull of the manual map's planView geometry
    ``buffer_m`` (shapely ``Polygon.buffer``, >=0 only -- a negative buffer
    would erode the footprint rather than widen it, which is never the intent
    here and is rejected).
+   Boundary semantics: "inside" is tested throughout this module with
+   shapely's ``Polygon.contains``/``prepared.contains``, which is
+   boundary-EXCLUSIVE -- a point lying exactly ON the hull (or buffered-hull)
+   boundary is NOT considered inside and will not by itself cause a road to
+   be kept. This only matters for degenerate/exact-touch geometry (a sampled
+   point landing precisely on the hull edge); any ``buffer_m > 0`` moves the
+   boundary away from the hull's own vertices and makes an exact-touch case
+   vanishingly unlikely in practice.
 
 b) Road selection (non-junction roads, ``road[@junction='-1']`` only --
    junction-member roads are governed entirely by rule (c), never by this
@@ -83,16 +91,36 @@ d) Link consistency (applied only to the roads/junctions kept by (b)/(c)):
        otherwise dangle.
 
 e) Header is a byte-identical deep copy of the source ``<header>`` (geoReference,
-   offset, revMajor/Minor, etc. untouched). ``<controller>`` elements are kept
-   only if at least one of their ``<control signalId=...>`` children still
-   resolves to a ``<signal>`` on a kept road (signals are scanned map-wide by
-   id, independent of which road currently owns them); non-resolving
-   ``<control>`` children are pruned first (count
-   ``controller_controls_removed``), and a controller left with zero
-   ``<control>`` children is dropped entirely (count
-   ``controllers_dropped_zero_controls``). ``<signal>``/``<object>`` elements
+   offset, revMajor/Minor, etc. untouched). Top-level ``<controller>``
+   elements are first copied byte-faithfully (document order) into the
+   output, then pruned in place: a ``<control signalId=...>`` child is
+   removed if it no longer resolves to a ``<signal>`` on a kept road
+   (signals are scanned map-wide by id, independent of which road currently
+   owns them; count ``controller_controls_removed``). A controller that is
+   left with zero ``<control>`` children AFTER pruning is dropped entirely
+   (count ``controllers_dropped_zero_controls``) -- but ONLY if it
+   originally had at least one ``<control>`` child; a controller that was
+   ALREADY empty of ``<control>`` children in the source (a legal, if
+   unusual, document) is never dropped by this rule and is preserved
+   untouched (count ``controllers_empty_preserved``). A ``<junction>``'s own
+   ``<controller id=.../>`` reference (grouping hint toward a top-level
+   controller) is removed if the controller it names was dropped (count
+   ``junction_controller_ref_removed``). ``<signal>``/``<object>`` elements
    need no special handling: they are children of ``<road>`` and therefore
    survive or drop automatically with their owning road.
+
+g) Any other top-level ``OpenDRIVE`` child kind this module has no dedicated
+   reference-aware rule for (e.g. ``junctionGroup``, ``station``,
+   ``userData``, ``include``) is preserved byte-faithfully and
+   unconditionally -- this module's selection/closure rules (b)/(c) are
+   scoped to roads and junctions only, so an unknown top-level kind carries
+   no reference this module could validate or invalidate, and dropping it
+   silently would violate the "pure SUBSET" contract. Every top-level tag
+   seen in the input is accounted for in the report's
+   ``top_level_accounting`` (``input_count``/``kept_count``/
+   ``dropped_count`` per tag); for every handled kind
+   ``kept_count + dropped_count == input_count`` by construction, and for
+   every unknown kind ``dropped_count`` is always 0.
 
 f) Determinism: every kept element is emitted in the SAME relative order it
    had in the source document (filter-by-membership-test over
@@ -398,7 +426,12 @@ def apply_connection_pruning(
 def apply_controller_pruning(
     cropped_root: ET.Element,
     kept_road_ids: Set[str],
-) -> Dict[str, int]:
+) -> Tuple[Dict[str, int], Set[str]]:
+    """Rule (e). Mutates the already-copied top-level ``<controller>``
+    elements of ``cropped_root`` in place. Returns ``(counts,
+    dropped_controller_ids)`` -- the latter feeds
+    ``apply_junction_controller_ref_pruning`` below.
+    """
     signal_owner: Dict[str, str] = {}
     for road in cropped_root.findall("road"):
         rid = road.get("id")
@@ -407,8 +440,14 @@ def apply_controller_pruning(
             if sid:
                 signal_owner[sid] = rid
 
-    counts = {"controller_controls_removed": 0, "controllers_dropped_zero_controls": 0}
+    counts = {
+        "controller_controls_removed": 0,
+        "controllers_dropped_zero_controls": 0,
+        "controllers_empty_preserved": 0,
+    }
+    dropped_controller_ids: Set[str] = set()
     for controller in list(cropped_root.findall("controller")):
+        originally_had_controls = bool(controller.findall("control"))
         for control in list(controller.findall("control")):
             sid = control.get("signalId")
             owner = signal_owner.get(sid)
@@ -416,9 +455,37 @@ def apply_controller_pruning(
                 controller.remove(control)
                 counts["controller_controls_removed"] += 1
         if not controller.findall("control"):
-            cropped_root.remove(controller)
-            counts["controllers_dropped_zero_controls"] += 1
-    return counts
+            if originally_had_controls:
+                cid = controller.get("id")
+                cropped_root.remove(controller)
+                counts["controllers_dropped_zero_controls"] += 1
+                if cid:
+                    dropped_controller_ids.add(cid)
+            else:
+                # Originally empty -- rule (e) only removes DANGLING
+                # references, it never deletes a controller that carried
+                # none to begin with.
+                counts["controllers_empty_preserved"] += 1
+    return counts, dropped_controller_ids
+
+
+def apply_junction_controller_ref_pruning(
+    kept_junctions: Sequence[ET.Element],
+    dropped_controller_ids: Set[str],
+) -> int:
+    """Rule (e) continued: a ``<junction><controller id=.../>`` grouping
+    reference that names a top-level controller dropped by
+    ``apply_controller_pruning`` would otherwise dangle; it is removed
+    (count returned, by caller convention merged into
+    ``junction_controller_ref_removed``)."""
+    removed = 0
+    for junction in kept_junctions:
+        for ref in list(junction.findall("controller")):
+            cid = ref.get("id")
+            if cid in dropped_controller_ids:
+                junction.remove(ref)
+                removed += 1
+    return removed
 
 
 # ------------------------------------------------------------------ dangling-reference proof
@@ -472,6 +539,41 @@ def find_dangling_references(cropped_root: ET.Element) -> Dict[str, List[Dict[st
                 )
 
     return dangling
+
+
+def find_unresolved_controller_references(cropped_root: ET.Element) -> Dict[str, List[Dict[str, Any]]]:
+    """Independent, from-scratch proof (companion to
+    `find_dangling_references`) that the OUTPUT tree carries zero unresolved
+    controller references: every top-level ``<controller><control
+    signalId=.../>`` must resolve to a ``<signal id=.../>`` that exists
+    under some ``<road>`` in the output, and every ``<junction><controller
+    id=.../>`` grouping reference must resolve to a top-level
+    ``<controller id=...>`` present in the output."""
+    signal_ids: Set[str] = set()
+    for road in cropped_root.findall("road"):
+        for sig in road.findall(".//signal"):
+            sid = sig.get("id")
+            if sid:
+                signal_ids.add(sid)
+    controller_ids: Set[str] = {c.get("id") for c in cropped_root.findall("controller") if c.get("id")}
+
+    unresolved: Dict[str, List[Dict[str, Any]]] = {
+        "control_signal": [],
+        "junction_controller_ref": [],
+    }
+    for controller in cropped_root.findall("controller"):
+        cid = controller.get("id")
+        for control in controller.findall("control"):
+            sid = control.get("signalId")
+            if sid not in signal_ids:
+                unresolved["control_signal"].append({"controller_id": cid, "signalId": sid})
+    for junction in cropped_root.findall("junction"):
+        jid = junction.get("id")
+        for ref in junction.findall("controller"):
+            cid = ref.get("id")
+            if cid not in controller_ids:
+                unresolved["junction_controller_ref"].append({"junction_id": jid, "controller_id": cid})
+    return unresolved
 
 
 # ------------------------------------------------------------------ top-level API
@@ -536,12 +638,48 @@ def crop_auto_to_manual_footprint(
             cropped_root.append(clone)
             kept_junctions_clone.append(clone)
 
+    # Top-level <controller> elements (rule e): copied byte-faithfully in
+    # document order; pruned in place below.
+    for controller in auto_root.findall("controller"):
+        cropped_root.append(copy.deepcopy(controller))
+
+    # Rule (g): any other top-level OpenDRIVE child kind this module has no
+    # dedicated reference-aware rule for is preserved byte-faithfully and
+    # unconditionally (never silently dropped).
+    _HANDLED_TOP_LEVEL_TAGS = {"header", "road", "junction", "controller"}
+    unknown_top_level_preserved: Dict[str, int] = {}
+    for child in auto_root:
+        if child.tag in _HANDLED_TOP_LEVEL_TAGS:
+            continue
+        cropped_root.append(copy.deepcopy(child))
+        unknown_top_level_preserved[child.tag] = unknown_top_level_preserved.get(child.tag, 0) + 1
+
     link_counts = apply_link_consistency(kept_roads_clone, kept_road_ids, kept_junction_ids)
     extra_conn_removed = apply_connection_pruning(kept_junctions_clone, kept_road_ids)
-    controller_counts = apply_controller_pruning(cropped_root, kept_road_ids)
+    controller_counts, dropped_controller_ids = apply_controller_pruning(cropped_root, kept_road_ids)
+    junction_controller_refs_removed = apply_junction_controller_ref_pruning(
+        kept_junctions_clone, dropped_controller_ids
+    )
 
     dangling = find_dangling_references(cropped_root)
     dangling_total = sum(len(v) for v in dangling.values())
+    unresolved_controller_refs = find_unresolved_controller_references(cropped_root)
+    unresolved_controller_refs_total = sum(len(v) for v in unresolved_controller_refs.values())
+
+    # Rule (g) accounting: every top-level tag seen in the input must be
+    # accounted for as kept + dropped == input, independent of which rule
+    # (specific or the generic unknown-kind fallback) handled it.
+    top_level_input_counts: Dict[str, int] = {}
+    for child in auto_root:
+        top_level_input_counts[child.tag] = top_level_input_counts.get(child.tag, 0) + 1
+    top_level_accounting: Dict[str, Dict[str, int]] = {}
+    for tag, input_count in top_level_input_counts.items():
+        kept_count = len(cropped_root.findall(tag))
+        top_level_accounting[tag] = {
+            "input_count": input_count,
+            "kept_count": kept_count,
+            "dropped_count": input_count - kept_count,
+        }
 
     counts: Dict[str, Any] = {
         "auto_roads_total": auto_roads_total,
@@ -559,8 +697,11 @@ def crop_auto_to_manual_footprint(
         "connections_removed_dangling": conn_dangling + extra_conn_removed,
         "controllers_total": len(auto_root.findall("controller")),
         "controllers_kept": len(cropped_root.findall("controller")),
+        "junction_controller_ref_removed": junction_controller_refs_removed,
+        "top_level_unknown_tags_preserved": unknown_top_level_preserved,
         "sampling_fallback_count": sampling_fallbacks,
         "dangling_references_found": dangling_total,
+        "unresolved_controller_references_found": unresolved_controller_refs_total,
     }
     counts.update(link_counts)
     counts.update(controller_counts)
@@ -575,5 +716,7 @@ def crop_auto_to_manual_footprint(
         "counts": counts,
         "junctions_dropped_reasons": dropped_junction_reasons,
         "dangling_references": dangling,
+        "unresolved_controller_references": unresolved_controller_refs,
+        "top_level_accounting": top_level_accounting,
     }
     return cropped_root, report

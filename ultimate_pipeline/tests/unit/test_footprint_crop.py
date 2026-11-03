@@ -73,9 +73,40 @@ def _param_poly3_road(rid, x, y, hdg, length, bu, cu, cv, junction="-1") -> str:
     )
 
 
-def _auto_xodr(road_xml: str, junction_xml: str = "", offset=(0.0, 0.0)) -> ET.Element:
-    xml = f'<OpenDRIVE>{_auto_header(offset)}{road_xml}{junction_xml}</OpenDRIVE>'
+def _auto_xodr(
+    road_xml: str,
+    junction_xml: str = "",
+    offset=(0.0, 0.0),
+    controller_xml: str = "",
+    extra_xml: str = "",
+) -> ET.Element:
+    xml = (
+        f'<OpenDRIVE>{_auto_header(offset)}{road_xml}{junction_xml}'
+        f'{controller_xml}{extra_xml}</OpenDRIVE>'
+    )
     return ET.fromstring(xml)
+
+
+def _signal_xml(sid, s=0.0, t=0.0) -> str:
+    return (
+        f'<signal id="{sid}" s="{s}" t="{t}" dynamic="no" orientation="+" '
+        f'zOffset="0" country="OpenDRIVE" type="1000001" subtype="-1" value="-1"/>'
+    )
+
+
+def _line_road_with_signals(rid, x, y, length, signal_ids, junction="-1") -> str:
+    signals_xml = "".join(_signal_xml(sid) for sid in signal_ids)
+    return (
+        f'<road id="{rid}" junction="{junction}" length="{length}">'
+        f'<planView><geometry s="0" x="{x}" y="{y}" hdg="0" length="{length}"><line/></geometry></planView>'
+        f'<signals>{signals_xml}</signals>'
+        f'</road>'
+    )
+
+
+def _controller_xml(cid, control_signal_ids) -> str:
+    controls = "".join(f'<control signalId="{sid}" type="1"/>' for sid in control_signal_ids)
+    return f'<controller id="{cid}" name="{cid}" sequence="0">{controls}</controller>'
 
 
 # Degenerate convex hull guard: tests build manual maps from >=3 non-collinear
@@ -380,6 +411,129 @@ def test_crop_rejects_invalid_selection_mode():
     auto_root, manual_root = _e2e_fixture()
     with pytest.raises(ValueError):
         crop_auto_to_manual_footprint(auto_root, manual_root, selection="bogus")
+
+
+# ------------------------------------------------------------------ rule (e): controllers
+def test_controller_with_signal_on_kept_road_is_preserved():
+    """A controller whose <control signalId=...> resolves to a signal on a
+    road that survives the crop must be copied through byte-faithfully."""
+    manual_root = _manual_xodr(MANUAL_SQUARE_PTS)
+    poly = _footprint_polygon_for_square()
+    cx, cy = poly.centroid.x, poly.centroid.y
+    road_xml = _line_road_with_signals(1, cx, cy, 1.0, ["501"])
+    controller_xml = _controller_xml("10", ["501"])
+    auto_root = _auto_xodr(road_xml, controller_xml=controller_xml)
+    cropped, report = crop_auto_to_manual_footprint(auto_root, manual_root)
+    controllers = cropped.findall("controller")
+    assert [c.get("id") for c in controllers] == ["10"]
+    assert [ctl.get("signalId") for ctl in controllers[0].findall("control")] == ["501"]
+    assert report["counts"]["controllers_total"] == 1
+    assert report["counts"]["controllers_kept"] == 1
+    assert report["counts"]["controller_controls_removed"] == 0
+    assert report["counts"]["controllers_dropped_zero_controls"] == 0
+    assert report["counts"]["unresolved_controller_references_found"] == 0
+
+
+def test_controller_control_on_dropped_road_removed_and_controller_dropped_when_now_empty():
+    """A <control signalId=...> whose signal's owning road is dropped by the
+    crop must itself be removed; if that empties the controller (and it
+    originally had >=1 control), the controller is dropped entirely."""
+    manual_root = _manual_xodr(MANUAL_SQUARE_PTS)
+    poly = _footprint_polygon_for_square()
+    far_x, far_y = poly.bounds[0] - 1_000_000.0, poly.bounds[1] - 1_000_000.0
+    road_xml = _line_road_with_signals(1, far_x, far_y, 1.0, ["501"])  # dropped -> signal gone
+    controller_xml = _controller_xml("10", ["501"])
+    auto_root = _auto_xodr(road_xml, controller_xml=controller_xml)
+    cropped, report = crop_auto_to_manual_footprint(auto_root, manual_root)
+    assert cropped.findall("controller") == []
+    assert report["counts"]["controller_controls_removed"] == 1
+    assert report["counts"]["controllers_dropped_zero_controls"] == 1
+    assert report["counts"]["controllers_empty_preserved"] == 0
+    assert report["counts"]["unresolved_controller_references_found"] == 0
+
+
+def test_controller_originally_empty_is_preserved():
+    """A controller with ZERO <control> children in the SOURCE document is a
+    legal (if unusual) document; rule (e) only removes dangling references,
+    so this controller must survive untouched, not be dropped as if it had
+    been emptied by pruning."""
+    manual_root = _manual_xodr(MANUAL_SQUARE_PTS)
+    poly = _footprint_polygon_for_square()
+    cx, cy = poly.centroid.x, poly.centroid.y
+    road_xml = _line_road(1, cx, cy, 1.0)
+    controller_xml = '<controller id="20" name="20" sequence="0"/>'
+    auto_root = _auto_xodr(road_xml, controller_xml=controller_xml)
+    cropped, report = crop_auto_to_manual_footprint(auto_root, manual_root)
+    controllers = cropped.findall("controller")
+    assert [c.get("id") for c in controllers] == ["20"]
+    assert report["counts"]["controllers_empty_preserved"] == 1
+    assert report["counts"]["controllers_dropped_zero_controls"] == 0
+
+
+def test_junction_controller_ref_to_dropped_controller_is_removed():
+    """A <junction><controller id=.../> grouping reference naming a
+    top-level controller that the crop dropped (because its only control
+    dangled) must itself be removed from the surviving junction."""
+    manual_root = _manual_xodr(MANUAL_SQUARE_PTS)
+    poly = _footprint_polygon_for_square()
+    cx, cy = poly.centroid.x, poly.centroid.y
+    far_x, far_y = poly.bounds[0] - 1_000_000.0, poly.bounds[1] - 1_000_000.0
+    road_xml = (
+        _line_road(1, cx, cy, 1.0)
+        + _line_road_with_signals(2, far_x, far_y, 1.0, ["501"])  # dropped; owns the signal
+        + _line_road(9001, cx, cy, 1.0, junction="100")
+    )
+    junction_xml = (
+        '<junction id="100" name="100">'
+        '<connection id="0" incomingRoad="1" connectingRoad="9001" contactPoint="start">'
+        '<laneLink from="-1" to="-1"/></connection>'
+        '<controller id="10" type="default"/>'
+        '</junction>'
+    )
+    controller_xml = _controller_xml("10", ["501"])
+    auto_root = _auto_xodr(road_xml, junction_xml, controller_xml=controller_xml)
+    cropped, report = crop_auto_to_manual_footprint(auto_root, manual_root)
+    assert cropped.findall("controller") == []  # controller 10 dropped (its only control dangled)
+    kept_junction = cropped.find("junction")
+    assert kept_junction is not None and kept_junction.get("id") == "100"
+    assert kept_junction.findall("controller") == []  # dangling ref removed, not left dangling
+    assert report["counts"]["junction_controller_ref_removed"] == 1
+    assert report["counts"]["unresolved_controller_references_found"] == 0
+
+
+def test_unknown_top_level_element_is_preserved():
+    """A top-level OpenDRIVE child kind this module has no dedicated rule
+    for (e.g. <station>) must be preserved byte-faithfully, never silently
+    dropped -- rule (g)."""
+    manual_root = _manual_xodr(MANUAL_SQUARE_PTS)
+    poly = _footprint_polygon_for_square()
+    cx, cy = poly.centroid.x, poly.centroid.y
+    road_xml = _line_road(1, cx, cy, 1.0)
+    extra_xml = '<station id="99" name="demo"/>'
+    auto_root = _auto_xodr(road_xml, extra_xml=extra_xml)
+    cropped, report = crop_auto_to_manual_footprint(auto_root, manual_root)
+    stations = cropped.findall("station")
+    assert len(stations) == 1 and stations[0].get("id") == "99"
+    assert report["top_level_accounting"]["station"] == {
+        "input_count": 1,
+        "kept_count": 1,
+        "dropped_count": 0,
+    }
+
+
+def test_crop_is_deterministic_with_controllers_across_repeated_runs():
+    """Determinism (rule f) must hold even with controllers/top-level
+    pruning in play: two runs over identical inputs produce byte-identical
+    output."""
+    manual_root = _manual_xodr(MANUAL_SQUARE_PTS)
+    poly = _footprint_polygon_for_square()
+    cx, cy = poly.centroid.x, poly.centroid.y
+    road_xml = _line_road_with_signals(1, cx, cy, 1.0, ["501"])
+    controller_xml = _controller_xml("10", ["501"])
+    auto_root = _auto_xodr(road_xml, controller_xml=controller_xml)
+    out1, _ = crop_auto_to_manual_footprint(copy.deepcopy(auto_root), copy.deepcopy(manual_root))
+    out2, _ = crop_auto_to_manual_footprint(copy.deepcopy(auto_root), copy.deepcopy(manual_root))
+    assert ET.tostring(out1, encoding="unicode") == ET.tostring(out2, encoding="unicode")
 
 
 # ------------------------------------------------------------------ CLI: out-dir safety refusals

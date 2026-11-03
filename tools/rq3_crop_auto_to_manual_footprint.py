@@ -24,7 +24,7 @@ import sys
 import time
 import xml.etree.ElementTree as ET
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
 _TOOLS_DIR = Path(__file__).resolve().parent
 _REPO_ROOT_OF_THIS_WORKTREE = _TOOLS_DIR.parent
@@ -164,8 +164,9 @@ def main(argv: list[str] | None = None) -> int:
 
     # ---------------------------------------------------------------- validation
     validations: Dict[str, Any] = {}
+    output_root_reparsed: Optional[ET.Element] = None
     try:
-        ET.parse(str(out_path))
+        output_root_reparsed = ET.parse(str(out_path)).getroot()
         validations["xml_well_formed"] = {"ok": True}
     except Exception as exc:
         validations["xml_well_formed"] = {"ok": False, "error": str(exc)}
@@ -177,6 +178,34 @@ def main(argv: list[str] | None = None) -> int:
         "ok": crop_report["counts"]["dangling_references_found"] == 0,
         "details": crop_report["dangling_references"],
     }
+    validations["controller_references_resolve"] = {
+        "ok": crop_report["counts"]["unresolved_controller_references_found"] == 0,
+        "details": crop_report["unresolved_controller_references"],
+    }
+
+    # no_unaccounted_top_level_loss: independently re-derived from the
+    # SOURCE `auto_root` (parsed above, before any crop logic ran) and the
+    # OUTPUT file re-parsed fresh from disk just now -- for every top-level
+    # tag seen in the input, actual-kept-in-output + reported-dropped (from
+    # the crop module's own report) must equal the input count. This is a
+    # from-scratch proof, not a re-statement of the module's own counts.
+    top_level_loss_detail: Dict[str, Any] = {}
+    top_level_loss_ok = output_root_reparsed is not None
+    if output_root_reparsed is not None:
+        for tag, acct in crop_report["top_level_accounting"].items():
+            actual_kept = len(output_root_reparsed.findall(tag))
+            reported_dropped = acct["dropped_count"]
+            input_count = acct["input_count"]
+            ok = (actual_kept + reported_dropped) == input_count
+            top_level_loss_detail[tag] = {
+                "input_count": input_count,
+                "actual_output_kept": actual_kept,
+                "reported_dropped": reported_dropped,
+                "ok": ok,
+            }
+            if not ok:
+                top_level_loss_ok = False
+    validations["no_unaccounted_top_level_loss"] = {"ok": top_level_loss_ok, "details": top_level_loss_detail}
     t_validate = time.time()
 
     hard_checks = {
@@ -185,6 +214,8 @@ def main(argv: list[str] | None = None) -> int:
         "check_lane_link_targets_exist_ok": bool(validations["check_lane_link_targets_exist"]["ok"]),
         "check_road_link_reciprocity_ok": bool(validations["check_road_link_reciprocity"]["ok"]),
         "xodr_strict_validator_ok": bool(validations["xodr_strict_validator"]["ok"]),
+        "controller_references_resolve": bool(validations["controller_references_resolve"]["ok"]),
+        "no_unaccounted_top_level_loss": bool(validations["no_unaccounted_top_level_loss"]["ok"]),
     }
     manifest_status = "PASS" if all(hard_checks.values()) else "FAIL"
 
@@ -225,6 +256,7 @@ def main(argv: list[str] | None = None) -> int:
         "polygon_bounds_auto_local": crop_report["polygon_bounds_auto_local"],
         "counts": crop_report["counts"],
         "junctions_dropped_reasons": crop_report["junctions_dropped_reasons"],
+        "top_level_accounting": crop_report["top_level_accounting"],
         "output": {
             "path": str(out_path),
             "sha256": output_sha256,
