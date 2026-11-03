@@ -28,6 +28,7 @@ if not _REAL_CARLA_AVAILABLE:
     _carla_module.ColorConverter = type("ColorConverter", (), {"CityScapesPalette": "palette"})
     _carla_module.Image = object
     _carla_module.Sensor = object
+    _carla_module.__offline_stub__ = True
 
     sys.modules["carla"] = _carla_module
 

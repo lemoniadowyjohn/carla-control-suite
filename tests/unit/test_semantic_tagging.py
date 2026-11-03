@@ -16,12 +16,13 @@ from ultimate_pipeline.enrichment.semantic_tagging import (
     tag_mesh_inventory,
     validate_semantic_tags,
 )
+from _carla_real import require_real_carla
 
 
 def test_city_object_labels_match_real_carla_enum() -> None:
     """Ground-truth check: our hardcoded table must match the actual
     installed carla.CityObjectLabel enum exactly, not drift from it."""
-    carla = pytest.importorskip("carla")
+    carla = require_real_carla()
     real = {}
     for name in dir(carla.CityObjectLabel):
         if name.startswith("_"):

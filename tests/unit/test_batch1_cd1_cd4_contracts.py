@@ -22,6 +22,7 @@ except Exception:
     _carla.ColorConverter = type("ColorConverter", (), {"CityScapesPalette": "palette"})
     _carla.Image = object
     _carla.Sensor = object
+    _carla.__offline_stub__ = True
     sys.modules["carla"] = _carla
 
 # Allow torch import
