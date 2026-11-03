@@ -570,7 +570,10 @@ def _step8_markings_and_integrity(self, lanes_out: str, final_out: str) -> str:
             check_lane_link_targets_exist,
         )
 
-        ordinary_lane_link_report = check_lane_link_targets_exist(fixed_out)
+        # `fixed_out` (the old Stage-8 laneSection-repair output) disappeared
+        # when that repair moved to Stage 7 (GAP-048), which left this call
+        # raising NameError on every run. The map written above is final_out.
+        ordinary_lane_link_report = check_lane_link_targets_exist(final_out)
         ordinary_lane_link_path = os.path.join(
             self.out_dir, "ordinary_road_lane_link_targets.json"
         )
@@ -595,6 +598,9 @@ def _step8_markings_and_integrity(self, lanes_out: str, final_out: str) -> str:
             )
     except Exception as e:
         print(f"⚠️ Ordinary road lane-link advisory skipped: {e}")
+        self.vreport.add(
+            "ordinary_road_lane_link_targets", "error", f"{type(e).__name__}: {e}"
+        )
 
     # L2 review: road->road <link> contactPoint presence + reciprocity
     # (validation-only, no mutation; see
