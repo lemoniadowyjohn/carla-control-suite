@@ -73,32 +73,98 @@ def _build_junction_connection_pairs(
     return junctions
 
 
+def _boundary_xy(road: ET.Element, at_end: bool) -> Union[Tuple[float, float], None]:
+    from ultimate_pipeline.geometry.opendrive_geometry_kernel import endpoint, pose_at_s
+
+    geometries = road.findall("./planView/geometry")
+    if not geometries:
+        return None
+    try:
+        geometries.sort(key=lambda g: float(g.get("s", "0") or 0.0))
+        pose = endpoint(geometries[-1]) if at_end else pose_at_s(geometries[0], 0.0)
+        return pose.x, pose.y
+    except (TypeError, ValueError, ZeroDivisionError):
+        return None
+
+
+def _carriageway_width(road: ET.Element, at_end: bool) -> float:
+    """Sum of lane widths of the first/last laneSection at the road boundary."""
+    sections = road.findall("./lanes/laneSection")
+    if not sections:
+        return 0.0
+    section = sections[-1] if at_end else sections[0]
+    try:
+        length = float(road.get("length", "0") or 0.0)
+        ds = (length - float(section.get("s", "0") or 0.0)) if at_end else 0.0
+    except (TypeError, ValueError):
+        return 0.0
+    total = 0.0
+    for lane in section.findall("./left/lane") + section.findall("./right/lane"):
+        widths = lane.findall("width")
+        if not widths:
+            continue
+        w = widths[-1] if at_end else widths[0]
+        try:
+            a, b, c, d = (float(w.get(k, "0") or 0.0) for k in "abcd")
+            t = ds - float(w.get("sOffset", "0") or 0.0) if at_end else 0.0
+        except (TypeError, ValueError):
+            continue
+        total += max(0.0, a + b * t + c * t * t + d * t ** 3)
+    return total
+
+
+def _exit_geometry_gap(
+    a: ET.Element, b: ET.Element, slot_a: str, contact_b: str
+) -> Union[Tuple[float, float], None]:
+    """(reference-line gap, combined carriageway width) at the touching ends.
+
+    Reference lines of a connecting road and its exit road need not coincide
+    (a one-way road's reference line sits at its lane edge, so on the real
+    map they are typically ~6.5 m apart); the carriageways must still
+    overlap, i.e. gap <= combined width.
+    """
+    a_xy = _boundary_xy(a, at_end=(slot_a == "successor"))
+    b_xy = _boundary_xy(b, at_end=(contact_b == "end"))
+    if a_xy is None or b_xy is None:
+        return None
+    gap = ((a_xy[0] - b_xy[0]) ** 2 + (a_xy[1] - b_xy[1]) ** 2) ** 0.5
+    width = _carriageway_width(a, slot_a == "successor") + _carriageway_width(b, contact_b == "end")
+    return gap, width
+
+
 def _junction_connects_roads(
     junctions: Dict[str, List[Tuple[str, str]]],
     junction_id: Union[str, None],
     road_a: str,
     road_b: str,
-) -> bool:
-    """True iff junction_id exists and has a <connection> linking A and B.
+    *,
+    roads: Union[Dict[str, ET.Element], None] = None,
+) -> Union[str, None]:
+    """How junction_id backs the A->B link: "connection", "exit" or None.
 
-    Orientation is not assumed: incomingRoad/connectingRoad may name A and
-    B in either order (either road may be the "incoming" one from this
-    junction's point of view).
+    "connection": a <connection> names A and B (in either order).
+    "exit": A is the junction's own connecting road (listed as its
+    connectingRoad AND road@junction == junction_id) leaving it into exit
+    road B. A <connection> lists only incomingRoad/connectingRoad, so a
+    one-way exit road never appears in one. Structure alone cannot tell a
+    real exit from an unrelated road naming the same junction; the caller
+    checks the exit geometry separately (_exit_geometry_gap).
     """
     if not junction_id:
-        return False
+        return None
     pairs = junctions.get(junction_id)
     if pairs is None:
-        return False
+        return None
     target = {road_a, road_b}
     for incoming, connecting in pairs:
         if {incoming, connecting} == target:
-            return True
-    # Junction exit side: A is one of this junction's connecting roads and
-    # leaves it into B, whose link names the junction. A <connection> only
-    # lists incomingRoad/connectingRoad, so a one-way exit road B never
-    # appears in one -- the backing fact is that A belongs to the junction.
-    return any(connecting == road_a for _incoming, connecting in pairs)
+            return "connection"
+    if not any(connecting == road_a for _incoming, connecting in pairs):
+        return None
+    a = roads.get(road_a) if roads is not None else None
+    if a is None or str(a.get("junction", "-1")) != str(junction_id):
+        return None
+    return "exit"
 
 
 def _load_tree_and_root(
@@ -146,6 +212,9 @@ def check_road_link_reciprocity(
     contactpoint_invalid: List[Dict[str, Any]] = []
     asymmetric: List[Dict[str, Any]] = []
     junction_reference_unbacked: List[Dict[str, Any]] = []
+    # Report-only: structurally backed junction exits whose carriageways do
+    # not meet (or cannot be measured). Not counted in `violations`.
+    junction_exit_geometry_gap: List[Dict[str, Any]] = []
     road_road_links_checked = 0
     junction_mediated_exempt = 0
     dangling_target_skipped = 0
@@ -209,10 +278,24 @@ def check_road_link_reciprocity(
                 # otherwise this is an unbacked reference masquerading as
                 # a junction-mediated connection.
                 reciprocal_junction_id = reciprocal_elem.get("elementId")
-                if _junction_connects_roads(
-                    junctions, reciprocal_junction_id, road_id, target_id
-                ):
+                backing = _junction_connects_roads(
+                    junctions, reciprocal_junction_id, road_id, target_id,
+                    roads=roads,
+                )
+                if backing:
                     junction_mediated_exempt += 1
+                    if backing == "exit":
+                        measured = _exit_geometry_gap(road, target_road, slot, contact)
+                        if measured is None or measured[0] > measured[1]:
+                            junction_exit_geometry_gap.append({
+                                "road_id": road_id,
+                                "slot": slot,
+                                "target_id": target_id,
+                                "contact_point": contact,
+                                "junction_id": reciprocal_junction_id,
+                                "reference_line_gap_m": None if measured is None else round(measured[0], 3),
+                                "carriageway_width_m": None if measured is None else round(measured[1], 3),
+                            })
                 else:
                     junction_reference_unbacked.append({
                         "road_id": road_id,
@@ -265,10 +348,12 @@ def check_road_link_reciprocity(
             "violations": violations,
             "junction_mediated_exempt": junction_mediated_exempt,
             "dangling_target_skipped": dangling_target_skipped,
+            "junction_exit_geometry_gap_count": len(junction_exit_geometry_gap),
         },
         "contactpoint_invalid_examples": contactpoint_invalid[:max_examples],
         "asymmetric_examples": asymmetric[:max_examples],
         "junction_reference_unbacked_examples": junction_reference_unbacked[:max_examples],
+        "junction_exit_geometry_gap_examples": junction_exit_geometry_gap[:max_examples],
     }
 
 

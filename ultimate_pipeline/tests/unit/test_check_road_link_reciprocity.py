@@ -160,24 +160,63 @@ def test_junction_reference_without_backing_connection_is_a_violation():
     assert found[0]["target_id"] == "B"
 
 
-def test_junction_exit_side_is_backed_by_connecting_road_membership():
-    # Connecting road A belongs to junction J1 (incoming I -> connecting A)
-    # and leaves it into exit road B; B's predecessor names J1. No
-    # <connection> names B (connections list only incoming/connecting
-    # roads), so the pair is backed by A being one of J1's connecting
-    # roads. On the real 07_lanes map every one-way exit has this shape.
-    root = ET.Element("OpenDRIVE")
-    root.append(_road("I", successor=("junction", "J1", None)))
-    root.append(_road("A", junction="J1",
-                      predecessor=("road", "I", "end"),
-                      successor=("road", "B", "start")))
-    root.append(_road("B", predecessor=("junction", "J1", None)))
-    root.append(_junction("J1", ("I", "A")))
+def _line(road, x, y, length=10.0):
+    plan = ET.SubElement(road, "planView")
+    ET.SubElement(plan, "geometry", {"s": "0", "x": str(x), "y": str(y),
+                                     "hdg": "0", "length": str(length)})
+    ET.SubElement(plan.find("geometry"), "line")
+    return road
 
-    report = check_road_link_reciprocity(root)
+
+def _exit_layout(*, a_junction="J1", b_x=20.0):
+    # I (0..10) -> junction J1 via connecting road A (10..20) -> exit road B.
+    root = ET.Element("OpenDRIVE")
+    root.append(_line(_road("I", successor=("junction", "J1", None)), 0.0, 0.0))
+    root.append(_line(_road("A", junction=a_junction,
+                            predecessor=("road", "I", "end"),
+                            successor=("road", "B", "start")), 10.0, 0.0))
+    root.append(_line(_road("B", predecessor=("junction", "J1", None)), b_x, 0.0))
+    root.append(_junction("J1", ("I", "A")))
+    return root
+
+
+def test_junction_exit_side_is_backed_by_connecting_road_membership():
+    # Connecting road A belongs to junction J1 and leaves it into exit road B;
+    # B's predecessor names J1. No <connection> names B (connections list
+    # only incoming/connecting roads), so the exit is backed by A belonging to
+    # J1 and A's end meeting B's start. On the real 07_lanes map every
+    # one-way exit has this shape.
+    report = check_road_link_reciprocity(_exit_layout())
     assert report["totals"]["junction_reference_unbacked_count"] == 0, report
     assert report["totals"]["junction_mediated_exempt"] == 2, report
     assert report["ok"] is True, report
+
+
+def test_unrelated_road_claiming_a_junction_exit_is_reported_as_geometry_gap():
+    # Review repro: A really is J1's connecting road, but the B it names sits
+    # 500 m away. Structurally identical to a real exit; only the geometry
+    # shows B is not where A leaves the junction. Geometry gaps are
+    # report-only (the real map has 207 pre-existing ones, GAP-026 class),
+    # so this must be listed, never silently exempt.
+    report = check_road_link_reciprocity(_exit_layout(b_x=520.0))
+    assert report["totals"]["junction_reference_unbacked_count"] == 0, report
+    assert report["totals"]["junction_exit_geometry_gap_count"] == 1, report
+    gap = report["junction_exit_geometry_gap_examples"][0]
+    assert (gap["road_id"], gap["target_id"], gap["junction_id"]) == ("A", "B", "J1")
+    assert gap["reference_line_gap_m"] == 500.0
+
+
+def test_genuine_exit_has_no_geometry_gap():
+    report = check_road_link_reciprocity(_exit_layout())
+    assert report["totals"]["junction_exit_geometry_gap_count"] == 0, report
+
+
+def test_exit_side_requires_connecting_road_to_belong_to_the_junction():
+    # A is listed as J1's connectingRoad but its own junction attribute says
+    # it is an ordinary road: inconsistent, so the exit is not backed.
+    report = check_road_link_reciprocity(_exit_layout(a_junction="-1"))
+    assert report["totals"]["junction_reference_unbacked_count"] == 1, report
+    assert report["ok"] is False, report
 
 
 def test_junction_reference_to_nonexistent_junction_is_a_violation():

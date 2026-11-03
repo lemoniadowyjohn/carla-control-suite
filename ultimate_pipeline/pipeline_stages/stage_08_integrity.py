@@ -599,7 +599,7 @@ def _step8_markings_and_integrity(self, lanes_out: str, final_out: str) -> str:
     except Exception as e:
         print(f"⚠️ Ordinary road lane-link advisory skipped: {e}")
         self.vreport.add(
-            "ordinary_road_lane_link_targets", "error", f"{type(e).__name__}: {e}"
+            "error", "ordinary_road_lane_link_targets", f"{type(e).__name__}: {e}"
         )
 
     # L2 review: road->road <link> contactPoint presence + reciprocity
@@ -616,9 +616,15 @@ def _step8_markings_and_integrity(self, lanes_out: str, final_out: str) -> str:
     # `junction_reference_unbacked` category. The first version of that
     # rule missed the exit side and reported 22588/45176 false positives on
     # the real map (reports/rq1_trial_runs/run_01/20261007_214826_524342/
-    # 07_lanes_...xodr, sha256 787870babc93644a...); with the exit side
-    # recognised that map measures contactpoint_invalid=0, asymmetric=0,
-    # junction_reference_unbacked=0, so every category is gated.
+    # 07_lanes_...xodr, sha256 787870babc93644a...). The exit side is now
+    # backed structurally (connectingRoad of the junction AND
+    # road@junction == junction id); whether the carriageways actually meet
+    # is reported separately as junction_exit_geometry_gap, which is NOT
+    # gated: that map has 207 pre-existing exits whose reference lines sit
+    # 3.5-7 m beyond the combined carriageway width (GAP-026 connector
+    # geometry class). Measured on that map: contactpoint_invalid=0,
+    # asymmetric=0, junction_reference_unbacked=0 (gated) and
+    # junction_exit_geometry_gap=207 (reported).
     try:
         from ultimate_pipeline.quality.check_road_link_reciprocity import (
             check_road_link_reciprocity,
@@ -638,10 +644,14 @@ def _step8_markings_and_integrity(self, lanes_out: str, final_out: str) -> str:
         unbacked_junction_refs = reciprocity_totals.get(
             "junction_reference_unbacked_count", 0
         )
+        exit_geometry_gaps = reciprocity_totals.get(
+            "junction_exit_geometry_gap_count", 0
+        )
         print(
             "[STEP 8] road_link_reciprocity: "
             f"violations={reciprocity_violations} "
-            f"(junction_reference_unbacked={unbacked_junction_refs}) "
+            f"(junction_reference_unbacked={unbacked_junction_refs}, "
+            f"junction_exit_geometry_gap[report-only]={exit_geometry_gaps}) "
             f"-> {road_link_reciprocity_path}"
         )
         if reciprocity_violations > 0 and bool(getattr(s, "THESIS_STRICT", True)):
@@ -655,7 +665,7 @@ def _step8_markings_and_integrity(self, lanes_out: str, final_out: str) -> str:
         raise
     except Exception as e:
         print(f"⚠️ Road-link reciprocity check skipped: {e}")
-        self.vreport.add("road_link_reciprocity", "error", f"{type(e).__name__}: {e}")
+        self.vreport.add("error", "road_link_reciprocity", f"{type(e).__name__}: {e}")
 
     # NOTE: no AUTHORITATIVE MAP SWITCH here anymore: with lane-topology
     # repair moved to Stage 7 there is no _laneSectionFixed variant to
