@@ -10,13 +10,19 @@ import hashlib
 import tempfile
 from pathlib import Path
 
-# Pre-register carla stub before importing any project modules
-_carla = types.ModuleType("carla")
-_carla.CityObjectLabel = type("CityObjectLabel", (), {"Road": 0, "TrafficLight": 1})()
-_carla.ColorConverter = type("ColorConverter", (), {"CityScapesPalette": "palette"})
-_carla.Image = object
-_carla.Sensor = object
-sys.modules["carla"] = _carla
+# Pre-register a carla stub before importing project modules, but only when
+# the real client is not importable: this runs at collection time, so an
+# unconditional stub replaced the real module for every later test in the
+# session (15 CARLA-API tests failed in the full run, passed alone).
+try:
+    import carla as _real_carla  # noqa: F401
+except Exception:
+    _carla = types.ModuleType("carla")
+    _carla.CityObjectLabel = type("CityObjectLabel", (), {"Road": 0, "TrafficLight": 1})()
+    _carla.ColorConverter = type("ColorConverter", (), {"CityScapesPalette": "palette"})
+    _carla.Image = object
+    _carla.Sensor = object
+    sys.modules["carla"] = _carla
 
 # Allow torch import
 torch = pytest = None
