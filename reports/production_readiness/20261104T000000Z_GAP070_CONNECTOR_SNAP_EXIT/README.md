@@ -43,7 +43,7 @@ population rather than creating the historical 3,373 53-degree kinks.
 
 Executed with E:-resident pytest temporary directories:
 
-- `ultimate_pipeline/tests/unit/test_junction_connector_snap.py`: 8 passed.
+- `ultimate_pipeline/tests/unit/test_junction_connector_snap.py`: 10 passed.
 - `ultimate_pipeline/tests/unit/test_check_road_link_reciprocity.py`: 17 passed.
 
 Residual risk: Hermite endpoint preservation establishes C0 position and tangent

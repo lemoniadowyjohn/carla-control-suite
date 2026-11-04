@@ -24,6 +24,7 @@
     "exit_heading_discontinuity_count": 351
   },
   "default_flag_unchanged": "UP_ENABLE_JUNCTION_CONNECTOR_SNAP remains default-on; no flag/default was modified",
+  "implementation": "canonical_kernel_endpoint_validation_with_atomic_rollback",
   "input": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\rq1_trial_runs\\run_01\\20261007_214826_524342\\05_planview_20261007_214826_524342.xodr",
   "input_sha256_after": "45c52059ec5b7d8d1e5f2f90a2f814bde465a923e7e77768c5f5e660790c721c",
   "input_sha256_before": "45c52059ec5b7d8d1e5f2f90a2f814bde465a923e7e77768c5f5e660790c721c",

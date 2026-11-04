@@ -30,6 +30,10 @@ from ultimate_pipeline.diagnostics.audit_xodr_visual_geometry import (
     _road_endpoint_pose,
     _roads_by_id,
 )
+from ultimate_pipeline.geometry.opendrive_geometry_kernel import (
+    endpoint as _kernel_endpoint,
+    pose_at_s as _kernel_pose_at_s,
+)
 from ultimate_pipeline.quality.check_geometric_continuity import (
     Geometry,
     Pose,
@@ -229,6 +233,28 @@ def _replace_with_hermite(
     return True
 
 
+def _restore_planview(connector: ET.Element, backup: ET.Element) -> None:
+    current = connector.find("./planView")
+    if current is None:
+        connector.append(backup)
+        return
+    index = list(connector).index(current)
+    connector.remove(current)
+    connector.insert(index, backup)
+
+
+def _canonical_connector_poses(connector: ET.Element) -> tuple[Pose, Pose]:
+    geoms = _planview_geometry_elements(connector)
+    if not geoms:
+        raise ValueError("connector has no planView geometry")
+    start = _kernel_pose_at_s(geoms[0], 0.0)
+    end = _kernel_endpoint(geoms[-1])
+    return (
+        Pose(x=float(start.x), y=float(start.y), hdg=float(start.heading)),
+        Pose(x=float(end.x), y=float(end.y), hdg=float(end.heading)),
+    )
+
+
 def _count_junction_issues(root: ET.Element) -> Dict[str, Any]:
     roads = _roads_by_id(root)
     rows = _build_junction_rows(root, roads)
@@ -366,15 +392,27 @@ def snap_junction_connectors(
                 skipped_missing_exit_anchor += 1
                 residuals.append({"connector_id": connecting_id, "reason": "missing_or_ambiguous_exit_anchor"})
                 continue
-            before_entry = _dist_xy(conn_start, target_pose)
-            before_exit = _dist_xy(_road_endpoint_pose(connecting, "end"), exit_anchor)
+            try:
+                before_start, before_end = _canonical_connector_poses(connecting)
+            except (ValueError, TypeError):
+                skipped_refit_validation += 1
+                residuals.append({"connector_id": connecting_id, "reason": "canonical_pose_unavailable"})
+                continue
+            before_entry = _dist_xy(before_start, target_pose)
+            before_exit = _dist_xy(before_end, exit_anchor)
+            plan = connecting.find("./planView")
+            plan_backup = ET.fromstring(ET.tostring(plan)) if plan is not None else None
             if not _replace_with_hermite(connecting, target_pose, exit_anchor):
                 skipped_refit_validation += 1
                 residuals.append({"connector_id": connecting_id, "reason": "hermite_refit_failed"})
                 continue
-            after_start = _road_endpoint_pose(connecting, "start")
-            after_end = _road_endpoint_pose(connecting, "end")
+            try:
+                after_start, after_end = _canonical_connector_poses(connecting)
+            except (ValueError, TypeError):
+                after_start = after_end = None
             if after_start is None or after_end is None or _dist_xy(after_start, target_pose) > 1e-6 or _dist_xy(after_end, exit_anchor) > 1e-6:
+                if plan_backup is not None:
+                    _restore_planview(connecting, plan_backup)
                 skipped_refit_validation += 1
                 residuals.append({"connector_id": connecting_id, "reason": "hermite_endpoint_validation_failed"})
                 continue

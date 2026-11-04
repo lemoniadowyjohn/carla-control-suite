@@ -28,6 +28,7 @@ import math
 import pytest
 
 from ultimate_pipeline.tools.junction_connector_snap import snap_junction_connectors
+from ultimate_pipeline.tools import junction_connector_snap as snap_module
 
 
 def _road(road_id: str, junction: str, x0: float, y0: float, hdg0: float, length: float) -> str:
@@ -279,3 +280,30 @@ def test_refuses_rotation_without_a_topology_declared_exit_anchor():
     assert result["connectors_snapped"] == 0
     assert result["skipped_missing_exit_anchor"] == 1
     assert connector.find("./planView/geometry").get("x") == before_x
+
+
+def test_refit_rolls_back_when_canonical_endpoint_validation_fails(monkeypatch):
+    incoming = _road("1", "-1", 0.0, 0.0, 0.0, 10.0)
+    root = _xodr_with_connection(
+        incoming=incoming, connecting_junction="100", connecting_pose=(15.0, 0.0, 0.0),
+        connecting_length=8.0, contact_point="start",
+    )
+    connector = root.find(".//road[@id='9']")
+    before_geom = connector.find("./planView/geometry")
+    before = (dict(before_geom.attrib), before_geom[0].tag, dict(before_geom[0].attrib))
+    original = snap_module._canonical_connector_poses
+    calls = {"count": 0}
+
+    def fail_after_before(road):
+        calls["count"] += 1
+        if calls["count"] == 2:
+            raise ValueError("forced validation failure")
+        return original(road)
+
+    monkeypatch.setattr(snap_module, "_canonical_connector_poses", fail_after_before)
+    result = snap_junction_connectors(root, max_gap_m=2.0)
+
+    assert result["connectors_snapped"] == 0
+    assert result["skipped_refit_validation"] == 1
+    after_geom = connector.find("./planView/geometry")
+    assert (dict(after_geom.attrib), after_geom[0].tag, dict(after_geom[0].attrib)) == before
