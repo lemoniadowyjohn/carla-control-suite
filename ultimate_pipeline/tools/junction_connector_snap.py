@@ -158,6 +158,77 @@ def _set_geometry_pose(geom_el: ET.Element, pose: Pose) -> None:
     geom_el.set("hdg", f"{_norm_angle(float(pose.hdg)):.12f}")
 
 
+def _exit_anchor_from_links(
+    connector: ET.Element,
+    roads: Dict[str, ET.Element],
+    incoming_id: str,
+) -> Optional[Pose]:
+    """Return the topology-declared exit pose, never a nearest-road guess."""
+    link = connector.find("./link")
+    if link is None:
+        return None
+    candidates: List[Pose] = []
+    for slot in ("successor", "predecessor"):
+        for item in link.findall(slot):
+            if str(item.get("elementType") or "").strip() != "road":
+                continue
+            road_id = str(item.get("elementId") or "").strip()
+            if not road_id or road_id == incoming_id:
+                continue
+            contact = str(item.get("contactPoint") or "").strip().lower()
+            if contact not in ("start", "end"):
+                continue
+            road = roads.get(road_id)
+            if road is None:
+                continue
+            pose = _road_endpoint_pose(road, contact)
+            if pose is not None:
+                candidates.append(pose)
+    if len(candidates) != 1:
+        return None
+    return candidates[0]
+
+
+def _replace_with_hermite(
+    connector: ET.Element,
+    start: Pose,
+    end: Pose,
+) -> bool:
+    """Replace planView by one normalized cubic holding both endpoint poses."""
+    length = _safe_float(connector.get("length"), 0.0)
+    if not math.isfinite(length) or length <= 0.0:
+        return False
+    dx, dy = float(end.x) - float(start.x), float(end.y) - float(start.y)
+    ch, sh = math.cos(float(start.hdg)), math.sin(float(start.hdg))
+    u, v = ch * dx + sh * dy, -sh * dx + ch * dy
+    delta = _norm_angle(float(end.hdg) - float(start.hdg))
+    # Derivatives are with respect to normalized p; retaining `length` keeps
+    # the original geometry scale used by the OpenDRIVE kernel.
+    b_u, b_v = length, 0.0
+    end_u, end_v = length * math.cos(delta), length * math.sin(delta)
+    c_u, c_v = 3.0 * u - 2.0 * b_u - end_u, 3.0 * v - 2.0 * b_v - end_v
+    d_u, d_v = -2.0 * u + b_u + end_u, -2.0 * v + b_v + end_v
+    vals = (u, v, b_u, b_v, c_u, c_v, d_u, d_v)
+    if not all(math.isfinite(value) for value in vals):
+        return False
+    plan = connector.find("./planView")
+    if plan is None:
+        return False
+    for child in list(plan):
+        plan.remove(child)
+    geom = ET.SubElement(plan, "geometry", {
+        "s": "0.000000000000", "x": f"{float(start.x):.12f}",
+        "y": f"{float(start.y):.12f}", "hdg": f"{_norm_angle(float(start.hdg)):.12f}",
+        "length": f"{length:.12f}",
+    })
+    ET.SubElement(geom, "paramPoly3", {
+        "aU": "0.000000000000", "bU": f"{b_u:.12f}", "cU": f"{c_u:.12f}", "dU": f"{d_u:.12f}",
+        "aV": "0.000000000000", "bV": f"{b_v:.12f}", "cV": f"{c_v:.12f}", "dV": f"{d_v:.12f}",
+        "pRange": "normalized",
+    })
+    return True
+
+
 def _count_junction_issues(root: ET.Element) -> Dict[str, Any]:
     roads = _roads_by_id(root)
     rows = _build_junction_rows(root, roads)
@@ -187,7 +258,7 @@ def snap_junction_connectors(
     max_gap_m: float = 2.0,
     rechain_guard_m: float = 50.0,
     skip_ambiguous: Optional[bool] = None,
-) -> Dict[str, int]:
+) -> Dict[str, Any]:
     """
     Snap displaced connector-road start poses to the nearest incoming-road endpoint.
 
@@ -220,6 +291,10 @@ def snap_junction_connectors(
     classified_exact = 0
     classified_inferred = 0
     classified_ambiguous = 0
+    skipped_missing_exit_anchor = 0
+    skipped_refit_validation = 0
+    residuals: List[Dict[str, Any]] = []
+    connector_pose_reports: List[Dict[str, Any]] = []
 
     for junction in root.findall("./junction"):
         for connection in junction.findall("./connection"):
@@ -286,13 +361,31 @@ def snap_junction_connectors(
                 skipped_missing_geometries += 1
                 continue
 
-            _set_geometry_pose(geoms[0], target_pose)
-            prev_end = _geometry_end_pose(geoms[0])
-            local_rechains = 0
-            for geom_el in geoms[1:]:
-                _set_geometry_pose(geom_el, prev_end)
-                prev_end = _geometry_end_pose(geom_el)
-                local_rechains += 1
+            exit_anchor = _exit_anchor_from_links(connecting, roads, incoming_id)
+            if exit_anchor is None:
+                skipped_missing_exit_anchor += 1
+                residuals.append({"connector_id": connecting_id, "reason": "missing_or_ambiguous_exit_anchor"})
+                continue
+            before_entry = _dist_xy(conn_start, target_pose)
+            before_exit = _dist_xy(_road_endpoint_pose(connecting, "end"), exit_anchor)
+            if not _replace_with_hermite(connecting, target_pose, exit_anchor):
+                skipped_refit_validation += 1
+                residuals.append({"connector_id": connecting_id, "reason": "hermite_refit_failed"})
+                continue
+            after_start = _road_endpoint_pose(connecting, "start")
+            after_end = _road_endpoint_pose(connecting, "end")
+            if after_start is None or after_end is None or _dist_xy(after_start, target_pose) > 1e-6 or _dist_xy(after_end, exit_anchor) > 1e-6:
+                skipped_refit_validation += 1
+                residuals.append({"connector_id": connecting_id, "reason": "hermite_endpoint_validation_failed"})
+                continue
+            local_rechains = max(0, len(geoms) - 1)
+            connector_pose_reports.append({
+                "connector_id": connecting_id,
+                "entry_error_before_m": round(before_entry, 6),
+                "entry_error_after_m": round(_dist_xy(after_start, target_pose), 6),
+                "exit_error_before_m": round(before_exit, 6),
+                "exit_error_after_m": round(_dist_xy(after_end, exit_anchor), 6),
+            })
 
             connectors_snapped += 1
             geometries_rechained += local_rechains
@@ -311,6 +404,11 @@ def snap_junction_connectors(
         "classified_exact_topology": classified_exact,
         "classified_inferred_high": classified_inferred,
         "classified_ambiguous": classified_ambiguous,
+        "skipped_missing_exit_anchor": skipped_missing_exit_anchor,
+        "skipped_refit_validation": skipped_refit_validation,
+        "residual_count": len(residuals),
+        "residuals": residuals,
+        "connector_pose_reports": connector_pose_reports,
     }
 
 
@@ -361,6 +459,11 @@ def run_snap(input_path: Path, output_path: Path, max_gap_m: float) -> Dict[str,
         "classified_exact_topology": repair["classified_exact_topology"],
         "classified_inferred_high": repair["classified_inferred_high"],
         "classified_ambiguous": repair["classified_ambiguous"],
+        "skipped_missing_exit_anchor": repair["skipped_missing_exit_anchor"],
+        "skipped_refit_validation": repair["skipped_refit_validation"],
+        "residual_count": repair["residual_count"],
+        "residuals": repair["residuals"],
+        "connector_pose_reports": repair["connector_pose_reports"],
     }
     report_path.write_text(json.dumps(report, indent=2), encoding="utf-8")
     return report

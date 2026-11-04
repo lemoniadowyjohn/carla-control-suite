@@ -23,6 +23,7 @@
 from __future__ import annotations
 
 import xml.etree.ElementTree as ET
+import math
 
 import pytest
 
@@ -49,10 +50,17 @@ def _xodr_with_connection(
     contact_point: str,
 ) -> ET.Element:
     cx, cy, chdg = connecting_pose
+    exit_x = cx + connecting_length * math.cos(chdg)
+    exit_y = cy + connecting_length * math.sin(chdg)
     xml = f"""<?xml version="1.0" encoding="UTF-8"?>
 <OpenDRIVE>
   {incoming}
-  {_road("9", connecting_junction, cx, cy, chdg, connecting_length)}
+  <road name="R9" length="{connecting_length}" id="9" junction="{connecting_junction}">
+    <link><successor elementType="road" elementId="2" contactPoint="start"/></link>
+    <planView><geometry s="0" x="{cx}" y="{cy}" hdg="{chdg}" length="{connecting_length}"><line/></geometry></planView>
+    <lanes><laneSection s="0"><center><lane id="0" type="none"/></center></laneSection></lanes>
+  </road>
+  {_road("2", "-1", exit_x, exit_y, chdg, 10.0)}
   <junction id="{connecting_junction}">
     <connection id="0" incomingRoad="1" connectingRoad="9" contactPoint="{contact_point}">
       <laneLink from="-1" to="-1"/>
@@ -136,12 +144,14 @@ def test_rechains_multi_segment_connector_after_snap():
 <OpenDRIVE>
   {incoming}
   <road name="R9" length="16.0" id="9" junction="100">
+    <link><successor elementType="road" elementId="2" contactPoint="start"/></link>
     <planView>
       <geometry s="0" x="15.0" y="0.0" hdg="0.0" length="8.0"><line/></geometry>
       <geometry s="8" x="23.0" y="0.0" hdg="0.0" length="8.0"><line/></geometry>
     </planView>
     <lanes><laneSection s="0"><center><lane id="0" type="none"/></center></laneSection></lanes>
   </road>
+  {_road("2", "-1", 31.0, 0.0, 0.0, 10.0)}
   <junction id="100">
     <connection id="0" incomingRoad="1" connectingRoad="9" contactPoint="start">
       <laneLink from="-1" to="-1"/>
@@ -158,8 +168,11 @@ def test_rechains_multi_segment_connector_after_snap():
 
     geoms = root.findall(".//road[@id='9']/planView/geometry")
     assert float(geoms[0].get("x")) == pytest.approx(10.0)
-    # second segment must be rechained to start where the first ends (10+8=18)
-    assert float(geoms[1].get("x")) == pytest.approx(18.0)
+    # The source-stage refit replaces the multi-segment connector with one
+    # Hermite segment so both declared ends remain anchored.
+    assert len(geoms) == 1
+    assert geoms[0].find("paramPoly3") is not None
+    assert result["connector_pose_reports"][0]["exit_error_after_m"] == pytest.approx(0.0)
 
 
 def test_non_connector_road_incoming_side_ignored():
@@ -203,7 +216,12 @@ def test_defaults_to_start_when_contact_point_attribute_absent():
     xml = f"""<?xml version="1.0" encoding="UTF-8"?>
 <OpenDRIVE>
   {incoming}
-  {_road("9", "100", 15.0, 0.0, 0.0, 8.0)}
+  <road name="R9" length="8.0" id="9" junction="100">
+    <link><successor elementType="road" elementId="2" contactPoint="start"/></link>
+    <planView><geometry s="0" x="15.0" y="0.0" hdg="0.0" length="8.0"><line/></geometry></planView>
+    <lanes><laneSection s="0"><center><lane id="0" type="none"/></center></laneSection></lanes>
+  </road>
+  {_road("2", "-1", 23.0, 0.0, 0.0, 10.0)}
   <junction id="100">
     <connection id="0" incomingRoad="1" connectingRoad="9">
       <laneLink from="-1" to="-1"/>
@@ -217,3 +235,47 @@ def test_defaults_to_start_when_contact_point_attribute_absent():
 
     assert result["skipped_end_contact_point"] == 0
     assert result["connectors_snapped"] == 1
+
+
+def test_refit_preserves_exit_pose_for_displaced_parampoly3_connector():
+    incoming = _road("1", "-1", 0.0, 0.0, 0.0, 10.0)
+    xml = f"""<OpenDRIVE>
+      {incoming}
+      <road name="connector" length="10" id="9" junction="100">
+        <link><successor elementType="road" elementId="2" contactPoint="start"/></link>
+        <planView><geometry s="0" x="15" y="0" hdg="0" length="10">
+          <paramPoly3 aU="0" bU="10" cU="0" dU="0" aV="0" bV="0" cV="0" dV="0" pRange="normalized"/>
+        </geometry></planView>
+        <lanes><laneSection s="0"><center><lane id="0" type="none"/></center></laneSection></lanes>
+      </road>
+      {_road("2", "-1", 25.0, 0.0, 0.0, 10.0)}
+      <junction id="100"><connection id="0" incomingRoad="1" connectingRoad="9" contactPoint="start"/></junction>
+    </OpenDRIVE>"""
+    root = ET.fromstring(xml)
+
+    result = snap_junction_connectors(root, max_gap_m=2.0)
+
+    connector = root.find(".//road[@id='9']")
+    start = connector.find("./planView/geometry")
+    assert result["connectors_snapped"] == 1
+    assert start.find("paramPoly3") is not None
+    assert float(start.get("x")) == pytest.approx(10.0)
+    assert result["connector_pose_reports"][0]["entry_error_after_m"] == pytest.approx(0.0)
+    assert result["connector_pose_reports"][0]["exit_error_after_m"] == pytest.approx(0.0)
+
+
+def test_refuses_rotation_without_a_topology_declared_exit_anchor():
+    incoming = _road("1", "-1", 0.0, 0.0, 0.0, 10.0)
+    root = _xodr_with_connection(
+        incoming=incoming, connecting_junction="100", connecting_pose=(15.0, 0.0, 0.0),
+        connecting_length=8.0, contact_point="start",
+    )
+    connector = root.find(".//road[@id='9']")
+    connector.remove(connector.find("./link"))
+    before_x = connector.find("./planView/geometry").get("x")
+
+    result = snap_junction_connectors(root, max_gap_m=2.0)
+
+    assert result["connectors_snapped"] == 0
+    assert result["skipped_missing_exit_anchor"] == 1
+    assert connector.find("./planView/geometry").get("x") == before_x
