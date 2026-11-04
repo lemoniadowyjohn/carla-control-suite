@@ -1,0 +1,51 @@
+{
+  "review_id": "ARCH-003",
+  "date_utc": "2026-11-04",
+  "decision": "NO_GO",
+  "verdict": "REQUIRES_SOURCE_HARDENING",
+  "evidence_class": "LOCAL_REPRODUCED_NOT_REMOTE_VERIFIED",
+  "identities": {
+    "integration": "1a36b560a69286841d4c42973cf00258a38f56c1",
+    "gap070_candidate": "2cee039f235f2cff7c87fa1fce935154cdcf3cd8",
+    "c1": "fix/gap070-connector-snap-safety-c1-20261104 @ 2cee039f + UNCOMMITTED changes (stage_05_geometry.py, test_stage05_connector_snap_wiring.py)",
+    "o13": "NOT_RUN: does not exist",
+    "input_sha256": "45c52059ec5b7d8d1e5f2f90a2f814bde465a923e7e77768c5f5e660790c721c",
+    "producing_commit_of_input_run": "22cf39ab (run metadata; code read at that commit)"
+  },
+  "established": {
+    "lane_border_hypothesis_non_uturn": "CONFIRMED at lane-centre level: 19,345/19,459 non-U-turn lane links continuous (<=1 m) with snap OFF; the merged snap raises >1 m gaps 114 -> 863",
+    "snap_off_is_best_on_position": "entry >1 m gaps OFF 355 vs MERGED 4,472 vs CANDIDATE 4,472; exit 341 vs 4,458 vs 3,824",
+    "uturn_source_defect": "3,696/3,947 U-turn lane links have entry gap >0.5 m and 3,716 have entry kink >10 deg with snap OFF (Osm2Odr source; not fixed by disabling the snap)",
+    "stage3_stage5_identity": "EXPLAINED: READ_ONLY_DIAGNOSTIC Stage-6 containment copies the input to 05_planview via shutil.copy2 (stage_06_links.py @22cf39ab); the run receipt confirms it"
+  },
+  "blocking_items": [
+    {"id": "C1-02", "what": "the disabled-snap report claims residual_count 0 without measuring; residuals must stay visible", "owner": "Codex C1"},
+    {"id": "C1-03", "what": "opt-in still runs the unhardened Hermite refit with no strict/release refusal", "owner": "Codex C1"},
+    {"id": "C1-commit", "what": "C1 is uncommitted; final review required", "owner": "Codex C1"},
+    {"id": "O13", "what": "independent validator plus lane-centre metric (second implementation) missing; 18 adversarial tests pending", "owner": "OpenCode O13"},
+    {"id": "GAP-NEW-UTURN", "what": "register the U-turn lane-level source defect as its own GAP (new addendum)", "owner": "docs"},
+    {"id": "RES-DISK", "what": ">= 15 GiB free on ONE volume plus headroom; current free: C 2.4G, E 0.6G, F 2.3G, G 5.1G (H quarantined)", "owner": "operator"},
+    {"id": "EVID-ARCHIVE", "what": "stage input archive (C0) approved and uploaded", "owner": "operator"},
+    {"id": "OP-APPROVAL", "what": "explicit operator approval for X8", "owner": "operator"}
+  ],
+  "x8_arms": [
+    {"arm": "C_OFF", "role": "CANDIDATE (new default)", "env": "UP_ENABLE_JUNCTION_CONNECTOR_SNAP=0"},
+    {"arm": "A_MERGED", "role": "historical default, negative control", "env": "UP_ENABLE_JUNCTION_CONNECTOR_SNAP=1 at 1a36b560"},
+    {"arm": "L_LANE_BORDER_AWARE", "role": "optional; only if a lane-border-aware snap is implemented and reviewed", "env": "TBD"},
+    {"arm": "H_HERMITE", "role": "diagnostic only, never a candidate; run only if it is cheap and isolated", "env": "2cee039f opt-in"},
+    {"arm": "C_OFF_REPEAT", "role": "determinism twin of C_OFF", "env": "as C_OFF"}
+  ],
+  "x8_metrics": {
+    "hard_zero": ["road-link reciprocity violations", "lane-link targets missing", "dangling references", "cusps/self-intersections in any modified connector (none expected in C_OFF)"],
+    "comparative_vs_A_MERGED_and_vs_stage_input": ["entry AND exit lane-centre gap distributions (>0.1, >0.5, >1 m) split by U-turn class", "entry/exit lane heading kinks (>10, >30, >150 deg)", "junction-exit kinks > 30 deg (EXIT_HEADING_DISCONTINUITY_DEG = 30.0; not to be raised)", "arc length vs @length (modified connectors)", "elevation continuity gates", "road/junction/lane counts"],
+    "sensitivity": ["RQ2 structural metrics (lane_width_gap, curvature_gap, density ratios) per arm, hull and bbox footprints"],
+    "determinism": ["C_OFF vs C_OFF_REPEAT: normalized-byte and structural identity"],
+    "negative_controls": ["A_MERGED must reproduce ~3,600+ U-turn exit kinks > 30 deg and ~860 non-U-turn >1 m entry gaps; if not, the measurement is broken"]
+  },
+  "missing_policies_reported_as_blockers": [
+    "lane-centre gap tolerance for acceptance (none exists in any contract; 0.1 / 0.5 / 1 m are reporting bins, not thresholds)",
+    "lane heading kink tolerance at the lane level (the only existing constant is the reference-line EXIT_HEADING_DISCONTINUITY_DEG = 30.0)",
+    "minimum drivable radius for U-turns (operator; CARLA vehicle model)",
+    "snap displacement guard value (only if any snapping is kept)"
+  ]
+}

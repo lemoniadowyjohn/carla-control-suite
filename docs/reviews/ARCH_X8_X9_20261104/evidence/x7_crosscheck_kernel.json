@@ -1,0 +1,16 @@
+{
+ "method": "kernel-only sampling, N=2000 per refit",
+ "refits": 4025,
+ "uturn_coincident_endpoints": 3375,
+ "uturn_with_direction_reversal": 3367,
+ "uturn_not_simple": 426,
+ "uturn_arc_ratio_min_max": [
+  0.385371644733511,
+  0.5000035741220028
+ ],
+ "other": 650,
+ "other_with_direction_reversal": 0,
+ "other_not_simple": 0,
+ "other_arc_dev_gt_10pct": 344,
+ "other_arc_ratio_max": 4.020091043369738
+}

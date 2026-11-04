@@ -1,0 +1,26 @@
+claim_id,rq_or_gap,claim,status_after_correction,evidence_path,identity,provenance_class,verification_method,open_requirement
+C01,RQ1,Osm2Odr aggregate signature identical over 3 runs,BOUNDED,reports/post_audit_hardening/C15_RQ4_DR/C15_RQ4_DOMAIN_RANDOMIZATION.json,integration 1a36b560,GITHUB_VERIFIED,summary JSON only,publish 3 XODRs; canonical structural hash
+C02,RQ1,3 Osm2Odr outputs differ in bytes,BOUNDED,same,same,GITHUB_VERIFIED,summary (3 unique sha),files unpublished
+C03,RQ1,byte differences are timestamps only,UNVERIFIED,tests/unit/test_exp_osm_to_xodr_determinism_normalized.py,1a36b560,REPORTED_NOT_REPRODUCED,string fixtures only,re-run on the 3 real files
+C04,RQ1,full-pipeline / post-enrichment determinism,NOT_RUN,-,-,NOT_RUN,-,X8 arm C_OFF + repeat
+C05,RQ1,run 20261007_214826_524342 evidences OSM->XODR determinism,WITHDRAWN,run_manifest.json (local),INPUT_XODR 370abbbb,LOCAL_REPRODUCED,manifest read,-
+C06,RQ2,hull road-length ratio 2.683,KEPT,reports/production_readiness/20260923_RQ2_REVERIFICATION/local_registration.json,auto 370abbbb / manual 5eaece23,GITHUB_VERIFIED,recomputed 143606.1/53525.3,report bbox 4.488 alongside
+C07,RQ2,hull lane_width_gap 0.042 / curvature 0.093,CORRECTED,same,same,GITHUB_VERIFIED,file read: hull 0.0597/0.2206; whole 0.0415/0.0931,-
+C08,RQ2,auto map is more complete,UNVERIFIED,-,-,REPORTED_NOT_REPRODUCED,-,correspondence matching + segmentation-invariant metrics
+C09,RQ2,2026-08-19 map-of-record pin,SUPERSEDED,docs/research/THESIS_TO_CURRENT_PROGRESS.md:93-104,ingolstadt_perception_map_of_record_20260819_160350.xodr,SUPERSEDED,-,-
+C10,RQ3,any perceptual gap value,NOT_MEASURED,-,-,NOT_RUN,-,CARLA + anchors + trust root
+C11,RQ4,cosine distance 0.921 [0.845 0.976],KEPT_AS_SEED_VARIABILITY,reports/production_readiness/20260924T000000Z_GAP010_RQ4_LEAKFREE_RETRAIN/aggregate_stats.json,sha256 prefix 89f5d2ac; pair Grid0821 vs candidate_connectivity_repaired,GITHUB_VERIFIED,5 per-seed values read,RQ4 spec null + permutation
+C12,RQ4,auto and manual clearly separated,WITHDRAWN_PENDING_TEST,same,same,NOT_RUN,no null for the leak-free retrain; thesis-era permutation test predates fixes (see C16),RQ4_STATISTICAL_EVALUATION_SPEC.md
+C13,RQ4,0.643 [0.616 0.676],SUPERSEDED,same dir (superseded_value),-,SUPERSEDED,GAP-010 leak,-
+C14,RQ4,training width mode,UNRECORDED,run_seed_ensemble_leakfree.py; graph_builder.py:309,default legacy,REPORTED_NOT_REPRODUCED,inferred from defaults,record schema hash
+C16,RQ4,thesis-era K=1000 permutation test p<0.001,HISTORICAL_NOT_APPLICABLE_TO_0.921,docs/research/THESIS_TO_CURRENT_PROGRESS.md:14,"thesis-era GNN (pre 2026-09-01 graph fix, pre GAP-010)",REPORTED_NOT_REPRODUCED,document read; unit/statistic undocumented; not in C21_REPORT.md,new null per RQ4_STATISTICAL_EVALUATION_SPEC.md
+C15,RQ5a/b,any generalization value,NOT_MEASURED,-,-,NOT_RUN,-,RQ3 captures; real data
+G01,GAP-070,default snap breaks lane-centre continuity (non-U-turn >1 m entry gaps 114 -> 863),OPEN,docs/reviews/ARCH003_20261104/evidence/,input 45c52059,LOCAL_REPRODUCED,one lane-centre implementation,second implementation (O13)
+G02,GAP-070,snap moves equal cumulative lane widths (4024/4025),OPEN,docs/reviews/ARCH002_20261104 + evidence,input 45c52059,LOCAL_REPRODUCED,offset-sum comparison,independent check
+G03,GAP-070,candidate 2cee039f collapses 3375 U-turn refits,OPEN (candidate rejected),docs/reviews/ARCH_X8_X9_20261104/evidence + ARCH002 crosscheck,2cee039f; input 45c52059,LOCAL_REPRODUCED,two methods (analytic + kernel),-
+G04,GAP-070,snap OFF keeps 99.41% non-U-turn laneLinks continuous,OPEN (containment),docs/reviews/ARCH003_20261104/evidence/lcc_off_cls.json,input 45c52059,LOCAL_REPRODUCED,one implementation,O13 + X8
+G05,GAP-079,58 -> 81 stubs (+23),OPEN,X9 inventory @06a31ed1 (local branch),run 20261007,LOCAL_REPRODUCED,two scripts (X9 + x9check.py),-
+G06,GAP-079,stubs originate in Osm2Odr / netconvert,WITHDRAWN (UNKNOWN_PENDING_RAW_OSM_REPRODUCTION),run_manifest.json,INPUT_XODR 370abbbb,LOCAL_REPRODUCED,manifest read,fresh Osm2Odr per-stage run
+G07,GAP-080,3696/3947 U-turn laneLinks >0.5 m lane-centre gap with snap OFF; median 0.7467 m / 26.565 deg,OPEN,docs/reviews/SCI_CORRECT003_20261104/evidence/lcc_off_v2.json,input 45c52059,LOCAL_REPRODUCED,"one implementation + synthetic controls (ARCH003/evidence/controls: A 0/0, B 3.25 m, C 0.7467 m / 26.565 deg)",second implementation; raw-OSM origin
+G08,GAP-080,U-turns physically impossible,NOT_CLAIMED,-,-,NOT_RUN,-,vehicle envelope + CARLA traversal
+G09,R-13,stage 03 == stage 05 bytes is expected,CLOSED_EXPLAINED,stage_06_links.py @22cf39ab + stage6_containment_runtime.json,22cf39ab,LOCAL_REPRODUCED,code trace + receipt + mtime,code GITHUB_VERIFIED at 22cf39ab; receipt and file hashes local

@@ -1,0 +1,69 @@
+{
+ "arm": "off",
+ "worktree": "repair-map-realism-p0-837a8504",
+ "snap_report": null,
+ "counts": {
+  "lanelinks": 23406,
+  "entry_unresolved": 0,
+  "exit_unresolved": 0,
+  "connector_left_lane_to": 0,
+  "by_class": {
+   "non_uturn": {
+    "lanelinks": 19459,
+    "entry_gap_gt_0_5": 123,
+    "entry_gap_gt_1": 114,
+    "entry_kink_gt_10": 113,
+    "exit_gap_gt_0_5": 114,
+    "exit_gap_gt_1": 108,
+    "exit_kink_gt_10": 121,
+    "exit_kink_gt_30": 111
+   },
+   "uturn": {
+    "lanelinks": 3947,
+    "entry_gap_gt_0_5": 3696,
+    "entry_gap_gt_1": 241,
+    "entry_kink_gt_10": 3716,
+    "exit_gap_gt_0_5": 3705,
+    "exit_gap_gt_1": 233,
+    "exit_kink_gt_10": 3722,
+    "exit_kink_gt_30": 248
+   }
+  }
+ },
+ "entry_gap": {
+  "n": 23406,
+  "p50": 6.514057738268427e-08,
+  "p99": 2.4859278584944575,
+  "max": 10.499896836100456,
+  "gt_0_10m": 3879,
+  "gt_0_50m": 3819,
+  "gt_1m": 355
+ },
+ "exit_gap": {
+  "n": 23406,
+  "p50": 5.030251480712527e-08,
+  "p99": 2.300399826452548,
+  "max": 10.498365214297863,
+  "gt_0_10m": 3913,
+  "gt_0_50m": 3819,
+  "gt_1m": 341
+ },
+ "entry_kink": {
+  "n": 23406,
+  "p50": 0.0,
+  "p99": 86.78594759522893,
+  "max": 179.99999979432002,
+  "gt_10deg": 3829,
+  "gt_30deg": 354,
+  "gt_150deg": 139
+ },
+ "exit_kink": {
+  "n": 23406,
+  "p50": 2.1869122500956346e-07,
+  "p99": 86.58032908537476,
+  "max": 179.99999996576003,
+  "gt_10deg": 3843,
+  "gt_30deg": 359,
+  "gt_150deg": 147
+ }
+}

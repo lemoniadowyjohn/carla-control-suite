@@ -1,0 +1,86 @@
+{
+ "arm": "snap",
+ "worktree": "fix-gap070-connector-snap-exit-20261103",
+ "snap_report": {
+  "connectors_examined": 22588,
+  "connectors_snapped": 4025,
+  "geometries_rechained": 0,
+  "skipped_missing_incoming": 0,
+  "skipped_missing_connecting": 0,
+  "skipped_missing_geometries": 0,
+  "skipped_missing_pose": 0,
+  "skipped_end_contact_point": 0,
+  "skip_ambiguous": true,
+  "skipped_ambiguous": 409,
+  "classified_exact_topology": 452,
+  "classified_inferred_high": 21727,
+  "classified_ambiguous": 409,
+  "skipped_missing_exit_anchor": 0,
+  "skipped_refit_validation": 0,
+  "residual_count": 0
+ },
+ "counts": {
+  "lanelinks": 23406,
+  "entry_unresolved": 0,
+  "exit_unresolved": 0,
+  "connector_left_lane_to": 0,
+  "by_class": {
+   "non_uturn": {
+    "lanelinks": 19459,
+    "entry_gap_gt_0_5": 872,
+    "entry_gap_gt_1": 863,
+    "entry_kink_gt_10": 112,
+    "exit_gap_gt_0_5": 229,
+    "exit_gap_gt_1": 223,
+    "exit_kink_gt_10": 119,
+    "exit_kink_gt_30": 109
+   },
+   "uturn": {
+    "lanelinks": 3947,
+    "entry_gap_gt_0_5": 3697,
+    "entry_gap_gt_1": 3609,
+    "entry_kink_gt_10": 347,
+    "exit_gap_gt_0_5": 3704,
+    "exit_gap_gt_1": 3601,
+    "exit_kink_gt_10": 353,
+    "exit_kink_gt_30": 248
+   }
+  }
+ },
+ "entry_gap": {
+  "n": 23406,
+  "p50": 7.132464019267697e-08,
+  "p99": 3.500000000001524,
+  "max": 14.000000000000322,
+  "gt_0_10m": 4627,
+  "gt_0_50m": 4569,
+  "gt_1m": 4472
+ },
+ "exit_gap": {
+  "n": 23406,
+  "p50": 4.975523490985883e-08,
+  "p99": 3.500000000000315,
+  "max": 14.000000000000146,
+  "gt_0_10m": 4026,
+  "gt_0_50m": 3933,
+  "gt_1m": 3824
+ },
+ "entry_kink": {
+  "n": 23406,
+  "p50": 0.0,
+  "p99": 86.78594759522893,
+  "max": 179.99999979432002,
+  "gt_10deg": 459,
+  "gt_30deg": 354,
+  "gt_150deg": 139
+ },
+ "exit_kink": {
+  "n": 23406,
+  "p50": 1.3598209640666495e-07,
+  "p99": 86.58032908537476,
+  "max": 179.99999996576003,
+  "gt_10deg": 472,
+  "gt_30deg": 357,
+  "gt_150deg": 147
+ }
+}
