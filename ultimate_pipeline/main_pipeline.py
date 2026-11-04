@@ -2052,12 +2052,12 @@ if str(_repo_root) not in sys.path:
                 f"🔐 Settings schema version: {getattr(s, 'SETTINGS_SCHEMA_VERSION', 'UNKNOWN')}"
             )
 
-            self.vreport.add("settings", "snapshot_sha256", settings_hash)
+            self.vreport.add("success", "settings", f"snapshot_sha256: {settings_hash}")
             if settings_hash_md5:
-                self.vreport.add("settings", "snapshot_md5", settings_hash_md5)
+                self.vreport.add("success", "settings", f"snapshot_md5: {settings_hash_md5}")
             if hasattr(s, "SETTINGS_SCHEMA_VERSION"):
                 self.vreport.add(
-                    "settings", "schema_version", s.SETTINGS_SCHEMA_VERSION
+                    "success", "settings", f"schema_version: {s.SETTINGS_SCHEMA_VERSION}"
                 )
 
             # ---------------------------------------------------------
@@ -2963,7 +2963,7 @@ if str(_repo_root) not in sys.path:
                 )
             except Exception as e:
                 print(f"   ❌ continuity scan run {i + 1} failed: {e}")
-                self.vreport.add("continuity_stability", "scan_failed", str(e))
+                self.vreport.add("error", "continuity_stability", f"scan_failed: {e}")
                 return
 
         def _canonical(obj):
@@ -2986,10 +2986,10 @@ if str(_repo_root) not in sys.path:
 
         if stable:
             print(f"✅ Continuity stats stable across {runs} runs → {out_json}")
-            self.vreport.add("continuity_stability", "stable", True)
+            self.vreport.add("success", "continuity_stability", f"stable: {stable}")
         else:
             print(f"⚠️ Continuity stats NOT stable across runs → {out_json}")
-            self.vreport.add("continuity_stability", "stable", False)
+            self.vreport.add("warning", "continuity_stability", f"stable: {stable}")
 
     def _validate_stage_capability_contract(self) -> None:
         """Fail-closed pre-flight check of the declared stage capability
@@ -3680,7 +3680,7 @@ if str(_repo_root) not in sys.path:
             raise RuntimeError("❌ FULL map has no valid spawn points")
 
         print("✅ FULL map loaded and spawn points validated (STEP 10).")
-        self.vreport.add("drivability", "full_map_spawn", "ok")
+        self.vreport.add("success", "drivability", "full_map_spawn: ok")
 
         # ---------------------------------------------------------
         # 🎯 FULL MAP VALIDATION (ONLY IF ATTEMPTED)
@@ -4587,7 +4587,7 @@ if str(_repo_root) not in sys.path:
             print("   → Roundabouts tagged for preview.")
         except Exception as e:
             print(f"⚠️ Roundabout tagging skipped: {e}")
-            self.vreport.add("roundabouts", "tagging_failed", str(e))
+            self.vreport.add("error", "roundabouts", f"tagging_failed: {e}")
 
         # Buildings: ensure buildings.geojson exists (source resolution only)
         buildings_path = resolve_buildings_geojson_for_stage4(
@@ -4644,7 +4644,7 @@ if str(_repo_root) not in sys.path:
                 )
         except Exception as e:
             print(f"⚠️ OSM meta source prep failed: {e}")
-            self.vreport.add("osm_meta_source_prep", "error", str(e))
+            self.vreport.add("error", "osm_meta_source_prep", str(e))
 
         # Access restrictions: EXTRACT only (apply in positional_semantics)
         try:
@@ -4661,7 +4661,7 @@ if str(_repo_root) not in sys.path:
             )
         except Exception as e:
             print(f"⚠️ OSM access metadata extraction failed: {e}")
-            self.vreport.add("osm_access_restriction_source_prep", "error", str(e))
+            self.vreport.add("error", "osm_access_restriction_source_prep", str(e))
 
         # Crosswalks: EXTRACT only (apply in positional_semantics)
         try:
@@ -4679,7 +4679,7 @@ if str(_repo_root) not in sys.path:
                 self.vreport.add_dict("crosswalk_source_prep", {"osm_crossings_found": 0, "cached_for_materialization": False})
         except Exception as e:
             print(f"⚠️ Crosswalk extraction failed: {e}")
-            self.vreport.add("crosswalk_source_prep", "error", str(e))
+            self.vreport.add("error", "crosswalk_source_prep", str(e))
 
         # XODR statistics after source preparation
         stats = XODRStatistics.compute(topo_fixed)

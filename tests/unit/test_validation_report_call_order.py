@@ -1,44 +1,34 @@
-"""Guard: ``ValidationReport.add()`` calls in pipeline stages must be level-first.
+"""Guard: ``ValidationReport.add()`` calls must be level-first, package-wide.
 
 ``ValidationReport.add(level, stage, message)`` takes the level *first*.  A call
 that passes the semantic stage key first (``vreport.add("enrichment", "error", ...)``)
 silently lands in the ``warnings`` bucket instead of ``errors``: no exception,
 no failing gate -- just a mis-classified report.  Commit ``56efb2cb`` fixed the
-26 reversed call sites that existed in ``ultimate_pipeline/pipeline_stages/``;
-this test keeps that fix from regressing.
+26 reversed call sites that existed in ``ultimate_pipeline/pipeline_stages/``.
+A follow-up fix made every remaining ``ultimate_pipeline/`` call site
+level-first (``main_pipeline.py`` and ``ultimate_pipeline/quality/``).  This
+test keeps the whole package's fix from regressing.
 
 Scope
 -----
-Only ``ultimate_pipeline/pipeline_stages/`` is walked (nested ``tests``
-directories and ``__pycache__`` are skipped).  Every ``.add(...)`` call whose
-receiver name ends in ``vreport`` (``self.vreport.add``, ``vreport.add``) is
-checked: the first positional argument must be a string literal that is one of
+All of ``ultimate_pipeline/`` is walked (nested ``tests`` directories and
+``__pycache__`` are skipped).  Every ``.add(...)`` call whose receiver name
+ends in ``vreport`` (``self.vreport.add``, ``vreport.add``) is checked: the
+first positional argument must be a string literal that is one of
 ``{"error", "warning", "success", "skipped"}``.
 
 Mandated-Limitations
 --------------------
-1. The scope is deliberately narrow.  A package-wide strict walk over
-   ``ultimate_pipeline/`` on HEAD ``46708baa`` finds **20** violations: three
-   genuine reversed-order calls in ``ultimate_pipeline/main_pipeline.py``
-   (lines 4647, 4664 and 4682, introduced by ``0473b280`` and untouched by
-   ``56efb2cb``) plus 17 legacy semantic-key call sites that were never
-   level-first (``main_pipeline.py`` and ``ultimate_pipeline/quality/``).
-2. Those three live reversals are a real defect filed as a follow-up issue
-   *outside* this guard.  They are deliberately **not** allowlisted here:
-   allowlisting them would bless two genuine bugs and hide them from the
-   follow-up.  The guard's job is to freeze the ``pipeline_stages/`` fix, not
-   to certify the whole package.
-3. The 26 reversed sites fixed by ``56efb2cb`` were all inside
-   ``pipeline_stages/`` (stage_04, stage_05, stage_07, stage_08_integrity,
-   stage_09, stage_12).  That is why this scope reproduces the fix exactly:
-   replayed against the parent commit ``56efb2cb~1`` the same checker reports
-   exactly 26 violations, and 0 on HEAD.
-4. ``ALLOWLIST`` is empty because the AST measurement on HEAD ``46708baa``
-   found **0** non-constant first positional arguments among the 31
+1. ``ALLOWLIST`` is empty because a package-wide AST measurement found **0**
+   non-constant first positional arguments among the 59
    ``vreport.add(...)`` calls in scope -- there is nothing legitimate to
    exempt.  If a future call genuinely needs a dynamic level, that is a design
    decision: fix the call (or extend the checker deliberately), do not widen
    the allowlist to make a red test green.
+2. The 26 reversed sites fixed by ``56efb2cb`` were all inside
+   ``pipeline_stages/`` (stage_04, stage_05, stage_07, stage_08_integrity,
+   stage_09, stage_12); the 20 additional sites fixed in this change span
+   ``main_pipeline.py`` and ``ultimate_pipeline/quality/``.
 
 Paths are resolved from this test file's location so the guard behaves the same
 when pytest is started from the worktree root or from anywhere else.
@@ -51,19 +41,20 @@ from pathlib import Path
 from typing import Iterable, List, NamedTuple, Optional, Set
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-STAGES_DIR = REPO_ROOT / "ultimate_pipeline" / "pipeline_stages"
+SCAN_ROOT = REPO_ROOT / "ultimate_pipeline"
 
 VALID_LEVELS = frozenset({"error", "warning", "success", "skipped"})
 
-# Empty on purpose -- see Mandated-Limitations item (4): 0 non-constant first
-# positional arguments exist in scope on HEAD 46708baa.
+# Empty on purpose -- see Mandated-Limitations item (1): 0 non-constant first
+# positional arguments exist in scope package-wide.
 ALLOWLIST: dict[str, Set[int]] = {}
 
-# Measured on HEAD 46708baa: 31 calls in scope.  The guard asserts a floor
-# (>= 20) instead of the exact number so that *adding* level-first calls never
-# turns it red, while a walk that silently matches nothing still fails.
-MIN_EXPECTED_CALLS = 20
-MEASURED_CALL_COUNT = 31
+# Measured package-wide (all of ultimate_pipeline/, nested tests/ excluded):
+# 59 calls in scope.  The guard asserts a floor (>= 59) instead of the exact
+# number so that *adding* level-first calls never turns it red, while a walk
+# that silently matches nothing still fails.
+MIN_EXPECTED_CALLS = 59
+MEASURED_CALL_COUNT = 59
 
 
 class AddCall(NamedTuple):
@@ -126,7 +117,7 @@ def describe_first_arg(node: Optional[ast.expr]) -> str:
     return f"{type(node).__name__} expression"
 
 
-def scan_stages_dir(root: Path) -> tuple[List[AddCall], List[str]]:
+def scan_package_dir(root: Path) -> tuple[List[AddCall], List[str]]:
     calls: List[AddCall] = []
     for path in _iter_scope_files(root):
         # utf-8-sig: some tracked sources carry a UTF-8 BOM.
@@ -153,17 +144,17 @@ def scan_stages_dir(root: Path) -> tuple[List[AddCall], List[str]]:
     return calls, violations
 
 
-def test_stages_dir_exists() -> None:
-    assert STAGES_DIR.is_dir(), f"pipeline stages directory not found: {STAGES_DIR}"
+def test_scan_root_exists() -> None:
+    assert SCAN_ROOT.is_dir(), f"ultimate_pipeline directory not found: {SCAN_ROOT}"
 
 
-def test_validation_report_add_is_level_first_in_pipeline_stages() -> None:
-    calls, violations = scan_stages_dir(STAGES_DIR)
+def test_validation_report_add_is_level_first_package_wide() -> None:
+    calls, violations = scan_package_dir(SCAN_ROOT)
 
     assert len(calls) >= MIN_EXPECTED_CALLS, (
         f"AST walk found only {len(calls)} vreport.add() call(s) under "
-        f"{STAGES_DIR} (expected at least {MIN_EXPECTED_CALLS}; measured "
-        f"{MEASURED_CALL_COUNT} on HEAD 46708baa). The check is probably "
+        f"{SCAN_ROOT} (expected at least {MIN_EXPECTED_CALLS}; measured "
+        f"{MEASURED_CALL_COUNT}). The check is probably "
         f"looking at the wrong directory."
     )
 

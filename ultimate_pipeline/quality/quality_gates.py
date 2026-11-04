@@ -102,7 +102,12 @@ def run_quality_gates(
         except Exception as e:
             if vreport is not None:
                 try:
-                    vreport.add("quality_gates", "quality_gate_manager_import", {"ok": False, "error": str(e)})
+                    # import failure {"ok": False} -> "error"
+                    vreport.add(
+                        "error",
+                        "quality_gates",
+                        {"key": "quality_gate_manager_import", "ok": False, "error": str(e)},
+                    )
                 except Exception:
                     pass
             return {"quality_gate_manager_import": {"ok": False, "error": str(e)}}
@@ -151,7 +156,12 @@ def run_quality_gates(
             fn()
         except ModuleNotFoundError as e:
             qgate.passed(label + "_skipped")
-            vreport.add("quality_gates", label + "_skipped", {"status": "skip", "reason": str(e)})
+            # "skip"/"skipped" status -> "skipped" level
+            vreport.add(
+                "skipped",
+                "quality_gates",
+                {"key": label + "_skipped", "status": "skip", "reason": str(e)},
+            )
         except Exception as e:
             # Record under the SAME bare name a clean ok=False failure would
             # use (see e.g. gate_xml_integrity's own self.fail("xml_integrity",
@@ -197,7 +207,16 @@ def run_quality_gates(
             )
             # Record in vreport
             try:
-                vreport.add("quality_gates", "external_libopendrive", external_rep)
+                # Plain data payload (raw validator report, not itself a
+                # pass/fail verdict -- the verdict is recorded separately via
+                # qgate.fail()/qgate.passed() below) -> "warning".
+                vreport.add(
+                    "warning",
+                    "quality_gates",
+                    {"key": "external_libopendrive", **external_rep}
+                    if isinstance(external_rep, dict) and "key" not in external_rep
+                    else {"key": "external_libopendrive", "value": external_rep},
+                )
             except Exception:
                 pass
             if not external_rep.get("ok", True) and bool(getattr(SETTINGS, "LIBOPENDRIVE_VALIDATION_STRICT", False)):
@@ -207,7 +226,11 @@ def run_quality_gates(
         else:
             # explicitly skipped
             try:
-                vreport.add("quality_gates", "external_libopendrive", {"status": "skipped", "reason": "disabled"})
+                vreport.add(
+                    "skipped",
+                    "quality_gates",
+                    {"key": "external_libopendrive", "status": "skipped", "reason": "disabled"},
+                )
             except Exception:
                 pass
             qgate.passed("external_libopendrive_skipped")
