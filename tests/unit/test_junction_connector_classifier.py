@@ -185,14 +185,27 @@ def test_rebuild_direct_line_allowed_when_headings_ok() -> None:
 # ---------------------------------------------------------------------------
 
 
-def _road_fragment(rid: str, junction: str, x: float, length: float = 10.0) -> str:
+def _road_fragment(
+    rid: str, junction: str, x: float, length: float = 10.0, link: str = ""
+) -> str:
     return (
         f'<road id="{rid}" junction="{junction}" length="{length}">'
+        f"{link}"
         f'<planView><geometry s="0" x="{x}" y="0" hdg="0" length="{length}">'
         "<line/></geometry></planView>"
         "<lanes><laneSection><right>"
         '<lane id="-1" type="driving"><width sOffset="0" a="3.5" b="0" c="0" d="0"/></lane>'
         "</right></laneSection></lanes></road>"
+    )
+
+
+def _exit_link_fragment(exit_road_id: str, contact_point: str = "start") -> str:
+    # X7 contract: a connector must declare its exit road via a road-level
+    # successor/predecessor link, otherwise snap_junction_connectors() fails
+    # closed and leaves the connector untouched.
+    return (
+        f'<link><successor elementType="road" elementId="{exit_road_id}" '
+        f'contactPoint="{contact_point}"/></link>'
     )
 
 
@@ -205,16 +218,37 @@ def _junction_fragment(jid: str, incoming: str, connecting: str) -> str:
     )
 
 
-def _ambiguous_root() -> ET.Element:
+def _ambiguous_root(with_exit: bool = False) -> ET.Element:
     # Incoming road spans (0,0)->(10,0); the connector starts at (5,0) --
     # equidistant from both boundaries (AMBIGUOUS near-tie).
-    return ET.fromstring(
-        "<OpenDRIVE>"
-        + _road_fragment("10", "-1", 0.0)
-        + _road_fragment("99", "5", 5.0)
-        + _junction_fragment("5", "10", "99")
-        + "</OpenDRIVE>"
-    )
+    parts = [
+        _road_fragment("10", "-1", 0.0),
+        _road_fragment(
+            "99", "5", 5.0, link=_exit_link_fragment("98") if with_exit else ""
+        ),
+    ]
+    if with_exit:
+        # Exit road anchored at the connector's end pose (5,0)+(10,0)=(15,0).
+        parts.append(_road_fragment("98", "-1", 15.0))
+    parts.append(_junction_fragment("5", "10", "99"))
+    return ET.fromstring("<OpenDRIVE>" + "".join(parts) + "</OpenDRIVE>")
+
+
+def _unambiguous_root(with_exit: bool = True) -> ET.Element:
+    # Incoming road spans (0,0)->(10,0); the connector starts at (30,0) so the
+    # nearest boundary is the END (distance 20 vs 30 to the start): unambiguous
+    # GEOMETRICALLY_INFERRED_HIGH.
+    parts = [
+        _road_fragment("20", "-1", 0.0),
+        _road_fragment(
+            "88", "6", 30.0, link=_exit_link_fragment("89") if with_exit else ""
+        ),
+    ]
+    if with_exit:
+        # Exit road anchored at the connector's end pose (30,0)+(10,0)=(40,0).
+        parts.append(_road_fragment("89", "-1", 40.0))
+    parts.append(_junction_fragment("6", "20", "88"))
+    return ET.fromstring("<OpenDRIVE>" + "".join(parts) + "</OpenDRIVE>")
 
 
 def test_snap_skips_ambiguous_by_default() -> None:
@@ -226,20 +260,29 @@ def test_snap_skips_ambiguous_by_default() -> None:
 
 
 def test_snap_allows_ambiguous_when_opted_in() -> None:
-    report = snap_junction_connectors(_ambiguous_root(), skip_ambiguous=False)
+    report = snap_junction_connectors(
+        _ambiguous_root(with_exit=True), skip_ambiguous=False
+    )
     assert report["skip_ambiguous"] is False
     assert report["skipped_ambiguous"] == 0
     assert report["connectors_snapped"] == 1
 
 
+def test_snap_skips_connector_without_exit_anchor() -> None:
+    # Same displaced/unambiguous fixture as below but WITHOUT the exit road
+    # (and therefore no road-level link declaring it): X7 fails closed and
+    # must leave the connector's planView byte-identical.
+    root = _unambiguous_root(with_exit=False)
+    connector = root.find(".//road[@id='88']")
+    plan_before = ET.tostring(connector.find("./planView"))
+    report = snap_junction_connectors(root)
+    assert report["connectors_snapped"] == 0
+    assert report["skipped_missing_exit_anchor"] == 1
+    assert ET.tostring(connector.find("./planView")) == plan_before
+
+
 def test_snap_classifies_unambiguous_displaced_inferred_and_snaps() -> None:
-    root = ET.fromstring(
-        "<OpenDRIVE>"
-        + _road_fragment("20", "-1", 0.0)
-        + _road_fragment("88", "6", 30.0)
-        + _junction_fragment("6", "20", "88")
-        + "</OpenDRIVE>"
-    )
+    root = _unambiguous_root()
     # Incoming (0,0)->(10,0); connector start at (30,0): nearest is END
     # (distance 20), margin vs start = 20 -> unambiguous, heading aligned ->
     # GEOMETRICALLY_INFERRED_HIGH -> snapped to the end boundary.
