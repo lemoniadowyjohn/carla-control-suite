@@ -6,6 +6,7 @@ from __future__ import annotations
 
 import os
 import hashlib
+import json
 
 
 def _inject_main_pipeline_globals():
@@ -93,29 +94,49 @@ def _run_junction_connector_snap(self, xodr_path: str) -> dict | None:
 
     The narrow snap operation is deliberately separate from the geometry stage
     orchestration so its strict-mode and write behavior remain directly
-    regression-testable. Default ON (settings-audit decision, 2026-09-12):
-    full-map verification on the pinned map-of-record showed 4125/22589
-    connectors snapped, zero structural regressions (road/junction/lane
-    counts unchanged), and junction_connector_issues dropping 8746 -> 5183
-    with num_issues staying 0 throughout -- see
-    CONNECTOR_SNAP_WIRING_EVIDENCE.json.
+    regression-testable.  C1 keeps it OFF by default: a connector reference
+    line may intentionally start on a continuing lane border rather than on
+    the incoming road reference line.  The historical endpoint-only snap
+    cannot distinguish those valid lane placements from a defect.  Explicit
+    opt-in remains available for controlled experimental comparison only.
     """
-    enabled = os.getenv("UP_ENABLE_JUNCTION_CONNECTOR_SNAP", "1").strip().lower() in (
-        "1",
-        "true",
-        "yes",
-        "on",
+    from ultimate_pipeline.contracts.release_profile import (
+        unsafe_junction_connector_snap_enabled,
+    )
+
+    requested = os.getenv("UP_ENABLE_JUNCTION_CONNECTOR_SNAP", "0").strip().lower() in (
+        "1", "true", "yes", "on",
+    )
+    enabled = unsafe_junction_connector_snap_enabled(
+        getattr(self, "settings", None)
     )
     if not enabled:
-        print("[STEP 6] Junction connector snap disabled.")
-        return None
+        status = "BLOCKED" if requested else "DISABLED"
+        reason = (
+            "experimental_snap_forbidden_by_release_profile"
+            if requested else "lane_border_semantics_unqualified"
+        )
+        report = {
+            "status": status,
+            "reason": reason,
+            "connectors_examined": 0,
+            "connectors_snapped": 0,
+            "residual_count": None,
+            "measurement_status": "NOT_MEASURED",
+            "measurement_reason": "connector diagnostics were not run",
+        }
+        from ultimate_pipeline.core.file_utils import atomic_write_json
+        report_path = os.path.join(self.out_dir, "junction_connector_snap_report.json")
+        atomic_write_json(report_path, report, indent=2)
+        self.vreport.add_dict("junction_connector_snap", report)
+        print(f"[STEP 6] Junction connector snap {status.lower()} ({reason}).")
+        return report
 
     try:
-        import json
-
         from ultimate_pipeline.tools.junction_connector_snap import (
             snap_junction_connectors,
         )
+        from ultimate_pipeline.core.file_utils import atomic_write_json
 
         tree, root = load_xodr(xodr_path)
         report = snap_junction_connectors(
@@ -126,8 +147,11 @@ def _run_junction_connector_snap(self, xodr_path: str) -> dict | None:
             save_xodr(tree, xodr_path)
 
         report_path = os.path.join(self.out_dir, "junction_connector_snap_report.json")
-        with open(report_path, "w", encoding="utf-8") as fh:
-            json.dump(report, fh, indent=2)
+        report.update({
+            "qualification": "UNQUALIFIED_EXPERIMENTAL",
+            "reason": "endpoint_only_snap_cannot_distinguish_lane_border_placement",
+        })
+        atomic_write_json(report_path, report, indent=2)
         self.vreport.add_dict("junction_connector_snap", report)
         print(
             "[STEP 6] Junction connector snap: "
@@ -136,6 +160,7 @@ def _run_junction_connector_snap(self, xodr_path: str) -> dict | None:
             f"skipped_end_contact_point={report.get('skipped_end_contact_point', 0)} "
             f"-> {report_path}"
         )
+        print("[STEP 6] WARNING: endpoint-only connector snap is UNQUALIFIED_EXPERIMENTAL.")
         return report
     except Exception as exc:
         print(f"[STEP 6] Junction connector snap failed (continuing): {exc}")

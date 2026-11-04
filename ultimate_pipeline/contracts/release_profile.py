@@ -202,6 +202,33 @@ def unsafe_planview_mutations_enabled(settings_obj) -> bool:
     return resolve_experimental_unsafe(profile_name)
 
 
+def unsafe_junction_connector_snap_enabled(settings_obj) -> bool:
+    """Whether the unqualified connector snap may mutate a planView.
+
+    This is experimental geometry reconstruction, not a release repair.  An
+    explicit request is necessary but never sufficient: release profiles stay
+    blocked even when an environment variable is set.
+    """
+    profile_name = str(
+        getattr(settings_obj, "RELEASE_PROFILE", "structural_release")
+        or "structural_release"
+    )
+    # A caller may force strict gates for a diagnostic profile.  That must be
+    # at least as protective as a named release profile, never an env bypass.
+    if resolve_strict_quality_gates(
+        profile_name, env_override=os.getenv("UP_STRICT_QUALITY_GATES")
+    ):
+        return False
+    thesis_strict_env = os.getenv("UP_THESIS_STRICT", "").strip().lower()
+    if bool(getattr(settings_obj, "THESIS_STRICT", False)) or thesis_strict_env in _TRUTHY:
+        return False
+    return _unsafe_feature_enabled(
+        settings_obj,
+        "ENABLE_JUNCTION_CONNECTOR_SNAP",
+        "UP_ENABLE_JUNCTION_CONNECTOR_SNAP",
+    )
+
+
 def _unsafe_feature_enabled(settings_obj, attr: str, env: str | None = None) -> bool:
     profile_name = str(
         getattr(settings_obj, "RELEASE_PROFILE", "structural_release")
