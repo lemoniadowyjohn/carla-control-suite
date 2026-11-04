@@ -320,7 +320,7 @@ tool does not write there):
   elements**. Both match the manifest's own `counts.roads_kept_total` (3584)
   and `counts.junctions_kept` (450) — no discrepancy to flag.
 - `0` dangling references and all 7 hard checks `PASS`, taken from the
-  committed manifest (`hard_checks`: `xml_well_formed`,
+  committed manifest (`hard_checks`: `xml_well_formed`, `zero_dangling_references`,
   `check_lane_link_targets_exist_ok`, `check_road_link_reciprocity_ok`,
   `xodr_strict_validator_ok`, `controller_references_resolve`,
   `no_unaccounted_top_level_loss` all `true`; `counts.dangling_references_found`
