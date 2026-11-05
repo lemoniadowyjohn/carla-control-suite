@@ -27,6 +27,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, Optional, Tuple, List
 
+from ultimate_pipeline.diagnostics.continuity_summary import load_continuity_scan
+
 
 def utc_now_iso() -> str:
     return datetime.now(timezone.utc).isoformat()
@@ -180,14 +182,14 @@ def main() -> int:
     settings_path = run_dir / "settings_snapshot.json"
     manifest_path = run_dir / "run_manifest.json"
     map_stats_path = run_dir / "map_statistics.json"
-    continuity_debug_path = run_dir / "continuity_debug.json"
     stability_path = run_dir / "continuity_stability.json"
     geom_debug_path = run_dir / "geometry_validator_debug.json"
 
     settings = read_json(settings_path) or {}
     manifest = read_json(manifest_path) or {}
     map_stats = read_json(map_stats_path) or {}
-    continuity_debug = read_json(continuity_debug_path)
+    continuity_debug, continuity_sources = load_continuity_scan(str(run_dir))
+    continuity_source_name = " + ".join(continuity_sources) if continuity_sources else "continuity_debug.json"
     stability = read_json(stability_path)
     geom_debug = read_json(geom_debug_path)
 
@@ -259,7 +261,7 @@ def main() -> int:
     gates = {
         "geometric_continuity": merge_gate_summaries(
             continuity_debug,
-            "continuity_debug.json",
+            continuity_source_name,
             geom_debug,
             "geometry_validator_debug.json",
         ),
@@ -291,9 +293,9 @@ def main() -> int:
                     ("settings_snapshot.json", settings_path),
                     ("run_manifest.json", manifest_path),
                     ("map_statistics.json", map_stats_path),
-                    ("continuity_debug.json", continuity_debug_path),
                     ("continuity_stability.json", stability_path),
                     ("geometry_validator_debug.json", geom_debug_path),
+                    *[(name, run_dir / name) for name in continuity_sources],
                 )
                 if path.exists()
             ]

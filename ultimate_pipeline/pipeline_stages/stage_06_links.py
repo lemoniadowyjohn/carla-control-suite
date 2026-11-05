@@ -7,6 +7,7 @@ from __future__ import annotations
 import copy
 import gzip
 import hashlib
+import io
 import json
 import math
 import os
@@ -79,10 +80,31 @@ def _bounded_continuity_scan_summary(scan: Dict[str, Any]) -> Dict[str, Any]:
 
 
 def _write_continuity_scan_detail(out_dir: str, scan: Dict[str, Any]) -> Dict[str, Any]:
-    """Write the full scan once as a compressed, hash-bound detail artifact."""
+    """Write the full scan once as a deterministic, atomically-published artifact."""
+    os.makedirs(out_dir, exist_ok=True)
     path = os.path.join(out_dir, STAGE6_CONTINUITY_DETAIL_FILENAME)
-    with gzip.open(path, "wt", encoding="utf-8") as fh:
-        json.dump(scan, fh, indent=2, default=str, ensure_ascii=True, sort_keys=True)
+    temp_path = path + ".tmp"
+    try:
+        with open(temp_path, "wb") as raw:
+            # filename="" and mtime=0 prevent wall-clock or path data from
+            # entering the gzip header, so the recorded hash is reproducible.
+            with gzip.GzipFile(
+                fileobj=raw, mode="wb", mtime=0, filename=""
+            ) as compressed:
+                with io.TextIOWrapper(compressed, encoding="utf-8") as text:
+                    json.dump(scan, text, indent=2, default=str, ensure_ascii=True, sort_keys=True)
+        # Re-open exactly as the established Windows-safe copy path does:
+        # close the gzip writer first, then flush/sync the completed temp file.
+        with open(temp_path, "r+b") as fh:
+            fh.flush()
+            os.fsync(fh.fileno())
+        os.replace(temp_path, path)
+    except Exception:
+        try:
+            os.remove(temp_path)
+        except OSError:
+            pass
+        raise
     with open(path, "rb") as fh:
         sha256 = hashlib.sha256(fh.read()).hexdigest()
     return {
@@ -92,6 +114,34 @@ def _write_continuity_scan_detail(out_dir: str, scan: Dict[str, Any]) -> Dict[st
         "encoding": "gzip",
         "content": "full_mesh_continuity_scan",
     }
+
+
+def _continuity_runtime_fields(out_dir: str, scan: Dict[str, Any]) -> Dict[str, Any]:
+    """Produce the bounded reader-facing summary and its full detail artifact once."""
+    return {
+        "mesh_continuity_scan": _bounded_continuity_scan_summary(scan),
+        "mesh_continuity_detail": _write_continuity_scan_detail(out_dir, scan),
+    }
+
+
+def _write_legacy_continuity_runtime_report(
+    out_dir: str, scan: Dict[str, Any]
+) -> Dict[str, Any]:
+    """Persist non-governed diagnostics in the v2 bounded runtime format."""
+    report: Dict[str, Any] = {
+        "schema": "stage6_containment_runtime_v2",
+        "mode": "NON_GOVERNED_DIAGNOSTIC",
+        **_continuity_runtime_fields(out_dir, scan),
+    }
+    atomic_write_json(
+        os.path.join(out_dir, "stage6_containment_runtime.json"),
+        report,
+        indent=2,
+        default=str,
+        ensure_ascii=True,
+        sort_keys=True,
+    )
+    return report
 
 
 def _stage6_governed_containment(settings_obj) -> bool:
@@ -395,7 +445,7 @@ def _run_stage6_read_only_diagnostic(
     )
 
     semantic_diff = _semantic_stage6_diff(elev_out, cont_out)
-    continuity_detail = _write_continuity_scan_detail(self.out_dir, continuity_scan)
+    continuity_artifacts = _continuity_runtime_fields(self.out_dir, continuity_scan)
     containment_report: Dict[str, Any] = {
         "schema": "stage6_containment_runtime_v2",
         "mode": "READ_ONLY_DIAGNOSTIC",
@@ -414,8 +464,7 @@ def _run_stage6_read_only_diagnostic(
         "observe_only_operations": observe_only,
         # Retain the v1 field name as a mapping for readers that only inspect
         # it, but bound its contents.  The full scan is one separate artifact.
-        "mesh_continuity_scan": _bounded_continuity_scan_summary(continuity_scan),
-        "mesh_continuity_detail": continuity_detail,
+        **continuity_artifacts,
         "continuity_gate": continuity_report,
         "xodr_semantic_changes": semantic_diff,
     }
@@ -436,7 +485,7 @@ def _run_stage6_read_only_diagnostic(
     HeatmapGenerator.run(
         cont_out,
         heatmap_png,
-        debug_json=os.path.join(self.out_dir, continuity_detail["path"]),
+        debug_json=os.path.join(self.out_dir, continuity_artifacts["mesh_continuity_detail"]["path"]),
     )
     MapPlotter.save_preview(cont_out, self.out_dir, stage="06_post_continuity_planview")
 
@@ -569,7 +618,7 @@ def _step6_planview_continuity(
     MapPlotter.save_preview(geo_out, self.out_dir, stage="05_planview_merge")
 
     # 6) continuity repair
-    MeshContinuityRepairer.run(geo_out, cont_out)
+    MeshContinuityRepairer.run(geo_out, cont_out, write_debug=False)
 
     # Geometric continuity check (XY/heading at road joins)
     continuity_report = self._stage_gate(
@@ -657,13 +706,18 @@ def _step6_planview_continuity(
             except Exception as e:
                 print(f"[STEP 6] Quarantine failed (continuing): {e}")
 
-    # continuity_debug.json
-    debug_path = os.path.join(self.out_dir, "continuity_debug.json")
+    # Persist both governed and non-governed scans through the same bounded
+    # runtime format.  The legacy unbounded continuity_debug.json is retained
+    # only as a reader fallback for historical runs.
+    debug_path = os.path.join(self.out_dir, STAGE6_CONTINUITY_DETAIL_FILENAME)
     try:
         r = MeshContinuityRepairer(cont_out)
-        scan = r.scan_roads()
-        atomic_write_json(debug_path, scan, indent=2)
-        print(f"✅ continuity_debug.json written → {debug_path}")
+        scan = r.scan_roads(write_debug=False)
+        legacy_report = _write_legacy_continuity_runtime_report(self.out_dir, scan)
+        debug_path = os.path.join(
+            self.out_dir, legacy_report["mesh_continuity_detail"]["path"]
+        )
+        print(f"✅ bounded continuity detail written → {debug_path}")
     except Exception as e:
         print(f"⚠️ Could not create continuity debug file: {e}")
 

@@ -61,23 +61,23 @@ class MeshContinuityRepairer:
     # PUBLIC ENTRY POINT
     # -------------------------------------------------------------
     @staticmethod
-    def run(input_path, output_path):
+    def run(input_path, output_path, *, write_debug: bool = True):
         r = MeshContinuityRepairer(input_path)
-        r.process()
+        r.process(write_debug=write_debug)
         r.save(output_path)
 
     # -------------------------------------------------------------
     # MAIN PROCESSING
     # -------------------------------------------------------------
-    def process(self):
+    def process(self, *, write_debug: bool = True):
 
         if self.mode == "safe":
             print("🔍 SAFE mode: continuity diagnostics only.")
-            self.diagnose()
+            self.diagnose(write_debug=write_debug)
             return
 
         # Scan everything first
-        scan = self.scan_roads()
+        scan = self.scan_roads(write_debug=write_debug)
         roads_to_fix = []
 
         if self.selective:
@@ -122,8 +122,8 @@ class MeshContinuityRepairer:
     # -------------------------------------------------------------
     # SAFE DIAGNOSTICS — never modifies geometry
     # -------------------------------------------------------------
-    def diagnose(self):
-        scan = self.scan_roads()
+    def diagnose(self, *, write_debug: bool = True):
+        scan = self.scan_roads(write_debug=write_debug)
         bad = [r for r, d in scan.items()
                if d["max_gap"] > 2.0 or d["max_hdg"] > math.radians(5.0)]
 
