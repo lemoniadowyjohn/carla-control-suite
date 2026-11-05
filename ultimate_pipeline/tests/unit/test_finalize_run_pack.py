@@ -265,7 +265,9 @@ def test_verify_reports_manifest_without_success(tmp_path):
     result = verify_run_pack(tmp_path)
     assert result["signature_present"] is True
     assert result["success_present"] is False
-    assert result["status"] == "PASS"
+    assert result["status"] == "FAIL"
+    assert any("publication is incomplete" in p for p in result["problems"])
+    assert verify_run_pack(tmp_path, require_success=False)["status"] == "PASS"
 
 
 def test_verify_detects_manifest_without_success_as_incomplete_evidence(tmp_path):

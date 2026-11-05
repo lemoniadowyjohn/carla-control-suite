@@ -59,8 +59,11 @@ __all__ = [
     "hash_file_sha256",
     "classify_requested_paths",
     "finalize_run_pack",
+    "invalidate_terminal_publication",
+    "clear_terminal_publication_invalidation",
     "verify_run_pack",
     "write_signature_json",
+    "write_pending_success_txt",
     "write_success_txt",
 ]
 
@@ -88,6 +91,7 @@ OPTIONAL_CATEGORIES = frozenset({CATEGORY_REQUESTED, CATEGORY_UNEXPECTED})
 SIGNATURE_FILENAME = "signature.json"
 SUCCESS_FILENAME = "SUCCESS.txt"
 _STATE_FILENAME = ".run_pack_finalization_state.json"
+TERMINAL_INVALIDATION_FILENAME = "terminal_publication_failure.json"
 
 _CHUNK = 1024 * 1024
 
@@ -473,12 +477,18 @@ def finalize_run_pack(
     return receipt
 
 
-def _write_success_bound(out_dir: Path, receipt: Dict[str, Any], summary: str) -> None:
-    """Write SUCCESS.txt bound to the finalized manifest."""
+def _write_success_bound(
+    out_dir: Path,
+    receipt: Dict[str, Any],
+    summary: str,
+    *,
+    publication_status: str = STATUS_PASS,
+) -> None:
+    """Atomically write a manifest-bound terminal marker."""
     ts = receipt["generated_at_utc"]
     body = (
         f"OK {ts}\n"
-        f"status={receipt['status']}\n"
+        f"status={publication_status}\n"
         f"schema={receipt['schema']}\n"
         f"manifest_sha256={receipt['manifest_sha256']}\n"
         f"signature_sha256={receipt['signature_sha256']}\n"
@@ -490,20 +500,64 @@ def _write_success_bound(out_dir: Path, receipt: Dict[str, Any], summary: str) -
     _atomic_write_text(out_dir / SUCCESS_FILENAME, body)
 
 
+def invalidate_terminal_publication(
+    out_dir: str | os.PathLike[str], reason: str
+) -> None:
+    """Atomically record that a terminal chain failure invalidates SUCCESS.
+
+    This receipt is deliberately outside the signed artifact set: it is a
+    fail-closed revocation signal written after a terminal failure, including
+    the case where an old SUCCESS.txt could not be removed.  Readers must
+    reject a pack while it is present.
+    """
+    root = Path(out_dir).expanduser().resolve()
+    payload = {
+        "schema": "terminal_publication_failure/v1",
+        "reason": str(reason),
+        "created_at_unix": time.time(),
+    }
+    _atomic_write_text(
+        root / TERMINAL_INVALIDATION_FILENAME,
+        json.dumps(payload, indent=2, sort_keys=True) + "\n",
+    )
+
+
+def clear_terminal_publication_invalidation(
+    out_dir: str | os.PathLike[str],
+) -> None:
+    """Clear an old failure receipt only after stale SUCCESS is revoked."""
+    path = Path(out_dir).expanduser().resolve() / TERMINAL_INVALIDATION_FILENAME
+    try:
+        path.unlink()
+    except FileNotFoundError:
+        return
+
+
 # ---------------------------------------------------------------------------
 # verification
 # ---------------------------------------------------------------------------
 
 
-def verify_run_pack(out_dir: str | os.PathLike[str]) -> Dict[str, Any]:
+def verify_run_pack(
+    out_dir: str | os.PathLike[str],
+    *,
+    require_success: bool = True,
+    allow_pending_success: bool = False,
+) -> Dict[str, Any]:
     """Re-verify a finalized run pack against its manifest.
 
     Detects post-finalization tampering of a hashed artifact and any attempt to
-    publish SUCCESS.txt without a complete, PASS manifest.
+    publish SUCCESS.txt without a complete, PASS manifest.  Public callers use
+    the default ``require_success=True``: a manifest-only directory is not an
+    accepted release.  The narrow internal pre-publication path in
+    :func:`write_success_txt` and ``MainPipeline.run`` passes ``False`` only to
+    verify a fully signed pack immediately before atomically publishing its
+    marker.
     """
     root = Path(out_dir).expanduser().resolve()
     sig_path = root / SIGNATURE_FILENAME
     success_path = root / SUCCESS_FILENAME
+    invalidation_path = root / TERMINAL_INVALIDATION_FILENAME
 
     result: Dict[str, Any] = {
         "schema": "RUN_PACK_VERIFICATION/v2",
@@ -513,6 +567,14 @@ def verify_run_pack(out_dir: str | os.PathLike[str]) -> Dict[str, Any]:
         "status": STATUS_FAIL,
         "problems": [],
     }
+    if invalidation_path.is_file():
+        result["problems"].append(
+            "terminal publication failure receipt is present; SUCCESS is invalid"
+        )
+    if require_success and not result["success_present"]:
+        result["problems"].append(
+            "SUCCESS.txt is missing; release publication is incomplete"
+        )
     if not result["signature_present"]:
         result["problems"].append("signature.json is missing")
         if result["success_present"]:
@@ -595,7 +657,10 @@ def verify_run_pack(out_dir: str | os.PathLike[str]) -> Dict[str, Any]:
                 result["problems"].append(
                     "SUCCESS.txt signature digest does not match the manifest file map"
                 )
-            if _success_field(success_text, "status") != STATUS_PASS:
+            success_status = _success_field(success_text, "status")
+            if success_status == "PENDING" and allow_pending_success:
+                pass
+            elif success_status != STATUS_PASS:
                 result["problems"].append("SUCCESS.txt does not assert finalization status PASS")
 
     result["status"] = STATUS_PASS if not result["problems"] else STATUS_FAIL
@@ -627,12 +692,26 @@ def write_signature_json(out_dir: str, key_paths: Iterable[Any]) -> Dict[str, An
     return receipt
 
 
-def write_success_txt(out_dir: str, summary: str = "") -> None:
-    """Write SUCCESS.txt, but only for a recorded PASS finalization.
+def write_pending_success_txt(out_dir: str, summary: str = "") -> None:
+    """Publish a non-authoritative, manifest-bound marker for final checking.
 
-    Retained for existing callers. It is now a *gated* operation: without a
-    PASS state recorded by :func:`finalize_run_pack` for the same release root
-    it raises rather than publishing an unbound success marker.
+    A public verifier rejects ``status=PENDING``.  It exists only to make the
+    process-crash interval before the final public verification fail closed.
+    :func:`write_success_txt` replaces it atomically with ``status=PASS``.
+    """
+    root, receipt = _load_finalized_success_receipt(out_dir, allow_pending_success=False)
+    _write_success_bound(root, receipt, summary, publication_status="PENDING")
+
+
+def _load_finalized_success_receipt(
+    out_dir: str,
+    *,
+    allow_pending_success: bool,
+) -> tuple[Path, Dict[str, Any]]:
+    """Load and independently verify the state that may be promoted to PASS.
+
+    A pending marker is accepted only for the internal promotion path; public
+    callers still reject it through :func:`verify_run_pack`'s default.
     """
     root = Path(out_dir).expanduser().resolve()
     sig_path = root / SIGNATURE_FILENAME
@@ -656,6 +735,16 @@ def write_success_txt(out_dir: str, summary: str = "") -> None:
         raise FinalizationError(
             "refusing to write SUCCESS.txt: no recorded PASS finalization state"
         )
+    verification = verify_run_pack(
+        root,
+        require_success=False,
+        allow_pending_success=allow_pending_success,
+    )
+    if verification.get("status") != STATUS_PASS:
+        raise FinalizationError(
+            "refusing to write SUCCESS.txt: finalized pack does not verify "
+            f"({verification.get('problems', [])})"
+        )
     # Re-read the manifest from disk and recompute its digest rather than trusting
     # the in-memory receipt: the digest is a property of the emitted bytes.
     # (The manifest cannot embed its own digest, so the on-disk value is the
@@ -667,4 +756,12 @@ def write_success_txt(out_dir: str, summary: str = "") -> None:
         raise FinalizationError(
             f"refusing to write SUCCESS.txt: cannot digest manifest ({exc})"
         )
-    _write_success_bound(root, receipt, summary)
+    return root, receipt
+
+
+def write_success_txt(out_dir: str, summary: str = "") -> None:
+    """Atomically promote a finalized (or verified pending) marker to PASS."""
+    root, receipt = _load_finalized_success_receipt(
+        out_dir, allow_pending_success=True
+    )
+    _write_success_bound(root, receipt, summary, publication_status=STATUS_PASS)
