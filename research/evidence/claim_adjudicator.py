@@ -63,7 +63,10 @@ def _check_bindings(receipt: Dict[str, Any]) -> Tuple[Optional[str], Dict[str, A
     from research.evidence.schemas import validate_receipt
 
     try:
-        validate_receipt(receipt, verify=False)
+        # This gate admits experiment evidence to a scientific claim.  A
+        # structurally valid receipt is insufficient: every receipt binding
+        # must still resolve to the recorded bytes at promotion time.
+        validate_receipt(receipt, verify=True)
     except ValueError as exc:
         return str(exc), {"gate": "receipt_structure"}
     if receipt["contract_sha256"] != receipt_protocol_sha_guard(receipt):
