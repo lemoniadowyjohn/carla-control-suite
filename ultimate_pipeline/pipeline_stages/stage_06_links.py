@@ -244,7 +244,7 @@ def _copy_artifact(src: str, dst: str) -> None:
         # copy -- never a partial file.
         temp_path = dst + ".tmp"
         shutil.copy2(src, temp_path)
-        with open(temp_path, "rb") as f:
+        with open(temp_path, "r+b") as f:
             os.fsync(f.fileno())
         os.replace(temp_path, dst)
 

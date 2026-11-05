@@ -53,6 +53,7 @@ def test_copy_artifact_raises_on_enospc(tmp_path: Path, monkeypatch) -> None:
 
     def _fake_copy2(src_path: str, dst_path: str, *args, **kwargs) -> None:
         real_copy2(src_path, dst_path)
+        Path(dst_path).write_bytes(b"partially copied")
         raise OSError(28, "No space left on device")
 
     monkeypatch.setattr(shutil, "copy2", _fake_copy2)
@@ -82,4 +83,6 @@ def test_copy_artifact_atomic_temp_file_not_visible(tmp_path: Path, monkeypatch)
 
     # The final dst must be present and complete.
     assert os.path.exists(dst)
+    assert seen_paths == [dst + ".tmp"]
+    assert not Path(dst + ".tmp").exists()
     assert Path(dst).read_text(encoding="utf-8") == "hello"
