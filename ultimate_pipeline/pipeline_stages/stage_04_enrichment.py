@@ -349,14 +349,23 @@ def _step4_enrichment(self, topo_fixed: str) -> str:
         )
 
         access_metadata = apply_access_metadata_from_osm(root, s.OSM_FILE)
-        if access_metadata["metadata_records_written"]:
+        if access_metadata.get("source_status") == "SOURCE_FAILURE":
+            access_summary = (
+                "SOURCE_FAILURE: "
+                + access_metadata.get("source_failure_reason", "source unavailable")
+            )
+        else:
+            access_summary = "{} road(s), {} record(s)".format(
+                access_metadata["roads_with_access_metadata"],
+                access_metadata["metadata_records_written"],
+            )
+        if (
+            access_metadata.get("source_status") != "SOURCE_FAILURE"
+            and access_metadata.get("metadata_records_written", 0)
+        ):
             save_xodr(tree, topo_fixed)
         self.vreport.add_dict("osm_access_restriction_metadata", access_metadata)
-        print(
-            "   → Access metadata: "
-            f"{access_metadata['roads_with_access_metadata']} road(s), "
-            f"{access_metadata['metadata_records_written']} record(s)"
-        )
+        print(f"   → Access metadata: {access_summary}")
     except Exception as e:
         print(f"❌ OSM access metadata enrichment failed: {e}")
         self.vreport.add("error", "osm_access_restriction_metadata", str(e))

@@ -175,6 +175,74 @@ def test_stage09_records_source_failure_without_clean_zero_count(tmp_path, monke
     save_xodr.assert_not_called()
 
 
+@pytest.mark.parametrize(
+    ("source_kind", "expected_status", "expected_summary"),
+    [
+        ("missing", "SOURCE_FAILURE", "SOURCE_FAILURE:"),
+        ("empty", "EMPTY", "0 road(s), 0 record(s)"),
+    ],
+)
+def test_stage04_distinguishes_access_source_failure_from_empty(
+    tmp_path, monkeypatch, capsys, source_kind, expected_status, expected_summary
+):
+    from unittest import mock
+
+    from ultimate_pipeline.pipeline_stages import stage_04_enrichment as stage04
+
+    _set_non_strict(monkeypatch)
+    from ultimate_pipeline.config.settings import SETTINGS
+    from ultimate_pipeline.enrichment.access_restriction_metadata import apply_access_metadata_from_osm
+
+    source = tmp_path / ("missing.osm" if source_kind == "missing" else "empty.osm")
+    if source_kind == "empty":
+        source.write_text('<osm version="0.6"></osm>', encoding="utf-8")
+    expected = apply_access_metadata_from_osm(_xodr_root(), source)
+    assert expected["source_status"] == expected_status
+
+    root = _xodr_root()
+    tree = object()
+    report_calls = []
+    fake = mock.Mock()
+    fake.settings = mock.Mock(
+        ENABLE_ROUNDABOUT_RECONSTRUCTION=False,
+        ENABLE_TRAFFIC_LIGHTS=False,
+        ENABLE_BUILDINGS=False,
+        ENABLE_REALISM=False,
+        OSM_BUILDINGS_GEOJSON=None,
+        OSM_FILE=str(source),
+        load_gps_bounds=mock.Mock(return_value={}),
+    )
+    fake.out_dir = str(tmp_path)
+    fake.vreport.add_dict.side_effect = lambda *args: report_calls.append(args)
+    fake.vreport.add.side_effect = lambda *args: report_calls.append(args)
+
+    monkeypatch.setattr(stage04, "_inject_main_pipeline_globals", lambda: None)
+    monkeypatch.setattr(stage04, "_mark_geometry_only_stage_contract", lambda _: None)
+    monkeypatch.setattr(stage04, "json", json, raising=False)
+    monkeypatch.setattr(stage04, "load_xodr", lambda _: (tree, root), raising=False)
+    monkeypatch.setattr(stage04, "save_xodr", mock.Mock(), raising=False)
+    monkeypatch.setattr(stage04, "RoundaboutRebuilder", mock.Mock(tag_roundabouts=mock.Mock(side_effect=RuntimeError("skip"))), raising=False)
+    monkeypatch.setattr(stage04, "resolve_buildings_geojson_for_stage4", lambda **_: None)
+    monkeypatch.setattr(stage04, "XODRStatistics", mock.Mock(compute=lambda _: {}), raising=False)
+    monkeypatch.setattr(stage04, "OSMPolygonLoader", mock.Mock(PROJ_STRING=""), raising=False)
+    monkeypatch.setattr(
+        "ultimate_pipeline.enrichment.osm_meta_index.extract_positioned_osm_metadata_ways",
+        lambda _: [],
+    )
+    monkeypatch.setattr("ultimate_pipeline.enrichment.crosswalk_writer.extract_osm_crossings", lambda _: [])
+    monkeypatch.setattr(SETTINGS, "THESIS_STRICT", False)
+
+    stage04._step4_enrichment(fake, str(tmp_path / "stage04.xodr"))
+
+    captured = capsys.readouterr().out
+    access_reports = [args[1] for args in report_calls if args and args[0] == "osm_access_restriction_metadata"]
+    assert len(access_reports) == 1
+    assert access_reports[0]["source_status"] == expected_status
+    assert expected_summary in captured
+    if source_kind == "missing":
+        assert "0 road(s), 0 record(s)" not in captured
+
+
 def _road(road_id: str, name: str, x: float) -> ET.Element:
     return ET.fromstring(
         f'<road id="{road_id}" name="{name}" length="10" junction="-1">'
