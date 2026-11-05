@@ -51,6 +51,7 @@ Typical HPC (single node, multi-GPU) with torchrun:
 from __future__ import annotations
 
 import argparse
+import hashlib
 import os
 import sys
 from pathlib import Path
@@ -230,7 +231,12 @@ def _resolve_out_dir(out_dir: str) -> Path:
     return p
 
 
-def _write_training_failure_receipt(out_dir: Path, status: str, failure: Dict[str, Any]) -> None:
+def _write_training_failure_receipt(
+    out_dir: Path,
+    status: str,
+    failure: Dict[str, Any],
+    dataset_resolution: Optional[Dict[str, Any]] = None,
+) -> None:
     """Persist a failure receipt that overrides any stale SUCCESS for the run."""
     import json
     from datetime import datetime, timezone
@@ -240,6 +246,8 @@ def _write_training_failure_receipt(out_dir: Path, status: str, failure: Dict[st
         "failure": failure,
         "created_utc": datetime.now(timezone.utc).isoformat(),
     }
+    if dataset_resolution is not None:
+        receipt["dataset_resolution"] = dataset_resolution
     target = Path(out_dir) / "training_failure.json"
     tmp = target.with_suffix(target.suffix + ".tmp")
     tmp.write_text(json.dumps(receipt, indent=2, sort_keys=True), encoding="utf-8")
@@ -273,6 +281,19 @@ def _find_latest_dataset(base: Path) -> Optional[Path]:
     if not candidates:
         return None
     return max(candidates, key=lambda x: x.stat().st_mtime)
+
+
+def _dataset_manifest_sha256(root: Path) -> Optional[str]:
+    """Hash the source dataset manifest when the dataset carries one."""
+    for name in ("rq3_dataset_manifest.json", "dataset_manifest.json"):
+        manifest = Path(root) / name
+        if manifest.is_file():
+            digest = hashlib.sha256()
+            with manifest.open("rb") as stream:
+                for chunk in iter(lambda: stream.read(1024 * 1024), b""):
+                    digest.update(chunk)
+            return digest.hexdigest()
+    return None
 
 
 def _init_ddp(enabled: bool) -> tuple[bool, int, int]:
@@ -351,7 +372,7 @@ def _build_model(num_classes: int) -> Tuple[nn.Module, Dict[str, Any]]:
     return model, contract
 
 
-def _resolve_dataset_roots(args: argparse.Namespace) -> List[Path]:
+def _resolve_dataset_roots(args: argparse.Namespace) -> tuple[List[Path], Dict[str, Any]]:
     """
     Resolve the training roots for this invocation.
 
@@ -366,15 +387,24 @@ def _resolve_dataset_roots(args: argparse.Namespace) -> List[Path]:
             "exactly one root, --datasets trains on the union of all supplied roots"
         )
 
-    roots: List[Path] = [Path(p) for p in (args.datasets or ([args.dataset] if args.dataset else []))]
-    if not roots:
+    requested: Optional[List[str]] = None
+    if args.datasets:
+        requested = [str(p) for p in args.datasets]
+    elif args.dataset:
+        requested = [str(args.dataset)]
+
+    roots: List[Path] = [Path(p) for p in (requested or [])]
+    if requested is None:
         # Preserve the historical SETTINGS-driven default (run_training.py's
-        # "local" backend relies on it) before falling back to auto-discovery.
+        # "local" backend relies on it). A configured path is explicit input:
+        # a missing value must fail closed rather than discover a substitute.
         configured = getattr(SETTINGS, "TRAINING_DATASET_DIR", "") or ""
         if configured:
+            requested = [str(configured)]
             roots = [Path(configured)]
-    if not roots:
-        # Preserve the historical auto-discovery behaviour for single-root runs.
+
+    resolution_source = "EXPLICIT" if requested is not None else "AUTO_DISCOVERED"
+    if requested is None:
         guess = _find_latest_dataset(Path(SETTINGS.BASE_OUTPUT_DIR))
         if guess is None:
             raise FileNotFoundError(
@@ -386,14 +416,18 @@ def _resolve_dataset_roots(args: argparse.Namespace) -> List[Path]:
 
     for root in roots:
         if not root.exists():
-            if len(roots) == 1:
-                guess = _find_latest_dataset(Path(SETTINGS.BASE_OUTPUT_DIR))
-                if guess is not None:
-                    roots[0] = guess
-                    print(f"📦 Auto-selected latest dataset: {guess}")
-                    continue
             raise FileNotFoundError(f"Dataset directory not found: {root}")
-    return roots
+    resolution = {
+        "requested_path": requested[0] if requested and len(requested) == 1 else requested,
+        "resolved_path": roots[0].as_posix() if len(roots) == 1 else [p.as_posix() for p in roots],
+        "resolution_source": resolution_source,
+        "dataset_manifest_sha256": (
+            _dataset_manifest_sha256(roots[0])
+            if len(roots) == 1
+            else [_dataset_manifest_sha256(root) for root in roots]
+        ),
+    }
+    return roots, resolution
 
 
 def _main_impl() -> int:
@@ -460,7 +494,7 @@ def _main_impl() -> int:
     if preinit_rank == 0:
         _revoke_stale_success(out_dir)
 
-    dataset_roots = _resolve_dataset_roots(args)
+    dataset_roots, dataset_resolution = _resolve_dataset_roots(args)
     multi_root = len(dataset_roots) > 1
 
     # NEW-277 (DATASET_ACCEPTANCE): fail closed BEFORE any model construction,
@@ -550,6 +584,7 @@ def _main_impl() -> int:
             out_dir,
             failure["status"],
             failure,
+            dataset_resolution=dataset_resolution,
         )
         print(f"[FATAL] pretraining contract violation: {exc}", file=sys.stderr)
         return 1
@@ -652,7 +687,12 @@ def _main_impl() -> int:
 
     if training_failure is not None:
         # CD-4: an unresolved failure is never published as a successful run.
-        _write_training_failure_receipt(out_dir, training_status, training_failure)
+        _write_training_failure_receipt(
+            out_dir,
+            training_status,
+            training_failure,
+            dataset_resolution=dataset_resolution,
+        )
         if ddp_enabled:
             try:
                 torch.distributed.destroy_process_group()
@@ -705,6 +745,7 @@ def _main_impl() -> int:
                 # consumer can see the training set was admitted by an explicit
                 # gate rather than merely discovered.
                 "dataset_acceptance": acceptance,
+                "dataset_resolution": dataset_resolution,
             },
         )
         manifest_path = write_model_manifest(out_dir, manifest)
