@@ -55,6 +55,7 @@ from ultimate_pipeline.contracts.stage_capabilities import (
     LANES_FINAL,
     STRUCTURE_FROZEN,
 )
+from ultimate_pipeline.contracts.stage_contracts import QualityStatus
 
 
 # ---------------------------------------------------------------------------
@@ -358,7 +359,7 @@ class TestLateMutationInvalidatesAcceptance:
         receipt = ledger.build_receipt(
             final_artifact_path=path,
             map_acceptance={"valid_for_experiments": True, "failed_gates": []},
-            topology_certification={"SPEC_TOPOLOGY": "COMPLETE"},
+            topology_certification={"SPEC_TOPOLOGY": QualityStatus.PASS.value},
             semantic_authority_profile={"release_profile": "structural_release"},
             source_manifest_identity=source_manifest_identity,
             receipt_root=str(tmp_path),
@@ -373,7 +374,9 @@ class TestLateMutationInvalidatesAcceptance:
         assert receipt["lane_count"] == 5
         assert receipt["structure_fingerprint"]["sha256"]
         assert receipt["map_acceptance_status"]["valid_for_experiments"] is True
-        assert receipt["topology_certification"] == {"SPEC_TOPOLOGY": "COMPLETE"}
+        assert receipt["topology_certification"] == {
+            "SPEC_TOPOLOGY": QualityStatus.PASS.value
+        }
         assert receipt["semantic_authority_profile"] == {
             "release_profile": "structural_release"
         }

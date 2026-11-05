@@ -16,6 +16,7 @@ from ultimate_pipeline.contracts.artifact_authority import (
     write_receipt,
 )
 from ultimate_pipeline.contracts.stage_capabilities import FINAL_ARTIFACT_PUBLISHED
+from ultimate_pipeline.contracts.stage_contracts import QualityStatus
 
 
 _XODR = """<?xml version="1.0" encoding="UTF-8"?>
@@ -55,7 +56,7 @@ def test_receipt_rejects_failed_map_acceptance(tmp_path: Path):
     receipt = ledger.build_receipt(
         final_artifact_path=final,
         map_acceptance={"valid_for_experiments": False, "hard_fail_reasons": ["P0-C"]},
-        topology_certification={"SPEC_TOPOLOGY": "COMPLETE"},
+        topology_certification={"SPEC_TOPOLOGY": QualityStatus.PASS.value},
         **kwargs,
     )
 
@@ -97,7 +98,7 @@ def test_resolver_refuses_acceptance_failed_receipt(tmp_path: Path):
     receipt = ledger.build_receipt(
         final_artifact_path=final,
         map_acceptance={"valid_for_experiments": False},
-        topology_certification={"SPEC_TOPOLOGY": "COMPLETE"},
+        topology_certification={"SPEC_TOPOLOGY": QualityStatus.PASS.value},
         **kwargs,
     )
     write_receipt(str(tmp_path), receipt)
@@ -123,3 +124,56 @@ def test_certification_failure_is_recorded_but_not_published(tmp_path: Path):
     assert receipt["publication_status"] == "ACCEPTANCE_FAILED"
     assert receipt["topology_certification"]["status"] == "CERTIFICATION_FAILED"
     assert FINAL_ARTIFACT_PUBLISHED not in receipt["capabilities_held"]
+
+
+@pytest.mark.parametrize(
+    "certification,reason",
+    [
+        (None, "missing"),
+        ({}, "missing"),
+        ({"SPEC_TOPOLOGY": QualityStatus.FAIL.value}, "fail"),
+        ({"SPEC_TOPOLOGY": QualityStatus.INCOMPLETE.value}, "incomplete"),
+        ({"RECOVERY_DIAGNOSTIC": QualityStatus.PASS.value}, "missing"),
+        (
+            {
+                "SPEC_TOPOLOGY": QualityStatus.FAIL.value,
+                "RECOVERY_DIAGNOSTIC": QualityStatus.PASS.value,
+            },
+            "fail",
+        ),
+    ],
+)
+def test_receipt_requires_literal_spec_topology_pass(
+    tmp_path: Path, certification: object, reason: str
+):
+    """Only literal-spec PASS authorizes publication; recovery is diagnostic."""
+    ledger, final, kwargs = _frozen_ledger(tmp_path)
+    receipt = ledger.build_receipt(
+        final_artifact_path=final,
+        map_acceptance={"valid_for_experiments": True},
+        topology_certification=certification,
+        **kwargs,
+    )
+
+    assert receipt["publication_status"] == "ACCEPTANCE_FAILED"
+    assert FINAL_ARTIFACT_PUBLISHED not in receipt["capabilities_held"]
+    assert any(reason in item.lower() for item in receipt["publication_reasons"])
+
+
+def test_resolver_rechecks_literal_spec_topology_for_v2_receipts(tmp_path: Path):
+    """A tampered v2 receipt cannot claim publication after a spec failure."""
+    ledger, final, kwargs = _frozen_ledger(tmp_path)
+    receipt = ledger.build_receipt(
+        final_artifact_path=final,
+        map_acceptance={"valid_for_experiments": True},
+        topology_certification={"SPEC_TOPOLOGY": QualityStatus.PASS.value},
+        **kwargs,
+    )
+    receipt["topology_certification"] = {
+        "SPEC_TOPOLOGY": QualityStatus.FAIL.value,
+        "RECOVERY_DIAGNOSTIC": QualityStatus.PASS.value,
+    }
+    write_receipt(str(tmp_path), receipt)
+
+    with pytest.raises(FinalArtifactReceiptError, match="literal-spec"):
+        resolve_final_artifact_receipt(str(tmp_path))

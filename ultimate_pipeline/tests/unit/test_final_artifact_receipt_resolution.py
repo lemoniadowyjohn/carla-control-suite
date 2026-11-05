@@ -130,3 +130,18 @@ def test_mtime_selection_is_available_only_through_explicit_historical_recovery(
     os.utime(newest, (now + 10_000, now + 10_000))
 
     assert _find_final_xodr_historical_recovery(run_dir) == newest
+
+
+def test_v1_receipt_is_not_a_fresh_publication_beside_v2_lifecycle_evidence(
+    tmp_path: Path,
+):
+    """Historical v1 remains readable alone, but cannot authorize a v2 run."""
+    run_dir = tmp_path / "pipeline_out"
+    run_dir.mkdir()
+    _write_receipt(run_dir)
+    (run_dir / "signal_index.json").write_text(
+        json.dumps({"schema": "signal_index/v2"}), encoding="utf-8"
+    )
+
+    with pytest.raises(FinalArtifactReceiptError, match="Legacy v1 receipt"):
+        resolve_final_artifact_receipt(str(run_dir))

@@ -39,6 +39,7 @@ from ultimate_pipeline.signals.index import (
     STATUS_SKIP,
     build_signal_index,
     normalize_signal_status,
+    run_has_v2_lifecycle_artifact,
     signal_ids_for_verdict,
 )
 from ultimate_pipeline.signals.registry import (
@@ -169,6 +170,7 @@ def compute_final_run_verdict(
 ) -> dict[str, Any]:
     """Compute (without writing) ``final_run_verdict.json``'s payload."""
     root = str(out_dir)
+    legacy_receipt_in_v2_run = run_has_v2_lifecycle_artifact(root)
     resolved_profile = canonical_release_profile(
         profile
         if profile is not None
@@ -222,7 +224,13 @@ def compute_final_run_verdict(
         elif not present:
             status = STATUS_MISSING
         else:
-            status = normalize_signal_status(sid, payload, error=error, run_id=current_run_id)
+            status = normalize_signal_status(
+                sid,
+                payload,
+                error=error,
+                run_id=current_run_id,
+                legacy_receipt_in_v2_run=legacy_receipt_in_v2_run,
+            )
 
         record = {
             "signal_id": sid,

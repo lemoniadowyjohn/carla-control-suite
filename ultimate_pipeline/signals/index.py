@@ -33,6 +33,7 @@ __all__ = [
     "STATUS_BLOCKED_EXTERNAL",
     "STATUS_NOT_APPLICABLE",
     "normalize_signal_status",
+    "run_has_v2_lifecycle_artifact",
     "build_signal_index",
     "signal_ids_for_verdict",
 ]
@@ -139,12 +140,33 @@ def _check_run_id_binding(payload: Any, expected_run_id: str | None) -> bool:
     return actual == expected_run_id
 
 
+def run_has_v2_lifecycle_artifact(root: str) -> bool:
+    """Whether *root* has current-generation lifecycle evidence.
+
+    A v1 final receipt remains readable for historical runs.  Once the run
+    has emitted a v2 signal index or final verdict, however, a v1 receipt is
+    legacy evidence and cannot authorize a fresh publication.
+    """
+    for name in ("signal_index.json", "final_run_verdict.json"):
+        payload, _ = _load(os.path.join(root, name))
+        if not isinstance(payload, dict):
+            continue
+        version = payload.get("schema_version")
+        if isinstance(version, int) and version >= 2:
+            return True
+        schema = str(payload.get("schema") or "")
+        if schema.endswith("/v2") or schema.endswith("_v2"):
+            return True
+    return False
+
+
 def normalize_signal_status(
     signal_id: str,
     payload: Any,
     *,
     error: str | None = None,
     run_id: str | None = None,
+    legacy_receipt_in_v2_run: bool = False,
 ) -> str:
     """Map a signal artifact body to one of the canonical status constants.
 
@@ -206,6 +228,15 @@ def normalize_signal_status(
             fp = payload.get("structure_fingerprint")
             if not (isinstance(fp, dict) and fp.get("sha256")):
                 return STATUS_INCOMPLETE
+            schema_version = payload.get("schema_version")
+            if schema_version == 1 and legacy_receipt_in_v2_run:
+                return STATUS_INCOMPLETE
+            if isinstance(schema_version, int) and schema_version >= 2:
+                publication_status = payload.get("publication_status")
+                if publication_status == "ACCEPTANCE_FAILED":
+                    return STATUS_FAIL
+                if publication_status != "PUBLISHED":
+                    return STATUS_INCOMPLETE
             return STATUS_PASS
         return STATUS_FAIL
 
@@ -331,6 +362,7 @@ def build_signal_index(
             pass
 
     index: dict[str, Any] = {}
+    legacy_receipt_in_v2_run = run_has_v2_lifecycle_artifact(root)
 
     for sid in sorted(SIGNAL_REGISTRY):
         entry = SIGNAL_REGISTRY[sid]
@@ -356,7 +388,13 @@ def build_signal_index(
                 # Present but parsed to a bare JSON null: the artifact exists
                 # and carries no verdict at all.  That is not a pass.
                 error = "payload parsed to null"
-            status = normalize_signal_status(sid, payload, error=error, run_id=current_run_id)
+            status = normalize_signal_status(
+                sid,
+                payload,
+                error=error,
+                run_id=current_run_id,
+                legacy_receipt_in_v2_run=legacy_receipt_in_v2_run,
+            )
 
         index[sid] = {
             "signal_id": sid,
