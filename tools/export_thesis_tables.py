@@ -30,6 +30,7 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 
 AUTHORITATIVE = "AUTHORITATIVE"
 BOUNDED = "BOUNDED"
+BOUNDED_DESCRIPTIVE = "BOUNDED_DESCRIPTIVE"
 PROTOTYPE = "PROTOTYPE"
 DEFERRED_RUNTIME = "DEFERRED_RUNTIME"
 DEFERRED_EXTERNAL_DATA = "DEFERRED_EXTERNAL_DATA"
@@ -43,6 +44,7 @@ MISSING = NOT_RUN
 VALID_STATUSES = frozenset({
     AUTHORITATIVE,
     BOUNDED,
+    BOUNDED_DESCRIPTIVE,
     PROTOTYPE,
     DEFERRED_RUNTIME,
     DEFERRED_EXTERNAL_DATA,
@@ -108,6 +110,7 @@ def _row(
     labels_available: bool | None = None,
     superseded_value: Dict[str, Any] | None = None,
     leakage_audit_status: str = "",
+    spatial_null_artifact: Dict[str, Any] | None = None,
 ) -> Dict[str, Any]:
     if status not in VALID_STATUSES:
         raise ValueError(f"invalid research row status: {status}")
@@ -163,6 +166,7 @@ def _row(
         # contract (e.g. the GAP-010 leak-free GNN retrain). Empty string
         # when not applicable to this row.
         "leakage_audit_status": leakage_audit_status,
+        "spatial_null_artifact": spatial_null_artifact or {},
     }
 
 
@@ -402,6 +406,45 @@ def _superseded_c21_value(root: Path) -> Dict[str, Any] | None:
     }
 
 
+_RQ4_BOUNDED_DESCRIPTIVE_BOUNDARY = (
+    "five-seed variability of one whole-map cosine distance for the pair "
+    "Grid0821 / candidate_connectivity_repaired; not a spatial separation test"
+)
+
+
+def _admissible_spatial_null_artifact(
+    root: Path, aggregate: Dict[str, Any],
+) -> tuple[bool, Dict[str, str]]:
+    """Validate hash-bound, schema-valid spatial-null evidence for RQ4."""
+    binding = aggregate.get("spatial_null_artifact")
+    if not isinstance(binding, dict):
+        return False, {}
+    rel = binding.get("path")
+    declared_sha = binding.get("sha256")
+    if not isinstance(rel, str) or not rel or not isinstance(declared_sha, str):
+        return False, {}
+    rel_path = Path(rel)
+    if rel_path.is_absolute() or ".." in rel_path.parts:
+        return False, {}
+    artifact_path = root / rel_path
+    if not artifact_path.is_file():
+        return False, {}
+    actual_sha = hashlib.sha256(artifact_path.read_bytes()).hexdigest()
+    if actual_sha != declared_sha:
+        return False, {}
+    artifact = _read_json(artifact_path)
+    if not isinstance(artifact, dict):
+        return False, {}
+    if (
+        artifact.get("schema_version") != "rq4_spatial_null/v1"
+        or artifact.get("rq") != "RQ4"
+        or artifact.get("metric") != "gnn_latent_cosine_distance"
+        or artifact.get("verdict") != "ADMISSIBLE"
+    ):
+        return False, {}
+    return True, {"path": rel_path.as_posix(), "sha256": actual_sha}
+
+
 def _gnn_latent_row(root: Path) -> Dict[str, Any]:
     # GAP-010: the leak-free retrain (5-seed ensemble, same protocol as C21,
     # with exclude_source_xodr active for the eval pair) is authoritative
@@ -419,7 +462,10 @@ def _gnn_latent_row(root: Path) -> Dict[str, Any]:
         cs = leakfree_agg.get("cosine_similarity", {})
         ci_excludes_zero = bool(leakfree_agg.get("ci_excludes_zero_similarity"))
         seeds = leakfree_agg.get("seeds", [])
-        status = AUTHORITATIVE if ci_excludes_zero else BOUNDED
+        spatial_null_ok, spatial_null = _admissible_spatial_null_artifact(
+            root, leakfree_agg
+        )
+        status = AUTHORITATIVE if ci_excludes_zero and spatial_null_ok else BOUNDED_DESCRIPTIVE
         agg_sha256 = hashlib.sha256(leakfree_agg_path.read_bytes()).hexdigest()
         leakage_audit = _read_json(leakfree_dir / "POST_HOC_LEAKAGE_AUDIT.json") or {}
         leakage_audit_status = str(leakage_audit.get("overall_status", "") or "")
@@ -440,9 +486,13 @@ def _gnn_latent_row(root: Path) -> Dict[str, Any]:
             sample_size=len(seeds),
             random_seeds=seeds,
             confidence_interval=cd.get("ci95_bootstrap"),
-            claim_boundary="Current leak-free ensemble strengthens the thesis RQ4 result; it does not make RQ4 wholly new post-thesis work.",
+            claim_boundary=(
+                "Current leak-free ensemble has hash-bound admissible spatial-null evidence."
+                if status == AUTHORITATIVE else _RQ4_BOUNDED_DESCRIPTIVE_BOUNDARY
+            ),
             superseded_value=_superseded_c21_value(root),
             leakage_audit_status=leakage_audit_status,
+            spatial_null_artifact=spatial_null,
             note=(
                 f"GAP-010 leak-free retrain: {len(seeds)}-seed ensemble (seeds={seeds}) "
                 f"trained on the UNION of both maps' tiles with exclude_source_xodr active "
@@ -468,7 +518,8 @@ def _gnn_latent_row(root: Path) -> Dict[str, Any]:
         cs = agg.get("cosine_similarity", {})
         ci_excludes_zero = bool(agg.get("ci_excludes_zero_similarity"))
         seeds = agg.get("seeds", [])
-        status = AUTHORITATIVE if ci_excludes_zero else BOUNDED
+        spatial_null_ok, spatial_null = _admissible_spatial_null_artifact(root, agg)
+        status = AUTHORITATIVE if ci_excludes_zero and spatial_null_ok else BOUNDED_DESCRIPTIVE
         agg_sha256 = hashlib.sha256(agg_path.read_bytes()).hexdigest()
         return _row(
             "RQ4", "gnn_latent_cosine_distance", cd.get("mean"), status,
@@ -482,7 +533,11 @@ def _gnn_latent_row(root: Path) -> Dict[str, Any]:
             sample_size=len(seeds),
             random_seeds=seeds,
             confidence_interval=cd.get("ci95_bootstrap"),
-            claim_boundary="Current C21 ensemble strengthens the thesis RQ4 result; it does not make RQ4 wholly new post-thesis work.",
+            claim_boundary=(
+                "Current C21 ensemble has hash-bound admissible spatial-null evidence."
+                if status == AUTHORITATIVE else _RQ4_BOUNDED_DESCRIPTIVE_BOUNDARY
+            ),
+            spatial_null_artifact=spatial_null,
             note=(
                 f"{len(seeds)}-seed ensemble (seeds={seeds}) trained on the UNION of both "
                 f"maps' tiles (resolves C18's OOD one-sided-training caveat); "

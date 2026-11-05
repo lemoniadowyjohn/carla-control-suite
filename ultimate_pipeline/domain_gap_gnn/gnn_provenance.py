@@ -367,7 +367,7 @@ def _normalise_loaded_checkpoint(ckpt: Any) -> tuple[Any, Optional[Dict[str, Any
     if isinstance(ckpt, dict) and isinstance(ckpt.get("metadata"), dict):
         meta = dict(ckpt["metadata"])
         state = ckpt.get("state_dict", ckpt.get("model_state"))
-        label = str(meta.get("provenance", VERIFIED_CRYPTOGRAPHIC_PROVENANCE))
+        label = str(meta.get("provenance", LEGACY_UNBOUND_CHECKPOINT))
         return state, meta, label
     if isinstance(ckpt, dict) and "model_state" in ckpt:
         return ckpt["model_state"], None, LEGACY_UNBOUND_CHECKPOINT
@@ -681,14 +681,19 @@ def summarize_determinism(
 # Leakage audit (§18)
 # ---------------------------------------------------------------------------
 
-def _road_ids_in_xodr(path: str | Path) -> List[str]:
+def _road_ids_in_xodr(path: str | Path) -> tuple[List[str], Dict[str, str]]:
+    """Read a declared XODR and return IDs plus a fail-closed read status."""
+    candidate = Path(path)
+    if not candidate.is_file():
+        return [], {"status": "MISSING", "exception_type": "FileNotFoundError"}
     try:
-        root = ET.parse(str(path)).getroot()
-        return sorted(
-            str(r.get("id", "")) for r in root.findall("road") if r.get("id") is not None
-        )
-    except Exception:
-        return []
+        root = ET.parse(str(candidate)).getroot()
+        return (sorted(
+            str(r.get("id", "")) for r in root.findall("road")
+            if r.get("id") is not None
+        ), {"status": "OK", "exception_type": ""})
+    except Exception as exc:
+        return [], {"status": "READ_ERROR", "exception_type": type(exc).__name__}
 
 
 def audit_leakage(
@@ -721,28 +726,60 @@ def audit_leakage(
         (train_hash_set & test_hash_set) - {""} - {"MISSING"}
     )
 
+    input_read_status: Dict[str, Any] = {
+        "train_tiles": {}, "test_tiles_directory": {}, "test_tiles": {},
+        "eval_pair_xodrs": {},
+    }
     same_road_ids: List[str] = []
     neighbouring_frame_note = "N/A - not frame-based"
-    try:
-        train_roads: set[str] = set()
-        for n in train_names:
-            train_roads.update(_road_ids_in_xodr(Path(str(train_tiles_dir)) / n))
-        test_dir = Path(str(test_tiles_dir)) if test_tiles_dir is not None else None
-        if test_dir is not None and test_dir.is_dir():
+    train_roads: set[str] = set()
+    for n in train_names:
+        roads, status = _road_ids_in_xodr(Path(str(train_tiles_dir)) / n)
+        input_read_status["train_tiles"][n] = status
+        train_roads.update(roads)
+    test_dir = Path(str(test_tiles_dir)) if test_tiles_dir is not None else None
+    if test_names:
+        if test_dir is None or not test_dir.is_dir():
+            input_read_status["test_tiles_directory"] = {
+                "status": "MISSING", "exception_type": "FileNotFoundError"
+            }
+        else:
+            input_read_status["test_tiles_directory"] = {
+                "status": "OK", "exception_type": ""
+            }
             test_roads: set[str] = set()
             for n in test_names:
-                test_roads.update(_road_ids_in_xodr(test_dir / n))
+                roads, status = _road_ids_in_xodr(test_dir / n)
+                input_read_status["test_tiles"][n] = status
+                test_roads.update(roads)
             same_road_ids = sorted(train_roads & test_roads)
-    except Exception:
-        pass
 
     eval_pair_hashes: Dict[str, str] = {}
     for p in eval_pair_paths:
-        try:
-            if Path(str(p)).is_file():
-                eval_pair_hashes[str(p)] = sha256_file(p)
-        except Exception:
-            eval_pair_hashes[str(p)] = "UNREADABLE"
+        key = str(p)
+        _, status = _road_ids_in_xodr(p)
+        input_read_status["eval_pair_xodrs"][key] = status
+        if status["status"] == "OK":
+            try:
+                eval_pair_hashes[key] = sha256_file(p)
+            except Exception as exc:
+                input_read_status["eval_pair_xodrs"][key] = {
+                    "status": "READ_ERROR", "exception_type": type(exc).__name__
+                }
+                eval_pair_hashes[key] = "UNREADABLE"
+
+    def _all_declared_inputs_ok() -> bool:
+        test_directory_records = (
+            (input_read_status["test_tiles_directory"],)
+            if input_read_status["test_tiles_directory"] else ()
+        )
+        groups = (
+            input_read_status["train_tiles"].values(),
+            test_directory_records,
+            input_read_status["test_tiles"].values(),
+            input_read_status["eval_pair_xodrs"].values(),
+        )
+        return all(item.get("status") == "OK" for group in groups for item in group)
     eval_in_train = sorted(
         h for h in eval_pair_hashes.values() if h in train_hash_set and h not in ("", "MISSING")
     )
@@ -758,6 +795,7 @@ def audit_leakage(
         and not eval_in_train
         and scaler_ok
         and selection_ok
+        and _all_declared_inputs_ok()
     )
     return {
         "duplicate_tile_hashes": duplicate_tile_hashes,
@@ -773,7 +811,9 @@ def audit_leakage(
         "normalization_leakage": (not scaler_ok),
         "test_metrics_used_for_selection": bool(test_metrics_used_for_selection),
         "test_metrics_feeding_training_or_selection": bool(test_metrics_used_for_selection),
+        "input_read_status": input_read_status,
         "status": "PASS" if passed else "FAIL",
+        "verdict": "VERIFIED" if passed else "NOT_VERIFIED",
     }
 
 
