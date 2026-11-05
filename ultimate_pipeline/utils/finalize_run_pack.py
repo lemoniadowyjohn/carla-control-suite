@@ -59,6 +59,8 @@ __all__ = [
     "hash_file_sha256",
     "classify_requested_paths",
     "finalize_run_pack",
+    "invalidate_terminal_publication",
+    "clear_terminal_publication_invalidation",
     "verify_run_pack",
     "write_signature_json",
     "write_success_txt",
@@ -88,6 +90,7 @@ OPTIONAL_CATEGORIES = frozenset({CATEGORY_REQUESTED, CATEGORY_UNEXPECTED})
 SIGNATURE_FILENAME = "signature.json"
 SUCCESS_FILENAME = "SUCCESS.txt"
 _STATE_FILENAME = ".run_pack_finalization_state.json"
+TERMINAL_INVALIDATION_FILENAME = "terminal_publication_failure.json"
 
 _CHUNK = 1024 * 1024
 
@@ -490,20 +493,61 @@ def _write_success_bound(out_dir: Path, receipt: Dict[str, Any], summary: str) -
     _atomic_write_text(out_dir / SUCCESS_FILENAME, body)
 
 
+def invalidate_terminal_publication(
+    out_dir: str | os.PathLike[str], reason: str
+) -> None:
+    """Atomically record that a terminal chain failure invalidates SUCCESS.
+
+    This receipt is deliberately outside the signed artifact set: it is a
+    fail-closed revocation signal written after a terminal failure, including
+    the case where an old SUCCESS.txt could not be removed.  Readers must
+    reject a pack while it is present.
+    """
+    root = Path(out_dir).expanduser().resolve()
+    payload = {
+        "schema": "terminal_publication_failure/v1",
+        "reason": str(reason),
+        "created_at_unix": time.time(),
+    }
+    _atomic_write_text(
+        root / TERMINAL_INVALIDATION_FILENAME,
+        json.dumps(payload, indent=2, sort_keys=True) + "\n",
+    )
+
+
+def clear_terminal_publication_invalidation(
+    out_dir: str | os.PathLike[str],
+) -> None:
+    """Clear an old failure receipt only after stale SUCCESS is revoked."""
+    path = Path(out_dir).expanduser().resolve() / TERMINAL_INVALIDATION_FILENAME
+    try:
+        path.unlink()
+    except FileNotFoundError:
+        return
+
+
 # ---------------------------------------------------------------------------
 # verification
 # ---------------------------------------------------------------------------
 
 
-def verify_run_pack(out_dir: str | os.PathLike[str]) -> Dict[str, Any]:
+def verify_run_pack(
+    out_dir: str | os.PathLike[str], *, require_success: bool = True
+) -> Dict[str, Any]:
     """Re-verify a finalized run pack against its manifest.
 
     Detects post-finalization tampering of a hashed artifact and any attempt to
-    publish SUCCESS.txt without a complete, PASS manifest.
+    publish SUCCESS.txt without a complete, PASS manifest.  Public callers use
+    the default ``require_success=True``: a manifest-only directory is not an
+    accepted release.  The narrow internal pre-publication path in
+    :func:`write_success_txt` and ``MainPipeline.run`` passes ``False`` only to
+    verify a fully signed pack immediately before atomically publishing its
+    marker.
     """
     root = Path(out_dir).expanduser().resolve()
     sig_path = root / SIGNATURE_FILENAME
     success_path = root / SUCCESS_FILENAME
+    invalidation_path = root / TERMINAL_INVALIDATION_FILENAME
 
     result: Dict[str, Any] = {
         "schema": "RUN_PACK_VERIFICATION/v2",
@@ -513,6 +557,14 @@ def verify_run_pack(out_dir: str | os.PathLike[str]) -> Dict[str, Any]:
         "status": STATUS_FAIL,
         "problems": [],
     }
+    if invalidation_path.is_file():
+        result["problems"].append(
+            "terminal publication failure receipt is present; SUCCESS is invalid"
+        )
+    if require_success and not result["success_present"]:
+        result["problems"].append(
+            "SUCCESS.txt is missing; release publication is incomplete"
+        )
     if not result["signature_present"]:
         result["problems"].append("signature.json is missing")
         if result["success_present"]:
@@ -655,6 +707,12 @@ def write_success_txt(out_dir: str, summary: str = "") -> None:
     if state.get("status") != STATUS_PASS:
         raise FinalizationError(
             "refusing to write SUCCESS.txt: no recorded PASS finalization state"
+        )
+    verification = verify_run_pack(root, require_success=False)
+    if verification.get("status") != STATUS_PASS:
+        raise FinalizationError(
+            "refusing to write SUCCESS.txt: finalized pack does not verify "
+            f"({verification.get('problems', [])})"
         )
     # Re-read the manifest from disk and recompute its digest rather than trusting
     # the in-memory receipt: the digest is a property of the emitted bytes.

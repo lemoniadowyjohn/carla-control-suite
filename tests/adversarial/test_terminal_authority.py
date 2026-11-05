@@ -22,14 +22,18 @@ import json
 import os
 import tempfile
 import time
+import threading
 from pathlib import Path
 
 import pytest
 
 from ultimate_pipeline.signals.verdict import compute_final_run_verdict
 from ultimate_pipeline.utils.finalize_run_pack import (
+    FinalizationError,
+    invalidate_terminal_publication,
     finalize_run_pack,
     verify_run_pack,
+    write_success_txt,
 )
 from ultimate_pipeline.signals.registry import mandatory_pack_artifacts
 
@@ -488,17 +492,257 @@ class TestNoLateWritesAfterSuccess:
         success_path = tmp_path / "SUCCESS.txt"
         assert success_path.exists()
 
-        # Get the mtime of SUCCESS
-        success_mtime = success_path.stat().st_mtime
 
-        # Wait a bit
-        time.sleep(0.01)
+class TestTransactionalTerminalPublication:
+    """Direct failure injections for the signature-to-SUCCESS transaction."""
 
-        # Try to write another artifact (should not happen in real chain,
-        # but we verify no code in this test suite does it)
-        # The test just verifies SUCCESS exists and was the last write
-        assert success_path.exists()
+    @staticmethod
+    def _finalized_without_success(tmp_path: Path) -> list[str]:
+        _make_minimal_current_artifacts(tmp_path, "terminal-transaction-run")
+        (tmp_path / "final_run_verdict.json").write_text(
+            json.dumps({"schema": "final_run_verdict/v1", "status": "PASS"}),
+            encoding="utf-8",
+        )
+        (tmp_path / "run_status.json").write_text(
+            json.dumps({"status": "ok", "stage": "done"}), encoding="utf-8"
+        )
+        mandatory = mandatory_pack_artifacts(
+            "structural_release", str(tmp_path / "final.xodr")
+        )
+        mandatory.extend(["final_run_verdict.json", "run_status.json"])
+        receipt = finalize_run_pack(str(tmp_path), mandatory, emit_success=False)
+        assert receipt["status"] == "PASS"
+        assert verify_run_pack(str(tmp_path), require_success=False)["status"] == "PASS"
+        assert not (tmp_path / "SUCCESS.txt").exists()
 
+
+class TestMainPipelineTerminalFailures(TestTransactionalTerminalPublication):
+    """Exercise MainPipeline's real terminal transaction with only stages mocked."""
+
+    @staticmethod
+    def _pipeline(tmp_path: Path, monkeypatch, verdict_status="PASS", post_verify_fail=False):
+        from ultimate_pipeline.main_pipeline import MainPipeline
+
+        class Settings:
+            RELEASE_PROFILE = "structural_release"
+            ENABLE_CARLA = False
+            DETERMINISTIC_MODE = False
+            def output_dir(self): return str(tmp_path)
+            def logs_dir(self): return str(tmp_path / "logs")
+
+        (tmp_path / "logs").mkdir(exist_ok=True)
+        final = tmp_path / "final.xodr"
+        final.write_text("<?xml version='1.0'?><OpenDRIVE/>", encoding="utf-8")
+        pipeline = MainPipeline(settings=Settings())
+        pipeline._run_internal = lambda: None
+        pipeline._validate_stage_capability_contract = lambda: None
+        pipeline._find_final_xodr = lambda: str(final)
+
+        from ultimate_pipeline.quality import pipeline_health_summary as health
+        monkeypatch.setattr(health, "write_pipeline_health_summary", lambda out_dir, **_kwargs: (Path(out_dir) / "pipeline_health_summary.json").write_text("{}", encoding="utf-8"))
+        from ultimate_pipeline.signals import verdict as verdict_module
+        def write_verdict(out_dir, **_kwargs):
+            (Path(out_dir) / "final_run_verdict.json").write_text(json.dumps({"status": verdict_status}), encoding="utf-8")
+            return {"status": verdict_status}
+        monkeypatch.setattr(verdict_module, "write_final_run_verdict", write_verdict)
+        from ultimate_pipeline.signals import registry
+        monkeypatch.setattr(registry, "mandatory_pack_artifacts", lambda *_args, **_kwargs: [str(final), "pipeline_health_summary.json"])
+        if post_verify_fail:
+            from ultimate_pipeline.utils import finalize_run_pack as pack
+            real_verify = pack.verify_run_pack
+            calls = {"count": 0}
+            def verify(out_dir, **_kwargs):
+                calls["count"] += 1
+                # Call 1 is the pre-publication pipeline verification and
+                # call 2 is write_success_txt's mandatory pre-write guard.
+                # Inject only on call 3, after the marker has been atomically
+                # published and the pipeline performs its final re-check.
+                if calls["count"] == 3:
+                    return {"status": "FAIL", "problems": ["injected post-publication failure"]}
+                return real_verify(out_dir, **_kwargs)
+            monkeypatch.setattr(pack, "verify_run_pack", verify)
+        return pipeline
+
+    @pytest.mark.parametrize("status", ["FAIL", "INCOMPLETE"])
+    def test_nonpass_verdict_stops_before_publication(self, tmp_path: Path, monkeypatch, status: str):
+        pipeline = self._pipeline(tmp_path, monkeypatch, verdict_status=status)
+        with pytest.raises(RuntimeError, match="not PASS"):
+            pipeline.run()
+        assert not (tmp_path / "SUCCESS.txt").exists()
+        assert (tmp_path / "crash_summary.json").exists()
+
+    def test_terminal_status_failure_leaves_no_success(self, tmp_path: Path, monkeypatch):
+        pipeline = self._pipeline(tmp_path, monkeypatch)
+        real_status = pipeline._write_run_status
+        def status_writer(*, required=False, **kwargs):
+            if required:
+                raise OSError("injected terminal status failure")
+            return real_status(required=required, **kwargs)
+        pipeline._write_run_status = status_writer
+        with pytest.raises(OSError, match="injected terminal status"):
+            pipeline.run()
+        assert not (tmp_path / "SUCCESS.txt").exists()
+
+    def test_post_publication_verification_revokes_success(self, tmp_path: Path, monkeypatch):
+        pipeline = self._pipeline(tmp_path, monkeypatch, post_verify_fail=True)
+        with pytest.raises(RuntimeError, match="SUCCESS verification failed"):
+            pipeline.run()
+        assert not (tmp_path / "SUCCESS.txt").exists()
+
+    def test_restart_after_interruption_cannot_reuse_stale_success(self, tmp_path: Path, monkeypatch):
+        """A restarted pipeline removes prior SUCCESS before a new early failure."""
+        self._finalized_without_success(tmp_path)
+        write_success_txt(str(tmp_path))
+        assert (tmp_path / "SUCCESS.txt").exists()
+
+        pipeline = self._pipeline(tmp_path, monkeypatch)
+        from ultimate_pipeline.quality import pipeline_health_summary as health
+
+        def interrupted_before_manifest(*_args, **_kwargs):
+            raise RuntimeError("injected interruption before manifest creation")
+
+        monkeypatch.setattr(health, "write_pipeline_health_summary", interrupted_before_manifest)
+        with pytest.raises(RuntimeError, match="injected interruption before manifest"):
+            pipeline.run()
+
+        assert not (tmp_path / "SUCCESS.txt").exists()
+        assert (tmp_path / "crash_summary.json").exists()
+
+    def test_concurrent_reader_never_accepts_partial_success_publication(
+        self, tmp_path: Path, monkeypatch
+    ):
+        """The marker's same-directory os.replace is the sole reader admission point."""
+        self._finalized_without_success(tmp_path)
+        from ultimate_pipeline.utils import finalize_run_pack as module
+
+        replace_entered = threading.Event()
+        permit_replace = threading.Event()
+        publication_error: list[BaseException] = []
+        real_replace = module.os.replace
+
+        def blocked_replace(src, dst):
+            if Path(dst).name == "SUCCESS.txt":
+                replace_entered.set()
+                assert permit_replace.wait(timeout=5), "test barrier was not released"
+            return real_replace(src, dst)
+
+        monkeypatch.setattr(module.os, "replace", blocked_replace)
+
+        def publish():
+            try:
+                write_success_txt(str(tmp_path))
+            except BaseException as exc:  # propagated below, never hidden by a thread
+                publication_error.append(exc)
+
+        publisher = threading.Thread(target=publish, daemon=True)
+        publisher.start()
+        assert replace_entered.wait(timeout=5), "SUCCESS publication did not reach atomic replace"
+
+        before = verify_run_pack(str(tmp_path))
+        assert before["success_present"] is False
+        assert before["status"] == "FAIL"
+        assert any("publication is incomplete" in p for p in before["problems"])
+
+        permit_replace.set()
+        publisher.join(timeout=5)
+        assert not publisher.is_alive(), "SUCCESS publisher did not finish"
+        assert publication_error == []
+
+        after = verify_run_pack(str(tmp_path))
+        assert after["success_present"] is True
+        assert after["status"] == "PASS"
+
+    def test_failed_restart_invalidates_an_unrevocable_prior_success(
+        self, tmp_path: Path, monkeypatch
+    ):
+        """A prior valid marker cannot remain authoritative after restart cleanup fails."""
+        self._finalized_without_success(tmp_path)
+        write_success_txt(str(tmp_path))
+        assert verify_run_pack(str(tmp_path))["status"] == "PASS"
+
+        pipeline = self._pipeline(tmp_path, monkeypatch)
+        started = False
+
+        def fail_revoke():
+            raise PermissionError("injected stale-success revocation failure")
+
+        def should_not_start():
+            nonlocal started
+            started = True
+
+        pipeline._revoke_stale_success = fail_revoke
+        pipeline._run_internal = should_not_start
+
+        with pytest.raises(RuntimeError, match="could not be revoked"):
+            pipeline.run()
+
+        assert not started
+        assert (tmp_path / "terminal_publication_failure.json").is_file()
+        assert verify_run_pack(str(tmp_path))["status"] == "FAIL"
+
+    def test_terminal_invalidation_blocks_direct_success_republication(self, tmp_path: Path):
+        """A terminal failure receipt invalidates even a byte-valid old marker."""
+        self._finalized_without_success(tmp_path)
+        write_success_txt(str(tmp_path))
+        invalidate_terminal_publication(str(tmp_path), "injected terminal chain failure")
+        result = verify_run_pack(str(tmp_path))
+        assert result["status"] == "FAIL"
+        assert any("terminal publication failure" in p for p in result["problems"])
+        with pytest.raises(FinalizationError, match="does not verify"):
+            write_success_txt(str(tmp_path))
+
+    def test_successful_restart_replaces_invalidated_prior_publication(
+        self, tmp_path: Path, monkeypatch
+    ):
+        """A new complete transaction may clear invalidation only after stale cleanup."""
+        self._finalized_without_success(tmp_path)
+        write_success_txt(str(tmp_path))
+        invalidate_terminal_publication(str(tmp_path), "old interrupted transaction")
+        assert verify_run_pack(str(tmp_path))["status"] == "FAIL"
+
+        pipeline = self._pipeline(tmp_path, monkeypatch)
+        assert pipeline.run() == str(tmp_path)
+        assert not (tmp_path / "terminal_publication_failure.json").exists()
+        assert verify_run_pack(str(tmp_path))["status"] == "PASS"
+
+    def test_terminal_verdict_and_status_are_hash_bound(self, tmp_path: Path):
+        self._finalized_without_success(tmp_path)
+        manifest = json.loads((tmp_path / "signature.json").read_text(encoding="utf-8"))
+        assert "final_run_verdict.json" in manifest["files"]
+        assert "run_status.json" in manifest["files"]
+        write_success_txt(str(tmp_path))
+        assert verify_run_pack(str(tmp_path))["status"] == "PASS"
+
+    def test_hash_mismatch_refuses_success_publication(self, tmp_path: Path):
+        self._finalized_without_success(tmp_path)
+        (tmp_path / "run_status.json").write_text('{"status":"tampered"}', encoding="utf-8")
+        with pytest.raises(FinalizationError, match="does not verify"):
+            write_success_txt(str(tmp_path))
+        assert not (tmp_path / "SUCCESS.txt").exists()
+
+    def test_success_publication_failure_leaves_no_marker(self, tmp_path: Path, monkeypatch):
+        self._finalized_without_success(tmp_path)
+        from ultimate_pipeline.utils import finalize_run_pack as module
+
+        def fail_success(*_args, **_kwargs):
+            raise OSError("injected SUCCESS publication failure")
+
+        monkeypatch.setattr(module, "_write_success_bound", fail_success)
+        with pytest.raises(OSError, match="injected SUCCESS"):
+            write_success_txt(str(tmp_path))
+        assert not (tmp_path / "SUCCESS.txt").exists()
+
+    def test_signature_publication_failure_leaves_no_success(self, tmp_path: Path, monkeypatch):
+        _make_minimal_current_artifacts(tmp_path, "signature-failure-run")
+        from ultimate_pipeline.utils import finalize_run_pack as module
+
+        def fail_signature(*_args, **_kwargs):
+            raise OSError("injected signature publication failure")
+
+        monkeypatch.setattr(module, "_atomic_write_text", fail_signature)
+        with pytest.raises(FinalizationError, match="signature manifest could not be written"):
+            finalize_run_pack(str(tmp_path), ["final.xodr"], emit_success=False)
+        assert not (tmp_path / "SUCCESS.txt").exists()
 
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])
@@ -541,6 +785,7 @@ class TestMainPipelineRunTerminalChain:
 
         # Track terminal chain calls
         terminal_calls = []
+        captured_finalization_paths = []
 
         # Mock _run_internal (the heavy pipeline stages)
         original_run_internal = pipeline._run_internal
@@ -584,6 +829,7 @@ class TestMainPipelineRunTerminalChain:
         original_finalize = frp_module.finalize_run_pack
         def mock_finalize(out_dir, key_paths, summary="", mandatory=None, emit_success=True):
             terminal_calls.append("finalize_run_pack")
+            captured_finalization_paths.extend(key_paths)
             # Create a minimal PASS receipt
             from ultimate_pipeline.utils.finalize_run_pack import STATUS_PASS
             receipt = {
@@ -601,14 +847,22 @@ class TestMainPipelineRunTerminalChain:
         monkeypatch.setattr(frp_module, "finalize_run_pack", mock_finalize)
 
         original_verify = frp_module.verify_run_pack
-        def mock_verify(out_dir):
+        def mock_verify(out_dir, **_kwargs):
             terminal_calls.append("verify_run_pack")
             return {"schema": "RUN_PACK_VERIFICATION/v2", "status": "PASS", "problems": []}
         monkeypatch.setattr(frp_module, "verify_run_pack", mock_verify)
 
+        original_write_success = frp_module.write_success_txt
+        def mock_write_success(out_dir, summary=""):
+            terminal_calls.append("write_success_txt")
+            (Path(out_dir) / "SUCCESS.txt").write_text(
+                "OK 2026-01-01T00:00:00Z\nstatus=PASS\n", encoding="utf-8"
+            )
+        monkeypatch.setattr(frp_module, "write_success_txt", mock_write_success)
+
         # Mock _write_run_status to track final status write
         original_write_status = pipeline._write_run_status
-        def mock_write_status(status, stage, message=None, error=None):
+        def mock_write_status(status, stage, message=None, error=None, required=False):
             terminal_calls.append(f"_write_run_status({status})")
             return original_write_status(status=status, stage=stage, message=message, error=error)
         pipeline._write_run_status = mock_write_status
@@ -622,12 +876,19 @@ class TestMainPipelineRunTerminalChain:
             "_run_internal",
             "write_pipeline_health_summary",
             "write_final_run_verdict",
+            "_write_run_status(ok)",
             "mandatory_pack_artifacts",
             "finalize_run_pack",
             "verify_run_pack",
-            "_write_run_status(ok)",
+            "write_success_txt",
+            "verify_run_pack",
         ]
         assert terminal_calls == expected_order, f"Terminal chain order mismatch: {terminal_calls}"
+
+        # The final signature request must bind the two terminal authority
+        # artifacts before SUCCESS is eligible for publication.
+        assert "final_run_verdict.json" in captured_finalization_paths
+        assert "run_status.json" in captured_finalization_paths
 
         # Verify SUCCESS.txt was created
         assert (tmp_path / "SUCCESS.txt").exists()

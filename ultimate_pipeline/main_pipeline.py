@@ -953,22 +953,41 @@ class MainPipeline:
         stage: str,
         message: str | None = None,
         error: str | None = None,
+        required: bool = False,
     ) -> None:
+        """Atomically publish run status, propagating failures to the caller.
+
+        Terminal status is evidence used to authorize SUCCESS.  The terminal
+        caller sets ``required=True`` so its failure is fail-closed; ordinary
+        progress telemetry remains best-effort for compatibility.
+        """
+        payload = {
+            "status": str(status),
+            "stage": str(stage),
+            "message": message,
+            "error": error,
+            "out_dir": self.out_dir,
+            "timestamp": datetime.now().isoformat(),
+        }
+        status_path = Path(self.out_dir) / "run_status.json"
+        tmp_path = status_path.with_name(
+            f".{status_path.name}.{uuid.uuid4().hex}.tmp"
+        )
         try:
-            payload = {
-                "status": str(status),
-                "stage": str(stage),
-                "message": message,
-                "error": error,
-                "out_dir": self.out_dir,
-                "timestamp": datetime.now().isoformat(),
-            }
-            with open(
-                os.path.join(self.out_dir, "run_status.json"), "w", encoding="utf-8"
-            ) as f:
-                json.dump(payload, f, indent=2, ensure_ascii=True)
-        except Exception:
-            pass
+            status_path.parent.mkdir(parents=True, exist_ok=True)
+            with open(tmp_path, "w", encoding="utf-8", newline="\n") as f:
+                json.dump(payload, f, indent=2, ensure_ascii=True, sort_keys=True)
+                f.write("\n")
+                f.flush()
+                os.fsync(f.fileno())
+            os.replace(tmp_path, status_path)
+        except BaseException:
+            try:
+                tmp_path.unlink()
+            except OSError:
+                pass
+            if required:
+                raise
 
     def _mark_stage(self, stage: str, *, message: str | None = None) -> None:
         self._run_stage = str(stage)
@@ -983,6 +1002,14 @@ class MainPipeline:
         Delegates to the standalone utility for testability and reuse.
         """
         revoke_stale_success(self.out_dir)
+
+    def _invalidate_terminal_publication(self, reason: str) -> None:
+        """Write the fail-closed receipt consumed by run-pack verification."""
+        from ultimate_pipeline.utils.finalize_run_pack import (
+            invalidate_terminal_publication,
+        )
+
+        invalidate_terminal_publication(self.out_dir, reason)
 
     def _get_source_sha(self) -> str:
         """Return the current Git commit SHA, or a deterministic placeholder."""
@@ -1742,10 +1769,16 @@ if str(_repo_root) not in sys.path:
         - on success: returns self.out_dir
         - on failure: writes crash artifacts into self.out_dir and re-raises
         """
-        # Revoke any stale SUCCESS from a previous run before mutating state.
-        self._revoke_stale_success()
-
         try:
+            # Revoke a prior marker before any run mutation.  A prior terminal
+            # failure receipt is cleared only after this revocation succeeds;
+            # otherwise a reader continues to reject the old pack.
+            self._revoke_stale_success()
+            from ultimate_pipeline.utils.finalize_run_pack import (
+                clear_terminal_publication_invalidation,
+            )
+            clear_terminal_publication_invalidation(self.out_dir)
+
             settings_blob = json.dumps(
                 {
                     k: getattr(self.settings, k)
@@ -1776,37 +1809,77 @@ if str(_repo_root) not in sys.path:
             # 2. Final run verdict (uses actual profile & settings)
             from ultimate_pipeline.signals.verdict import write_final_run_verdict
             final_xodr_path = self._find_final_xodr()
-            write_final_run_verdict(
+            verdict = write_final_run_verdict(
                 self.out_dir,
                 profile=self._profile,
                 settings=self.settings,
                 final_xodr=final_xodr_path,
             )
+            if not isinstance(verdict, dict) or verdict.get("status") != "PASS":
+                raise RuntimeError(
+                    "Terminal final verdict is not PASS: "
+                    f"{verdict.get('status') if isinstance(verdict, dict) else verdict!r}"
+                )
 
-            # 3. Registry-derived mandatory pack finalization
+            # 3. Publish terminal status before finalizing it into the manifest.
+            # This avoids a signature/status dependency cycle and makes the
+            # signed status the evidence that authorizes the final marker.
+            self._write_run_status(status="ok", stage="done", required=True)
+
+            # 4. Registry-derived mandatory pack finalization.  The terminal
+            # authority artifacts are deliberately added after their producers
+            # have completed; SUCCESS itself remains outside the manifest.
             from ultimate_pipeline.signals.registry import mandatory_pack_artifacts
             from ultimate_pipeline.utils.finalize_run_pack import (
                 finalize_run_pack,
                 verify_run_pack,
+                write_success_txt,
             )
             mandatory = mandatory_pack_artifacts(
                 self._profile,
                 final_xodr_path,
                 settings=self.settings,
             )
-            finalize_run_pack(self.out_dir, mandatory, emit_success=True)
+            mandatory.extend(["final_run_verdict.json", "run_status.json"])
+            receipt = finalize_run_pack(self.out_dir, mandatory, emit_success=False)
+            if receipt.get("status") != "PASS":
+                raise RuntimeError(
+                    f"Terminal pack finalization failed: {receipt.get('failures', [])}"
+                )
 
-            # 4. Post-publication verification
-            verify_result = verify_run_pack(self.out_dir)
+            # 5. Verify the complete signed pack before publication.
+            verify_result = verify_run_pack(self.out_dir, require_success=False)
             if verify_result.get("status") != "PASS":
                 raise RuntimeError(
                     f"Terminal pack verification failed: {verify_result.get('problems', [])}"
                 )
 
-            # 5. Terminal run status (only after full chain passes)
-            self._write_run_status(status="ok", stage="done")
+            # 6. SUCCESS is the sole final publication write.  Reverify it to
+            # detect any publication/binding anomaly; the exception path below
+            # revokes it if that read-only check cannot establish authority.
+            write_success_txt(self.out_dir)
+            verify_result = verify_run_pack(self.out_dir)
+            if verify_result.get("status") != "PASS":
+                raise RuntimeError(
+                    "Terminal SUCCESS verification failed: "
+                    f"{verify_result.get('problems', [])}"
+                )
             return self.out_dir
         except Exception as e:
+            # A terminal-chain failure must invalidate a previously published
+            # marker before any best-effort failure evidence is written.
+            invalidation_error = None
+            try:
+                self._invalidate_terminal_publication(str(e))
+            except Exception as exc:
+                invalidation_error = exc
+                print(f"❌ Failed to write terminal invalidation receipt: {exc}")
+            revocation_error = None
+            try:
+                self._revoke_stale_success()
+            except Exception as exc:
+                revocation_error = exc
+                print(f"❌ Failed to revoke terminal SUCCESS marker: {exc}")
             # Keep console signal for local debugging
             print("❌ PIPELINE CRASHED:", e)
             traceback.print_exc()
@@ -1839,6 +1912,12 @@ if str(_repo_root) not in sys.path:
                     f"⚠️ Failed to write crash/status artifacts while handling pipeline failure: {artifact_exc}",
                     flush=True,
                 )
+
+            if revocation_error is not None or invalidation_error is not None:
+                raise RuntimeError(
+                    "Terminal publication failed and SUCCESS.txt could not be revoked "
+                    "or invalidated"
+                ) from e
 
             # IMPORTANT: re-raise so callers (scripts/HPC) get a non-zero exit
             raise
