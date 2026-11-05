@@ -253,8 +253,11 @@ def _revoke_stale_success(out_dir: Path) -> None:
         success_path = Path(out_dir) / "SUCCESS.txt"
         if success_path.is_file():
             success_path.unlink()
-    except Exception:
-        pass
+    except Exception as exc:
+        # A run may not proceed while an old authoritative success claim is
+        # still visible.  In particular, swallowing a permission failure here
+        # would allow a failed re-run to inherit the previous run's SUCCESS.
+        raise RuntimeError(f"Failed to revoke stale SUCCESS.txt: {exc}") from exc
 
 
 def _find_latest_dataset(base: Path) -> Optional[Path]:
@@ -538,7 +541,17 @@ def _main_impl() -> int:
         model = model.to(device)
         pretraining_contract_record = pretraining_contract
     except PretrainingContractError as exc:
-        print(f"[FATAL] pretraining contract violation: {exc}", file=os.stderr)
+        failure = {
+            "status": "TRAINING_ABORTED_PRETRAINING_CONTRACT",
+            "message": str(exc),
+            "detail": {"error_type": type(exc).__name__},
+        }
+        _write_training_failure_receipt(
+            out_dir,
+            failure["status"],
+            failure,
+        )
+        print(f"[FATAL] pretraining contract violation: {exc}", file=sys.stderr)
         return 1
     if ddp_enabled:
         local_rank = int(os.environ.get("LOCAL_RANK", "0"))
