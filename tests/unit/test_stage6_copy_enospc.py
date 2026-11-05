@@ -64,6 +64,24 @@ def test_copy_artifact_raises_on_enospc(tmp_path: Path, monkeypatch) -> None:
     # Destination must be absent or a previous complete copy -- never partial.
     if os.path.exists(dst):
         assert Path(dst).read_text(encoding="utf-8") == "hello"
+    assert not Path(dst + ".tmp").exists()
+
+
+def test_copy_artifact_removes_temp_when_fsync_fails(tmp_path: Path, monkeypatch) -> None:
+    """A sync failure must leave neither a partial destination nor a temp file."""
+    src = _make_src(tmp_path, "src.txt", "hello")
+    dst = str(tmp_path / "dst.txt")
+
+    def _failing_fsync(_fd: int) -> None:
+        raise OSError(28, "No space left on device")
+
+    monkeypatch.setattr(stage_06_links.os, "fsync", _failing_fsync)
+
+    with pytest.raises(OSError, match="No space left"):
+        stage_06_links._copy_artifact(src, dst)
+
+    assert not Path(dst).exists()
+    assert not Path(dst + ".tmp").exists()
 
 
 def test_copy_artifact_atomic_temp_file_not_visible(tmp_path: Path, monkeypatch) -> None:

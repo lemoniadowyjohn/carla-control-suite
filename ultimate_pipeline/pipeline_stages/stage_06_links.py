@@ -243,10 +243,19 @@ def _copy_artifact(src: str, dst: str) -> None:
         # ENOSPC), the destination is either absent or a complete previous
         # copy -- never a partial file.
         temp_path = dst + ".tmp"
-        shutil.copy2(src, temp_path)
-        with open(temp_path, "r+b") as f:
-            os.fsync(f.fileno())
-        os.replace(temp_path, dst)
+        try:
+            shutil.copy2(src, temp_path)
+            with open(temp_path, "r+b") as f:
+                os.fsync(f.fileno())
+            os.replace(temp_path, dst)
+        except Exception:
+            try:
+                os.remove(temp_path)
+            except OSError:
+                # Cleanup must never hide the original copy/sync/replace
+                # failure; the temporary path may not have been created.
+                pass
+            raise
 
 
 def _write_stage6_containment_report(self, report: Dict[str, Any]) -> None:
