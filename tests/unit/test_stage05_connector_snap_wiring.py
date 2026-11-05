@@ -186,6 +186,27 @@ def test_default_disabled_preserves_real_lane_border_fixture(tmp_path, monkeypat
     assert path.read_bytes() == original
 
 
+def test_experimental_historical_snap_moves_lane_border_connector(tmp_path, monkeypatch):
+    """Negative control: historical snap shifts the valid border by one lane."""
+    stage._inject_main_pipeline_globals()
+    stage_instance = _Stage(tmp_path)
+    stage_instance.settings.RELEASE_PROFILE = "experimental_unsafe"
+    monkeypatch.setenv("UP_ENABLE_JUNCTION_CONNECTOR_SNAP", "1")
+    monkeypatch.delenv("UP_STRICT_QUALITY_GATES", raising=False)
+    monkeypatch.delenv("UP_THESIS_STRICT", raising=False)
+    path = tmp_path / "lane_border.xodr"
+    path.write_text(_lane_border_xodr(uturn=False), encoding="utf-8")
+
+    report = stage._run_junction_connector_snap(stage_instance, str(path))
+
+    import xml.etree.ElementTree as ET
+    root = ET.parse(path).getroot()
+    geometry = root.find("./road[@id='2']/planView/geometry")
+    assert report["qualification"] == "UNQUALIFIED_EXPERIMENTAL"
+    assert report["reason"] == "endpoint_only_snap_cannot_distinguish_lane_border_placement"
+    assert float(geometry.get("y")) == pytest.approx(0.0)
+
+
 def test_connector_snap_threshold_contract_unchanged():
     assert EXIT_HEADING_DISCONTINUITY_DEG == 30.0
     assert inspect.signature(snap_junction_connectors).parameters["max_gap_m"].default == 2.0
