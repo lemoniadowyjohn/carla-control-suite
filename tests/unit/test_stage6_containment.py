@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import hashlib
 import shutil
 import xml.etree.ElementTree as ET
 from pathlib import Path
@@ -127,7 +128,8 @@ class _DiagnosticMeshRepairer:
     def __init__(self, xodr_path: str):
         self.xodr_path = xodr_path
 
-    def scan_roads(self):
+    def scan_roads(self, *, write_debug: bool = True):
+        assert write_debug is False
         return {"diagnostic": True}
 
 
@@ -193,8 +195,13 @@ def test_stage6_read_only_containment_preserves_protected_semantics(
     assert out == str(cont)
     assert stage_06_links._semantic_stage6_diff(str(src), str(cont))["ok"] is True
     report = json.loads((tmp_path / "stage6_containment_runtime.json").read_text(encoding="utf-8"))
+    assert report["schema"] == "stage6_containment_runtime_v2"
     assert report["mode"] == "READ_ONLY_DIAGNOSTIC"
     assert report["xodr_semantic_changes"]["ok"] is True
+    detail = tmp_path / report["mesh_continuity_detail"]["path"]
+    assert detail.is_file()
+    assert hashlib.sha256(detail.read_bytes()).hexdigest() == report["mesh_continuity_detail"]["sha256"]
+    assert not (tmp_path / "continuity_debug.json").exists()
 
 
 def test_stage6_semantic_diff_detects_protected_planview_change(tmp_path: Path) -> None:

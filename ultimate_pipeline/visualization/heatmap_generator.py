@@ -1,6 +1,7 @@
 # ultimate_pipeline/visualization/heatmap_generator.py
 
 import json
+import gzip
 import math
 import os
 import xml.etree.ElementTree as ET
@@ -107,7 +108,8 @@ class HeatmapGenerator:
             return
 
         try:
-            with open(debug_json, "r", encoding="utf-8") as f:
+            opener = gzip.open if str(debug_json).endswith(".gz") else open
+            with opener(debug_json, "rt", encoding="utf-8") as f:
                 debug = json.load(f)
         except Exception as e:
             print(f"⚠ Failed to read {debug_json}: {e}")

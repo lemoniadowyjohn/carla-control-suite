@@ -136,7 +136,7 @@ class MeshContinuityRepairer:
     # -------------------------------------------------------------
     # SCAN ROADS FOR DISCONTINUITIES
     # -------------------------------------------------------------
-    def scan_roads(self):
+    def scan_roads(self, *, write_debug: bool = True):
         report = {}
 
         for road in self.root.findall("road"):
@@ -214,15 +214,17 @@ class MeshContinuityRepairer:
                 "local": local,
             }
 
-        # debug dump
-        debug_path = os.path.join(os.path.dirname(self.xodr_path),
-                                  "continuity_debug.json")
-        try:
-            with open(debug_path, "w", encoding="utf-8") as f:
-                json.dump(report, f, indent=2)
-            print(f"📄 continuity_debug.json written → {debug_path}")
-        except Exception:
-            pass
+        if write_debug:
+            # Preserve the direct-call diagnostic behavior.  Stage 6 passes
+            # write_debug=False and persists one compressed, hash-bound copy.
+            debug_path = os.path.join(os.path.dirname(self.xodr_path),
+                                      "continuity_debug.json")
+            try:
+                with open(debug_path, "w", encoding="utf-8") as f:
+                    json.dump(report, f, indent=2)
+                print(f"📄 continuity_debug.json written → {debug_path}")
+            except Exception:
+                pass
 
         return report
 
