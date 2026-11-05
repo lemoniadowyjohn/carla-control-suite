@@ -10,7 +10,7 @@ Test suite covers:
   - A17-A19: analyze geometry basic / has sub-status / invalid
 
   - C1-C18: adversarial attacks (specified IDs from O13 prompt)
-  - K1-K3: known-good lane-centre controls (specified IDs from O13 prompt)
+  - K1-K5: known-good lane-centre controls (specified IDs from O13 prompt)
 """
 
 from __future__ import annotations
@@ -40,6 +40,7 @@ from ultimate_pipeline.quality.connector_geometry_validator import (
     _wrapped_angle_diff,
     _classify_u_turn,
     _generate_summary_stats,
+    _lane_offset_value,
 )
 
 
@@ -396,188 +397,202 @@ class TestAdversarialAttacks:
 
 
 # ============================================================
-# K1-K3: Known-good lane-centre controls (adapted for new schema)
+# K1-K5: Known-good lane-centre controls
 # ============================================================
 
 
-class TestKnownGoodControls:
-    """K1-K3: Known-good lane-centre controls with exact value assertions."""
-
-    def test_K1_inner_border_lane_minus2(self):
-        """K1: connector on the inner border of lane -2 -> entry gap 0, kink 0.
-
-        Lane -2 is a right-side driving lane on the inner border.
-        With no width offset, the lane-centre should be on the reference line,
-        giving entry_gap_m = 0.
-
-        Incoming road goes from (0,0) to (100,0), junction at end (100,0).
-        Connector road starts at (100,0) with heading 0, goes to (200,0).
-        """
-        # Incoming road: (0,0) to (100,0)
-        incoming_road = ET.Element("road", {"id": "1", "junction": "-1", "length": "100"})
-        plan = ET.SubElement(incoming_road, "planView")
-        geom = ET.SubElement(plan, "geometry", {"s": "0", "length": "100", "x": "0.0", "y": "0.0", "hdg": "0.0"})
-        ET.SubElement(geom, "line")
-        lanes = ET.SubElement(incoming_road, "lanes")
-        lane_section = ET.SubElement(lanes, "laneSection", {"s": "0"})
-        right = ET.SubElement(lane_section, "right")
-        lane = ET.SubElement(right, "lane", {"id": "-2", "type": "driving"})
-        ET.SubElement(lane, "width", {"sOffset": "0", "a": "0.0", "b": "0.0", "c": "0.0", "d": "0.0"})
-        link = ET.SubElement(incoming_road, "link")
-        ET.SubElement(link, "successor", {"elementType": "junction", "elementId": "j1"})
-
-        # Connector road: starts at (100,0), goes to (200,0)
-        connector_road = ET.Element("road", {"id": "2", "junction": "-1", "length": "100"})
-        plan = ET.SubElement(connector_road, "planView")
-        geom = ET.SubElement(plan, "geometry", {"s": "0", "length": "100", "x": "100.0", "y": "0.0", "hdg": "0.0"})
-        ET.SubElement(geom, "line")
-        lanes = ET.SubElement(connector_road, "lanes")
-        lane_section = ET.SubElement(lanes, "laneSection", {"s": "0"})
-        right = ET.SubElement(lane_section, "right")
-        lane = ET.SubElement(right, "lane", {"id": "-2", "type": "driving"})
-        ET.SubElement(lane, "width", {"sOffset": "0", "a": "0.0", "b": "0.0", "c": "0.0", "d": "0.0"})
-        link = ET.SubElement(connector_road, "link")
-        ET.SubElement(link, "predecessor", {"elementType": "junction", "elementId": "j1"})
-
-        junction = ET.Element("junction", {"id": "j1"})
-        conn = ET.SubElement(junction, "connection", {
-            "incomingRoad": "1",
-            "connectingRoad": "2",
-            "contactPoint": "start",
+def _make_right_lane_road(
+    road_id: str,
+    x: float,
+    y: float,
+    hdg: float,
+    lanes_right: list[tuple[int, float]],
+    link_kind: str = "successor",
+    lane_offset: dict[str, str] | None = None,
+    length: float = 100.0,
+) -> ET.Element:
+    """Build a straight road with right-side lanes and optional <laneOffset>."""
+    road = ET.Element("road", {"id": road_id, "junction": "-1", "length": str(length)})
+    plan = ET.SubElement(road, "planView")
+    geom = ET.SubElement(plan, "geometry", {
+        "s": "0", "length": str(length), "x": str(x), "y": str(y), "hdg": str(hdg),
+    })
+    ET.SubElement(geom, "line")
+    lanes_el = ET.SubElement(road, "lanes")
+    if lane_offset is not None:
+        ET.SubElement(lanes_el, "laneOffset", lane_offset)
+    section = ET.SubElement(lanes_el, "laneSection", {"s": "0"})
+    right = ET.SubElement(section, "right")
+    for lane_id, width in lanes_right:
+        lane = ET.SubElement(right, "lane", {"id": str(lane_id), "type": "driving"})
+        ET.SubElement(lane, "width", {
+            "sOffset": "0", "a": str(width), "b": "0.0", "c": "0.0", "d": "0.0",
         })
-        ET.SubElement(conn, "laneLink", {"from": "-2", "to": "-2"})
+    link = ET.SubElement(road, "link")
+    ET.SubElement(link, link_kind, {"elementType": "junction", "elementId": "j1"})
+    return road
 
-        root = ET.Element("OpenDRIVE")
-        root.append(incoming_road)
-        root.append(connector_road)
-        root.append(junction)
 
-        result = analyze_junction_lane_links(root, junction, contact_point="start")
-        assert len(result) >= 1
-        rec = result[0]
-        # Inner border lane -2 with no width: lane-centre on reference line -> gap 0
-        assert rec["entry_gap_m"] == 0.0, f"Expected entry_gap_m=0.0, got {rec['entry_gap_m']}"
-        # Exit gap is None because connector road has no successor (dead-end test)
-        assert rec["exit_gap_m"] is None
-        # Kink should be 0 since everything is straight/aligned
+def _run_control(
+    incoming: ET.Element,
+    connector: ET.Element,
+    from_lane: str,
+    to_lane: str,
+) -> dict:
+    """Wire two roads into a one-laneLink junction and return its analysis record."""
+    junction = ET.Element("junction", {"id": "j1"})
+    conn = ET.SubElement(junction, "connection", {
+        "incomingRoad": incoming.get("id"),
+        "connectingRoad": connector.get("id"),
+        "contactPoint": "start",
+    })
+    ET.SubElement(conn, "laneLink", {"from": from_lane, "to": to_lane})
+    root = ET.Element("OpenDRIVE")
+    root.append(incoming)
+    root.append(connector)
+    root.append(junction)
+    result = analyze_junction_lane_links(root, junction, contact_point="start")
+    assert len(result) >= 1, "expected one laneLink record"
+    return result[0]
+
+
+class TestKnownGoodControls:
+    """K1-K5: lane-centre controls with exact value assertions."""
+
+    def test_K1_connector_reference_on_inner_border_of_lane_minus2(self):
+        """K1: connector reference line on lane -2's inner border -> gap 0, kink 0.
+
+        Incoming road has two 3.25 m right lanes. Lane -2's inner border is
+        3.25 m right of the reference line; its centre is 4.875 m right.
+        The connector reference line starts on that border and its lane -1
+        centre (1.625 m right of its own reference) lands on the same point.
+        """
+        incoming = _make_right_lane_road(
+            "1", 0.0, 0.0, 0.0, [(-1, 3.25), (-2, 3.25)],
+        )
+        connector = _make_right_lane_road(
+            "2", 100.0, -3.25, 0.0, [(-1, 3.25)], link_kind="predecessor",
+        )
+
+        rec = _run_control(incoming, connector, "-2", "-1")
+
+        assert rec["entry_gap_m"] == pytest.approx(0.0, abs=1e-9)
+        assert rec["entry_heading_diff_deg"] == pytest.approx(0.0, abs=1e-9)
         assert rec["u_turn"] is False
 
-    def test_K2_moved_onto_incoming_reference_line(self):
-        """K2: lane -2 with width 3.25 m on incoming, width 0 on connector
-        -> entry gap ≈ 1.625 m (half the lane width offset).
+    def test_K2_connector_moved_onto_incoming_reference_line(self):
+        """K2: same as K1 but connector reference moved onto the incoming one.
 
-        Incoming road lane -2 has width 3.25m -> lane-centre is offset
-        1.625m to the right of the reference line.
-        Connector road lane -2 has width 0 -> lane-centre on reference line.
-        Both reference lines meet at (100,0), so gap = 1.625m.
+        Incoming lane -2 centre is 4.875 m right of the reference line;
+        connector lane -1 centre is 1.625 m right of its own reference.
+        Both references meet at (100, 0), so the entry gap is 3.25 m.
         """
-        # Incoming road: (0,0) to (100,0), lane -2 with width 3.25m
-        incoming_road = ET.Element("road", {"id": "1", "junction": "-1", "length": "100"})
-        plan = ET.SubElement(incoming_road, "planView")
-        geom = ET.SubElement(plan, "geometry", {"s": "0", "length": "100", "x": "0.0", "y": "0.0", "hdg": "0.0"})
-        ET.SubElement(geom, "line")
-        lanes = ET.SubElement(incoming_road, "lanes")
-        lane_section = ET.SubElement(lanes, "laneSection", {"s": "0"})
-        right = ET.SubElement(lane_section, "right")
-        lane = ET.SubElement(right, "lane", {"id": "-2", "type": "driving"})
-        ET.SubElement(lane, "width", {"sOffset": "0", "a": "3.25", "b": "0.0", "c": "0.0", "d": "0.0"})
-        link = ET.SubElement(incoming_road, "link")
-        ET.SubElement(link, "successor", {"elementType": "junction", "elementId": "j1"})
+        incoming = _make_right_lane_road(
+            "1", 0.0, 0.0, 0.0, [(-1, 3.25), (-2, 3.25)],
+        )
+        connector = _make_right_lane_road(
+            "2", 100.0, 0.0, 0.0, [(-1, 3.25)], link_kind="predecessor",
+        )
 
-        # Connector road: starts at (100,0), lane -2 with width 0
-        connector_road = ET.Element("road", {"id": "2", "junction": "-1", "length": "100"})
-        plan = ET.SubElement(connector_road, "planView")
-        geom = ET.SubElement(plan, "geometry", {"s": "0", "length": "100", "x": "100.0", "y": "0.0", "hdg": "0.0"})
-        ET.SubElement(geom, "line")
-        lanes = ET.SubElement(connector_road, "lanes")
-        lane_section = ET.SubElement(lanes, "laneSection", {"s": "0"})
-        right = ET.SubElement(lane_section, "right")
-        lane = ET.SubElement(right, "lane", {"id": "-2", "type": "driving"})
-        ET.SubElement(lane, "width", {"sOffset": "0", "a": "0.0", "b": "0.0", "c": "0.0", "d": "0.0"})
-        link = ET.SubElement(connector_road, "link")
-        ET.SubElement(link, "predecessor", {"elementType": "junction", "elementId": "j1"})
+        rec = _run_control(incoming, connector, "-2", "-1")
 
-        junction = ET.Element("junction", {"id": "j1"})
-        conn = ET.SubElement(junction, "connection", {
-            "incomingRoad": "1",
-            "connectingRoad": "2",
-            "contactPoint": "start",
-        })
-        ET.SubElement(conn, "laneLink", {"from": "-2", "to": "-2"})
-
-        root = ET.Element("OpenDRIVE")
-        root.append(incoming_road)
-        root.append(connector_road)
-        root.append(junction)
-
-        result = analyze_junction_lane_links(root, junction, contact_point="start")
-        assert len(result) >= 1
-        rec = result[0]
-        # Incoming lane -2 width 3.25m -> centre offset 1.625m right of reference
-        # Connector lane -2 width 0 -> centre on reference
-        # Both references meet at (100,0) -> gap = 1.625m
-        gap = rec["entry_gap_m"]
-        assert abs(gap - 1.625) < 0.01, f"Expected entry_gap_m≈1.625, got {gap}"
-        assert rec["exit_gap_m"] is None or rec["exit_gap_m"] >= 0.0
+        assert rec["entry_gap_m"] == pytest.approx(3.25, abs=1e-9)
         assert rec["u_turn"] is False
 
     def test_K3_K1_rotated_by_atan_1_2(self):
-        """K3: K1 road rotated by atan(1/2) -> report measured heading diff.
+        """K3: K1 rotated by atan(1/2) -> gap 3.25*sin(atan(1/4)) du = 0.7467 m.
 
-        The connector road is rotated by atan(1/2) ≈ 26.565 degrees.
-        The heading difference between incoming and connector lane centres
-        should be approximately atan(1/2) in degrees.
+        The connector reference starts on lane -2's inner border and is
+        rotated by atan(1/2). Both centre offsets are 1.625 m, so the
+        residual gap is 2*1.625*sin(hdg/2) = 3.25*sin(atan(1/4)).
         """
-        angle = math.degrees(math.atan(1 / 2))  # ≈ 26.565 deg
-        # Incoming road: (0,0) to (100,0)
-        incoming_road = ET.Element("road", {"id": "1", "junction": "-1", "length": "100"})
-        plan = ET.SubElement(incoming_road, "planView")
-        geom = ET.SubElement(plan, "geometry", {"s": "0", "length": "100", "x": "0.0", "y": "0.0", "hdg": "0.0"})
-        ET.SubElement(geom, "line")
-        lanes = ET.SubElement(incoming_road, "lanes")
-        lane_section = ET.SubElement(lanes, "laneSection", {"s": "0"})
-        right = ET.SubElement(lane_section, "right")
-        lane = ET.SubElement(right, "lane", {"id": "-2", "type": "driving"})
-        ET.SubElement(lane, "width", {"sOffset": "0", "a": "0.0", "b": "0.0", "c": "0.0", "d": "0.0"})
-        link = ET.SubElement(incoming_road, "link")
-        ET.SubElement(link, "successor", {"elementType": "junction", "elementId": "j1"})
+        angle = math.atan(1 / 2)
+        expected_gap = 3.25 * math.sin(angle / 2)  # 0.7467 m
 
-        # Connector road: starts at (100,0), rotated by atan(1/2)
-        connector_road = ET.Element("road", {"id": "2", "junction": "-1", "length": "100"})
-        plan = ET.SubElement(connector_road, "planView")
-        # hdg in OpenDRIVE is in radians
-        geom = ET.SubElement(plan, "geometry", {"s": "0", "length": "100", "x": "100.0", "y": "0.0", "hdg": str(math.atan(1 / 2))})
-        ET.SubElement(geom, "line")
-        lanes = ET.SubElement(connector_road, "lanes")
-        lane_section = ET.SubElement(lanes, "laneSection", {"s": "0"})
-        right = ET.SubElement(lane_section, "right")
-        lane = ET.SubElement(right, "lane", {"id": "-2", "type": "driving"})
-        ET.SubElement(lane, "width", {"sOffset": "0", "a": "0.0", "b": "0.0", "c": "0.0", "d": "0.0"})
-        link = ET.SubElement(connector_road, "link")
-        ET.SubElement(link, "predecessor", {"elementType": "junction", "elementId": "j1"})
-
-        junction = ET.Element("junction", {"id": "j1"})
-        conn = ET.SubElement(junction, "connection", {
-            "incomingRoad": "1",
-            "connectingRoad": "2",
-            "contactPoint": "start",
-        })
-        ET.SubElement(conn, "laneLink", {"from": "-2", "to": "-2"})
-
-        root = ET.Element("OpenDRIVE")
-        root.append(incoming_road)
-        root.append(connector_road)
-        root.append(junction)
-
-        result = analyze_junction_lane_links(root, junction, contact_point="start")
-        assert len(result) >= 1
-        rec = result[0]
-        # The heading difference should be approximately atan(1/2) ≈ 26.565 deg
-        hdg = rec["entry_heading_diff_deg"]
-        expected = abs(angle)  # 26.565...
-        assert abs(hdg - expected) < 1.0, (
-            f"Expected entry_heading_diff_deg≈{expected:.2f}, got {hdg:.2f}"
+        incoming = _make_right_lane_road(
+            "1", 0.0, 0.0, 0.0, [(-1, 3.25), (-2, 3.25)],
         )
-        # With both lane-centres at (100,0), gap should be 0
-        assert rec["entry_gap_m"] == 0.0, f"Expected entry_gap_m=0.0, got {rec['entry_gap_m']}"
+        connector = _make_right_lane_road(
+            "2", 100.0, -3.25, angle, [(-1, 3.25)], link_kind="predecessor",
+        )
+
+        rec = _run_control(incoming, connector, "-2", "-1")
+
+        assert rec["entry_gap_m"] == pytest.approx(expected_gap, abs=1e-9)
+        assert rec["entry_gap_m"] == pytest.approx(0.7467, abs=1e-4)
+        assert rec["entry_heading_diff_deg"] == pytest.approx(
+            math.degrees(angle), abs=1e-9,
+        )
         assert rec["u_turn"] is False
+
+    def test_K4_lane_offset_not_rotated(self):
+        """K4: connector reference 3.25 m right, but laneOffset a=3.25 -> gap 0.
+
+        Incoming lane -1 centre is 1.625 m right of its reference. The
+        connector reference starts 3.25 m right, and its laneOffset shifts
+        the whole lane section 3.25 m back left, so lane -1 centre is at
+        t = 3.25 - 1.625 = +1.625 -> the same world point.
+        """
+        lane_offset = {"s": "0", "a": "3.25", "b": "0.0", "c": "0.0", "d": "0.0"}
+        incoming = _make_right_lane_road(
+            "1", 0.0, 0.0, 0.0, [(-1, 3.25)],
+        )
+        connector = _make_right_lane_road(
+            "2", 100.0, -3.25, 0.0, [(-1, 3.25)],
+            link_kind="predecessor", lane_offset=lane_offset,
+        )
+
+        rec = _run_control(incoming, connector, "-1", "-1")
+
+        assert rec["entry_gap_m"] == pytest.approx(0.0, abs=1e-9)
+        assert rec["entry_heading_diff_deg"] == pytest.approx(0.0, abs=1e-9)
+        assert rec["u_turn"] is False
+
+    def test_K4_lane_offset_rotated(self):
+        """K4 rotated: the same laneOffset control rotated by atan(1/2).
+
+        The laneOffset cancels the 3.25 m reference shift, leaving the same
+        1.625 m lateral pair as K3 -> 0.7467 m.
+        """
+        angle = math.atan(1 / 2)
+        expected_gap = 3.25 * math.sin(angle / 2)  # 0.7467 m
+        lane_offset = {"s": "0", "a": "3.25", "b": "0.0", "c": "0.0", "d": "0.0"}
+
+        incoming = _make_right_lane_road(
+            "1", 0.0, 0.0, 0.0, [(-1, 3.25)],
+        )
+        connector = _make_right_lane_road(
+            "2", 100.0, -3.25, angle, [(-1, 3.25)],
+            link_kind="predecessor", lane_offset=lane_offset,
+        )
+
+        rec = _run_control(incoming, connector, "-1", "-1")
+
+        assert rec["entry_gap_m"] == pytest.approx(expected_gap, abs=1e-9)
+        assert rec["entry_gap_m"] == pytest.approx(0.7467, abs=1e-4)
+        assert rec["entry_heading_diff_deg"] == pytest.approx(
+            math.degrees(angle), abs=1e-9,
+        )
+        assert rec["u_turn"] is False
+
+    def test_K5_lane_offset_cubic_at_s_gt_0(self):
+        """K5: the laneOffset cubic (b/c/d) is evaluated at s > 0.
+
+        With a=1, b=0.5, c=0.1, d=0.2 at s=4 (ds=4):
+        1 + 2 + 1.6 + 12.8 = 17.4. A linear-only implementation would give
+        3.0, and ignoring b would give 15.4.
+        """
+        cubic = ET.Element("lanes")
+        ET.SubElement(cubic, "laneOffset", {
+            "s": "0", "a": "1.0", "b": "0.5", "c": "0.1", "d": "0.2",
+        })
+        assert _lane_offset_value(cubic, 0.0) == pytest.approx(1.0, abs=1e-12)
+        assert _lane_offset_value(cubic, 4.0) == pytest.approx(17.4, abs=1e-12)
+
+        records = ET.Element("lanes")
+        ET.SubElement(records, "laneOffset", {"s": "0", "a": "2.0"})
+        ET.SubElement(records, "laneOffset", {"s": "10", "a": "7.0"})
+        assert _lane_offset_value(records, 5.0) == pytest.approx(2.0, abs=1e-12)
+        assert _lane_offset_value(records, 10.0) == pytest.approx(7.0, abs=1e-12)
+
+        assert _lane_offset_value(ET.Element("lanes"), 5.0) == 0.0
