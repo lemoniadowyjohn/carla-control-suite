@@ -240,19 +240,34 @@ def _is_zero_width_taper(lane: ET.Element) -> bool:
     return True
 
 
+def _clamped_section_lengths(road_length: float, starts: List[float]) -> Tuple[List[float], int]:
+    """Return in-road section spans and the number of out-of-range starts."""
+    length = max(0.0, road_length)
+    ordered = sorted(starts)
+    malformed = sum(start < 0.0 or start > length for start in ordered)
+    spans: List[float] = []
+    for index, start in enumerate(ordered):
+        clamped_start = min(max(start, 0.0), length)
+        raw_end = ordered[index + 1] if index + 1 < len(ordered) else length
+        clamped_end = min(max(raw_end, 0.0), length)
+        spans.append(max(0.0, clamped_end - clamped_start))
+    return spans, malformed
+
+
 def _lane_count_v2(root: ET.Element) -> Dict[str, Dict[str, Any]]:
     """Compute versioned physical-lane proxies without changing legacy lane_count.
 
     ``all`` includes every non-centre, non-zero-width lane and ``driving`` only
-    lanes whose type is ``driving``.  M1/M2 retain a per-road distribution;
-    network metrics are also emitted with connector roads excluded.
+    lanes whose type is ``driving``. M1/M2 retain a per-road distribution;
+    network metrics are also emitted with connector roads excluded. Invariance
+    under section splitting holds when section spans use clamped road bounds.
     """
     variants = {
         "all": lambda lane: True,
         "driving": lambda lane: (lane.get("type") or "").lower() == "driving",
     }
     result: Dict[str, Dict[str, Any]] = {}
-    excluded = {"no_lanes_element": 0, "zero_length": 0}
+    excluded = {"no_lanes_element": 0, "zero_length": 0, "malformed_sections": 0}
 
     per_variant: Dict[str, Dict[str, Any]] = {}
     for name in variants:
@@ -270,20 +285,18 @@ def _lane_count_v2(root: ET.Element) -> Dict[str, Dict[str, Any]]:
         if lanes_elem is None:
             excluded["no_lanes_element"] += 1
             continue
-        length = _safe_float(road.get("length"))
-        if length <= 0.0:
+        length = max(0.0, _safe_float(road.get("length")))
+        if length == 0.0:
             excluded["zero_length"] += 1
-            continue
         sections = sorted(lanes_elem.findall("laneSection"), key=lambda sec: _safe_float(sec.get("s")))
         if not sections:
             # A declared lanes element without sections is an observed zero-lane road.
             sections = []
 
-        section_lengths: List[float] = []
-        for index, section in enumerate(sections):
-            start = _safe_float(section.get("s"))
-            end = _safe_float(sections[index + 1].get("s")) if index + 1 < len(sections) else length
-            section_lengths.append(max(0.0, end - start))
+        section_lengths, malformed = _clamped_section_lengths(
+            length, [_safe_float(section.get("s")) for section in sections]
+        )
+        excluded["malformed_sections"] += malformed
 
         for name, include_lane in variants.items():
             counts: List[int] = []
@@ -303,7 +316,7 @@ def _lane_count_v2(root: ET.Element) -> Dict[str, Dict[str, Any]]:
 
             weighted_total = sum(count * segment_length for count, segment_length in zip(counts, section_lengths))
             max_concurrent = float(max(counts, default=0))
-            weighted_mean = weighted_total / length
+            weighted_mean = weighted_total / length if length else 0.0
             row = per_variant[name]
             row["max_concurrent_lanes_per_road"].append(max_concurrent)
             row["length_weighted_mean_lanes_per_road"].append(weighted_mean)

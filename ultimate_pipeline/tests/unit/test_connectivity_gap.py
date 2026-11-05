@@ -15,6 +15,7 @@ import pytest
 
 from ultimate_pipeline.domain_gap.connectivity_gap import (
     ConnectivityGap,
+    _clamped_section_lengths,
     _road_link_metrics,
     _lane_count_per_road,
     _lane_count_v2,
@@ -199,6 +200,44 @@ def _v2_root(roads: list[dict]) -> ET.Element:
 
 
 class TestLaneCountV2:
+    def test_out_of_range_section_boundary_is_clamped_and_counted(self):
+        root = _v2_root([
+            {"id": 1, "length": 100, "sections": [
+                {"s": 0, "lanes": [{"id": -1}, {"id": 1}]},
+                {"s": 150, "lanes": [{"id": -1}]},
+            ]},
+        ])
+        metrics = _lane_count_v2(root)["driving"]
+        assert metrics["length_weighted_mean_lanes_per_road"] == [2.0]
+        assert metrics["network_mean_lanes"] == pytest.approx(2.0)
+        assert metrics["excluded_roads"]["malformed_sections"] == 1
+
+    def test_zero_length_road_is_retained_in_distributions(self):
+        root = _v2_root([
+            {"id": 1, "length": 0, "sections": [
+                {"s": 0, "lanes": [{"id": -1}, {"id": 1}]},
+            ]},
+        ])
+        metrics = _lane_count_v2(root)["driving"]
+        assert metrics["max_concurrent_lanes_per_road"] == [2.0]
+        assert metrics["length_weighted_mean_lanes_per_road"] == [0.0]
+        assert metrics["excluded_roads"]["zero_length"] == 1
+        assert metrics["network_road_km"] == 0.0
+
+    def test_clamped_section_lengths_cover_exactly_the_in_bounds_extent(self):
+        cases = [
+            (100.0, [-5.0, 0.0, 10.0, 150.0]),
+            (100.0, [0.0, 50.0, 100.0]),
+            (100.0, [10.0, 20.0, 80.0]),
+            (100.0, [101.0, 150.0]),
+            (0.0, [-1.0, 0.0, 1.0]),
+        ]
+        for length, starts in cases:
+            section_lengths, malformed = _clamped_section_lengths(length, starts)
+            first = min(max(starts[0], 0.0), length)
+            assert sum(section_lengths) == pytest.approx(length - first)
+            assert malformed == sum(s < 0.0 or s > length for s in starts)
+
     def test_section_split_changes_legacy_but_not_v2_metrics(self):
         unsplit = _v2_root([
             {"id": 1, "length": 100, "sections": [
