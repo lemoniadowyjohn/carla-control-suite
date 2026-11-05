@@ -238,7 +238,15 @@ def _semantic_stage6_diff(before_path: str, after_path: str) -> Dict[str, Any]:
 def _copy_artifact(src: str, dst: str) -> None:
     os.makedirs(os.path.dirname(os.path.abspath(dst)), exist_ok=True)
     if os.path.abspath(src) != os.path.abspath(dst):
-        shutil.copy2(src, dst)
+        # Write to a temp file in the same directory as the destination so
+        # that os.replace can atomically swap it. If the copy fails (e.g.,
+        # ENOSPC), the destination is either absent or a complete previous
+        # copy -- never a partial file.
+        temp_path = dst + ".tmp"
+        shutil.copy2(src, temp_path)
+        with open(temp_path, "rb") as f:
+            os.fsync(f.fileno())
+        os.replace(temp_path, dst)
 
 
 def _write_stage6_containment_report(self, report: Dict[str, Any]) -> None:
