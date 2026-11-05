@@ -229,6 +229,110 @@ def _lane_count_per_road(root: ET.Element) -> List[int]:
     return counts
 
 
+def _is_zero_width_taper(lane: ET.Element) -> bool:
+    """Return whether every declared width polynomial is identically zero."""
+    widths = lane.findall("width")
+    if not widths:
+        return False
+    for width in widths:
+        if any(_safe_float(width.get(coefficient)) != 0.0 for coefficient in ("a", "b", "c", "d")):
+            return False
+    return True
+
+
+def _lane_count_v2(root: ET.Element) -> Dict[str, Dict[str, Any]]:
+    """Compute versioned physical-lane proxies without changing legacy lane_count.
+
+    ``all`` includes every non-centre, non-zero-width lane and ``driving`` only
+    lanes whose type is ``driving``.  M1/M2 retain a per-road distribution;
+    network metrics are also emitted with connector roads excluded.
+    """
+    variants = {
+        "all": lambda lane: True,
+        "driving": lambda lane: (lane.get("type") or "").lower() == "driving",
+    }
+    result: Dict[str, Dict[str, Any]] = {}
+    excluded = {"no_lanes_element": 0, "zero_length": 0}
+
+    per_variant: Dict[str, Dict[str, Any]] = {}
+    for name in variants:
+        per_variant[name] = {
+            "max_concurrent_lanes_per_road": [],
+            "length_weighted_mean_lanes_per_road": [],
+            "network_lane_m": 0.0,
+            "network_road_m": 0.0,
+            "network_lane_m_excluding_connectors": 0.0,
+            "network_road_m_excluding_connectors": 0.0,
+        }
+
+    for road in root.findall("road"):
+        lanes_elem = road.find("lanes")
+        if lanes_elem is None:
+            excluded["no_lanes_element"] += 1
+            continue
+        length = _safe_float(road.get("length"))
+        if length <= 0.0:
+            excluded["zero_length"] += 1
+            continue
+        sections = sorted(lanes_elem.findall("laneSection"), key=lambda sec: _safe_float(sec.get("s")))
+        if not sections:
+            # A declared lanes element without sections is an observed zero-lane road.
+            sections = []
+
+        section_lengths: List[float] = []
+        for index, section in enumerate(sections):
+            start = _safe_float(section.get("s"))
+            end = _safe_float(sections[index + 1].get("s")) if index + 1 < len(sections) else length
+            section_lengths.append(max(0.0, end - start))
+
+        for name, include_lane in variants.items():
+            counts: List[int] = []
+            for section in sections:
+                count = 0
+                for side in ("left", "right"):
+                    side_elem = section.find(side)
+                    if side_elem is None:
+                        continue
+                    for lane in side_elem.findall("lane"):
+                        if _safe_int(lane.get("id"), 0) == 0:
+                            continue
+                        if _is_zero_width_taper(lane) or not include_lane(lane):
+                            continue
+                        count += 1
+                counts.append(count)
+
+            weighted_total = sum(count * segment_length for count, segment_length in zip(counts, section_lengths))
+            max_concurrent = float(max(counts, default=0))
+            weighted_mean = weighted_total / length
+            row = per_variant[name]
+            row["max_concurrent_lanes_per_road"].append(max_concurrent)
+            row["length_weighted_mean_lanes_per_road"].append(weighted_mean)
+            row["network_lane_m"] += weighted_total
+            row["network_road_m"] += length
+            if road.get("junction", "-1") == "-1":
+                row["network_lane_m_excluding_connectors"] += weighted_total
+                row["network_road_m_excluding_connectors"] += length
+
+    for name, row in per_variant.items():
+        lane_m = float(row.pop("network_lane_m"))
+        road_m = float(row.pop("network_road_m"))
+        lane_m_without_connectors = float(row.pop("network_lane_m_excluding_connectors"))
+        road_m_without_connectors = float(row.pop("network_road_m_excluding_connectors"))
+        max_values = list(row["max_concurrent_lanes_per_road"])
+        weighted_values = list(row["length_weighted_mean_lanes_per_road"])
+        row["max_concurrent_lanes_stats"] = _dist_stats(max_values)
+        row["length_weighted_mean_lanes_stats"] = _dist_stats(weighted_values)
+        row["network_lane_km"] = lane_m / 1000.0
+        row["network_road_km"] = road_m / 1000.0
+        row["network_mean_lanes"] = lane_m / road_m if road_m else 0.0
+        row["network_mean_lanes_excluding_connectors"] = (
+            lane_m_without_connectors / road_m_without_connectors if road_m_without_connectors else 0.0
+        )
+        row["excluded_roads"] = dict(excluded)
+        result[name] = row
+    return result
+
+
 def _junction_degree_metrics(root: ET.Element) -> Tuple[List[int], List[int], List[int]]:
     """
     For each junction return (total_connections, unique_incoming, unique_outgoing).
@@ -335,6 +439,7 @@ def _per_map_summary(xodr_path: str) -> Dict[str, Any]:
 
     road_link = _road_link_metrics(root)
     lane_counts = _lane_count_per_road(root)
+    lane_count_v2 = _lane_count_v2(root)
     total_conns, incoming, outgoing = _junction_degree_metrics(root)
     junc_ll_completeness = _junction_lane_link_completeness(root)
     road_ll_validity = _road_lane_link_validity(root)
@@ -345,6 +450,7 @@ def _per_map_summary(xodr_path: str) -> Dict[str, Any]:
             "per_road_values": lane_counts,
             "stats": _dist_stats([float(v) for v in lane_counts]),
         },
+        "lane_count_v2": lane_count_v2,
         "junction_degree": {
             "total_connections_per_junction": _dist_stats([float(v) for v in total_conns]),
             "unique_incoming_per_junction": _dist_stats([float(v) for v in incoming]),
@@ -415,6 +521,35 @@ class ConnectivityGap:
                     "mean_delta": _delta(["lane_count", "stats", "mean"], manual, auto),
                     "median_delta": _delta(["lane_count", "stats", "median"], manual, auto),
                 },
+                "lane_count_v2": {
+                    variant: {
+                        "max_concurrent_lanes_mean_delta": _delta(
+                            ["lane_count_v2", variant, "max_concurrent_lanes_stats", "mean"], manual, auto
+                        ),
+                        "max_concurrent_lanes_median_delta": _delta(
+                            ["lane_count_v2", variant, "max_concurrent_lanes_stats", "median"], manual, auto
+                        ),
+                        "length_weighted_mean_lanes_mean_delta": _delta(
+                            ["lane_count_v2", variant, "length_weighted_mean_lanes_stats", "mean"], manual, auto
+                        ),
+                        "length_weighted_mean_lanes_median_delta": _delta(
+                            ["lane_count_v2", variant, "length_weighted_mean_lanes_stats", "median"], manual, auto
+                        ),
+                        "network_lane_km_delta": _delta(
+                            ["lane_count_v2", variant, "network_lane_km"], manual, auto
+                        ),
+                        "network_road_km_delta": _delta(
+                            ["lane_count_v2", variant, "network_road_km"], manual, auto
+                        ),
+                        "network_mean_lanes_delta": _delta(
+                            ["lane_count_v2", variant, "network_mean_lanes"], manual, auto
+                        ),
+                        "network_mean_lanes_excluding_connectors_delta": _delta(
+                            ["lane_count_v2", variant, "network_mean_lanes_excluding_connectors"], manual, auto
+                        ),
+                    }
+                    for variant in ("all", "driving")
+                },
                 # Junction degree distribution distance
                 "junction_degree": {
                     "total_connections_l1_gap": _l1_distance(
@@ -444,6 +579,11 @@ class ConnectivityGap:
             auto["junction_degree"].pop("_raw_total", None)
             manual["lane_count"].pop("per_road_values", None)
             auto["lane_count"].pop("per_road_values", None)
+            for variant in ("all", "driving"):
+                manual["lane_count_v2"][variant].pop("max_concurrent_lanes_per_road", None)
+                manual["lane_count_v2"][variant].pop("length_weighted_mean_lanes_per_road", None)
+                auto["lane_count_v2"][variant].pop("max_concurrent_lanes_per_road", None)
+                auto["lane_count_v2"][variant].pop("length_weighted_mean_lanes_per_road", None)
 
             return {
                 "manual": manual,

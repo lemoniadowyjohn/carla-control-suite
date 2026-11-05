@@ -17,6 +17,7 @@ from ultimate_pipeline.domain_gap.connectivity_gap import (
     ConnectivityGap,
     _road_link_metrics,
     _lane_count_per_road,
+    _lane_count_v2,
     _junction_lane_link_completeness,
     _road_lane_link_validity,
 )
@@ -165,6 +166,117 @@ class TestLaneCountPerRoad:
         root = _build_xodr([{"id": 0, "lane_counts": [0]}])
         counts = _lane_count_per_road(root)
         assert counts == [0]
+
+
+def _v2_root(roads: list[dict]) -> ET.Element:
+    """Build only the lane material needed for N07's v2 metric tests."""
+    root = ET.Element("OpenDRIVE")
+    for spec in roads:
+        road = ET.SubElement(
+            root,
+            "road",
+            id=str(spec["id"]),
+            length=str(spec.get("length", 100.0)),
+            junction=str(spec.get("junction", "-1")),
+        )
+        lanes = ET.SubElement(road, "lanes")
+        for section_spec in spec.get("sections", []):
+            section = ET.SubElement(lanes, "laneSection", s=str(section_spec["s"]))
+            for lane_spec in section_spec.get("lanes", []):
+                side_name = lane_spec.get("side", "right")
+                side = section.find(side_name)
+                if side is None:
+                    side = ET.SubElement(section, side_name)
+                lane = ET.SubElement(
+                    side,
+                    "lane",
+                    id=str(lane_spec["id"]),
+                    type=lane_spec.get("type", "driving"),
+                )
+                if "width" in lane_spec:
+                    ET.SubElement(lane, "width", **lane_spec["width"])
+    return root
+
+
+class TestLaneCountV2:
+    def test_section_split_changes_legacy_but_not_v2_metrics(self):
+        unsplit = _v2_root([
+            {"id": 1, "length": 100, "sections": [
+                {"s": 0, "lanes": [{"id": -1}, {"id": 1}]},
+            ]},
+        ])
+        split = _v2_root([
+            {"id": 1, "length": 100, "sections": [
+                {"s": 0, "lanes": [{"id": -1}, {"id": 1}]},
+                {"s": 50, "lanes": [{"id": -1}, {"id": 1}]},
+            ]},
+        ])
+
+        assert _lane_count_per_road(unsplit) == [2]
+        assert _lane_count_per_road(split) == [4]
+        assert _lane_count_v2(unsplit) == _lane_count_v2(split)
+
+    def test_network_metrics_survive_road_split(self):
+        one_road = _v2_root([
+            {"id": 1, "length": 100, "sections": [
+                {"s": 0, "lanes": [{"id": -1}, {"id": 1}]},
+            ]},
+        ])
+        two_roads = _v2_root([
+            {"id": 1, "length": 50, "sections": [
+                {"s": 0, "lanes": [{"id": -1}, {"id": 1}]},
+            ]},
+            {"id": 2, "length": 50, "sections": [
+                {"s": 0, "lanes": [{"id": -1}, {"id": 1}]},
+            ]},
+        ])
+        for variant in ("all", "driving"):
+            first = _lane_count_v2(one_road)[variant]
+            second = _lane_count_v2(two_roads)[variant]
+            assert first["network_lane_km"] == second["network_lane_km"]
+            assert first["network_mean_lanes"] == second["network_mean_lanes"]
+
+    def test_zero_width_taper_is_excluded_only_by_v2(self):
+        root = _v2_root([
+            {"id": 1, "length": 100, "sections": [
+                {"s": 0, "lanes": [
+                    {"id": -1, "width": {"a": "0", "b": "0", "c": "0", "d": "0"}},
+                    {"id": 1},
+                ]},
+            ]},
+        ])
+        assert _lane_count_per_road(root) == [2]
+        assert _lane_count_v2(root)["all"]["max_concurrent_lanes_per_road"] == [1.0]
+
+    def test_driving_and_all_variants_diverge_for_sidewalk(self):
+        root = _v2_root([
+            {"id": 1, "length": 100, "sections": [
+                {"s": 0, "lanes": [{"id": -1}, {"id": 1, "type": "sidewalk"}]},
+            ]},
+        ])
+        metrics = _lane_count_v2(root)
+        assert metrics["all"]["max_concurrent_lanes_per_road"] == [2.0]
+        assert metrics["driving"]["max_concurrent_lanes_per_road"] == [1.0]
+
+    def test_legacy_lane_count_payload_is_unchanged(self, tmp_path: Path):
+        root = _build_xodr([{"id": 1, "lane_counts": [1, 2]}])
+        path = _write_xodr(tmp_path / "map.xodr", root)
+        summary = ConnectivityGap.compute(path, path)
+        assert summary["manual"]["lane_count"] == {
+            "stats": {"count": 1, "mean": 6.0, "median": 6.0, "p95": 6.0, "max": 6.0}
+        }
+
+    def test_analytical_network_mean_is_length_weighted(self):
+        root = _v2_root([
+            {"id": 1, "length": 100, "sections": [
+                {"s": 0, "lanes": [{"id": -1}, {"id": 1}]},
+            ]},
+            {"id": 2, "length": 300, "sections": [
+                {"s": 0, "lanes": [{"id": -1}, {"id": -2}, {"id": 1}, {"id": 2}]},
+            ]},
+        ])
+        metrics = _lane_count_v2(root)["driving"]
+        assert metrics["network_mean_lanes"] == pytest.approx(3.5)
 
 
 # ---------------------------------------------------------------------------
