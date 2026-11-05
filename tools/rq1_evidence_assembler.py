@@ -93,6 +93,27 @@ def build_artifact(path: Path) -> Dict[str, str]:
     return {"path": str(path), "sha256": sha256_file(path)}
 
 
+def validated_final_xodr(child: Dict[str, Any]) -> tuple[Path | None, str | None]:
+    """Resolve only the child-declared final XODR when its hash still binds.
+
+    An output directory may contain stale or unrelated XODRs.  Evidence
+    admission must never substitute one based on directory enumeration.
+    """
+    acceptance = child.get("map_acceptance") or {}
+    declared = acceptance.get("final_xodr_path")
+    expected_sha = child.get("xodr_sha256")
+    if not declared:
+        return None, "declared_final_xodr_missing"
+    if not expected_sha:
+        return None, "declared_final_xodr_sha256_missing"
+    path = Path(declared)
+    if not path.is_file():
+        return None, "declared_final_xodr_missing"
+    if sha256_file(path) != expected_sha:
+        return None, "declared_final_xodr_sha256_mismatch"
+    return path, None
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description="Assemble RQ1 evidence receipt")
     ap.add_argument("--matrix", type=Path, default=REPO / "reports/rq1b_runs/RQ1_FULL_DETERMINISM_MATRIX.json")
@@ -110,10 +131,17 @@ def main() -> int:
     # ---- one experiment receipt per valid run --------------------------------
     run_receipts: List[Dict[str, Any]] = []
     run_receipt_hashes: List[Dict[str, str]] = []
+    inadmissible_runs: List[Dict[str, Any]] = []
     claim_reusable: Dict[str, Any] = {}
     for wrapper in wrappers:
         child = wrapper.get("child_receipt") or {}
         if not (wrapper.get("return_code") == 0 and child.get("status") == "ok"):
+            continue
+        final_disk, final_xodr_problem = validated_final_xodr(child)
+        if final_xodr_problem:
+            inadmissible_runs.append(
+                {"run": child.get("run"), "reason": final_xodr_problem}
+            )
             continue
         execution_status = "COMPLETED"
         seeds = ["deterministic-no-seed"]
@@ -137,19 +165,7 @@ def main() -> int:
         meta = child.get("structural_meta") or {}
         if meta.get("payload_path"):
             outputs.append(build_artifact(Path(meta["payload_path"])))
-        ma = child.get("map_acceptance") or {}
-        final_xodr_path = ma.get("final_xodr_path")
-        final_disk = (
-            Path(final_xodr_path)
-            if final_xodr_path and Path(final_xodr_path).is_file()
-            else None
-        )
-        if final_disk is None:
-            out_dir_c = Path(child.get("out_dir") or "")
-            candidates = sorted(out_dir_c.rglob("*.xodr")) if out_dir_c.is_dir() else []
-            final_disk = candidates[-1] if candidates else None
-        if final_disk is not None and final_disk.is_file():
-            outputs.append(build_artifact(final_disk))
+        outputs.append(build_artifact(final_disk))
 
         raw_metric_payload = {
             "run_index": child.get("run"),
@@ -231,6 +247,7 @@ def main() -> int:
             "rules_hash": sha256_of_jsonable(normalization_rules()),
         },
         "run_receipts": run_receipt_hashes,
+        "inadmissible_runs": inadmissible_runs,
         "five_run_matrix": {
             "path": str(args.matrix),
             "sha256": sha256_file(args.matrix),

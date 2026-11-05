@@ -61,3 +61,25 @@ def test_adjudication_refuses_missing_bound_input_even_if_frozen(tmp_path: Path)
 
     assert claim["claim_status"] == "NOT_RUN"
     assert any("missing" in problem for problem in claim["adjudication"]["problems"])
+
+
+def test_rq1_assembler_refuses_missing_or_mismatched_declared_final_xodr(tmp_path: Path):
+    from tools.rq1_evidence_assembler import validated_final_xodr
+
+    declared = tmp_path / "declared.xodr"
+    decoy = tmp_path / "newer-decoy.xodr"
+    decoy.write_text("decoy", encoding="utf-8")
+    child = {
+        "out_dir": str(tmp_path),
+        "map_acceptance": {"final_xodr_path": str(declared)},
+        "xodr_sha256": sha256_file(decoy),
+    }
+
+    path, reason = validated_final_xodr(child)
+    assert path is None
+    assert reason == "declared_final_xodr_missing"
+
+    declared.write_text("different bytes", encoding="utf-8")
+    path, reason = validated_final_xodr(child)
+    assert path is None
+    assert reason == "declared_final_xodr_sha256_mismatch"
