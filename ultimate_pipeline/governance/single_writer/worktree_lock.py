@@ -88,6 +88,7 @@ class WorktreeLease:
     holder_pid: int = 0
     holder_ppid: int = 0
     holder_cmdline: str = ""
+    host: str = ""
     # OS-derived process start identity; makes the PID an identity, not a guess.
     holder_start_identity: str = ""
     purpose: str = ""
@@ -121,6 +122,7 @@ class WorktreeLease:
             "holder_pid": self.holder_pid,
             "holder_ppid": self.holder_ppid,
             "holder_cmdline": self.holder_cmdline,
+            "host": self.host,
             "holder_start_identity": self.holder_start_identity,
             "purpose": self.purpose,
         }
@@ -144,6 +146,7 @@ class WorktreeLease:
         lease.holder_start_identity = data.get(
             "holder_start_identity", data.get("holder_start_utc", "")
         )
+        lease.host = data.get("host", "")
         lease.purpose = data.get("purpose", "")
         return lease
 
@@ -322,6 +325,68 @@ def _remove_lease(worktree_root: Path) -> None:
         pass
 
 
+def publish_lease(lease: WorktreeLease) -> None:
+    """Publish a complete lease record atomically via O_EXCL + fsync + os.replace.
+
+    This is the canonical lease write path: the entire JSON payload is written
+    to a unique temp file, fsynced, then atomically replaced into place. No
+    partial/empty files are ever left visible.
+    """
+    path = _worktree_lease_path(worktree_root=Path(lease.worktree_root))
+    path.parent.mkdir(parents=True, exist_ok=True)
+    _write_payload(path, lease.to_json())
+
+
+def validate_lease(lease: WorktreeLease) -> bool:
+    """Validate that a lease record is well-formed and not stale.
+
+    Returns True when the lease status is ``active``, has a non-empty generation
+    number, and its payload fields are all present and consistent. Returns False
+    for any malformed lease, LOCKED_UNKNOWN outcome, or generation gap.
+    """
+    if lease.status != "active":
+        return False
+    if lease.generation <= 0:
+        return False
+    required_fields = [
+        "lease_id", "owner_token", "purpose", "schema",
+        "worktree_root", "worktree_name",
+    ]
+    missing = [f for f in required_fields if not getattr(lease, f, None)]
+    if missing:
+        return False
+    return True
+
+
+def current_generation(scope_path: Path) -> int:
+    """Return the latest generation number for a scope path, or 0 if absent.
+
+    This is the public API for other modules to discover the current generation
+    without acquiring a lease themselves.
+    """
+    path = _worktree_lease_path(Path(scope_path))
+    try:
+        raw = path.read_bytes()
+    except FileNotFoundError:
+        return 0
+    except OSError:
+        return 0
+    if not raw.strip():
+        return 0
+    try:
+        data = json.loads(raw.decode("utf-8"))
+    except (UnicodeDecodeError, json.JSONDecodeError):
+        return 0
+    generation = int(data.get("generation", 0) or 0)
+    return max(0, generation)
+
+
+def release_lease(lease: WorktreeLease) -> bool:
+    """Release the lease with the exact owner token. Token-less release fails closed."""
+    worktree_root = Path(lease.worktree_root)
+    return wl.release_worktree_lease(worktree_root, lease.owner_token, lease.lease_id)
+
+
 # ---------------------------------------------------------------------------
 # fencing
 # ---------------------------------------------------------------------------
@@ -442,10 +507,17 @@ def acquire_worktree_lease(
 ) -> WorktreeLease:
     """Acquire exclusive mutation authority over one worktree.
 
+    A read-only session is refused outright: no mutation lease may be taken
+    while READ_ONLY_SESSION is set.
+
     Publication is atomic and exclusive over a complete record. A held lease is
     reclaimed only when its owner is proven dead: expiry alone, or an UNKNOWN
     owner state, never authorises a steal.
     """
+    if read_only_session():
+        raise RuntimeError(
+            "READ_ONLY_SESSION is set: refusing worktree mutation lease acquisition"
+        )
     worktree_root = Path(worktree_root).resolve()
     path = _worktree_lease_path(worktree_root)
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -469,6 +541,7 @@ def acquire_worktree_lease(
             holder_pid=pid,
             holder_ppid=os.getppid(),
             holder_cmdline=" ".join(sys.argv),
+            host=os.uname().nodename if hasattr(os, "uname") else "",
             holder_start_identity=start_identity or "",
             expires_at=_utc_in(lease_minutes * 60),
         )
@@ -659,8 +732,7 @@ def cleanup_expired_leases(repo_root: Path) -> int:
     return removed
 
 
-def recover_malformed_lease(
-    repo_root: Path, worktree_root: Path, operator: str, reason: str
+def recover_malformed_lease(    repo_root: Path, worktree_root: Path, operator: str, reason: str
 ) -> dict:
     """Operator-only removal of a malformed lease, with an audit record."""
     worktree_root = Path(worktree_root).resolve()
