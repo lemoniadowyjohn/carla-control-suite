@@ -63,6 +63,7 @@ __all__ = [
     "clear_terminal_publication_invalidation",
     "verify_run_pack",
     "write_signature_json",
+    "write_pending_success_txt",
     "write_success_txt",
 ]
 
@@ -476,12 +477,18 @@ def finalize_run_pack(
     return receipt
 
 
-def _write_success_bound(out_dir: Path, receipt: Dict[str, Any], summary: str) -> None:
-    """Write SUCCESS.txt bound to the finalized manifest."""
+def _write_success_bound(
+    out_dir: Path,
+    receipt: Dict[str, Any],
+    summary: str,
+    *,
+    publication_status: str = STATUS_PASS,
+) -> None:
+    """Atomically write a manifest-bound terminal marker."""
     ts = receipt["generated_at_utc"]
     body = (
         f"OK {ts}\n"
-        f"status={receipt['status']}\n"
+        f"status={publication_status}\n"
         f"schema={receipt['schema']}\n"
         f"manifest_sha256={receipt['manifest_sha256']}\n"
         f"signature_sha256={receipt['signature_sha256']}\n"
@@ -532,7 +539,10 @@ def clear_terminal_publication_invalidation(
 
 
 def verify_run_pack(
-    out_dir: str | os.PathLike[str], *, require_success: bool = True
+    out_dir: str | os.PathLike[str],
+    *,
+    require_success: bool = True,
+    allow_pending_success: bool = False,
 ) -> Dict[str, Any]:
     """Re-verify a finalized run pack against its manifest.
 
@@ -647,7 +657,10 @@ def verify_run_pack(
                 result["problems"].append(
                     "SUCCESS.txt signature digest does not match the manifest file map"
                 )
-            if _success_field(success_text, "status") != STATUS_PASS:
+            success_status = _success_field(success_text, "status")
+            if success_status == "PENDING" and allow_pending_success:
+                pass
+            elif success_status != STATUS_PASS:
                 result["problems"].append("SUCCESS.txt does not assert finalization status PASS")
 
     result["status"] = STATUS_PASS if not result["problems"] else STATUS_FAIL
@@ -679,12 +692,26 @@ def write_signature_json(out_dir: str, key_paths: Iterable[Any]) -> Dict[str, An
     return receipt
 
 
-def write_success_txt(out_dir: str, summary: str = "") -> None:
-    """Write SUCCESS.txt, but only for a recorded PASS finalization.
+def write_pending_success_txt(out_dir: str, summary: str = "") -> None:
+    """Publish a non-authoritative, manifest-bound marker for final checking.
 
-    Retained for existing callers. It is now a *gated* operation: without a
-    PASS state recorded by :func:`finalize_run_pack` for the same release root
-    it raises rather than publishing an unbound success marker.
+    A public verifier rejects ``status=PENDING``.  It exists only to make the
+    process-crash interval before the final public verification fail closed.
+    :func:`write_success_txt` replaces it atomically with ``status=PASS``.
+    """
+    root, receipt = _load_finalized_success_receipt(out_dir, allow_pending_success=False)
+    _write_success_bound(root, receipt, summary, publication_status="PENDING")
+
+
+def _load_finalized_success_receipt(
+    out_dir: str,
+    *,
+    allow_pending_success: bool,
+) -> tuple[Path, Dict[str, Any]]:
+    """Load and independently verify the state that may be promoted to PASS.
+
+    A pending marker is accepted only for the internal promotion path; public
+    callers still reject it through :func:`verify_run_pack`'s default.
     """
     root = Path(out_dir).expanduser().resolve()
     sig_path = root / SIGNATURE_FILENAME
@@ -708,7 +735,11 @@ def write_success_txt(out_dir: str, summary: str = "") -> None:
         raise FinalizationError(
             "refusing to write SUCCESS.txt: no recorded PASS finalization state"
         )
-    verification = verify_run_pack(root, require_success=False)
+    verification = verify_run_pack(
+        root,
+        require_success=False,
+        allow_pending_success=allow_pending_success,
+    )
     if verification.get("status") != STATUS_PASS:
         raise FinalizationError(
             "refusing to write SUCCESS.txt: finalized pack does not verify "
@@ -725,4 +756,12 @@ def write_success_txt(out_dir: str, summary: str = "") -> None:
         raise FinalizationError(
             f"refusing to write SUCCESS.txt: cannot digest manifest ({exc})"
         )
-    _write_success_bound(root, receipt, summary)
+    return root, receipt
+
+
+def write_success_txt(out_dir: str, summary: str = "") -> None:
+    """Atomically promote a finalized (or verified pending) marker to PASS."""
+    root, receipt = _load_finalized_success_receipt(
+        out_dir, allow_pending_success=True
+    )
+    _write_success_bound(root, receipt, summary, publication_status=STATUS_PASS)

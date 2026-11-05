@@ -1833,6 +1833,7 @@ if str(_repo_root) not in sys.path:
             from ultimate_pipeline.utils.finalize_run_pack import (
                 finalize_run_pack,
                 verify_run_pack,
+                write_pending_success_txt,
                 write_success_txt,
             )
             mandatory = mandatory_pack_artifacts(
@@ -1854,9 +1855,22 @@ if str(_repo_root) not in sys.path:
                     f"Terminal pack verification failed: {verify_result.get('problems', [])}"
                 )
 
-            # 6. SUCCESS is the sole final publication write.  Reverify it to
-            # detect any publication/binding anomaly; the exception path below
-            # revokes it if that read-only check cannot establish authority.
+            # 6. A pending marker is intentionally not public authority.  It
+            # survives a process kill as an explicitly rejected state, then is
+            # independently checked before the final PASS replacement below.
+            write_pending_success_txt(self.out_dir)
+            verify_result = verify_run_pack(
+                self.out_dir, allow_pending_success=True
+            )
+            if verify_result.get("status") != "PASS":
+                raise RuntimeError(
+                    "Terminal pending SUCCESS verification failed: "
+                    f"{verify_result.get('problems', [])}"
+                )
+
+            # 7. SUCCESS is the sole final authoritative publication write.
+            # Reverify it afterwards; the exception path below revokes it if
+            # that read-only check cannot establish authority.
             write_success_txt(self.out_dir)
             verify_result = verify_run_pack(self.out_dir)
             if verify_result.get("status") != "PASS":

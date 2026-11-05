@@ -19,6 +19,7 @@ terminal chain and verify it does not produce a false PASS.
 from __future__ import annotations
 
 import json
+import multiprocessing
 import os
 import tempfile
 import time
@@ -36,6 +37,106 @@ from ultimate_pipeline.utils.finalize_run_pack import (
     write_success_txt,
 )
 from ultimate_pipeline.signals.registry import mandatory_pack_artifacts
+
+
+def _wait_for_test_release(reached: Path) -> None:
+    """Test-only kill-point barrier; the parent deliberately never releases it."""
+    reached.write_text("reached\n", encoding="utf-8")
+    while True:
+        time.sleep(0.01)
+
+
+def _kill_point_worker(out_dir_text: str, boundary: str, reached_text: str) -> None:
+    """Spawn target for T035; monkeypatches live only in this child process."""
+    out_dir = Path(out_dir_text)
+    reached = Path(reached_text)
+    from ultimate_pipeline.main_pipeline import MainPipeline
+    from ultimate_pipeline.utils import finalize_run_pack as pack
+
+    if boundary.startswith("run_status_"):
+        class Settings:
+            RELEASE_PROFILE = "structural_release"
+            ENABLE_CARLA = False
+            DETERMINISTIC_MODE = False
+            def output_dir(self): return str(out_dir)
+            def logs_dir(self): return str(out_dir / "logs")
+
+        (out_dir / "logs").mkdir(parents=True, exist_ok=True)
+        pipeline = MainPipeline(settings=Settings())
+        import ultimate_pipeline.main_pipeline as pipeline_module
+        if boundary == "run_status_after_write_before_fsync":
+            real_fsync = pipeline_module.os.fsync
+            def blocked_fsync(fd):
+                _wait_for_test_release(reached)
+                return real_fsync(fd)
+            pipeline_module.os.fsync = blocked_fsync
+        else:
+            real_replace = pipeline_module.os.replace
+            def blocked_replace(src, dst):
+                if Path(dst).name == "run_status.json":
+                    _wait_for_test_release(reached)
+                return real_replace(src, dst)
+            pipeline_module.os.replace = blocked_replace
+        pipeline._write_run_status(status="ok", stage="done", required=True)
+        return
+
+    _make_minimal_current_artifacts(out_dir, "t035-kill-run")
+    (out_dir / "final_run_verdict.json").write_text(
+        json.dumps({"schema": "final_run_verdict/v1", "status": "PASS"}),
+        encoding="utf-8",
+    )
+    (out_dir / "run_status.json").write_text(
+        json.dumps({"status": "ok", "stage": "done"}), encoding="utf-8",
+    )
+    mandatory = mandatory_pack_artifacts(
+        "structural_release", str(out_dir / "final.xodr")
+    ) + ["final_run_verdict.json", "run_status.json"]
+
+    if boundary == "manifest_after_write_before_success_tmp":
+        real_atomic = pack._atomic_write_text
+        def blocked_atomic(target, text):
+            real_atomic(target, text)
+            if Path(target).name == "signature.json":
+                _wait_for_test_release(reached)
+        pack._atomic_write_text = blocked_atomic
+        pack.finalize_run_pack(str(out_dir), mandatory, emit_success=True)
+        return
+
+    if boundary == "success_tmp_before_replace":
+        real_replace = pack.os.replace
+        def blocked_replace(src, dst):
+            if Path(dst).name == "SUCCESS.txt":
+                _wait_for_test_release(reached)
+            return real_replace(src, dst)
+        pack.os.replace = blocked_replace
+        pack.finalize_run_pack(str(out_dir), mandatory, emit_success=True)
+        return
+
+    if boundary == "success_after_replace_before_reverify":
+        pack.finalize_run_pack(str(out_dir), mandatory, emit_success=False)
+        pack.write_pending_success_txt(str(out_dir))
+        _wait_for_test_release(reached)
+        # The parent kills before pending-marker verification/promotion.
+        pack.verify_run_pack(str(out_dir), allow_pending_success=True)
+        pack.write_success_txt(str(out_dir))
+        return
+
+    raise AssertionError(f"unknown T035 boundary: {boundary}")
+
+
+def _fresh_reader_worker(out_dir_text: str, result_queue) -> None:
+    """Fresh process reader: no inherited module monkeypatches or process state."""
+    result_queue.put(verify_run_pack(out_dir_text)["status"])
+
+
+def _restart_admission_worker(out_dir_text: str, result_queue) -> None:
+    """Fresh-process restart admission: verify first, then revoke stale authority."""
+    from ultimate_pipeline.core.terminal_authority import revoke_stale_success
+
+    before = verify_run_pack(out_dir_text)["status"]
+    revoke_stale_success(Path(out_dir_text))
+    after = verify_run_pack(out_dir_text)["status"]
+    result_queue.put({"before": before, "after": after})
 
 
 def _write_fake_previous_run(out_dir: Path, run_id: str = "fake-old-run") -> None:
@@ -516,6 +617,77 @@ class TestTransactionalTerminalPublication:
         assert not (tmp_path / "SUCCESS.txt").exists()
 
 
+class TestProcessKillCrashCutpoints:
+    """T035: Windows spawn-process kills at terminal-publication boundaries."""
+
+    @pytest.mark.parametrize(
+        "boundary",
+        [
+            "run_status_after_write_before_fsync",
+            "run_status_after_fsync_before_replace",
+            "manifest_after_write_before_success_tmp",
+            "success_tmp_before_replace",
+            "success_after_replace_before_reverify",
+        ],
+    )
+    def test_killed_terminal_publication_never_admits_partial_state(
+        self, tmp_path: Path, boundary: str
+    ) -> None:
+        """Kill a real spawned publisher and inspect only fresh-process state."""
+        ctx = multiprocessing.get_context("spawn")
+        out_dir = tmp_path / boundary
+        reached = tmp_path / f"{boundary}.reached"
+        publisher = ctx.Process(
+            target=_kill_point_worker,
+            args=(str(out_dir), boundary, str(reached)),
+        )
+        publisher.start()
+        deadline = time.monotonic() + 20
+        while not reached.exists() and time.monotonic() < deadline:
+            time.sleep(0.02)
+        assert reached.exists(), f"publisher did not reach {boundary}"
+        publisher.kill()
+        publisher.join(timeout=10)
+        assert not publisher.is_alive(), f"publisher survived kill at {boundary}"
+
+        # A reader in a new interpreter must not inherit the child's monkeypatch
+        # and may not accept a pack with no completed public publication.
+        reader_queue = ctx.Queue()
+        reader = ctx.Process(target=_fresh_reader_worker, args=(str(out_dir), reader_queue))
+        reader.start()
+        reader.join(timeout=10)
+        assert reader.exitcode == 0
+        reader_status = reader_queue.get(timeout=5)
+        assert reader_status == "FAIL"
+
+        # Interrupted temporary files are deliberately not release artifacts;
+        # verifier ignores them and restart admission removes any stale marker.
+        tmp_files = list(out_dir.glob("*.tmp"))
+        assert verify_run_pack(str(out_dir))["status"] == "FAIL"
+
+        if boundary == "success_after_replace_before_reverify":
+            # The marker exists at this cut point.  A post-publication manifest
+            # mutation must be caught by a fresh restart admission before it can
+            # reuse that marker.
+            assert (out_dir / "SUCCESS.txt").exists()
+            (out_dir / "signature.json").write_text("{corrupt", encoding="utf-8")
+
+        restart_queue = ctx.Queue()
+        restart = ctx.Process(
+            target=_restart_admission_worker, args=(str(out_dir), restart_queue)
+        )
+        restart.start()
+        restart.join(timeout=10)
+        assert restart.exitcode == 0
+        restart_result = restart_queue.get(timeout=5)
+        assert restart_result["before"] == "FAIL"
+        assert restart_result["after"] == "FAIL"
+        assert not (out_dir / "SUCCESS.txt").exists()
+        # Presence is allowed after an abrupt kill, but these names are never
+        # trusted by the verifier and are not a PASS-bearing release state.
+        assert all(path.name.endswith(".tmp") for path in tmp_files)
+
+
 class TestMainPipelineTerminalFailures(TestTransactionalTerminalPublication):
     """Exercise MainPipeline's real terminal transaction with only stages mocked."""
 
@@ -853,6 +1025,13 @@ class TestMainPipelineRunTerminalChain:
         monkeypatch.setattr(frp_module, "verify_run_pack", mock_verify)
 
         original_write_success = frp_module.write_success_txt
+        def mock_write_pending_success(out_dir, summary=""):
+            terminal_calls.append("write_pending_success_txt")
+            (Path(out_dir) / "SUCCESS.txt").write_text(
+                "OK 2026-01-01T00:00:00Z\nstatus=PENDING\n", encoding="utf-8"
+            )
+        monkeypatch.setattr(frp_module, "write_pending_success_txt", mock_write_pending_success)
+
         def mock_write_success(out_dir, summary=""):
             terminal_calls.append("write_success_txt")
             (Path(out_dir) / "SUCCESS.txt").write_text(
@@ -879,6 +1058,8 @@ class TestMainPipelineRunTerminalChain:
             "_write_run_status(ok)",
             "mandatory_pack_artifacts",
             "finalize_run_pack",
+            "verify_run_pack",
+            "write_pending_success_txt",
             "verify_run_pack",
             "write_success_txt",
             "verify_run_pack",
