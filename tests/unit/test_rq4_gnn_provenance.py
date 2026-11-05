@@ -588,6 +588,72 @@ def test_leakage_audit_catches_overlap(tmp_path):
     assert clean["same_spatial_tile_in_train_and_test_by_filename"] == []
 
 
+def test_checkpoint_metadata_without_provenance_is_legacy_unbound(tmp_path):
+    ckpt = tmp_path / "unbound.pt"
+    metadata = _base_metadata()
+    metadata.pop("provenance", None)
+    torch.save({"state_dict": _tiny_state(), "metadata": metadata}, ckpt)
+    _, _, label = prov.load_checkpoint(ckpt)
+    assert label == prov.LEGACY_UNBOUND_CHECKPOINT
+
+
+def test_leakage_audit_fails_closed_for_missing_or_unreadable_declared_inputs(tmp_path):
+    train_dir = tmp_path / "train"
+    test_dir = tmp_path / "test"
+    train_dir.mkdir()
+    test_dir.mkdir()
+    _write_tiles_dir(train_dir, 1, prefix="train")
+    _write_tile(
+        test_dir / "test_000.xodr",
+        _road_xml(
+            "2000",
+            lane_sections_xml=(f"<laneSection s=\"0\">{_lane_xml('1')}</laneSection>"),
+        ),
+    )
+    train_name = "train_000.xodr"
+    test_name = "test_000.xodr"
+    train_hashes = {train_name: prov.sha256_file(train_dir / train_name)}
+    test_hashes = {test_name: prov.sha256_file(test_dir / test_name)}
+
+    valid = prov.audit_leakage(
+        train_tile_names=[train_name], train_tile_hashes=train_hashes,
+        train_tiles_dir=train_dir, test_tile_names=[test_name],
+        test_tile_hashes=test_hashes, test_tiles_dir=test_dir,
+    )
+    assert valid["status"] == "PASS"
+
+    cases = [
+        ("missing_train", {"train_tile_names": ["missing.xodr"]}),
+        ("missing_test_dir", {"test_tiles_dir": tmp_path / "absent"}),
+        ("missing_eval", {"eval_pair_paths": [tmp_path / "absent_eval.xodr"]}),
+    ]
+    for _, overrides in cases:
+        kwargs = {
+            "train_tile_names": [train_name], "train_tile_hashes": train_hashes,
+            "train_tiles_dir": train_dir, "test_tile_names": [test_name],
+            "test_tile_hashes": test_hashes, "test_tiles_dir": test_dir,
+        }
+        kwargs.update(overrides)
+        audit = prov.audit_leakage(**kwargs)
+        assert audit["status"] == "FAIL"
+        assert audit["verdict"] == "NOT_VERIFIED"
+
+    bad = test_dir / test_name
+    bad.write_text("not xml", encoding="utf-8")
+    unreadable = prov.audit_leakage(
+        train_tile_names=[train_name], train_tile_hashes=train_hashes,
+        train_tiles_dir=train_dir, test_tile_names=[test_name],
+        test_tile_hashes={test_name: prov.sha256_file(bad)}, test_tiles_dir=test_dir,
+        eval_pair_paths=[bad],
+    )
+    assert unreadable["status"] == "FAIL"
+    assert unreadable["verdict"] == "NOT_VERIFIED"
+    assert any(
+        entry["status"] == "READ_ERROR"
+        for entry in unreadable["input_read_status"]["test_tiles"].values()
+    )
+
+
 def test_ksweep_protocol_output_labels_stages(tmp_path):
     from ultimate_pipeline.domain_gap_gnn import run_ksweep as ks
 
