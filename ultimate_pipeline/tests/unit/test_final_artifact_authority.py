@@ -379,7 +379,9 @@ class TestLateMutationInvalidatesAcceptance:
         }
         assert receipt["source_manifest_identity"] == source_manifest_identity
         assert receipt["source_manifest"]["sha256"] == source_manifest_identity["inputs_manifest_sha256"]
-        assert receipt["schema_version"] == 1
+        assert receipt["schema_version"] == 2
+        assert receipt["schema"] == "final_artifact_authority/v2"
+        assert receipt["publication_status"] == "PUBLISHED"
         assert receipt["final_xodr"]["path"] == "final.xodr"
         assert receipt["acceptance_receipt"]["path"] == "map_acceptance.json"
         assert FINAL_ARTIFACT_PUBLISHED in receipt["capabilities_held"]

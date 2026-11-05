@@ -87,7 +87,10 @@ class FinalArtifactReceiptError(ArtifactAuthorityError):
 # final artifact by this content-addressed receipt, never by directory order,
 # filename order, or filesystem timestamps.
 FINAL_ARTIFACT_RECEIPT_FILENAME = "final_artifact_receipt.json"
-FINAL_ARTIFACT_RECEIPT_SCHEMA_VERSION = 1
+FINAL_ARTIFACT_RECEIPT_SCHEMA_VERSION = 2
+_SUPPORTED_FINAL_ARTIFACT_RECEIPT_SCHEMA_VERSIONS = frozenset({1, 2})
+_PUBLICATION_STATUS_PUBLISHED = "PUBLISHED"
+_PUBLICATION_STATUS_ACCEPTANCE_FAILED = "ACCEPTANCE_FAILED"
 
 
 # ---------------------------------------------------------------------------
@@ -358,7 +361,8 @@ def resolve_final_artifact_receipt(run_dir: str) -> Path:
         ) from exc
     if not isinstance(receipt, dict):
         raise FinalArtifactReceiptError("Final-artifact receipt root must be an object")
-    if receipt.get("schema_version") != FINAL_ARTIFACT_RECEIPT_SCHEMA_VERSION:
+    schema_version = receipt.get("schema_version")
+    if schema_version not in _SUPPORTED_FINAL_ARTIFACT_RECEIPT_SCHEMA_VERSIONS:
         raise FinalArtifactReceiptError(
             "Unsupported or missing final-artifact receipt schema_version"
         )
@@ -406,6 +410,25 @@ def resolve_final_artifact_receipt(run_dir: str) -> Path:
         raise FinalArtifactReceiptError("Receipt created_at_utc trace is required")
     if not isinstance(receipt.get("producer_stage"), str):
         raise FinalArtifactReceiptError("Receipt producer_stage is required")
+
+    # v2 made publication an explicit, fail-closed state.  v1 remains
+    # accepted for historical receipts whose published capability is the only
+    # durable state available; it is deliberately distinguishable from v2.
+    if schema_version >= 2:
+        if receipt.get("publication_status") != _PUBLICATION_STATUS_PUBLISHED:
+            raise FinalArtifactReceiptError(
+                "Receipt is not published: publication_status must be PUBLISHED"
+            )
+        acceptance_status = _required_mapping(receipt, "map_acceptance_status")
+        if acceptance_status.get("valid_for_experiments") is not True:
+            raise FinalArtifactReceiptError(
+                "Receipt is not published: map acceptance is not valid for experiments"
+            )
+        certification = _required_mapping(receipt, "topology_certification")
+        if certification.get("status") == "CERTIFICATION_FAILED":
+            raise FinalArtifactReceiptError(
+                "Receipt is not published: topology certification failed"
+            )
 
     acceptance = _required_mapping(receipt, "acceptance_receipt")
     acceptance_path = acceptance.get("path")
@@ -751,9 +774,34 @@ class ArtifactAuthorityLedger:
                 "A final-artifact receipt requires source_manifest_identity.inputs_manifest_sha256"
             )
 
-        # Publish the capability before serialising its state.  The receipt
-        # itself is the durable evidence for this capability.
-        self.provide(FINAL_ARTIFACT_PUBLISHED, stage, evidence=final_sha)
+        # A final receipt may document a failed acceptance, but that document
+        # must never itself be a publication capability.  Missing acceptance
+        # truth is a failure, not an implicit pass.  Certification failures
+        # are represented explicitly by the pipeline and are equally
+        # non-publishable.
+        publication_reasons: List[str] = []
+        if acceptance.get("valid_for_experiments") is not True:
+            publication_reasons.append("map acceptance is not valid for experiments")
+        if certification.get("status") == "CERTIFICATION_FAILED":
+            publication_reasons.append("topology certification failed")
+        publication_status = (
+            _PUBLICATION_STATUS_PUBLISHED
+            if not publication_reasons
+            else _PUBLICATION_STATUS_ACCEPTANCE_FAILED
+        )
+
+        # Publish the capability only before serialising a successful packet.
+        # If this ledger was previously published and is being asked to record
+        # a later failure, revoke the in-memory capability so the failure
+        # receipt cannot inherit a stale published state.
+        if publication_status == _PUBLICATION_STATUS_PUBLISHED:
+            self.provide(FINAL_ARTIFACT_PUBLISHED, stage, evidence=final_sha)
+        elif self.holds(FINAL_ARTIFACT_PUBLISHED):
+            self.invalidate(
+                FINAL_ARTIFACT_PUBLISHED,
+                stage,
+                reason="final receipt records failed acceptance or certification",
+            )
 
         receipt: Dict[str, Any] = {
             # Resolver-facing, content-addressed contract.  Timestamps are
@@ -788,7 +836,10 @@ class ArtifactAuthorityLedger:
                 },
             },
             # Compatibility detail retained for existing evidence readers.
-            "schema": "final_artifact_authority/v1",
+            "schema": "final_artifact_authority/v2",
+            "status": publication_status,
+            "publication_status": publication_status,
+            "publication_reasons": publication_reasons,
             "generated_at_utc": _utc_now(),
             "final_artifact_path": final_artifact_path,
             "final_artifact_sha256": final_sha,

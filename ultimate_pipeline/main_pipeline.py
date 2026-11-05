@@ -3397,7 +3397,16 @@ if str(_repo_root) not in sys.path:
                 component_reachability_summary(final_root),
             )
         except Exception as exc:
-            print(f"[AUTHORITY] topology certification skipped: {exc}")
+            topology_certification = {
+                "status": "CERTIFICATION_FAILED",
+                "error_type": type(exc).__name__,
+                "error": str(exc),
+            }
+            print(
+                "[AUTHORITY] topology certification failed; "
+                "final receipt will not be published: "
+                f"{topology_certification['error_type']}: {exc}"
+            )
 
         receipt = ledger.build_receipt(
             final_artifact_path=final_out,

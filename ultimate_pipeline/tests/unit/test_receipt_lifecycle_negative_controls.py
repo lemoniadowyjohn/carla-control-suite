@@ -1,56 +1,125 @@
-# ultimate_pipeline/tests/unit/test_receipt_lifecycle_negative_controls.py
-# OC-25: synthetic negative-control fixtures for resolve_final_artifact_receipt()
-"""READ-ONLY / SYNTHETIC ONLY — never asserts PASS for real campaigns."""
+# -*- coding: utf-8 -*-
+"""Negative lifecycle controls for final-artifact authority receipts."""
+
+from __future__ import annotations
+
+from pathlib import Path
 
 import pytest
-from ultimate_pipeline.contracts import release_acceptance as _ra
 
-if not hasattr(_ra, "build_final_receipt"):
-    pytest.skip("build_final_receipt not implemented in release_acceptance (OPEN_OUT_OF_SCOPE per "
-                "reports/carla_runtime/POST_P0_TEST_BASELINE_CLASSIFICATION.json); see B01 review",
-                allow_module_level=True)
+from ultimate_pipeline.contracts.artifact_authority import (
+    ArtifactAuthorityError,
+    ArtifactAuthorityLedger,
+    FinalArtifactReceiptError,
+    resolve_final_artifact_receipt,
+    sha256_file,
+    write_receipt,
+)
+from ultimate_pipeline.contracts.stage_capabilities import FINAL_ARTIFACT_PUBLISHED
 
 
-def test_receipt_rejects_failed_map_acceptance():
-    """C3: receipt must not pass when map_acceptance reports failure."""
-    # Synthetic: acceptance reports failure; receipt must not claim PASS
-    receipt = _ra.build_final_receipt(
-        final_path="/fake/final.xodr",
-        map_acceptance={"ok": False, "hard_fail_reasons": ["P0-C seams"]},
-        evidence={"map_acceptance": {"artifact_path": "/fake/final.xodr"}},
-    )
-    assert receipt.get("status") != "PASS", (
-        "receipt must reject when map_acceptance.ok=False"
+_XODR = """<?xml version="1.0" encoding="UTF-8"?>
+<OpenDRIVE><header revMajor="1" revMinor="4"/>
+<road name="receipt" length="1" id="1" junction="-1">
+<planView><geometry s="0" x="0" y="0" hdg="0" length="1"><line/></geometry></planView>
+<lanes><laneSection s="0"><center><lane id="0" type="none" level="false"/></center></laneSection></lanes>
+</road></OpenDRIVE>"""
+
+
+def _frozen_ledger(tmp_path: Path) -> tuple[ArtifactAuthorityLedger, str, dict[str, object]]:
+    final = tmp_path / "final.xodr"
+    final.write_text(_XODR, encoding="utf-8")
+    acceptance = tmp_path / "map_acceptance.json"
+    acceptance.write_text('{"valid_for_experiments": true}', encoding="utf-8")
+    manifest = tmp_path / "inputs_manifest.json"
+    manifest.write_text('{"inputs": {}}', encoding="utf-8")
+
+    ledger = ArtifactAuthorityLedger()
+    ledger.freeze_structure(str(final), stage="final_artifact_authority")
+    ledger.record_evidence("map_acceptance", str(final), stage="final_artifact_authority")
+    return ledger, str(final), {
+        "receipt_root": str(tmp_path),
+        "run_id": tmp_path.name,
+        "acceptance_receipt_path": str(acceptance),
+        "source_manifest_identity": {
+            "inputs_manifest_path": str(manifest),
+            "inputs_manifest_sha256": sha256_file(str(manifest)),
+        },
+    }
+
+
+def test_receipt_rejects_failed_map_acceptance(tmp_path: Path):
+    """C3: a failed acceptance is documented but never published."""
+    ledger, final, kwargs = _frozen_ledger(tmp_path)
+
+    receipt = ledger.build_receipt(
+        final_artifact_path=final,
+        map_acceptance={"valid_for_experiments": False, "hard_fail_reasons": ["P0-C"]},
+        topology_certification={"SPEC_TOPOLOGY": "COMPLETE"},
+        **kwargs,
     )
 
-def test_receipt_rejects_missing_stage():
-    """C2: receipt must not claim RUN_COMPLETED when a required stage never executed."""
-    receipt = _ra.build_final_receipt(
-        final_path="/fake/final.xodr",
-        stage_history=["01_sanitize", "02_topology"],  # missing tiling/freeze
-        map_acceptance={"ok": True},
-        freeze_provided=False,
-    )
-    assert "FINAL_ARTIFACT_PROMOTABLE" not in receipt.get("states", []), (
-        "missing freeze must block promotable claim"
-    )
-def test_receipt_detects_post_freeze_mutation():
-    """C4: receipt must detect final XODR changed after freeze fingerprint."""
-    receipt = _ra.build_final_receipt(
-        final_path="/fake/final.xodr",
-        freeze_sha="ce7a20c0...",
-        current_sha="a32b26a8...",
-        map_acceptance={"ok": True},
-    )
-    # The receipt mechanism (if implemented correctly) must expose
-    # freeze-vs-live mismatch rather than suppress it.
-    assert "freeze_sha256" in receipt or receipt.get("freeze_mismatch") is True
+    assert receipt["publication_status"] == "ACCEPTANCE_FAILED"
+    assert FINAL_ARTIFACT_PUBLISHED not in receipt["capabilities_held"]
 
-def test_receipt_rejects_tiling_from_different_sha():
-    """C5: receipt must not describe tiles derived from a different XODR."""
-    receipt = _ra.build_final_receipt(
-        final_path="/fake/final.xodr",
-        tile_input_sha="other_sha_1234",
-        final_sha="final_sha_5678",
+
+def test_receipt_rejects_missing_stage(tmp_path: Path):
+    """C2: a receipt cannot be built before STRUCTURE_FROZEN."""
+    final = tmp_path / "final.xodr"
+    final.write_text(_XODR, encoding="utf-8")
+
+    with pytest.raises(ArtifactAuthorityError, match="structure_frozen"):
+        ArtifactAuthorityLedger().build_receipt(final_artifact_path=str(final))
+
+
+def test_receipt_detects_post_freeze_mutation(tmp_path: Path):
+    """C4: a structural mutation after freeze prevents receipt construction."""
+    ledger, final, _ = _frozen_ledger(tmp_path)
+    Path(final).write_text(_XODR.replace('length="1"', 'length="2"'), encoding="utf-8")
+
+    with pytest.raises(ArtifactAuthorityError, match="STRUCTURE_FROZEN violated"):
+        ledger.assert_structure_unchanged(final, where="receipt")
+
+
+def test_receipt_rejects_tiling_from_different_sha(tmp_path: Path):
+    """C5: evidence from a superseded artifact cannot describe the final map."""
+    ledger, _, _ = _frozen_ledger(tmp_path)
+    superseding = tmp_path / "superseding.xodr"
+    superseding.write_text(_XODR.replace('name="receipt"', 'name="new"'), encoding="utf-8")
+
+    with pytest.raises(ArtifactAuthorityError, match="does not describe"):
+        ledger.assert_evidence_current(str(superseding))
+
+
+def test_resolver_refuses_acceptance_failed_receipt(tmp_path: Path):
+    """A receipt that records failure is never a resolver-published artifact."""
+    ledger, final, kwargs = _frozen_ledger(tmp_path)
+    receipt = ledger.build_receipt(
+        final_artifact_path=final,
+        map_acceptance={"valid_for_experiments": False},
+        topology_certification={"SPEC_TOPOLOGY": "COMPLETE"},
+        **kwargs,
     )
-    assert receipt.get("tile_source_mismatch") is True or receipt.get("status") != "PASS"
+    write_receipt(str(tmp_path), receipt)
+
+    with pytest.raises(FinalArtifactReceiptError, match="not published"):
+        resolve_final_artifact_receipt(str(tmp_path))
+
+
+def test_certification_failure_is_recorded_but_not_published(tmp_path: Path):
+    """Certification errors are durable failure evidence, never publication."""
+    ledger, final, kwargs = _frozen_ledger(tmp_path)
+    receipt = ledger.build_receipt(
+        final_artifact_path=final,
+        map_acceptance={"valid_for_experiments": True},
+        topology_certification={
+            "status": "CERTIFICATION_FAILED",
+            "error_type": "ValueError",
+            "error": "malformed topology",
+        },
+        **kwargs,
+    )
+
+    assert receipt["publication_status"] == "ACCEPTANCE_FAILED"
+    assert receipt["topology_certification"]["status"] == "CERTIFICATION_FAILED"
+    assert FINAL_ARTIFACT_PUBLISHED not in receipt["capabilities_held"]

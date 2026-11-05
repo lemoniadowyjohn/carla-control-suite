@@ -431,7 +431,11 @@ class TestPublishedEvidenceIsAuthoritative:
             "structural_release"
         )
         assert "inputs_manifest_path" in receipt["source_manifest_identity"]
-        assert FINAL_ARTIFACT_PUBLISHED in receipt["capabilities_held"]
+        # This deliberately minimal fixture has a broken lane-successor
+        # report.  F15 makes that failed acceptance non-publishable while
+        # retaining the receipt as diagnostics for the exact final artifact.
+        assert receipt["publication_status"] == "ACCEPTANCE_FAILED"
+        assert FINAL_ARTIFACT_PUBLISHED not in receipt["capabilities_held"]
 
         on_disk = json.loads(
             (out_dir / "final_artifact_receipt.json").read_text(encoding="utf-8")
@@ -464,6 +468,30 @@ class TestPublishedEvidenceIsAuthoritative:
         pipe._publish_final_artifact_authority(xodr, seam_report={"ok": True})
         # _run_internal marks the stage; the method itself must not double-mark.
         assert "final_artifact_authority" not in pipe.marks
+
+    def test_topology_certification_exception_is_recorded_not_published(
+        self, staged, monkeypatch
+    ):
+        """Certification failure is durable evidence, never a skipped pass."""
+        pipe, xodr, _ = staged
+
+        def fail_certification(*_args, **_kwargs):
+            raise ValueError("bad topology XML")
+
+        from ultimate_pipeline.quality import topology_certification
+
+        monkeypatch.setattr(
+            topology_certification, "certify_topology", fail_certification
+        )
+        receipt = pipe._publish_final_artifact_authority(xodr, seam_report={"ok": True})
+
+        assert receipt["publication_status"] == "ACCEPTANCE_FAILED"
+        assert receipt["topology_certification"] == {
+            "status": "CERTIFICATION_FAILED",
+            "error_type": "ValueError",
+            "error": "bad topology XML",
+        }
+        assert FINAL_ARTIFACT_PUBLISHED not in receipt["capabilities_held"]
 
     def test_publish_fails_closed_when_hygiene_never_completed(self, tmp_path):
         out_dir = tmp_path / "run"
