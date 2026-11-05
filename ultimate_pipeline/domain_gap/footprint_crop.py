@@ -10,6 +10,13 @@ as required to keep the output self-consistent (AGENTS: generator fixes at
 source stage only; no final-XODR cosmetic mutation -- this is neither: it is a
 derived, self-consistent SUBSET, not an edit of the frozen map-of-record).
 
+Important: a nonzero ``sampling_fallback_count`` means at least one road
+primitive was unsupported/malformed and fell back to the anchor point.
+This drops coverage and is FATAL for admission -- the report status must be
+FAIL, never a clean PASS. The hard check ``zero_sampling_fallbacks``
+(sampling_fallback_count == 0) is one of eight conditions that must all
+hold for a PASS verdict.
+
 Frames and the hull-footprint polygon are entirely delegated to
 ``ultimate_pipeline.domain_gap.local_registration`` (RQ1's already-verified
 auto<->manual registration); this module owns only the SUBSET/link-closure
