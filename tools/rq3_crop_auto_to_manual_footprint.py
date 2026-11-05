@@ -211,6 +211,7 @@ def main(argv: list[str] | None = None) -> int:
         "xodr_strict_validator_ok": bool(validations["xodr_strict_validator"]["ok"]),
         "controller_references_resolve": bool(validations["controller_references_resolve"]["ok"]),
         "no_unaccounted_top_level_loss": bool(validations["no_unaccounted_top_level_loss"]["ok"]),
+        "zero_sampling_fallbacks": bool(crop_report["counts"]["sampling_fallback_count"] == 0),
     }
     manifest_status = "PASS" if all(hard_checks.values()) else "FAIL"
 

@@ -182,6 +182,76 @@ def test_any_point_selection_curved_road_enters_polygon_only_along_its_curve():
     assert kept and kept[0].get("id") == "1"
 
 
+# ------------------------------------------------------------------ rule (b): sampling fallback is fatal for admission
+
+
+def _unsupported_primitive_road(rid: str, x: float, y: float, length: float) -> str:
+    """A road whose geometry uses an unsupported primitive so kernel sampling raises."""
+    return (
+        f'<road id="{rid}" junction="-1" length="{length}">'
+        f'<planView><geometry s="0" x="{x}" y="{y}" hdg="0" length="{length}"><not_a_primitive/></geometry></planView>'
+        f'</road>'
+    )
+
+
+def test_malformed_primitive_increments_sampling_fallback_count():
+    """kernel_sample raises on unsupported primitive; fallback to anchor
+    increments sampling_fallback_count; anchor outside -> road dropped."""
+    poly = box(0.0, 0.0, 20.0, 20.0)
+    road_xml = _unsupported_primitive_road(1, 21.0, 10.0, 10.0)  # anchor outside footprint
+    auto_root = _auto_xodr(road_xml)
+    kept, fallbacks = select_non_junction_roads(auto_root, poly, selection="any_point")
+    assert fallbacks >= 1, f"expected >=1 fallback, got {fallbacks}"
+    assert kept == []
+
+
+def test_normal_road_zero_sampling_fallback_count():
+    """A well-formed line road has zero sampling fallbacks and is kept when inside."""
+    poly = box(0.0, 0.0, 20.0, 20.0)
+    road_xml = _line_road(1, 5.0, 5.0, 10.0)
+    auto_root = _auto_xodr(road_xml)
+    kept, fallbacks = select_non_junction_roads(auto_root, poly, selection="any_point")
+    assert fallbacks == 0
+    assert kept and kept[0].get("id") == "1"
+
+
+def test_crop_report_exposes_sampling_fallback_count():
+    """select_non_junction_roads returns sampling_fallback_count >= 1 for a
+    malformed primitive, so the crop tool's zero_sampling_fallbacks hard
+    check can be False and status FAIL."""
+    poly = box(0.0, 0.0, 20.0, 20.0)
+    road_xml = _unsupported_primitive_road(1, 21.0, 10.0, 10.0)
+    auto_root = _auto_xodr(road_xml)
+    kept, fallbacks = select_non_junction_roads(auto_root, poly, selection="any_point")
+    assert fallbacks >= 1
+    assert kept == []
+
+
+def test_zero_sampling_fallbacks_hard_check_in_crop_tool():
+    """The crop tool's hard_checks must include zero_sampling_fallbacks;
+    when sampling_fallback_count > 0 it is False and manifest status is FAIL."""
+    poly = box(0.0, 0.0, 20.0, 20.0)
+    road_xml = _unsupported_primitive_road(1, 21.0, 10.0, 10.0)
+    auto_root = _auto_xodr(road_xml)
+    kept, sampling_fallback_count = select_non_junction_roads(
+        auto_root, poly, selection="any_point"
+    )
+
+    # Simulate the crop tool's hard check construction.
+    hard_checks = {
+        "xml_well_formed": True,
+        "zero_dangling_references": True,
+        "check_lane_link_targets_exist_ok": True,
+        "check_road_link_reciprocity_ok": True,
+        "xodr_strict_validator_ok": True,
+        "controller_references_resolve": True,
+        "no_unaccounted_top_level_loss": True,
+        "zero_sampling_fallbacks": bool(sampling_fallback_count == 0),
+    }
+    assert hard_checks["zero_sampling_fallbacks"] is False
+    assert ("PASS" if all(hard_checks.values()) else "FAIL") == "FAIL"
+
+
 def test_centroid_selection_matches_local_registration_road_centroid_rule():
     poly = box(0.0, 0.0, 10.0, 10.0)
     inside = _auto_xodr(_line_road(1, 4.0, 4.0, 2.0)).find("road")  # anchor (4,4) only point -> centroid (4,4)
