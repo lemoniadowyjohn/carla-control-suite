@@ -244,14 +244,23 @@ def _step9_positional_semantics(self, final_out: str) -> str:
             apply_access_metadata_from_osm,
         )
         access_metadata = apply_access_metadata_from_osm(root, s.OSM_FILE)
-        if access_metadata["metadata_records_written"]:
+        if access_metadata.get("source_status") == "SOURCE_FAILURE":
+            # A missing or malformed source is not an EMPTY dataset. Keep the
+            # explicit failure status in the stage report and do not rewrite XODR.
+            access_summary = (
+                "SOURCE_FAILURE: "
+                + access_metadata.get("source_failure_reason", "source unavailable")
+            )
+        else:
+            access_summary = "{} road(s), {} record(s)".format(
+                access_metadata["roads_with_access_metadata"],
+                access_metadata["metadata_records_written"],
+            )
+        has_access_records = bool(access_metadata.get("metadata_records_written", 0))
+        if access_metadata.get("source_status") != "SOURCE_FAILURE" and has_access_records:
             save_xodr(tree, final_out)
         self.vreport.add_dict("osm_access_restriction_metadata_postfreeze", access_metadata)
-        print(
-            "   → Access metadata: "
-            f"{access_metadata['roads_with_access_metadata']} road(s), "
-            f"{access_metadata['metadata_records_written']} record(s)"
-        )
+        print(f"   → Access metadata: {access_summary}")
     except Exception as e:
         print(f"❌ OSM access metadata materialization failed: {e}")
         self.vreport.add("error", "osm_access_restriction_postfreeze", str(e))
