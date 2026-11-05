@@ -1,4 +1,5 @@
 import xml.etree.ElementTree as ET
+import gzip
 import json
 import math
 import os
@@ -11,7 +12,8 @@ from ultimate_pipeline.diagnostics.continuity_metrics import compute_severity_pe
 
 
 def _load_severity_from_debug(debug_json: str) -> Dict[str, float]:
-    with open(debug_json, "r", encoding="utf-8") as f:
+    opener = gzip.open if debug_json.endswith(".gz") else open
+    with opener(debug_json, "rt", encoding="utf-8") as f:
         report = json.load(f)
     return compute_severity_per_road(report)
 
