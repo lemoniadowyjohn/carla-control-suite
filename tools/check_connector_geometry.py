@@ -6,6 +6,7 @@ import json
 import math
 import os
 import sys
+import time
 import xml.etree.ElementTree as ET
 
 # Worktree root must be on sys.path for direct invocation
@@ -159,7 +160,9 @@ def main_per_geom(root: ET.Element, sha: str, args: argparse.Namespace) -> int:
 
 def main_junctions(root: ET.Element, sha: str, args: argparse.Namespace) -> int:
     # Junction mode: analyze all junctions and their laneLinks
+    started = time.perf_counter()
     result = analyze_all_junctions_full(root)
+    runtime_seconds = time.perf_counter() - started
 
     # output assembly
     output = {
@@ -168,6 +171,7 @@ def main_junctions(root: ET.Element, sha: str, args: argparse.Namespace) -> int:
         "samples": args.samples,
         "thresholds": args.thresholds if args.thresholds else "unset",
         "sha256": sha,
+        "runtime_seconds": round(runtime_seconds, 3),
         "junctions": result["junctions"],
         "lane_links": result["lane_links"],
         "summary": result["summary"],

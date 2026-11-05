@@ -283,22 +283,67 @@ def _g0_gap(geom_a: ET.Element, geom_b: ET.Element) -> Optional[float]:
         return None
 
 
-def _lane_offset_at(lane: ET.Element, s: float) -> float:
-    """Evaluate lane width/offset polynomial at s."""
-    total = 0.0
+def _lane_width_at(lane: ET.Element, s: float) -> float:
+    """Evaluate the lane's ``<width>`` polynomial at section-relative ``s``.
+
+    This is a lane WIDTH helper, not the road-level ``<laneOffset>``
+    (see :func:`_lane_offset_value`). Per OpenDRIVE the record with the
+    greatest ``sOffset <= s`` applies; the value is not cumulative.
+    """
+    best = None
+    best_s = None
     for width in lane.findall("width"):
         try:
             so = float(width.get("sOffset", "0"))
-            a = float(width.get("a", "0"))
-            b = float(width.get("b", "0"))
-            c = float(width.get("c", "0"))
-            d = float(width.get("d", "0"))
-            ds = s - so
-            if ds >= 0:
-                total += a + b * ds + c * ds * ds + d * ds * ds * ds
-        except Exception:
+        except (TypeError, ValueError):
             continue
-    return total
+        if so <= s and (best_s is None or so >= best_s):
+            best = width
+            best_s = so
+    if best is None:
+        return 0.0
+    try:
+        ds = s - best_s
+        a = float(best.get("a", "0"))
+        b = float(best.get("b", "0"))
+        c = float(best.get("c", "0"))
+        d = float(best.get("d", "0"))
+        return a + b * ds + c * ds * ds + d * ds * ds * ds
+    except (TypeError, ValueError):
+        return 0.0
+
+
+def _lane_offset_value(lanes_el: ET.Element, s: float) -> float:
+    """Evaluate the road-level ``<lanes><laneOffset>`` polynomial at ``s``.
+
+    OpenDRIVE applies the record with the greatest ``s`` not exceeding ``s``::
+
+        laneOffset(s) = a + b*ds + c*ds**2 + d*ds**3,  ds = s - s_rec
+
+    ``laneOffset`` is optional, and a record only applies at or after its
+    ``s``; return 0.0 when no record applies.
+    """
+    best = None
+    best_s = None
+    for rec in lanes_el.findall("laneOffset"):
+        try:
+            rec_s = float(rec.get("s", "0"))
+        except (TypeError, ValueError):
+            continue
+        if rec_s <= s and (best_s is None or rec_s >= best_s):
+            best = rec
+            best_s = rec_s
+    if best is None:
+        return 0.0
+    try:
+        ds = s - best_s
+        a = float(best.get("a", "0"))
+        b = float(best.get("b", "0"))
+        c = float(best.get("c", "0"))
+        d = float(best.get("d", "0"))
+        return a + b * ds + c * ds * ds + d * ds * ds * ds
+    except (TypeError, ValueError):
+        return 0.0
 
 
 def _active_lane_section(lanes_el: ET.Element, s: float) -> Optional[ET.Element]:
@@ -327,47 +372,6 @@ def _section_lanes(section: ET.Element) -> List[ET.Element]:
 def _lane_id_to_idx(lane_id: str) -> int:
     """Convert lane id string to index. Left lanes have positive ids, right lanes negative."""
     return int(lane_id)
-
-
-def _lane_width_at(s: float, lane_section: ET.Element, lane: ET.Element, all_lanes_info: List[Dict[str, Any]]) -> float:
-    """Compute the lane-centre offset relative to the lane's centre.
-    
-    Positive offset is to the left.
-    """
-    lid = _lane_id_to_idx(lane.get("id", "0"))
-    # Find the centre of this lane
-    lane_s = float(lane.get("s", "0"))
-    lane_len = float(lane.get("length", "0"))
-    s_local = s - lane_s
-    if s_local < 0 or s_local > lane_len:
-        return 0.0
-    offset = _lane_offset_at(lane, s_local)
-    # Find all lanes in the section to compute cumulative offsets
-    section = lane_section
-    if section is None:
-        return offset
-    
-    # Compute the centre offset within the section
-    # Lanes are ordered: left, center, right. Positive ids = left.
-    # We need the offset of the target lane from the section start.
-    # If lane id > 0, it's to the right; if < 0, it's to the left.
-    # The cumulative offset of lanes before this one gives the lane-centre position.
-    
-    all_in_section = _section_lanes(section)
-    cumulative = 0.0
-    for ln in all_in_section:
-        ln_id = _lane_id_to_idx(ln.get("id", "0"))
-        if ln_id == lid:
-            # This is our lane; return the offset from section centre
-            # Lane centre = cumulative width of preceding lanes + half this lane's width
-            ln_width = _lane_offset_at(ln, s_local)
-            return cumulative + ln_width / 2.0
-        # Add this lane's width to cumulative
-        ln_width = _lane_offset_at(ln, s_local)
-        # Lane width is roughly constant for simplicity; use centre offset
-        cumulative += ln_width
-    
-    return offset
 
 
 def _compute_reference_pose(geom: ET.Element, s: float) -> Optional[KernelPose]:
@@ -711,29 +715,36 @@ def _get_lane_centre_pose(road: ET.Element, lane_id: str, s: float) -> Optional[
 
         # Compute lateral offset from the reference line to the lane centre.
         # Positive offset = left of reference line.
+        #
+        # OpenDRIVE: t(s) = laneOffset(s)
+        #                   + sign(k) * sum(width_i for |i| < |k|)
+        #                   + sign(k) * width_k(s) / 2
+        # The road-level <laneOffset> shifts the whole lane section; it is
+        # independent of the lane widths and must be added once.
         lane_id_int = int(lane_id)
         lane_s = s - float(lane_section.get("s", "0"))
+        lane_offset = _lane_offset_value(lanes_el, s)
 
         if lane_id_int > 0:  # Left lanes
-            offset = 0.0
+            offset = lane_offset
             for side in ("left", "center", "right"):
                 for lane in lane_section.findall(f"./{side}/lane"):
                     ln_id = int(lane.get("id", "0"))
                     if ln_id == 0:
                         continue
                     if 0 < ln_id < lane_id_int:
-                        offset += _lane_offset_at(lane, lane_s)
-            offset += _lane_offset_at(target_lane, lane_s) / 2.0
+                        offset += _lane_width_at(lane, lane_s)
+            offset += _lane_width_at(target_lane, lane_s) / 2.0
         elif lane_id_int < 0:  # Right lanes
-            offset = 0.0
+            offset = lane_offset
             for side in ("left", "center", "right"):
                 for lane in lane_section.findall(f"./{side}/lane"):
                     ln_id = int(lane.get("id", "0"))
                     if lane_id_int < ln_id < 0:
-                        offset -= _lane_offset_at(lane, lane_s)
-            offset -= _lane_offset_at(target_lane, lane_s) / 2.0
+                        offset -= _lane_width_at(lane, lane_s)
+            offset -= _lane_width_at(target_lane, lane_s) / 2.0
         else:  # Center lane
-            offset = 0.0
+            offset = lane_offset
 
         # Apply lateral offset to get lane-centre position
         # Left normal: (-sin(h), cos(h))
