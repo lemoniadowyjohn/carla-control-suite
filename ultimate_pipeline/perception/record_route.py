@@ -332,8 +332,9 @@ def _tick_watchdog(
             tick_result = _tick_with_timeout(world, timeout_s=tick_timeout)
             tick_duration = time.time() - tick_start
             attempt_data["tick_durations_s"].append(round(tick_duration, 3))
-
-            if not tick_result.get("ok", False):
+            tick_result_ok_val = tick_result.get("ok", False)
+            tick_result_ok = tick_result_ok_val if isinstance(tick_result_ok_val, bool) else False
+            if not tick_result_ok:
                 err = tick_result.get("error") or "tick_failed"
                 attempt_data["errors"].append(f"tick_{tick_idx}:{err}")
                 last_error = str(err)
@@ -472,7 +473,9 @@ def _warmup_ticks(world, *, n_ticks: int, timeout_s: float) -> Dict[str, object]
     errors: list[str] = []
     for _ in range(n_ticks):
         tick_result = _tick_with_timeout(world, timeout_s=timeout_s)
-        if not tick_result.get("ok", False):
+        tick_ok_val = tick_result.get("ok", False)
+        tick_ok = tick_ok_val if isinstance(tick_ok_val, bool) else False
+        if not tick_ok:
             errors.append(str(tick_result.get("error") or "tick_failed"))
             break
         # Use frame_id and elapsed_seconds directly from tick result
@@ -633,7 +636,9 @@ def _ticks_advancing(world, *, n: int, timeout_s: float) -> Dict[str, object]:
     errors: list[str] = []
     for _ in range(int(max(1, n))):
         tick_result = _tick_with_timeout(world, timeout_s=timeout_s)
-        if not tick_result.get("ok", False):
+        tick_ok_val = tick_result.get("ok", False)
+        tick_ok = tick_ok_val if isinstance(tick_ok_val, bool) else False
+        if not tick_ok:
             errors.append(str(tick_result.get("error") or "tick_failed"))
             break
         # Use frame_id and elapsed_seconds directly from tick result
@@ -719,7 +724,8 @@ def _spawn_sensors_smoke(
                 actors[spec.name] = actor
                 entry["actor_id"] = getattr(actor, "id", None)
                 tick_check = _ticks_advancing(world, n=3, timeout_s=2.0)
-                entry["tick_ok"] = bool(tick_check.get("ok", False))
+                tick_ok_val = tick_check.get("ok", False)
+                entry["tick_ok"] = tick_ok_val if isinstance(tick_ok_val, bool) else False
                 entry["tick_frames"] = tick_check.get("frames")
                 entry["tick_elapsed_seconds"] = tick_check.get("elapsed_seconds")
                 entry["tick_errors"] = tick_check.get("errors")
@@ -908,7 +914,7 @@ def _soft_teardown(
     except Exception as exc:
         _log("disable_physics", False, str(exc))
 
-    _log("tick_between_steps", bool(_safe_tick(world, n=tick_between).get("ok", False)))
+    _log("tick_between_steps", (lambda v: v if isinstance(v, bool) else False)(_safe_tick(world, n=tick_between).get("ok", False)))
 
     if not skip_destroy:
         # Destroy auxiliary actors (e.g., sanity props) before sensors/ego.
@@ -934,7 +940,7 @@ def _soft_teardown(
         except Exception as exc:
             _log("destroy_sensors", False, str(exc))
 
-        _log("tick_after_destroy_sensors", bool(_safe_tick(world, n=tick_between).get("ok", False)))
+        _log("tick_after_destroy_sensors", (lambda v: v if isinstance(v, bool) else False)(_safe_tick(world, n=tick_between).get("ok", False)))
 
         try:
             if ego is not None:
@@ -949,7 +955,7 @@ def _soft_teardown(
         except Exception as exc:
             _log("destroy_vehicle", False, str(exc))
 
-        _log("tick_after_destroy_vehicle", bool(_safe_tick(world, n=tick_after).get("ok", False)))
+        _log("tick_after_destroy_vehicle", (lambda v: v if isinstance(v, bool) else False)(_safe_tick(world, n=tick_after).get("ok", False)))
 
     try:
         try:
@@ -1474,7 +1480,9 @@ def main(argv: Optional[list[str]] = None) -> int:
         return 2
 
     warmup = _warmup_ticks(world, n_ticks=10, timeout_s=_env_float("UP_CARLA_READY_TICK_TIMEOUT_S", 5.0))
-    if not warmup.get("ok", False):
+    warmup_ok_val = warmup.get("ok", False)
+    warmup_ok = warmup_ok_val if isinstance(warmup_ok_val, bool) else False
+    if not warmup_ok:
         _write_run_status(
             out_dir,
             _status_payload(
@@ -1556,7 +1564,9 @@ def main(argv: Optional[list[str]] = None) -> int:
         async_warmup_result = _async_warmup_ticks(world, n_ticks=async_warmup_ticks, tick_timeout_s=10.0)
         run_info["async_warmup"] = async_warmup_result
         _write_json(run_info_path, run_info)
-        if not async_warmup_result.get("ok", False):
+        async_warmup_ok_val = async_warmup_result.get("ok", False)
+        async_warmup_ok = async_warmup_ok_val if isinstance(async_warmup_ok_val, bool) else False
+        if not async_warmup_ok:
             print(f"[WARN] Async warmup incomplete: {async_warmup_result.get('errors', [])}")
         else:
             print(f"[OK] Async warmup completed: {async_warmup_result.get('ticks_completed', 0)} ticks")
@@ -1711,7 +1721,9 @@ def main(argv: Optional[list[str]] = None) -> int:
 
                 # Early tick check after spawn (may fail if vehicle intersects / sim unstable).
                 tick_result = _safe_tick(world, n=early_tick_n, timeout_s=float(os.environ.get("UP_CARLA_READY_TICK_TIMEOUT_S", "2.0")))
-                if not tick_result.get("ok", False):
+                tick_result_ok_val = tick_result.get("ok", False)
+                tick_result_ok = tick_result_ok_val if isinstance(tick_result_ok_val, bool) else False
+                if not tick_result_ok:
                     attempt["error"] = f"early_tick_failed: {tick_result.get('error')}"
                     try:
                         # Best-effort cleanup of this attempt (vehicle only) before retrying.
@@ -1831,7 +1843,9 @@ def main(argv: Optional[list[str]] = None) -> int:
         run_info["sensor_sanity"] = {k: v for k, v in sanity_check.items() if k != "sensors_checked"}
         _write_json(run_info_path, run_info)
 
-        if not sanity_check.get("ok", True):
+        sanity_ok_val = sanity_check.get("ok", True)
+        sanity_ok = sanity_ok_val if isinstance(sanity_ok_val, bool) else False
+        if not sanity_ok:
             issues_str = "; ".join(sanity_check.get("issues", [])[:3])
             if getattr(args, "strict_sensor_sanity", False):
                 raise RuntimeError(f"Sensor sanity check failed: {issues_str}")

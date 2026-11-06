@@ -99,6 +99,55 @@ def crop_xodr(input_xodr: str, output_xodr: str, radius_m: float = 300.0) -> Non
             except Exception:
                 pass
 
+    # --- G5: reference-aware pruning after road/junction crop ---
+    # After roads and junctions are cropped, prune any remaining elements
+    # that reference now-absent roads or junctions. This prevents dangling
+    # references in the cropped XODR (e.g. a junction connection pointing
+    # to a road that was cropped away).
+    kept_junction_ids = {j.get("id") for j in root.findall("junction") if j.get("id") is not None}
+
+    # 1. Prune junction connections whose incoming/connecting road was cropped.
+    for j in list(root.findall("junction")):
+        for conn in list(j.findall("connection")):
+            ir = conn.get("incomingRoad")
+            cr = conn.get("connectingRoad")
+            dangling = False
+            if ir and ir not in existing_road_ids:
+                dangling = True
+            if cr and cr not in existing_road_ids:
+                dangling = True
+            if dangling:
+                j.remove(conn)
+
+    # 2. Prune signals whose dependency owner road was cropped.
+    for sig in list(root.findall("signal")):
+        for dep in list(sig.findall("dependency")):
+            owner = dep.get("owner")
+            if owner and owner not in existing_road_ids:
+                root.remove(sig)
+                break
+
+    # 3. Prune controllers whose controlled junction was cropped.
+    for ctrl in list(root.findall("controller")):
+        dangling = False
+        for controlled in list(ctrl.findall("controlled")):
+            ctype = controlled.get("type")
+            cid = controlled.get("id")
+            if ctype == "junction" and cid and cid not in kept_junction_ids:
+                dangling = True
+        if dangling:
+            root.remove(ctrl)
+
+    # 4. Prune junctionGroups whose junctionReference points to a cropped junction.
+    for jg in list(root.findall("junctionGroup")):
+        dangling = False
+        for ref in list(jg.findall("junctionReference")):
+            rid = ref.get("id")
+            if rid and rid not in kept_junction_ids:
+                dangling = True
+        if dangling:
+            root.remove(jg)
+
     os.makedirs(os.path.dirname(output_xodr), exist_ok=True)
     tree.write(output_xodr, encoding="utf-8", xml_declaration=True)
 

@@ -139,9 +139,11 @@ def _write_final_selected_xodr_status(final_out: str, out_dir: str) -> Dict[str,
         try:
             visual_payload = json.loads(visual_gate_path.read_text(encoding="utf-8"))
             visual_eval = evaluate_visual_smoke_report(visual_payload, require_files=False)
+            visual_eval_ok_val = visual_eval.get("ok", False)
+            visual_eval_ok = visual_eval_ok_val if isinstance(visual_eval_ok_val, bool) else False
             visual_gate = {
-                "ok": bool(visual_eval.get("ok", False)),
-                "status": "pass" if bool(visual_eval.get("ok", False)) else "fail",
+                "ok": visual_eval_ok,
+                "status": "pass" if visual_eval_ok else "fail",
                 "reason": str(visual_eval.get("reason") or ""),
             }
         except Exception as exc:
@@ -160,11 +162,11 @@ def _write_final_selected_xodr_status(final_out: str, out_dir: str) -> Dict[str,
         "worst_junction_sample": risk.get("worst_junction_sample", []),
         "junction_connector_risk_report_path": risk.get("path"),
         "junction_connector_risk_report_available": bool(risk.get("available")),
-        "CARLA_VISUAL_READY": "yes" if bool(visual_gate.get("ok", False)) else "no",
+        "CARLA_VISUAL_READY": "yes" if visual_gate.get("ok", False) is True else "no",
         "PERCEPTION_READY": "no",
         "perception_gate_reason": (
             ""
-            if bool(visual_gate.get("ok", False))
+            if visual_gate.get("ok", False) is True
             else "blocked_until_carla_visual_smoke_gate_passes"
         ),
         "carla_visual_smoke_gate_report_path": str(visual_gate_path),
@@ -252,7 +254,9 @@ def _step8f_optional_carla_elevation_validation(self, final_out: str) -> None:
             report["z_min"] = payload.get("waypoint_z_min")
             report["z_max"] = payload.get("waypoint_z_max")
             report["bounds"] = payload.get("map_bounds")
-            if bool(payload.get("load_ok")) and sampled > 0:
+            load_ok_val = payload.get("load_ok")
+            load_ok = load_ok_val if isinstance(load_ok_val, bool) else False
+            if load_ok and sampled > 0:
                 report["ok"] = True
                 report["reason"] = "ok"
             else:
@@ -312,12 +316,15 @@ def _step8f_optional_carla_elevation_validation(self, final_out: str) -> None:
     except Exception as e:
         print(f"[STEP 8] carla_elevation_validation.json write failed: {e}")
 
-    if strict_quality and not bool(report.get("ok", False)):
-        raise RuntimeError(
-            "CARLA elevation validation failed in strict mode: "
-            f"{report.get('reason')} (see {report_path})"
-        )
-    if not bool(report.get("ok", False)):
+    if strict_quality:
+        report_ok_val = report.get("ok", False)
+        report_ok = report_ok_val if isinstance(report_ok_val, bool) else False
+        if not report_ok:
+            raise RuntimeError(
+                "CARLA elevation validation failed in strict mode: "
+                f"{report.get('reason')} (see {report_path})"
+            )
+    if not report_ok:
         print(
             f"⚠️ CARLA elevation validation failed (non-strict): {report.get('reason')}"
         )
@@ -381,11 +388,8 @@ def _step8c_spawn_validation(self, final_out: str) -> None:
             pass
 
         payload = smoke.get("payload") if isinstance(smoke, dict) else None
-        load_ok = (
-            bool(payload.get("load_ok", False))
-            if isinstance(payload, dict)
-            else False
-        )
+        load_ok_val = payload.get("load_ok", False) if isinstance(payload, dict) else False
+        load_ok = load_ok_val if isinstance(load_ok_val, bool) else False
         spawn_n = (
             int(payload.get("spawn_points_count", 0))
             if isinstance(payload, dict)

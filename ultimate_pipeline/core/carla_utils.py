@@ -148,7 +148,9 @@ def _format_gpu_tdr_block(report: dict) -> str:
 
 def _require_gpu_tdr_clean_for_carla() -> dict:
     report = _gpu_tdr_preflight()
-    if not report.get("ok", False):
+    report_ok_val = report.get("ok", False)
+    report_ok = report_ok_val if isinstance(report_ok_val, bool) else False
+    if not report_ok:
         raise RuntimeError(_format_gpu_tdr_block(report))
     return report
 
@@ -651,7 +653,9 @@ def carla_load_xodr_with_restart(
             )
 
         rep = StrictXodrValidator().validate_path(effective_xodr_path)
-        if not rep.get("ok", False):
+        rep_ok_val = rep.get("ok", False)
+        rep_ok = rep_ok_val if isinstance(rep_ok_val, bool) else False
+        if not rep_ok:
             print("\n❌ Strict XODR preflight failed (blocking CARLA load to prevent crash).")
             print(f"   Errors: {rep.get('n_errors')}  Warnings: {rep.get('n_warnings')}  Total: {rep.get('n_issues')}")
             # Print the first few high-signal issues

@@ -262,7 +262,9 @@ def main(argv: Optional[list[str]] = None) -> int:
 
         ready_timeout_s = float(os.environ.get("UP_CARLA_READY_TIMEOUT_S", "180"))
         ready_report = _ready_probe(str(args.host), int(args.port), timeout_s=ready_timeout_s)
-        if not ready_report.get("ok", False):
+        ready_ok_val = ready_report.get("ok", False)
+        ready_ok = ready_ok_val if isinstance(ready_ok_val, bool) else False
+        if not ready_ok:
             report_path = out_dir / "carla_ready_report.json"
             _write_json(report_path, ready_report)
             print(f"[ERROR] CARLA not ready within {ready_timeout_s}s. Report: {report_path}")
