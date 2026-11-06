@@ -1,0 +1,29 @@
+{
+  "schema": "MOR_STAGE8_SIM_FINDING/v1",
+  "date": "2026-10-21",
+  "branch": "repair/map-realism-p0-837a8504",
+  "base_sha": "837a8504b624dc90653aef3a48300abb3275e291",
+  "subject_map": {
+    "path": "campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_perception_map_of_record_20260916_232831.xodr",
+    "sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+    "bytes": 149799632,
+    "role": "map_of_record (immutable historical artifact, not mutated)"
+  },
+  "instrument": {
+    "repair_assert": "ultimate_pipeline/quality/check_lane_section_successors.py: repair_and_assert_lane_section_successors(strict=True)",
+    "post_check": "ultimate_pipeline/quality/check_lane_connectivity.py: find_broken_lanes_detailed(allow_dead_ends=True)",
+    "sim_output_note": "repaired XODR written OUT OF TREE to E:/wtTmp_sim/mor_stage8_sim.xodr; the map of record itself was never written"
+  },
+  "finding": {
+    "repair_assert_result": "PASS",
+    "repairs_applied": 4,
+    "failures": 0,
+    "runtime_error_raised": false,
+    "post_sim_find_broken_lanes_detailed": 0
+  },
+  "reconciliation": "MAP_REALISM_AUDIT_837a8504 Lane A claims 376 dangling mandatory lane successors on final_integrity (GAP048_STAGE8_SIMULATION.json). That population belongs to the 20261008/20261014 GAP-048 artifact chain (07_lanes regen artifacts, CLOSURE-18 stage7 sha 03568aec; the audit's 6 orphan road ids 42367/43405/46369/46698/48129/51657 do not exist in the map of record at all - verified by direct text scan). The promoted map of record passes repair_and_assert_lane_section_successors with 0 failures and 0 residual broken lanes. The 376 metric must therefore be re-measured on a NEW candidate's stage-7 artifact, not attributed to the promoted map.",
+  "command_evidence": [
+    "py -3 E:/wt_tmp/mor_sim2.py  ->  SIM: assert PASSED; repairs: 4 failures: 0 ; post-sim find_broken on SIM OUTPUT: 0 ; elapsed 22.5 s"
+  ],
+  "verdict_impact": "Lane A P0-A reconciliation: 0 dangling on map of record under committed authoritative checker semantics (allow_dead_ends=True). UP_STRICT_LANE_SUCCESSORS flip decision remains bound to the candidate regen residual (=0 required)."
+}

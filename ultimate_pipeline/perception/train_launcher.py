@@ -82,6 +82,15 @@ from ultimate_pipeline.perception.rq5_provenance import (
     dataset_content_identity,
     seed_everything,
     write_model_manifest,
+    verify_random_initialisation,
+    PretrainingContractError,
+)
+from ultimate_pipeline.perception.training_failure_guard import (
+    assert_finite_loss,
+    require_free_disk,
+    atomic_torch_save,
+    classify_exception,
+    TrainingFailure,
 )
 
 DEFAULT_SEED = 1337
@@ -221,6 +230,33 @@ def _resolve_out_dir(out_dir: str) -> Path:
     return p
 
 
+def _write_training_failure_receipt(out_dir: Path, status: str, failure: Dict[str, Any]) -> None:
+    """Persist a failure receipt that overrides any stale SUCCESS for the run."""
+    import json
+    from datetime import datetime, timezone
+    receipt = {
+        "schema": "training_failure_receipt_v1",
+        "status": status,
+        "failure": failure,
+        "created_utc": datetime.now(timezone.utc).isoformat(),
+    }
+    target = Path(out_dir) / "training_failure.json"
+    tmp = target.with_suffix(target.suffix + ".tmp")
+    tmp.write_text(json.dumps(receipt, indent=2, sort_keys=True), encoding="utf-8")
+    tmp.replace(target)
+    print(f"❌ Wrote training failure receipt → {target}")
+
+
+def _revoke_stale_success(out_dir: Path) -> None:
+    """Remove any pre-existing SUCCESS.txt so failure cannot look like success."""
+    try:
+        success_path = Path(out_dir) / "SUCCESS.txt"
+        if success_path.is_file():
+            success_path.unlink()
+    except Exception:
+        pass
+
+
 def _find_latest_dataset(base: Path) -> Optional[Path]:
     """Best-effort discovery of the newest folder that looks like a dataset."""
     if not base.exists():
@@ -244,19 +280,72 @@ def _init_ddp(enabled: bool) -> tuple[bool, int, int]:
     if not torch.distributed.is_available():
         raise RuntimeError("torch.distributed not available in this PyTorch build.")
 
-    world_size = int(os.environ.get("WORLD_SIZE", "1"))
-    rank = int(os.environ.get("RANK", "0"))
+    raw_world_size = os.environ.get("WORLD_SIZE")
+    raw_rank = os.environ.get("RANK")
+    if raw_world_size is None and raw_rank is None:
+        return False, 0, 1
+    if raw_world_size is None or raw_rank is None:
+        raise RuntimeError("--ddp requires both WORLD_SIZE and RANK")
+
+    world_size = int(raw_world_size)
+    rank = int(raw_rank)
+    if world_size < 1 or rank < 0 or rank >= world_size:
+        raise RuntimeError("RANK must satisfy 0 <= RANK < WORLD_SIZE for --ddp")
 
     if world_size <= 1:
         return False, 0, 1
 
-    torch.distributed.init_process_group(backend="nccl" if torch.cuda.is_available() else "gloo")
+    try:
+        torch.distributed.init_process_group(
+            backend="nccl" if torch.cuda.is_available() else "gloo"
+        )
+    except Exception:
+        # A backend may have created a process group before reporting an
+        # initialization error.  Do not leave it alive for a failed run.
+        if torch.distributed.is_initialized():
+            torch.distributed.destroy_process_group()
+        raise
     return True, rank, world_size
 
 
-def _build_model(num_classes: int) -> nn.Module:
-    model = models.segmentation.fcn_resnet50(weights=None, num_classes=int(num_classes))
-    return model
+def _preinit_artifact_rank(ddp_requested: bool) -> Optional[int]:
+    """Return a proven artifact owner before DDP initialization, if any.
+
+    A single-process invocation owns its artifacts.  A distributed invocation
+    is allowed to clean rank-zero artifacts before initialization only when
+    the launcher supplied the authoritative ``RANK`` variable; ``LOCAL_RANK``
+    is intentionally never used for this decision.
+    """
+    if not ddp_requested:
+        return 0
+    raw_rank = os.environ.get("RANK")
+    if raw_rank is None:
+        return None
+    try:
+        return int(raw_rank)
+    except ValueError as exc:
+        raise RuntimeError("RANK must be an integer for --ddp artifact ownership") from exc
+
+
+def _build_model(num_classes: int) -> Tuple[nn.Module, Dict[str, Any]]:
+    """
+    Build the segmentation model under the frozen random-initialisation contract.
+
+    The thesis protocol requires ``weights=None`` (random initialisation), but an
+    argument alone is not proof: the previous code constructed the model and
+    trusted the call site. The contract is now *verified at runtime*:
+
+    * torchvision must expose the ``weights`` API (>= 0.13); older builds fail
+      closed instead of silently loading pretrained weights.
+    * the instantiated parameter set is fingerprinted, and the fingerprint is
+      recorded in the training receipt (``model_manifest.json``), so the claim
+      is auditable after the fact rather than inferred.
+
+    Returns the model plus the recorded pretraining contract.
+    """
+    model = models.segmentation.fcn_resnet50(weights=None, weights_backbone=None, num_classes=int(num_classes))
+    contract = verify_random_initialisation(model, weights=None, weights_backbone=None)
+    return model, contract
 
 
 def _resolve_dataset_roots(args: argparse.Namespace) -> List[Path]:
@@ -304,7 +393,7 @@ def _resolve_dataset_roots(args: argparse.Namespace) -> List[Path]:
     return roots
 
 
-def main() -> int:
+def _main_impl() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--dataset", type=str, default=None, help="Single dataset root directory")
     parser.add_argument(
@@ -350,7 +439,23 @@ def main() -> int:
         default=0,
         help="Optional cap on files digested per dataset root when computing content identity (0 = no cap)",
     )
+    parser.add_argument(
+        "--min-free-disk-mb",
+        type=int,
+        default=512,
+        help="Minimum free disk space (MiB) required before each checkpoint write (CD-4 failure guard)",
+    )
     args = parser.parse_args()
+
+    out_dir = _resolve_out_dir(args.out_dir)
+
+    # Clear stale success evidence before any fail-closed admission or DDP
+    # initialization path, but only when this process has proven rank-zero
+    # ownership.  This avoids both stale success on early failure and writes
+    # by nonzero ranks.
+    preinit_rank = _preinit_artifact_rank(args.ddp)
+    if preinit_rank == 0:
+        _revoke_stale_success(out_dir)
 
     dataset_roots = _resolve_dataset_roots(args)
     multi_root = len(dataset_roots) > 1
@@ -372,10 +477,13 @@ def main() -> int:
     # deep in the loss function.
     args.num_classes = validate_num_classes(args.num_classes)
 
-    out_dir = _resolve_out_dir(args.out_dir)
-
     ddp_enabled, rank, world_size = _init_ddp(args.ddp)
     is_main = (rank == 0)
+
+    # CD-4: remove any pre-existing SUCCESS.txt so a later "success" cannot be
+    # interpreted as evidence that this run completed without failures.
+    if is_main and preinit_rank is None:
+        _revoke_stale_success(out_dir)
 
     device = torch.device(args.device if (args.device != "cuda" or torch.cuda.is_available()) else "cpu")
 
@@ -425,7 +533,13 @@ def main() -> int:
         generator=generator,
     )
 
-    model = _build_model(args.num_classes).to(device)
+    try:
+        model, pretraining_contract = _build_model(args.num_classes)
+        model = model.to(device)
+        pretraining_contract_record = pretraining_contract
+    except PretrainingContractError as exc:
+        print(f"[FATAL] pretraining contract violation: {exc}", file=os.stderr)
+        return 1
     if ddp_enabled:
         local_rank = int(os.environ.get("LOCAL_RANK", "0"))
         if device.type == "cuda":
@@ -467,22 +581,40 @@ def main() -> int:
 
     model.train()
     last_ckpt: Optional[Path] = None
+    training_status = "TRAINING_COMPLETED"
+    training_failure: Optional[Dict[str, Any]] = None
     for epoch in range(int(args.epochs)):
         if ddp_enabled:
             assert sampler is not None
             sampler.set_epoch(epoch)
 
         running = 0.0
-        for x, y in dl:
-            x = x.to(device, non_blocking=True)
-            y = y.to(device, non_blocking=True)
+        epoch_failed = False
+        for step, (x, y) in enumerate(dl):
+            try:
+                x = x.to(device, non_blocking=True)
+                y = y.to(device, non_blocking=True)
 
-            optimizer.zero_grad(set_to_none=True)
-            out = model(x)["out"]
-            loss = criterion(out, y)
-            loss.backward()
-            optimizer.step()
-            running += float(loss.item())
+                optimizer.zero_grad(set_to_none=True)
+                out = model(x)["out"]
+                loss = criterion(out, y)
+                # CD-4: a NaN/Inf loss must abort the run *before* it can be
+                # written into an authoritative-looking checkpoint.
+                assert_finite_loss(loss, epoch=epoch + 1, step=step)
+                loss.backward()
+                optimizer.step()
+                running += float(loss.item())
+            except BaseException as exc:  # noqa: BLE001 - classified below
+                failure = classify_exception(exc, epoch=epoch + 1)
+                training_status = failure.status
+                training_failure = failure.to_dict()
+                epoch_failed = True
+                if is_main:
+                    print(f"[FAIL] {failure.status}: {failure.message}", file=sys.stderr)
+                break
+
+        if epoch_failed:
+            break
 
         if is_main:
             avg = running / max(1, len(dl))
@@ -491,9 +623,29 @@ def main() -> int:
             ckpt = out_dir / f"seg_fcn_epoch{epoch+1:03d}.pt"
             # unwrap DDP
             state = model.module.state_dict() if hasattr(model, "module") else model.state_dict()
-            torch.save(state, ckpt)
+            try:
+                # CD-4: check the disk *before* writing and write atomically, so
+                # a full disk or a crashed write can never leave a truncated
+                # checkpoint that still loads.
+                require_free_disk(ckpt, min_free_bytes=int(args.min_free_disk_mb) * 1024 * 1024)
+                atomic_torch_save(state, ckpt)
+            except TrainingFailure as failure:
+                training_status = failure.status
+                training_failure = failure.to_dict()
+                print(f"[FAIL] {failure.status}: {failure.message}", file=sys.stderr)
+                break
             last_ckpt = ckpt
             print(f"✅ Saved {ckpt}")
+
+    if training_failure is not None:
+        # CD-4: an unresolved failure is never published as a successful run.
+        _write_training_failure_receipt(out_dir, training_status, training_failure)
+        if ddp_enabled:
+            try:
+                torch.distributed.destroy_process_group()
+            except Exception:
+                pass
+        return 1
 
     # NEW-243: bind the final checkpoint to the run that produced it.
     if is_main and last_ckpt is not None and not args.no_manifest:
@@ -525,6 +677,8 @@ def main() -> int:
             batch_size=int(args.batch),
             seed=int(args.seed),
             augmentation_policy="none",
+            split_manifest_sha256=None,
+            pretraining_contract=pretraining_contract_record,
             extra={
                 "multi_root": bool(multi_root),
                 "train_frame_count": len(ds),
@@ -547,6 +701,22 @@ def main() -> int:
         torch.distributed.destroy_process_group()
 
     return 0
+
+
+def main() -> int:
+    """Run training and release any DDP group on every exit path."""
+    try:
+        return _main_impl()
+    finally:
+        # Keep an earlier training exception authoritative; a best-effort
+        # cleanup failure must not rewrite its cause.
+        original_failure = sys.exc_info()[0] is not None
+        try:
+            if torch.distributed.is_available() and torch.distributed.is_initialized():
+                torch.distributed.destroy_process_group()
+        except Exception:
+            if not original_failure:
+                raise
 
 
 if __name__ == "__main__":

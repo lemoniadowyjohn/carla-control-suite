@@ -204,7 +204,7 @@ def main():
         dl = DataLoader(ds, batch_size=args.batch, shuffle=True, num_workers=2, pin_memory=True)
 
     num_classes = validate_num_classes(args.num_classes)
-    model = torchvision.models.segmentation.fcn_resnet50(weights=None, num_classes=num_classes)
+    model = torchvision.models.segmentation.fcn_resnet50(weights=None, weights_backbone=None, num_classes=num_classes)
     model.to(args.device)
 
     opt = torch.optim.Adam(model.parameters(), lr=args.lr)

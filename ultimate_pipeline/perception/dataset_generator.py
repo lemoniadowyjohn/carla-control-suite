@@ -48,6 +48,7 @@ Label schema (C8 fix — unified with min_train_segmentation / eval_sim_labeled
 from __future__ import annotations
 
 import argparse
+import logging
 import os
 import json
 import time
@@ -58,11 +59,16 @@ import carla
 import numpy as np
 
 from ultimate_pipeline.config.settings import SETTINGS
+
+logger = logging.getLogger(__name__)
 from ultimate_pipeline.sensors.dominik_sensor_setup import DominikSensorSetup
 from ultimate_pipeline.core.carla_opendrive_loader import load_opendrive_world, load_builtin_world
 
 from ultimate_pipeline.carla_tools.reload_ready_for_sensors import _reload_ready_for_sensors
-from ultimate_pipeline.perception.capture_writer import save_capture_frame
+from ultimate_pipeline.perception.capture_writer import (
+    FrameSetTransaction,
+    save_capture_frame,
+)
 # Optional dependencies (don't crash on HPC)
 try:
     import cv2  # type: ignore
@@ -433,60 +439,86 @@ class DatasetGenerator:
                 if not all_have:
                     continue
 
-                # Save each camera sample for this frame (counts as ONE completed frame set)
-                for cn in self._record_cams:
-                    img = imgs_for_frame[cn]
-                    base = f"{frame:08d}"
+                # CD-4: the whole frame set (all cameras of this tick) is ONE
+                # transaction. Members are still written per-file atomically
+                # (NEW-274), but the frame only counts as saved if every member
+                # exists and the frame_status row is published as "complete".
+                # A member failure marks the frame REJECTED_INCOMPLETE; it can
+                # never enter a train/test manifest.
+                tx = FrameSetTransaction(
+                    self.dataset_dir,
+                    frame,
+                    metadata={"cameras": list(self._record_cams), "label_mode": self.label_mode},
+                )
+                written_paths: List[Path] = []
+                try:
+                    # Save each camera sample for this frame (counts as ONE completed frame set)
+                    for cn in self._record_cams:
+                        img = imgs_for_frame[cn]
+                        base = f"{frame:08d}"
 
-                    # Save via the shared writer: rgb/<cam>/ + semseg_raw/<cam>/
-                    # (raw class ids; palette conversion applied only to the
-                    # optional semseg_viz/ artifact, never to the training
-                    # label). Detection (label_mode != "semantic") is an
-                    # explicit no-op — no fabricated empty YOLO labels.
-                    write_result = save_capture_frame(
-                        self.dataset_dir,
-                        camera=cn,
-                        frame=frame,
-                        rgb_image=img,
-                        seg_image=seg_imgs_for_frame[cn] if self.label_mode == "semantic" else None,
-                        label_mode=self.label_mode,
-                        write_viz=(self.label_mode == "semantic"),
-                    )
-                    img_path = write_result.rgb_path
-                    label_path = write_result.semseg_raw_path
+                        # Save via the shared writer: rgb/<cam>/ + semseg_raw/<cam>/
+                        # (raw class ids; palette conversion applied only to the
+                        # optional semseg_viz/ artifact, never to the training
+                        # label). Detection (label_mode != "semantic") is an
+                        # explicit no-op — no fabricated empty YOLO labels.
+                        write_result = save_capture_frame(
+                            self.dataset_dir,
+                            camera=cn,
+                            frame=frame,
+                            rgb_image=img,
+                            seg_image=seg_imgs_for_frame[cn] if self.label_mode == "semantic" else None,
+                            label_mode=self.label_mode,
+                            write_viz=(self.label_mode == "semantic"),
+                        )
+                        img_path = write_result.rgb_path
+                        label_path = write_result.semseg_raw_path
+                        if img_path is not None:
+                            written_paths.append(img_path)
+                            tx.add_member(img_path)
+                        if label_path is not None:
+                            written_paths.append(label_path)
+                            tx.add_member(label_path)
+                        if write_result.semseg_viz_path is not None:
+                            tx.add_member(write_result.semseg_viz_path)
 
-                    cam_out_dir = _ensure_dir(self.dataset_dir / "rgb" / cn)
+                        cam_out_dir = _ensure_dir(self.dataset_dir / "rgb" / cn)
 
 # Optional augmentation (only if cv2 exists and not in semantic mode)
-                    # In semantic mode, we don't augment because we cannot properly
-                    # transform semantic labels to match augmented RGB images
-                    if self.apply_augmentation and _HAS_CV2 and self.label_mode != "semantic":
-                        # decode RGBA -> RGB numpy
-                        arr = np.frombuffer(img.raw_data, dtype=np.uint8).reshape((img.height, img.width, 4))[:, :, :3]
-                        aug = _augment_numpy_rgb(arr)
-                        aug_path = cam_out_dir / f"{frame:08d}_aug.png"
-                        # cv2 wants BGR
-                        cv2.imwrite(str(aug_path), cv2.cvtColor(aug, cv2.COLOR_RGB2BGR))
-                        # Note: augmented copies are RGB-only; no fabricated
-                        # detection label is written for them either.
+                        # In semantic mode, we don't augment because we cannot properly
+                        # transform semantic labels to match augmented RGB images
+                        if self.apply_augmentation and _HAS_CV2 and self.label_mode != "semantic":
+                            # decode RGBA -> RGB numpy
+                            arr = np.frombuffer(img.raw_data, dtype=np.uint8).reshape((img.height, img.width, 4))[:, :, :3]
+                            aug = _augment_numpy_rgb(arr)
+                            aug_path = cam_out_dir / f"{frame:08d}_aug.png"
+                            # cv2 wants BGR
+                            cv2.imwrite(str(aug_path), cv2.cvtColor(aug, cv2.COLOR_RGB2BGR))
+                            # Note: augmented copies are RGB-only; no fabricated
+                            # detection label is written for them either.
 
-                    # Optional DB logging (guarded)
-                    if self.db is not None:
-                        try:
-                            self.db.log_dataset_entry(
-                                timestamp=str(frame),
-                                dataset_name=self.dataset_dir.name,
-                                image_path=str(img_path) if img_path else "",
-                                label_path=str(label_path) if label_path else "",
-                                map_type=self.map_type,
-                                augmentation=0,
-                                metadata_json="{}",
-                            )
-                        except Exception:
-                            pass
+                        # Optional DB logging (guarded)
+                        if self.db is not None:
+                            try:
+                                self.db.log_dataset_entry(
+                                    timestamp=str(frame),
+                                    dataset_name=self.dataset_dir.name,
+                                    image_path=str(img_path) if img_path else "",
+                                    label_path=str(label_path) if label_path else "",
+                                    map_type=self.map_type,
+                                    augmentation=0,
+                                    metadata_json="{}",
+                                )
+                            except Exception:
+                                pass
 
-                # Only increment saved after successfully saving ALL cameras for this frame
-                saved += 1
+                    tx.commit()
+                    # Only increment saved after successfully saving ALL cameras for this frame
+                    saved += 1
+                except BaseException as exc:  # noqa: BLE001 - frame must never half-count
+                    tx.mark_rejected_incomplete(exc)
+                    logger.exception("frame %s rejected_incomplete: %s", frame, exc)
+                    continue
                 if saved >= self.n_frames:
                     break
 

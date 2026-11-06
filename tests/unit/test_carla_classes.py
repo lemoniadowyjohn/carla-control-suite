@@ -7,6 +7,7 @@ from ultimate_pipeline.perception.carla_classes import (
     CARLA_SEMANTIC_NUM_CLASSES,
     assert_label_ids_in_range,
 )
+from _carla_real import require_real_carla
 
 
 def test_num_classes_is_29_not_256():
@@ -14,7 +15,7 @@ def test_num_classes_is_29_not_256():
 
 
 def test_constant_matches_live_carla_enum_when_available():
-    carla = pytest.importorskip("carla")
+    carla = require_real_carla()
     labels = carla.CityObjectLabel
     tags = [
         int(getattr(labels, name))

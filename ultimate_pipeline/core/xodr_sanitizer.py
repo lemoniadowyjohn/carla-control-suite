@@ -111,8 +111,24 @@ class XODRSanitizer:
         geo = header.find("geoReference")
         if geo is None:
             geo = ET.SubElement(header, "geoReference")
-            geo.text = "+proj=utm +zone=32 +datum=WGS84 +units=m +no_defs"
-            log.info("Created missing <geoReference> with default UTM32/WGS84.")
+            try:
+                # P0-E: never invent `+proj=utm +zone=32` for local-rebased
+                # coordinates — zone-32 defaults are ~166 km away from the
+                # native (lat_0=0 lon_0=0) frame these maps use. Emit the
+                # frame-contract geoReference (absolute origin embedded).
+                from ultimate_pipeline.geometry.coordinate_frame_contract import (
+                    open_drive_georeference,
+                )
+
+                geo.text = open_drive_georeference()
+                log.info("Created missing <geoReference> from frame contract (absolute).")
+            except Exception as exc:
+                geo.text = "+proj=tmerc"
+                log.warning(
+                    "Created bare <geoReference> fallback (%s): frame contract "
+                    "unavailable. Absolute origin NOT embedded.",
+                    exc,
+                )
         else:
             if geo.text:
                 # Normalize whitespace so CARLA's parser doesn't freak out.

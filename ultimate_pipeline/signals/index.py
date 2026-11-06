@@ -128,17 +128,32 @@ def _status_from_payload(payload: Any) -> str | None:
     return None
 
 
+def _check_run_id_binding(payload: Any, expected_run_id: str | None) -> bool:
+    """Check if artifact payload has the expected run_id. Returns True if bound correctly."""
+    if not expected_run_id:
+        # No run_id expected; don't enforce binding
+        return True
+    if not isinstance(payload, dict):
+        return False
+    actual = payload.get("run_id")
+    return actual == expected_run_id
+
+
 def normalize_signal_status(
     signal_id: str,
     payload: Any,
     *,
     error: str | None = None,
+    run_id: str | None = None,
 ) -> str:
     """Map a signal artifact body to one of the canonical status constants.
 
     Registry ``pass_states`` / ``failure_states`` / ``missing_states`` drive the
     mapping so a signal declaring (say) ``["ok"]`` as a pass state is honoured
     without hard-coding its name here.
+
+    If ``run_id`` is provided, the artifact must contain a matching ``run_id``
+    field; otherwise it is treated as stale evidence and returns INCOMPLETE.
     """
     entry = SIGNAL_REGISTRY.get(signal_id, {})
     pass_states = {str(s).strip().lower() for s in entry.get("pass_states", [])}
@@ -150,6 +165,10 @@ def normalize_signal_status(
             # it means a producer wrote something a consumer cannot trust.
             return STATUS_FAIL
         return STATUS_MISSING
+
+    # Stale evidence rejection: if run_id is provided, artifact must bind to it
+    if run_id and not _check_run_id_binding(payload, run_id):
+        return STATUS_INCOMPLETE
 
     # Signal-specific structural rules that no generic field read captures.
     if signal_id == "CUMULATIVE_GATES" or signal_id == "WRAPPED_GATE_FAILURES":
@@ -200,9 +219,19 @@ def normalize_signal_status(
             return STATUS_PASS if _truthy(payload.get("overall_ok")) else STATUS_FAIL
         return STATUS_FAIL
 
-    if signal_id in {"RUN_SUMMARY", "VALIDATION_REPORT"}:
-        if isinstance(payload, dict) and payload:
-            return STATUS_PASS
+    if signal_id == "RUN_SUMMARY":
+        if isinstance(payload, dict):
+            # Require core fields for a valid run summary
+            required = {"pipeline_version", "run_timestamp_utc", "run_dir", "inputs", "outputs", "validation", "settings"}
+            if required.issubset(payload.keys()):
+                return STATUS_PASS
+        return STATUS_INCOMPLETE
+
+    if signal_id == "VALIDATION_REPORT":
+        if isinstance(payload, dict):
+            # Require schema and at least one content section
+            if payload.get("schema") and ("summary" in payload or "stages" in payload or "checks" in payload):
+                return STATUS_PASS
         return STATUS_INCOMPLETE
 
     if signal_id == "DETERMINISM_FINGERPRINT":
@@ -289,6 +318,18 @@ def build_signal_index(
     root = str(out_dir)
     profile = canonical_release_profile(profile)
     required = set(required_for_profile(profile))
+
+    # Read current run_id from run_identity.json for stale evidence detection
+    run_identity_path = os.path.join(root, "run_identity.json")
+    current_run_id = None
+    if os.path.exists(run_identity_path):
+        try:
+            with open(run_identity_path, "r", encoding="utf-8") as f:
+                identity = json.load(f)
+            current_run_id = identity.get("run_id")
+        except Exception:
+            pass
+
     index: dict[str, Any] = {}
 
     for sid in sorted(SIGNAL_REGISTRY):
@@ -315,7 +356,7 @@ def build_signal_index(
                 # Present but parsed to a bare JSON null: the artifact exists
                 # and carries no verdict at all.  That is not a pass.
                 error = "payload parsed to null"
-            status = normalize_signal_status(sid, payload, error=error)
+            status = normalize_signal_status(sid, payload, error=error, run_id=current_run_id)
 
         index[sid] = {
             "signal_id": sid,

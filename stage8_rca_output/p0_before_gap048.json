@@ -1,0 +1,32 @@
+{
+  "artifact": "campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_map_of_record_20260916_232831.xodr",
+  "artifact_sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+  "broken_total": 0,
+  "buckets": {},
+  "partition_ok": true,
+  "partition": {
+    "by_position": {
+      "terminal": 0,
+      "intermediate": 0
+    },
+    "by_reason": {
+      "missing_successor": 0,
+      "missing_link": 0
+    },
+    "by_road_successor": {
+      "junction": 0,
+      "road": 0,
+      "none": 0
+    }
+  },
+  "junction_funnel": {},
+  "through_junction_candidates": 0,
+  "through_junction_unambiguous": 0,
+  "through_junction_ambiguous": 0,
+  "through_junction_no_candidate": 0,
+  "unambiguous_records": [],
+  "ambiguous_records": [],
+  "no_candidate_records": [],
+  "strategy1_records": [],
+  "broken_records": []
+}

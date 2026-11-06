@@ -1,0 +1,18 @@
+{
+  "task": "TASK4_STAGE_C_MINIMAL_RGB_CAPTURE",
+  "captured_at_utc": "2026-10-21T22:49:23.334509+00:00",
+  "world_map": "Grid0828/Maps/Grid0828/Grid0828",
+  "frame_before": 4231,
+  "callback_count": 2,
+  "raw_bytes": 1228800,
+  "expected_bytes": 1228800,
+  "shape_ok": true,
+  "pixel_mean": 155.49832139756944,
+  "pixel_std": 18.566156971282286,
+  "pixel_max": 244,
+  "nonempty_rendered_pixels": true,
+  "frame_id": 4235,
+  "frame_after": 4238,
+  "ticks_advanced": true,
+  "status": "STAGE_C_RGB_CAPTURE_OK"
+}

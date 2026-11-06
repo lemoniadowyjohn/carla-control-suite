@@ -1,38 +1,175 @@
-"""Verify repository-owned Python namespaces import only from the expected source root.
+"""Fail-closed import-authority preflight for candidate verification.
 
-Policy (fail-closed):
-  * Repository-owned packages (e.g. ``ultimate_pipeline``) must resolve to the
-    expected checkout root. Any resolution outside that root is rejected.
-  * Third-party dependencies may legitimately come from site-packages and are
-    not checked by this tool.
-  * Missing repository-owned namespaces are reported as failures.
+A verification run is only meaningful if the code under test is the code that
+was checked out. This module proves that: every repository Python module that
+the interpreter can supply must originate from the expected checkout, and no
+other CARLA checkout may appear anywhere in the import search path for those
+namespaces.
+
+It is deliberately strict. Path *ordering* is not treated as sufficient: if an
+external checkout can supply a candidate module at all, that is a violation,
+because collection order can change which module wins.
+
+The expected repository root is discovered dynamically (``git rev-parse
+--show-toplevel`` with a parent-walk fallback). No machine-specific path is
+encoded.
 
 Usage::
 
-    python tools/verify_import_authority.py [--expected-root /path/to/repo]
+    python tools/verify_import_authority.py [--json]
 
-Exits 0 on PASS, non-zero on FAIL.
+Exit codes: 0 = authority proven, 1 = violation detected, 2 = unusable.
 """
 from __future__ import annotations
 
 import argparse
 import importlib
 import json
+import os
+import subprocess
 import sys
+import sysconfig
 from pathlib import Path
-from typing import Any
 
-#: Repository-owned top-level namespaces that must resolve from the expected root.
-REPO_OWNED_NAMESPACES: frozenset[str] = frozenset({"ultimate_pipeline"})
+# Top-level import namespaces owned by this repository.
+REPO_NAMESPACES = ("ultimate_pipeline", "tools")
+REPO_OWNED_NAMESPACES = frozenset(REPO_NAMESPACES)
+
+
+def expected_repo_root(start: Path | None = None) -> Path:
+    """Discover the checkout root dynamically. Never hardcodes a path."""
+    here = (start or Path(__file__).resolve()).parent
+    try:
+        out = subprocess.run(
+            ["git", "rev-parse", "--show-toplevel"],
+            cwd=str(here), capture_output=True, text=True, timeout=60,
+        )
+        if out.returncode == 0 and out.stdout.strip():
+            return Path(out.stdout.strip()).resolve()
+    except (OSError, subprocess.SubprocessError):
+        pass
+    for candidate in [here, *here.parents]:
+        if (candidate / "pyproject.toml").is_file() and (
+            (candidate / "ultimate_pipeline").is_dir()
+        ):
+            return candidate.resolve()
+    raise RuntimeError("could not determine repository root")
+
+
+def _norm(path: str | os.PathLike) -> str:
+    try:
+        return os.path.normcase(os.path.realpath(str(path)))
+    except (OSError, ValueError):
+        return os.path.normcase(str(path))
+
+
+def _under(path: str, root: str) -> bool:
+    """True when `path` is `root` itself or lives inside it."""
+    if path == root:
+        return True
+    return path.startswith(root.rstrip(os.sep) + os.sep)
+
+
+def _stdlib_prefixes() -> set[str]:
+    out = set()
+    for key in ("stdlib", "platstdlib"):
+        try:
+            value = sysconfig.get_paths().get(key)
+        except Exception:
+            value = None
+        if value:
+            out.add(_norm(value))
+    return out
+
+
+def audit(expected_root: Path) -> dict:
+    """Import the repository namespaces and report any external origin."""
+    expected = _norm(expected_root)
+    allowed_roots = {expected} | _stdlib_prefixes()
+
+    def permitted(candidate: str) -> bool:
+        return any(_under(candidate, root) for root in allowed_roots)
+    # The candidate environment's own site-packages may legitimately contain a
+    # third-party distribution, but never a *repository* checkout.
+    violations: list[dict] = []
+    census: list[dict] = []
+
+    for name in REPO_NAMESPACES:
+        try:
+            module = importlib.import_module(name)
+        except Exception as exc:  # pragma: no cover - environment dependent
+            violations.append({
+                "kind": "import_failed",
+                "module": name,
+                "detail": f"{type(exc).__name__}: {exc}",
+            })
+            continue
+
+        search = list(getattr(module, "__path__", []) or [])
+        origin = getattr(module, "__file__", None)
+        if origin:
+            search.append(os.path.dirname(origin))
+        census.append({
+            "module": name,
+            "origin": origin,
+            "search_locations": [str(p) for p in search],
+        })
+
+        if origin is None and name != "tools":
+            violations.append({
+                "kind": "missing_module_origin",
+                "module": name,
+            })
+
+        # Namespace-package aggregation: ANY external location that could
+        # supply a submodule of this namespace is a violation, regardless of
+        # whether it currently sorts first.
+        for loc in search:
+            if not permitted(_norm(loc)):
+                violations.append({
+                    "kind": "external_search_location",
+                    "namespace": name,
+                    "location": str(loc),
+                })
+
+    # Census every already-imported repository submodule.
+    for mod_name, module in sorted(list(sys.modules.items())):
+        top = mod_name.split(".")[0]
+        if top not in REPO_NAMESPACES:
+            continue
+        origin = getattr(module, "__file__", None)
+        search = list(getattr(module, "__path__", []) or [])
+        entry = {
+            "module": mod_name,
+            "origin": origin,
+            "search_locations": [str(p) for p in search],
+        }
+        census.append(entry)
+        if origin and not permitted(_norm(origin)):
+            violations.append({
+                "kind": "external_module_origin",
+                "module": mod_name,
+                "origin": origin,
+            })
+
+    return {
+        "expected_root": str(expected_root),
+        "sys_prefix": sys.prefix,
+        "sys_executable": sys.executable,
+        "pythonpath_env": os.environ.get("PYTHONPATH", ""),
+        "namespaces": census[: len(REPO_NAMESPACES)],
+        "module_count": len(census),
+        "violations": violations,
+        "status": "PASS" if not violations else "FAIL",
+        "passed": not violations,
+    }
 
 
 def _expected_source_root() -> Path:
-    """Default expected source root: the parent of the ``tools/`` directory."""
     return Path(__file__).resolve().parent.parent
 
 
 def _is_within(path: Path, root: Path) -> bool:
-    """True when ``path`` resolves to a location inside ``root``."""
     try:
         path.resolve().relative_to(root.resolve())
         return True
@@ -40,102 +177,72 @@ def _is_within(path: Path, root: Path) -> bool:
         return False
 
 
-def verify_import_authority(
-    expected_root: Path | None = None,
-) -> dict[str, Any]:
-    """Verify all repository-owned namespaces import from ``expected_root``.
-
-    Returns a dict with ``schema``, ``expected_root``, ``passed`` and
-    ``failures``. Exit code should be 0 when ``passed`` is True.
-    """
-    if expected_root is None:
-        expected_root = _expected_source_root()
-    expected_root = expected_root.resolve()
-
-    failures: list[dict[str, Any]] = []
-
-    for namespace in sorted(REPO_OWNED_NAMESPACES):
-        try:
-            module = importlib.import_module(namespace)
-        except ImportError as exc:
-            failures.append({
+def verify_import_authority(expected_root: Path | None = None) -> dict:
+    """Compatibility API for callers that need a compact pass/fail result."""
+    report = audit(expected_root or _expected_source_root())
+    failures_by_namespace = {}
+    for item in report["violations"]:
+        namespace = item.get("namespace", item.get("module", "unknown"))
+        failures_by_namespace.setdefault(
+            namespace,
+            {
                 "namespace": namespace,
-                "status": "NOT_FOUND",
-                "origin": None,
-                "expected_root": str(expected_root),
-                "message": (
-                    f"repository-owned namespace {namespace!r} is not importable: {exc}"
+                "status": (
+                    "NO_ORIGIN"
+                    if item.get("kind") == "missing_module_origin"
+                    else "WRONG_ORIGIN"
                 ),
-            })
-            continue
-
-        origin = getattr(module, "__file__", None)
-        if origin is None:
-            failures.append({
-                "namespace": namespace,
-                "status": "NO_ORIGIN",
-                "origin": None,
-                "expected_root": str(expected_root),
-                "message": (
-                    f"namespace {namespace!r} has no __file__ origin "
-                    f"(namespace package or built-in)"
-                ),
-            })
-            continue
-
-        origin_path = Path(origin)
-        if not _is_within(origin_path, expected_root):
-            failures.append({
-                "namespace": namespace,
-                "status": "WRONG_ORIGIN",
-                "origin": str(origin),
-                "expected_root": str(expected_root),
-                "message": (
-                    f"namespace {namespace!r} resolves to {origin}, "
-                    f"outside expected root {expected_root}"
-                ),
-            })
-            continue
-
+                "origin": item.get("origin", item.get("location")),
+                "expected_root": report["expected_root"],
+                "message": item.get("detail", item.get("kind", "import authority failed")),
+            },
+        )
+    failures = list(failures_by_namespace.values())
     return {
-        "schema": "import_authority/v1",
-        "expected_root": str(expected_root),
-        "passed": len(failures) == 0,
+        "schema": "import_authority/v2",
+        "expected_root": report["expected_root"],
+        "passed": report["status"] == "PASS",
         "failures": failures,
+        "report": report,
     }
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(
-        description="Verify repository-owned imports come from the expected source root."
-    )
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--json", action="store_true", help="emit JSON only")
     parser.add_argument(
-        "--expected-root",
-        type=Path,
-        default=None,
-        help="Expected source root directory (default: parent of tools/)",
-    )
-    parser.add_argument(
-        "--json",
-        action="store_true",
-        help="Emit machine-readable JSON result",
+        "--expect-root", "--expected-root", dest="expect_root", default=None,
+        help="override the dynamically discovered repository root",
     )
     args = parser.parse_args(argv)
 
-    result = verify_import_authority(args.expected_root)
+    try:
+        root = Path(args.expect_root).resolve() if args.expect_root \
+            else expected_repo_root()
+    except RuntimeError as exc:
+        print(f"IMPORT_AUTHORITY_UNUSABLE: {exc}", file=sys.stderr)
+        return 2
 
+    report = audit(root)
     if args.json:
-        print(json.dumps(result, indent=2, sort_keys=True))
+        print(json.dumps(report, indent=2, sort_keys=True))
     else:
-        if result["passed"]:
-            print(f"IMPORT_AUTHORITY PASS: all namespaces from {result['expected_root']}")
-        else:
-            print(f"IMPORT_AUTHORITY FAIL: expected root {result['expected_root']}")
-            for f in result["failures"]:
-                print(f"  {f['namespace']}: {f['message']}")
-
-    return 0 if result["passed"] else 1
+        print(f"expected_root : {report['expected_root']}")
+        print(f"sys_prefix    : {report['sys_prefix']}")
+        print(f"sys_executable: {report['sys_executable']}")
+        print(f"PYTHONPATH    : {report['pythonpath_env']!r}")
+        for ns in report["namespaces"]:
+            print(f"  {ns['module']}: {ns['origin']}")
+            for loc in ns["search_locations"]:
+                print(f"      search: {loc}")
+        print(f"modules audited: {report['module_count']}")
+        if report["violations"]:
+            print("VIOLATIONS:")
+            for violation in report["violations"]:
+                print(f"  - {violation}")
+        print(f"IMPORT_AUTHORITY_{report['status']}")
+    return 0 if report["status"] == "PASS" else 1
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    raise SystemExit(main())

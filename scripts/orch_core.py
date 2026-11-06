@@ -23,6 +23,7 @@ import hashlib
 import json
 import os
 import subprocess
+import sys
 import tempfile
 import uuid
 
@@ -74,12 +75,8 @@ def sha256_file(path: str):
 # ---------------------------------------------------------------------------
 # process identity
 # ---------------------------------------------------------------------------
-def process_creation_time(pid: int):
-    """Authoritative process creation time, or None if the PID is not live.
-
-    Read from the OS rather than trusting a cached value so that a recycled PID
-    produces a different (or absent) creation time.
-    """
+def _process_creation_time_windows(pid: int):
+    """Win32 path: authoritative creation time via CIM. Unchanged behaviour."""
     script = (
         "$p=Get-CimInstance Win32_Process -Filter \"ProcessId=%d\" "
         "-ErrorAction SilentlyContinue; "
@@ -93,6 +90,98 @@ def process_creation_time(pid: int):
     except (OSError, subprocess.SubprocessError):
         return None
     return out or None
+
+
+def _boot_epoch_seconds():
+    """Seconds since the epoch at boot, from /proc/stat ``btime``.
+
+    Returns None when the value cannot be established; callers must then fail
+    closed rather than guess a creation time.
+    """
+    try:
+        with open("/proc/stat", "r", encoding="ascii",
+                  errors="replace") as fh:
+            for line in fh:
+                if line.startswith("btime"):
+                    parts = line.split()
+                    if len(parts) >= 2:
+                        return float(parts[1])
+    except (OSError, ValueError):
+        return None
+    return None
+
+
+def _process_start_ticks(pid: int):
+    """``starttime`` (field 22) from /proc/<pid>/stat, parsed safely.
+
+    The ``comm`` field is parenthesised and may itself contain spaces *and*
+    parentheses, so the line is split at the LAST ')' rather than assuming
+    fixed offsets from token 0. The tokens after that delimiter begin at field
+    3 (``state``), therefore field 22 is index 19.
+
+    Returns None on any malformed or unreadable input so that a PID which
+    cannot be read is never classified as live.
+    """
+    try:
+        with open("/proc/%d/stat" % int(pid), "r", encoding="utf-8",
+                  errors="replace") as fh:
+            data = fh.read()
+    except (OSError, TypeError, ValueError):
+        return None
+    close = data.rfind(")")
+    if close < 0:
+        return None
+    fields = data[close + 1:].split()
+    # state(3) .. itrealvalue(21) must all be present before starttime(22).
+    if len(fields) <= 19:
+        return None
+    try:
+        return int(fields[19])
+    except ValueError:
+        return None
+
+
+def _process_creation_time_linux(pid: int):
+    """Linux path: kernel-provided process start identity, no subprocess.
+
+    The kernel is the authority. ``btime`` plus ``starttime`` scaled by the
+    clock tick frequency yields the process start instant in epoch seconds.
+    No wall-clock sampling, PID, command line or directory mtime is used, so
+    two calls for the same live process always agree and a recycled PID
+    always differs.
+    """
+    ticks = _process_start_ticks(pid)
+    if ticks is None:
+        return None
+    boot = _boot_epoch_seconds()
+    if boot is None:
+        return None
+    try:
+        hz = os.sysconf("SC_CLK_TCK")
+    except (AttributeError, ValueError, OSError):
+        return None
+    if not hz or hz <= 0:
+        return None
+    epoch = boot + (ticks / float(hz))
+    try:
+        stamp = datetime.datetime.fromtimestamp(
+            epoch, tz=datetime.timezone.utc)
+    except (OverflowError, OSError, ValueError):
+        return None
+    return stamp.isoformat().replace("+00:00", "Z")
+
+
+def process_creation_time(pid: int):
+    """Authoritative process creation time, or None if the PID is not live.
+
+    Read from the OS rather than trusting a cached value so that a recycled PID
+    produces a different (or absent) creation time. Windows keeps its CIM
+    implementation; Linux uses /proc. Any other platform, and any unreadable
+    or malformed input, fails closed with None.
+    """
+    if sys.platform == "win32":
+        return _process_creation_time_windows(pid)
+    return _process_creation_time_linux(pid)
 
 
 def process_identity(pid: int, run_id: str = None):

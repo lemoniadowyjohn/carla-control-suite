@@ -25,13 +25,17 @@ class QualityGateManager:
     # -------------------------------- bookkeeping --------------------------------
 
     def fail(self, gate_name: str, payload: Any) -> None:
+        # {"status": "fail"} -> "error"
         self.vreport.add(
-            "quality_gates", gate_name, {"status": "fail", "detail": payload}
+            "error",
+            "quality_gates",
+            {"key": gate_name, "status": "fail", "detail": payload},
         )
         self._failures_by_name[gate_name] = payload
 
     def passed(self, gate_name: str) -> None:
-        self.vreport.add("quality_gates", gate_name, {"status": "pass"})
+        # "pass" -> "success"
+        self.vreport.add("success", "quality_gates", {"key": gate_name, "status": "pass"})
         self._failures_by_name.pop(gate_name, None)
 
     def get_failures(self) -> Dict[str, Any]:
@@ -125,7 +129,12 @@ class QualityGateManager:
         issues = PolygonChecker.check_xodr(root)
         comparison = {"polygon_intersection": issues, "heuristic_legacy": heuristic,
                       "polygon_issue_count": len(issues), "heuristic_issue_count": len(heuristic)}
-        self.vreport.add("quality_gates", "semantic_overlap_comparison", comparison)
+        # Plain data payload (diagnostic comparison, not itself a pass/fail
+        # verdict -- the verdict is recorded separately via fail()/passed()
+        # below) -> "warning".
+        self.vreport.add(
+            "warning", "quality_gates", {"key": "semantic_overlap_comparison", **comparison}
+        )
         self._persist_optional(comparison, "semantic_overlap_comparison")
         # The standalone map-acceptance report remains advisory.  Quality-gate
         # orchestration must nevertheless retain the polygon result as a
@@ -171,9 +180,15 @@ class QualityGateManager:
         errors = [i for i in issues if i.get("severity") == "error"]
         warns = [i for i in issues if i.get("severity") == "warn"]
 
-        # Record all issues in vreport for diagnostics
+        # Record all issues in vreport for diagnostics. Plain data payload
+        # (raw issue list, not itself a pass/fail verdict -- the verdict is
+        # recorded separately via fail()/passed() below) -> "warning".
         if issues:
-            self.vreport.add("quality_gates", "carla_opendrive_compat_issues", issues)
+            self.vreport.add(
+                "warning",
+                "quality_gates",
+                {"key": "carla_opendrive_compat_issues", "value": issues},
+            )
 
         # Only fail on actual errors, not warnings
         if errors:
@@ -269,10 +284,15 @@ class QualityGateManager:
                 if strict:
                     raise RuntimeError(f"Offset solver failed in strict mode: {e}") from e
                 try:
+                    # Key ends in "_error" -> "error"
                     self.vreport.add(
+                        "error",
                         "quality_gates",
-                        "elevation_offset_solver_error",
-                        {"error": str(e), "reason": activation_reason},
+                        {
+                            "key": "elevation_offset_solver_error",
+                            "error": str(e),
+                            "reason": activation_reason,
+                        },
                     )
                 except Exception:
                     pass

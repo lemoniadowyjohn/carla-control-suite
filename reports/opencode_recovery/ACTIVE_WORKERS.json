@@ -1,0 +1,31 @@
+{
+  "session_start_utc": "2026-10-21T15:20:00.000Z",
+  "session_end_utc": "N/A",
+  "active_agents": 2,
+  "total_agent_slots": 2,
+  "writer_agent": "lead_integration_coordinator (this session)",
+  "reviewer_agents": [],
+  "running_tasks": [
+    "OC03_StorageAudit",
+    "OC04_ConfigAudit",
+    "OC05_SemanticProvenance",
+    "OC06_P0GateVerification",
+    "OC08_IntegrationReadiness"
+  ],
+  "completed_tasks": [
+    "OC01_AuthorityReconciliation",
+    "OC02_SourceFixesCommitted",
+    "OC07_PipelineAbortAndEvidenceCapture",
+    "OC09_CurrentAuthorityReportGenerated"
+  ],
+  "blocked_tasks": [
+    "OC10_RegenerationAdmissionGate",
+    "OC11_ReviewAIndependentCertification",
+    "OC12_GithubConvergence",
+    "OC13_CarlaEngineRigBlocks",
+    "OC14_RQ3RQ5Investigation"
+  ],
+  "disk_space_gib": {"C":4.90,"D":1.24,"E":4.16,"F":2.22,"G":9.11,"H":15.70},
+  "admission_gate_passed": false,
+  "admission_gate_reason": "No volume has >=20 GiB free"
+}

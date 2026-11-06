@@ -15,6 +15,7 @@ from ultimate_pipeline.domain_gap.tile_matcher import TileMatcher
 from .map_encoder import MapEncoder, MapEncoderConfig
 from .latent_gap_utils import combine_latent_gaps
 from .graph_builder import MapGraphBuilder
+from .collapse_guard_wire import collapse_verdict, collapsed_payload
 
 
 # ============================================================
@@ -111,9 +112,16 @@ def compute_whole_map_latent_gap(
     manual_xodr: str,
     auto_xodr: str,
     checkpoint: str,
+    tiles_dir: Optional[str] = None,
 ) -> Dict[str, Any]:
 
     _set_determinism(getattr(SETTINGS, "DETERMINISTIC_SEED", None))
+
+    # RQ4: encoder-collapse guard — if the encoder is COLLAPSED,
+    # emit NOT_RUN instead of fabricated gap metrics.
+    cv = collapse_verdict(checkpoint, tiles_dir=tiles_dir)
+    if cv.get("verdict") == "COLLAPSED":
+        return collapsed_payload(checkpoint, tiles_dir=tiles_dir)
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model = _load_encoder(checkpoint, device)
@@ -168,6 +176,11 @@ def compute_per_tile_latent_gap(
 ) -> Dict[str, Any]:
 
     _set_determinism(getattr(SETTINGS, "DETERMINISTIC_SEED", None))
+
+    # RQ4: encoder-collapse guard (tiles_dir = auto_tiles)
+    cv = collapse_verdict(checkpoint, tiles_dir=auto_tiles)
+    if cv.get("verdict") == "COLLAPSED":
+        return collapsed_payload(checkpoint, tiles_dir=auto_tiles)
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model = _load_encoder(checkpoint, device)

@@ -1,0 +1,44 @@
+{
+  "cli_flag": "--strict-rq3 (env UP_STRICT_RQ3)",
+  "document_id": "RQ3_CANONICAL_RUNNER_INTEGRATION_20261021",
+  "exit_codes": {
+    "INVARIANT_VIOLATION": 3,
+    "OK": 0,
+    "SETUP_FAILURE": 4
+  },
+  "files_changed": [
+    "ultimate_pipeline/perception/record_route_fixed.py",
+    "tests/unit/test_canonical_runner_integration.py",
+    "tests/unit/test_strict_runner_integration.py"
+  ],
+  "final_sha": "363a1868455cab0c33ce9584d6f4b09d594f74e3",
+  "integration_tests": {
+    "tests/unit/test_canonical_runner_integration.py": {
+      "failed": 0,
+      "passed": 3
+    },
+    "tests/unit/test_strict_runner_integration.py": {
+      "failed": 0,
+      "passed": 1
+    }
+  },
+  "new_orchestrator": "run_strict_rq3_capture",
+  "new_strict_entrypoint": "run_strict_capture_entrypoint",
+  "status": "READY_FOR_INDEPENDENT_REVIEW",
+  "strict_invariants_enforced": [
+    "No unsupported map fallback (map_identity_mismatch)",
+    "No ungoverned spawn recovery (transaction rollback + readback verification)",
+    "No session overwrite (session lock + session_identity_sha256)",
+    "No false restoration PASS (READBACK_VERIFIED or UNOBSERVABLE only)",
+    "No capture promotion after terminal error (terminal_status_not_completed)",
+    "No missing-sensor warning substituted for hard failure (incomplete_multimodal_frame_publication)"
+  ],
+  "synthetic_fixtures_labeled": true,
+  "target_file": "ultimate_pipeline/perception/record_route_fixed.py",
+  "verified_invocations_from_real_path": {
+    "capture_transaction.CaptureTransaction": true,
+    "capture_transaction.run_governed_capture": true,
+    "rq3_frame_set.ArmFrameSet / FrameMember / intersect_frame_sets": true,
+    "rq3_rq5_handoff_adapter.build_current_handoff_report": true
+  }
+}

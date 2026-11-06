@@ -234,6 +234,48 @@ def test_autofix_does_not_touch_a_correctly_linked_lane_in_a_sibling_lanesection
 
 
 # ---------------------------------------------------------------------------
+# autofix_missing_lane_successors -- L2 review follow-up (2026-11-02):
+# a ROAD-type successor link's contactPoint must not be defaulted/assumed.
+# ---------------------------------------------------------------------------
+
+
+def test_autofix_road_link_missing_contactpoint_reported_not_assumed(tmp_path):
+    xodr = tmp_path / "missing_contact.xodr"
+    xodr.write_text(
+        '<?xml version="1.0"?><OpenDRIVE>'
+        '<road name="r1" length="10" id="R1" junction="-1">'
+        '<link><successor elementType="road" elementId="R2"/></link>'
+        '<planView><geometry s="0" x="0" y="0" hdg="0" length="10"><line/></geometry></planView>'
+        '<lanes><laneSection s="0"><right>'
+        '<lane id="-1" type="driving" level="false">'
+        '<width sOffset="0" a="3.5" b="0" c="0" d="0"/>'
+        "</lane></right></laneSection></lanes>"
+        "</road>"
+        '<road name="r2" length="10" id="R2" junction="-1">'
+        '<planView><geometry s="0" x="10" y="0" hdg="0" length="10"><line/></geometry></planView>'
+        '<lanes><laneSection s="0"><right>'
+        '<lane id="-1" type="driving" level="false">'
+        '<link><successor id="-1"/></link>'
+        '<width sOffset="0" a="3.5" b="0" c="0" d="0"/>'
+        "</lane></right></laneSection></lanes>"
+        "</road>"
+        "</OpenDRIVE>",
+        encoding="utf-8",
+    )
+    report = autofix_missing_lane_successors(str(xodr), allow_dead_ends=True)
+
+    assert report["fixed_count"] == 0, report
+    reasons = {b["reason"] for b in report["still_broken"]}
+    assert "road_link_contactpoint_missing" in reasons, report
+
+    out_root = ET.parse(report["output_xodr"]).getroot()
+    lane = out_root.find("road[@id='R1']/lanes/laneSection/right/lane[@id='-1']")
+    assert lane.find("link/successor") is None, (
+        "must not guess a successor on a ROAD-type link with no contactPoint"
+    )
+
+
+# ---------------------------------------------------------------------------
 # assert_all_lanes_have_successors
 # ---------------------------------------------------------------------------
 

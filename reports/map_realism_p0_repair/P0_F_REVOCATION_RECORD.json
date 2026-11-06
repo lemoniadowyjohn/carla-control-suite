@@ -1,0 +1,60 @@
+{
+  "schema": "P0_F_EVIDENCE_REVOCATION/v1",
+  "campaign": "map-realism-p0-repair-837a8504",
+  "campaign_branch": "repair/map-realism-p0-837a8504",
+  "base_sha": "837a8504b624dc90653aef3a48300abb3275e291",
+  "generated_at": "2026-10-21",
+  "defect": "Fabricated sensor-validation claims (P0-F): historical phase-L validation runs recorded rgb/depth/semantic_segmentation/lidar/gnss/imu as CAPTURED with gnss_agreement=PASS and synchronization_status=PASS without spawning any sensor rig or capturing any frame. The producer code at this base SHA is fail-closed (phase_l_validation.py, step_l9_sensor_validation, lines 510-546: claims retired with reason 'no sensor rig spawned and no frames captured by this run'), but the historical evidence artifacts remain on disk as false-positive receipts.",
+  "disposition": "RETIRED_FALSE_PASS",
+  "action": "Revoked in place; artifacts are preserved (never overwritten) and are excluded from all acceptance chains. Any artifact claiming map-dependent sensor validation produced before the P0 map repair must be regenerated against the repaired candidate with a live CARLA runtime.",
+  "revoked_artifacts": [
+    {
+      "path": "reports/post_audit_hardening/20260804T204419Z/L9_sensor_validation.json",
+      "sha256": "a1a71a9001f528074ba05d793ed422cc5ef9b92b80c8f7ae6bd409a94eb101a3",
+      "gnss_status": "CAPTURED",
+      "gnss_agreement": "PASS",
+      "synchronization_status": "PASS",
+      "verdict": "RETIRED_FALSE_PASS"
+    },
+    {
+      "path": "reports/post_audit_hardening/20260804T205730Z/L9_sensor_validation.json",
+      "sha256": "a747bd09d537c4598545b29a587046fac679d8eda7a72f31b8895dffe853424f",
+      "gnss_status": "CAPTURED",
+      "gnss_agreement": "PASS",
+      "synchronization_status": "PASS",
+      "verdict": "RETIRED_FALSE_PASS"
+    },
+    {
+      "path": "reports/post_audit_hardening/20260804T205920Z/L9_sensor_validation.json",
+      "sha256": "bf852fc73a0773ad5ea6f5a2cf084243c2f974e7485ac9bad621110beba68d43",
+      "gnss_status": "CAPTURED",
+      "gnss_agreement": "PASS",
+      "synchronization_status": "PASS",
+      "verdict": "RETIRED_FALSE_PASS"
+    },
+    {
+      "path": "reports/post_audit_hardening/20260804T210232Z/L9_sensor_validation.json",
+      "sha256": "ba5f94c76b0e2f07e5316d500f62384cd5bcdc8d70e643932aa0a9ada159abc2",
+      "gnss_status": "CAPTURED",
+      "gnss_agreement": "PASS",
+      "synchronization_status": "PASS",
+      "verdict": "RETIRED_FALSE_PASS"
+    },
+    {
+      "path": "reports/post_audit_hardening/20260805T122525Z/L9_sensor_validation.json",
+      "sha256": "c4354e4c6b729a3cc34e4895dbfe5adac5587242964e78d64cd341dec3f3f6f7",
+      "gnss_status": "CAPTURED",
+      "gnss_agreement": "PASS",
+      "synchronization_status": "PASS",
+      "verdict": "RETIRED_FALSE_PASS"
+    }
+  ],
+  "producer_fix_evidence": {
+    "file": "phase_l_validation.py",
+    "scope": "root-level phase-L validation harness tracked at base SHA 837a8504",
+    "lines": "510-546",
+    "behavior": "fail-closed: L9 returns status NOT_RUN / NOT_CAPTURED with explicit retirement reason; no CAPTURED/PASS can be emitted without a live runtime"
+  },
+  "negative_control": "Required before acceptance: invoke a sensor-validation claim path with no runtime and assert the result is NOT_RUN / FAIL (never CAPTURED/PASS).",
+  "map_dependency_note": "GNSS agreement against the map georeference additionally depends on P0-E (absolute origin). A truthful GNSS re-validation can only run after the georeference-carrying candidate is loaded in CARLA."
+}

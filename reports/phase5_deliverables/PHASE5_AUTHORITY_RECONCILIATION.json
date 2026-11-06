@@ -1,0 +1,40 @@
+{
+  "authority_reconciliation": {
+    "timestamp_utc": "2026-10-21T14:45:00Z",
+    "repository": "carla_-main",
+    "local_head": "d3daf015",
+    "local_branch": "fix/acceptance-contract-hardening-20261021",
+    "remote_head": "35b3e5d1",
+    "remote_tracking_branch": "repair/map-realism-p0-837a8504",
+    "worktree_status": {
+      "active": "E:\\wt\\repair-map-realism-p0-837a8504",
+      "clean": "G:/wt/acceptance-contract-hardening-20261021",
+      "locked": "H:/opencode/rq12-closure",
+      "total_registered": 30
+    },
+    "commit_history": {
+      "d3daf015": "Phase 0-1 artifacts, CI remediation receipt, final execution report",
+      "363a1868": "OC-15: stage-02 plotting crash guard + regression tests (7/7 passed)",
+      "f0c83285": "P0-E: georeference enforcement + P0-D regulatory sign wiring",
+      "26cf42cf": "Research: batch 1 new modules – split manifest, training failure guard, collapse guard wire",
+      "4ca15683": "Research: split authority + frame transactions + failure guards + pretraining contracts"
+    },
+    "unique_artifacts_preserved": [
+      "AUDITOR_CANDIDATE_VERIFICATION_20261021.json",
+      "AUDITOR_FINDINGS_20261021.json",
+      "P0_F_REVOCATION_RECORD.json",
+      "BEFORE_MANIFEST.json",
+      "E:\\wt_tmp\\audit_georef_fix_verification.json",
+      "E:\\wt_tmp\\audit_header_probe.json",
+      "ultimate_pipeline_out\\20261021_165726_800368\\ (218.40 MB)"
+    ],
+    "defects_verified": {
+      "stage-02_crash": "Fixed (commit 363a1868)",
+      "regulatory_sign_wiring": "No-op fix; actual mechanism functional",
+      "CI_B": "Verified (import test passes)",
+      "CI_A": "Documented (PyQt6 missing; not source defect)",
+      "dataset_generator_verbose": "Fixed (self.verbose added to __init__)",
+      "realism_augmentor_apply": "Fixed (now calls apply_random)"
+    }
+  }
+}

@@ -525,6 +525,28 @@ def verify_crs_contract(
         native_wgs84 is not None and _inside(native_wgs84, expanded)
     )
 
+    # P0-E evidence additive (no verdict-flow change): a geoReference that
+    # embeds the header offset as +x_0/+y_0 maps plan-view (LOCAL) coordinates
+    # directly. The plausibility check above consumes effective GLOBAL bounds,
+    # so for such maps a truthful claimed string is legitimately non-plausible
+    # there. Record the local-frame test explicitly so future readers do not
+    # misread "claimed_geoReference_disproven" as the string being wrong.
+    claimed_local_embedded = False
+    claimed_wgs84_local = None
+    try:
+        from ultimate_pipeline.core.georef_utils import (
+            georef_describes_local_coords,
+        )
+
+        if claimed_raw and claimed_crs is not None and georef_describes_local_coords(
+            claimed_raw, float(header_offset.get("x", 0.0)), float(header_offset.get("y", 0.0))
+        ):
+            claimed_local_embedded = True
+            if geometry_bounds is not None:
+                claimed_wgs84_local = _bbox_to_wgs84(geometry_bounds, claimed_crs)
+    except Exception:
+        pass
+
     if claimed_plausible and not native_plausible:
         verdict = "CLAIMED_CRS_VERIFIED"
         reason = "claimed_geoReference_plausible_against_osm"
@@ -570,6 +592,8 @@ def verify_crs_contract(
         "claimed_proj4": claimed_raw,
         "claimed_crs_reason": claimed_reason,
         "claimed_crs_header_bounds_wgs84": claimed_wgs84,
+        "claimed_wgs84_geodetic_local_embedded": claimed_wgs84_local,
+        "claimed_crs_local_embedded": claimed_local_embedded,
         "claimed_plausible": claimed_plausible,
         "native_frame": OSM2ODR_NATIVE_PROJ4,
         "native_frame_header_bounds_wgs84": native_wgs84,
@@ -624,7 +648,36 @@ def map_wgs84_extent(
         xodr_path, osm_bounds=osm_bounds, osm_path=osm_path, strict=strict
     )
     bbox = _planview_bbox(xodr_path)
-    extent = _bbox_to_wgs84(bbox, crs) if bbox is not None and crs is not None else None
+
+    # P0-E: when the file's geoReference embeds the header offset (maps LOCAL
+    # plan-view coordinates directly), the raw planView bbox is already in the
+    # claimed CRS's frame — transform it with the claimed CRS for a truthful
+    # WGS84 extent. Legacy behavior (global claimed/native frames) unchanged.
+    extent = None
+    if bbox is not None and crs is not None:
+        try:
+            from ultimate_pipeline.core.georef_utils import (
+                georef_describes_local_coords,
+            )
+
+            off = header_offset_from_xodr(xodr_path)
+            geo = None
+            root = ET.parse(xodr_path).getroot()
+            hdr = root.find("header")
+            if hdr is not None:
+                g = hdr.find("geoReference")
+                geo = (g.text or "").strip() if g is not None else ""
+            if geo and georef_describes_local_coords(
+                geo, float(off.get("x", 0.0)), float(off.get("y", 0.0))
+            ):
+                claimed, _, _ = claimed_crs_from_xodr(xodr_path)
+                if claimed is not None:
+                    src, source = claimed, "claimed_geoReference_local_embedded"
+                    extent = _bbox_to_wgs84(bbox, src)
+        except Exception:
+            pass
+    if extent is None:
+        extent = _bbox_to_wgs84(bbox, crs) if bbox is not None and crs is not None else None
     return {
         "extent_wgs84": extent,
         "bbox_in_xodr_frame": bbox,

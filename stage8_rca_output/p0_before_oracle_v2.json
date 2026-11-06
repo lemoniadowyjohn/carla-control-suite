@@ -1,0 +1,9593 @@
+{
+ "schema": "MAP_REALISM_P0_ORACLE/v1",
+ "xodr_path": "campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_perception_map_of_record_20260916_232831.xodr",
+ "xodr_sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+ "georeference": {
+  "has_geo_reference": true,
+  "geo_reference": "+proj=tmerc",
+  "has_absolute_origin": false,
+  "lat_0": null,
+  "lon_0": null,
+  "has_offset": true,
+  "offset": {
+   "x": 832671.676,
+   "y": 5458671.104,
+   "z": 0.0,
+   "hdg": 0.0
+  },
+  "duplicate_offset_in_georef": false
+ },
+ "dangling_mandatory_lane_successors": {
+  "mandatory_lanes_checked": 3,
+  "dangling_mandatory_lane_successors": 3,
+  "dangling_by_class": {
+   "VALID_AMBIGUITY": 3
+  },
+  "dangling_records": [
+   {
+    "road_id": "46620",
+    "lane_id": 1,
+    "road_length_m": 214.741,
+    "junctions_connected": [
+     "684"
+    ],
+    "candidate_connections": 3,
+    "routed": false,
+    "classification": "VALID_AMBIGUITY",
+    "candidates": [
+     [
+      "684",
+      "72849"
+     ],
+     [
+      "684",
+      "72850"
+     ],
+     [
+      "684",
+      "72851"
+     ]
+    ]
+   },
+   {
+    "road_id": "51816",
+    "lane_id": 2,
+    "road_length_m": 20.983,
+    "junctions_connected": [
+     "360"
+    ],
+    "candidate_connections": 2,
+    "routed": false,
+    "classification": "VALID_AMBIGUITY",
+    "candidates": [
+     [
+      "360",
+      "70198"
+     ],
+     [
+      "360",
+      "70199"
+     ]
+    ]
+   },
+   {
+    "road_id": "51816",
+    "lane_id": 1,
+    "road_length_m": 20.983,
+    "junctions_connected": [
+     "360"
+    ],
+    "candidate_connections": 2,
+    "routed": false,
+    "classification": "VALID_AMBIGUITY",
+    "candidates": [
+     [
+      "360",
+      "70198"
+     ],
+     [
+      "360",
+      "70199"
+     ]
+    ]
+   }
+  ]
+ },
+ "orphan_drivable_roads": {
+  "orphan_drivable_roads": 326,
+  "orphan_records": [
+   {
+    "road_id": "42335",
+    "length_m": 26.606,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "11"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "42435",
+    "length_m": 83.577,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "173"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "42471",
+    "length_m": 20.943,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "216"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "42473",
+    "length_m": 34.695,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "219"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "42584",
+    "length_m": 110.855,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "381"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "42661",
+    "length_m": 108.617,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "36"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "42671",
+    "length_m": 89.565,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "498"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "42687",
+    "length_m": 102.618,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "521"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "42694",
+    "length_m": 8.974,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "531"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "42699",
+    "length_m": 29.702,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "539"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "42703",
+    "length_m": 1466.856,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "314"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "42723",
+    "length_m": 89.889,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "571"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "42893",
+    "length_m": 114.68,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "772"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "42949",
+    "length_m": 24.378,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "842"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "43022",
+    "length_m": 12.04,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "928"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "43071",
+    "length_m": 62.402,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "985"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "43273",
+    "length_m": 48.622,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "1183"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "43319",
+    "length_m": 183.276,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "1225"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "43351",
+    "length_m": 17.537,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "1249"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "43442",
+    "length_m": 382.318,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "1326"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "43585",
+    "length_m": 19.594,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "1438"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "43620",
+    "length_m": 54.231,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "1464"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "43644",
+    "length_m": 83.685,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "1478"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "43703",
+    "length_m": 91.27,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "1523"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "43728",
+    "length_m": 38.139,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "1272"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "43772",
+    "length_m": 39.691,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "1577"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "43787",
+    "length_m": 39.806,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "1589"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "43791",
+    "length_m": 35.422,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "466"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "43864",
+    "length_m": 22.007,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "1652"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "43933",
+    "length_m": 60.391,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "463"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "43940",
+    "length_m": 28.692,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "1719"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "43960",
+    "length_m": 29.803,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "1729"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "44024",
+    "length_m": 15.417,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "1780"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "44033",
+    "length_m": 104.015,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "1756"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "44034",
+    "length_m": 147.555,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "1758"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "44035",
+    "length_m": 85.289,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "1738"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "44050",
+    "length_m": 224.879,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "1795"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "44092",
+    "length_m": 14.014,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "1820"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "44131",
+    "length_m": 735.563,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "1859"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "44318",
+    "length_m": 158.12,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "1677"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "44320",
+    "length_m": 83.186,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "2012"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "44342",
+    "length_m": 276.826,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "2019"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "44366",
+    "length_m": 119.922,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "2037"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "44367",
+    "length_m": 21.891,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "2038"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "44374",
+    "length_m": 248.16,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "2046"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "44416",
+    "length_m": 73.38,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "2075"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "44455",
+    "length_m": 633.291,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "2103"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "44457",
+    "length_m": 93.708,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "2065"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "44510",
+    "length_m": 45.482,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "2143"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "44520",
+    "length_m": 269.01,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "2150"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "44534",
+    "length_m": 131.961,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "2154"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "44541",
+    "length_m": 188.89,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "2156"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "44542",
+    "length_m": 241.913,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "2157"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "44627",
+    "length_m": 52.569,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "2210"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "44638",
+    "length_m": 35.521,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "1763"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "44730",
+    "length_m": 85.564,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "2274"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "44753",
+    "length_m": 180.377,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "469"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "44754",
+    "length_m": 15.147,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "2291"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "44766",
+    "length_m": 80.131,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "2296"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "44772",
+    "length_m": 21.796,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "2302"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "44842",
+    "length_m": 37.226,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "2351"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "44847",
+    "length_m": 148.156,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "2355"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "44861",
+    "length_m": 112.871,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "2364"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "44866",
+    "length_m": 68.233,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "649"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "44875",
+    "length_m": 226.921,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "2374"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "44878",
+    "length_m": 149.417,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "2376"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "44964",
+    "length_m": 105.261,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "2359"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "44969",
+    "length_m": 14.469,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "2437"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "44976",
+    "length_m": 82.982,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "2439"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "45015",
+    "length_m": 54.42,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "901"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "45029",
+    "length_m": 49.335,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "2470"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "45073",
+    "length_m": 21.581,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "2391"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "45080",
+    "length_m": 68.635,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "2506"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "45131",
+    "length_m": 144.299,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "2285"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "45181",
+    "length_m": 52.315,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "747"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "45297",
+    "length_m": 41.958,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "1702"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "45351",
+    "length_m": 7.263,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "2284"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "45363",
+    "length_m": 19.877,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "30"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "45429",
+    "length_m": 44.427,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "1226"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "45526",
+    "length_m": 24.92,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "1854"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "45537",
+    "length_m": 18.146,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "2745"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "45551",
+    "length_m": 0.575,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "1424"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "45560",
+    "length_m": 57.874,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "2529"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "45577",
+    "length_m": 13.616,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "2770"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "45590",
+    "length_m": 30.96,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "2634"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "45609",
+    "length_m": 86.738,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "842"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "45622",
+    "length_m": 253.418,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "687"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "45628",
+    "length_m": 54.336,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "2792"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "45635",
+    "length_m": 172.645,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "500"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "45642",
+    "length_m": 36.061,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "2800"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "45660",
+    "length_m": 99.107,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "2801"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "45672",
+    "length_m": 40.945,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "2817"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "45674",
+    "length_m": 192.467,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "1583"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "45679",
+    "length_m": 154.628,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "2803"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "45706",
+    "length_m": 86.447,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "1831"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "45708",
+    "length_m": 70.205,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "1499"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "45787",
+    "length_m": 196.23,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "797"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "45826",
+    "length_m": 60.466,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "2572"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "45833",
+    "length_m": 18.511,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "1046"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "45834",
+    "length_m": 92.173,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "1183"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "45836",
+    "length_m": 190.882,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "1158"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "45880",
+    "length_m": 140.364,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "473"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "45898",
+    "length_m": 44.166,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "1851"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "45925",
+    "length_m": 34.762,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "1794"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "45956",
+    "length_m": 40.424,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "2913"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "45959",
+    "length_m": 51.834,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "841"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "45973",
+    "length_m": 140.096,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "1249"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "46031",
+    "length_m": 82.887,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "2916"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "46056",
+    "length_m": 25.126,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "1656"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "46073",
+    "length_m": 25.791,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "2953"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "46183",
+    "length_m": 57.039,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "1841"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "46188",
+    "length_m": 267.192,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "583"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "46213",
+    "length_m": 91.088,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "275"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "46283",
+    "length_m": 286.924,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "3023"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "46386",
+    "length_m": 21.774,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "2455"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "46516",
+    "length_m": 47.964,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "3090"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "46643",
+    "length_m": 65.36,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "16"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "46700",
+    "length_m": 89.461,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "68"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "46701",
+    "length_m": 88.198,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "70"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "46740",
+    "length_m": 300.6,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "3109"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "46793",
+    "length_m": 511.498,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "185"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "46796",
+    "length_m": 60.301,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "192"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "46808",
+    "length_m": 71.143,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "201"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "46810",
+    "length_m": 49.475,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "207"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "46844",
+    "length_m": 18.438,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "239"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "46900",
+    "length_m": 432.548,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "2618"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "46903",
+    "length_m": 85.049,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "286"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "46908",
+    "length_m": 0.2,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "199"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "46919",
+    "length_m": 39.574,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "307"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "46954",
+    "length_m": 37.551,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "349"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "46974",
+    "length_m": 21.595,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "372"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "46984",
+    "length_m": 0.2,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "381"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "46993",
+    "length_m": 43.564,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "383"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "47008",
+    "length_m": 44.208,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "396"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "47023",
+    "length_m": 15.985,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "408"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "47096",
+    "length_m": 100.588,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "447"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "47195",
+    "length_m": 80.879,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "523"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "47238",
+    "length_m": 122.207,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "563"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "47255",
+    "length_m": 26.648,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "580"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "47262",
+    "length_m": 26.4,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "586"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "47263",
+    "length_m": 70.636,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "587"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "47302",
+    "length_m": 43.345,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "636"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "47328",
+    "length_m": 51.378,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "656"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "47415",
+    "length_m": 70.812,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "713"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "47428",
+    "length_m": 46.983,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "726"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "47429",
+    "length_m": 48.338,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "727"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "47469",
+    "length_m": 45.217,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "764"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "47508",
+    "length_m": 198.971,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "802"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "47573",
+    "length_m": 24.41,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "875"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "47580",
+    "length_m": 100.125,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "881"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "47630",
+    "length_m": 115.097,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "168"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "47646",
+    "length_m": 92.128,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "927"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "47663",
+    "length_m": 19.108,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "942"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "47677",
+    "length_m": 61.684,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "743"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "47700",
+    "length_m": 47.42,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "973"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "47754",
+    "length_m": 71.382,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "1005"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "47871",
+    "length_m": 40.457,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "1088"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "47886",
+    "length_m": 0.2,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "1100"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "48000",
+    "length_m": 24.658,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "1193"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "48069",
+    "length_m": 31.835,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "1247"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "48130",
+    "length_m": 25.401,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "710"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "48173",
+    "length_m": 127.352,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "1328"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "48219",
+    "length_m": 43.022,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "607"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "48235",
+    "length_m": 57.28,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "1370"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "48295",
+    "length_m": 55.562,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "1414"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "48310",
+    "length_m": 65.416,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "612"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "48358",
+    "length_m": 61.703,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "1048"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "48361",
+    "length_m": 131.244,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "1417"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "48372",
+    "length_m": 306.082,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "319"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "48411",
+    "length_m": 93.637,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "343"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "48450",
+    "length_m": 86.527,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "618"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "48451",
+    "length_m": 69.887,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "1522"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "48453",
+    "length_m": 52.189,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "1085"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "48454",
+    "length_m": 141.499,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "618"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "48457",
+    "length_m": 55.08,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "1084"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "48458",
+    "length_m": 48.031,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "1528"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "48459",
+    "length_m": 6.544,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "1171"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "48461",
+    "length_m": 43.509,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "902"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "48531",
+    "length_m": 32.188,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "1582"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "48541",
+    "length_m": 42.57,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "1590"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "48571",
+    "length_m": 8.135,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "1614"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "48592",
+    "length_m": 49.289,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "1628"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "48601",
+    "length_m": 24.666,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "1631"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "48627",
+    "length_m": 818.091,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "1662"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "48649",
+    "length_m": 23.761,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "1683"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "48666",
+    "length_m": 61.954,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "1698"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "48677",
+    "length_m": 133.855,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "1705"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "48682",
+    "length_m": 38.453,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "1706"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "48714",
+    "length_m": 124.452,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "1726"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "48822",
+    "length_m": 23.269,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "1757"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "48845",
+    "length_m": 27.344,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "1806"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "48853",
+    "length_m": 151.664,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "1816"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "48856",
+    "length_m": 96.835,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "1818"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "48888",
+    "length_m": 150.437,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "1848"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "48895",
+    "length_m": 30.618,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "1851"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "48947",
+    "length_m": 77.292,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "1898"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "48949",
+    "length_m": 96.246,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "1901"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "48981",
+    "length_m": 42.582,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "151"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "48986",
+    "length_m": 102.229,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "511"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "48998",
+    "length_m": 143.491,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "1933"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "49008",
+    "length_m": 112.362,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "1940"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "49042",
+    "length_m": 94.496,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "648"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "49089",
+    "length_m": 39.642,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "1959"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "49098",
+    "length_m": 153.724,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "457"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "49124",
+    "length_m": 83.189,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "2013"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "49147",
+    "length_m": 2.503,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "2025"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "49176",
+    "length_m": 51.586,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "2044"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "49190",
+    "length_m": 46.818,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "2056"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "49191",
+    "length_m": 57.816,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "2044"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "49195",
+    "length_m": 26.819,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "2052"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "49297",
+    "length_m": 51.814,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "2108"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "49307",
+    "length_m": 201.036,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "1121"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "49350",
+    "length_m": 361.799,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "2153"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "49383",
+    "length_m": 31.187,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "2095"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "49384",
+    "length_m": 31.616,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "2094"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "49420",
+    "length_m": 66.277,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "1193"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "49471",
+    "length_m": 4235.733,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "3448"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "49555",
+    "length_m": 70.497,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "2245"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "49577",
+    "length_m": 59.988,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "219"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "49582",
+    "length_m": 1066.954,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "464"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "49588",
+    "length_m": 102.693,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "1115"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "49594",
+    "length_m": 109.605,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "1118"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "49610",
+    "length_m": 71.976,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "2279"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "49630",
+    "length_m": 107.353,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "2292"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "49632",
+    "length_m": 95.559,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "1387"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "49633",
+    "length_m": 53.121,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "921"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "49634",
+    "length_m": 54.59,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "923"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "49635",
+    "length_m": 113.59,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "470"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "49637",
+    "length_m": 78.2,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "926"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "49667",
+    "length_m": 31.745,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "1968"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "49705",
+    "length_m": 96.913,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "2341"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "49741",
+    "length_m": 94.24,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "2357"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "49756",
+    "length_m": 30.278,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "2376"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "49767",
+    "length_m": 2509.967,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "3395"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "49824",
+    "length_m": 84.869,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "976"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "49898",
+    "length_m": 57.886,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "1149"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "49913",
+    "length_m": 34.263,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "2461"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "49933",
+    "length_m": 21.368,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "2475"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "49966",
+    "length_m": 35.213,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "1632"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "49985",
+    "length_m": 57.666,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "2469"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "50107",
+    "length_m": 23.364,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "2564"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "50125",
+    "length_m": 200.257,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "2299"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "50250",
+    "length_m": 14.415,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "2366"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "50291",
+    "length_m": 105.576,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "1163"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "50380",
+    "length_m": 37.729,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "11"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "50391",
+    "length_m": 33.498,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "968"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "50398",
+    "length_m": 126.181,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "2670"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "50443",
+    "length_m": 298.917,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "2286"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "50470",
+    "length_m": 40.426,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "2504"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "50477",
+    "length_m": 47.444,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "2706"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "50482",
+    "length_m": 63.985,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "2501"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "50492",
+    "length_m": 34.658,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "2709"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "50512",
+    "length_m": 70.608,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "2716"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "50555",
+    "length_m": 27.78,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "2741"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "50562",
+    "length_m": 114.871,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "2744"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "50563",
+    "length_m": 61.445,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "2745"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "50571",
+    "length_m": 26.221,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "2750"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "50590",
+    "length_m": 75.791,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "2759"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "50595",
+    "length_m": 43.039,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "2761"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "50615",
+    "length_m": 41.228,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "1003"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "50619",
+    "length_m": 251.011,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "2776"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "50630",
+    "length_m": 20.39,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "2750"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "50634",
+    "length_m": 20.642,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "1276"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "50646",
+    "length_m": 45.237,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "933"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "50661",
+    "length_m": 81.734,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "2791"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "50734",
+    "length_m": 64.378,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "2362"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "50761",
+    "length_m": 13.412,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "2829"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "50860",
+    "length_m": 32.088,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "2853"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "50863",
+    "length_m": 122.396,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "2802"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "50871",
+    "length_m": 44.507,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "2564"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "50910",
+    "length_m": 36.112,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "1905"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "50958",
+    "length_m": 72.736,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "1004"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "50968",
+    "length_m": 64.459,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "2841"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "50975",
+    "length_m": 142.055,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "28"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "50979",
+    "length_m": 150.221,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "709"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "50982",
+    "length_m": 42.276,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "1363"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "50986",
+    "length_m": 84.192,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "1093"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "50987",
+    "length_m": 91.903,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "2885"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "50990",
+    "length_m": 153.833,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "447"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "50994",
+    "length_m": 34.06,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "2686"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "51015",
+    "length_m": 34.798,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "2318"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "51017",
+    "length_m": 59.099,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "937"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "51020",
+    "length_m": 30.416,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "2895"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "51021",
+    "length_m": 67.246,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "2727"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "51031",
+    "length_m": 57.72,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "1693"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "51034",
+    "length_m": 26.907,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "2899"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "51035",
+    "length_m": 64.1,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "2899"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "51052",
+    "length_m": 99.195,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "1814"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "51080",
+    "length_m": 30.697,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "287"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "51099",
+    "length_m": 44.473,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "1178"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "51116",
+    "length_m": 134.297,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "556"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "51119",
+    "length_m": 192.042,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "1879"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "51140",
+    "length_m": 207.488,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "2504"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "51154",
+    "length_m": 12.434,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "2169"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "51159",
+    "length_m": 2.383,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "2853"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "51204",
+    "length_m": 83.527,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "2511"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "51205",
+    "length_m": 81.653,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "2441"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "51230",
+    "length_m": 54.522,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "1614"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "51231",
+    "length_m": 44.019,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "2952"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "51235",
+    "length_m": 219.802,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "2954"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "51242",
+    "length_m": 74.934,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "2447"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "51243",
+    "length_m": 21.086,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "2432"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "51244",
+    "length_m": 42.813,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "2430"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "51273",
+    "length_m": 4.592,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "2249"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "51298",
+    "length_m": 54.899,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "2520"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "51341",
+    "length_m": 37.051,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "766"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "51412",
+    "length_m": 77.534,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "2196"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "51562",
+    "length_m": 26.311,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "2388"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "51653",
+    "length_m": 31.767,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "2291"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "51670",
+    "length_m": 23.346,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "3060"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "51674",
+    "length_m": 16.446,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "2772"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "51675",
+    "length_m": 50.481,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "2282"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "51677",
+    "length_m": 23.601,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "1578"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "51678",
+    "length_m": 21.694,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "2754"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "51679",
+    "length_m": 25.851,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "2756"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "51681",
+    "length_m": 19.81,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "177"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "51762",
+    "length_m": 8.95,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "3075"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "51767",
+    "length_m": 65.08,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "71"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "51786",
+    "length_m": 19.124,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "3077"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "51806",
+    "length_m": 27.254,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "2949"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "51807",
+    "length_m": 63.855,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "1649"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "51843",
+    "length_m": 29.027,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "2307"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "51847",
+    "length_m": 102.643,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "1395"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "51874",
+    "length_m": 117.576,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "2049"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "51881",
+    "length_m": 183.084,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "2987"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   },
+   {
+    "road_id": "51950",
+    "length_m": 19.833,
+    "predecessor": {
+     "elementType": "junction",
+     "elementId": "531"
+    },
+    "successor": null,
+    "classification": "UNEXPLAINED"
+   }
+  ]
+ },
+ "connector_lane_interface_dz": {
+  "interface_links": 23529,
+  "connections_total": 22589,
+  "connection_interfaces": 45178,
+  "audit_style_interfaces": 45178,
+  "audit_style_bad_interfaces": 866,
+  "bad_seams": 776,
+  "bad_connections": 739,
+  "bad_interface_examples": [
+   {
+    "junction_id": "1",
+    "connector_road": "52025",
+    "dz_start": 0.9576,
+    "dz_end": 0.2722,
+    "classification": "REAL_SURFACE_DISCONTINUITY"
+   },
+   {
+    "junction_id": "1",
+    "connector_road": "52026",
+    "dz_start": 0.6701,
+    "dz_end": -0.0075,
+    "classification": "REAL_SURFACE_DISCONTINUITY"
+   },
+   {
+    "junction_id": "1",
+    "connector_road": "52027",
+    "dz_start": 1.0971,
+    "dz_end": 0.5412,
+    "classification": "REAL_SURFACE_DISCONTINUITY"
+   },
+   {
+    "junction_id": "1",
+    "connector_road": "52031",
+    "dz_start": 0.237,
+    "dz_end": 0.6992,
+    "classification": "REAL_SURFACE_DISCONTINUITY"
+   },
+   {
+    "junction_id": "926",
+    "connector_road": "52185",
+    "dz_start": -0.7158,
+    "dz_end": -0.361,
+    "classification": "REAL_SURFACE_DISCONTINUITY"
+   },
+   {
+    "junction_id": "926",
+    "connector_road": "52190",
+    "dz_start": -0.2225,
+    "dz_end": -0.5492,
+    "classification": "REAL_SURFACE_DISCONTINUITY"
+   },
+   {
+    "junction_id": "929",
+    "connector_road": "52204",
+    "dz_start": 0.5383,
+    "dz_end": 0.3757,
+    "classification": "REAL_SURFACE_DISCONTINUITY"
+   },
+   {
+    "junction_id": "929",
+    "connector_road": "52207",
+    "dz_start": -0.7512,
+    "dz_end": 0.0,
+    "classification": "REAL_SURFACE_DISCONTINUITY"
+   },
+   {
+    "junction_id": "949",
+    "connector_road": "52340",
+    "dz_start": -1.5814,
+    "dz_end": -0.7687,
+    "classification": "REAL_SURFACE_DISCONTINUITY"
+   },
+   {
+    "junction_id": "949",
+    "connector_road": "52342",
+    "dz_start": -0.7026,
+    "dz_end": -0.2804,
+    "classification": "REAL_SURFACE_DISCONTINUITY"
+   },
+   {
+    "junction_id": "949",
+    "connector_road": "52343",
+    "dz_start": -0.8307,
+    "dz_end": -0.1991,
+    "classification": "REAL_SURFACE_DISCONTINUITY"
+   },
+   {
+    "junction_id": "949",
+    "connector_road": "52344",
+    "dz_start": 0.5456,
+    "dz_end": -0.2231,
+    "classification": "REAL_SURFACE_DISCONTINUITY"
+   },
+   {
+    "junction_id": "93",
+    "connector_road": "52422",
+    "dz_start": 0.5876,
+    "dz_end": -0.0084,
+    "classification": "REAL_SURFACE_DISCONTINUITY"
+   },
+   {
+    "junction_id": "93",
+    "connector_road": "52423",
+    "dz_start": 0.6843,
+    "dz_end": 0.1954,
+    "classification": "REAL_SURFACE_DISCONTINUITY"
+   },
+   {
+    "junction_id": "962",
+    "connector_road": "52463",
+    "dz_start": 0.5627,
+    "dz_end": 0.4909,
+    "classification": "REAL_SURFACE_DISCONTINUITY"
+   },
+   {
+    "junction_id": "962",
+    "connector_road": "52464",
+    "dz_start": 0.6654,
+    "dz_end": 0.8238,
+    "classification": "REAL_SURFACE_DISCONTINUITY"
+   },
+   {
+    "junction_id": "962",
+    "connector_road": "52468",
+    "dz_start": -0.5107,
+    "dz_end": 0.5064,
+    "classification": "REAL_SURFACE_DISCONTINUITY"
+   },
+   {
+    "junction_id": "94",
+    "connector_road": "52525",
+    "dz_start": -0.4181,
+    "dz_end": -0.698,
+    "classification": "REAL_SURFACE_DISCONTINUITY"
+   },
+   {
+    "junction_id": "94",
+    "connector_road": "52526",
+    "dz_start": -0.8951,
+    "dz_end": -0.3429,
+    "classification": "REAL_SURFACE_DISCONTINUITY"
+   },
+   {
+    "junction_id": "94",
+    "connector_road": "52529",
+    "dz_start": 0.8611,
+    "dz_end": -0.2302,
+    "classification": "REAL_SURFACE_DISCONTINUITY"
+   },
+   {
+    "junction_id": "969",
+    "connector_road": "52541",
+    "dz_start": -0.9006,
+    "dz_end": -0.3784,
+    "classification": "REAL_SURFACE_DISCONTINUITY"
+   },
+   {
+    "junction_id": "969",
+    "connector_road": "52542",
+    "dz_start": -0.4502,
+    "dz_end": -0.603,
+    "classification": "REAL_SURFACE_DISCONTINUITY"
+   },
+   {
+    "junction_id": "969",
+    "connector_road": "52546",
+    "dz_start": 0.2392,
+    "dz_end": -0.5106,
+    "classification": "REAL_SURFACE_DISCONTINUITY"
+   },
+   {
+    "junction_id": "971",
+    "connector_road": "52548",
+    "dz_start": -0.5965,
+    "dz_end": -0.2968,
+    "classification": "REAL_SURFACE_DISCONTINUITY"
+   },
+   {
+    "junction_id": "983",
+    "connector_road": "52647",
+    "dz_start": 0.5149,
+    "dz_end": 0.259,
+    "classification": "REAL_SURFACE_DISCONTINUITY"
+   },
+   {
+    "junction_id": "983",
+    "connector_road": "52651",
+    "dz_start": -1.2752,
+    "dz_end": -0.3925,
+    "classification": "REAL_SURFACE_DISCONTINUITY"
+   },
+   {
+    "junction_id": "983",
+    "connector_road": "52652",
+    "dz_start": -1.0261,
+    "dz_end": -0.2157,
+    "classification": "REAL_SURFACE_DISCONTINUITY"
+   },
+   {
+    "junction_id": "983",
+    "connector_road": "52653",
+    "dz_start": -1.2222,
+    "dz_end": -0.8261,
+    "classification": "REAL_SURFACE_DISCONTINUITY"
+   },
+   {
+    "junction_id": "983",
+    "connector_road": "52655",
+    "dz_start": 0.752,
+    "dz_end": 0.1476,
+    "classification": "REAL_SURFACE_DISCONTINUITY"
+   },
+   {
+    "junction_id": "984",
+    "connector_road": "52656",
+    "dz_start": -0.8253,
+    "dz_end": 0.0,
+    "classification": "REAL_SURFACE_DISCONTINUITY"
+   },
+   {
+    "junction_id": "997",
+    "connector_road": "52777",
+    "dz_start": -1.1127,
+    "dz_end": -0.5784,
+    "classification": "REAL_SURFACE_DISCONTINUITY"
+   },
+   {
+    "junction_id": "997",
+    "connector_road": "52781",
+    "dz_start": -0.8087,
+    "dz_end": -0.9499,
+    "classification": "REAL_SURFACE_DISCONTINUITY"
+   },
+   {
+    "junction_id": "997",
+    "connector_road": "52782",
+    "dz_start": 0.2343,
+    "dz_end": -0.8307,
+    "classification": "REAL_SURFACE_DISCONTINUITY"
+   },
+   {
+    "junction_id": "997",
+    "connector_road": "52783",
+    "dz_start": 0.6657,
+    "dz_end": 0.3068,
+    "classification": "REAL_SURFACE_DISCONTINUITY"
+   },
+   {
+    "junction_id": "997",
+    "connector_road": "52784",
+    "dz_start": 0.6717,
+    "dz_end": 0.2481,
+    "classification": "REAL_SURFACE_DISCONTINUITY"
+   },
+   {
+    "junction_id": "998",
+    "connector_road": "52785",
+    "dz_start": 0.5758,
+    "dz_end": -0.1252,
+    "classification": "REAL_SURFACE_DISCONTINUITY"
+   },
+   {
+    "junction_id": "998",
+    "connector_road": "52789",
+    "dz_start": 0.6045,
+    "dz_end": 0.1699,
+    "classification": "REAL_SURFACE_DISCONTINUITY"
+   },
+   {
+    "junction_id": "998",
+    "connector_road": "52790",
+    "dz_start": -0.4425,
+    "dz_end": -0.6481,
+    "classification": "REAL_SURFACE_DISCONTINUITY"
+   },
+   {
+    "junction_id": "998",
+    "connector_road": "52791",
+    "dz_start": -0.6018,
+    "dz_end": 0.0,
+    "classification": "REAL_SURFACE_DISCONTINUITY"
+   },
+   {
+    "junction_id": "999",
+    "connector_road": "52793",
+    "dz_start": -0.947,
+    "dz_end": -0.477,
+    "classification": "REAL_SURFACE_DISCONTINUITY"
+   },
+   {
+    "junction_id": "999",
+    "connector_road": "52794",
+    "dz_start": -2.0648,
+    "dz_end": -0.7989,
+    "classification": "REAL_SURFACE_DISCONTINUITY"
+   },
+   {
+    "junction_id": "999",
+    "connector_road": "52796",
+    "dz_start": 1.0166,
+    "dz_end": -0.2924,
+    "classification": "REAL_SURFACE_DISCONTINUITY"
+   },
+   {
+    "junction_id": "999",
+    "connector_road": "52799",
+    "dz_start": 0.7558,
+    "dz_end": -0.1484,
+    "classification": "REAL_SURFACE_DISCONTINUITY"
+   },
+   {
+    "junction_id": "999",
+    "connector_road": "52800",
+    "dz_start": 1.1581,
+    "dz_end": 0.4289,
+    "classification": "REAL_SURFACE_DISCONTINUITY"
+   },
+   {
+    "junction_id": "1000",
+    "connector_road": "52804",
+    "dz_start": -0.2696,
+    "dz_end": 0.7055,
+    "classification": "REAL_SURFACE_DISCONTINUITY"
+   },
+   {
+    "junction_id": "1000",
+    "connector_road": "52809",
+    "dz_start": -0.6546,
+    "dz_end": -0.0,
+    "classification": "REAL_SURFACE_DISCONTINUITY"
+   },
+   {
+    "junction_id": "1000",
+    "connector_road": "52811",
+    "dz_start": -0.8619,
+    "dz_end": -0.319,
+    "classification": "REAL_SURFACE_DISCONTINUITY"
+   },
+   {
+    "junction_id": "3345",
+    "connector_road": "52814",
+    "dz_start": -0.63,
+    "dz_end": -0.1777,
+    "classification": "REAL_SURFACE_DISCONTINUITY"
+   },
+   {
+    "junction_id": "596",
+    "connector_road": "52907",
+    "dz_start": -0.556,
+    "dz_end": -0.2701,
+    "classification": "REAL_SURFACE_DISCONTINUITY"
+   },
+   {
+    "junction_id": "1020",
+    "connector_road": "52995",
+    "dz_start": -0.7152,
+    "dz_end": -0.4334,
+    "classification": "REAL_SURFACE_DISCONTINUITY"
+   }
+  ],
+  "conn_class_counts": {
+   "UNKNOWN_NO_Z": 4,
+   "VALID_GRADE_CHANGE": 21749,
+   "DEGENERATE_CONNECTOR": 97,
+   "REAL_SURFACE_DISCONTINUITY": 739
+  },
+  "bad_examples": [
+   {
+    "junction_id": "1",
+    "connector_road": "52025",
+    "connector_length_m": 21.196,
+    "from": -1,
+    "to": -1,
+    "dz_start": 0.9576,
+    "dz_end": 0.2722,
+    "classification": "REAL_SURFACE_DISCONTINUITY"
+   },
+   {
+    "junction_id": "1",
+    "connector_road": "52026",
+    "connector_length_m": 10.335,
+    "from": -1,
+    "to": -1,
+    "dz_start": 0.6701,
+    "dz_end": -0.0075,
+    "classification": "REAL_SURFACE_DISCONTINUITY"
+   },
+   {
+    "junction_id": "1",
+    "connector_road": "52027",
+    "connector_length_m": 17.187,
+    "from": -2,
+    "to": -1,
+    "dz_start": 1.0971,
+    "dz_end": 0.5412,
+    "classification": "REAL_SURFACE_DISCONTINUITY"
+   },
+   {
+    "junction_id": "1",
+    "connector_road": "52031",
+    "connector_length_m": 18.995,
+    "from": -1,
+    "to": -1,
+    "dz_start": 0.237,
+    "dz_end": 0.6992,
+    "classification": "REAL_SURFACE_DISCONTINUITY"
+   },
+   {
+    "junction_id": "926",
+    "connector_road": "52185",
+    "connector_length_m": 10.335,
+    "from": -1,
+    "to": -1,
+    "dz_start": -0.7158,
+    "dz_end": -0.361,
+    "classification": "REAL_SURFACE_DISCONTINUITY"
+   },
+   {
+    "junction_id": "926",
+    "connector_road": "52190",
+    "connector_length_m": 15.669,
+    "from": -1,
+    "to": -1,
+    "dz_start": -0.2225,
+    "dz_end": -0.5492,
+    "classification": "REAL_SURFACE_DISCONTINUITY"
+   },
+   {
+    "junction_id": "929",
+    "connector_road": "52204",
+    "connector_length_m": 12.612,
+    "from": -1,
+    "to": -1,
+    "dz_start": 0.5383,
+    "dz_end": 0.3757,
+    "classification": "REAL_SURFACE_DISCONTINUITY"
+   },
+   {
+    "junction_id": "929",
+    "connector_road": "52207",
+    "connector_length_m": 12.686,
+    "from": -1,
+    "to": -1,
+    "dz_start": -0.7512,
+    "dz_end": 0.0,
+    "classification": "REAL_SURFACE_DISCONTINUITY"
+   },
+   {
+    "junction_id": "949",
+    "connector_road": "52340",
+    "connector_length_m": 19.437,
+    "from": -1,
+    "to": -1,
+    "dz_start": -1.5814,
+    "dz_end": -0.7687,
+    "classification": "REAL_SURFACE_DISCONTINUITY"
+   },
+   {
+    "junction_id": "949",
+    "connector_road": "52342",
+    "connector_length_m": 14.749,
+    "from": -1,
+    "to": -1,
+    "dz_start": -0.7026,
+    "dz_end": -0.2804,
+    "classification": "REAL_SURFACE_DISCONTINUITY"
+   },
+   {
+    "junction_id": "949",
+    "connector_road": "52343",
+    "connector_length_m": 20.005,
+    "from": -1,
+    "to": -1,
+    "dz_start": -0.8307,
+    "dz_end": -0.1991,
+    "classification": "REAL_SURFACE_DISCONTINUITY"
+   },
+   {
+    "junction_id": "949",
+    "connector_road": "52344",
+    "connector_length_m": 10.335,
+    "from": -1,
+    "to": -1,
+    "dz_start": 0.5456,
+    "dz_end": -0.2231,
+    "classification": "REAL_SURFACE_DISCONTINUITY"
+   },
+   {
+    "junction_id": "93",
+    "connector_road": "52422",
+    "connector_length_m": 16.289,
+    "from": -1,
+    "to": -1,
+    "dz_start": 0.5876,
+    "dz_end": -0.0084,
+    "classification": "REAL_SURFACE_DISCONTINUITY"
+   },
+   {
+    "junction_id": "93",
+    "connector_road": "52423",
+    "connector_length_m": 10.335,
+    "from": -1,
+    "to": -1,
+    "dz_start": 0.6843,
+    "dz_end": 0.1954,
+    "classification": "REAL_SURFACE_DISCONTINUITY"
+   },
+   {
+    "junction_id": "962",
+    "connector_road": "52463",
+    "connector_length_m": 10.335,
+    "from": -1,
+    "to": -1,
+    "dz_start": 0.5627,
+    "dz_end": 0.4909,
+    "classification": "REAL_SURFACE_DISCONTINUITY"
+   },
+   {
+    "junction_id": "962",
+    "connector_road": "52464",
+    "connector_length_m": 16.109,
+    "from": -1,
+    "to": -1,
+    "dz_start": 0.6654,
+    "dz_end": 0.8238,
+    "classification": "REAL_SURFACE_DISCONTINUITY"
+   },
+   {
+    "junction_id": "962",
+    "connector_road": "52468",
+    "connector_length_m": 26.241,
+    "from": -1,
+    "to": -1,
+    "dz_start": -0.5107,
+    "dz_end": 0.5064,
+    "classification": "REAL_SURFACE_DISCONTINUITY"
+   },
+   {
+    "junction_id": "94",
+    "connector_road": "52525",
+    "connector_length_m": 13.135,
+    "from": -1,
+    "to": -1,
+    "dz_start": -0.4181,
+    "dz_end": -0.698,
+    "classification": "REAL_SURFACE_DISCONTINUITY"
+   },
+   {
+    "junction_id": "94",
+    "connector_road": "52526",
+    "connector_length_m": 12.905,
+    "from": -1,
+    "to": -1,
+    "dz_start": -0.8951,
+    "dz_end": -0.3429,
+    "classification": "REAL_SURFACE_DISCONTINUITY"
+   },
+   {
+    "junction_id": "94",
+    "connector_road": "52529",
+    "connector_length_m": 15.578,
+    "from": -1,
+    "to": -1,
+    "dz_start": 0.8611,
+    "dz_end": -0.2302,
+    "classification": "REAL_SURFACE_DISCONTINUITY"
+   },
+   {
+    "junction_id": "969",
+    "connector_road": "52541",
+    "connector_length_m": 10.335,
+    "from": -1,
+    "to": -1,
+    "dz_start": -0.9006,
+    "dz_end": -0.3784,
+    "classification": "REAL_SURFACE_DISCONTINUITY"
+   },
+   {
+    "junction_id": "969",
+    "connector_road": "52542",
+    "connector_length_m": 15.981,
+    "from": -1,
+    "to": -1,
+    "dz_start": -0.4502,
+    "dz_end": -0.603,
+    "classification": "REAL_SURFACE_DISCONTINUITY"
+   },
+   {
+    "junction_id": "969",
+    "connector_road": "52546",
+    "connector_length_m": 17.346,
+    "from": -1,
+    "to": -1,
+    "dz_start": 0.2392,
+    "dz_end": -0.5106,
+    "classification": "REAL_SURFACE_DISCONTINUITY"
+   },
+   {
+    "junction_id": "969",
+    "connector_road": "52546",
+    "connector_length_m": 17.346,
+    "from": -2,
+    "to": -2,
+    "dz_start": 0.2392,
+    "dz_end": -0.5106,
+    "classification": "REAL_SURFACE_DISCONTINUITY"
+   },
+   {
+    "junction_id": "971",
+    "connector_road": "52548",
+    "connector_length_m": 17.913,
+    "from": -2,
+    "to": -1,
+    "dz_start": -0.5965,
+    "dz_end": -0.2968,
+    "classification": "REAL_SURFACE_DISCONTINUITY"
+   },
+   {
+    "junction_id": "983",
+    "connector_road": "52647",
+    "connector_length_m": 17.246,
+    "from": -1,
+    "to": -1,
+    "dz_start": 0.5149,
+    "dz_end": 0.259,
+    "classification": "REAL_SURFACE_DISCONTINUITY"
+   },
+   {
+    "junction_id": "983",
+    "connector_road": "52651",
+    "connector_length_m": 17.98,
+    "from": -1,
+    "to": -1,
+    "dz_start": -1.2752,
+    "dz_end": -0.3925,
+    "classification": "REAL_SURFACE_DISCONTINUITY"
+   },
+   {
+    "junction_id": "983",
+    "connector_road": "52652",
+    "connector_length_m": 10.335,
+    "from": -1,
+    "to": -1,
+    "dz_start": -1.0261,
+    "dz_end": -0.2157,
+    "classification": "REAL_SURFACE_DISCONTINUITY"
+   },
+   {
+    "junction_id": "983",
+    "connector_road": "52653",
+    "connector_length_m": 17.98,
+    "from": -1,
+    "to": -1,
+    "dz_start": -1.2222,
+    "dz_end": -0.8261,
+    "classification": "REAL_SURFACE_DISCONTINUITY"
+   },
+   {
+    "junction_id": "983",
+    "connector_road": "52655",
+    "connector_length_m": 10.335,
+    "from": -1,
+    "to": -1,
+    "dz_start": 0.752,
+    "dz_end": 0.1476,
+    "classification": "REAL_SURFACE_DISCONTINUITY"
+   },
+   {
+    "junction_id": "984",
+    "connector_road": "52656",
+    "connector_length_m": 10.335,
+    "from": -1,
+    "to": -1,
+    "dz_start": -0.8253,
+    "dz_end": 0.0,
+    "classification": "REAL_SURFACE_DISCONTINUITY"
+   },
+   {
+    "junction_id": "997",
+    "connector_road": "52777",
+    "connector_length_m": 24.474,
+    "from": -1,
+    "to": -1,
+    "dz_start": -1.1127,
+    "dz_end": -0.5784,
+    "classification": "REAL_SURFACE_DISCONTINUITY"
+   },
+   {
+    "junction_id": "997",
+    "connector_road": "52781",
+    "connector_length_m": 10.335,
+    "from": -1,
+    "to": -1,
+    "dz_start": -0.8087,
+    "dz_end": -0.9499,
+    "classification": "REAL_SURFACE_DISCONTINUITY"
+   },
+   {
+    "junction_id": "997",
+    "connector_road": "52782",
+    "connector_length_m": 28.238,
+    "from": -1,
+    "to": -1,
+    "dz_start": 0.2343,
+    "dz_end": -0.8307,
+    "classification": "REAL_SURFACE_DISCONTINUITY"
+   },
+   {
+    "junction_id": "997",
+    "connector_road": "52783",
+    "connector_length_m": 30.836,
+    "from": -1,
+    "to": -1,
+    "dz_start": 0.6657,
+    "dz_end": 0.3068,
+    "classification": "REAL_SURFACE_DISCONTINUITY"
+   },
+   {
+    "junction_id": "997",
+    "connector_road": "52784",
+    "connector_length_m": 10.335,
+    "from": -1,
+    "to": -1,
+    "dz_start": 0.6717,
+    "dz_end": 0.2481,
+    "classification": "REAL_SURFACE_DISCONTINUITY"
+   },
+   {
+    "junction_id": "998",
+    "connector_road": "52785",
+    "connector_length_m": 13.444,
+    "from": -1,
+    "to": -1,
+    "dz_start": 0.5758,
+    "dz_end": -0.1252,
+    "classification": "REAL_SURFACE_DISCONTINUITY"
+   },
+   {
+    "junction_id": "998",
+    "connector_road": "52789",
+    "connector_length_m": 15.811,
+    "from": -1,
+    "to": -1,
+    "dz_start": 0.6045,
+    "dz_end": 0.1699,
+    "classification": "REAL_SURFACE_DISCONTINUITY"
+   },
+   {
+    "junction_id": "998",
+    "connector_road": "52790",
+    "connector_length_m": 15.811,
+    "from": -1,
+    "to": -1,
+    "dz_start": -0.4425,
+    "dz_end": -0.6481,
+    "classification": "REAL_SURFACE_DISCONTINUITY"
+   },
+   {
+    "junction_id": "998",
+    "connector_road": "52791",
+    "connector_length_m": 13.444,
+    "from": -1,
+    "to": -1,
+    "dz_start": -0.6018,
+    "dz_end": 0.0,
+    "classification": "REAL_SURFACE_DISCONTINUITY"
+   },
+   {
+    "junction_id": "999",
+    "connector_road": "52793",
+    "connector_length_m": 32.921,
+    "from": -1,
+    "to": -1,
+    "dz_start": -0.947,
+    "dz_end": -0.477,
+    "classification": "REAL_SURFACE_DISCONTINUITY"
+   },
+   {
+    "junction_id": "999",
+    "connector_road": "52794",
+    "connector_length_m": 23.684,
+    "from": -1,
+    "to": -1,
+    "dz_start": -2.0648,
+    "dz_end": -0.7989,
+    "classification": "REAL_SURFACE_DISCONTINUITY"
+   },
+   {
+    "junction_id": "999",
+    "connector_road": "52796",
+    "connector_length_m": 35.228,
+    "from": -1,
+    "to": -1,
+    "dz_start": 1.0166,
+    "dz_end": -0.2924,
+    "classification": "REAL_SURFACE_DISCONTINUITY"
+   },
+   {
+    "junction_id": "999",
+    "connector_road": "52799",
+    "connector_length_m": 10.335,
+    "from": -1,
+    "to": -1,
+    "dz_start": 0.7558,
+    "dz_end": -0.1484,
+    "classification": "REAL_SURFACE_DISCONTINUITY"
+   },
+   {
+    "junction_id": "999",
+    "connector_road": "52800",
+    "connector_length_m": 26.538,
+    "from": -1,
+    "to": -1,
+    "dz_start": 1.1581,
+    "dz_end": 0.4289,
+    "classification": "REAL_SURFACE_DISCONTINUITY"
+   },
+   {
+    "junction_id": "1000",
+    "connector_road": "52804",
+    "connector_length_m": 18.147,
+    "from": -1,
+    "to": -1,
+    "dz_start": -0.2696,
+    "dz_end": 0.7055,
+    "classification": "REAL_SURFACE_DISCONTINUITY"
+   },
+   {
+    "junction_id": "1000",
+    "connector_road": "52809",
+    "connector_length_m": 12.518,
+    "from": -2,
+    "to": -1,
+    "dz_start": -0.6546,
+    "dz_end": -0.0,
+    "classification": "REAL_SURFACE_DISCONTINUITY"
+   },
+   {
+    "junction_id": "1000",
+    "connector_road": "52811",
+    "connector_length_m": 10.335,
+    "from": -1,
+    "to": -1,
+    "dz_start": -0.8619,
+    "dz_end": -0.319,
+    "classification": "REAL_SURFACE_DISCONTINUITY"
+   },
+   {
+    "junction_id": "3345",
+    "connector_road": "52814",
+    "connector_length_m": 2.248,
+    "from": -1,
+    "to": -1,
+    "dz_start": -0.63,
+    "dz_end": -0.1777,
+    "classification": "REAL_SURFACE_DISCONTINUITY"
+   },
+   {
+    "junction_id": "596",
+    "connector_road": "52907",
+    "connector_length_m": 10.335,
+    "from": -1,
+    "to": -1,
+    "dz_start": -0.556,
+    "dz_end": -0.2701,
+    "classification": "REAL_SURFACE_DISCONTINUITY"
+   }
+  ],
+  "worst_dz": 2.4184,
+  "worst_record": {
+   "worst_dz": 2.4184,
+   "junction_id": "3033",
+   "connector_road": "68410",
+   "from": -1,
+   "to": -1,
+   "dz_start": 2.4184,
+   "dz_end": 1.0193
+  }
+ },
+ "structure_terrain_separation": {
+  "classified_structure_roads": 240,
+  "violations": 136,
+  "violated_roads": [
+   "42427",
+   "42686",
+   "43596",
+   "44624",
+   "44672",
+   "44887",
+   "45804",
+   "45824",
+   "45949",
+   "45950",
+   "46204",
+   "46209",
+   "46766",
+   "46928",
+   "47191",
+   "47233",
+   "47599",
+   "47738",
+   "47769",
+   "48351",
+   "48625",
+   "49399",
+   "49448",
+   "49456",
+   "49531",
+   "49989",
+   "49999",
+   "50442",
+   "50737",
+   "50929",
+   "50995",
+   "51383",
+   "51389",
+   "51392",
+   "51393",
+   "51724",
+   "51995",
+   "52025",
+   "52026",
+   "52027",
+   "52029",
+   "52070",
+   "52110",
+   "52111",
+   "52656",
+   "56614",
+   "56615",
+   "57150",
+   "57151",
+   "57920",
+   "57921",
+   "60187",
+   "60188",
+   "60189",
+   "60190",
+   "60191",
+   "60192",
+   "60193",
+   "60194",
+   "60195",
+   "60196",
+   "60197",
+   "60198",
+   "60199",
+   "60200",
+   "60201",
+   "60388",
+   "60389",
+   "61027",
+   "62915",
+   "62916",
+   "62932",
+   "62933",
+   "63038",
+   "63077",
+   "63078",
+   "63079",
+   "63338",
+   "63341",
+   "63351",
+   "65150",
+   "65151",
+   "66630",
+   "66631",
+   "66632",
+   "67402",
+   "67618",
+   "67971",
+   "68104",
+   "68105",
+   "68106",
+   "68248",
+   "68249",
+   "68595",
+   "68742",
+   "68743",
+   "69187",
+   "69516",
+   "69651",
+   "69652",
+   "69767",
+   "69809",
+   "69810",
+   "69969",
+   "69981",
+   "69982",
+   "70091",
+   "70133",
+   "70134",
+   "71584",
+   "71585",
+   "71587",
+   "71588",
+   "71589",
+   "71590",
+   "71591",
+   "71593",
+   "71665",
+   "71666",
+   "71667",
+   "71668",
+   "71670",
+   "71672",
+   "71784",
+   "71785",
+   "72404",
+   "72405",
+   "72406",
+   "72872",
+   "72875",
+   "72876",
+   "72877",
+   "73977",
+   "73980",
+   "73982",
+   "73983"
+  ],
+  "records": [
+   {
+    "road_id": "42427",
+    "class": "elevated",
+    "worst_dz": 0.151,
+    "violated": true,
+    "samples": [
+     {
+      "s": 14.4,
+      "road_z": 368.401,
+      "terrain_z": 368.25,
+      "dz": 0.151
+     }
+    ]
+   },
+   {
+    "road_id": "42505",
+    "class": "elevated",
+    "worst_dz": 0.731,
+    "violated": false,
+    "samples": [
+     {
+      "s": 0.9,
+      "road_z": 368.111,
+      "terrain_z": 367.38,
+      "dz": 0.731
+     }
+    ]
+   },
+   {
+    "road_id": "42686",
+    "class": "tunnel",
+    "worst_dz": 0.081,
+    "violated": true,
+    "samples": [
+     {
+      "s": 0.3,
+      "road_z": 375.35,
+      "terrain_z": 375.269,
+      "dz": 0.081
+     },
+     {
+      "s": 1.4,
+      "road_z": 375.35,
+      "terrain_z": 375.269,
+      "dz": 0.081
+     },
+     {
+      "s": 3.3,
+      "road_z": 375.35,
+      "terrain_z": 375.269,
+      "dz": 0.081
+     },
+     {
+      "s": 5.2,
+      "road_z": 375.35,
+      "terrain_z": 375.269,
+      "dz": 0.081
+     },
+     {
+      "s": 8.1,
+      "road_z": 375.35,
+      "terrain_z": 375.269,
+      "dz": 0.081
+     },
+     {
+      "s": 10.5,
+      "road_z": 375.35,
+      "terrain_z": 375.269,
+      "dz": 0.081
+     }
+    ]
+   },
+   {
+    "road_id": "43089",
+    "class": "elevated",
+    "worst_dz": 1.253,
+    "violated": false,
+    "samples": [
+     {
+      "s": 3.5,
+      "road_z": 381.042,
+      "terrain_z": 379.789,
+      "dz": 1.253
+     }
+    ]
+   },
+   {
+    "road_id": "43596",
+    "class": "elevated",
+    "worst_dz": 0.324,
+    "violated": true,
+    "samples": [
+     {
+      "s": 5.2,
+      "road_z": 364.494,
+      "terrain_z": 363.845,
+      "dz": 0.649
+     },
+     {
+      "s": 13.0,
+      "road_z": 364.627,
+      "terrain_z": 363.845,
+      "dz": 0.782
+     },
+     {
+      "s": 17.2,
+      "road_z": 364.698,
+      "terrain_z": 363.845,
+      "dz": 0.853
+     },
+     {
+      "s": 21.6,
+      "road_z": 364.773,
+      "terrain_z": 363.845,
+      "dz": 0.928
+     },
+     {
+      "s": 25.4,
+      "road_z": 364.838,
+      "terrain_z": 364.365,
+      "dz": 0.473
+     },
+     {
+      "s": 28.8,
+      "road_z": 364.896,
+      "terrain_z": 364.571,
+      "dz": 0.324
+     },
+     {
+      "s": 32.9,
+      "road_z": 364.966,
+      "terrain_z": 364.571,
+      "dz": 0.394
+     },
+     {
+      "s": 37.0,
+      "road_z": 365.036,
+      "terrain_z": 364.571,
+      "dz": 0.464
+     },
+     {
+      "s": 41.1,
+      "road_z": 365.105,
+      "terrain_z": 364.571,
+      "dz": 0.534
+     }
+    ]
+   },
+   {
+    "road_id": "44127",
+    "class": "elevated",
+    "worst_dz": 2.037,
+    "violated": false,
+    "samples": [
+     {
+      "s": 0.1,
+      "road_z": 381.462,
+      "terrain_z": 379.425,
+      "dz": 2.037
+     }
+    ]
+   },
+   {
+    "road_id": "44579",
+    "class": "elevated",
+    "worst_dz": 3.653,
+    "violated": false,
+    "samples": [
+     {
+      "s": 8.8,
+      "road_z": 377.153,
+      "terrain_z": 373.5,
+      "dz": 3.653
+     }
+    ]
+   },
+   {
+    "road_id": "44624",
+    "class": "elevated",
+    "worst_dz": -0.974,
+    "violated": true,
+    "samples": [
+     {
+      "s": 29.4,
+      "road_z": 375.426,
+      "terrain_z": 376.401,
+      "dz": -0.974
+     },
+     {
+      "s": 59.6,
+      "road_z": 376.234,
+      "terrain_z": 376.401,
+      "dz": -0.167
+     },
+     {
+      "s": 62.2,
+      "road_z": 376.304,
+      "terrain_z": 376.401,
+      "dz": -0.097
+     },
+     {
+      "s": 65.0,
+      "road_z": 376.378,
+      "terrain_z": 376.401,
+      "dz": -0.022
+     },
+     {
+      "s": 66.7,
+      "road_z": 376.423,
+      "terrain_z": 376.401,
+      "dz": 0.022
+     },
+     {
+      "s": 70.3,
+      "road_z": 376.52,
+      "terrain_z": 376.401,
+      "dz": 0.12
+     }
+    ]
+   },
+   {
+    "road_id": "44627",
+    "class": "elevated",
+    "worst_dz": 0.852,
+    "violated": false,
+    "samples": [
+     {
+      "s": 26.3,
+      "road_z": 375.215,
+      "terrain_z": 374.364,
+      "dz": 0.852
+     }
+    ]
+   },
+   {
+    "road_id": "44672",
+    "class": "tunnel",
+    "worst_dz": 0.71,
+    "violated": true,
+    "samples": [
+     {
+      "s": 5.4,
+      "road_z": 369.882,
+      "terrain_z": 369.172,
+      "dz": 0.71
+     }
+    ]
+   },
+   {
+    "road_id": "44887",
+    "class": "tunnel",
+    "worst_dz": 0.979,
+    "violated": true,
+    "samples": [
+     {
+      "s": 5.5,
+      "road_z": 370.434,
+      "terrain_z": 369.722,
+      "dz": 0.712
+     },
+     {
+      "s": 18.0,
+      "road_z": 370.388,
+      "terrain_z": 369.41,
+      "dz": 0.979
+     },
+     {
+      "s": 30.1,
+      "road_z": 370.344,
+      "terrain_z": 369.55,
+      "dz": 0.794
+     },
+     {
+      "s": 36.0,
+      "road_z": 370.322,
+      "terrain_z": 369.55,
+      "dz": 0.773
+     },
+     {
+      "s": 37.6,
+      "road_z": 370.316,
+      "terrain_z": 369.55,
+      "dz": 0.767
+     },
+     {
+      "s": 39.4,
+      "road_z": 370.31,
+      "terrain_z": 369.55,
+      "dz": 0.76
+     },
+     {
+      "s": 41.2,
+      "road_z": 370.303,
+      "terrain_z": 369.55,
+      "dz": 0.754
+     },
+     {
+      "s": 42.8,
+      "road_z": 370.297,
+      "terrain_z": 369.554,
+      "dz": 0.743
+     },
+     {
+      "s": 44.7,
+      "road_z": 370.291,
+      "terrain_z": 369.554,
+      "dz": 0.736
+     }
+    ]
+   },
+   {
+    "road_id": "45136",
+    "class": "elevated",
+    "worst_dz": 0.689,
+    "violated": false,
+    "samples": [
+     {
+      "s": 8.8,
+      "road_z": 367.9,
+      "terrain_z": 366.749,
+      "dz": 1.151
+     },
+     {
+      "s": 18.9,
+      "road_z": 367.715,
+      "terrain_z": 366.749,
+      "dz": 0.966
+     },
+     {
+      "s": 20.8,
+      "road_z": 367.68,
+      "terrain_z": 366.749,
+      "dz": 0.931
+     },
+     {
+      "s": 23.4,
+      "road_z": 367.633,
+      "terrain_z": 366.749,
+      "dz": 0.884
+     },
+     {
+      "s": 26.2,
+      "road_z": 367.581,
+      "terrain_z": 366.749,
+      "dz": 0.832
+     },
+     {
+      "s": 28.1,
+      "road_z": 367.546,
+      "terrain_z": 366.749,
+      "dz": 0.796
+     },
+     {
+      "s": 29.9,
+      "road_z": 367.512,
+      "terrain_z": 366.698,
+      "dz": 0.814
+     },
+     {
+      "s": 31.5,
+      "road_z": 367.482,
+      "terrain_z": 366.698,
+      "dz": 0.784
+     },
+     {
+      "s": 32.9,
+      "road_z": 367.457,
+      "terrain_z": 366.698,
+      "dz": 0.759
+     },
+     {
+      "s": 34.3,
+      "road_z": 367.431,
+      "terrain_z": 366.698,
+      "dz": 0.733
+     },
+     {
+      "s": 35.7,
+      "road_z": 367.406,
+      "terrain_z": 366.698,
+      "dz": 0.708
+     },
+     {
+      "s": 36.7,
+      "road_z": 367.387,
+      "terrain_z": 366.698,
+      "dz": 0.689
+     }
+    ]
+   },
+   {
+    "road_id": "45234",
+    "class": "elevated",
+    "worst_dz": 0.9,
+    "violated": false,
+    "samples": [
+     {
+      "s": 3.7,
+      "road_z": 377.907,
+      "terrain_z": 377.008,
+      "dz": 0.9
+     }
+    ]
+   },
+   {
+    "road_id": "45338",
+    "class": "elevated",
+    "worst_dz": 1.903,
+    "violated": false,
+    "samples": [
+     {
+      "s": 4.4,
+      "road_z": 374.789,
+      "terrain_z": 372.854,
+      "dz": 1.935
+     },
+     {
+      "s": 9.7,
+      "road_z": 374.8,
+      "terrain_z": 372.7,
+      "dz": 2.1
+     },
+     {
+      "s": 11.5,
+      "road_z": 374.804,
+      "terrain_z": 372.7,
+      "dz": 2.104
+     },
+     {
+      "s": 22.8,
+      "road_z": 374.828,
+      "terrain_z": 372.925,
+      "dz": 1.903
+     }
+    ]
+   },
+   {
+    "road_id": "45366",
+    "class": "elevated",
+    "worst_dz": 0.541,
+    "violated": false,
+    "samples": [
+     {
+      "s": 1.7,
+      "road_z": 370.94,
+      "terrain_z": 370.398,
+      "dz": 0.543
+     },
+     {
+      "s": 5.8,
+      "road_z": 370.941,
+      "terrain_z": 370.398,
+      "dz": 0.543
+     },
+     {
+      "s": 8.9,
+      "road_z": 370.941,
+      "terrain_z": 370.398,
+      "dz": 0.544
+     },
+     {
+      "s": 10.5,
+      "road_z": 370.942,
+      "terrain_z": 370.401,
+      "dz": 0.541
+     },
+     {
+      "s": 14.8,
+      "road_z": 370.942,
+      "terrain_z": 370.401,
+      "dz": 0.542
+     }
+    ]
+   },
+   {
+    "road_id": "45804",
+    "class": "tunnel",
+    "worst_dz": 0.071,
+    "violated": true,
+    "samples": [
+     {
+      "s": 20.2,
+      "road_z": 372.702,
+      "terrain_z": 372.631,
+      "dz": 0.071
+     },
+     {
+      "s": 42.7,
+      "road_z": 372.183,
+      "terrain_z": 372.631,
+      "dz": -0.448
+     },
+     {
+      "s": 47.6,
+      "road_z": 372.071,
+      "terrain_z": 372.631,
+      "dz": -0.56
+     },
+     {
+      "s": 55.3,
+      "road_z": 371.894,
+      "terrain_z": 372.092,
+      "dz": -0.199
+     },
+     {
+      "s": 61.6,
+      "road_z": 371.749,
+      "terrain_z": 372.092,
+      "dz": -0.343
+     },
+     {
+      "s": 68.0,
+      "road_z": 371.602,
+      "terrain_z": 372.092,
+      "dz": -0.49
+     },
+     {
+      "s": 75.1,
+      "road_z": 371.44,
+      "terrain_z": 371.455,
+      "dz": -0.015
+     },
+     {
+      "s": 79.2,
+      "road_z": 371.345,
+      "terrain_z": 371.455,
+      "dz": -0.109
+     }
+    ]
+   },
+   {
+    "road_id": "45824",
+    "class": "bridge",
+    "worst_dz": -0.308,
+    "violated": true,
+    "samples": [
+     {
+      "s": 7.6,
+      "road_z": 371.107,
+      "terrain_z": 370.613,
+      "dz": 0.493
+     },
+     {
+      "s": 15.9,
+      "road_z": 371.288,
+      "terrain_z": 371.359,
+      "dz": -0.071
+     },
+     {
+      "s": 17.6,
+      "road_z": 371.325,
+      "terrain_z": 371.359,
+      "dz": -0.034
+     },
+     {
+      "s": 19.5,
+      "road_z": 371.367,
+      "terrain_z": 371.359,
+      "dz": 0.008
+     },
+     {
+      "s": 21.6,
+      "road_z": 371.412,
+      "terrain_z": 371.359,
+      "dz": 0.053
+     },
+     {
+      "s": 23.7,
+      "road_z": 371.457,
+      "terrain_z": 371.359,
+      "dz": 0.099
+     },
+     {
+      "s": 27.4,
+      "road_z": 371.539,
+      "terrain_z": 371.359,
+      "dz": 0.18
+     },
+     {
+      "s": 43.6,
+      "road_z": 371.891,
+      "terrain_z": 372.199,
+      "dz": -0.308
+     }
+    ]
+   },
+   {
+    "road_id": "45884",
+    "class": "tunnel",
+    "worst_dz": -1.386,
+    "violated": false,
+    "samples": [
+     {
+      "s": 11.6,
+      "road_z": 372.16,
+      "terrain_z": 373.546,
+      "dz": -1.386
+     }
+    ]
+   },
+   {
+    "road_id": "45949",
+    "class": "elevated",
+    "worst_dz": -0.836,
+    "violated": true,
+    "samples": [
+     {
+      "s": 23.5,
+      "road_z": 370.805,
+      "terrain_z": 371.642,
+      "dz": -0.836
+     },
+     {
+      "s": 47.9,
+      "road_z": 372.025,
+      "terrain_z": 371.642,
+      "dz": 0.383
+     },
+     {
+      "s": 49.5,
+      "road_z": 372.107,
+      "terrain_z": 371.642,
+      "dz": 0.466
+     },
+     {
+      "s": 51.4,
+      "road_z": 372.201,
+      "terrain_z": 371.061,
+      "dz": 1.139
+     },
+     {
+      "s": 53.4,
+      "road_z": 372.301,
+      "terrain_z": 371.061,
+      "dz": 1.239
+     },
+     {
+      "s": 55.4,
+      "road_z": 372.404,
+      "terrain_z": 371.061,
+      "dz": 1.343
+     },
+     {
+      "s": 57.5,
+      "road_z": 372.507,
+      "terrain_z": 371.061,
+      "dz": 1.446
+     },
+     {
+      "s": 59.5,
+      "road_z": 372.607,
+      "terrain_z": 371.061,
+      "dz": 1.546
+     },
+     {
+      "s": 61.3,
+      "road_z": 372.701,
+      "terrain_z": 371.061,
+      "dz": 1.639
+     },
+     {
+      "s": 63.0,
+      "road_z": 372.783,
+      "terrain_z": 373.032,
+      "dz": -0.249
+     },
+     {
+      "s": 66.8,
+      "road_z": 372.974,
+      "terrain_z": 373.032,
+      "dz": -0.058
+     }
+    ]
+   },
+   {
+    "road_id": "45950",
+    "class": "elevated",
+    "worst_dz": 0.083,
+    "violated": true,
+    "samples": [
+     {
+      "s": 4.0,
+      "road_z": 368.931,
+      "terrain_z": 368.821,
+      "dz": 0.11
+     },
+     {
+      "s": 12.2,
+      "road_z": 368.956,
+      "terrain_z": 368.463,
+      "dz": 0.494
+     },
+     {
+      "s": 39.2,
+      "road_z": 369.04,
+      "terrain_z": 368.037,
+      "dz": 1.003
+     },
+     {
+      "s": 64.0,
+      "road_z": 369.116,
+      "terrain_z": 368.037,
+      "dz": 1.079
+     },
+     {
+      "s": 67.1,
+      "road_z": 369.126,
+      "terrain_z": 368.037,
+      "dz": 1.089
+     },
+     {
+      "s": 69.3,
+      "road_z": 369.133,
+      "terrain_z": 368.037,
+      "dz": 1.096
+     },
+     {
+      "s": 71.4,
+      "road_z": 369.139,
+      "terrain_z": 369.056,
+      "dz": 0.083
+     },
+     {
+      "s": 73.4,
+      "road_z": 369.146,
+      "terrain_z": 369.056,
+      "dz": 0.089
+     },
+     {
+      "s": 75.3,
+      "road_z": 369.151,
+      "terrain_z": 369.056,
+      "dz": 0.095
+     }
+    ]
+   },
+   {
+    "road_id": "45951",
+    "class": "elevated",
+    "worst_dz": 1.096,
+    "violated": false,
+    "samples": [
+     {
+      "s": 9.7,
+      "road_z": 378.525,
+      "terrain_z": 377.147,
+      "dz": 1.377
+     },
+     {
+      "s": 57.1,
+      "road_z": 378.835,
+      "terrain_z": 377.739,
+      "dz": 1.096
+     },
+     {
+      "s": 90.0,
+      "road_z": 379.05,
+      "terrain_z": 377.349,
+      "dz": 1.701
+     },
+     {
+      "s": 122.1,
+      "road_z": 379.26,
+      "terrain_z": 376.881,
+      "dz": 2.379
+     },
+     {
+      "s": 155.0,
+      "road_z": 379.475,
+      "terrain_z": 376.499,
+      "dz": 2.977
+     },
+     {
+      "s": 188.1,
+      "road_z": 379.692,
+      "terrain_z": 376.421,
+      "dz": 3.271
+     },
+     {
+      "s": 222.2,
+      "road_z": 379.915,
+      "terrain_z": 377.017,
+      "dz": 2.898
+     },
+     {
+      "s": 257.4,
+      "road_z": 380.145,
+      "terrain_z": 377.818,
+      "dz": 2.327
+     }
+    ]
+   },
+   {
+    "road_id": "46007",
+    "class": "elevated",
+    "worst_dz": 0.739,
+    "violated": false,
+    "samples": [
+     {
+      "s": 7.7,
+      "road_z": 376.061,
+      "terrain_z": 375.322,
+      "dz": 0.739
+     }
+    ]
+   },
+   {
+    "road_id": "46204",
+    "class": "elevated",
+    "worst_dz": 0.181,
+    "violated": true,
+    "samples": [
+     {
+      "s": 80.9,
+      "road_z": 371.829,
+      "terrain_z": 371.648,
+      "dz": 0.181
+     }
+    ]
+   },
+   {
+    "road_id": "46206",
+    "class": "elevated",
+    "worst_dz": 0.751,
+    "violated": false,
+    "samples": [
+     {
+      "s": 11.4,
+      "road_z": 371.316,
+      "terrain_z": 370.564,
+      "dz": 0.751
+     }
+    ]
+   },
+   {
+    "road_id": "46209",
+    "class": "tunnel",
+    "worst_dz": 0.689,
+    "violated": true,
+    "samples": [
+     {
+      "s": 8.8,
+      "road_z": 376.093,
+      "terrain_z": 375.404,
+      "dz": 0.689
+     }
+    ]
+   },
+   {
+    "road_id": "46265",
+    "class": "elevated",
+    "worst_dz": 1.018,
+    "violated": false,
+    "samples": [
+     {
+      "s": 7.5,
+      "road_z": 375.174,
+      "terrain_z": 374.156,
+      "dz": 1.018
+     },
+     {
+      "s": 15.8,
+      "road_z": 375.23,
+      "terrain_z": 374.156,
+      "dz": 1.075
+     },
+     {
+      "s": 17.4,
+      "road_z": 375.241,
+      "terrain_z": 374.156,
+      "dz": 1.086
+     },
+     {
+      "s": 19.2,
+      "road_z": 375.254,
+      "terrain_z": 374.156,
+      "dz": 1.098
+     },
+     {
+      "s": 21.1,
+      "road_z": 375.267,
+      "terrain_z": 374.156,
+      "dz": 1.111
+     },
+     {
+      "s": 23.1,
+      "road_z": 375.28,
+      "terrain_z": 374.156,
+      "dz": 1.125
+     },
+     {
+      "s": 25.1,
+      "road_z": 375.294,
+      "terrain_z": 374.156,
+      "dz": 1.138
+     },
+     {
+      "s": 26.9,
+      "road_z": 375.306,
+      "terrain_z": 374.156,
+      "dz": 1.15
+     },
+     {
+      "s": 28.5,
+      "road_z": 375.317,
+      "terrain_z": 374.156,
+      "dz": 1.161
+     },
+     {
+      "s": 41.1,
+      "road_z": 375.403,
+      "terrain_z": 374.225,
+      "dz": 1.178
+     }
+    ]
+   },
+   {
+    "road_id": "46766",
+    "class": "elevated",
+    "worst_dz": -0.056,
+    "violated": true,
+    "samples": [
+     {
+      "s": 14.4,
+      "road_z": 368.328,
+      "terrain_z": 368.383,
+      "dz": -0.056
+     }
+    ]
+   },
+   {
+    "road_id": "46874",
+    "class": "elevated",
+    "worst_dz": 0.62,
+    "violated": false,
+    "samples": [
+     {
+      "s": 0.9,
+      "road_z": 368.001,
+      "terrain_z": 367.38,
+      "dz": 0.62
+     }
+    ]
+   },
+   {
+    "road_id": "46928",
+    "class": "tunnel",
+    "worst_dz": 0.509,
+    "violated": true,
+    "samples": [
+     {
+      "s": 3.3,
+      "road_z": 370.737,
+      "terrain_z": 370.228,
+      "dz": 0.509
+     }
+    ]
+   },
+   {
+    "road_id": "46958",
+    "class": "elevated",
+    "worst_dz": 1.565,
+    "violated": false,
+    "samples": [
+     {
+      "s": 0.8,
+      "road_z": 381.375,
+      "terrain_z": 379.711,
+      "dz": 1.665
+     },
+     {
+      "s": 2.4,
+      "road_z": 381.344,
+      "terrain_z": 379.711,
+      "dz": 1.633
+     },
+     {
+      "s": 4.0,
+      "road_z": 381.312,
+      "terrain_z": 379.711,
+      "dz": 1.602
+     },
+     {
+      "s": 5.8,
+      "road_z": 381.276,
+      "terrain_z": 379.711,
+      "dz": 1.565
+     },
+     {
+      "s": 7.7,
+      "road_z": 381.237,
+      "terrain_z": 379.279,
+      "dz": 1.958
+     },
+     {
+      "s": 9.6,
+      "road_z": 381.201,
+      "terrain_z": 379.279,
+      "dz": 1.921
+     },
+     {
+      "s": 11.2,
+      "road_z": 381.168,
+      "terrain_z": 379.279,
+      "dz": 1.889
+     },
+     {
+      "s": 16.7,
+      "road_z": 381.057,
+      "terrain_z": 379.279,
+      "dz": 1.778
+     }
+    ]
+   },
+   {
+    "road_id": "47191",
+    "class": "tunnel",
+    "worst_dz": -0.16,
+    "violated": true,
+    "samples": [
+     {
+      "s": 0.6,
+      "road_z": 375.109,
+      "terrain_z": 375.269,
+      "dz": -0.16
+     },
+     {
+      "s": 3.1,
+      "road_z": 375.109,
+      "terrain_z": 375.269,
+      "dz": -0.16
+     },
+     {
+      "s": 5.9,
+      "road_z": 375.109,
+      "terrain_z": 375.269,
+      "dz": -0.16
+     },
+     {
+      "s": 7.8,
+      "road_z": 375.109,
+      "terrain_z": 375.269,
+      "dz": -0.16
+     },
+     {
+      "s": 9.7,
+      "road_z": 375.109,
+      "terrain_z": 375.269,
+      "dz": -0.16
+     },
+     {
+      "s": 10.8,
+      "road_z": 375.109,
+      "terrain_z": 375.269,
+      "dz": -0.16
+     }
+    ]
+   },
+   {
+    "road_id": "47233",
+    "class": "elevated",
+    "worst_dz": -1.379,
+    "violated": true,
+    "samples": [
+     {
+      "s": 2.0,
+      "road_z": 375.32,
+      "terrain_z": 376.619,
+      "dz": -1.3
+     },
+     {
+      "s": 4.8,
+      "road_z": 375.299,
+      "terrain_z": 376.619,
+      "dz": -1.321
+     },
+     {
+      "s": 6.6,
+      "road_z": 375.285,
+      "terrain_z": 376.619,
+      "dz": -1.334
+     },
+     {
+      "s": 8.7,
+      "road_z": 375.27,
+      "terrain_z": 376.619,
+      "dz": -1.35
+     },
+     {
+      "s": 10.7,
+      "road_z": 375.254,
+      "terrain_z": 376.619,
+      "dz": -1.365
+     },
+     {
+      "s": 12.6,
+      "road_z": 375.241,
+      "terrain_z": 376.619,
+      "dz": -1.379
+     },
+     {
+      "s": 32.6,
+      "road_z": 375.091,
+      "terrain_z": 376.082,
+      "dz": -0.991
+     },
+     {
+      "s": 52.7,
+      "road_z": 374.942,
+      "terrain_z": 376.082,
+      "dz": -1.14
+     },
+     {
+      "s": 54.5,
+      "road_z": 374.928,
+      "terrain_z": 376.082,
+      "dz": -1.154
+     },
+     {
+      "s": 56.6,
+      "road_z": 374.912,
+      "terrain_z": 376.082,
+      "dz": -1.169
+     },
+     {
+      "s": 58.8,
+      "road_z": 374.896,
+      "terrain_z": 376.082,
+      "dz": -1.186
+     },
+     {
+      "s": 61.0,
+      "road_z": 374.88,
+      "terrain_z": 376.082,
+      "dz": -1.202
+     },
+     {
+      "s": 63.1,
+      "road_z": 374.864,
+      "terrain_z": 375.938,
+      "dz": -1.074
+     },
+     {
+      "s": 64.9,
+      "road_z": 374.851,
+      "terrain_z": 375.938,
+      "dz": -1.088
+     },
+     {
+      "s": 80.0,
+      "road_z": 374.738,
+      "terrain_z": 375.917,
+      "dz": -1.179
+     }
+    ]
+   },
+   {
+    "road_id": "47303",
+    "class": "elevated",
+    "worst_dz": 0.553,
+    "violated": false,
+    "samples": [
+     {
+      "s": 0.3,
+      "road_z": 367.42,
+      "terrain_z": 366.698,
+      "dz": 0.722
+     },
+     {
+      "s": 1.3,
+      "road_z": 367.438,
+      "terrain_z": 366.698,
+      "dz": 0.74
+     },
+     {
+      "s": 2.8,
+      "road_z": 367.464,
+      "terrain_z": 366.698,
+      "dz": 0.766
+     },
+     {
+      "s": 4.2,
+      "road_z": 367.49,
+      "terrain_z": 366.698,
+      "dz": 0.792
+     },
+     {
+      "s": 5.5,
+      "road_z": 367.516,
+      "terrain_z": 366.698,
+      "dz": 0.818
+     },
+     {
+      "s": 7.2,
+      "road_z": 367.545,
+      "terrain_z": 366.749,
+      "dz": 0.796
+     },
+     {
+      "s": 9.0,
+      "road_z": 367.579,
+      "terrain_z": 366.749,
+      "dz": 0.83
+     },
+     {
+      "s": 10.9,
+      "road_z": 367.614,
+      "terrain_z": 366.749,
+      "dz": 0.865
+     },
+     {
+      "s": 13.7,
+      "road_z": 367.666,
+      "terrain_z": 366.749,
+      "dz": 0.917
+     },
+     {
+      "s": 16.3,
+      "road_z": 367.713,
+      "terrain_z": 366.749,
+      "dz": 0.964
+     },
+     {
+      "s": 18.2,
+      "road_z": 367.748,
+      "terrain_z": 366.749,
+      "dz": 0.999
+     },
+     {
+      "s": 28.2,
+      "road_z": 367.933,
+      "terrain_z": 367.38,
+      "dz": 0.553
+     }
+    ]
+   },
+   {
+    "road_id": "47317",
+    "class": "elevated",
+    "worst_dz": 1.903,
+    "violated": false,
+    "samples": [
+     {
+      "s": 10.4,
+      "road_z": 374.797,
+      "terrain_z": 372.7,
+      "dz": 2.097
+     },
+     {
+      "s": 21.8,
+      "road_z": 374.773,
+      "terrain_z": 372.7,
+      "dz": 2.073
+     },
+     {
+      "s": 23.6,
+      "road_z": 374.769,
+      "terrain_z": 372.854,
+      "dz": 1.915
+     },
+     {
+      "s": 28.8,
+      "road_z": 374.758,
+      "terrain_z": 372.854,
+      "dz": 1.903
+     }
+    ]
+   },
+   {
+    "road_id": "47599",
+    "class": "elevated",
+    "worst_dz": 0.079,
+    "violated": true,
+    "samples": [
+     {
+      "s": 10.7,
+      "road_z": 370.493,
+      "terrain_z": 370.209,
+      "dz": 0.284
+     },
+     {
+      "s": 22.3,
+      "road_z": 370.59,
+      "terrain_z": 370.209,
+      "dz": 0.381
+     },
+     {
+      "s": 24.1,
+      "road_z": 370.606,
+      "terrain_z": 370.209,
+      "dz": 0.396
+     },
+     {
+      "s": 26.2,
+      "road_z": 370.623,
+      "terrain_z": 370.209,
+      "dz": 0.414
+     },
+     {
+      "s": 28.4,
+      "road_z": 370.641,
+      "terrain_z": 370.209,
+      "dz": 0.432
+     },
+     {
+      "s": 30.6,
+      "road_z": 370.66,
+      "terrain_z": 369.57,
+      "dz": 1.089
+     },
+     {
+      "s": 32.6,
+      "road_z": 370.677,
+      "terrain_z": 369.57,
+      "dz": 1.107
+     },
+     {
+      "s": 34.5,
+      "road_z": 370.693,
+      "terrain_z": 369.57,
+      "dz": 1.122
+     },
+     {
+      "s": 133.8,
+      "road_z": 371.526,
+      "terrain_z": 371.005,
+      "dz": 0.52
+     },
+     {
+      "s": 235.2,
+      "road_z": 372.377,
+      "terrain_z": 371.005,
+      "dz": 1.372
+     },
+     {
+      "s": 239.2,
+      "road_z": 372.411,
+      "terrain_z": 371.005,
+      "dz": 1.405
+     },
+     {
+      "s": 241.1,
+      "road_z": 372.427,
+      "terrain_z": 371.005,
+      "dz": 1.421
+     },
+     {
+      "s": 255.6,
+      "road_z": 372.549,
+      "terrain_z": 372.469,
+      "dz": 0.079
+     }
+    ]
+   },
+   {
+    "road_id": "47737",
+    "class": "elevated",
+    "worst_dz": 1.954,
+    "violated": false,
+    "samples": [
+     {
+      "s": 0.5,
+      "road_z": 381.744,
+      "terrain_z": 379.789,
+      "dz": 1.954
+     },
+     {
+      "s": 1.8,
+      "road_z": 381.715,
+      "terrain_z": 379.135,
+      "dz": 2.58
+     },
+     {
+      "s": 3.5,
+      "road_z": 381.678,
+      "terrain_z": 379.135,
+      "dz": 2.543
+     },
+     {
+      "s": 5.3,
+      "road_z": 381.637,
+      "terrain_z": 379.135,
+      "dz": 2.502
+     },
+     {
+      "s": 7.0,
+      "road_z": 381.599,
+      "terrain_z": 379.135,
+      "dz": 2.464
+     },
+     {
+      "s": 8.6,
+      "road_z": 381.563,
+      "terrain_z": 379.135,
+      "dz": 2.428
+     },
+     {
+      "s": 10.5,
+      "road_z": 381.522,
+      "terrain_z": 379.135,
+      "dz": 2.387
+     },
+     {
+      "s": 12.5,
+      "road_z": 381.477,
+      "terrain_z": 379.135,
+      "dz": 2.342
+     },
+     {
+      "s": 14.4,
+      "road_z": 381.436,
+      "terrain_z": 379.135,
+      "dz": 2.301
+     },
+     {
+      "s": 15.9,
+      "road_z": 381.402,
+      "terrain_z": 379.135,
+      "dz": 2.266
+     },
+     {
+      "s": 17.5,
+      "road_z": 381.366,
+      "terrain_z": 379.135,
+      "dz": 2.231
+     },
+     {
+      "s": 19.3,
+      "road_z": 381.327,
+      "terrain_z": 379.135,
+      "dz": 2.192
+     },
+     {
+      "s": 20.9,
+      "road_z": 381.291,
+      "terrain_z": 379.135,
+      "dz": 2.156
+     },
+     {
+      "s": 27.7,
+      "road_z": 381.14,
+      "terrain_z": 379.04,
+      "dz": 2.101
+     }
+    ]
+   },
+   {
+    "road_id": "47738",
+    "class": "elevated",
+    "worst_dz": 0.308,
+    "violated": true,
+    "samples": [
+     {
+      "s": 0.1,
+      "road_z": 381.356,
+      "terrain_z": 381.048,
+      "dz": 0.308
+     },
+     {
+      "s": 1.3,
+      "road_z": 381.356,
+      "terrain_z": 381.048,
+      "dz": 0.308
+     },
+     {
+      "s": 3.3,
+      "road_z": 381.356,
+      "terrain_z": 381.048,
+      "dz": 0.308
+     },
+     {
+      "s": 5.4,
+      "road_z": 381.356,
+      "terrain_z": 381.048,
+      "dz": 0.308
+     },
+     {
+      "s": 7.6,
+      "road_z": 381.356,
+      "terrain_z": 381.048,
+      "dz": 0.308
+     },
+     {
+      "s": 9.6,
+      "road_z": 381.356,
+      "terrain_z": 381.048,
+      "dz": 0.308
+     },
+     {
+      "s": 11.4,
+      "road_z": 381.356,
+      "terrain_z": 381.048,
+      "dz": 0.308
+     },
+     {
+      "s": 13.0,
+      "road_z": 381.356,
+      "terrain_z": 381.048,
+      "dz": 0.308
+     },
+     {
+      "s": 14.6,
+      "road_z": 381.356,
+      "terrain_z": 381.048,
+      "dz": 0.308
+     },
+     {
+      "s": 16.4,
+      "road_z": 381.356,
+      "terrain_z": 381.048,
+      "dz": 0.308
+     },
+     {
+      "s": 18.0,
+      "road_z": 381.356,
+      "terrain_z": 381.048,
+      "dz": 0.308
+     },
+     {
+      "s": 20.3,
+      "road_z": 381.356,
+      "terrain_z": 381.048,
+      "dz": 0.308
+     }
+    ]
+   },
+   {
+    "road_id": "47739",
+    "class": "elevated",
+    "worst_dz": 1.206,
+    "violated": false,
+    "samples": [
+     {
+      "s": 3.5,
+      "road_z": 380.995,
+      "terrain_z": 379.789,
+      "dz": 1.206
+     }
+    ]
+   },
+   {
+    "road_id": "47769",
+    "class": "elevated",
+    "worst_dz": -0.059,
+    "violated": true,
+    "samples": [
+     {
+      "s": 1.1,
+      "road_z": 373.163,
+      "terrain_z": 373.032,
+      "dz": 0.131
+     },
+     {
+      "s": 3.0,
+      "road_z": 373.065,
+      "terrain_z": 373.032,
+      "dz": 0.033
+     },
+     {
+      "s": 4.8,
+      "road_z": 372.973,
+      "terrain_z": 373.032,
+      "dz": -0.059
+     },
+     {
+      "s": 6.8,
+      "road_z": 372.873,
+      "terrain_z": 371.061,
+      "dz": 1.812
+     },
+     {
+      "s": 8.9,
+      "road_z": 372.768,
+      "terrain_z": 371.061,
+      "dz": 1.707
+     },
+     {
+      "s": 11.1,
+      "road_z": 372.66,
+      "terrain_z": 371.061,
+      "dz": 1.598
+     },
+     {
+      "s": 13.3,
+      "road_z": 372.549,
+      "terrain_z": 371.061,
+      "dz": 1.488
+     },
+     {
+      "s": 15.5,
+      "road_z": 372.437,
+      "terrain_z": 371.061,
+      "dz": 1.376
+     },
+     {
+      "s": 17.7,
+      "road_z": 372.326,
+      "terrain_z": 371.642,
+      "dz": 0.684
+     },
+     {
+      "s": 19.9,
+      "road_z": 372.218,
+      "terrain_z": 371.642,
+      "dz": 0.576
+     },
+     {
+      "s": 22.0,
+      "road_z": 372.113,
+      "terrain_z": 371.642,
+      "dz": 0.471
+     },
+     {
+      "s": 24.0,
+      "road_z": 372.013,
+      "terrain_z": 371.642,
+      "dz": 0.371
+     },
+     {
+      "s": 25.8,
+      "road_z": 371.921,
+      "terrain_z": 371.642,
+      "dz": 0.279
+     },
+     {
+      "s": 27.5,
+      "road_z": 371.836,
+      "terrain_z": 371.642,
+      "dz": 0.195
+     },
+     {
+      "s": 49.1,
+      "road_z": 370.755,
+      "terrain_z": 369.53,
+      "dz": 1.225
+     }
+    ]
+   },
+   {
+    "road_id": "48351",
+    "class": "tunnel",
+    "worst_dz": 0.614,
+    "violated": true,
+    "samples": [
+     {
+      "s": 1.1,
+      "road_z": 369.972,
+      "terrain_z": 369.554,
+      "dz": 0.418
+     },
+     {
+      "s": 3.0,
+      "road_z": 369.979,
+      "terrain_z": 369.55,
+      "dz": 0.429
+     },
+     {
+      "s": 4.6,
+      "road_z": 369.985,
+      "terrain_z": 369.55,
+      "dz": 0.435
+     },
+     {
+      "s": 6.4,
+      "road_z": 369.991,
+      "terrain_z": 369.55,
+      "dz": 0.441
+     },
+     {
+      "s": 8.2,
+      "road_z": 369.998,
+      "terrain_z": 369.55,
+      "dz": 0.448
+     },
+     {
+      "s": 9.8,
+      "road_z": 370.004,
+      "terrain_z": 369.55,
+      "dz": 0.454
+     },
+     {
+      "s": 15.2,
+      "road_z": 370.023,
+      "terrain_z": 369.41,
+      "dz": 0.614
+     },
+     {
+      "s": 26.9,
+      "road_z": 370.066,
+      "terrain_z": 369.722,
+      "dz": 0.344
+     },
+     {
+      "s": 39.8,
+      "road_z": 370.113,
+      "terrain_z": 369.722,
+      "dz": 0.392
+     }
+    ]
+   },
+   {
+    "road_id": "48625",
+    "class": "elevated",
+    "worst_dz": 0.376,
+    "violated": true,
+    "samples": [
+     {
+      "s": 1.5,
+      "road_z": 365.157,
+      "terrain_z": 364.571,
+      "dz": 0.586
+     },
+     {
+      "s": 5.6,
+      "road_z": 365.087,
+      "terrain_z": 364.571,
+      "dz": 0.516
+     },
+     {
+      "s": 9.7,
+      "road_z": 365.017,
+      "terrain_z": 364.571,
+      "dz": 0.446
+     },
+     {
+      "s": 13.9,
+      "road_z": 364.947,
+      "terrain_z": 364.571,
+      "dz": 0.376
+     },
+     {
+      "s": 17.3,
+      "road_z": 364.889,
+      "terrain_z": 364.365,
+      "dz": 0.525
+     },
+     {
+      "s": 21.1,
+      "road_z": 364.824,
+      "terrain_z": 363.845,
+      "dz": 0.98
+     },
+     {
+      "s": 25.4,
+      "road_z": 364.75,
+      "terrain_z": 363.845,
+      "dz": 0.905
+     },
+     {
+      "s": 29.6,
+      "road_z": 364.679,
+      "terrain_z": 363.845,
+      "dz": 0.834
+     },
+     {
+      "s": 37.5,
+      "road_z": 364.545,
+      "terrain_z": 363.845,
+      "dz": 0.701
+     }
+    ]
+   },
+   {
+    "road_id": "48896",
+    "class": "elevated",
+    "worst_dz": 1.78,
+    "violated": false,
+    "samples": [
+     {
+      "s": 0.1,
+      "road_z": 381.205,
+      "terrain_z": 379.425,
+      "dz": 1.78
+     }
+    ]
+   },
+   {
+    "road_id": "49399",
+    "class": "elevated",
+    "worst_dz": -1.003,
+    "violated": true,
+    "samples": [
+     {
+      "s": 8.8,
+      "road_z": 377.015,
+      "terrain_z": 378.018,
+      "dz": -1.003
+     }
+    ]
+   },
+   {
+    "road_id": "49448",
+    "class": "elevated",
+    "worst_dz": -0.322,
+    "violated": true,
+    "samples": [
+     {
+      "s": 26.3,
+      "road_z": 375.614,
+      "terrain_z": 375.936,
+      "dz": -0.322
+     }
+    ]
+   },
+   {
+    "road_id": "49456",
+    "class": "elevated",
+    "worst_dz": -0.23,
+    "violated": true,
+    "samples": [
+     {
+      "s": 2.9,
+      "road_z": 376.457,
+      "terrain_z": 376.401,
+      "dz": 0.056
+     },
+     {
+      "s": 6.5,
+      "road_z": 376.359,
+      "terrain_z": 376.401,
+      "dz": -0.041
+     },
+     {
+      "s": 8.2,
+      "road_z": 376.315,
+      "terrain_z": 376.401,
+      "dz": -0.086
+     },
+     {
+      "s": 11.0,
+      "road_z": 376.241,
+      "terrain_z": 376.401,
+      "dz": -0.16
+     },
+     {
+      "s": 13.6,
+      "road_z": 376.171,
+      "terrain_z": 376.401,
+      "dz": -0.23
+     },
+     {
+      "s": 43.8,
+      "road_z": 375.363,
+      "terrain_z": 374.442,
+      "dz": 0.921
+     }
+    ]
+   },
+   {
+    "road_id": "49531",
+    "class": "tunnel",
+    "worst_dz": 0.356,
+    "violated": true,
+    "samples": [
+     {
+      "s": 5.4,
+      "road_z": 369.528,
+      "terrain_z": 369.172,
+      "dz": 0.356
+     }
+    ]
+   },
+   {
+    "road_id": "49644",
+    "class": "elevated",
+    "worst_dz": 1.099,
+    "violated": false,
+    "samples": [
+     {
+      "s": 11.9,
+      "road_z": 375.427,
+      "terrain_z": 374.156,
+      "dz": 1.272
+     },
+     {
+      "s": 24.5,
+      "road_z": 375.341,
+      "terrain_z": 374.156,
+      "dz": 1.185
+     },
+     {
+      "s": 26.1,
+      "road_z": 375.33,
+      "terrain_z": 374.156,
+      "dz": 1.174
+     },
+     {
+      "s": 27.9,
+      "road_z": 375.318,
+      "terrain_z": 374.156,
+      "dz": 1.162
+     },
+     {
+      "s": 29.8,
+      "road_z": 375.304,
+      "terrain_z": 374.156,
+      "dz": 1.149
+     },
+     {
+      "s": 31.8,
+      "road_z": 375.291,
+      "terrain_z": 374.156,
+      "dz": 1.135
+     },
+     {
+      "s": 33.7,
+      "road_z": 375.278,
+      "terrain_z": 374.156,
+      "dz": 1.122
+     },
+     {
+      "s": 35.5,
+      "road_z": 375.265,
+      "terrain_z": 374.156,
+      "dz": 1.11
+     },
+     {
+      "s": 37.1,
+      "road_z": 375.254,
+      "terrain_z": 374.156,
+      "dz": 1.099
+     },
+     {
+      "s": 45.4,
+      "road_z": 375.198,
+      "terrain_z": 373.863,
+      "dz": 1.335
+     }
+    ]
+   },
+   {
+    "road_id": "49989",
+    "class": "elevated",
+    "worst_dz": -1.553,
+    "violated": true,
+    "samples": [
+     {
+      "s": 72.7,
+      "road_z": 366.765,
+      "terrain_z": 368.202,
+      "dz": -1.437
+     },
+     {
+      "s": 146.0,
+      "road_z": 366.668,
+      "terrain_z": 368.202,
+      "dz": -1.533
+     },
+     {
+      "s": 147.6,
+      "road_z": 366.666,
+      "terrain_z": 368.202,
+      "dz": -1.535
+     },
+     {
+      "s": 151.0,
+      "road_z": 366.662,
+      "terrain_z": 368.202,
+      "dz": -1.54
+     },
+     {
+      "s": 155.0,
+      "road_z": 366.657,
+      "terrain_z": 368.202,
+      "dz": -1.545
+     },
+     {
+      "s": 157.1,
+      "road_z": 366.654,
+      "terrain_z": 368.202,
+      "dz": -1.548
+     },
+     {
+      "s": 160.7,
+      "road_z": 366.649,
+      "terrain_z": 368.202,
+      "dz": -1.553
+     }
+    ]
+   },
+   {
+    "road_id": "49999",
+    "class": "elevated",
+    "worst_dz": -0.511,
+    "violated": true,
+    "samples": [
+     {
+      "s": 6.7,
+      "road_z": 370.03,
+      "terrain_z": 369.085,
+      "dz": 0.945
+     },
+     {
+      "s": 20.4,
+      "road_z": 370.024,
+      "terrain_z": 367.894,
+      "dz": 2.13
+     },
+     {
+      "s": 76.4,
+      "road_z": 369.999,
+      "terrain_z": 369.105,
+      "dz": 0.893
+     },
+     {
+      "s": 126.2,
+      "road_z": 369.976,
+      "terrain_z": 369.105,
+      "dz": 0.871
+     },
+     {
+      "s": 128.0,
+      "road_z": 369.975,
+      "terrain_z": 369.105,
+      "dz": 0.87
+     },
+     {
+      "s": 130.1,
+      "road_z": 369.975,
+      "terrain_z": 369.105,
+      "dz": 0.869
+     },
+     {
+      "s": 132.3,
+      "road_z": 369.974,
+      "terrain_z": 369.105,
+      "dz": 0.868
+     },
+     {
+      "s": 134.5,
+      "road_z": 369.973,
+      "terrain_z": 369.105,
+      "dz": 0.867
+     },
+     {
+      "s": 136.5,
+      "road_z": 369.972,
+      "terrain_z": 369.105,
+      "dz": 0.866
+     },
+     {
+      "s": 138.4,
+      "road_z": 369.971,
+      "terrain_z": 369.105,
+      "dz": 0.865
+     },
+     {
+      "s": 176.9,
+      "road_z": 369.953,
+      "terrain_z": 370.464,
+      "dz": -0.511
+     }
+    ]
+   },
+   {
+    "road_id": "50166",
+    "class": "elevated",
+    "worst_dz": 1.873,
+    "violated": false,
+    "samples": [
+     {
+      "s": 3.7,
+      "road_z": 377.972,
+      "terrain_z": 376.098,
+      "dz": 1.873
+     }
+    ]
+   },
+   {
+    "road_id": "50323",
+    "class": "elevated",
+    "worst_dz": 1.857,
+    "violated": false,
+    "samples": [
+     {
+      "s": 3.7,
+      "road_z": 381.816,
+      "terrain_z": 379.959,
+      "dz": 1.857
+     }
+    ]
+   },
+   {
+    "road_id": "50324",
+    "class": "elevated",
+    "worst_dz": 1.692,
+    "violated": false,
+    "samples": [
+     {
+      "s": 3.7,
+      "road_z": 381.719,
+      "terrain_z": 380.027,
+      "dz": 1.692
+     },
+     {
+      "s": 8.0,
+      "road_z": 381.732,
+      "terrain_z": 380.027,
+      "dz": 1.706
+     },
+     {
+      "s": 9.6,
+      "road_z": 381.737,
+      "terrain_z": 380.027,
+      "dz": 1.71
+     },
+     {
+      "s": 11.3,
+      "road_z": 381.742,
+      "terrain_z": 380.027,
+      "dz": 1.716
+     },
+     {
+      "s": 13.1,
+      "road_z": 381.748,
+      "terrain_z": 380.027,
+      "dz": 1.721
+     },
+     {
+      "s": 14.7,
+      "road_z": 381.753,
+      "terrain_z": 380.027,
+      "dz": 1.726
+     },
+     {
+      "s": 18.8,
+      "road_z": 381.765,
+      "terrain_z": 380.027,
+      "dz": 1.738
+     }
+    ]
+   },
+   {
+    "road_id": "50335",
+    "class": "elevated",
+    "worst_dz": 0.525,
+    "violated": false,
+    "samples": [
+     {
+      "s": 3.6,
+      "road_z": 370.925,
+      "terrain_z": 370.401,
+      "dz": 0.525
+     },
+     {
+      "s": 7.9,
+      "road_z": 370.924,
+      "terrain_z": 370.398,
+      "dz": 0.527
+     },
+     {
+      "s": 9.5,
+      "road_z": 370.924,
+      "terrain_z": 370.398,
+      "dz": 0.526
+     },
+     {
+      "s": 12.7,
+      "road_z": 370.924,
+      "terrain_z": 370.398,
+      "dz": 0.526
+     },
+     {
+      "s": 16.8,
+      "road_z": 370.923,
+      "terrain_z": 370.398,
+      "dz": 0.525
+     }
+    ]
+   },
+   {
+    "road_id": "50442",
+    "class": "elevated",
+    "worst_dz": -0.687,
+    "violated": true,
+    "samples": [
+     {
+      "s": 28.2,
+      "road_z": 374.293,
+      "terrain_z": 374.98,
+      "dz": -0.687
+     }
+    ]
+   },
+   {
+    "road_id": "50727",
+    "class": "tunnel",
+    "worst_dz": -0.627,
+    "violated": false,
+    "samples": [
+     {
+      "s": 0.9,
+      "road_z": 370.74,
+      "terrain_z": 371.455,
+      "dz": -0.715
+     },
+     {
+      "s": 4.7,
+      "road_z": 370.828,
+      "terrain_z": 371.455,
+      "dz": -0.627
+     },
+     {
+      "s": 10.1,
+      "road_z": 370.95,
+      "terrain_z": 372.092,
+      "dz": -1.142
+     },
+     {
+      "s": 16.5,
+      "road_z": 371.098,
+      "terrain_z": 372.092,
+      "dz": -0.994
+     },
+     {
+      "s": 24.1,
+      "road_z": 371.274,
+      "terrain_z": 372.092,
+      "dz": -0.819
+     },
+     {
+      "s": 30.3,
+      "road_z": 371.414,
+      "terrain_z": 372.631,
+      "dz": -1.217
+     },
+     {
+      "s": 37.4,
+      "road_z": 371.577,
+      "terrain_z": 372.631,
+      "dz": -1.054
+     },
+     {
+      "s": 40.9,
+      "road_z": 371.658,
+      "terrain_z": 372.631,
+      "dz": -0.973
+     }
+    ]
+   },
+   {
+    "road_id": "50737",
+    "class": "elevated",
+    "worst_dz": 0.257,
+    "violated": true,
+    "samples": [
+     {
+      "s": 2.9,
+      "road_z": 368.558,
+      "terrain_z": 368.202,
+      "dz": 0.356
+     },
+     {
+      "s": 6.5,
+      "road_z": 368.563,
+      "terrain_z": 368.202,
+      "dz": 0.361
+     },
+     {
+      "s": 8.7,
+      "road_z": 368.566,
+      "terrain_z": 368.202,
+      "dz": 0.364
+     },
+     {
+      "s": 12.6,
+      "road_z": 368.571,
+      "terrain_z": 368.202,
+      "dz": 0.369
+     },
+     {
+      "s": 16.0,
+      "road_z": 368.575,
+      "terrain_z": 368.202,
+      "dz": 0.374
+     },
+     {
+      "s": 17.6,
+      "road_z": 368.577,
+      "terrain_z": 368.202,
+      "dz": 0.376
+     },
+     {
+      "s": 91.0,
+      "road_z": 368.674,
+      "terrain_z": 368.416,
+      "dz": 0.257
+     }
+    ]
+   },
+   {
+    "road_id": "50929",
+    "class": "bridge",
+    "worst_dz": 0.098,
+    "violated": true,
+    "samples": [
+     {
+      "s": 13.5,
+      "road_z": 372.023,
+      "terrain_z": 371.359,
+      "dz": 0.664
+     },
+     {
+      "s": 29.6,
+      "road_z": 371.671,
+      "terrain_z": 371.359,
+      "dz": 0.312
+     },
+     {
+      "s": 33.4,
+      "road_z": 371.589,
+      "terrain_z": 371.359,
+      "dz": 0.23
+     },
+     {
+      "s": 35.5,
+      "road_z": 371.543,
+      "terrain_z": 371.359,
+      "dz": 0.185
+     },
+     {
+      "s": 37.5,
+      "road_z": 371.499,
+      "terrain_z": 371.359,
+      "dz": 0.14
+     },
+     {
+      "s": 39.5,
+      "road_z": 371.457,
+      "terrain_z": 371.359,
+      "dz": 0.098
+     },
+     {
+      "s": 41.2,
+      "road_z": 371.42,
+      "terrain_z": 370.613,
+      "dz": 0.807
+     },
+     {
+      "s": 49.5,
+      "road_z": 371.238,
+      "terrain_z": 370.957,
+      "dz": 0.282
+     }
+    ]
+   },
+   {
+    "road_id": "50995",
+    "class": "tunnel",
+    "worst_dz": 0.132,
+    "violated": true,
+    "samples": [
+     {
+      "s": 11.6,
+      "road_z": 372.15,
+      "terrain_z": 372.019,
+      "dz": 0.132
+     }
+    ]
+   },
+   {
+    "road_id": "51074",
+    "class": "elevated",
+    "worst_dz": 1.459,
+    "violated": false,
+    "samples": [
+     {
+      "s": 103.9,
+      "road_z": 371.03,
+      "terrain_z": 369.57,
+      "dz": 1.459
+     }
+    ]
+   },
+   {
+    "road_id": "51163",
+    "class": "elevated",
+    "worst_dz": 1.286,
+    "violated": false,
+    "samples": [
+     {
+      "s": 7.7,
+      "road_z": 376.473,
+      "terrain_z": 375.187,
+      "dz": 1.286
+     }
+    ]
+   },
+   {
+    "road_id": "51383",
+    "class": "elevated",
+    "worst_dz": -0.631,
+    "violated": true,
+    "samples": [
+     {
+      "s": 80.9,
+      "road_z": 369.752,
+      "terrain_z": 370.383,
+      "dz": -0.631
+     }
+    ]
+   },
+   {
+    "road_id": "51389",
+    "class": "elevated",
+    "worst_dz": 0.269,
+    "violated": true,
+    "samples": [
+     {
+      "s": 11.4,
+      "road_z": 371.692,
+      "terrain_z": 371.423,
+      "dz": 0.269
+     }
+    ]
+   },
+   {
+    "road_id": "51392",
+    "class": "tunnel",
+    "worst_dz": 0.478,
+    "violated": true,
+    "samples": [
+     {
+      "s": 8.8,
+      "road_z": 375.829,
+      "terrain_z": 375.35,
+      "dz": 0.478
+     }
+    ]
+   },
+   {
+    "road_id": "51393",
+    "class": "elevated",
+    "worst_dz": -1.55,
+    "violated": true,
+    "samples": [
+     {
+      "s": 14.3,
+      "road_z": 374.716,
+      "terrain_z": 375.938,
+      "dz": -1.223
+     },
+     {
+      "s": 29.4,
+      "road_z": 374.828,
+      "terrain_z": 375.938,
+      "dz": -1.11
+     },
+     {
+      "s": 31.2,
+      "road_z": 374.842,
+      "terrain_z": 376.082,
+      "dz": -1.24
+     },
+     {
+      "s": 33.3,
+      "road_z": 374.858,
+      "terrain_z": 376.082,
+      "dz": -1.224
+     },
+     {
+      "s": 35.5,
+      "road_z": 374.874,
+      "terrain_z": 376.082,
+      "dz": -1.208
+     },
+     {
+      "s": 37.7,
+      "road_z": 374.89,
+      "terrain_z": 376.082,
+      "dz": -1.192
+     },
+     {
+      "s": 39.7,
+      "road_z": 374.906,
+      "terrain_z": 376.082,
+      "dz": -1.176
+     },
+     {
+      "s": 41.6,
+      "road_z": 374.919,
+      "terrain_z": 376.082,
+      "dz": -1.162
+     },
+     {
+      "s": 61.6,
+      "road_z": 375.069,
+      "terrain_z": 376.619,
+      "dz": -1.55
+     },
+     {
+      "s": 81.7,
+      "road_z": 375.219,
+      "terrain_z": 376.619,
+      "dz": -1.401
+     },
+     {
+      "s": 83.5,
+      "road_z": 375.232,
+      "terrain_z": 376.619,
+      "dz": -1.387
+     },
+     {
+      "s": 85.6,
+      "road_z": 375.247,
+      "terrain_z": 376.619,
+      "dz": -1.372
+     },
+     {
+      "s": 87.6,
+      "road_z": 375.263,
+      "terrain_z": 376.619,
+      "dz": -1.357
+     },
+     {
+      "s": 89.5,
+      "road_z": 375.276,
+      "terrain_z": 376.619,
+      "dz": -1.343
+     },
+     {
+      "s": 92.3,
+      "road_z": 375.297,
+      "terrain_z": 376.619,
+      "dz": -1.322
+     }
+    ]
+   },
+   {
+    "road_id": "51437",
+    "class": "tunnel",
+    "worst_dz": -1.924,
+    "violated": false,
+    "samples": [
+     {
+      "s": 1.5,
+      "road_z": 370.094,
+      "terrain_z": 372.019,
+      "dz": -1.924
+     },
+     {
+      "s": 4.0,
+      "road_z": 370.094,
+      "terrain_z": 372.019,
+      "dz": -1.924
+     },
+     {
+      "s": 5.9,
+      "road_z": 370.094,
+      "terrain_z": 372.019,
+      "dz": -1.924
+     },
+     {
+      "s": 7.9,
+      "road_z": 370.094,
+      "terrain_z": 372.019,
+      "dz": -1.924
+     },
+     {
+      "s": 9.5,
+      "road_z": 370.094,
+      "terrain_z": 372.019,
+      "dz": -1.924
+     },
+     {
+      "s": 11.0,
+      "road_z": 370.094,
+      "terrain_z": 372.019,
+      "dz": -1.924
+     },
+     {
+      "s": 12.5,
+      "road_z": 370.094,
+      "terrain_z": 372.019,
+      "dz": -1.924
+     },
+     {
+      "s": 13.6,
+      "road_z": 370.094,
+      "terrain_z": 372.019,
+      "dz": -1.924
+     }
+    ]
+   },
+   {
+    "road_id": "51587",
+    "class": "elevated",
+    "worst_dz": 1.069,
+    "violated": false,
+    "samples": [
+     {
+      "s": 4.1,
+      "road_z": 380.526,
+      "terrain_z": 378.765,
+      "dz": 1.761
+     },
+     {
+      "s": 66.3,
+      "road_z": 380.119,
+      "terrain_z": 377.818,
+      "dz": 2.301
+     },
+     {
+      "s": 102.5,
+      "road_z": 379.882,
+      "terrain_z": 377.017,
+      "dz": 2.865
+     },
+     {
+      "s": 135.1,
+      "road_z": 379.668,
+      "terrain_z": 376.421,
+      "dz": 3.247
+     },
+     {
+      "s": 168.7,
+      "road_z": 379.448,
+      "terrain_z": 376.499,
+      "dz": 2.95
+     },
+     {
+      "s": 201.5,
+      "road_z": 379.234,
+      "terrain_z": 376.881,
+      "dz": 2.353
+     },
+     {
+      "s": 233.7,
+      "road_z": 379.024,
+      "terrain_z": 377.571,
+      "dz": 1.452
+     },
+     {
+      "s": 266.6,
+      "road_z": 378.808,
+      "terrain_z": 377.739,
+      "dz": 1.069
+     }
+    ]
+   },
+   {
+    "road_id": "51724",
+    "class": "tunnel",
+    "worst_dz": 1.285,
+    "violated": true,
+    "samples": [
+     {
+      "s": 2.6,
+      "road_z": 377.27,
+      "terrain_z": 376.82,
+      "dz": 0.45
+     },
+     {
+      "s": 5.9,
+      "road_z": 377.416,
+      "terrain_z": 376.82,
+      "dz": 0.596
+     },
+     {
+      "s": 7.4,
+      "road_z": 377.481,
+      "terrain_z": 376.82,
+      "dz": 0.661
+     },
+     {
+      "s": 8.9,
+      "road_z": 377.546,
+      "terrain_z": 376.82,
+      "dz": 0.726
+     },
+     {
+      "s": 10.3,
+      "road_z": 377.612,
+      "terrain_z": 376.82,
+      "dz": 0.792
+     },
+     {
+      "s": 12.1,
+      "road_z": 377.691,
+      "terrain_z": 376.82,
+      "dz": 0.871
+     },
+     {
+      "s": 14.1,
+      "road_z": 377.78,
+      "terrain_z": 376.82,
+      "dz": 0.96
+     },
+     {
+      "s": 16.1,
+      "road_z": 377.869,
+      "terrain_z": 376.82,
+      "dz": 1.049
+     },
+     {
+      "s": 17.9,
+      "road_z": 377.948,
+      "terrain_z": 376.82,
+      "dz": 1.128
+     },
+     {
+      "s": 19.6,
+      "road_z": 378.021,
+      "terrain_z": 376.82,
+      "dz": 1.202
+     },
+     {
+      "s": 21.5,
+      "road_z": 378.105,
+      "terrain_z": 376.82,
+      "dz": 1.285
+     },
+     {
+      "s": 23.6,
+      "road_z": 378.199,
+      "terrain_z": 378.107,
+      "dz": 0.092
+     },
+     {
+      "s": 25.7,
+      "road_z": 378.292,
+      "terrain_z": 378.107,
+      "dz": 0.186
+     },
+     {
+      "s": 27.6,
+      "road_z": 378.376,
+      "terrain_z": 378.107,
+      "dz": 0.269
+     },
+     {
+      "s": 36.6,
+      "road_z": 378.777,
+      "terrain_z": 378.107,
+      "dz": 0.67
+     }
+    ]
+   },
+   {
+    "road_id": "51995",
+    "class": "elevated",
+    "worst_dz": -0.05,
+    "violated": true,
+    "samples": [
+     {
+      "s": 0.9,
+      "road_z": 369.012,
+      "terrain_z": 369.056,
+      "dz": -0.045
+     },
+     {
+      "s": 2.8,
+      "road_z": 369.006,
+      "terrain_z": 369.056,
+      "dz": -0.05
+     },
+     {
+      "s": 4.8,
+      "road_z": 369.0,
+      "terrain_z": 368.037,
+      "dz": 0.963
+     },
+     {
+      "s": 6.9,
+      "road_z": 368.993,
+      "terrain_z": 368.037,
+      "dz": 0.956
+     },
+     {
+      "s": 9.1,
+      "road_z": 368.986,
+      "terrain_z": 368.037,
+      "dz": 0.949
+     },
+     {
+      "s": 12.2,
+      "road_z": 368.977,
+      "terrain_z": 368.037,
+      "dz": 0.94
+     },
+     {
+      "s": 37.0,
+      "road_z": 368.9,
+      "terrain_z": 368.463,
+      "dz": 0.437
+     },
+     {
+      "s": 64.0,
+      "road_z": 368.817,
+      "terrain_z": 368.821,
+      "dz": -0.004
+     },
+     {
+      "s": 72.2,
+      "road_z": 368.792,
+      "terrain_z": 368.821,
+      "dz": -0.029
+     }
+    ]
+   },
+   {
+    "road_id": "52025",
+    "class": "tunnel",
+    "worst_dz": 0.633,
+    "violated": true,
+    "samples": [
+     {
+      "s": 10.6,
+      "road_z": 370.585,
+      "terrain_z": 369.952,
+      "dz": 0.633
+     }
+    ]
+   },
+   {
+    "road_id": "52026",
+    "class": "tunnel",
+    "worst_dz": 0.256,
+    "violated": true,
+    "samples": [
+     {
+      "s": 5.2,
+      "road_z": 371.172,
+      "terrain_z": 370.916,
+      "dz": 0.256
+     }
+    ]
+   },
+   {
+    "road_id": "52027",
+    "class": "tunnel",
+    "worst_dz": 0.1,
+    "violated": true,
+    "samples": [
+     {
+      "s": 8.6,
+      "road_z": 371.016,
+      "terrain_z": 370.916,
+      "dz": 0.1
+     }
+    ]
+   },
+   {
+    "road_id": "52029",
+    "class": "tunnel",
+    "worst_dz": 0.041,
+    "violated": true,
+    "samples": [
+     {
+      "s": 0.0,
+      "road_z": 369.993,
+      "terrain_z": 369.952,
+      "dz": 0.041
+     }
+    ]
+   },
+   {
+    "road_id": "52070",
+    "class": "tunnel",
+    "worst_dz": 0.266,
+    "violated": true,
+    "samples": [
+     {
+      "s": 5.2,
+      "road_z": 370.065,
+      "terrain_z": 369.798,
+      "dz": 0.266
+     }
+    ]
+   },
+   {
+    "road_id": "52110",
+    "class": "elevated",
+    "worst_dz": -0.13,
+    "violated": true,
+    "samples": [
+     {
+      "s": 1.5,
+      "road_z": 370.308,
+      "terrain_z": 370.437,
+      "dz": -0.13
+     }
+    ]
+   },
+   {
+    "road_id": "52111",
+    "class": "elevated",
+    "worst_dz": -0.016,
+    "violated": true,
+    "samples": [
+     {
+      "s": 1.5,
+      "road_z": 370.422,
+      "terrain_z": 370.437,
+      "dz": -0.016
+     }
+    ]
+   },
+   {
+    "road_id": "52656",
+    "class": "elevated",
+    "worst_dz": -2.629,
+    "violated": true,
+    "samples": [
+     {
+      "s": 5.2,
+      "road_z": 365.168,
+      "terrain_z": 367.798,
+      "dz": -2.629
+     }
+    ]
+   },
+   {
+    "road_id": "52794",
+    "class": "elevated",
+    "worst_dz": 0.953,
+    "violated": false,
+    "samples": [
+     {
+      "s": 11.8,
+      "road_z": 380.742,
+      "terrain_z": 379.789,
+      "dz": 0.953
+     }
+    ]
+   },
+   {
+    "road_id": "52795",
+    "class": "elevated",
+    "worst_dz": 0.816,
+    "violated": false,
+    "samples": [
+     {
+      "s": 5.2,
+      "road_z": 380.606,
+      "terrain_z": 379.789,
+      "dz": 0.816
+     }
+    ]
+   },
+   {
+    "road_id": "52799",
+    "class": "elevated",
+    "worst_dz": 0.963,
+    "violated": false,
+    "samples": [
+     {
+      "s": 5.2,
+      "road_z": 384.376,
+      "terrain_z": 383.413,
+      "dz": 0.963
+     }
+    ]
+   },
+   {
+    "road_id": "52806",
+    "class": "elevated",
+    "worst_dz": 2.132,
+    "violated": false,
+    "samples": [
+     {
+      "s": 6.4,
+      "road_z": 381.267,
+      "terrain_z": 379.135,
+      "dz": 2.132
+     }
+    ]
+   },
+   {
+    "road_id": "52808",
+    "class": "elevated",
+    "worst_dz": 0.877,
+    "violated": false,
+    "samples": [
+     {
+      "s": 5.2,
+      "road_z": 380.666,
+      "terrain_z": 379.789,
+      "dz": 0.877
+     }
+    ]
+   },
+   {
+    "road_id": "53621",
+    "class": "elevated",
+    "worst_dz": 1.76,
+    "violated": false,
+    "samples": [
+     {
+      "s": 6.1,
+      "road_z": 374.614,
+      "terrain_z": 372.854,
+      "dz": 1.76
+     }
+    ]
+   },
+   {
+    "road_id": "53622",
+    "class": "elevated",
+    "worst_dz": 1.864,
+    "violated": false,
+    "samples": [
+     {
+      "s": 9.2,
+      "road_z": 374.719,
+      "terrain_z": 372.854,
+      "dz": 1.864
+     }
+    ]
+   },
+   {
+    "road_id": "53623",
+    "class": "elevated",
+    "worst_dz": 2.142,
+    "violated": false,
+    "samples": [
+     {
+      "s": 9.2,
+      "road_z": 374.738,
+      "terrain_z": 372.596,
+      "dz": 2.142
+     }
+    ]
+   },
+   {
+    "road_id": "53624",
+    "class": "elevated",
+    "worst_dz": 1.911,
+    "violated": false,
+    "samples": [
+     {
+      "s": 7.0,
+      "road_z": 374.766,
+      "terrain_z": 372.854,
+      "dz": 1.911
+     }
+    ]
+   },
+   {
+    "road_id": "53625",
+    "class": "elevated",
+    "worst_dz": 1.969,
+    "violated": false,
+    "samples": [
+     {
+      "s": 6.7,
+      "road_z": 374.824,
+      "terrain_z": 372.854,
+      "dz": 1.969
+     }
+    ]
+   },
+   {
+    "road_id": "53626",
+    "class": "elevated",
+    "worst_dz": 2.077,
+    "violated": false,
+    "samples": [
+     {
+      "s": 6.1,
+      "road_z": 374.673,
+      "terrain_z": 372.596,
+      "dz": 2.077
+     }
+    ]
+   },
+   {
+    "road_id": "54318",
+    "class": "elevated",
+    "worst_dz": 1.687,
+    "violated": false,
+    "samples": [
+     {
+      "s": 0.2,
+      "road_z": 375.187,
+      "terrain_z": 373.5,
+      "dz": 1.687
+     }
+    ]
+   },
+   {
+    "road_id": "54319",
+    "class": "elevated",
+    "worst_dz": 1.924,
+    "violated": false,
+    "samples": [
+     {
+      "s": 0.2,
+      "road_z": 375.424,
+      "terrain_z": 373.5,
+      "dz": 1.924
+     }
+    ]
+   },
+   {
+    "road_id": "56614",
+    "class": "elevated",
+    "worst_dz": 0.433,
+    "violated": true,
+    "samples": [
+     {
+      "s": 7.6,
+      "road_z": 365.005,
+      "terrain_z": 364.571,
+      "dz": 0.433
+     }
+    ]
+   },
+   {
+    "road_id": "56615",
+    "class": "elevated",
+    "worst_dz": 0.228,
+    "violated": true,
+    "samples": [
+     {
+      "s": 6.4,
+      "road_z": 365.042,
+      "terrain_z": 364.814,
+      "dz": 0.228
+     }
+    ]
+   },
+   {
+    "road_id": "56616",
+    "class": "elevated",
+    "worst_dz": 0.641,
+    "violated": false,
+    "samples": [
+     {
+      "s": 5.2,
+      "road_z": 365.212,
+      "terrain_z": 364.571,
+      "dz": 0.641
+     }
+    ]
+   },
+   {
+    "road_id": "56617",
+    "class": "elevated",
+    "worst_dz": 0.749,
+    "violated": false,
+    "samples": [
+     {
+      "s": 6.4,
+      "road_z": 365.32,
+      "terrain_z": 364.571,
+      "dz": 0.749
+     }
+    ]
+   },
+   {
+    "road_id": "56621",
+    "class": "elevated",
+    "worst_dz": 0.612,
+    "violated": false,
+    "samples": [
+     {
+      "s": 7.6,
+      "road_z": 365.183,
+      "terrain_z": 364.571,
+      "dz": 0.612
+     }
+    ]
+   },
+   {
+    "road_id": "57150",
+    "class": "elevated",
+    "worst_dz": -0.349,
+    "violated": true,
+    "samples": [
+     {
+      "s": 0.1,
+      "road_z": 368.067,
+      "terrain_z": 368.416,
+      "dz": -0.349
+     }
+    ]
+   },
+   {
+    "road_id": "57151",
+    "class": "elevated",
+    "worst_dz": -1.499,
+    "violated": true,
+    "samples": [
+     {
+      "s": 0.1,
+      "road_z": 366.917,
+      "terrain_z": 368.416,
+      "dz": -1.499
+     }
+    ]
+   },
+   {
+    "road_id": "57920",
+    "class": "elevated",
+    "worst_dz": 0.075,
+    "violated": true,
+    "samples": [
+     {
+      "s": 0.1,
+      "road_z": 370.499,
+      "terrain_z": 370.424,
+      "dz": 0.075
+     }
+    ]
+   },
+   {
+    "road_id": "57921",
+    "class": "elevated",
+    "worst_dz": -0.658,
+    "violated": true,
+    "samples": [
+     {
+      "s": 0.1,
+      "road_z": 369.766,
+      "terrain_z": 370.424,
+      "dz": -0.658
+     }
+    ]
+   },
+   {
+    "road_id": "59130",
+    "class": "elevated",
+    "worst_dz": 1.2,
+    "violated": false,
+    "samples": [
+     {
+      "s": 0.1,
+      "road_z": 378.208,
+      "terrain_z": 377.008,
+      "dz": 1.2
+     }
+    ]
+   },
+   {
+    "road_id": "59131",
+    "class": "elevated",
+    "worst_dz": 1.389,
+    "violated": false,
+    "samples": [
+     {
+      "s": 0.1,
+      "road_z": 378.397,
+      "terrain_z": 377.008,
+      "dz": 1.389
+     }
+    ]
+   },
+   {
+    "road_id": "59958",
+    "class": "elevated",
+    "worst_dz": 1.379,
+    "violated": false,
+    "samples": [
+     {
+      "s": 2.7,
+      "road_z": 381.266,
+      "terrain_z": 379.888,
+      "dz": 1.379
+     }
+    ]
+   },
+   {
+    "road_id": "59959",
+    "class": "elevated",
+    "worst_dz": 2.197,
+    "violated": false,
+    "samples": [
+     {
+      "s": 3.0,
+      "road_z": 381.622,
+      "terrain_z": 379.425,
+      "dz": 2.197
+     }
+    ]
+   },
+   {
+    "road_id": "59960",
+    "class": "elevated",
+    "worst_dz": 2.163,
+    "violated": false,
+    "samples": [
+     {
+      "s": 6.3,
+      "road_z": 381.448,
+      "terrain_z": 379.284,
+      "dz": 2.163
+     }
+    ]
+   },
+   {
+    "road_id": "59961",
+    "class": "elevated",
+    "worst_dz": 1.868,
+    "violated": false,
+    "samples": [
+     {
+      "s": 11.4,
+      "road_z": 381.292,
+      "terrain_z": 379.425,
+      "dz": 1.868
+     }
+    ]
+   },
+   {
+    "road_id": "59962",
+    "class": "elevated",
+    "worst_dz": 1.936,
+    "violated": false,
+    "samples": [
+     {
+      "s": 9.1,
+      "road_z": 381.361,
+      "terrain_z": 379.425,
+      "dz": 1.936
+     }
+    ]
+   },
+   {
+    "road_id": "60187",
+    "class": "tunnel",
+    "worst_dz": 0.48,
+    "violated": true,
+    "samples": [
+     {
+      "s": 6.4,
+      "road_z": 373.853,
+      "terrain_z": 373.373,
+      "dz": 0.48
+     }
+    ]
+   },
+   {
+    "road_id": "60188",
+    "class": "tunnel",
+    "worst_dz": 0.176,
+    "violated": true,
+    "samples": [
+     {
+      "s": 7.9,
+      "road_z": 373.845,
+      "terrain_z": 373.669,
+      "dz": 0.176
+     }
+    ]
+   },
+   {
+    "road_id": "60189",
+    "class": "tunnel",
+    "worst_dz": 0.496,
+    "violated": true,
+    "samples": [
+     {
+      "s": 7.8,
+      "road_z": 373.349,
+      "terrain_z": 372.853,
+      "dz": 0.496
+     }
+    ]
+   },
+   {
+    "road_id": "60190",
+    "class": "tunnel",
+    "worst_dz": 0.87,
+    "violated": true,
+    "samples": [
+     {
+      "s": 6.3,
+      "road_z": 373.724,
+      "terrain_z": 372.853,
+      "dz": 0.87
+     }
+    ]
+   },
+   {
+    "road_id": "60191",
+    "class": "tunnel",
+    "worst_dz": 0.316,
+    "violated": true,
+    "samples": [
+     {
+      "s": 11.4,
+      "road_z": 373.69,
+      "terrain_z": 373.373,
+      "dz": 0.316
+     }
+    ]
+   },
+   {
+    "road_id": "60192",
+    "class": "tunnel",
+    "worst_dz": 0.081,
+    "violated": true,
+    "samples": [
+     {
+      "s": 7.9,
+      "road_z": 373.75,
+      "terrain_z": 373.669,
+      "dz": 0.081
+     }
+    ]
+   },
+   {
+    "road_id": "60193",
+    "class": "tunnel",
+    "worst_dz": 0.07,
+    "violated": true,
+    "samples": [
+     {
+      "s": 5.2,
+      "road_z": 373.5,
+      "terrain_z": 373.431,
+      "dz": 0.07
+     }
+    ]
+   },
+   {
+    "road_id": "60194",
+    "class": "tunnel",
+    "worst_dz": 0.909,
+    "violated": true,
+    "samples": [
+     {
+      "s": 6.4,
+      "road_z": 373.762,
+      "terrain_z": 372.853,
+      "dz": 0.909
+     }
+    ]
+   },
+   {
+    "road_id": "60195",
+    "class": "tunnel",
+    "worst_dz": 0.673,
+    "violated": true,
+    "samples": [
+     {
+      "s": 7.9,
+      "road_z": 374.047,
+      "terrain_z": 373.373,
+      "dz": 0.673
+     }
+    ]
+   },
+   {
+    "road_id": "60196",
+    "class": "tunnel",
+    "worst_dz": 0.679,
+    "violated": true,
+    "samples": [
+     {
+      "s": 7.9,
+      "road_z": 374.052,
+      "terrain_z": 373.373,
+      "dz": 0.679
+     }
+    ]
+   },
+   {
+    "road_id": "60197",
+    "class": "tunnel",
+    "worst_dz": 0.734,
+    "violated": true,
+    "samples": [
+     {
+      "s": 5.2,
+      "road_z": 374.108,
+      "terrain_z": 373.373,
+      "dz": 0.734
+     }
+    ]
+   },
+   {
+    "road_id": "60198",
+    "class": "tunnel",
+    "worst_dz": 0.29,
+    "violated": true,
+    "samples": [
+     {
+      "s": 6.4,
+      "road_z": 373.96,
+      "terrain_z": 373.669,
+      "dz": 0.29
+     }
+    ]
+   },
+   {
+    "road_id": "60199",
+    "class": "tunnel",
+    "worst_dz": 0.963,
+    "violated": true,
+    "samples": [
+     {
+      "s": 11.4,
+      "road_z": 373.816,
+      "terrain_z": 372.853,
+      "dz": 0.963
+     }
+    ]
+   },
+   {
+    "road_id": "60200",
+    "class": "tunnel",
+    "worst_dz": 0.652,
+    "violated": true,
+    "samples": [
+     {
+      "s": 7.9,
+      "road_z": 374.025,
+      "terrain_z": 373.373,
+      "dz": 0.652
+     }
+    ]
+   },
+   {
+    "road_id": "60201",
+    "class": "tunnel",
+    "worst_dz": 0.613,
+    "violated": true,
+    "samples": [
+     {
+      "s": 5.2,
+      "road_z": 373.987,
+      "terrain_z": 373.373,
+      "dz": 0.613
+     }
+    ]
+   },
+   {
+    "road_id": "60202",
+    "class": "elevated",
+    "worst_dz": 1.156,
+    "violated": false,
+    "samples": [
+     {
+      "s": 0.1,
+      "road_z": 376.479,
+      "terrain_z": 375.322,
+      "dz": 1.156
+     }
+    ]
+   },
+   {
+    "road_id": "60203",
+    "class": "elevated",
+    "worst_dz": 0.941,
+    "violated": false,
+    "samples": [
+     {
+      "s": 0.1,
+      "road_z": 376.264,
+      "terrain_z": 375.322,
+      "dz": 0.941
+     }
+    ]
+   },
+   {
+    "road_id": "60388",
+    "class": "bridge",
+    "worst_dz": -0.518,
+    "violated": true,
+    "samples": [
+     {
+      "s": 4.5,
+      "road_z": 372.693,
+      "terrain_z": 373.211,
+      "dz": -0.518
+     }
+    ]
+   },
+   {
+    "road_id": "60389",
+    "class": "bridge",
+    "worst_dz": -0.519,
+    "violated": true,
+    "samples": [
+     {
+      "s": 4.0,
+      "road_z": 372.692,
+      "terrain_z": 373.211,
+      "dz": -0.519
+     }
+    ]
+   },
+   {
+    "road_id": "60390",
+    "class": "bridge",
+    "worst_dz": 0.627,
+    "violated": false,
+    "samples": [
+     {
+      "s": 4.0,
+      "road_z": 372.827,
+      "terrain_z": 372.199,
+      "dz": 0.627
+     }
+    ]
+   },
+   {
+    "road_id": "61027",
+    "class": "tunnel",
+    "worst_dz": 0.431,
+    "violated": true,
+    "samples": [
+     {
+      "s": 5.2,
+      "road_z": 374.707,
+      "terrain_z": 374.276,
+      "dz": 0.431
+     }
+    ]
+   },
+   {
+    "road_id": "62726",
+    "class": "elevated",
+    "worst_dz": 0.825,
+    "violated": false,
+    "samples": [
+     {
+      "s": 0.1,
+      "road_z": 378.843,
+      "terrain_z": 378.018,
+      "dz": 0.825
+     }
+    ]
+   },
+   {
+    "road_id": "62727",
+    "class": "elevated",
+    "worst_dz": 0.894,
+    "violated": false,
+    "samples": [
+     {
+      "s": 0.1,
+      "road_z": 378.912,
+      "terrain_z": 378.018,
+      "dz": 0.894
+     }
+    ]
+   },
+   {
+    "road_id": "62915",
+    "class": "elevated",
+    "worst_dz": 0.19,
+    "violated": true,
+    "samples": [
+     {
+      "s": 1.5,
+      "road_z": 374.632,
+      "terrain_z": 374.442,
+      "dz": 0.19
+     }
+    ]
+   },
+   {
+    "road_id": "62916",
+    "class": "elevated",
+    "worst_dz": 0.235,
+    "violated": true,
+    "samples": [
+     {
+      "s": 1.5,
+      "road_z": 374.677,
+      "terrain_z": 374.442,
+      "dz": 0.235
+     }
+    ]
+   },
+   {
+    "road_id": "62932",
+    "class": "elevated",
+    "worst_dz": 0.465,
+    "violated": true,
+    "samples": [
+     {
+      "s": 0.1,
+      "road_z": 376.401,
+      "terrain_z": 375.936,
+      "dz": 0.465
+     }
+    ]
+   },
+   {
+    "road_id": "62933",
+    "class": "elevated",
+    "worst_dz": 0.066,
+    "violated": true,
+    "samples": [
+     {
+      "s": 0.1,
+      "road_z": 376.001,
+      "terrain_z": 375.936,
+      "dz": 0.066
+     }
+    ]
+   },
+   {
+    "road_id": "63038",
+    "class": "tunnel",
+    "worst_dz": 1.034,
+    "violated": true,
+    "samples": [
+     {
+      "s": 2.8,
+      "road_z": 377.154,
+      "terrain_z": 376.12,
+      "dz": 1.034
+     }
+    ]
+   },
+   {
+    "road_id": "63077",
+    "class": "tunnel",
+    "worst_dz": 0.721,
+    "violated": true,
+    "samples": [
+     {
+      "s": 4.5,
+      "road_z": 369.893,
+      "terrain_z": 369.172,
+      "dz": 0.721
+     }
+    ]
+   },
+   {
+    "road_id": "63078",
+    "class": "tunnel",
+    "worst_dz": 0.71,
+    "violated": true,
+    "samples": [
+     {
+      "s": 4.0,
+      "road_z": 369.882,
+      "terrain_z": 369.172,
+      "dz": 0.71
+     }
+    ]
+   },
+   {
+    "road_id": "63079",
+    "class": "tunnel",
+    "worst_dz": 0.415,
+    "violated": true,
+    "samples": [
+     {
+      "s": 4.0,
+      "road_z": 369.587,
+      "terrain_z": 369.172,
+      "dz": 0.415
+     }
+    ]
+   },
+   {
+    "road_id": "63338",
+    "class": "elevated",
+    "worst_dz": 0.28,
+    "violated": true,
+    "samples": [
+     {
+      "s": 6.3,
+      "road_z": 366.698,
+      "terrain_z": 366.418,
+      "dz": 0.28
+     }
+    ]
+   },
+   {
+    "road_id": "63341",
+    "class": "elevated",
+    "worst_dz": 0.131,
+    "violated": true,
+    "samples": [
+     {
+      "s": 5.2,
+      "road_z": 366.983,
+      "terrain_z": 366.853,
+      "dz": 0.131
+     }
+    ]
+   },
+   {
+    "road_id": "63351",
+    "class": "elevated",
+    "worst_dz": -0.275,
+    "violated": true,
+    "samples": [
+     {
+      "s": 6.3,
+      "road_z": 366.578,
+      "terrain_z": 366.853,
+      "dz": -0.275
+     }
+    ]
+   },
+   {
+    "road_id": "63534",
+    "class": "elevated",
+    "worst_dz": 1.711,
+    "violated": false,
+    "samples": [
+     {
+      "s": 1.5,
+      "road_z": 377.369,
+      "terrain_z": 375.658,
+      "dz": 1.711
+     }
+    ]
+   },
+   {
+    "road_id": "63535",
+    "class": "elevated",
+    "worst_dz": 1.621,
+    "violated": false,
+    "samples": [
+     {
+      "s": 1.5,
+      "road_z": 377.278,
+      "terrain_z": 375.658,
+      "dz": 1.621
+     }
+    ]
+   },
+   {
+    "road_id": "63626",
+    "class": "tunnel",
+    "worst_dz": -0.605,
+    "violated": false,
+    "samples": [
+     {
+      "s": 0.2,
+      "road_z": 371.413,
+      "terrain_z": 372.019,
+      "dz": -0.605
+     }
+    ]
+   },
+   {
+    "road_id": "63627",
+    "class": "tunnel",
+    "worst_dz": -0.604,
+    "violated": false,
+    "samples": [
+     {
+      "s": 0.1,
+      "road_z": 371.415,
+      "terrain_z": 372.019,
+      "dz": -0.604
+     }
+    ]
+   },
+   {
+    "road_id": "63644",
+    "class": "elevated",
+    "worst_dz": 0.746,
+    "violated": false,
+    "samples": [
+     {
+      "s": 1.3,
+      "road_z": 375.004,
+      "terrain_z": 374.258,
+      "dz": 0.746
+     }
+    ]
+   },
+   {
+    "road_id": "63645",
+    "class": "elevated",
+    "worst_dz": 0.72,
+    "violated": false,
+    "samples": [
+     {
+      "s": 1.3,
+      "road_z": 374.978,
+      "terrain_z": 374.258,
+      "dz": 0.72
+     }
+    ]
+   },
+   {
+    "road_id": "65150",
+    "class": "elevated",
+    "worst_dz": -0.196,
+    "violated": true,
+    "samples": [
+     {
+      "s": 0.1,
+      "road_z": 368.098,
+      "terrain_z": 368.295,
+      "dz": -0.196
+     }
+    ]
+   },
+   {
+    "road_id": "65151",
+    "class": "elevated",
+    "worst_dz": -0.308,
+    "violated": true,
+    "samples": [
+     {
+      "s": 0.1,
+      "road_z": 367.987,
+      "terrain_z": 368.295,
+      "dz": -0.308
+     }
+    ]
+   },
+   {
+    "road_id": "65782",
+    "class": "elevated",
+    "worst_dz": 2.075,
+    "violated": false,
+    "samples": [
+     {
+      "s": 24.8,
+      "road_z": 381.134,
+      "terrain_z": 379.059,
+      "dz": 2.075
+     }
+    ]
+   },
+   {
+    "road_id": "65783",
+    "class": "elevated",
+    "worst_dz": 1.765,
+    "violated": false,
+    "samples": [
+     {
+      "s": 5.4,
+      "road_z": 380.805,
+      "terrain_z": 379.04,
+      "dz": 1.765
+     }
+    ]
+   },
+   {
+    "road_id": "65784",
+    "class": "elevated",
+    "worst_dz": 1.865,
+    "violated": false,
+    "samples": [
+     {
+      "s": 36.9,
+      "road_z": 380.905,
+      "terrain_z": 379.04,
+      "dz": 1.865
+     }
+    ]
+   },
+   {
+    "road_id": "65811",
+    "class": "elevated",
+    "worst_dz": 1.471,
+    "violated": false,
+    "samples": [
+     {
+      "s": 1.4,
+      "road_z": 377.569,
+      "terrain_z": 376.098,
+      "dz": 1.471
+     }
+    ]
+   },
+   {
+    "road_id": "65812",
+    "class": "elevated",
+    "worst_dz": 1.331,
+    "violated": false,
+    "samples": [
+     {
+      "s": 1.4,
+      "road_z": 377.662,
+      "terrain_z": 376.33,
+      "dz": 1.331
+     }
+    ]
+   },
+   {
+    "road_id": "66138",
+    "class": "elevated",
+    "worst_dz": 0.71,
+    "violated": false,
+    "samples": [
+     {
+      "s": 1.5,
+      "road_z": 371.111,
+      "terrain_z": 370.401,
+      "dz": 0.71
+     }
+    ]
+   },
+   {
+    "road_id": "66139",
+    "class": "elevated",
+    "worst_dz": 0.525,
+    "violated": false,
+    "samples": [
+     {
+      "s": 1.5,
+      "road_z": 370.926,
+      "terrain_z": 370.401,
+      "dz": 0.525
+     }
+    ]
+   },
+   {
+    "road_id": "66505",
+    "class": "elevated",
+    "worst_dz": 0.646,
+    "violated": false,
+    "samples": [
+     {
+      "s": 6.3,
+      "road_z": 368.016,
+      "terrain_z": 367.37,
+      "dz": 0.646
+     }
+    ]
+   },
+   {
+    "road_id": "66517",
+    "class": "elevated",
+    "worst_dz": 0.516,
+    "violated": false,
+    "samples": [
+     {
+      "s": 6.3,
+      "road_z": 367.896,
+      "terrain_z": 367.38,
+      "dz": 0.516
+     }
+    ]
+   },
+   {
+    "road_id": "66555",
+    "class": "elevated",
+    "worst_dz": 0.62,
+    "violated": false,
+    "samples": [
+     {
+      "s": 3.9,
+      "road_z": 368.001,
+      "terrain_z": 367.38,
+      "dz": 0.62
+     }
+    ]
+   },
+   {
+    "road_id": "66556",
+    "class": "elevated",
+    "worst_dz": 0.711,
+    "violated": false,
+    "samples": [
+     {
+      "s": 4.5,
+      "road_z": 368.092,
+      "terrain_z": 367.38,
+      "dz": 0.711
+     }
+    ]
+   },
+   {
+    "road_id": "66557",
+    "class": "elevated",
+    "worst_dz": 0.721,
+    "violated": false,
+    "samples": [
+     {
+      "s": 3.9,
+      "road_z": 368.101,
+      "terrain_z": 367.38,
+      "dz": 0.721
+     }
+    ]
+   },
+   {
+    "road_id": "66630",
+    "class": "elevated",
+    "worst_dz": 0.049,
+    "violated": true,
+    "samples": [
+     {
+      "s": 4.5,
+      "road_z": 369.047,
+      "terrain_z": 368.998,
+      "dz": 0.049
+     }
+    ]
+   },
+   {
+    "road_id": "66631",
+    "class": "elevated",
+    "worst_dz": 0.008,
+    "violated": true,
+    "samples": [
+     {
+      "s": 4.0,
+      "road_z": 369.064,
+      "terrain_z": 369.056,
+      "dz": 0.008
+     }
+    ]
+   },
+   {
+    "road_id": "66632",
+    "class": "elevated",
+    "worst_dz": 0.002,
+    "violated": true,
+    "samples": [
+     {
+      "s": 4.5,
+      "road_z": 369.059,
+      "terrain_z": 369.056,
+      "dz": 0.002
+     }
+    ]
+   },
+   {
+    "road_id": "67402",
+    "class": "tunnel",
+    "worst_dz": -0.195,
+    "violated": true,
+    "samples": [
+     {
+      "s": 5.2,
+      "road_z": 368.212,
+      "terrain_z": 368.408,
+      "dz": -0.195
+     }
+    ]
+   },
+   {
+    "road_id": "67617",
+    "class": "tunnel",
+    "worst_dz": -1.028,
+    "violated": false,
+    "samples": [
+     {
+      "s": 1.5,
+      "road_z": 372.597,
+      "terrain_z": 373.624,
+      "dz": -1.028
+     }
+    ]
+   },
+   {
+    "road_id": "67618",
+    "class": "tunnel",
+    "worst_dz": -0.03,
+    "violated": true,
+    "samples": [
+     {
+      "s": 1.5,
+      "road_z": 373.308,
+      "terrain_z": 373.338,
+      "dz": -0.03
+     }
+    ]
+   },
+   {
+    "road_id": "67740",
+    "class": "tunnel",
+    "worst_dz": -0.642,
+    "violated": false,
+    "samples": [
+     {
+      "s": 1.4,
+      "road_z": 372.904,
+      "terrain_z": 373.546,
+      "dz": -0.642
+     }
+    ]
+   },
+   {
+    "road_id": "67741",
+    "class": "tunnel",
+    "worst_dz": -0.629,
+    "violated": false,
+    "samples": [
+     {
+      "s": 1.4,
+      "road_z": 372.896,
+      "terrain_z": 373.526,
+      "dz": -0.629
+     }
+    ]
+   },
+   {
+    "road_id": "67970",
+    "class": "elevated",
+    "worst_dz": 0.64,
+    "violated": false,
+    "samples": [
+     {
+      "s": 0.2,
+      "road_z": 366.764,
+      "terrain_z": 366.124,
+      "dz": 0.64
+     }
+    ]
+   },
+   {
+    "road_id": "67971",
+    "class": "elevated",
+    "worst_dz": 0.286,
+    "violated": true,
+    "samples": [
+     {
+      "s": 0.2,
+      "road_z": 366.41,
+      "terrain_z": 366.124,
+      "dz": 0.286
+     }
+    ]
+   },
+   {
+    "road_id": "68102",
+    "class": "elevated",
+    "worst_dz": 0.944,
+    "violated": false,
+    "samples": [
+     {
+      "s": 7.0,
+      "road_z": 371.83,
+      "terrain_z": 370.886,
+      "dz": 0.944
+     }
+    ]
+   },
+   {
+    "road_id": "68104",
+    "class": "elevated",
+    "worst_dz": -0.639,
+    "violated": true,
+    "samples": [
+     {
+      "s": 7.3,
+      "road_z": 371.081,
+      "terrain_z": 371.72,
+      "dz": -0.639
+     }
+    ]
+   },
+   {
+    "road_id": "68105",
+    "class": "elevated",
+    "worst_dz": -0.584,
+    "violated": true,
+    "samples": [
+     {
+      "s": 7.0,
+      "road_z": 371.136,
+      "terrain_z": 371.72,
+      "dz": -0.584
+     }
+    ]
+   },
+   {
+    "road_id": "68106",
+    "class": "elevated",
+    "worst_dz": 0.1,
+    "violated": true,
+    "samples": [
+     {
+      "s": 5.2,
+      "road_z": 370.987,
+      "terrain_z": 370.886,
+      "dz": 0.1
+     }
+    ]
+   },
+   {
+    "road_id": "68248",
+    "class": "tunnel",
+    "worst_dz": 0.752,
+    "violated": true,
+    "samples": [
+     {
+      "s": 4.4,
+      "road_z": 375.665,
+      "terrain_z": 374.913,
+      "dz": 0.752
+     }
+    ]
+   },
+   {
+    "road_id": "68249",
+    "class": "tunnel",
+    "worst_dz": 0.041,
+    "violated": true,
+    "samples": [
+     {
+      "s": 4.5,
+      "road_z": 375.392,
+      "terrain_z": 375.35,
+      "dz": 0.041
+     }
+    ]
+   },
+   {
+    "road_id": "68311",
+    "class": "elevated",
+    "worst_dz": 1.259,
+    "violated": false,
+    "samples": [
+     {
+      "s": 4.5,
+      "road_z": 375.122,
+      "terrain_z": 373.863,
+      "dz": 1.259
+     }
+    ]
+   },
+   {
+    "road_id": "68312",
+    "class": "elevated",
+    "worst_dz": 1.286,
+    "violated": false,
+    "samples": [
+     {
+      "s": 5.6,
+      "road_z": 375.149,
+      "terrain_z": 373.863,
+      "dz": 1.286
+     }
+    ]
+   },
+   {
+    "road_id": "68313",
+    "class": "elevated",
+    "worst_dz": 1.285,
+    "violated": false,
+    "samples": [
+     {
+      "s": 4.3,
+      "road_z": 375.148,
+      "terrain_z": 373.863,
+      "dz": 1.285
+     }
+    ]
+   },
+   {
+    "road_id": "68314",
+    "class": "elevated",
+    "worst_dz": 1.284,
+    "violated": false,
+    "samples": [
+     {
+      "s": 3.9,
+      "road_z": 375.147,
+      "terrain_z": 373.863,
+      "dz": 1.284
+     }
+    ]
+   },
+   {
+    "road_id": "68595",
+    "class": "tunnel",
+    "worst_dz": 0.171,
+    "violated": true,
+    "samples": [
+     {
+      "s": 18.9,
+      "road_z": 374.674,
+      "terrain_z": 374.503,
+      "dz": 0.171
+     }
+    ]
+   },
+   {
+    "road_id": "68682",
+    "class": "tunnel",
+    "worst_dz": -1.734,
+    "violated": false,
+    "samples": [
+     {
+      "s": 6.2,
+      "road_z": 378.498,
+      "terrain_z": 380.231,
+      "dz": -1.734
+     }
+    ]
+   },
+   {
+    "road_id": "68683",
+    "class": "tunnel",
+    "worst_dz": -1.544,
+    "violated": false,
+    "samples": [
+     {
+      "s": 10.0,
+      "road_z": 378.688,
+      "terrain_z": 380.231,
+      "dz": -1.544
+     }
+    ]
+   },
+   {
+    "road_id": "68742",
+    "class": "elevated",
+    "worst_dz": -1.812,
+    "violated": true,
+    "samples": [
+     {
+      "s": 1.4,
+      "road_z": 370.55,
+      "terrain_z": 372.362,
+      "dz": -1.812
+     }
+    ]
+   },
+   {
+    "road_id": "68743",
+    "class": "elevated",
+    "worst_dz": -1.813,
+    "violated": true,
+    "samples": [
+     {
+      "s": 1.4,
+      "road_z": 370.548,
+      "terrain_z": 372.362,
+      "dz": -1.813
+     }
+    ]
+   },
+   {
+    "road_id": "69186",
+    "class": "elevated",
+    "worst_dz": 0.596,
+    "violated": false,
+    "samples": [
+     {
+      "s": 2.7,
+      "road_z": 369.249,
+      "terrain_z": 368.653,
+      "dz": 0.596
+     }
+    ]
+   },
+   {
+    "road_id": "69187",
+    "class": "elevated",
+    "worst_dz": 0.347,
+    "violated": true,
+    "samples": [
+     {
+      "s": 5.2,
+      "road_z": 369.0,
+      "terrain_z": 368.653,
+      "dz": 0.347
+     }
+    ]
+   },
+   {
+    "road_id": "69188",
+    "class": "elevated",
+    "worst_dz": 0.737,
+    "violated": false,
+    "samples": [
+     {
+      "s": 4.3,
+      "road_z": 369.391,
+      "terrain_z": 368.653,
+      "dz": 0.737
+     }
+    ]
+   },
+   {
+    "road_id": "69189",
+    "class": "elevated",
+    "worst_dz": 0.774,
+    "violated": false,
+    "samples": [
+     {
+      "s": 2.7,
+      "road_z": 369.427,
+      "terrain_z": 368.653,
+      "dz": 0.774
+     }
+    ]
+   },
+   {
+    "road_id": "69275",
+    "class": "elevated",
+    "worst_dz": 2.243,
+    "violated": false,
+    "samples": [
+     {
+      "s": 5.4,
+      "road_z": 381.194,
+      "terrain_z": 378.951,
+      "dz": 2.243
+     }
+    ]
+   },
+   {
+    "road_id": "69276",
+    "class": "elevated",
+    "worst_dz": 1.653,
+    "violated": false,
+    "samples": [
+     {
+      "s": 3.7,
+      "road_z": 381.364,
+      "terrain_z": 379.711,
+      "dz": 1.653
+     }
+    ]
+   },
+   {
+    "road_id": "69277",
+    "class": "elevated",
+    "worst_dz": 1.734,
+    "violated": false,
+    "samples": [
+     {
+      "s": 5.7,
+      "road_z": 381.013,
+      "terrain_z": 379.279,
+      "dz": 1.734
+     }
+    ]
+   },
+   {
+    "road_id": "69278",
+    "class": "elevated",
+    "worst_dz": 1.708,
+    "violated": false,
+    "samples": [
+     {
+      "s": 4.5,
+      "road_z": 380.987,
+      "terrain_z": 379.279,
+      "dz": 1.708
+     }
+    ]
+   },
+   {
+    "road_id": "69516",
+    "class": "elevated",
+    "worst_dz": 0.193,
+    "violated": true,
+    "samples": [
+     {
+      "s": 0.4,
+      "road_z": 373.115,
+      "terrain_z": 372.922,
+      "dz": 0.193
+     }
+    ]
+   },
+   {
+    "road_id": "69517",
+    "class": "elevated",
+    "worst_dz": 1.08,
+    "violated": false,
+    "samples": [
+     {
+      "s": 0.4,
+      "road_z": 374.001,
+      "terrain_z": 372.922,
+      "dz": 1.08
+     }
+    ]
+   },
+   {
+    "road_id": "69651",
+    "class": "elevated",
+    "worst_dz": -0.639,
+    "violated": true,
+    "samples": [
+     {
+      "s": 4.1,
+      "road_z": 368.447,
+      "terrain_z": 369.085,
+      "dz": -0.639
+     }
+    ]
+   },
+   {
+    "road_id": "69652",
+    "class": "elevated",
+    "worst_dz": -0.606,
+    "violated": true,
+    "samples": [
+     {
+      "s": 4.1,
+      "road_z": 368.479,
+      "terrain_z": 369.085,
+      "dz": -0.606
+     }
+    ]
+   },
+   {
+    "road_id": "69767",
+    "class": "elevated",
+    "worst_dz": 0.174,
+    "violated": true,
+    "samples": [
+     {
+      "s": 3.9,
+      "road_z": 368.149,
+      "terrain_z": 367.975,
+      "dz": 0.174
+     }
+    ]
+   },
+   {
+    "road_id": "69809",
+    "class": "elevated",
+    "worst_dz": -0.58,
+    "violated": true,
+    "samples": [
+     {
+      "s": 4.5,
+      "road_z": 366.719,
+      "terrain_z": 367.299,
+      "dz": -0.58
+     }
+    ]
+   },
+   {
+    "road_id": "69810",
+    "class": "elevated",
+    "worst_dz": -0.606,
+    "violated": true,
+    "samples": [
+     {
+      "s": 4.0,
+      "road_z": 366.693,
+      "terrain_z": 367.299,
+      "dz": -0.606
+     }
+    ]
+   },
+   {
+    "road_id": "69969",
+    "class": "elevated",
+    "worst_dz": -0.666,
+    "violated": true,
+    "samples": [
+     {
+      "s": 3.9,
+      "road_z": 367.038,
+      "terrain_z": 367.704,
+      "dz": -0.666
+     }
+    ]
+   },
+   {
+    "road_id": "69981",
+    "class": "elevated",
+    "worst_dz": -0.244,
+    "violated": true,
+    "samples": [
+     {
+      "s": 1.8,
+      "road_z": 367.461,
+      "terrain_z": 367.704,
+      "dz": -0.244
+     }
+    ]
+   },
+   {
+    "road_id": "69982",
+    "class": "elevated",
+    "worst_dz": -0.154,
+    "violated": true,
+    "samples": [
+     {
+      "s": 1.7,
+      "road_z": 367.55,
+      "terrain_z": 367.704,
+      "dz": -0.154
+     }
+    ]
+   },
+   {
+    "road_id": "70058",
+    "class": "elevated",
+    "worst_dz": 2.037,
+    "violated": false,
+    "samples": [
+     {
+      "s": 5.8,
+      "road_z": 381.876,
+      "terrain_z": 379.839,
+      "dz": 2.037
+     }
+    ]
+   },
+   {
+    "road_id": "70059",
+    "class": "elevated",
+    "worst_dz": 1.814,
+    "violated": false,
+    "samples": [
+     {
+      "s": 4.3,
+      "road_z": 381.773,
+      "terrain_z": 379.959,
+      "dz": 1.814
+     }
+    ]
+   },
+   {
+    "road_id": "70060",
+    "class": "elevated",
+    "worst_dz": 1.741,
+    "violated": false,
+    "samples": [
+     {
+      "s": 5.5,
+      "road_z": 381.768,
+      "terrain_z": 380.027,
+      "dz": 1.741
+     }
+    ]
+   },
+   {
+    "road_id": "70061",
+    "class": "elevated",
+    "worst_dz": 1.724,
+    "violated": false,
+    "samples": [
+     {
+      "s": 6.8,
+      "road_z": 381.751,
+      "terrain_z": 380.027,
+      "dz": 1.724
+     }
+    ]
+   },
+   {
+    "road_id": "70091",
+    "class": "tunnel",
+    "worst_dz": -0.024,
+    "violated": true,
+    "samples": [
+     {
+      "s": 2.7,
+      "road_z": 377.079,
+      "terrain_z": 377.103,
+      "dz": -0.024
+     }
+    ]
+   },
+   {
+    "road_id": "70099",
+    "class": "tunnel",
+    "worst_dz": -1.833,
+    "violated": false,
+    "samples": [
+     {
+      "s": 1.3,
+      "road_z": 370.185,
+      "terrain_z": 372.019,
+      "dz": -1.833
+     }
+    ]
+   },
+   {
+    "road_id": "70133",
+    "class": "elevated",
+    "worst_dz": 0.445,
+    "violated": true,
+    "samples": [
+     {
+      "s": 4.1,
+      "road_z": 370.654,
+      "terrain_z": 370.209,
+      "dz": 0.445
+     }
+    ]
+   },
+   {
+    "road_id": "70134",
+    "class": "elevated",
+    "worst_dz": 0.434,
+    "violated": true,
+    "samples": [
+     {
+      "s": 4.2,
+      "road_z": 370.643,
+      "terrain_z": 370.209,
+      "dz": 0.434
+     }
+    ]
+   },
+   {
+    "road_id": "71584",
+    "class": "tunnel",
+    "worst_dz": -0.326,
+    "violated": true,
+    "samples": [
+     {
+      "s": 14.4,
+      "road_z": 374.944,
+      "terrain_z": 375.269,
+      "dz": -0.326
+     }
+    ]
+   },
+   {
+    "road_id": "71585",
+    "class": "tunnel",
+    "worst_dz": -0.266,
+    "violated": true,
+    "samples": [
+     {
+      "s": 8.4,
+      "road_z": 375.003,
+      "terrain_z": 375.269,
+      "dz": -0.266
+     }
+    ]
+   },
+   {
+    "road_id": "71587",
+    "class": "tunnel",
+    "worst_dz": -0.082,
+    "violated": true,
+    "samples": [
+     {
+      "s": 7.8,
+      "road_z": 375.188,
+      "terrain_z": 375.269,
+      "dz": -0.082
+     }
+    ]
+   },
+   {
+    "road_id": "71588",
+    "class": "tunnel",
+    "worst_dz": 0.385,
+    "violated": true,
+    "samples": [
+     {
+      "s": 6.4,
+      "road_z": 375.17,
+      "terrain_z": 374.785,
+      "dz": 0.385
+     }
+    ]
+   },
+   {
+    "road_id": "71589",
+    "class": "tunnel",
+    "worst_dz": 0.686,
+    "violated": true,
+    "samples": [
+     {
+      "s": 13.2,
+      "road_z": 375.262,
+      "terrain_z": 374.576,
+      "dz": 0.686
+     }
+    ]
+   },
+   {
+    "road_id": "71590",
+    "class": "tunnel",
+    "worst_dz": 0.694,
+    "violated": true,
+    "samples": [
+     {
+      "s": 8.3,
+      "road_z": 375.406,
+      "terrain_z": 374.712,
+      "dz": 0.694
+     }
+    ]
+   },
+   {
+    "road_id": "71591",
+    "class": "tunnel",
+    "worst_dz": 0.071,
+    "violated": true,
+    "samples": [
+     {
+      "s": 6.7,
+      "road_z": 375.34,
+      "terrain_z": 375.269,
+      "dz": 0.071
+     }
+    ]
+   },
+   {
+    "road_id": "71593",
+    "class": "tunnel",
+    "worst_dz": 0.557,
+    "violated": true,
+    "samples": [
+     {
+      "s": 8.2,
+      "road_z": 375.133,
+      "terrain_z": 374.576,
+      "dz": 0.557
+     }
+    ]
+   },
+   {
+    "road_id": "71665",
+    "class": "tunnel",
+    "worst_dz": 0.711,
+    "violated": true,
+    "samples": [
+     {
+      "s": 7.6,
+      "road_z": 378.86,
+      "terrain_z": 378.149,
+      "dz": 0.711
+     }
+    ]
+   },
+   {
+    "road_id": "71666",
+    "class": "tunnel",
+    "worst_dz": 0.557,
+    "violated": true,
+    "samples": [
+     {
+      "s": 6.5,
+      "road_z": 378.706,
+      "terrain_z": 378.149,
+      "dz": 0.557
+     }
+    ]
+   },
+   {
+    "road_id": "71667",
+    "class": "tunnel",
+    "worst_dz": 0.628,
+    "violated": true,
+    "samples": [
+     {
+      "s": 5.2,
+      "road_z": 378.777,
+      "terrain_z": 378.149,
+      "dz": 0.628
+     }
+    ]
+   },
+   {
+    "road_id": "71668",
+    "class": "tunnel",
+    "worst_dz": 0.798,
+    "violated": true,
+    "samples": [
+     {
+      "s": 6.5,
+      "road_z": 378.947,
+      "terrain_z": 378.149,
+      "dz": 0.798
+     }
+    ]
+   },
+   {
+    "road_id": "71670",
+    "class": "tunnel",
+    "worst_dz": 0.665,
+    "violated": true,
+    "samples": [
+     {
+      "s": 5.2,
+      "road_z": 378.815,
+      "terrain_z": 378.149,
+      "dz": 0.665
+     }
+    ]
+   },
+   {
+    "road_id": "71672",
+    "class": "tunnel",
+    "worst_dz": 0.803,
+    "violated": true,
+    "samples": [
+     {
+      "s": 7.6,
+      "road_z": 378.952,
+      "terrain_z": 378.149,
+      "dz": 0.803
+     }
+    ]
+   },
+   {
+    "road_id": "71784",
+    "class": "elevated",
+    "worst_dz": -1.201,
+    "violated": true,
+    "samples": [
+     {
+      "s": 0.1,
+      "road_z": 373.9,
+      "terrain_z": 375.101,
+      "dz": -1.201
+     }
+    ]
+   },
+   {
+    "road_id": "71785",
+    "class": "elevated",
+    "worst_dz": -0.823,
+    "violated": true,
+    "samples": [
+     {
+      "s": 0.1,
+      "road_z": 374.278,
+      "terrain_z": 375.101,
+      "dz": -0.823
+     }
+    ]
+   },
+   {
+    "road_id": "72404",
+    "class": "elevated",
+    "worst_dz": 0.283,
+    "violated": true,
+    "samples": [
+     {
+      "s": 3.7,
+      "road_z": 368.151,
+      "terrain_z": 367.868,
+      "dz": 0.283
+     }
+    ]
+   },
+   {
+    "road_id": "72405",
+    "class": "elevated",
+    "worst_dz": -0.007,
+    "violated": true,
+    "samples": [
+     {
+      "s": 4.4,
+      "road_z": 367.861,
+      "terrain_z": 367.868,
+      "dz": -0.007
+     }
+    ]
+   },
+   {
+    "road_id": "72406",
+    "class": "elevated",
+    "worst_dz": -0.026,
+    "violated": true,
+    "samples": [
+     {
+      "s": 3.7,
+      "road_z": 367.842,
+      "terrain_z": 367.868,
+      "dz": -0.026
+     }
+    ]
+   },
+   {
+    "road_id": "72870",
+    "class": "elevated",
+    "worst_dz": 0.602,
+    "violated": false,
+    "samples": [
+     {
+      "s": 4.5,
+      "road_z": 370.132,
+      "terrain_z": 369.53,
+      "dz": 0.602
+     }
+    ]
+   },
+   {
+    "road_id": "72871",
+    "class": "elevated",
+    "worst_dz": 0.596,
+    "violated": false,
+    "samples": [
+     {
+      "s": 4.0,
+      "road_z": 370.126,
+      "terrain_z": 369.53,
+      "dz": 0.596
+     }
+    ]
+   },
+   {
+    "road_id": "72872",
+    "class": "elevated",
+    "worst_dz": -0.269,
+    "violated": true,
+    "samples": [
+     {
+      "s": 4.0,
+      "road_z": 370.263,
+      "terrain_z": 370.532,
+      "dz": -0.269
+     }
+    ]
+   },
+   {
+    "road_id": "72875",
+    "class": "elevated",
+    "worst_dz": -0.963,
+    "violated": true,
+    "samples": [
+     {
+      "s": 8.1,
+      "road_z": 365.97,
+      "terrain_z": 366.933,
+      "dz": -0.963
+     }
+    ]
+   },
+   {
+    "road_id": "72876",
+    "class": "elevated",
+    "worst_dz": -1.002,
+    "violated": true,
+    "samples": [
+     {
+      "s": 5.2,
+      "road_z": 365.931,
+      "terrain_z": 366.933,
+      "dz": -1.002
+     }
+    ]
+   },
+   {
+    "road_id": "72877",
+    "class": "elevated",
+    "worst_dz": -0.907,
+    "violated": true,
+    "samples": [
+     {
+      "s": 8.1,
+      "road_z": 366.026,
+      "terrain_z": 366.933,
+      "dz": -0.907
+     }
+    ]
+   },
+   {
+    "road_id": "73977",
+    "class": "bridge",
+    "worst_dz": -0.144,
+    "violated": true,
+    "samples": [
+     {
+      "s": 7.9,
+      "road_z": 372.171,
+      "terrain_z": 372.316,
+      "dz": -0.144
+     }
+    ]
+   },
+   {
+    "road_id": "73980",
+    "class": "bridge",
+    "worst_dz": -1.344,
+    "violated": true,
+    "samples": [
+     {
+      "s": 6.6,
+      "road_z": 370.972,
+      "terrain_z": 372.316,
+      "dz": -1.344
+     }
+    ]
+   },
+   {
+    "road_id": "73981",
+    "class": "bridge",
+    "worst_dz": 1.874,
+    "violated": false,
+    "samples": [
+     {
+      "s": 6.6,
+      "road_z": 371.244,
+      "terrain_z": 369.37,
+      "dz": 1.874
+     }
+    ]
+   },
+   {
+    "road_id": "73982",
+    "class": "bridge",
+    "worst_dz": 0.064,
+    "violated": true,
+    "samples": [
+     {
+      "s": 7.9,
+      "road_z": 372.38,
+      "terrain_z": 372.316,
+      "dz": 0.064
+     }
+    ]
+   },
+   {
+    "road_id": "73983",
+    "class": "bridge",
+    "worst_dz": -0.117,
+    "violated": true,
+    "samples": [
+     {
+      "s": 5.2,
+      "road_z": 372.199,
+      "terrain_z": 372.316,
+      "dz": -0.117
+     }
+    ]
+   }
+  ],
+  "ok": false
+ }
+}

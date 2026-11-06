@@ -165,7 +165,8 @@ def test_runner_passes_every_k_root_to_the_trainer(tmp_path, monkeypatch):
         from ultimate_pipeline.perception.rq5_provenance import MULTI_ROOT_TRAIN
 
         roots = [Path(p) for p in cmd[cmd.index("--datasets") + 1 : cmd.index("--camera")]]
-        model = train_launcher._build_model(CARLA_SEMANTIC_NUM_CLASSES)
+        model, contract = train_launcher._build_model(CARLA_SEMANTIC_NUM_CLASSES)
+        assert contract["schema"] == "rq5_pretraining_contract_v1"
         ckpt = model_dir / "seg_fcn_epoch001.pt"
         torch.save(model.state_dict(), ckpt)
         ids = [dataset_content_identity(r, CAMERA) for r in roots]
@@ -226,7 +227,7 @@ def test_failed_training_does_not_evaluate_a_stale_checkpoint(tmp_path, monkeypa
     stale_model_dir.mkdir(parents=True, exist_ok=True)
     from ultimate_pipeline.perception import train_launcher
 
-    model = train_launcher._build_model(CARLA_SEMANTIC_NUM_CLASSES)
+    model, contract = train_launcher._build_model(CARLA_SEMANTIC_NUM_CLASSES)
     stale_ckpt = stale_model_dir / "seg_fcn_epoch001.pt"
     torch.save(model.state_dict(), stale_ckpt)
     ident = dataset_content_identity(gen[0], CAMERA)
@@ -334,7 +335,7 @@ def test_successful_retrain_cannot_evaluate_the_previous_model(tmp_path, monkeyp
         from ultimate_pipeline.perception.rq5_provenance import MULTI_ROOT_TRAIN
 
         roots = [Path(p) for p in cmd[cmd.index("--datasets") + 1 : cmd.index("--camera")]]
-        model = train_launcher._build_model(CARLA_SEMANTIC_NUM_CLASSES)
+        model, contract = train_launcher._build_model(CARLA_SEMANTIC_NUM_CLASSES)
         ckpt = model_dir / "seg_fcn_epoch001.pt"
         torch.save(model.state_dict(), ckpt)
         ids = [dataset_content_identity(r, CAMERA) for r in roots]
@@ -602,7 +603,8 @@ def test_zero_frame_labeled_eval_exits_nonzero_with_null_metrics(tmp_path, monke
     from ultimate_pipeline.perception import train_launcher
 
     ckpt = model_dir / "seg_fcn_epoch001.pt"
-    torch.save(train_launcher._build_model(CARLA_SEMANTIC_NUM_CLASSES).state_dict(), ckpt)
+    model, contract = train_launcher._build_model(CARLA_SEMANTIC_NUM_CLASSES)
+    torch.save(model.state_dict(), ckpt)
 
     empty_ds = tmp_path / "empty"
     (empty_ds / "rgb" / CAMERA).mkdir(parents=True)
@@ -640,7 +642,8 @@ def test_empty_real_world_directory_exits_nonzero(tmp_path, monkeypatch):
     from ultimate_pipeline.perception import train_launcher
 
     ckpt = model_dir / "seg_fcn_epoch001.pt"
-    torch.save(train_launcher._build_model(CARLA_SEMANTIC_NUM_CLASSES).state_dict(), ckpt)
+    model, contract = train_launcher._build_model(CARLA_SEMANTIC_NUM_CLASSES)
+    torch.save(model.state_dict(), ckpt)
 
     real_dir = tmp_path / "real"
     real_dir.mkdir()  # exists, empty
@@ -675,7 +678,8 @@ def test_real_unlabeled_report_declares_it_cannot_produce_accuracy(tmp_path, mon
     from ultimate_pipeline.perception import train_launcher
 
     ckpt = model_dir / "seg_fcn_epoch001.pt"
-    torch.save(train_launcher._build_model(CARLA_SEMANTIC_NUM_CLASSES).state_dict(), ckpt)
+    model, contract = train_launcher._build_model(CARLA_SEMANTIC_NUM_CLASSES)
+    torch.save(model.state_dict(), ckpt)
 
     real_dir = tmp_path / "real"
     real_dir.mkdir()
@@ -784,7 +788,7 @@ def test_model_manifest_binds_checkpoint_dataset_git_and_seed(tmp_path, monkeypa
 def test_verify_checkpoint_manifest_rejects_a_swapped_checkpoint(tmp_path):
     from ultimate_pipeline.perception import train_launcher
 
-    model = train_launcher._build_model(CARLA_SEMANTIC_NUM_CLASSES)
+    model, contract = train_launcher._build_model(CARLA_SEMANTIC_NUM_CLASSES)
     out_dir = tmp_path / "out"
     out_dir.mkdir()
     ckpt = out_dir / "seg_fcn_epoch001.pt"
@@ -815,7 +819,8 @@ def test_verify_checkpoint_manifest_requires_provenance_when_governed(tmp_path):
     out_dir = tmp_path / "out"
     out_dir.mkdir()
     ckpt = out_dir / "seg_fcn_epoch001.pt"
-    torch.save(train_launcher._build_model(CARLA_SEMANTIC_NUM_CLASSES).state_dict(), ckpt)
+    model, contract = train_launcher._build_model(CARLA_SEMANTIC_NUM_CLASSES)
+    torch.save(model.state_dict(), ckpt)
     # A manifest with no dataset identity, git commit or seed.
     write_model_manifest(
         out_dir,
@@ -838,7 +843,7 @@ def test_strict_load_rejects_incompatible_checkpoint(tmp_path):
     """NEW-245: pre-fix, strict=False hid missing/unexpected parameters."""
     from ultimate_pipeline.perception import train_launcher
 
-    model = train_launcher._build_model(CARLA_SEMANTIC_NUM_CLASSES)
+    model, contract = train_launcher._build_model(CARLA_SEMANTIC_NUM_CLASSES)
     state = model.state_dict()
     # Drop one parameter entirely: a partially-initialised model would silently
     # report metrics while never having learned that layer.
@@ -848,31 +853,40 @@ def test_strict_load_rejects_incompatible_checkpoint(tmp_path):
     ckpt = tmp_path / "partial.pt"
     torch.save(partial, ckpt)
 
-    fresh = train_launcher._build_model(CARLA_SEMANTIC_NUM_CLASSES)
+    fresh, contract = train_launcher._build_model(CARLA_SEMANTIC_NUM_CLASSES)
     with pytest.raises(StateDictLoadError) as exc:
         load_state_dict_governed(fresh, ckpt)
     assert victim in str(exc.value) or "missing" in str(exc.value)
 
-    # Explicitly opting in is allowed, and the mismatch is still reported.
-    fresh2 = train_launcher._build_model(CARLA_SEMANTIC_NUM_CLASSES)
+    # Explicitly opting in is allowed only with an explicit migration contract,
+    # and the mismatch is still reported.
+    fresh2, contract = train_launcher._build_model(CARLA_SEMANTIC_NUM_CLASSES)
     record: dict = {}
-    outcome = load_state_dict_governed(fresh2, ckpt, allow_partial=True, record=record)
+    migration_contract = f"NEW-245 test partial load: {victim}"
+    outcome = load_state_dict_governed(
+        fresh2,
+        ckpt,
+        allow_partial=True,
+        record=record,
+        migration_contract=migration_contract,
+    )
     assert victim in outcome["missing_keys"]
     assert outcome["strict"] is False
     assert record["state_dict_load"]["missing_keys"] == outcome["missing_keys"]
+    assert outcome["migration_contract"] == migration_contract
 
 
 def test_strict_load_rejects_unexpected_parameters(tmp_path):
     from ultimate_pipeline.perception import train_launcher
 
-    model = train_launcher._build_model(CARLA_SEMANTIC_NUM_CLASSES)
+    model, contract = train_launcher._build_model(CARLA_SEMANTIC_NUM_CLASSES)
     state = dict(model.state_dict())
     state["totally.unexpected.parameter"] = torch.zeros(1)
 
     ckpt = tmp_path / "extra.pt"
     torch.save(state, ckpt)
 
-    fresh = train_launcher._build_model(CARLA_SEMANTIC_NUM_CLASSES)
+    fresh, contract = train_launcher._build_model(CARLA_SEMANTIC_NUM_CLASSES)
     with pytest.raises(StateDictLoadError, match="unexpected"):
         load_state_dict_governed(fresh, ckpt)
 
@@ -885,7 +899,8 @@ def test_evaluator_refuses_unbound_checkpoint_when_manifest_required(tmp_path, m
     from ultimate_pipeline.perception import train_launcher
 
     ckpt = model_dir / "seg_fcn_epoch001.pt"
-    torch.save(train_launcher._build_model(CARLA_SEMANTIC_NUM_CLASSES).state_dict(), ckpt)
+    model, contract = train_launcher._build_model(CARLA_SEMANTIC_NUM_CLASSES)
+    torch.save(model.state_dict(), ckpt)
     _write_dataset(tmp_path / "ds", n=1)
 
     out_json = tmp_path / "eval.json"
@@ -1021,4 +1036,38 @@ def test_allow_incomplete_flag_can_suppress_the_nonzero_exit(tmp_path, monkeypat
     )
     assert status["experiment_status"] == "incomplete", (
         "the recorded status must stay truthful even when the exit code is suppressed"
+    )
+
+
+def test_checkpoint_disk_guard_receives_supported_keyword(tmp_path, monkeypatch):
+    """RQ5-P1: the checkpoint disk guard must be called with its real keyword.
+
+    Pre-fix, ``train_launcher`` passed ``min_free_disk_bytes=`` to
+    ``require_free_disk``, whose signature only accepts ``min_free_bytes``.
+    The resulting ``TypeError`` was not a ``TrainingFailure``, so it escaped
+    the checkpoint guard and crashed real training at the first save.  The
+    autospec mock below fails on any unsupported keyword, so this test is a
+    genuine regression check rather than a re-implementation of the call.
+    """
+    from unittest import mock
+
+    from ultimate_pipeline.perception import train_launcher, training_failure_guard
+
+    root = _write_dataset(tmp_path / "gen_0", n=3, h=16, w=16, seed=5)
+    out_dir = tmp_path / "out"
+    guard = mock.create_autospec(training_failure_guard.require_free_disk)
+    monkeypatch.setattr(train_launcher, "require_free_disk", guard)
+    # Never write a real checkpoint: this test only exercises the guard call.
+    monkeypatch.setattr(train_launcher, "atomic_torch_save", lambda *a, **k: None)
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        _train_launcher_argv(out_dir, [root], extra=["--no-manifest"]),
+    )
+
+    assert train_launcher.main() == 0
+
+    # argparse default --min-free-disk-mb is 512 MiB.
+    guard.assert_called_once_with(
+        out_dir / "seg_fcn_epoch001.pt", min_free_bytes=512 * 1024 * 1024
     )

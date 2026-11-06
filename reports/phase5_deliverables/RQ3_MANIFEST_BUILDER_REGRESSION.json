@@ -1,0 +1,19 @@
+{
+  "report": "RQ3_MANIFEST_BUILDER_REGRESSION",
+  "version": "v1",
+  "date": "2026-10-21T14:40:00Z",
+  "verdict": "REPAIR_VERIFIED",
+  "fixes_applied": [
+    {"id": "P0-1-manifest-preserve-identity", "file": "experiment_map_pair_authority.py", "before": "All identity hashes dropped to ''; manual_arm={}; auto_arm={}; pair_valid=True hardcoded; claim_level hardcoded", "after": "Identity hashes preserved from params; manual_arm and auto_arm bound to actual data; pair_valid derived from validator; claim_level derived from validator"},
+    {"id": "P0-1-remove-unused-imports", "file": "experiment_map_pair_authority.py", "fix": "Removed redundant duplicate import of build_pair_manifest from rq3_capture_contract"}
+  ],
+  "tests": {
+    "command": "py -m pytest ultimate_pipeline/tests/unit/test_experiment_manifest_negative_controls.py -v",
+    "exit_code": 0,
+    "executed": 8,
+    "passing": 8,
+    "failing": 0,
+    "source_sha": "git hash of experiment_map_pair_authority.py at last commit + edits",
+    "verified_tests": ["test_manifest_preserves_identity_hashes", "test_negative_control_empty_calibration_sha", "test_negative_control_empty_route_sha", "test_negative_control_false_pair_valid", "test_negative_control_mismatched_auto_sha", "test_negative_control_missing_manual_arm", "test_negative_control_tampered_manifest", "test_synthetic_pair_positive"]
+  }
+}

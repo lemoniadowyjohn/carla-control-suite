@@ -150,6 +150,25 @@ def crop_buildings_to_polygon(
     return kept
 
 
+# ------------------------------------------------------------------ geometry
+def effective_auto_offset(
+    auto_proj4: str, auto_offset: Tuple[float, float]
+) -> Tuple[float, float]:
+    """Header <offset> only when the georef has NOT already embedded it.
+
+    P0-E: an absolute geoReference that re-expresses the header rebase as
+    non-zero ``+x_0``/``+y_0`` already maps plan-view (local) coordinates
+    directly, so applying the header <offset> again would be a second
+    translation (600+ km error). Non-embedded geoReferences keep legacy
+    behavior exactly.
+    """
+    from ultimate_pipeline.core.georef_utils import georef_describes_local_coords
+
+    if georef_describes_local_coords(auto_proj4, auto_offset[0], auto_offset[1]):
+        return (0.0, 0.0)
+    return (float(auto_offset[0]), float(auto_offset[1]))
+
+
 def building_frame_shift_to_auto_local(
     osm_lat_min: float,
     osm_lon_min: float,
@@ -165,7 +184,7 @@ def building_frame_shift_to_auto_local(
     auto map's own bare-tmerc CRS, then subtract the auto header `<offset>` — the same
     "global minus offset" step used to register the manual map's footprint.
     """
-    ox, oy = auto_offset
+    ox, oy = effective_auto_offset(auto_proj4, auto_offset)
     to_auto_global = Transformer.from_crs("EPSG:4326", CRS.from_proj4(auto_proj4), always_xy=True)
     gx, gy = to_auto_global.transform(osm_lon_min, osm_lat_min)
     return gx - ox, gy - oy
@@ -185,7 +204,7 @@ def transform_manual_points_to_auto_local(
     points is convex by construction when the input is a bbox's 4 corners; for a hull point
     set this yields the tightened footprint).
     """
-    ox, oy = auto_offset
+    ox, oy = effective_auto_offset(auto_proj4, auto_offset)
     to_ll = Transformer.from_crs(CRS.from_proj4(manual_proj4), "EPSG:4326", always_xy=True)
     to_auto = Transformer.from_crs("EPSG:4326", CRS.from_proj4(auto_proj4), always_xy=True)
     local: List[Tuple[float, float]] = []
@@ -213,7 +232,7 @@ def transform_auto_points_to_manual_local(
     (list in, list out) since callers typically reproject many points per road across many
     roads.
     """
-    ox, oy = auto_offset
+    ox, oy = effective_auto_offset(auto_proj4, auto_offset)
     to_ll = Transformer.from_crs(CRS.from_proj4(auto_proj4), "EPSG:4326", always_xy=True)
     to_manual = Transformer.from_crs("EPSG:4326", CRS.from_proj4(manual_proj4), always_xy=True)
     xs = [float(x) + ox for x, _ in auto_points]

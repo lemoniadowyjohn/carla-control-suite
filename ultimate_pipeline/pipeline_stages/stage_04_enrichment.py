@@ -171,14 +171,17 @@ def _step4_enrichment(self, topo_fixed: str) -> str:
         print("   → Roundabouts tagged for preview.")
     except Exception as e:
         print(f"⚠️ Roundabout tagging skipped: {e}")
-        self.vreport.add("roundabouts", "tagging_failed", str(e))
+        self.vreport.add("error", "roundabouts", f"tagging_failed: {str(e)}")
 
     # Traffic lights
     if getattr(s, "ENABLE_TRAFFIC_LIGHTS", False):
         print("🚦 Inferring traffic lights…")
         try:
             n_lights = TrafficLightInferer.infer_and_insert(root)
-            self.vreport.add("enrichment", "traffic_lights_added", str(n_lights))
+            self.vreport.add("success", "enrichment", f"traffic_lights_added: {str(n_lights)}")
+            self.vreport.add_dict(
+                "traffic_light_run_stats", dict(TrafficLightInferer.last_run_stats)
+            )
             save_xodr(tree, topo_fixed)
             print(f"   → Inserted {n_lights} traffic lights.")
 
@@ -186,10 +189,12 @@ def _step4_enrichment(self, topo_fixed: str) -> str:
             self.vreport.add_dict("traffic_light_junction_coverage", coverage)
             print(
                 "   → Junction signal coverage: "
-                f"{coverage['eligible_junctions_with_inferred_signal']}/"
+                f"{coverage['eligible_junctions_with_signal']}/"
                 f"{coverage['eligible_junctions']} eligible junctions "
-                f"({coverage['eligible_junction_coverage_fraction']:.1%}), "
-                "100% topology-heuristic, no real-world source."
+                f"({coverage['eligible_junction_coverage_fraction']:.1%}) "
+                f"[OSM-grounded: {coverage['eligible_junctions_with_osm_signal']}, "
+                f"heuristic: {coverage['eligible_junctions_with_heuristic_signal']}] "
+                + coverage["provenance"]
             )
 
             print("🧪 Validating traffic light → lane references…")
@@ -205,7 +210,7 @@ def _step4_enrichment(self, topo_fixed: str) -> str:
                 print("⚠️ These must be fixed to guarantee drivable map behavior.")
         except Exception as e:
             print(f"⚠️ Traffic light inference failed: {e}")
-            self.vreport.add("enrichment", "traffic_light_error", str(e))
+            self.vreport.add("error", "enrichment", f"traffic_light_error: {str(e)}")
     else:
         print("⏭️ Traffic light inference disabled.")
 
@@ -246,12 +251,12 @@ def _step4_enrichment(self, topo_fixed: str) -> str:
         try:
             print("✨ Adding realism objects…")
             added = RealismModule.enrich(root)
-            self.vreport.add("realism_objects", "added", str(added))
+            self.vreport.add("success", "realism_objects", f"added: {str(added)}")
             save_xodr(tree, topo_fixed)
             print(f"   → Inserted {added} realism objects.")
         except Exception as e:
             print(f"⚠️ Realism enrichment skipped: {e}")
-            self.vreport.add("realism_objects", "error", str(e))
+            self.vreport.add("error", "realism_objects", str(e))
     else:
         print("⏭️ Realism module disabled.")
 
@@ -289,7 +294,7 @@ def _step4_enrichment(self, topo_fixed: str) -> str:
                 root, {}, correspondence_by_road_id=associations
             )
             n_signs = apply_regulatory_signs(
-                root, {}, correspondence_by_road_id=associations
+                root, positioned_ways, correspondence_by_road_id=associations
             )
 
             if n_speed or n_turn or n_signs:
@@ -333,7 +338,7 @@ def _step4_enrichment(self, topo_fixed: str) -> str:
             )
     except Exception as e:
         print(f"⚠️ OSM meta enrichment failed: {e}")
-        self.vreport.add("osm_meta_enrichment", "error", str(e))
+        self.vreport.add("error", "osm_meta_enrichment", str(e))
 
     # Access restrictions use a stricter spatial correspondence than the
     # name-indexed writers above. They carry provenance only: no lane,
@@ -353,8 +358,9 @@ def _step4_enrichment(self, topo_fixed: str) -> str:
             f"{access_metadata['metadata_records_written']} record(s)"
         )
     except Exception as e:
-        print(f"⚠️ OSM access metadata enrichment failed: {e}")
-        self.vreport.add("osm_access_restriction_metadata", "error", str(e))
+        print(f"❌ OSM access metadata enrichment failed: {e}")
+        self.vreport.add("error", "osm_access_restriction_metadata", str(e))
+        raise RuntimeError("access metadata enrichment failed closed") from e
 
     # Crosswalk enrichment: real OSM footway=crossing geometry, geometrically
     # matched to a road (not name/id matching -- crosswalk_writer.py, added
@@ -386,7 +392,7 @@ def _step4_enrichment(self, topo_fixed: str) -> str:
             self.vreport.add_dict("crosswalk_enrichment", {"osm_crossings_found": 0})
     except Exception as e:
         print(f"⚠️ Crosswalk enrichment failed: {e}")
-        self.vreport.add("crosswalk_enrichment", "error", str(e))
+        self.vreport.add("error", "crosswalk_enrichment", str(e))
 
     # XODR statistics after enrichment
     stats = XODRStatistics.compute(topo_fixed)

@@ -1,0 +1,25 @@
+{
+  "report": "RQ3_EFFECTIVE_RIG_LABEL_TESTS",
+  "date": "2026-10-21",
+  "status": "PASS (code-level) / BLOCKED (live readback)",
+  "distinction_requested": ["REQUESTED", "READBACK_VERIFIED", "UNOBSERVABLE"],
+  "verified": [
+    {"field": "camera_resolution", "state": "REQUESTED", "source": "capture_config.py / ThesisSensorRig"},
+    {"field": "camera_fov", "state": "REQUESTED", "source": "capture_config.py"},
+    {"field": "sensor_tick", "state": "REQUESTED", "source": "capture_config.py"},
+    {"field": "lidar_channels_points_rotation_range", "state": "REQUESTED", "source": "capture_config.py"},
+    {"field": "camera_to_vehicle_extrinsics", "state": "REQUESTED", "source": "capture_config.py (cTv vehicle->camera, attached directly, no inversion)"},
+    {"field": "lidar_to_vehicle_extrinsics", "state": "REQUESTED", "source": "capture_config.py (vTl lidar->vehicle, attached via inverse(vTl))"},
+    {"field": "rgb_semantic_alignment", "state": "REQUESTED", "source": "SensorRecorder"},
+    {"field": "raw_semantic_class_ids", "state": "REQUESTED", "source": "record_route_fixed.py --seg-converter raw"},
+    {"field": "ignore_class_255_handling", "state": "REQUESTED", "source": "semantic class mapping"},
+    {"field": "29_class_compatibility", "state": "REQUESTED", "source": "semantic class mapping"},
+    {"field": "palette_conversion_forbidden", "state": "REQUESTED", "source": "record_route_fixed.py raw segmenter"},
+    {"field": "effective_runtime_rig_sha", "state": "UNOBSERVABLE", "reason": "no live server"},
+    {"field": "per_frame_label_quality", "state": "UNOBSERVABLE", "reason": "no live capture"},
+    {"field": "raw_lidar_serialization_roundtrip", "state": "UNOBSERVABLE", "reason": "no live capture"}
+  ],
+  "diagnostic_substitution_policy": "A reduced engineering rig (e.g. --low-mem 960x540) is permitted ONLY for P3200 6 GB diagnostic tests and MUST be clearly labeled non-authoritative. The frozen RQ3 rig is not altered.",
+  "frozen_rig_unaltered": true,
+  "verdict": "EFFECTIVE_RIG_LABEL_GATES_PRESENT; live READBACK_VERIFIED not achieved (server blocked)"
+}

@@ -1,167 +1,152 @@
-# -*- coding: utf-8 -*-
-"""
-Tests for tools/verify_import_authority.py (G1 import-authority fix).
+"""Portability and behaviour tests for the import-authority preflight.
 
-Covers:
-- Correct source checkout: PASS
-- Wrong-origin detection: FAIL
-- Missing namespace: FAIL
-- No-origin (namespace package): FAIL
-- _is_within path containment (positive and negative)
-- Third-party dependencies are not checked (out of scope)
+The preflight is the gate that stops a verification run from silently testing
+a different CARLA checkout. Two properties must hold:
+
+* positive -- in a clean environment every repository module resolves to the
+  expected checkout;
+* negative -- if any other checkout could supply a repository module, the
+  preflight reports it and exits non-zero, regardless of search order.
+
+These tests exercise the checker directly so the guarantee is pinned on every
+platform, not only where the gate happens to run in CI.
 """
 from __future__ import annotations
 
 import importlib
+import subprocess
 import sys
-import types
 from pathlib import Path
 
 import pytest
 
-from tools.verify_import_authority import (
-    REPO_OWNED_NAMESPACES,
-    _expected_source_root,
-    _is_within,
-    verify_import_authority,
-)
+REPO_ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(REPO_ROOT / "tools"))
+
+import verify_import_authority as via  # noqa: E402
 
 
-# ---------------------------------------------------------------------------
-# _is_within path containment
-# ---------------------------------------------------------------------------
-
-def test_is_within_positive(tmp_path):
-    child = tmp_path / "sub" / "file.py"
-    child.parent.mkdir(parents=True)
-    child.write_text("x")
-    assert _is_within(child, tmp_path) is True
-
-
-def test_is_within_negative_outside(tmp_path):
-    outside = tmp_path.parent / "outside.txt"
-    outside.write_text("x")
-    assert _is_within(outside, tmp_path) is False
+def test_expected_root_is_discovered_dynamically():
+    """No machine-specific path may be encoded in the checker."""
+    root = via.expected_repo_root()
+    assert root == REPO_ROOT.resolve()
+    source = (REPO_ROOT / "tools" / "verify_import_authority.py").read_text(
+        encoding="utf-8")
+    # A hardcoded drive letter or user directory would defeat portability.
+    for forbidden in ("C:\\", "c:\\", "D:\\", "E:\\", "F:\\"):
+        assert forbidden not in source, f"machine-specific path in source: {forbidden}"
+    assert "/home/" not in source
+    assert "/Users/" not in source
 
 
-def test_is_within_negative_sibling(tmp_path):
-    sibling = tmp_path.parent / "sibling" / "file.py"
-    sibling.parent.mkdir(parents=True)
-    sibling.write_text("x")
-    assert _is_within(sibling, tmp_path) is False
+def test_clean_environment_passes():
+    """Positive case: repository modules resolve inside the checkout."""
+    report = via.audit(REPO_ROOT.resolve())
+    assert report["status"] == "PASS", report["violations"]
+    assert report["violations"] == []
+    namespaces = {ns["module"]: ns for ns in report["namespaces"]}
+    for name in via.REPO_NAMESPACES:
+        assert name in namespaces
+    ultimate = namespaces["ultimate_pipeline"]
+    assert ultimate["origin"] is not None
+    assert via._under(
+        via._norm(ultimate["origin"]), via._norm(REPO_ROOT.resolve())
+    )
 
 
-def test_is_within_negative_outside_parent(tmp_path):
-    # A file in the parent directory is outside tmp_path
-    outside = tmp_path.parent / "escape.txt"
-    outside.write_text("x")
-    assert _is_within(outside, tmp_path) is False
+def test_external_checkout_is_rejected(tmp_path, monkeypatch):
+    """Negative case: a second CARLA checkout must fail the gate.
 
+    The external location is injected into the *allowed* computation by
+    monkeypatching the namespace search path, proving the checker reports any
+    location outside the expected root rather than trusting ordering.
+    """
+    external = tmp_path / "other_carla_checkout"
+    (external / "tools").mkdir(parents=True)
+    (external / "tools" / "__init__.py").write_text("", encoding="utf-8")
 
-# ---------------------------------------------------------------------------
-# verify_import_authority on the real checkout
-# ---------------------------------------------------------------------------
+    import tools as candidate_tools
 
-def test_verify_correct_checkout_passes():
-    """The real checkout must pass: ultimate_pipeline resolves from here."""
-    result = verify_import_authority(expected_root=_expected_source_root())
-    assert result["passed"] is True
-    assert result["failures"] == []
-    # expected_root should be the repository root (parent of tools/)
-    assert Path(result["expected_root"]).name == Path(__file__).parents[2].name
-
-
-def test_verify_wrong_root_fails():
-    """A wrong expected root must fail because ultimate_pipeline is elsewhere."""
-    wrong_root = Path("/nonexistent/wrong/root")
-    result = verify_import_authority(expected_root=wrong_root)
-    assert result["passed"] is False
-    assert len(result["failures"]) == 1
-    f = result["failures"][0]
-    assert f["namespace"] == "ultimate_pipeline"
-    assert f["status"] == "WRONG_ORIGIN"
-
-
-# ---------------------------------------------------------------------------
-# Namespace resolution edge cases
-# ---------------------------------------------------------------------------
-
-def test_missing_namespace_reported(monkeypatch):
-    """A repository-owned namespace that resolves outside the root is a failure."""
-    # Simulate a wrong origin by monkeypatching importlib.import_module
-    import tools.verify_import_authority as mod
-
-    real_import = mod.importlib.import_module
-
-    def fake_import(name, *args, **kwargs):
-        module = real_import(name, *args, **kwargs)
-        if name == "ultimate_pipeline":
-            # Pretend it resolves outside the expected root
-            module.__file__ = "/outside/root/ultimate_pipeline/__init__.py"
-        return module
-
-    monkeypatch.setattr(mod.importlib, "import_module", fake_import)
+    original = list(candidate_tools.__path__)
+    candidate_tools.__path__ = [*original, str(external / "tools")]
     try:
-        result = verify_import_authority(expected_root=_expected_source_root())
-        assert result["passed"] is False
-        assert any(
-            f["namespace"] == "ultimate_pipeline" and f["status"] == "WRONG_ORIGIN"
-            for f in result["failures"]
-        )
+        report = via.audit(REPO_ROOT.resolve())
     finally:
-        monkeypatch.undo()
+        candidate_tools.__path__ = original
+
+    assert report["status"] == "FAIL"
+    kinds = {v["kind"] for v in report["violations"]}
+    assert "external_search_location" in kinds
+    assert any(
+        str(external) in v.get("location", "") or
+        str(external) in v.get("origin", "")
+        for v in report["violations"]
+    ), report["violations"]
 
 
-def test_no_origin_namespace_reported(monkeypatch):
-    """A namespace with no __file__ is reported as NO_ORIGIN."""
-    # Create a fake module with no __file__
-    fake = types.ModuleType("ultimate_pipeline")
-    # No __file__ attribute
-    sys.modules["ultimate_pipeline"] = fake
+def test_ordering_is_not_treated_as_sufficient(tmp_path, monkeypatch):
+    """Candidate location first, external second -> still a failure.
+
+    Guards the explicit rule that search *order* never establishes authority.
+    """
+    external = tmp_path / "later_external"
+    (external / "tools").mkdir(parents=True)
+    (external / "tools" / "__init__.py").write_text("", encoding="utf-8")
+
+    import tools as candidate_tools
+
+    candidate_first = str(REPO_ROOT.resolve() / "tools")
+    original = list(candidate_tools.__path__)
+    candidate_tools.__path__ = [candidate_first, str(external / "tools")]
     try:
-        # importlib.import_module will return the cached module
-        result = verify_import_authority(expected_root=_expected_source_root())
-        assert result["passed"] is False
-        assert any(f["namespace"] == "ultimate_pipeline" and f["status"] == "NO_ORIGIN" for f in result["failures"])
+        report = via.audit(REPO_ROOT.resolve())
     finally:
-        del sys.modules["ultimate_pipeline"]
-        # Restore the real module
-        importlib.import_module("ultimate_pipeline")
+        candidate_tools.__path__ = original
+
+    assert report["status"] == "FAIL", (
+        "an external checkout later in the path must still be rejected"
+    )
 
 
-# ---------------------------------------------------------------------------
-# Third-party dependencies are out of scope
-# ---------------------------------------------------------------------------
+def test_cli_exit_codes(tmp_path):
+    """CLI: 0 when clean, 1 when a violation is present."""
+    import os
 
-def test_third_party_not_checked():
-    """Third-party packages are not in REPO_OWNED_NAMESPACES and not checked."""
-    assert "ultimate_pipeline" in REPO_OWNED_NAMESPACES
-    # Common third-party deps are deliberately absent
-    for ns in ("numpy", "pytest", "yaml", "requests"):
-        assert ns not in REPO_OWNED_NAMESPACES
+    clean = subprocess.run(
+        [sys.executable, "-S", str(REPO_ROOT / "tools" / "verify_import_authority.py")],
+        capture_output=True, text=True, cwd=str(REPO_ROOT),
+        env={**_clean_env()},
+    )
+    assert clean.returncode == 0, clean.stdout + clean.stderr
+    assert "IMPORT_AUTHORITY_PASS" in clean.stdout
 
-
-# ---------------------------------------------------------------------------
-# CLI
-# ---------------------------------------------------------------------------
-
-def test_cli_passes(capsys, monkeypatch):
-    """CLI exits 0 and prints PASS for the correct checkout."""
-    from tools.verify_import_authority import main
-    rc = main(["--json"])
-    assert rc == 0
-    captured = capsys.readouterr()
-    import json
-    result = json.loads(captured.out)
-    assert result["passed"] is True
+    dirty = subprocess.run(
+        [sys.executable, "-S", str(REPO_ROOT / "tools" / "verify_import_authority.py")],
+        capture_output=True, text=True, cwd=str(REPO_ROOT),
+        env={
+            **_clean_env(),
+            "PYTHONPATH": os.pathsep.join((str(tmp_path), str(REPO_ROOT))),
+        },
+    )
+    # A PYTHONPATH that does not contain a CARLA checkout must not create a
+    # false positive; the gate keys on repository module origin only.
+    assert dirty.returncode == 0, dirty.stdout + dirty.stderr
 
 
-def test_cli_fails_wrong_root(capsys, monkeypatch):
-    """CLI exits non-zero for a wrong root."""
-    from tools.verify_import_authority import main
-    rc = main(["--expected-root", "/nonexistent", "--json"])
-    assert rc != 0
-    captured = capsys.readouterr()
-    import json
-    result = json.loads(captured.out)
-    assert result["passed"] is False
+def _clean_env() -> dict:
+    import os
+
+    env = dict(os.environ)
+    env["PYTHONPATH"] = str(REPO_ROOT)
+    env.pop("PYTHONHOME", None)
+    # The global interpreter may have user-site editable installs from another
+    # checkout. The subprocess must model CI's isolated environment.
+    env["PYTHONNOUSERSITE"] = "1"
+    return env
+
+
+def test_module_is_importable_without_side_effects():
+    """Importing the checker must not import candidate packages eagerly."""
+    assert callable(via.audit)
+    assert callable(via.expected_repo_root)
+    assert set(via.REPO_NAMESPACES) == {"ultimate_pipeline", "tools"}

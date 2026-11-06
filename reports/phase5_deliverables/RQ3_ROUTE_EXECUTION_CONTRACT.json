@@ -1,0 +1,31 @@
+{
+  "report": "RQ3_ROUTE_EXECUTION_CONTRACT",
+  "version": "v1",
+  "date": "2026-10-21",
+  "status": "CONTRACT_SPECIFIED_AMBIGUITY_ESCALATED",
+  "finding": {
+    "issue": "Route execution semantics ambiguity: continuous driving vs pose replay",
+    "affected_files": [
+      "ultimate_pipeline/perception/route_execution.py",
+      "ultimate_pipeline/perception/route_manifest.py",
+      "ultimate_pipeline/perception/route_frame_binding.py"
+    ],
+    "observed": "The published strict route helper uses set_transform() at each requested pose, which is POSE_REPLAY semantics (controlled viewpoint sampling), not CONTINUOUS_DRIVING (actual vehicle traversal with physics).",
+    "decision": "NOT unilaterally redesigned. The frozen RQ3 protocol text is authoritative and is frozen; this assignment must not alter it.",
+    "action": "ESCALATED to the scientific owner (Codex/RQ5 protocol owner) for adjudication.",
+    "interim_rule": "Any capture produced via the pose-replay helper MUST be labelled method=POSE_REPLAY and MUST NOT be reported as physically continuous driving."
+  },
+  "requirements_for_continuity_if_required": [
+    "bounded governed controller (no teleport)",
+    "record actual vehicle trajectory",
+    "measure lateral/longitudinal route error",
+    "measure heading error",
+    "record velocity/acceleration",
+    "reject discontinuous teleportation",
+    "reject unapproved spawn relocation",
+    "reject skipped segments",
+    "verify route coverage"
+  ],
+  "escalation_id": "RQ3-ROUTE-SEMANTICS-AMBIGUITY-2026-10-21",
+  "status_detail": "Software contract is specified; scientific adjudication outstanding."
+}

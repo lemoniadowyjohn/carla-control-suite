@@ -1,0 +1,33 @@
+AUDITOR CANDIDATE VERIFICATION — 2026-10-21 (independent, out-of-tree, read-only)
+===
+INPUT (recorded, not modified by this session):
+  Source branch: repair/map-realism-p0-837a8504
+  Record map SHA (verified byte-id): 370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8 (149,799,632 B)
+  Implementer base for regen: 1e1b090c (with 6bcc1112, e2ce6252, b60125d2, 8d3fc821, 35b3e5d1 in tree)
+  Candidate out-tree dir: E:\wt_tmp\cand_out\20261021_034330_770903
+  Final stage XODR: 08_final_20261021_034330_770903.xodr (SHA B734..., bytes 123,081,856 — DIFFERENT, verified; new, never promoted)
+  Candidate regeneration process observed completed (run_status, stage files dated 05:11-05:21); run3 log at 12:23 is empty; no live python writer running at audit time.
+===
+INDEPENDENT SCAN (re-ran oracle at E:\wt_tmp\audit_cand_oracle.json, venv 3.12.2, isolated):
+  connector: interfaces=45,094 (= 22,547 connections — ~same denominator as audit 45,178); bad_connections=0; bad_seams=0; worst_dz=0.0
+  dangling (frozen allow_dead_ends=True): 348 broken (reason missing_successor, class NO_CANDIDATE_ROUTING) -> FAILS frozen GAP-048 gate (record 0)
+  fully_disconnected orphans: 6 -> P0-B regression (record 0)
+  junction_link_unresolved (diagnostic): 327 (record 326; class shift not defect count change by same definition — 327 indicates 1 new junction-link unresolved, consistent with repaired connector topology)
+  georef: has_absolute_origin=False, lat_0/None, lon_0/None -> Lane G fix NOT reflected in this candidate (bare +proj=tmerc, no geoReference detail, offset ABSENT from header — worse than record which at least had <offset/>)
+===
+COMPARISON (BEFORE -> CANDIDATE, identical definitions):
+  P0-A frozen gate: 0 -> 348 (FAIL — requires implementer explanation; may be same dead-end population now classified differently due to repaired junction links, but under frozen definition it's a regression or must become 0 before promotion)
+  P0-B orphan (gate class FULLY_DISCONNECTED): 0 -> 6 (FAIL — same regression)
+  P0-C connector dz: 866/45,178 (worst 2.4184) -> 0/45,094 (PASS — Lane Z verified independently; denominator ~same at ±32 interfaces, acceptable)
+  P0-D structure: 136 violations / 240 (record, canonical classifier) — NOT re-scanned independently; assume preserved (implementer must prove with the same classifier on the candidate file)
+  P0-E georef: FAIL (record) -> FAIL (candidate, still bare; fix required at source before promotion; must apply to regenerated file)
+===
+LINEAGE CHECK (required by item 7 directive):
+  Candidate file generated in E:\wt_tmp\cand_out subfolder 20261021_034330_770903 — out-of-tree, not committed.
+  Source SHA of the regen (from run_identity.json) — needs implementer confirmation whether regeneration started from 1e1b090c (contains Lane B) or from a newer fix-SHA that includes the georef fix; file timestamps (05:11-05:21) show stages done after all committed fixes except georef (6bcc1112 present in tree before regen, but the regenerated header is bare — so the sanitizer did NOT inject geoReference; either source header already present bare, or injection was skipped).
+  Binding prerequisites NOT yet satisfied: input_map_path + sha (record 370abbb...) for this specific candidate file; source_git_sha that produced it; OSM/building/DEM/config SHAs; result XODR sha (B734...) linked to producer commit — must be added to receipt before promotion.
+===
+GATE HOLD (Review-A cannot pass until):
+  (a) 348 dangling at frozen gate resolved -> 0 with same definition; (b) 6 fully-disconnected orphans -> 0; (c) georef string repaired (origin-anchored per item-2 determination) AND header verified; (d) P0-D structure scan on B734... confirmed with same classifier; (e) Lane-Z receipt with 10 provenance fields on the SHA-bound input; (f) provenance ledger exists; (g) negative controls executed (item 2 T4 Null-Island must FAIL); (h) true-world independent control points documented (currently 0 — must remain 0 / not fabricated); (i) classifier verdict = STATIC_MAP_REMEDIATION_PASS (not PARTIAL with runtime unverified).
+===
+NO VERDICT ISSUED BY AUDITOR (self-certification prevented). All evidence preserved; implementer owns resolution and final certification with independent Review A/B.

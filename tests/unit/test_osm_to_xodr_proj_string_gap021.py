@@ -49,8 +49,14 @@ from ultimate_pipeline.osm.osm_to_xodr_wrapper import (
 )
 from ultimate_pipeline.dem.dem_crs_contract import OSM2ODR_NATIVE_PROJ4
 from ultimate_pipeline.enrichment.osm_polygon_loader import PROJ_STRING as OSM_POLYGON_LOADER_PROJ_STRING
+from _carla_real import require_real_carla
 
-pytest.importorskip("carla")
+# This whole module exercises the real carla.Osm2Odr/Osm2OdrSettings
+# conversion path (see osm_to_xodr_wrapper.py); the offline stub has neither
+# symbol, so a plain importorskip("carla") would silently run against the
+# stub instead of skipping once the stub is installed, producing a
+# misleading georeference failure instead of a clean SKIP.
+require_real_carla()
 
 # A short residential way with real Ingolstadt-area coordinates (well within
 # the authoritative OSM extract's bounds). Small enough to convert in well

@@ -190,7 +190,7 @@ SIGNAL_REGISTRY: dict[str, dict[str, Any]] = {
     },
     "SUCCESS_MARKER": {
         "signal_id": "SUCCESS_MARKER",
-        "producer": "ultimate_pipeline.main_pipeline._finalize_run_pack_gated",
+        "producer": "ultimate_pipeline.utils.finalize_run_pack.finalize_run_pack",
         "artifact": "SUCCESS.txt",
         "class": SignalClass.HARD_GATE.value,
         "enabled_by": [],

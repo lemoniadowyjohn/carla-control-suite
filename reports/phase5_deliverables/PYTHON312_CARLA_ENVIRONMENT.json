@@ -1,0 +1,26 @@
+{
+  "report": "PYTHON312_CARLA_ENVIRONMENT",
+  "version": "v1",
+  "date": "2026-10-21",
+  "status": "PASS",
+  "python_312_installed": true,
+  "python_312_path": "C:\\Users\\admin\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+  "python_312_version": "3.12.2",
+  "python_312_arch": "AMD64",
+  "venv_path": "C:\\temp\\py312_venv",
+  "carla_wheel_path": "E:\\CARLA\\carla-0.9.16-cp312-cp312-win_amd64.whl",
+  "carla_wheel_install_success": true,
+  "carla_import_success": true,
+  "carla_client_class_available": true,
+  "test_command": "C:\\temp\\py312_venv\\Scripts\\python.exe -c \"import carla; print('import OK'); print('Client:', hasattr(carla, 'Client'))\"",
+  "test_exit_code": 0,
+  "python_314_unchanged": true,
+  "no_ccp312_wheel_in_py314": true,
+  "isolated_reusable_venv": true,
+  "remaining_dependencies": [
+    "No server running (CARLA server startup separate from client import)",
+    "Test actual Client('localhost', 2000) requires server start (blocked by shader/AV/storage)"
+  ],
+  "blocked": false,
+  "notes": "Python 3.12 is already installed; no download needed. The venv is isolated and reusable. The 4.16 GiB on E: is NOT needed for this small test; the venv is on C: (6.12 GiB free, sufficient)."
+}

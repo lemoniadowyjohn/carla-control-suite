@@ -1,0 +1,23 @@
+{
+  "deliverable_id": "QUADRO_P3200_RUNTIME_CAPACITY",
+  "evaluation_utc": "2026-10-21T22:45Z",
+  "gpu": "NVIDIA Quadro P3200 with Max-Q Design (driver 573.22)",
+  "gpu_memory_total_mib": 6144,
+  "gpu_memory_used_idle_mib": 686,
+  "gpu_memory_used_after_town10hd_mib": 5857,
+  "gpu_memory_free_after_town10hd_mib": 167,
+  "gpu_utilization_after_load_pct": 61,
+  "gpu_memory_used_after_grid0828_mib": 3847,
+  "gpu_memory_free_after_grid0828_mib": 2177,
+  "gpu_utilization_after_grid0828_pct": 18,
+  "cpu": "Intel Core i7-8850H, 6C/12T (verified by env), 47.7 GiB RAM installed",
+  "system_commit_approx": "not directly measured; sufficient for startup (no pagefail observed)",
+  "server_startup": "PASS (Town10HD_Opt loaded; 15 maps; version 0.9.16; RPC 2000/streaming 2001)",
+  "small_map_load": "PASS (Grid0828; ticks 2383 → 4231 → 4238; no native crash)",
+  "diagnostic_rgb_render": "PASS (640x480, 2 callbacks, pixel mean 155.5, std 18.6, nonempty confirmed)",
+  "rig_frozen_rq3_feasibility": "NOT_QUALIFIED — frozen RQ3 rig (RGB + semantic + LiDAR, full resolution, high tick rate) exceeds measured capacity; Quadro P3200 6 GiB is insufficient for full Ingolstadt streaming + multiple sensors simultaneously. Recommendation: downgrade to low-res diagnostic profile for qualification, or use a workstation with ≥8 GiB VRAM for frozen rig.",
+  "bottleneck": "GPU VRAM, not CPU (12 threads idle during startup) or system commit (ample headroom on H/G).",
+  "optimization_profile_proposed": "Low-quality off-screen, reduced streaming distance (default), single diagnostic RGB only; do not reduce scientific sensor density silently.",
+  "no_overclock_or_risky_change": true,
+  "verdict": "QUADRO_P3200_CAN_START_LOW_RESOURCE; FULL_RQ3_RIG_BEYOND_MEASURED_CAPACITY"
+}

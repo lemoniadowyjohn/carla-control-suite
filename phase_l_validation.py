@@ -29,6 +29,74 @@ DEFAULT_CANDIDATE_XODR = (
 )
 EXPECTED_MAP_NAME = "Carla/Maps/OpenDriveMap"
 
+# Governed status vocabulary (GAP036 policy): every phase-L status must come
+# from this set and must be EARNED. A status that would be "PASS" without its
+# mandatory producer having executed is forbidden (P0-F: fabricated PASS
+# evidence). Unknown/unexecuted producers report NOT_RUN and bubble up in the
+# L13 verdict as L_SOME_FAIL / L_BLOCKED_EXTERNAL (fail closed).
+GOVERNED_STATUSES = (
+    "PASS",
+    "FAIL",
+    "INCOMPLETE",
+    "NOT_RUN",
+    "BLOCKED_EXTERNAL",
+    "WAIVED",
+)
+
+
+def governed_status(*, producer_ran: bool, evidence: bool = True) -> str:
+    """Fail-closed status for a phase-L check.
+
+    PASS requires BOTH the producer to have actually run AND supporting
+    evidence to be present. Anything else is NOT_RUN. Never default to PASS.
+    """
+    if not producer_ran or not evidence:
+        return "NOT_RUN"
+    return "PASS"
+
+
+def repo_git_identity() -> dict:
+    """Derive branch/commit from the actual working tree (no hardcoded IDs).
+
+    Returns {"branch": str | None, "commit": str | None, "dirty": bool | None}.
+    Never fabricates: fields are None when git is unavailable.
+    """
+    out = {"branch": None, "commit": None, "dirty": None}
+    try:
+        import subprocess
+
+        repo_root = str(Path(__file__).resolve().parent)
+        cp = subprocess.run(
+            ["git", "rev-parse", "HEAD"],
+            cwd=repo_root,
+            capture_output=True,
+            text=True,
+            timeout=15,
+        )
+        if cp.returncode == 0:
+            out["commit"] = cp.stdout.strip()
+        cb = subprocess.run(
+            ["git", "rev-parse", "--abbrev-ref", "HEAD"],
+            cwd=repo_root,
+            capture_output=True,
+            text=True,
+            timeout=15,
+        )
+        if cb.returncode == 0:
+            out["branch"] = cb.stdout.strip()
+        st = subprocess.run(
+            ["git", "status", "--porcelain"],
+            cwd=repo_root,
+            capture_output=True,
+            text=True,
+            timeout=15,
+        )
+        if st.returncode == 0:
+            out["dirty"] = bool(st.stdout.strip())
+    except Exception:
+        pass
+    return out
+
 
 def ensure_dirs():
     RUN_DIR.mkdir(parents=True, exist_ok=True)
@@ -138,25 +206,77 @@ def step_l2_map_identity(client):
 
 
 def step_l3_parser_logs(client):
-    """L3: Capture parser/map-load logs and classify errors/warnings."""
+    """L3: Capture parser/map-load logs and classify errors/warnings.
+
+    Fail-closed: parse_status is governed. Log capture requires an actual
+    producer (UE log file / CARLA log stream); without captured log evidence
+    the step reports NOT_RUN instead of an assumed-clean parse.
+    """
     result = {}
     world = client.get_world()
     m = world.get_map()
 
     od = m.to_opendrive()
     result["opendrive_length"] = len(od)
-    result["parse_status"] = "OK"
-    result["fatal_errors"] = []
-    result["warnings"] = []
-    result["geometry_import_warnings"] = []
-    result["lane_import_warnings"] = []
-    result["junction_import_warnings"] = []
-    result["signal_import_warnings"] = []
-    result["mesh_import_warnings"] = []
 
-    result["status"] = "PASS"
+    logs = _capture_carla_logs(world)
+    result["log_capture_source"] = logs["source"]
+    result["fatal_errors"] = logs["fatal_errors"]
+    result["warnings"] = logs["warnings"]
+    result["geometry_import_warnings"] = [
+        w for w in logs["warnings"] if "geometry" in str(w).lower()
+    ]
+    result["lane_import_warnings"] = [
+        w for w in logs["warnings"] if "lane" in str(w).lower()
+    ]
+    result["junction_import_warnings"] = [
+        w for w in logs["warnings"] if "junction" in str(w).lower()
+    ]
+    result["signal_import_warnings"] = [
+        w for w in logs["warnings"] if "signal" in str(w).lower()
+    ]
+    result["mesh_import_warnings"] = [
+        w for w in logs["warnings"] if "mesh" in str(w).lower()
+    ]
+
+    if logs["source"] == "captured":
+        result["parse_status"] = (
+            "OK" if not result["fatal_errors"] else "FATAL_ERRORS"
+        )
+        result["status"] = "FAIL" if result["fatal_errors"] else "PASS"
+    else:
+        result["parse_status"] = "NOT_RUN_NO_LOG_CAPTURE"
+        result["status"] = "NOT_RUN"
+        result["reason"] = (
+            "no parser log producer wired into this run; parse cleanliness "
+            "cannot be claimed from an absent log capture"
+        )
+
     result["timestamp"] = datetime.now(timezone.utc).isoformat()
     return result
+
+
+def _capture_carla_logs(world) -> dict:
+    """Best-effort log capture. Returns {source, fatal_errors, warnings}.
+
+    ``source`` is "captured" only when real log lines were retrieved from the
+    server/client; otherwise "none" (callers must fail closed).
+    """
+    captured: list = []
+    try:
+        # CARLA client exposes server log snippets on some builds; when
+        # unavailable this stays empty and the step fails closed.
+        client_fn = getattr(world, "get_snapshot", None)
+        _ = client_fn  # placeholder: no log producer exists client-side yet
+    except Exception:
+        captured = []
+    if captured:
+        return {
+            "source": "captured",
+            "fatal_errors": [l for l in captured if "fatal" in str(l).lower()],
+            "warnings": [l for l in captured if "warn" in str(l).lower()],
+        }
+    return {"source": "none", "fatal_errors": [], "warnings": []}
 
 
 def step_l4_alignment(client):
@@ -191,14 +311,17 @@ def step_l4_alignment(client):
         result["y_range"] = {"min": None, "max": None, "span": None}
         result["x_bias"] = None
         result["y_bias"] = None
-        result["residual_p50"] = 0.0
-        result["residual_p90"] = 0.0
-        result["residual_p95"] = 0.0
-        result["residual_p99"] = 0.0
-        result["residual_max"] = 0.0
-        result["alignment_status"] = "N/A_NO_LANDMARKS"
-        result["note"] = "Map exposes no OpenDRIVE signals/landmarks; runtime alignment N/A."
-        result["status"] = "PASS"
+        result["residual_p50"] = None
+        result["residual_p90"] = None
+        result["residual_p95"] = None
+        result["residual_p99"] = None
+        result["residual_max"] = None
+        result["alignment_status"] = "NOT_RUN_NO_LANDMARKS"
+        result["note"] = (
+            "Map exposes no OpenDRIVE signals/landmarks; runtime alignment is "
+            "NOT RUN (no reference residuals can be claimed)."
+        )
+        result["status"] = "NOT_RUN"
         result["timestamp"] = datetime.now(timezone.utc).isoformat()
         return result
 
@@ -207,30 +330,44 @@ def step_l4_alignment(client):
     result["x_bias"] = round(sum(xs) / len(xs), 6)
     result["y_bias"] = round(sum(ys) / len(ys), 6)
 
-    result["residual_p50"] = 0.0
-    result["residual_p90"] = 0.0
-    result["residual_p95"] = 0.0
-    result["residual_p99"] = 0.0
-    result["residual_max"] = 0.0
-    result["alignment_status"] = "ALIGNED"
-    result["status"] = "PASS"
+    # Residuals vs the distributed landmark plan require a reference producer
+    # (expected landmark coordinates); until one runs, no ALIGNED claim.
+    result["residual_p50"] = None
+    result["residual_p90"] = None
+    result["residual_p95"] = None
+    result["residual_p99"] = None
+    result["residual_max"] = None
+    result["alignment_status"] = "NOT_RUN_NO_REFERENCE_PRODUCER"
+    result["status"] = "NOT_RUN"
+    result["reason"] = (
+        "landmark positions recorded, but no reference-residual producer is "
+        "wired into this run; ALIGNED cannot be claimed"
+    )
 
     result["timestamp"] = datetime.now(timezone.utc).isoformat()
     return result
 
 
 def step_l5_visual_regression(client):
-    """L5: Recreate historic camera locations for visual defect regression."""
+    """L5: Recreate historic camera locations for visual defect regression.
+
+    Fail-closed: with no camera replay producer in this run, no visual
+    status can be claimed.
+    """
     result = {}
     world = client.get_world()
 
-    result["cameras"] = []
+    result["cameras"] = []          # populated only by an actual replay producer
     result["defects_found"] = []
     result["mesh_explosions"] = []
     result["folded_surfaces"] = []
     result["floating_slabs"] = []
-    result["visual_defect_regression_status"] = "PASS"
-    result["status"] = "PASS"
+    result["visual_defect_regression_status"] = "NOT_RUN_NO_CAMERA_REPLAY"
+    result["status"] = "NOT_RUN"
+    result["reason"] = (
+        "historic camera replay producer not wired into this run; visual "
+        "defect regression cannot be claimed from an empty sweep"
+    )
 
     result["timestamp"] = datetime.now(timezone.utc).isoformat()
     return result
@@ -245,18 +382,22 @@ def step_l6_waypoint_topology(client):
     waypoints = m.generate_waypoints(2.0)
     result["waypoint_count"] = len(waypoints)
 
+    # Fail-closed: fixture validation requires an actual fixture runner.
+    # Until one executes, every fixture is NOT_RUN (never assumed PASS).
+    fixtures_ran = False
+    fixture_status = "PASS" if fixtures_ran else "NOT_RUN"
     result["fixtures"] = {
-        "straight": {"status": "PASS", "count": 0},
-        "left_turn": {"status": "PASS", "count": 0},
-        "right_turn": {"status": "PASS", "count": 0},
-        "t_junction": {"status": "PASS", "count": 0},
-        "four_way": {"status": "PASS", "count": 0},
-        "merge": {"status": "PASS", "count": 0},
-        "split": {"status": "PASS", "count": 0},
-        "roundabout": {"status": "PASS", "count": 0},
-        "bridge": {"status": "PASS", "count": 0},
-        "tunnel": {"status": "PASS", "count": 0},
-        "tile_boundary": {"status": "PASS", "count": 0},
+        "straight": {"status": fixture_status, "count": 0},
+        "left_turn": {"status": fixture_status, "count": 0},
+        "right_turn": {"status": fixture_status, "count": 0},
+        "t_junction": {"status": fixture_status, "count": 0},
+        "four_way": {"status": fixture_status, "count": 0},
+        "merge": {"status": fixture_status, "count": 0},
+        "split": {"status": fixture_status, "count": 0},
+        "roundabout": {"status": fixture_status, "count": 0},
+        "bridge": {"status": fixture_status, "count": 0},
+        "tunnel": {"status": fixture_status, "count": 0},
+        "tile_boundary": {"status": fixture_status, "count": 0},
     }
 
     for wp in waypoints:
@@ -279,25 +420,39 @@ def step_l6_waypoint_topology(client):
     result["spawn_points"] = len(m.get_spawn_points())
     result["crosswalk_count"] = len(m.get_crosswalks())
 
-    result["status"] = "PASS"
+    result["status"] = governed_status(producer_ran=fixtures_ran)
+    if result["status"] != "PASS":
+        result["reason"] = (
+            "topology counters are real RPC measurements, but the fixture "
+            "runner did not execute; fixture statuses are NOT_RUN, not PASS"
+        )
     result["timestamp"] = datetime.now(timezone.utc).isoformat()
     return result
 
 
 def step_l7_drivability(client):
-    """L7: Run vehicle drivability tests."""
+    """L7: Run vehicle drivability tests.
+
+    Fail-closed: drivability PASS requires at least one executed vehicle
+    spawn/drive attempt. With zero attempts this step is NOT_RUN.
+    """
     result = {}
     world = client.get_world()
 
-    result["drivability_status"] = "PASS"
+    result["drivability_status"] = "NOT_RUN_NO_VEHICLE_ATTEMPTS"
     result["vehicle_spawn_attempts"] = 0
     result["vehicle_successful_spawns"] = 0
     result["vehicle_crash_count"] = 0
     result["vehicle_stuck_count"] = 0
-    result["tm_stability"] = "OK"
+    result["tm_stability"] = "NOT_RUN"
     result["tm_rpc_timeouts"] = 0
     result["server_crashes"] = 0
-    result["status"] = "PASS"
+    result["status"] = governed_status(producer_ran=result["vehicle_spawn_attempts"] > 0)
+    if result["status"] != "PASS":
+        result["reason"] = (
+            "no vehicle spawn/drive attempt was executed by this validation "
+            "run; drivability cannot be claimed PASS from zero attempts"
+        )
 
     result["timestamp"] = datetime.now(timezone.utc).isoformat()
     return result
@@ -326,34 +481,70 @@ def step_l8_signal_validation(client):
 
     result["speed_limit_signals"] = []
     result["signal_positions"] = []
-    result["signal_orientation_valid"] = True
-    result["signal_associations_valid"] = True
-    result["signal_validity_intervals_valid"] = True
-    result["turn_lane_directions_valid"] = True
 
-    result["signal_validation_status"] = "PASS"
-    result["status"] = "PASS"
+    # Fail-closed: association/orientation/interval validity requires an
+    # actual validator producer (OpenDRIVE signal cross-check). Enumerating
+    # runtime traffic lights alone proves nothing about these.
+    signals_validated = False
+    valid = governed_status(producer_ran=signals_validated)
+    result["signal_orientation_valid"] = valid
+    result["signal_associations_valid"] = valid
+    result["signal_validity_intervals_valid"] = valid
+    result["turn_lane_directions_valid"] = valid
+
+    result["signal_validation_status"] = (
+        "PASS" if signals_validated else "NOT_RUN_NO_SIGNAL_VALIDATOR"
+    )
+    result["status"] = governed_status(producer_ran=signals_validated)
+    if result["status"] != "PASS":
+        result["reason"] = (
+            "traffic lights enumerated via RPC (real data above), but no "
+            "signal-association validator ran; *_valid flags are NOT_RUN, "
+            "not True"
+        )
 
     result["timestamp"] = datetime.now(timezone.utc).isoformat()
     return result
 
 
 def step_l9_sensor_validation(client):
-    """L9: Capture synchronized sensor data."""
+    """L9: Capture synchronized sensor data.
+
+    Fail-closed (P0-F): the previous version reported every sensor CAPTURED
+    with PASS evidence while spawning no sensor rig at all — fabricated
+    evidence, now retired in RETIRED_TOPOLOGY_CLAIMS.json. Without a real
+    rig and non-empty frames, each sensor is NOT_RUN.
+    """
     result = {}
     world = client.get_world()
 
+    rig_spawned = False   # no sensor rig producer is wired into this run yet
+    sensor_status = "NOT_RUN_NO_SENSOR_RIG"
     result["sensor_data"] = {
-        "rgb": {"status": "CAPTURED", "frame_non_empty": True, "timestamp_valid": True},
-        "depth": {"status": "CAPTURED", "frame_non_empty": True, "timestamp_valid": True},
-        "semantic_segmentation": {"status": "CAPTURED", "frame_non_empty": True, "timestamp_valid": True},
-        "lidar": {"status": "CAPTURED", "frame_non_empty": True, "timestamp_valid": True},
-        "gnss": {"status": "CAPTURED", "timestamp_valid": True, "gnss_agreement": "PASS"},
-        "imu": {"status": "CAPTURED", "timestamp_valid": True},
+        sensor: {
+            "status": sensor_status,
+            "frame_non_empty": None,
+            "timestamp_valid": None,
+            **({"gnss_agreement": None} if sensor == "gnss" else {}),
+        }
+        for sensor in (
+            "rgb",
+            "depth",
+            "semantic_segmentation",
+            "lidar",
+            "gnss",
+            "imu",
+        )
     }
-
-    result["synchronization_status"] = "PASS"
-    result["status"] = "PASS"
+    result["synchronization_status"] = (
+        "PASS" if rig_spawned else "NOT_RUN_NO_SENSOR_RIG"
+    )
+    result["status"] = governed_status(producer_ran=rig_spawned)
+    if result["status"] != "PASS":
+        result["reason"] = (
+            "no sensor rig spawned and no frames captured by this run; "
+            "CAPTURED/PASS claims were fabricated and are retired"
+        )
     result["timestamp"] = datetime.now(timezone.utc).isoformat()
     return result
 
@@ -369,32 +560,53 @@ def step_l10_performance(client):
     map_load_time_ms = round((time.time() - start) * 1000, 2)
 
     result["map_load_time_ms"] = map_load_time_ms
-    result["fps"] = 0
-    result["p95_frame_time_ms"] = 0
-    result["ram_usage_mb"] = 0
-    result["vram_usage_mb"] = 0
+    result["fps"] = None
+    result["p95_frame_time_ms"] = None
+    result["ram_usage_mb"] = None
+    result["vram_usage_mb"] = None
     result["rpc_timeouts"] = 0
     result["server_crashes"] = 0
-    result["tm_stability"] = "OK"
-    result["performance_status"] = "PASS"
-    result["status"] = "PASS"
+    result["tm_stability"] = "NOT_RUN"
+
+    perf_producer_ran = False  # no frame-latency profiler wired into this run
+    result["performance_status"] = (
+        "PASS" if perf_producer_ran else "NOT_RUN_NO_FRAME_PROFILER"
+    )
+    result["status"] = given = governed_status(producer_ran=perf_producer_ran)
+    if given != "PASS":
+        result["reason"] = (
+            "map_load_time_ms is a real RPC measurement, but the frame-time "
+            "profiler did not run; performance PASS cannot be claimed"
+        )
 
     result["timestamp"] = datetime.now(timezone.utc).isoformat()
     return result
 
 
 def step_l11_old_vs_new(client):
-    """L11: Old-vs-new comparison."""
+    """L11: Old-vs-new comparison.
+
+    Fail-closed: without an executed comparison rig on BOTH maps, nothing is
+    "identical"; comparisons are None and the step is NOT_RUN.
+    """
     result = {}
-    result["comparison_status"] = "PASS"
-    result["status"] = "PASS"
-    result["identical_cameras"] = True
-    result["identical_vehicle"] = True
-    result["identical_routes"] = True
-    result["identical_weather"] = True
-    result["identical_time"] = True
-    result["identical_sensor_rig"] = True
+    comparison_ran = False   # no old-vs-new rig wired into this run
+    result["comparison_status"] = (
+        "PASS" if comparison_ran else "NOT_RUN_NO_COMPARISON_RIG"
+    )
+    result["status"] = governed_status(producer_ran=comparison_ran)
+    result["identical_cameras"] = None
+    result["identical_vehicle"] = None
+    result["identical_routes"] = None
+    result["identical_weather"] = None
+    result["identical_time"] = None
+    result["identical_sensor_rig"] = None
     result["differences"] = []
+    if result["status"] != "PASS":
+        result["reason"] = (
+            "old-vs-new comparison rig did not execute; identical_* flags "
+            "are None, not asserted True"
+        )
 
     result["timestamp"] = datetime.now(timezone.utc).isoformat()
     return result
@@ -450,8 +662,13 @@ def step_l13_outputs(client, all_results):
     result["details"] = verdict_parts
     result["run_id"] = RUN_ID
     result["generated_at"] = datetime.now(timezone.utc).isoformat()
-    result["branch"] = "fix/post-audit-phase-e-junctions-roundabouts-20260803"
-    result["commit"] = "f5aabc0a4f170e564aa03efcb906966880859a9f"
+
+    # P0-F: branch/commit fabricated as a hardcoded constant falsified the
+    # provenance of every phase-L report. Derive from the actual working tree;
+    # None (never invented) when git is unavailable.
+    result["git_identity"] = repo_git_identity()
+    result["branch"] = result["git_identity"]["branch"]
+    result["commit"] = result["git_identity"]["commit"]
 
     return result
 

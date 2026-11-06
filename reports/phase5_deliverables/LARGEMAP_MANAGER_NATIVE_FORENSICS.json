@@ -1,0 +1,43 @@
+{
+  "report": "LARGEMAP_MANAGER_NATIVE_FORENSICS",
+  "date": "2026-10-21",
+  "status": "UNRESOLVED",
+  "crash_signature": {
+    "exception": "EXCEPTION_ACCESS_VIOLATION",
+    "write_address": "0x28",
+    "faulting_function": "ALargeMapManager::OnLevelRemovedFromWorld",
+    "offset": "+0x9 (reported)",
+    "trigger": "client.load_world('Grid0828') during map transition"
+  },
+  "minidumps": [
+    {"id": "C8805F33", "present": true, "analysis_log": "cdb_crash1.txt", "same_binary": true, "same_function": true},
+    {"id": "9D5399CA", "present": true, "analysis_log": "cdb_crash2.txt", "same_binary": true, "same_function": true},
+    {"id": "87F1B2AC", "present": true, "analysis_log": "cdb_crash3_ecxr.txt", "same_binary": true, "same_function": true}
+  ],
+  "additional_evidence": ["cdb_crash3_town10arm.txt", "cdb_disasm_onlevelremoved.txt", "modres.txt", "modres2.txt", "minidump_err.txt"],
+  "attribution": {
+    "lifecycle_stage": "level removal / world transition (not shader compilation — separate fault)",
+    "null_or_stale_pointer": "NOT PROVEN",
+    "address_0x28_note": "Writing to 0x28 indicates a near-null base + offset field access; it does not by itself prove which member is null",
+    "tile_deregistration": "PLAUSIBLE but unconfirmed",
+    "streaming_teardown": "PLAUSIBLE but unconfirmed",
+    "object_lifetime_cleanup": "PLAUSIBLE but unconfirmed"
+  },
+  "source_search": {
+    "carla_0_9_16_source_available_locally": false,
+    "ue4_26_carla_fork_available_locally": false,
+    "pdb_available": false,
+    "patch_feasible_today": false
+  },
+  "repro_strategy_defined": {
+    "hypothesis": "Crash occurs only when transitioning AWAY from a large-map world (i.e., OnLevelRemovedFromWorld for the previous large map)",
+    "test": "Start server on Town10/Town01 small map, then load_world(Grid0828) and compare against direct Grid0828 startup",
+    "status": "BLOCKED — server startup blocked by shader-fatal (independent fault)",
+    "negative_controls": ["wrong requested map", "unavailable map", "stale loaded world", "built-in fallback", "map-name-only false match", "server dies during transition", "RPC responds but world cannot tick"]
+  },
+  "patch_proposal": null,
+  "patch_proposal_status": "BLOCKED — a packaged Shipping.exe cannot be repaired by editing an unrelated local .cpp. Matching CARLA 0.9.16 source revision, CARLA-modified UE4.26 fork, VS2022/MSVC toolchain, Windows SDK, content assets, UE4_ROOT and ~165 GB build capacity are all required, and none are currently admitted.",
+  "smallest_justified_patch": "Cannot be proposed without source-grounded function semantics. Blind introduction of FindCarlaMapTile() or an early return is explicitly rejected.",
+  "verdict": "LARGEMAP_AV_CAUSE_NOT_IDENTIFIED (source-grounded attribution blocked; three minidumps reconciled as same binary/function)",
+  "independent_review": "NOT RUN"
+}

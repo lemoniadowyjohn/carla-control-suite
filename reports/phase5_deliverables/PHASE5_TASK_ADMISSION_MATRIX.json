@@ -1,0 +1,63 @@
+{
+  "phase5_task_admission_matrix": {
+    "timestamp_utc": "2026-10-21T14:45:00Z",
+    "classification_criteria": {
+      "OFFLINE_READY": "Implementation fix ready, no external resources required",
+      "DATA_BLOCKED": "Requires completed candidate or evidence that does not exist",
+      "RESOURCE_BLOCKED": "Storage gate (≥20 GiB) unmet",
+      "RUNTIME_BLOCKED": "Requires CARLA/Unreal runtime; not yet available",
+      "PROTOCOL_AUTHORITY_BLOCKED": "Requires frozen protocol not yet defined"
+    },
+    "tasks": {
+      "OC-15": {
+        "classification": "OFFLINE_READY",
+        "status": "COMPLETED",
+        "details": "Stage-02 plotting crash fixed with regression tests (7/7 passing).",
+        "commit": "363a1868",
+        "blockers": []
+      },
+      "OC-16": {
+        "classification": "DATA_BLOCKED",
+        "status": "BLOCKED",
+        "details": "P0-E multi-control-point georeference test harness requires 08_final candidate with current source (none exists).",
+        "commit": "none",
+        "blockers": ["Missing 08_final candidate with current source"]
+      },
+      "OC-17/18/24": {
+        "classification": "DATA_BLOCKED",
+        "status": "BLOCKED",
+        "details": "Semantic consistency, duplicate prevention, regulatory-sign provenance tests require completed 08_final candidate.",
+        "commit": "none",
+        "blockers": ["Missing 08_final candidate with current source"]
+      },
+      "OC-19/20": {
+        "classification": "OFFLINE_READY",
+        "status": "COMPLETED",
+        "details": "CI-B verified (import test passes); CI-A documented (PyQt6 environment issue).",
+        "commit": "d3daf015",
+        "blockers": []
+      },
+      "OC-21/22": {
+        "classification": "RESOURCE_BLOCKED",
+        "status": "BLOCKED",
+        "details": "Storage admission gate requires ≥20 GiB on one drive (current: C:6.13, E:4.16, F:2.22, G:5.10, H:15.70 GiB).",
+        "commit": "none",
+        "blockers": ["Storage admission gate unmet (external action required)"]
+      },
+      "OC-23": {
+        "classification": "DATA_BLOCKED",
+        "status": "BLOCKED",
+        "details": "RQ1 five-run evidence validation requires fresh isolated runs with current source (current source stale).",
+        "commit": "none",
+        "blockers": ["Missing 5 valid runs with current source"]
+      },
+      "OC-25": {
+        "classification": "NOT_STARTED",
+        "status": "PENDING",
+        "details": "Stage-02 topology crash audit requires identification of structural freeze violation.",
+        "commit": "none",
+        "blockers": ["Stage-02 topology crash root cause not yet resolved"]
+      }
+    }
+  }
+}

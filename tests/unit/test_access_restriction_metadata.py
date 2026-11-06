@@ -1,5 +1,8 @@
 import json
+from pathlib import Path
 import xml.etree.ElementTree as ET
+
+import pytest
 
 from ultimate_pipeline.enrichment.access_restriction_metadata import (
     AccessMatch,
@@ -73,3 +76,28 @@ def test_name_match_without_geometry_coverage_fails_closed():
     matches, outcomes = match_access_ways(root, [way], spacing_m=1.0)
     assert matches == []
     assert outcomes == {"unmatched_way": 1}
+
+
+def test_unresolved_matched_road_fails_before_any_metadata_mutation():
+    root = ET.Element("OpenDRIVE")
+    root.append(_road("1", "Access Road", 0))
+    valid = AccessMatch("w1", "1", {"access": "destination"}, 0.98, "HIGH", 0.1, 1.0)
+    missing = AccessMatch("w2", "missing", {"vehicle": "no"}, 0.98, "HIGH", 0.1, 1.0)
+
+    with pytest.raises(ValueError, match="access_metadata_unresolved_xodr_road_ids:missing"):
+        attach_access_metadata(root, [valid, missing])
+
+    assert root.findall(f"./road[@id='1']/userData/vector[@key='{USERDATA_KEY}']") == []
+
+
+def test_all_access_metadata_pipeline_callers_fail_closed():
+    """Both materialization stages must propagate an unresolved-road failure."""
+    repo_root = Path(__file__).resolve().parents[2]
+    for relative_path in (
+        "ultimate_pipeline/pipeline_stages/stage_04_enrichment.py",
+        "ultimate_pipeline/pipeline_stages/stage_09_positional_semantics.py",
+    ):
+        source = (repo_root / relative_path).read_text(encoding="utf-8")
+        assert "access metadata" in source.lower()
+        assert "failed closed" in source
+        assert "raise RuntimeError" in source

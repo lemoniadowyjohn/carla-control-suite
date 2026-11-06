@@ -974,6 +974,83 @@ def _step5_dem_and_geometry(self, topo_fixed: str, elev_out: str) -> str:
                 f"(see {dem_qc_report_path}).{hint}{actionable_hint}"
             )
 
+    # Lane Z source-stage repair: reconcile connector boundary elevations so
+    # every junction connector starts/ends exactly C0 with the incident roads
+    # (P0-C audit-style interface seams). Runs on the final in-memory DEM
+    # elevation tree, right before it is persisted; incident roads, lane
+    # topology and planView are never touched. Degrades without blocking on
+    # any failure (admission is decided by the P0-C oracle after regen).
+    connector_reconcile_enabled = str(
+        os.getenv("UP_CONNECTOR_ELEV_RECONCILE", "1")
+    ).strip().lower() not in ("0", "false", "no", "off")
+    if connector_reconcile_enabled:
+        try:
+            from ultimate_pipeline.topology.connector_elevation_reconciler import (
+                reconcile_connector_elevations,
+            )
+
+            connector_elevation_report = reconcile_connector_elevations(root)
+            connector_reconcile_report_path = os.path.join(
+                self.out_dir, "connector_elevation_reconciliation_report.json"
+            )
+            with open(connector_reconcile_report_path, "w", encoding="utf-8") as f:
+                json.dump(
+                    connector_elevation_report, f, indent=2, ensure_ascii=True, sort_keys=True
+                )
+            self.vreport.add_dict(
+                "connector_elevation_reconciliation", connector_elevation_report
+            )
+            print(
+                "✅ Connector elevation reconciliation: "
+                f"rewritten={connector_elevation_report['rewritten']} "
+                f"already_continuous={connector_elevation_report['already_continuous']} "
+                f"missing_bc={connector_elevation_report['missing_boundary_conditions']} "
+                f"conflicts={connector_elevation_report['conflicting_boundary_conditions']}"
+            )
+        except Exception as e:
+            print(f"⚠️ Connector elevation reconciliation failed (continuing): {e}")
+            self.vreport.add_dict(
+                "connector_elevation_reconciliation", {"error": str(e)}
+            )
+
+    # P0-D source-stage fix: enforce bridge/tunnel/elevated separation from
+    # terrain using DEM samples. Runs after connector elevation reconciliation
+    # and before final save so the deck/elevation profile is set correctly.
+    structure_repair_enabled = str(
+        os.getenv("UP_STRUCTURE_ELEV_REPAIR", "1")
+    ).strip().lower() not in ("0", "false", "no", "off")
+    if structure_repair_enabled and dem_path and os.path.exists(dem_path):
+        try:
+            from ultimate_pipeline.topology.structure_elevation_repair import (
+                repair_structure_elevation_separation,
+            )
+
+            # Need OSM for classification: use same path as structure resolution
+            structure_repair_report = repair_structure_elevation_separation(
+                root,
+                road_classes=structure_report.get("plausibility_road_classes", {}),
+                dem_path=dem_path,
+                xodr_path=cont_out if 'cont_out' in locals() else topo_fixed,
+                min_clearance_m=0.5,
+            )
+            structure_repair_path = os.path.join(
+                self.out_dir, "structure_elevation_repair_report.json"
+            )
+            import json as _json
+            with open(structure_repair_path, "w", encoding="utf-8") as f:
+                _json.dump(structure_repair_report, f, indent=2, ensure_ascii=True)
+            self.vreport.add_dict("structure_elevation_repair", structure_repair_report)
+            print(
+                "✅ P0-D structure elevation separation: "
+                f"repaired={structure_repair_report['repaired_roads']} "
+                f"unrepaired={structure_repair_report['unrepaired_roads']}"
+            )
+        except Exception as e:
+            print(f"⚠️ P0-D structure elevation repair failed (continuing): {e}")
+            self.vreport.add_dict(
+                "structure_elevation_repair", {"error": str(e)}
+            )
+
     save_xodr(tree, topo_fixed)
 
     # DEM coverage gate (only if DEM was used)
@@ -1071,8 +1148,8 @@ def _step5_dem_and_geometry(self, topo_fixed: str, elev_out: str) -> str:
         if bool(getattr(s, "FAIL_ON_FLAT_ELEVATION", True)) or bool(strict_dem):
             raise RuntimeError(msg)
         print(f"⚠️ {msg} (continuing with FAIL_ON_FLAT_ELEVATION=False)")
-        self.vreport.add("elevation_stats", "flat_dem_warning", True)
-        self.vreport.add("elevation_stats", "flat_dem_warning_reason", msg)
+        self.vreport.add("warning", "elevation_stats", f"flat_dem_warning: {True}")
+        self.vreport.add("warning", "elevation_stats", f"flat_dem_warning_reason: {msg}")
 
     # Always write the smoothed elevation first. Optional link-offset
     # correction is canonicalized inside gate_elevation_continuity() so the

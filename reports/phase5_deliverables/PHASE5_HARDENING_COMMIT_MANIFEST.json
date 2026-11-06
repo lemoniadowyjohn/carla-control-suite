@@ -1,0 +1,30 @@
+{
+  "report": "PHASE5_HARDENING_COMMIT_MANIFEST",
+  "date": "2026-10-21",
+  "branch": "repair/map-realism-p0-837a8504",
+  "local_head": "363a1868",
+  "local_head_message": "OC-15: guard degenerate zero-length arrow in MapPlotter._draw_direction_arrow (patches 3161); regression tests",
+  "committed_fixes": [
+    {"sha": "363a1868", "description": "Phase 0-1 repair artifacts; OC-15 arrow guard; pre-existing"},
+    {"sha": "d3daf015", "description": "Phase 0-1 artifacts; CI remediation receipt; final execution report"},
+    {"sha": "f0c83285", "description": "P0-E origin-anchored CRS enforcement"},
+    {"sha": "0c08412f", "description": "P0-B orphan_road_repair + P0-D elevation repair"},
+    {"sha": "d74c0f17", "description": "Research authority closeout matrix + CD-1 to CD-7 verification"}
+  ],
+  "new_fix_commits_produced_in_phase_6": [
+    "P0-1 experiment_map_pair_authority.py fix (not committed in this session; edited directly at 363a1868 base)",
+    "P0-2 rq3_frame_set.py module + test_rq3_frame_set.py (new files, not yet committed — uncommitted work)",
+    "P0-3 capture_transaction.py module + test_capture_transaction_rollback.py (new files, uncommitted)",
+    "P1-12 rq3_rq5_handoff_adapter.py + RQ3_TO_RQ5_HANDOFF_CONTRACT.json (new files, uncommitted)"
+  ],
+  "uncommitted_new_files": [
+    "ultimate_pipeline/perception/rq3_frame_set.py",
+    "ultimate_pipeline/perception/capture_transaction.py",
+    "ultimate_pipeline/perception/rq3_rq5_handoff_adapter.py",
+    "ultimate_pipeline/tests/unit/test_rq3_frame_set.py",
+    "ultimate_pipeline/tests/unit/test_capture_transaction_rollback.py",
+    "reports/phase5_deliverables/* (all new deliverables)"
+  ],
+  "commit_policy": "Single writer per file maintained throughout. No destructive git reset/prune/GC applied to any worktree.",
+  "independent_review_for_new_fixes": "NOT RUN"
+}

@@ -46,7 +46,16 @@ _DEBUG_PASS_ARTIFACTS = {
     "map_acceptance.json": {"schema": "map_acceptance_v1", "valid_for_experiments": True},
     "gate_failures.json": {},
     "pipeline_health_summary.json": {"schema": "pipeline_health_summary/v1", "overall_ok": True},
-    "run_summary.json": {"schema": "run_summary/v1", "signals": {}},
+    "run_summary.json": {
+        "schema": "run_summary/v1",
+        "pipeline_version": "test",
+        "run_timestamp_utc": "2026-01-01T00:00:00Z",
+        "run_dir": "/tmp/test",
+        "inputs": {"osm_file": "", "bbox_json": ""},
+        "outputs": {"final_xodr": "final.xodr", "semantic_xodr": ""},
+        "validation": {"preflight_status": None, "tile_qa_status": None},
+        "settings": {"snapshot_path": "", "snapshot_sha256": None, "snapshot_md5": None},
+    },
     "cumulative_gate_report.json": {"schema": "cumulative_gate_report/v1", "failed": 0, "total": 3},
     "08h5_g6_lane_coverage_repair_report.json": {
         "schema": "08h5_g6_lane_coverage_repair_report/v1",

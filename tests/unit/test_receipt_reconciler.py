@@ -179,11 +179,14 @@ def test_case10_identity_not_membership(tmp_path) -> None:
         pid = child.pid
         child.wait(timeout=30)
         # wait() does NOT release the handle (Popen has no close(); the
-        # dead PID stays observable while held). Close explicitly: same
-        # lesson as the multiprocessing-handle finding, now pinned.
-        import ctypes as _ct
-
-        _ct.windll.kernel32.CloseHandle(child._handle)
+        # dead PID stays observable while held). Close explicitly, via the
+        # owning subprocess.Handle API: a raw CloseHandle here would release
+        # the OS handle while leaving Handle.closed False, so Handle.__del__
+        # would close the same handle a second time and raise WinError 6 as an
+        # unraisable exception during GC. Close() is idempotent, so the
+        # explicit release stays deterministic and cannot double-close.
+        child._handle.Close()
+        assert child._handle.closed is True
         before = leases.process_creation_time(pid)
         assert before is None
         # A future process reusing this PID would carry a DIFFERENT

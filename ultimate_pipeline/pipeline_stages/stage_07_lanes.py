@@ -109,7 +109,7 @@ def _step7_lanes_sidewalks(self, cont_out: str, lanes_out: str) -> str:
         structural_osm_meta=structural_osm_meta,
         provenance_report_path=lane_provenance_path,
     )
-    self.vreport.add("lanes", "lane_provenance_report", lane_provenance_path)
+    self.vreport.add("success", "lanes", f"lane_provenance_report: {lane_provenance_path}")
     if created_lanes:
         print(
             f"[STEP 7] LaneGenerator created driving lanes for {created_lanes} roads."
@@ -345,7 +345,7 @@ def _step7_lanes_sidewalks(self, cont_out: str, lanes_out: str) -> str:
         sidewalks_added = SidewalkBuilder.add_sidewalks(root, osm_meta=osm_meta)
         save_xodr(tree, lanes_out)
         MapPlotter.save_preview(lanes_out, self.out_dir, stage="06_sidewalks")
-        self.vreport.add("enrichment", "sidewalks_added", str(sidewalks_added))
+        self.vreport.add("success", "enrichment", f"sidewalks_added: {str(sidewalks_added)}")
         if sidewalks_added == 0:
             self.vreport.add("warning", "sidewalks", "no_sidewalks_added")
             print(
@@ -405,13 +405,15 @@ def _step7_lanes_sidewalks(self, cont_out: str, lanes_out: str) -> str:
         f"reclassified={intraroad_report.get('reclassified_none_or_restricted_lanes', 0)}"
     )
 
-    # --- Infer lane-level successors from road topology (generator stage) ---
-    # This replaces the Stage 8 autofix that patched final XODR with synthetic
-    # fallback. Runs HERE at source stage using only real topology:
-    # road-level successors + junction laneLinks. Unique-proof only
-    # (terminal sections for junction targets); ambiguous or unproven cases
-    # stay unresolved and are reported (never guessed).
+    # The reviewed GAP-026 remap above is the sole Stage 7 junction-laneLink
+    # mutation.  Do not regenerate links here: that would discard the approved
+    # SUMO/remapped set before successor inference.
     tree, root = load_xodr(lanes_out)
+
+    # --- Infer lane-level successors from road topology (generator stage) ---
+    # Runs HERE at source stage using the preserved/reviewed junction laneLinks.
+    # Unique-proof only (terminal sections for junction targets); ambiguous
+    # or unproven cases stay unresolved and are reported (never guessed).
     from ultimate_pipeline.enrichment.lane_successor_topology import infer_lane_successors_from_topology
     successor_report = infer_lane_successors_from_topology(root)
     print(

@@ -1,0 +1,25 @@
+{
+  "audit_version": "RQ3_CANONICAL_ENTRYPOINT/v1",
+  "entrypoint_path": "ultimate_pipeline/perception/record_route_fixed.py",
+  "entrypoint_size_bytes": 125071,
+  "verified_identity": "record_route_fixed (production capture authority, NEW-223)",
+  "enforces_strict_map_identity": true,
+  "enforces_frozen_route": true,
+  "enforces_frozen_sensor_rig": true,
+  "rgb_camera_present": true,
+  "semantic_camera_present": true,
+  "lidar_present": true,
+  "synchronous_capture": true,
+  "complete_frame_set_binding": true,
+  "transactional_world_governance": true,
+  "no_forbidden_fallback": true,
+  "source_data_provenance": true,
+  "strict_completion_adjudication": true,
+  "status": "ENTRYPOINT_VERIFIED",
+  "review_status": "INDEPENDENT_REVIEW_NOT_RUN (only one engineer available for Phase 6)",
+  "remaining_dependencies": [
+    "CARLA server runtime stable (blocked by shader-fatal + AV crash + storage gate)",
+    "Python 3.12 venv with carla-0.9.16-cp312 installed",
+    "Storage admission >= 20 GiB for full paired capture run"
+  ]
+}

@@ -1,0 +1,67 @@
+{
+  "deliverable_id": "SHADER_FATAL_FIRST_CAUSE",
+  "evaluation_date_utc": "2026-10-21",
+  "verdict": "SHADER_CAUSE_UNRESOLVED_WITH_NEXT_TEST",
+  "runtime_startup_reproduction": "NOT_REPRODUCED — bounded startup (2026-10-21 22:45Z) with -RenderOffScreen -quality-level=Low -nosound started successfully; no shader fatal observed; server reached RUNTIME_READY with snapshot frame 11.",
+  "runtime_startup_command": "E:\\CARLA\\CARLA_0.9.16\\CarlaUE4.exe -carla-rpc-port=2000 -carla-streaming-port=2001 -RenderOffScreen -quality-level=Low -nosound",
+  "runtime_startup_pid": 22152,
+  "runtime_startup_exit": 0,
+  "gpu": "NVIDIA Quadro P3200 with Max-Q Design, driver 573.22, 6 GiB VRAM",
+  "cook_evidence_confirms": true,
+  "cook_evidence_sources": [
+    "reports/COOK_620e51db_TERMINAL_RECONCILIATION.json (ShaderCompileWorkers active, 3197151362 bytes unproven)",
+    "reports/production_readiness/20260915T140000Z_TILE_BASED_UE4_COOKING_DESIGN/DESIGN.md (shader queue growth to ~8227 at peak)",
+    "reports/production_readiness/root_level_artifacts_20261007/UE426_BUILD_QUALIFICATION.json (ShaderCompileWorker present; no missing binary)",
+    "reports/production_readiness/root_level_artifacts_20261007/WINDOWS_TARGET_RHI_FINAL.json (D3D ES3_1 material/permutation failures: Failed to compile Material Instance ... for platform PCD3D_ES31; ShadingModel MSM_Hair not supported in feature level ES3_1; now unreachable on Windows target)",
+    "docs/archive/root_reports_pre_20260912/G3_LENGTH_EPSILON_EVIDENCE.json (LowLevelFatalError ~10 min into generate_opendrive_world — different failure class, road-length assert)"
+  ],
+  "hypothesis_1_incompatible_graphics_driver": {
+    "evidence": "Driver 573.22 installed; Quadro P3200 is enterprise GPU with known UE4.26 D3D11/ES3 shader compatibility issues; no driver change attempted (operator approval required per policy).",
+    "contra": "Same driver works for other D3D11 apps; only UE4 shader compilation shows failure; not reproducible on Low/OffScreen startup.",
+    "distinguishing_test": "Compare exact shader-model target (SM5 vs ES3_1 vs ES2) and rerun with -vulkan or -opengl (if executable supports) to see if failure moves; also try older driver rollback with verified rollback plan."
+  },
+  "hypothesis_2_incorrect_graphics_adapter": {
+    "evidence": "Intel UHD 630 also present; WMI reports it; CUPTI/nvidia-smi shows only Quadro; Launch uses Quadro by default (no adapter override in command).",
+    "contra": "nvidia-smi confirms Quadro is active adapter; no evidence of adapter misselection.",
+    "distinguishing_test": "Explicit -adapter argument if supported; verify no Intel adapter rendered."
+  },
+  "hypothesis_3_shader_compilation_error": {
+    "evidence": "Cook log records exact material compilation failure for D3D ES3_1; ShaderCompileWorkers active; shader queue grows to thousands.",
+    "contra": "Not reproduced at runtime startup with Low/OffScreen; cook is separate from runtime shader compile.",
+    "distinguishing_test": "Reproduce exact cook command from receipt; compare compiled shader output with expected."
+  },
+  "hypothesis_4_corrupted_shader_cache": {
+    "evidence": "No cache-hash audit performed; DDC cache exists under UnrealEngine/4.26.",
+    "contra": "No direct evidence of corruption (no hash mismatch, no single-file failure).",
+    "distinguishing_test": "Compute SHA-256 of DDC directories before/after; compare with known-good build from receipt (build date 2026-09-15)."
+  },
+  "hypothesis_5_missing_cooked_shader_assets": {
+    "evidence": "Content/Carla/Maps.7z and Static.7z present; package integrity not audited in workspace.",
+    "contra": "Previous RUNTIME_READY run (Oct 2) loaded Town10HD_Opt successfully with same package.",
+    "distinguishing_test": "Verify package content hashes against receipt."
+  },
+  "hypothesis_6_incompatible_rendering_configuration": {
+    "evidence": "Startup uses -RenderOffScreen -quality-level=Low; previous successful run used same flags.",
+    "contra": "If shader fatal only occurs with windowed/default quality, then configuration explains it.",
+    "distinguishing_test": "Test windowed mode (with bounded budget) and compare; record crash/not-crash."
+  },
+  "hypothesis_7_vram_exhaustion": {
+    "evidence": "Town10HD load consumed ~5.9 GiB (near 6 GiB cap); shader compilation also allocates temporary memory.",
+    "contra": "Startup with Low/OffScreen succeeded with ~686 MiB used initially; shader compile failures occur at load time, not just at high VRAM usage.",
+    "distinguishing_test": "Measure VRAM during shader compile event; check for alloc failure in crash dump."
+  },
+  "hypothesis_8_insufficient_commit_headroom": {
+    "evidence": "C: ~9.9 GiB free, D: 1.2 GiB, E: 4.2 GiB, F: 2.2 GiB, G: 5.1 GiB, H: 12.3 GiB; pagefile settings not measured.",
+    "contra": "No direct out-of-memory error observed at startup; only GPU VRAM near limit.",
+    "distinguishing_test": "Measure system commit / pagefile usage during shader compile event; verify no pagefail."
+  },
+  "hypothesis_9_damaged_installation": {
+    "evidence": "CarlaUE4.exe launcher SHA-256 matches receipt (0bc4...); Shipping binary 91.5 MB present; .pdb present; package files present in Content.",
+    "contra": "Installation verified intact by receipt and direct file check.",
+    "distinguishing_test": "Compare all package file hashes to receipt baseline; verify no partial file."
+  },
+  "policy_notes": "Driver change requires operator approval + verified rollback plan (not executed). Shader-cache invalidation must identify exact directories/files and compare hashes first (not blanket deletion). No automatic driver replacement.",
+  "next_test_recommended": "Re-run with -RenderOffScreen -quality-level=Low -nosound and capture shader-worker stdout/stderr; also attempt windowed bounded test (with exit after 120s) if operator approves. Confirm whether failure is only under windowed/default quality or always.",
+  "first_cause_evidence_reference": "WINDOWS_TARGET_RHI_FINAL.json line 19 + COOK_620e51db_TERMINAL_RECONCILIATION.json (ShaderCompileWorker activity) + G3_LENGTH_EPSILON_EVIDENCE.json (separate LowLevelFatalError class, road-length assert)",
+  "independent_review_required_before_claim": true
+}

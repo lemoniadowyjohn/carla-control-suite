@@ -1,0 +1,73 @@
+{
+  "additional_worktrees_created": false,
+  "author": "single_engineer",
+  "branch": "repair/map-realism-p0-837a8504",
+  "carla_server_started": false,
+  "commits_ahead_remote": 9,
+  "deleted_files": [],
+  "document_id": "RQ3_PATCH_MANIFEST_20261022",
+  "frozen_or_codex_owned_untouched": [
+    "ultimate_pipeline/perception/rq3_capture_contract.py (frozen protocol constants preserved; only validation semantics corrected)",
+    "RQ5 Codex-owned training modules",
+    "docs/archive/BRANCH_ARCHIVAL_PLAN.md"
+  ],
+  "historical_artifacts_overwritten": false,
+  "independent_review_not_run": true,
+  "local_head_sha": "9e777a270f91299bd20efcc879919029e2956e45",
+  "map_regeneration_performed": false,
+  "modified_existing_files": [
+    "ultimate_pipeline/perception/experiment_map_pair_authority.py",
+    "ultimate_pipeline/perception/rq3_capture_contract.py",
+    "ultimate_pipeline/perception/record_route_fixed.py"
+  ],
+  "new_files": [
+    "configs/rq3_protocol_freeze_v1.json",
+    "reports/phase5_deliverables/",
+    "tests/unit/test_canonical_runner_integration.py",
+    "tests/unit/test_rq3_builder_false_pass_regression.py",
+    "tests/unit/test_rq3_terminal_adversarial_tests.py",
+    "tests/unit/test_strict_runner_integration.py",
+    "tests/unit/test_task1_2_cross_arm_sync.py",
+    "ultimate_pipeline/perception/capture_transaction.py",
+    "ultimate_pipeline/perception/rq3_evidence_gate.py",
+    "ultimate_pipeline/perception/rq3_frame_set.py",
+    "ultimate_pipeline/perception/rq3_rq5_handoff_adapter.py",
+    "ultimate_pipeline/tests/unit/test_capture_transaction_rollback.py",
+    "ultimate_pipeline/tests/unit/test_experiment_manifest_negative_controls.py",
+    "ultimate_pipeline/tests/unit/test_frame_set_intersection.py",
+    "ultimate_pipeline/tests/unit/test_receipt_lifecycle_negative_controls.py",
+    "ultimate_pipeline/tests/unit/test_rollback_audit.py",
+    "ultimate_pipeline/tests/unit/test_rq3_artifact_content_verification.py",
+    "ultimate_pipeline/tests/unit/test_rq3_frame_set.py"
+  ],
+  "os_or_driver_changes": false,
+  "patch_commit_groups": [
+    "1. Manifest-builder correctness (experiment_map_pair_authority.py + 12 builder regression tests)",
+    "2. Cross-arm fixture/schema corrections (test_task1_2_cross_arm_sync.py -> 23/23)",
+    "3. Canonical capture integration (record_route_fixed.py strict entrypoint + integration tests)",
+    "4. Terminal negative controls (test_rq3_terminal_adversarial_tests.py, 10/10)",
+    "5. Handoff verification evidence (reports/phase5_deliverables/)",
+    "9e777a27 P0 RQ3: strict CLI dispatch + evidence gate + derived manifest validity + artifact byte verification + frozen protocol tracked + venv pytest"
+  ],
+  "status": "RQ3_HANDOFF_PARTIAL_EXACT_BLOCKERS",
+  "unreal_executed": false,
+  "implementation_sha": "9e777a270f91299bd20efcc879919029e2956e45",
+  "real_paired_dataset_status": "RQ3_PAIRED_DATASET_NOT_ADMITTED",
+  "frozen_protocol": {
+    "path": "configs/rq3_protocol_freeze_v1.json",
+    "sha256": "5aa8ae248b26ed1bcc053ae1b70b5a508e3fd05b5cab4bb68debc495f44b98bd",
+    "tracked_at_head": true,
+    "edited": false
+  },
+  "p0_remediation": {
+    "P0-1_strict_cli_dispatch": "record_route_fixed.main() routes --strict-rq3 to run_strict_capture_entrypoint; no legacy fallback; __main__ guard moved to end of file.",
+    "P0-2_synthetic_to_authoritative": "rq3_evidence_gate.evaluate_strict_evidence separates structural/synthetic/real/admission/authority states; synthetic never authoritative.",
+    "P0-3_manifest_promotion": "experiment_map_pair_authority derives pair_valid from evidence predicates; strict validator applied to derived candidate; claim downgraded when invalid.",
+    "P0-4_artifact_bytes": "rq3_evidence_gate.verify_artifact_set verifies actual file bytes, blocks traversal, rejects stale session, uncommitted staging, duplicate identity, missing modality, modified content.",
+    "P0-5_reproducible_campaign": "All required RQ3 modules and tests tracked (14 files added at 9e777a27); build outputs/caches excluded.",
+    "P0-6_frozen_protocol": "PRESENT_UNEDITED_TRACKED at configs/rq3_protocol_freeze_v1.json.",
+    "P0-7_environment": "C:\\temp\\py312_venv Python 3.12.2; pytest 9.1.1 installed; numpy 2.5.4, pydantic 2.14.1; carla 0.9.16 import PASS.",
+    "P0-8_fresh_receipts": "RQ3_EVIDENCE_RECEIPT_20261022_9e777a27.json bound to 9e777a27 (no self-reference).",
+    "P0-9_acceptance": "PARTIAL: core RQ3 regressions PASS; independent review NOT_RUN; dataset NOT_ADMITTED; 18 pre-existing unrelated failures preserved."
+  }
+}

@@ -18,6 +18,8 @@ from __future__ import annotations
 
 from unittest import mock
 
+import pytest
+
 import ultimate_pipeline.pipeline_stages.stage_03_topology_repair as stage_mod
 
 
@@ -65,3 +67,42 @@ def test_lane_width_invariant_log_line_shows_real_counts(capsys, tmp_path):
         f"expected the real totals in the log line, got: {out!r}"
     )
     assert "found 0, fixed 0" not in out
+
+
+# ---------------------------------------------------------------------------
+# L1 review follow-up (defect C, 2026-11-02): _step3_topology_repair only
+# honoured a new ORPHAN_STRICT flag; settings.THESIS_STRICT (default True,
+# ultimate_pipeline/config/settings.py ~2226) never made a repair exception
+# propagate, so a real repair defect was silently swallowed in the default
+# (THESIS_STRICT=True) configuration. Fix: strict = ORPHAN_STRICT or
+# THESIS_STRICT.
+# ---------------------------------------------------------------------------
+
+def test_thesis_strict_alone_propagates_orphan_repair_exception(tmp_path):
+    """ORPHAN_STRICT=False but THESIS_STRICT=True (the real default) must
+    still re-raise a forced repair_orphan_roads() exception, not swallow
+    it into a quiet orphan_report['ok']=False."""
+    fake_settings = mock.Mock()
+    fake_settings.ORPHAN_STRICT = False
+    fake_settings.THESIS_STRICT = True
+    fake_settings.ENABLE_CARLA_TEST_EARLY = False
+
+    fake_self = mock.Mock()
+    fake_self.settings = fake_settings
+    fake_self.out_dir = str(tmp_path)
+
+    patches = {
+        "load_xodr": lambda p: ("fake_tree", "fake_root"),
+        "TopologyRepair": mock.Mock(run=mock.Mock()),
+        "save_xodr": lambda tree, path: None,
+        "MapPlotter": mock.Mock(save_preview=mock.Mock()),
+    }
+    with mock.patch.multiple(stage_mod, create=True, **patches):
+        with mock.patch(
+            "ultimate_pipeline.topology.orphan_road_repair.repair_orphan_roads",
+            side_effect=RuntimeError("forced orphan repair failure"),
+        ):
+            with pytest.raises(RuntimeError, match="forced orphan repair failure"):
+                stage_mod._step3_topology_repair(
+                    fake_self, "input.xodr", "topo_fixed.xodr"
+                )

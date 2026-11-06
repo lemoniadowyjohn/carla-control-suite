@@ -68,6 +68,34 @@ def test_cross_road_fixer_uses_existing_boundary_lane_instead_of_dangling_same_i
     assert check_lane_link_targets_exist(str(output_path))["ok"] is True
 
 
+def test_road_link_missing_contactpoint_reported_not_assumed(tmp_path: Path):
+    """L2 review follow-up (2026-11-02): a ROAD-type successor link with
+    no contactPoint attribute must not be assumed to mean "start" -- it
+    must be refused and reported, not silently fixed against the wrong
+    (or merely guessed) boundary."""
+    source = _road("1", [_section(0, [-1, -2])])
+    link = ET.SubElement(source, "link")
+    # Deliberately NO contactPoint attribute on this road-type link.
+    ET.SubElement(link, "successor", elementType="road", elementId="2")
+    target = _road("2", [_section(0, [-1, -2])])
+    source_path = tmp_path / "source.xodr"
+    output_path = tmp_path / "output.xodr"
+    _write(source_path, source, target)
+
+    report = fix_missing_lane_successors(str(source_path), str(output_path))
+
+    assert report["fixed_count"] == 0, report
+    assert report["fallback_applied"] == 0, report
+    reasons = {b["reason"] for b in report["still_broken"]}
+    assert "road_link_contactpoint_missing" in reasons, report
+    assert report.get("road_link_contactpoint_missing") == 2, report
+    root = ET.parse(output_path).getroot()
+    repaired_lanes = root.findall("road[@id='1']/lanes/laneSection/right/lane")
+    assert all(lane.find("link") is None for lane in repaired_lanes), (
+        "must not write a guessed successor when contactPoint is missing"
+    )
+
+
 def test_intra_road_repair_prefers_geometric_lane_center_when_ids_disagree(tmp_path: Path):
     road = _road("1", [_section(0, [-1, -2]), _section(10, [-1, -3])])
     source_path = tmp_path / "source.xodr"

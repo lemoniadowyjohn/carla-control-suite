@@ -1,0 +1,11 @@
+{
+  "eps_hdg": 0.01,
+  "eps_xy": 0.05,
+  "issues": [],
+  "num_junctions": 3561,
+  "num_roads": 32267,
+  "num_signals": 21163,
+  "ok": true,
+  "seam_endpoint_issues": [],
+  "warnings": []
+}

@@ -51,6 +51,61 @@ MAP_OF_RECORD_SHA256 = "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c
 MAP_OF_RECORD_BYTES = 149799632
 MAP_OF_RECORD_ROLE = "auto_map_of_record"
 
+
+# ============================================================================
+# OpenDRIVE <geoReference> authority (P0-E)
+# ============================================================================
+#
+# The XODR plan-view coordinates are LOCAL: native_tmerc(0,0,1) - REBASE.
+# A bare "+proj=tmerc" geoReference (current map-of-record state) has no
+# absolute origin, so WGS84 -> projected CRS -> local rebase -> OpenDRIVE
+# geoReference -> CARLA GNSS is not invertible. The truthful encoding re-
+# expresses the SAME single rebase in the projection's false easting/northing
+# (proj x_0/y_0 are pure post-translations, so this is exact):
+#
+#   +proj=tmerc +lat_0=0 +lon_0=0 +k=1
+#   +x_0=-832671.676 +y_0=-5458671.104 +datum=WGS84 +units=m +no_defs
+#
+# NO second offset and NO coordinate mutation: native_to_local() keeps its
+# exact behavior and remains the projection-free rebase authority.
+def open_drive_georeference(
+    dx: float = REBASE_DX, dy: float = REBASE_DY
+) -> str:
+    """Absolute <geoReference> for the local-rebased OpenDRIVE coordinate."""
+    from ultimate_pipeline.core.georef_utils import (
+        build_local_rebased_georeference,
+    )
+
+    return build_local_rebased_georeference(dx, dy)
+
+
+def wgs84_to_open_drive(lon: float, lat: float) -> Tuple[float, float]:
+    """WGS84 geographic -> OpenDRIVE file coordinates (local frame).
+
+    Identical to :func:`wgs84_to_local`; kept as the named projection-facing
+    twin for the georeference acceptance tests.
+    """
+    return wgs84_to_local(lon, lat)
+
+
+def open_drive_to_wgs84(x: float, y: float) -> Tuple[float, float]:
+    """OpenDRIVE file coordinates -> WGS84 geographic (local frame inverse)."""
+    return local_to_wgs84(x, y)
+
+
+def has_absolute_georeference_origin(proj4: str) -> bool:
+    """True when a geoReference string declares an absolute origin.
+
+    A georeference is absolute when it carries ``+lat_0``/``+lon_0`` (the
+    projection origin, which is what CARLA's geoReference parser keys off of)
+    AND has_embedded non-trivial ``+x_0``/``+y_0`` OR explicit non-zero
+    false easting/northing that pins the projection downstream of lat/lon.
+    """
+    has_origin_params = "+lat_0=" in proj4 and "+lon_0=" in proj4
+    from ultimate_pipeline.core.georef_utils import has_embedded_georef_origin
+
+    return has_origin_params and has_embedded_georef_origin(proj4)
+
 # Frame ID strings for binding
 FRAME_ID_WGS84 = "wgs84_geographic"
 FRAME_ID_NATIVE = "osm2odr_native_tmerc"
