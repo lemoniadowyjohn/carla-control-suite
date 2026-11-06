@@ -19,7 +19,91 @@ from typing import Any, Dict, List, Optional, Union
 from pydantic import BaseModel, Field
 
 
-def get_git_sha() -> Optional[str]:
+_INVALID_RUN_ID_REASONS: Dict[str, str] = {}
+
+
+def validate_run_id(run_id: str) -> str:
+    """Validate that a run_id cannot escape the artifact root.
+
+    Rejects:
+    - Parent traversal (``..`` components)
+    - Absolute paths
+    - Windows drive-qualified paths (``C:\\...``)
+    - UNC-style paths (``\\\\server\\...``)
+    - Path separator injection
+    - Empty or whitespace-only IDs
+
+    Returns the run_id unchanged if valid.
+    Raises ValueError with a descriptive message if invalid.
+    """
+    if not run_id or not run_id.strip():
+        raise ValueError("run_id must not be empty or whitespace-only")
+
+    # Reject path separators that could be used for traversal
+    if "\\" in run_id or "/" in run_id:
+        raise ValueError(f"run_id must not contain path separators: {run_id!r}")
+
+    # Reject parent traversal
+    parts = run_id.split("\\") if "\\" in run_id else run_id.split("/")
+    for part in parts:
+        if part == "..":
+            raise ValueError(f"run_id must not contain parent traversal: {run_id!r}")
+
+    # Reject absolute paths (POSIX)
+    if run_id.startswith("/"):
+        raise ValueError(f"run_id must not be an absolute path: {run_id!r}")
+
+    # Reject Windows drive-qualified paths (e.g. C:\..., D:/...)
+    if len(run_id) >= 2 and run_id[1] == ":":
+        raise ValueError(f"run_id must not be a Windows drive-qualified path: {run_id!r}")
+
+    # Reject UNC-style paths (\\server\...)
+    if run_id.startswith("\\\\") or run_id.startswith("//"):
+        raise ValueError(f"run_id must not be a UNC-style path: {run_id!r}")
+
+    # Reject null bytes
+    if "\x00" in run_id:
+        raise ValueError(f"run_id must not contain null bytes: {run_id!r}")
+
+    # Reject unreasonably long IDs
+    if len(run_id) > 200:
+        raise ValueError(f"run_id must not exceed 200 characters: {len(run_id)}")
+
+    return run_id
+
+
+def _redact_env_vars(env: Dict[str, str]) -> Dict[str, str]:
+    """Return environment variables with secret-bearing values redacted.
+
+    Captures UP_*, CARLA_*, and PYTHONPATH for reproducibility, but redacts
+    values whose names suggest they contain credentials, tokens, keys, or
+    passwords. The key name is always preserved; only the value is redacted.
+    """
+    _SECRET_NAME_PATTERNS = (
+        "token",
+        "secret",
+        "key",
+        "password",
+        "pwd",
+        "credential",
+        "auth",
+        "api_key",
+        "apikey",
+        "access_key",
+        "secret_key",
+        "private_key",
+        "client_secret",
+    )
+
+    redacted: Dict[str, str] = {}
+    for k, v in env.items():
+        k_lower = k.lower()
+        if k.startswith("UP_") or k.startswith("CARLA_") or k == "PYTHONPATH":
+            if any(pat in k_lower for pat in _SECRET_NAME_PATTERNS):
+                redacted[k] = "[REDACTED]"
+            else:
+                redacted[k] = v
+    return redacted
     """Get short git SHA of current commit."""
     try:
         result = subprocess.run(
@@ -64,21 +148,24 @@ def create_run_id(
 
     Example: 20260220_143052_abc123_d4e5f6_domain_gap
     """
+    import uuid
+
     if timestamp is None:
         timestamp = datetime.now(timezone.utc)
 
     ts_str = timestamp.strftime("%Y%m%d_%H%M%S")
+    ts_str += f"_{timestamp.microsecond:06d}"
     git_sha = get_git_sha() or "nogit"
     config_short = config_hash[:6] if config_hash else "noconf"
 
     parts = [ts_str, git_sha, config_short]
     if experiment_id:
-        # Sanitize experiment_id for filesystem
-        import re
         safe_id = re.sub(r'[^\w\-]', '_', experiment_id)[:30]
         parts.append(safe_id)
+    parts.append(uuid.uuid4().hex[:8])
 
-    return "_".join(parts)
+    run_id = "_".join(parts)
+    return validate_run_id(run_id)
 
 
 class RunArtifacts(BaseModel):
@@ -139,6 +226,18 @@ class RunArtifacts(BaseModel):
         self.logs_dir.mkdir(exist_ok=True)
         self.repro_dir.mkdir(exist_ok=True)
 
+    def _atomic_write_text(self, path: Path, text: str) -> None:
+        """Write text to a file atomically using temp file + os.replace.
+
+        This prevents partial/corrupt files if the process crashes mid-write.
+        The temp file is created in the same directory as the target so that
+        os.replace is atomic on the same filesystem.
+        """
+        path.parent.mkdir(parents=True, exist_ok=True)
+        tmp_path = path.with_suffix(path.suffix + ".tmp")
+        tmp_path.write_text(text, encoding="utf-8")
+        tmp_path.replace(path)
+
     def write_config(self, config: Any) -> Path:
         """Write resolved config to artifact directory."""
         self.ensure_directories()
@@ -189,10 +288,7 @@ class RunArtifacts(BaseModel):
             "python_version": sys.version,
             "platform": sys.platform,
             "cwd": str(Path.cwd()),
-            "env_vars": {
-                k: v for k, v in os.environ.items()
-                if k.startswith("UP_") or k.startswith("CARLA_") or k == "PYTHONPATH"
-            },
+            "env_vars": _redact_env_vars(os.environ),
         }
         (self.repro_dir / "env_snapshot.json").write_text(
             json.dumps(env_snapshot, indent=2), encoding="utf-8"
@@ -207,8 +303,9 @@ class RunArtifacts(BaseModel):
     def write_metrics(self, metrics: Dict[str, Any]) -> Path:
         """Write metrics to artifact directory."""
         self.ensure_directories()
-        self.metrics_path.write_text(
-            json.dumps(metrics, indent=2, default=str), encoding="utf-8"
+        self._atomic_write_text(
+            self.metrics_path,
+            json.dumps(metrics, indent=2, default=str),
         )
         return self.metrics_path
 
@@ -242,12 +339,13 @@ class RunArtifacts(BaseModel):
             },
         }
 
-        # Write JSON summary
-        self.summary_json_path.write_text(
-            json.dumps(summary, indent=2, default=str), encoding="utf-8"
+        # Write JSON summary atomically
+        self._atomic_write_text(
+            self.summary_json_path,
+            json.dumps(summary, indent=2, default=str),
         )
 
-        # Write Markdown summary
+        # Write Markdown summary atomically
         md_lines = [
             f"# Run Summary: {self.run_id}",
             "",
@@ -292,7 +390,10 @@ class RunArtifacts(BaseModel):
             f"- **Logs:** `{self.logs_dir}`",
         ])
 
-        self.summary_md_path.write_text("\n".join(md_lines), encoding="utf-8")
+        self._atomic_write_text(
+            self.summary_md_path,
+            "\n".join(md_lines),
+        )
 
     def finalize(
         self,

@@ -205,4 +205,11 @@ class ExperimentConfigModel(BaseModel):
                 target = target[part]
             target[parts[-1]] = value
 
+        # When the top-level seed is overridden, keep determinism.seed in sync.
+        # Without this, apply_overrides({"seed": 123}) would leave
+        # determinism.seed at its previous value because sync_seeds only copies
+        # seed -> determinism.seed when the latter is None.
+        if "seed" in overrides:
+            data.setdefault("determinism", {})["seed"] = overrides["seed"]
+
         return ExperimentConfigModel.model_validate(data)
