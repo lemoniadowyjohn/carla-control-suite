@@ -68,7 +68,7 @@ def test_verify_correct_checkout_passes():
     assert result["passed"] is True
     assert result["failures"] == []
     # expected_root should be the repository root (parent of tools/)
-    assert Path(result["expected_root"]).name == "carla_-main"
+    assert Path(result["expected_root"]).name == Path(__file__).parents[2].name
 
 
 def test_verify_wrong_root_fails():
