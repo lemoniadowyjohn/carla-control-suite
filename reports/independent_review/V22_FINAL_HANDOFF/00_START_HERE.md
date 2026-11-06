@@ -7,10 +7,10 @@ Independent review of the CARLA Control Suite V21 consolidation candidate.
 `lemoniadowyjohn/carla-control-suite`
 
 ## Source Branch
-`v17-consolidation` (local) → `review/v21-consolidation-audit-20261106` (remote, pending push)
+`v17-consolidation` (local) → `review/v21-consolidation-audit-20261106` (remote, pushed)
 
 ## Commit SHA
-`67c7026e8ac69d71e702a2bae53b24da68ff21a2` (V21 baseline) + V22 Boolean fixes on `be908432`
+`67c7026e8ac69d71e702a2bae53b24da68ff21a2` (V21 baseline) + V22 Boolean fixes on `be908432` + docs on `89bab27e`
 
 ## Verified Work
 - 118/118 V21 baseline tests pass
