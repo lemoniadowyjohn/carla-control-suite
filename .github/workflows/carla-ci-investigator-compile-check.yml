@@ -54,6 +54,15 @@ jobs:
           for bad in ("pull_request_target:", "repository_dispatch:", "workflow_run:"):
               assert bad not in data, f"unexpected trigger: {bad}"
           print("Compiled file present; no privileged auto-event trigger found")
+      - name: Print compiled candidate in bounded review chunks
+        shell: python
+        run: |
+          from pathlib import Path
+          import json
+          content = Path(".github/workflows/carla-ci-investigator.lock.yml").read_text(encoding="utf-8")
+          print(f"@@GH_AW_LENGTH:{len(content)}")
+          for offset in range(0, len(content), 3000):
+              print(f"@@GH_AW_CHUNK:{offset//3000:05d}:" + json.dumps(content[offset:offset+3000]))
       - name: Upload compiled candidate (not deployed)
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
