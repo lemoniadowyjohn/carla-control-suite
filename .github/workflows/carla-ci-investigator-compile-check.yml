@@ -1,0 +1,68 @@
+name: CARLA investigator source validation
+
+on:
+  push:
+    branches:
+      - hardening/ci-failure-investigator-v1
+    paths:
+      - ".github/workflows/carla-ci-investigator.md"
+      - ".github/workflows/carla-ci-investigator-compile-check.yml"
+  pull_request:
+    paths:
+      - ".github/workflows/carla-ci-investigator.md"
+      - ".github/workflows/carla-ci-investigator-compile-check.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: carla-investigator-compile-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  compile-and-validate:
+    name: Validate and compile gh-aw source
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout candidate commit
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          persist-credentials: false
+      - name: Install pinned gh-aw extension
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh extension install github/gh-aw --pin v1.0.1
+      - name: Compile source with strict validation
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh aw version
+          gh aw compile carla-ci-investigator --validate --strict
+          test -s .github/workflows/carla-ci-investigator.lock.yml
+      - name: Enforce read-only staged compiled workflow
+        shell: python
+        run: |
+          from pathlib import Path
+          import re
+          data = Path(".github/workflows/carla-ci-investigator.lock.yml").read_text(encoding="utf-8")
+          assert "  workflow_dispatch:" in data, "manual dispatch trigger missing"
+          for bad in ("pull_request_target:", "repository_dispatch:", "workflow_run:", "  schedule:"):
+              assert bad not in data, f"unexpected trigger: {bad}"
+          assert not re.search(r"(?m)^\s*(?:contents|actions|issues|pull-requests): write\s*$", data), "compiled job granted repository write permissions"
+          assert '"staged":true' in data or "GH_AW_SAFE_OUTPUTS_STAGED" in data, "safe outputs not staged"
+          assert "create-issue: false" in Path(".github/workflows/carla-ci-investigator.md").read_text(), "issue creation not disabled"
+          print("PASS: manual-only, staged, no repository write permissions")
+      - name: Ensure compiled lock is committed and fresh
+        run: git diff --exit-code -- .github/workflows/carla-ci-investigator.lock.yml
+      - name: Upload compiled candidate (not deployed)
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: carla-investigator-ghaw-lock-candidate
+          path: .github/workflows/carla-ci-investigator.lock.yml
+          if-no-files-found: error
+          retention-days: 7
