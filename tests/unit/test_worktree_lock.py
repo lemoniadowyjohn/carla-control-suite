@@ -566,21 +566,15 @@ def test_acquire_still_succeeds_under_read_only_session(worktree, monkeypatch):
     """
     monkeypatch.setenv("READ_ONLY_SESSION", "1")
 
-    lease = wl.acquire_worktree_lease(worktree, purpose="read only session")
-
-    assert lease.status == "active"
-    wl.release_worktree_lease(worktree, lease.owner_token, lease.lease_id)
+    with pytest.raises(RuntimeError, match="READ_ONLY_SESSION is set"):
+        wl.acquire_worktree_lease(worktree, purpose="read only session")
 
 
-@pytest.mark.xfail(
-    strict=True,
-    reason="GAP-052 known bug, out of Phase 5 scope: worktree_lock imports "
-           "read_only_session but never calls it, so a READ_ONLY_SESSION process "
-           "can still take a mutation lease. Phase 5 hardened lock authority "
-           "(liveness, identity, fencing, ABA, malformed policy) and deliberately "
-           "did not change session policy.",
-)
 def test_acquire_is_refused_under_read_only_session(worktree, monkeypatch):
+    """Read-only session refusal (implemented): acquire() calls read_only_session() and refuses.
+
+    Previously GAP-052: worktree_lock imported read_only_session but never called it.
+    """
     monkeypatch.setenv("READ_ONLY_SESSION", "1")
 
     with pytest.raises(RuntimeError):
