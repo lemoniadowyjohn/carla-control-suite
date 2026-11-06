@@ -39,6 +39,7 @@ from research.evidence.schemas import (
     build_experiment_receipt,
     load_claim_statuses,
 )
+from research.rq1_determinism_matrix import identities_for_child
 from research.rq1_normalization import NORMALIZATION_VERSION, normalization_rules
 
 CONVERGENCE_SOURCE_SHA = "a9c9b6c167497893ccf97e86ec1858deaf69b306"
@@ -106,7 +107,22 @@ def validated_final_xodr(child: Dict[str, Any]) -> tuple[Path | None, str | None
         return None, "declared_final_xodr_missing"
     if not expected_sha:
         return None, "declared_final_xodr_sha256_missing"
+    output_dir = child.get("out_dir")
+    if not output_dir:
+        return None, "declared_run_output_directory_missing"
+    run_dir = Path(output_dir)
+    if not run_dir.is_absolute():
+        run_dir = REPO / run_dir
     path = Path(declared)
+    if not path.is_absolute():
+        path = run_dir / path
+    try:
+        run_root = run_dir.resolve()
+        path = path.resolve()
+        if not path.is_relative_to(run_root):
+            return None, "declared_final_xodr_outside_run_directory"
+    except (OSError, RuntimeError, ValueError):
+        return None, "declared_final_xodr_path_unresolvable"
     if not path.is_file():
         return None, "declared_final_xodr_missing"
     if sha256_file(path) != expected_sha:
@@ -124,6 +140,11 @@ def main() -> int:
     full_matrix = json.loads(args.matrix.read_text(encoding="utf-8"))
     determinism: Dict[str, Any] = full_matrix["determinism"]
     wrappers: List[Dict[str, Any]] = full_matrix["receipts"]
+    matrix_runs = {
+        row.get("run_id"): row
+        for row in determinism.get("per_run", [])
+        if isinstance(row, dict) and row.get("run_id")
+    }
 
     protocol_bindings = _protocol_bindings()
     contract_binding = protocol_bindings["research/thesis_rq_contract.yaml"]
@@ -143,6 +164,38 @@ def main() -> int:
                 {"run": child.get("run"), "reason": final_xodr_problem}
             )
             continue
+        run_index = child.get("run")
+        run_id = wrapper.get("run_id")
+        invocation_id = wrapper.get("invocation_id")
+        started_at_utc = wrapper.get("started_at_utc")
+        matrix_run = matrix_runs.get(run_id)
+        child_identities = identities_for_child(child)
+        if (
+            type(run_index) is not int
+            or not isinstance(run_id, str)
+            or not run_id
+            or not isinstance(invocation_id, str)
+            or not invocation_id
+            or not isinstance(started_at_utc, str)
+            or not started_at_utc
+            or matrix_run is None
+            or matrix_run.get("run") != run_index
+            or matrix_run.get("valid") is not True
+            or matrix_run.get("identities") != child_identities
+        ):
+            inadmissible_runs.append(
+                {"run": run_index, "reason": "run_identity_or_matrix_binding_missing"}
+            )
+            continue
+        run_identity = {
+            "run_index": run_index,
+            "run_id": run_id,
+            "invocation_id": invocation_id,
+            "started_at_utc": started_at_utc,
+            "source_sha": child.get("git_sha"),
+            "input_sha256": child.get("input_sha256"),
+            "output_identity_sha256": sha256_of_jsonable(child_identities),
+        }
         execution_status = "COMPLETED"
         seeds = ["deterministic-no-seed"]
         git_sha = child.get("git_sha") or git_head_sha(REPO)
@@ -196,6 +249,9 @@ def main() -> int:
                 "final_xodr_sha256": child.get("xodr_sha256"),
                 "normalized_xodr_sha256": child.get("normalized_xodr_sha256"),
                 "structural_signature_sha256": child.get("structural_signature"),
+                "tileset_digest": child.get("tileset_digest"),
+                "map_acceptance_digest": child.get("map_acceptance_digest"),
+                "final_receipt_digest": child.get("final_receipt_digest"),
                 "determinism_classification": determinism.get(
                     "divergence_classification"
                 ),
@@ -209,6 +265,7 @@ def main() -> int:
             statistics_method=STATISTICS_METHOD,
             execution_status=execution_status,
             claim_boundary=CLAIM_BOUNDARY,
+            run_identity=run_identity,
         )
         receipt["generated_at_utc"] = wrapper.get("generated_at_utc")
         run_receipts.append(receipt)

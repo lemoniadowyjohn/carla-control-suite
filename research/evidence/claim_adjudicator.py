@@ -28,7 +28,7 @@ from __future__ import annotations
 
 from typing import Any, Dict, List, Optional, Tuple
 
-ADJUDICATOR_VERSION = "research-claim-adjudicator/v1"
+ADJUDICATOR_VERSION = "research-claim-adjudicator/v2"
 
 # Frozen protocol requirement for RQ1 five-run determinism evidence.
 RQ1_REQUIRED_VALID_RUNS = 5
@@ -129,9 +129,11 @@ def adjudicate_rq1(
     sufficient).
     """
     from research.evidence.schemas import (
+        EXPERIMENT_RECEIPT_SCHEMA_V2,
         RESEARCH_CONTRACT_SHA256,
         load_claim_statuses,
     )
+    from research.evidence.canonical import sha256_of_jsonable
 
     statuses = load_claim_statuses()
     contract = current_contract_sha256 or RESEARCH_CONTRACT_SHA256
@@ -151,6 +153,12 @@ def adjudicate_rq1(
         if missing_metrics:
             problems.append(f"missing RQ1 metric identities: {sorted(missing_metrics)}")
             continue
+        if r.get("schema") != EXPERIMENT_RECEIPT_SCHEMA_V2:
+            problems.append(
+                "RQ1 receipt lacks v2 run identity; legacy schema remains readable "
+                "but cannot establish distinct campaign runs"
+            )
+            continue
         valid.append(r)
 
     detail["receipts_total"] = len(run_receipts)
@@ -162,21 +170,110 @@ def adjudicate_rq1(
         )
         return _claim("RQ1", "NOT_RUN", None, problems, statuses, contract, detail)
 
+    identities = [r["run_identity"] for r in valid]
+    run_ids = [identity["run_id"] for identity in identities]
+    run_indices = [identity["run_index"] for identity in identities]
+    invocation_ids = {identity["invocation_id"] for identity in identities}
+    metric_payload_bindings = {r["raw_metric_payload_sha256"] for r in valid}
+    if (
+        len(valid) != required_valid_runs
+        or len(set(run_ids)) != required_valid_runs
+        or len(set(run_indices)) != required_valid_runs
+        or len(invocation_ids) != 1
+        or len(metric_payload_bindings) != required_valid_runs
+    ):
+        problems.append(
+            "RQ1 evidence does not bind exactly the required number of distinct runs "
+            "to one invocation (run ids, indices, outputs, and payloads must be unique)"
+        )
+        return _claim("RQ1", "NOT_RUN", None, problems, statuses, contract, detail)
+
     # Repeatability comes ONLY from the measured determinism matrix (raw /
     # normalized / structural identity equality across the valid runs) --
     # never from return codes or receipt presence alone.
     if not determinism_matrix:
         problems.append("five-run determinism matrix missing (invalid evidence)")
         return _claim("RQ1", "NOT_RUN", None, problems, statuses, contract, detail)
+    if determinism_matrix.get("schema") != "rq1_full_determinism_matrix/v2":
+        problems.append("RQ1 claim requires matrix schema v2 with explicit per-run bindings")
+        return _claim("RQ1", "NOT_RUN", None, problems, statuses, contract, detail)
 
-    all_equal = {
-        "raw": bool(determinism_matrix.get("all_raw_equal")),
-        "normalized": bool(determinism_matrix.get("all_normalized_equal")),
-        "structural": bool(determinism_matrix.get("all_structural_equal")),
+    matrix_runs = determinism_matrix.get("per_run")
+    if not isinstance(matrix_runs, list) or len(matrix_runs) != required_valid_runs:
+        problems.append("five-run determinism matrix lacks one entry per required run")
+        return _claim("RQ1", "NOT_RUN", None, problems, statuses, contract, detail)
+    matrix_by_id: Dict[str, Dict[str, Any]] = {}
+    for matrix_run in matrix_runs:
+        if not isinstance(matrix_run, dict):
+            problems.append("determinism matrix contains a malformed run entry")
+            return _claim("RQ1", "NOT_RUN", None, problems, statuses, contract, detail)
+        run_id = matrix_run.get("run_id")
+        if not isinstance(run_id, str) or not run_id or run_id in matrix_by_id:
+            problems.append("determinism matrix run ids are missing or duplicated")
+            return _claim("RQ1", "NOT_RUN", None, problems, statuses, contract, detail)
+        matrix_by_id[run_id] = matrix_run
+
+    for receipt, identity in zip(valid, identities):
+        matrix_run = matrix_by_id.get(identity["run_id"])
+        expected_identity_sha = identity["output_identity_sha256"]
+        matrix_identity = (matrix_run or {}).get("identities") or {}
+        input_identity = matrix_identity.get("input_identity") or {}
+        receipt_map_identity = receipt.get("map_identities") or {}
+        if (
+            matrix_run is None
+            or matrix_run.get("run") != identity["run_index"]
+            or matrix_run.get("valid") is not True
+            or not isinstance(matrix_run.get("identities"), dict)
+            or sha256_of_jsonable(matrix_run["identities"]) != expected_identity_sha
+            or identity["source_sha"] != receipt.get("git_sha")
+            or identity["input_sha256"]
+            != receipt_map_identity.get("auto_map_of_record_sha256")
+            or input_identity.get("input_xodr_sha256") != identity["input_sha256"]
+            or matrix_identity.get("raw_xodr_sha256")
+            != receipt_map_identity.get("final_xodr_sha256")
+            or matrix_identity.get("normalized_xodr_sha256")
+            != receipt_map_identity.get("normalized_xodr_sha256")
+            or matrix_identity.get("structural_signature")
+            != receipt_map_identity.get("structural_signature_sha256")
+            or matrix_identity.get("tileset_digest") != receipt_map_identity.get("tileset_digest")
+            or matrix_identity.get("map_acceptance_digest")
+            != receipt_map_identity.get("map_acceptance_digest")
+            or matrix_identity.get("final_receipt_digest")
+            != receipt_map_identity.get("final_receipt_digest")
+            or matrix_identity.get("settings_digest") != receipt.get("settings_digest")
+        ):
+            problems.append(
+                f"RQ1 receipt/matrix run binding mismatch for {identity['run_id']}"
+            )
+            return _claim("RQ1", "NOT_RUN", None, problems, statuses, contract, detail)
+
+    identities_in_matrix = [row["identities"] for row in matrix_runs]
+    measured_equal = {
+        "all_raw_equal": len({r.get("raw_xodr_sha256") for r in identities_in_matrix}) == 1,
+        "all_normalized_equal": len(
+            {r.get("normalized_xodr_sha256") for r in identities_in_matrix}
+        )
+        == 1,
+        "all_structural_equal": len(
+            {r.get("structural_signature") for r in identities_in_matrix}
+        )
+        == 1,
     }
-    valid_run_count = int(
-        determinism_matrix.get("valid_run_count", detail["receipts_valid"]) or 0
-    )
+    if any(type(determinism_matrix.get(k)) is not bool for k in measured_equal) or any(
+        determinism_matrix.get(k) != value for k, value in measured_equal.items()
+    ):
+        problems.append("determinism matrix summary contradicts its per-run identities")
+        return _claim("RQ1", "NOT_RUN", None, problems, statuses, contract, detail)
+    all_equal = {
+        "raw": measured_equal["all_raw_equal"],
+        "normalized": measured_equal["all_normalized_equal"],
+        "structural": measured_equal["all_structural_equal"],
+    }
+    raw_valid_run_count = determinism_matrix.get("valid_run_count", detail["receipts_valid"])
+    if type(raw_valid_run_count) is not int:
+        problems.append("matrix valid_run_count must be an integer")
+        return _claim("RQ1", "NOT_RUN", None, problems, statuses, contract, detail)
+    valid_run_count = raw_valid_run_count
     detail["identity_repeatability"] = all_equal
     detail["matrix_valid_run_count"] = valid_run_count
     detail["divergence_classification"] = determinism_matrix.get(

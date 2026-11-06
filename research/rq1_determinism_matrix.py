@@ -57,6 +57,7 @@ def _valid(child: Optional[Dict[str, Any]], receipt: Dict[str, Any]) -> bool:
     validations = [
         receipt.get("return_code") == 0,
         not receipt.get("timed_out"),
+        receipt.get("receipt_found") is True,
         child.get("status") == "ok",
     ]
     required_fields = [
@@ -69,7 +70,8 @@ def _valid(child: Optional[Dict[str, Any]], receipt: Dict[str, Any]) -> bool:
     return all(validations) and all(child.get(f) for f in required_fields)
 
 
-def _identities(child: Dict[str, Any]) -> Dict[str, Any]:
+def identities_for_child(child: Dict[str, Any]) -> Dict[str, Any]:
+    """Canonical per-run identity record shared by matrix and receipt binding."""
     out: Dict[str, Any] = {}
     toplevel: Dict[str, Any] = {
         "xodr_sha256": child.get("xodr_sha256"),
@@ -118,7 +120,7 @@ def build_determinism_matrix(receipts: List[Dict[str, Any]], *, valid_run_count:
                 "wrapper_timed_out": r.get("timed_out"),
                 "valid": bool(c is not None and valid_flags[idx]),
                 "status": (c or {}).get("status"),
-                "identities": _identities(c) if c else None,
+                "identities": identities_for_child(c) if c else None,
             }
         )
 
@@ -173,7 +175,7 @@ def build_determinism_matrix(receipts: List[Dict[str, Any]], *, valid_run_count:
         divergence = "NOT_RUN" if not valid_children else divergence
 
     return {
-        "schema": "rq1_full_determinism_matrix/v1",
+        "schema": "rq1_full_determinism_matrix/v2",
         "run_count": len(receipts),
         "valid_run_count": sum(1 for p in per_run if p["valid"]),
         "all_raw_equal": all_raw_equal,

@@ -14,11 +14,12 @@ from pathlib import Path
 
 import pytest
 
-REPO = Path(__file__).resolve().parents[2]
+REPO = Path(__file__).resolve().parents[3]
 
 from research.evidence.canonical import (
     canonical_json_bytes,
     safe_env_record,
+    sha256_file,
     sha256_of_jsonable,
 )
 from research.evidence.claim_adjudicator import (
@@ -43,6 +44,8 @@ CONTRACT_SHA = RESEARCH_CONTRACT_SHA256
 # fixtures / helpers
 # ---------------------------------------------------------------------------
 def _receipt_base(**overrides):
+    contract_path = REPO / "research" / "thesis_rq_contract.yaml"
+    contract_sha = sha256_file(contract_path)
     fields = dict(
         rq_id="RQ1",
         metric_ids=["raw_hash_repeatability", "normalized_hash_repeatability",
@@ -51,13 +54,13 @@ def _receipt_base(**overrides):
         source_dirty=False,
         dirty_reason=None,
         protocol_path="research/thesis_rq_contract.yaml",
-        protocol_sha256=CONTRACT_SHA,
-        input_paths=[{"path": "in.xodr", "sha256": "a" * 64}],
+        protocol_sha256=contract_sha,
+        input_paths=[{"path": "research/thesis_rq_contract.yaml", "sha256": contract_sha}],
         map_identities={"scope": "manual_hull", "frozen_reproduction": True},
         settings_digest="b" * 64,
         runtime={"python": "3.12"},
         seeds=["deterministic-no-seed"],
-        output_paths=[{"path": "out.json", "sha256": "c" * 64}],
+        output_paths=[{"path": "research/thesis_rq_contract.yaml", "sha256": contract_sha}],
         raw_metric_payload={"k": 1},
         statistics_method="exact identity comparison",
         execution_status="COMPLETED",
@@ -69,7 +72,7 @@ def _receipt_base(**overrides):
 
 def _matrix(**overrides):
     m = dict(
-        schema="rq1_full_determinism_matrix/v1",
+        schema="rq1_full_determinism_matrix/v2",
         run_count=5,
         valid_run_count=5,
         all_raw_equal=True,
@@ -77,9 +80,37 @@ def _matrix(**overrides):
         all_structural_equal=True,
         first_divergent_stage=None,
         divergence_classification="NO_DIFFERENCE",
+        per_run=[
+            {
+                "run": i,
+                "run_id": f"rq1b_run{i:02d}",
+                "valid": True,
+                "identities": _test_matrix_identities(),
+            }
+            for i in range(5)
+        ],
     )
     m.update(overrides)
     return m
+
+
+def _test_matrix_identities(raw_sha: str = "b" * 64):
+    return {
+        "input_identity": {
+            "input_xodr_path": "input.xodr",
+            "input_xodr_sha256": "a" * 64,
+            "osm": None,
+            "buildings": None,
+            "effective_env_governed": None,
+        },
+        "raw_xodr_sha256": raw_sha,
+        "normalized_xodr_sha256": "c" * 64,
+        "structural_signature": "d" * 64,
+        "tileset_digest": "e" * 64,
+        "map_acceptance_digest": "f" * 64,
+        "final_receipt_digest": "1" * 64,
+        "settings_digest": "2" * 64,
+    }
 
 
 # ---------------------------------------------------------------------------
@@ -152,17 +183,91 @@ class TestExperimentReceiptSchema:
 # adjudicator
 # ---------------------------------------------------------------------------
 class TestAdjudicatorRQ1:
-    def _runs(self, n=5, **overrides):
+    def _runs(self, n=5, *, raw_different=False, **overrides):
+        from research.evidence.canonical import sha256_of_jsonable
+
+        contract_path = REPO / "research" / "thesis_rq_contract.yaml"
+        contract_sha = sha256_file(contract_path)
+
         return [
             json.loads(
-                json.dumps(build_experiment_receipt(**_receipt_base(rq_id="RQ1", **overrides)))
+                json.dumps(
+                    build_experiment_receipt(
+                        **_receipt_base(
+                            rq_id="RQ1",
+                            map_identities={
+                                "scope": "manual_hull",
+                                "frozen_reproduction": True,
+                                "auto_map_of_record_sha256": "a" * 64,
+                                "final_xodr_sha256": (
+                                    (chr(ord("b") + i) * 64) if raw_different else "b" * 64
+                                ),
+                                "normalized_xodr_sha256": "c" * 64,
+                                "structural_signature_sha256": "d" * 64,
+                                "tileset_digest": "e" * 64,
+                                "map_acceptance_digest": "f" * 64,
+                                "final_receipt_digest": "1" * 64,
+                                "settings_digest": "2" * 64,
+                            },
+                            settings_digest="2" * 64,
+                            raw_metric_payload={"run_index": i},
+                            protocol_path="research/thesis_rq_contract.yaml",
+                            protocol_sha256=contract_sha,
+                            input_paths=[
+                                {
+                                    "path": "research/thesis_rq_contract.yaml",
+                                    "sha256": contract_sha,
+                                }
+                            ],
+                            output_paths=[
+                                {
+                                    "path": "research/thesis_rq_contract.yaml",
+                                    "sha256": contract_sha,
+                                }
+                            ],
+                            **overrides,
+                        ),
+                        run_identity={
+                            "run_index": i,
+                            "run_id": f"rq1b_run{i:02d}",
+                            "invocation_id": "invocation-test",
+                            "started_at_utc": "2026-11-06T00:00:00Z",
+                            "source_sha": "0" * 40,
+                            "input_sha256": "a" * 64,
+                            "output_identity_sha256": sha256_of_jsonable(
+                                _test_matrix_identities(
+                                    (chr(ord("b") + i) * 64) if raw_different else "b" * 64
+                                )
+                            ),
+                        },
+                    )
+                )
             )
-            for _ in range(n)
+            for i in range(n)
         ]
 
     def test_authoritative_requires_exact_valid_run_count_and_metrics(self):
         claim = adjudicate_rq1(self._runs(5), _matrix())
         assert claim["claim_status"] == "AUTHORITATIVE", claim["adjudication"]["problems"]
+
+    def test_v1_receipts_remain_valid_but_cannot_prove_distinct_runs(self):
+        from research.evidence.schemas import validate_receipt
+
+        runs = self._runs(5)
+        for receipt in runs:
+            receipt["schema"] = "rq_experiment_receipt/v1"
+            receipt.pop("run_identity")
+            validate_receipt(receipt, verify=False)
+        claim = adjudicate_rq1(runs, _matrix())
+        assert claim["claim_status"] == "NOT_RUN"
+        assert any("legacy schema" in p for p in claim["adjudication"]["problems"])
+
+    def test_matrix_identity_must_match_hash_bound_receipt_identity(self):
+        matrix = _matrix()
+        matrix["per_run"][0]["identities"]["settings_digest"] = "9" * 64
+        claim = adjudicate_rq1(self._runs(5), matrix)
+        assert claim["claim_status"] == "NOT_RUN"
+        assert any("run binding mismatch" in p for p in claim["adjudication"]["problems"])
 
     def test_missing_runs_not_run(self):
         claim = adjudicate_rq1(self._runs(4), _matrix())
@@ -197,7 +302,20 @@ class TestAdjudicatorRQ1:
         assert claim["claim_status"] == "NOT_RUN"
 
     def test_mismatched_identities_bounded_not_authoritative(self):
-        claim = adjudicate_rq1(self._runs(5), _matrix(all_raw_equal=False, divergence_classification="RAW_DIFFERENT_NORMALIZED_EQUAL"))
+        matrix = _matrix(
+            all_raw_equal=False,
+            divergence_classification="RAW_DIFFERENT_NORMALIZED_EQUAL",
+        )
+        matrix["per_run"] = [
+            {
+                "run": i,
+                "run_id": f"rq1b_run{i:02d}",
+                "valid": True,
+                "identities": _test_matrix_identities(chr(ord("b") + i) * 64),
+            }
+            for i in range(5)
+        ]
+        claim = adjudicate_rq1(self._runs(5, raw_different=True), matrix)
         assert claim["claim_status"] == "BOUNDED"
 
     def test_matrix_missing_not_run(self):
@@ -207,7 +325,17 @@ class TestAdjudicatorRQ1:
     def test_return_codes_alone_never_authoritative(self):
         # receipts + rc=0 + receipts-present only; without matrix identity
         # evidence the gate must NOT produce AUTHORITATIVE.
-        claim = adjudicate_rq1(self._runs(5), _matrix(all_raw_equal=False))
+        matrix = _matrix(all_raw_equal=False)
+        matrix["per_run"] = [
+            {
+                "run": i,
+                "run_id": f"rq1b_run{i:02d}",
+                "valid": True,
+                "identities": _test_matrix_identities(chr(ord("b") + i) * 64),
+            }
+            for i in range(5)
+        ]
+        claim = adjudicate_rq1(self._runs(5, raw_different=True), matrix)
         assert claim["claim_status"] != "AUTHORITATIVE"
 
     def test_protocol_sha_missing_invalid_evidence(self):
@@ -220,6 +348,8 @@ class TestAdjudicatorRQ1:
 
 class TestAdjudicatorRQ2:
     def _receipt(self, **overrides):
+        contract_path = REPO / "research" / "thesis_rq_contract.yaml"
+        contract_sha = sha256_file(contract_path)
         base = dict(
             rq_id="RQ2",
             metric_ids=[
@@ -233,12 +363,12 @@ class TestAdjudicatorRQ2:
             dirty_reason=None,
             protocol_path="research/thesis_rq_contract.yaml",
             protocol_sha256=CONTRACT_SHA,
-            input_paths=[{"path": "auto.xodr", "sha256": "a" * 64}],
+            input_paths=[{"path": "research/thesis_rq_contract.yaml", "sha256": contract_sha}],
             map_identities={"scope": "manual_hull", "frozen_reproduction": True},
             settings_digest="b" * 64,
             runtime={"python": "3.12"},
             seeds=["deterministic-no-seed"],
-            output_paths=[{"path": "rq2.json", "sha256": "c" * 64}],
+            output_paths=[{"path": "research/thesis_rq_contract.yaml", "sha256": contract_sha}],
             raw_metric_payload={"lane_width_gap": 0.0597},
             statistics_method="point recomputation",
             execution_status="COMPLETED",

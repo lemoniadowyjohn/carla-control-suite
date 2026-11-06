@@ -156,9 +156,13 @@ def _verify_evidence(evidence_dir: Path, current_commit: str) -> Dict[str, Any]:
             # Check if schema version is recognized
             known_schemas = [
                 "rq1_run_receipt/v1",
+                "rq1_run_receipt/v2",
+                "rq1b_run_wrapper_receipt/v2",
                 "rq1a_run_receipt/v1",
                 "rq1b_run_receipt/v1",
                 "rq1_full_determinism_matrix/v1",
+                "rq1_full_determinism_matrix/v2",
+                "rq1b_five_run_matrix/v2",
                 "rq3_map_lineage/v1",
                 "evidence_freshness_gate/v1",
             ]

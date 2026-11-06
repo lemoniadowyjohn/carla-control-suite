@@ -107,7 +107,10 @@ try:
 except ValueError:
     RESEARCH_CONTRACT_SHA256 = RESEARCH_CONTRACT_SHA256_FALLBACK
 
-EXPERIMENT_RECEIPT_SCHEMA = "rq_experiment_receipt/v1"
+EXPERIMENT_RECEIPT_SCHEMA_V1 = "rq_experiment_receipt/v1"
+EXPERIMENT_RECEIPT_SCHEMA_V2 = "rq_experiment_receipt/v2"
+# Compatibility alias for callers that still construct the original v1 shape.
+EXPERIMENT_RECEIPT_SCHEMA = EXPERIMENT_RECEIPT_SCHEMA_V1
 CLAIM_RECEIPT_SCHEMA = "rq_claim_receipt/v1"
 CLOSURE_MATRIX_SCHEMA = "rq_closure_matrix/v1"
 
@@ -139,13 +142,22 @@ def _require(cond: bool, msg: str) -> None:
         raise ValueError(f"invalid research receipt: {msg}")
 
 
-def validate_artifact_list(entries: List[Dict[str, Any]], label: str, verify: bool) -> None:
+def validate_artifact_list(
+    entries: List[Dict[str, Any]],
+    label: str,
+    verify: bool,
+    *,
+    repo_root: Optional[Path] = None,
+) -> None:
     _require(isinstance(entries, list) and entries, f"{label} must be a non-empty list")
+    root = Path(repo_root) if repo_root is not None else REPO_ROOT
     for entry in entries:
         _require("path" in entry and entry["path"], f"{label} entry missing path")
         _require("sha256" in entry and entry["sha256"], f"{label} entry missing sha256")
         if verify:
             p = Path(entry["path"])
+            if not p.is_absolute():
+                p = root / p
             _require(p.is_file(), f"{label} file missing on disk: {entry['path']}")
             if p.is_file():
                 actual = sha256_file(p)
@@ -174,6 +186,7 @@ def build_experiment_receipt(
     statistics_method: str,
     execution_status: str,
     claim_boundary: str,
+    run_identity: Optional[Dict[str, Any]] = None,
 ) -> Dict[str, Any]:
     """Construct *and validate* one experiment receipt.
 
@@ -201,7 +214,11 @@ def build_experiment_receipt(
         )
     _, current_contract_sha256 = _load_contract_authority()
     receipt: Dict[str, Any] = {
-        "schema": EXPERIMENT_RECEIPT_SCHEMA,
+        "schema": (
+            EXPERIMENT_RECEIPT_SCHEMA_V2
+            if run_identity is not None
+            else EXPERIMENT_RECEIPT_SCHEMA_V1
+        ),
         "generated_at_utc": None,  # filled by caller to keep hash stable
         "rq_id": str(rq_id),
         "metric_ids": sorted(str(m) for m in metric_ids),
@@ -221,11 +238,18 @@ def build_experiment_receipt(
         "claim_boundary": str(claim_boundary),
         "contract_sha256": current_contract_sha256,
     }
+    if run_identity is not None:
+        receipt["run_identity"] = dict(run_identity)
     validate_receipt(receipt, verify=False)
     return receipt
 
 
-def validate_receipt(receipt: Dict[str, Any], verify: bool = False) -> None:
+def validate_receipt(
+    receipt: Dict[str, Any],
+    verify: bool = False,
+    *,
+    repo_root: Optional[Path] = None,
+) -> None:
     """Fail-closed validation of one experiment receipt.
 
     ``verify=True`` additionally checks every bound artifact against the
@@ -233,7 +257,42 @@ def validate_receipt(receipt: Dict[str, Any], verify: bool = False) -> None:
     """
     for key in _REQUIRED_EXPERIMENT_KEYS:
         _require(key in receipt, f"missing required field '{key}'")
-    _require(receipt["schema"] == EXPERIMENT_RECEIPT_SCHEMA, "wrong schema")
+    _require(
+        receipt["schema"] in {EXPERIMENT_RECEIPT_SCHEMA_V1, EXPERIMENT_RECEIPT_SCHEMA_V2},
+        "wrong schema",
+    )
+    if receipt["schema"] == EXPERIMENT_RECEIPT_SCHEMA_V2:
+        identity = receipt.get("run_identity")
+        _require(isinstance(identity, dict), "v2 run_identity must be an object")
+        identity_keys = {
+            "run_index",
+            "run_id",
+            "invocation_id",
+            "started_at_utc",
+            "source_sha",
+            "input_sha256",
+            "output_identity_sha256",
+        }
+        _require(identity_keys <= set(identity), "v2 run_identity fields are incomplete")
+        _require(
+            type(identity["run_index"]) is int and identity["run_index"] >= 0,
+            "v2 run_index must be a non-negative integer",
+        )
+        for key in ("run_id", "invocation_id", "started_at_utc"):
+            _require(isinstance(identity[key], str) and bool(identity[key]), f"v2 {key} is missing")
+        _require(
+            isinstance(identity["source_sha"], str)
+            and len(identity["source_sha"]) == 40
+            and all(c in "0123456789abcdef" for c in identity["source_sha"].lower()),
+            "v2 source_sha must be a hex Git SHA",
+        )
+        for key in ("input_sha256", "output_identity_sha256"):
+            _require(
+                isinstance(identity[key], str)
+                and len(identity[key]) == 64
+                and all(c in "0123456789abcdef" for c in identity[key].lower()),
+                f"v2 {key} must be a hex SHA256 digest",
+            )
     _, current_contract_sha256 = _load_contract_authority()
     _require(
         isinstance(receipt["contract_sha256"], str)
@@ -252,13 +311,16 @@ def validate_receipt(receipt: Dict[str, Any], verify: bool = False) -> None:
         _require(bool(receipt["seeds"]), "COMPLETED run must record seeds")
         _require(bool(receipt["settings_digest"]), "COMPLETED run must record settings digest")
     if verify:
+        root = Path(repo_root) if repo_root is not None else REPO_ROOT
         proto = receipt["protocol"]
         pp = Path(proto["path"])
+        if not pp.is_absolute():
+            pp = root / pp
         _require(pp.is_file(), f"protocol file missing: {proto['path']}")
         if pp.is_file():
             _require(sha256_file(pp) == proto["sha256"], "protocol sha mismatch")
-        validate_artifact_list(receipt["inputs"], "inputs", verify)
-        validate_artifact_list(receipt["outputs"], "outputs", verify)
+        validate_artifact_list(receipt["inputs"], "inputs", verify, repo_root=root)
+        validate_artifact_list(receipt["outputs"], "outputs", verify, repo_root=root)
 
 
 def receipt_digest(receipt: Dict[str, Any]) -> str:

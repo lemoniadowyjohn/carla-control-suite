@@ -63,6 +63,37 @@ def test_adjudication_refuses_missing_bound_input_even_if_frozen(tmp_path: Path)
     assert any("missing" in problem for problem in claim["adjudication"]["problems"])
 
 
+def test_adjudication_refuses_one_receipt_repeated_as_five_runs(tmp_path: Path):
+    receipt = _receipt(tmp_path)
+    receipt["schema"] = "rq_experiment_receipt/v2"
+    receipt["map_identities"]["auto_map_of_record_sha256"] = "a" * 64
+    receipt["run_identity"] = {
+        "run_index": 0,
+        "run_id": "rq1b_run00",
+        "invocation_id": "invocation-1",
+        "started_at_utc": "2026-11-06T00:00:00Z",
+        "source_sha": "b" * 40,
+        "input_sha256": "a" * 64,
+        "output_identity_sha256": "c" * 64,
+    }
+    matrix = {
+        "valid_run_count": 5,
+        "all_raw_equal": True,
+        "all_normalized_equal": True,
+        "all_structural_equal": True,
+        "divergence_classification": "NO_DIFFERENCE",
+    }
+
+    claim = adjudicate_rq1(
+        [receipt] * 5,
+        matrix,
+        current_contract_sha256=RESEARCH_CONTRACT_SHA256,
+    )
+
+    assert claim["claim_status"] == "NOT_RUN"
+    assert any("distinct" in problem for problem in claim["adjudication"]["problems"])
+
+
 def test_rq1_assembler_refuses_missing_or_mismatched_declared_final_xodr(tmp_path: Path):
     from tools.rq1_evidence_assembler import validated_final_xodr
 
@@ -83,3 +114,21 @@ def test_rq1_assembler_refuses_missing_or_mismatched_declared_final_xodr(tmp_pat
     path, reason = validated_final_xodr(child)
     assert path is None
     assert reason == "declared_final_xodr_sha256_mismatch"
+
+
+def test_rq1_assembler_refuses_hash_valid_xodr_outside_declared_run_directory(tmp_path: Path):
+    from tools.rq1_evidence_assembler import validated_final_xodr
+
+    run_dir = tmp_path / "run_00"
+    run_dir.mkdir()
+    stale_elsewhere = tmp_path / "stale.xodr"
+    stale_elsewhere.write_text("valid bytes, wrong run", encoding="utf-8")
+    child = {
+        "out_dir": str(run_dir),
+        "map_acceptance": {"final_xodr_path": str(stale_elsewhere)},
+        "xodr_sha256": sha256_file(stale_elsewhere),
+    }
+
+    path, reason = validated_final_xodr(child)
+    assert path is None
+    assert reason == "declared_final_xodr_outside_run_directory"

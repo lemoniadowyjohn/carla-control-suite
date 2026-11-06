@@ -62,3 +62,52 @@ def test_closure_matrix_rejects_unknown_status_and_malformed_digest():
         schemas.build_closure_matrix(
             [{"rq_id": "RQ1", "claim_status": "AUTHORITATIVE", "claim_receipt_sha256": "bad"}]
         )
+
+
+def test_relative_artifact_bindings_resolve_from_repo_root_outside_repo_cwd(
+    tmp_path: Path, monkeypatch
+):
+    from research.evidence.canonical import sha256_file
+
+    repo_root = Path(__file__).resolve().parents[2]
+    contract_path = repo_root / "research" / "thesis_rq_contract.yaml"
+    contract_sha = sha256_file(contract_path)
+    receipt = schemas.build_experiment_receipt(
+        rq_id="RQ1",
+        metric_ids=["raw_hash_repeatability"],
+        git_sha="a" * 40,
+        source_dirty=False,
+        dirty_reason=None,
+        protocol_path="research/thesis_rq_contract.yaml",
+        protocol_sha256=contract_sha,
+        input_paths=[
+            {"path": "research/thesis_rq_contract.yaml", "sha256": contract_sha}
+        ],
+        map_identities={"frozen_reproduction": False},
+        settings_digest="b" * 64,
+        runtime={"python": "3.12"},
+        seeds=[0],
+        output_paths=[
+            {"path": "research/thesis_rq_contract.yaml", "sha256": contract_sha}
+        ],
+        raw_metric_payload={},
+        statistics_method="test",
+        execution_status="COMPLETED",
+        claim_boundary="test",
+    )
+    monkeypatch.chdir(tmp_path)
+
+    schemas.validate_receipt(receipt, verify=True, repo_root=repo_root)
+
+
+def test_freshness_gate_recognizes_versioned_rq1_matrix_v2(tmp_path: Path):
+    import json
+
+    from tools.evidence_freshness_gate import _verify_evidence
+
+    (tmp_path / "matrix.json").write_text(
+        json.dumps({"schema": "rq1_full_determinism_matrix/v2"}), encoding="utf-8"
+    )
+    result = _verify_evidence(tmp_path, current_commit="test")
+    schema_check = next(c for c in result["checks"] if c.get("check") == "schema_version")
+    assert schema_check["status"] == "PASS"
