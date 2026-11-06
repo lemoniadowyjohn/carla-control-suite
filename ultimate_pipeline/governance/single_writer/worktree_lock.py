@@ -24,6 +24,7 @@ release, and a malformed record that blocks rather than being deleted.
 from __future__ import annotations
 
 import calendar
+from contextlib import contextmanager
 import hashlib
 import hmac
 import json
@@ -175,6 +176,137 @@ def _ledger_path(worktree_root: Path) -> Path:
     return lease_path.with_name(f"{lease_path.name}.generations")
 
 
+def _generation_claim_path(worktree_root: Path) -> Path:
+    """Stable per-scope mutex file; the O_EXCL-created file is never a lease."""
+    lease_path = _worktree_lease_path(worktree_root)
+    return lease_path.with_name(f"{lease_path.name}.generation-claim")
+
+
+@contextmanager
+def _generation_claim(worktree_root: Path):
+    """Hold the exclusive O_EXCL claim while allocating and publishing a lease.
+
+    The claim is a short-lived O_CREAT|O_EXCL file. Its complete owner identity
+    permits safe cleanup after a crashed holder; the claim is never parsed as a
+    lease or generation ledger.
+    """
+    path = _generation_claim_path(worktree_root)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    pid, start_identity = process_identity.current_process_identity()
+    claim_token = uuid.uuid4().hex
+    payload = json.dumps({
+        "pid": pid, "start_identity": start_identity or "", "token": claim_token,
+    }, sort_keys=True).encode("utf-8")
+    permission_denials = 0
+    while True:
+        try:
+            fd = os.open(str(path), os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o644)
+        except (FileExistsError, PermissionError):
+            # Windows can report an existing O_EXCL target as PermissionError
+            # while its creator still has the file open. Treat a confirmed
+            # existing path as contention and inspect the owner record below.
+            try:
+                claim_stat = path.stat()
+            except FileNotFoundError:
+                # Another process may have removed the claim after our failed
+                # exclusive create. Retry the namespace operation.
+                continue
+            except OSError as exc:
+                raise RuntimeError(
+                    f"LOCKED_UNKNOWN: cannot inspect generation claim at {path}: {exc}"
+                ) from exc
+            claim_age = time.time() - claim_stat.st_mtime
+            # Normal active claims are short. Avoid opening the record on every
+            # contender attempt: Windows denies deletion while another process
+            # has a reader handle open, which can starve claim release.
+            if claim_age < 1.0:
+                time.sleep(0.001)
+                continue
+            try:
+                observed = path.read_bytes()
+                claim = json.loads(observed.decode("utf-8"))
+                owner_pid = int(claim["pid"])
+                owner_token = str(claim["token"])
+                owner_start = str(claim.get("start_identity", ""))
+            except FileNotFoundError:
+                # The prior holder may remove the claim after stat() but
+                # before read_bytes(). That is a normal namespace race; retry
+                # acquisition rather than treating the missing record as
+                # malformed or unknown ownership.
+                continue
+            except PermissionError as exc:
+                # Windows can briefly deny a read while a prior holder removes
+                # the claim. Re-read after that atomic namespace transition.
+                permission_denials += 1
+                if permission_denials > 200:
+                    raise RuntimeError(
+                        f"LOCKED_UNKNOWN: generation claim remained unreadable at {path}"
+                    ) from exc
+                time.sleep(0.001)
+                continue
+            except (OSError, UnicodeError, ValueError, KeyError, TypeError) as exc:
+                raise RuntimeError(
+                    f"LOCKED_UNKNOWN: malformed generation claim at {path}: {exc}"
+                ) from exc
+            permission_denials = 0
+            owner_state = process_identity.probe_liveness(owner_pid)
+            owner_dead = owner_state.reclaimable or (
+                owner_state.alive and owner_start and owner_state.start_identity
+                and owner_start != owner_state.start_identity
+            )
+            if owner_dead:
+                recovery_name = "WorktreeLeaseClaimRecovery_" + hashlib.sha256(
+                    str(path.resolve()).encode("utf-8")
+                ).hexdigest()[:32]
+                from ultimate_pipeline.governance.single_writer.os_lock import NamedMutex
+                recovery = NamedMutex(recovery_name)
+                if recovery.acquire(timeout_ms=1000).acquired:
+                    try:
+                        current = path.read_bytes()
+                        if current == observed:
+                            state = process_identity.probe_liveness(owner_pid)
+                            still_dead = state.reclaimable or (
+                                state.alive and owner_start and state.start_identity
+                                and owner_start != state.start_identity
+                            )
+                            if still_dead:
+                                path.unlink(missing_ok=True)
+                    finally:
+                        recovery.release()
+                continue
+            time.sleep(0.001)
+            continue
+        try:
+            view = memoryview(payload)
+            while view:
+                view = view[os.write(fd, view):]
+            os.fsync(fd)
+        except BaseException:
+            os.close(fd)
+            try:
+                path.unlink(missing_ok=True)
+            except OSError:
+                pass
+            raise
+        else:
+            os.close(fd)
+        break
+    try:
+        yield
+    finally:
+        for _cleanup_attempt in range(1000):
+            try:
+                path.unlink(missing_ok=True)
+                break
+            except PermissionError:
+                # Windows may briefly deny deletion while a contender has the
+                # claim open for its liveness check. Retry until readers close.
+                time.sleep(0.005)
+            except OSError:
+                # Preserve unexpected ownership evidence for explicit recovery.
+                break
+
+
 # ---------------------------------------------------------------------------
 # durable writes
 # ---------------------------------------------------------------------------
@@ -195,20 +327,22 @@ def _fsync_dir(directory: Path) -> None:
 def _write_payload(path: Path, payload: dict) -> None:
     """Serialise, fsync and atomically replace ``path`` via a unique temp file."""
     tmp = path.with_name(f"{path.name}.{os.getpid()}.{uuid.uuid4().hex}.tmp")
-    fd = os.open(str(tmp), os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o644)
     try:
-        with os.fdopen(fd, "w", encoding="utf-8") as fh:
-            fh.write(json.dumps(payload, indent=2, sort_keys=True))
-            fh.flush()
-            os.fsync(fh.fileno())
-    except BaseException:
+        fd = os.open(str(tmp), os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o644)
         try:
-            os.unlink(tmp)
+            with os.fdopen(fd, "w", encoding="utf-8") as fh:
+                fh.write(json.dumps(payload, indent=2, sort_keys=True))
+                fh.flush()
+                os.fsync(fh.fileno())
+        except BaseException:
+            raise
+        os.replace(tmp, path)
+        _fsync_dir(path.parent)
+    finally:
+        try:
+            tmp.unlink(missing_ok=True)
         except OSError:
             pass
-        raise
-    os.replace(tmp, path)
-    _fsync_dir(path.parent)
 
 
 def _publish_exclusive(path: Path, payload: dict) -> bool:
@@ -392,21 +526,33 @@ def release_lease(lease: WorktreeLease) -> bool:
 # ---------------------------------------------------------------------------
 
 def _issue_generation(worktree_root: Path, floor: int = 0) -> int:
+    """Allocate the next fencing number; caller must hold _generation_claim."""
     path = _ledger_path(worktree_root)
     path.parent.mkdir(parents=True, exist_ok=True)
     highest = max(0, int(floor))
     try:
-        with open(path, "r", encoding="utf-8") as fh:
-            for line in fh:
-                line = line.strip()
-                if line.isdigit():
-                    highest = max(highest, int(line))
-    except (FileNotFoundError, OSError):
-        pass
+        raw = path.read_text(encoding="ascii")
+    except FileNotFoundError:
+        raw = ""
+    except (OSError, UnicodeError) as exc:
+        raise RuntimeError(f"LOCKED_UNKNOWN: generation ledger unreadable: {exc}") from exc
+    previous = 0
+    if raw:
+        lines = raw.splitlines()
+        if not lines:
+            raise RuntimeError("LOCKED_UNKNOWN: generation ledger is empty/corrupt")
+        for line in lines:
+            if not line.isdigit() or int(line) <= previous:
+                raise RuntimeError("LOCKED_UNKNOWN: generation ledger is corrupt or non-monotonic")
+            previous = int(line)
+        highest = max(highest, previous)
     nxt = highest + 1
     fd = os.open(str(path), os.O_CREAT | os.O_WRONLY | os.O_APPEND, 0o644)
     try:
-        os.write(fd, f"{nxt}\n".encode("ascii"))
+        payload = f"{nxt}\n".encode("ascii")
+        written = 0
+        while written < len(payload):
+            written += os.write(fd, payload[written:])
         os.fsync(fd)
     finally:
         os.close(fd)
@@ -525,64 +671,72 @@ def acquire_worktree_lease(
     pid, start_identity = process_identity.current_process_identity()
 
     for _attempt in range(_ACQUIRE_MAX_ATTEMPTS):
-        state, observed, reason = _read_state(worktree_root)
-        if state is _LeaseRead.MALFORMED:
-            raise MalformedLeaseError(path, reason)
-
-        floor = observed.generation if (observed is not None) else 0
-        generation = _issue_generation(worktree_root, floor)
-
-        candidate = WorktreeLease(
-            worktree_root=str(worktree_root),
-            worktree_identity=lock_paths.worktree_identity(worktree_root),
-            worktree_name=worktree_root.name,
-            purpose=purpose,
-            generation=generation,
-            holder_pid=pid,
-            holder_ppid=os.getppid(),
-            holder_cmdline=" ".join(sys.argv),
-            host=os.uname().nodename if hasattr(os, "uname") else "",
-            holder_start_identity=start_identity or "",
-            expires_at=_utc_in(lease_minutes * 60),
-        )
-
         try:
-            won = _publish_exclusive(path, candidate.to_json())
+            claim = _generation_claim(worktree_root)
+            claim.__enter__()
         except OSError as exc:
-            raise RuntimeError(f"Failed to acquire worktree lease: {exc}") from exc
-        if won:
-            return candidate
+            # A competing process owns the exclusive scope claim. Retry without
+            # allocating a generation outside that critical section.
+            if getattr(exc, "winerror", None) in (33, 36) or getattr(exc, "errno", None) in (11, 13):
+                time.sleep(_FRESH_PUBLISH_REREAD_DELAY_S)
+                continue
+            raise RuntimeError(f"Failed to acquire generation claim: {exc}") from exc
+        try:
+            state, observed, reason = _read_state(worktree_root)
+            if state is _LeaseRead.MALFORMED:
+                raise MalformedLeaseError(path, reason)
 
-        state2, existing, reason2 = _read_state(worktree_root)
-        if state2 is _LeaseRead.MALFORMED:
-            raise MalformedLeaseError(path, reason2)
-        if state2 is _LeaseRead.ABSENT:
-            time.sleep(_FRESH_PUBLISH_REREAD_DELAY_S)
-            continue
+            if observed is not None:
+                may_reclaim, why = reclaim_decision(observed)
+                if not may_reclaim:
+                    raise RuntimeError(
+                        f"Worktree {worktree_root} leased by another process: "
+                        f"lease_id={observed.lease_id}, pid={observed.holder_pid}, "
+                        f"generation={observed.generation}, purpose={observed.purpose!r}; "
+                        f"not reclaimable because {why}"
+                    )
+                claimed, tomb = _claim_by_rename(
+                    worktree_root,
+                    "reclaim",
+                    _lease_matches(
+                        observed.lease_id, observed.owner_token, observed.generation
+                    ),
+                )
+                if claimed and tomb is not None:
+                    try:
+                        tomb.unlink()
+                    except OSError:
+                        pass
+                time.sleep(_FRESH_PUBLISH_REREAD_DELAY_S)
+                continue
 
-        may_reclaim, why = reclaim_decision(existing)
-        if may_reclaim:
-            claimed, tomb = _claim_by_rename(
-                worktree_root,
-                "reclaim",
-                _lease_matches(
-                    existing.lease_id, existing.owner_token, existing.generation
-                ),
+            generation = _issue_generation(worktree_root)
+            candidate = WorktreeLease(
+                worktree_root=str(worktree_root),
+                worktree_identity=lock_paths.worktree_identity(worktree_root),
+                worktree_name=worktree_root.name,
+                purpose=purpose,
+                generation=generation,
+                holder_pid=pid,
+                holder_ppid=os.getppid(),
+                holder_cmdline=" ".join(sys.argv),
+                host=os.uname().nodename if hasattr(os, "uname") else "",
+                holder_start_identity=start_identity or "",
+                expires_at=_utc_in(lease_minutes * 60),
             )
-            if claimed and tomb is not None:
-                try:
-                    tomb.unlink()
-                except OSError:
-                    pass
-            time.sleep(_FRESH_PUBLISH_REREAD_DELAY_S)
-            continue
-
-        raise RuntimeError(
-            f"Worktree {worktree_root} leased by another process: "
-            f"lease_id={existing.lease_id}, pid={existing.holder_pid}, "
-            f"generation={existing.generation}, purpose={existing.purpose!r}; "
-            f"not reclaimable because {why}"
-        )
+            try:
+                won = _publish_exclusive(path, candidate.to_json())
+            except OSError as exc:
+                raise RuntimeError(f"Failed to acquire worktree lease: {exc}") from exc
+            if won:
+                return candidate
+            # All compliant writers hold the claim, so this indicates an
+            # external/legacy writer. Do not infer generation ownership.
+            raise RuntimeError(
+                f"LOCKED_UNKNOWN: lease appeared outside generation claim for {worktree_root}"
+            )
+        finally:
+            claim.__exit__(None, None, None)
 
     raise RuntimeError(
         f"Failed to acquire worktree lease after {_ACQUIRE_MAX_ATTEMPTS} attempts"
@@ -628,23 +782,25 @@ def release_worktree_lease(
     successor's lease.
     """
     worktree_root = Path(worktree_root).resolve()
-    current = _require_mine(_read_lease(worktree_root), owner_token, lease_id, "release")
-
-    claimed, tomb = _claim_by_rename(
-        worktree_root,
-        "release",
-        _lease_matches(current.lease_id, current.owner_token, current.generation),
-    )
-    if not claimed:
-        raise RuntimeError(
-            f"cannot release: the published lease changed while releasing "
-            f"(expected generation={current.generation}); refusing"
+    with _generation_claim(worktree_root):
+        current = _require_mine(
+            _read_lease(worktree_root), owner_token, lease_id, "release"
         )
-    if tomb is not None:
-        try:
-            tomb.unlink()
-        except OSError:
-            pass
+        claimed, tomb = _claim_by_rename(
+            worktree_root,
+            "release",
+            _lease_matches(current.lease_id, current.owner_token, current.generation),
+        )
+        if not claimed:
+            raise RuntimeError(
+                f"cannot release: the published lease changed while releasing "
+                f"(expected generation={current.generation}); refusing"
+            )
+        if tomb is not None:
+            try:
+                tomb.unlink()
+            except OSError:
+                pass
     return True
 
 
