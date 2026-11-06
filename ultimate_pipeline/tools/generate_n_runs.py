@@ -452,7 +452,7 @@ def main() -> int:
 
         det_result = _run_determinism_check(run_dirs, report_path)
         det_report = _read_json(report_path)
-        if not det_result.get("ok"):
+        if not det_result.get("ok") is True:
             print("  -> UNKNOWN (determinism tool failed)")
         else:
             print(f"  -> {'IDENTICAL' if det_report.get('identical') else 'DIFFER'}")

@@ -320,8 +320,8 @@ def _final_dem_used_verdict(
     dem_coverage: Dict[str, Any],
     dem_path: Path,
 ) -> Dict[str, Any]:
-    dem_qc_ok = bool(dem_qc.get("ok")) if dem_qc else None
-    coverage_ok = bool(dem_coverage.get("ok")) if dem_coverage else None
+    dem_qc_ok = dem_qc.get("ok") is True if dem_qc else None
+    coverage_ok = dem_coverage.get("ok") is True if dem_coverage else None
     z_stats = sampling.get("z_sample_stats_m", {})
     z_range = _safe_float(z_stats.get("max"), None)
     if z_range is not None and _safe_float(z_stats.get("min"), None) is not None:

@@ -183,9 +183,11 @@ def _run_perception_safe(xodr: Path, out_dir: Path, manual_town: str, host: str,
     # attach metrics/status if present
     rep["carla_status"] = _read_json(per_out / "carla_status.json")
     rep["recording_summary"] = _read_json(per_out / "recording_summary.json")
-    # Normalize ok using carla_status.ok when present
+    # Normalize ok using carla_status.ok when present.
+    # Use `is True` rather than `bool(...)` so that a JSON string "ok" or
+    # the integer 1 cannot masquerade as a successful status.
     if isinstance(rep["carla_status"], dict) and "ok" in rep["carla_status"]:
-        rep["ok"] = bool(rep["carla_status"].get("ok"))
+        rep["ok"] = rep["carla_status"].get("ok") is True
     return rep
 
 
@@ -335,7 +337,7 @@ def main() -> int:
             )
             import_rows.append({
                 **row_base,
-                "import_ok": bool(import_rep.get("ok")),
+                "import_ok": import_rep.get("ok") is True,
                 "import_returncode": import_rep.get("returncode", ""),
                 "import_out_dir": import_rep.get("out_dir", ""),
             })

@@ -10,6 +10,7 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+import re
 import subprocess
 import sys
 from datetime import datetime, timezone
@@ -20,6 +21,23 @@ from pydantic import BaseModel, Field
 
 
 _INVALID_RUN_ID_REASONS: Dict[str, str] = {}
+
+
+def get_git_sha() -> Optional[str]:
+    """Get short git SHA of current commit."""
+    try:
+        import subprocess
+        result = subprocess.run(
+            ["git", "rev-parse", "--short", "HEAD"],
+            capture_output=True,
+            text=True,
+            timeout=5,
+        )
+        if result.returncode == 0:
+            return result.stdout.strip()
+    except Exception:
+        pass
+    return None
 
 
 def validate_run_id(run_id: str) -> str:

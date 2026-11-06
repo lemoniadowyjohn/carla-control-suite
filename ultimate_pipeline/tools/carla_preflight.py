@@ -234,7 +234,7 @@ def main() -> int:
 
     if result.get("artifact_write_error"):
         return 2
-    return 0 if result.get("ok") else 1
+    return 0 if result.get("ok") is True else 1
 
 
 if __name__ == "__main__":
