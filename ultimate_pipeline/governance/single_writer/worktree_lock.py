@@ -44,6 +44,8 @@ DEFAULT_LEASE_MINUTES = 240
 
 _ACQUIRE_MAX_ATTEMPTS = 64
 _FRESH_PUBLISH_REREAD_DELAY_S = 0.005
+_GENERATION_CLAIM_TIMEOUT_S = 30.0
+_GENERATION_CLAIM_CLEANUP_RETRIES = 1000
 
 
 class MalformedLeaseError(RuntimeError):
@@ -183,7 +185,9 @@ def _generation_claim_path(worktree_root: Path) -> Path:
 
 
 @contextmanager
-def _generation_claim(worktree_root: Path):
+def _generation_claim(
+    worktree_root: Path, *, timeout_s: float = _GENERATION_CLAIM_TIMEOUT_S
+):
     """Hold the exclusive O_EXCL claim while allocating and publishing a lease.
 
     The claim is a short-lived O_CREAT|O_EXCL file. Its complete owner identity
@@ -192,6 +196,18 @@ def _generation_claim(worktree_root: Path):
     """
     path = _generation_claim_path(worktree_root)
     path.parent.mkdir(parents=True, exist_ok=True)
+    timeout_s = max(0.0, float(timeout_s))
+    deadline = time.monotonic() + timeout_s
+
+    def _remaining_s() -> float:
+        remaining = deadline - time.monotonic()
+        if remaining <= 0:
+            raise RuntimeError(
+                f"LOCKED_UNKNOWN: timed out waiting for generation claim at {path} "
+                f"after {timeout_s:.3f}s"
+            )
+        return remaining
+
     pid, start_identity = process_identity.current_process_identity()
     claim_token = uuid.uuid4().hex
     payload = json.dumps({
@@ -199,6 +215,7 @@ def _generation_claim(worktree_root: Path):
     }, sort_keys=True).encode("utf-8")
     permission_denials = 0
     while True:
+        _remaining_s()
         try:
             fd = os.open(str(path), os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o644)
         except (FileExistsError, PermissionError):
@@ -220,7 +237,7 @@ def _generation_claim(worktree_root: Path):
             # contender attempt: Windows denies deletion while another process
             # has a reader handle open, which can starve claim release.
             if claim_age < 1.0:
-                time.sleep(0.001)
+                time.sleep(min(0.001, _remaining_s()))
                 continue
             try:
                 observed = path.read_bytes()
@@ -242,7 +259,7 @@ def _generation_claim(worktree_root: Path):
                     raise RuntimeError(
                         f"LOCKED_UNKNOWN: generation claim remained unreadable at {path}"
                     ) from exc
-                time.sleep(0.001)
+                time.sleep(min(0.001, _remaining_s()))
                 continue
             except (OSError, UnicodeError, ValueError, KeyError, TypeError) as exc:
                 raise RuntimeError(
@@ -271,10 +288,14 @@ def _generation_claim(worktree_root: Path):
                             )
                             if still_dead:
                                 path.unlink(missing_ok=True)
+                    except FileNotFoundError:
+                        # The observed claim was removed before the serialized
+                        # re-read; retry without treating it as ownership loss.
+                        pass
                     finally:
                         recovery.release()
                 continue
-            time.sleep(0.001)
+            time.sleep(min(0.001, _remaining_s()))
             continue
         try:
             view = memoryview(payload)
@@ -294,17 +315,23 @@ def _generation_claim(worktree_root: Path):
     try:
         yield
     finally:
-        for _cleanup_attempt in range(1000):
+        for _cleanup_attempt in range(_GENERATION_CLAIM_CLEANUP_RETRIES):
             try:
                 path.unlink(missing_ok=True)
                 break
-            except PermissionError:
+            except PermissionError as exc:
                 # Windows may briefly deny deletion while a contender has the
-                # claim open for its liveness check. Retry until readers close.
+                # claim open for its liveness check. Retry, then fail visibly
+                # instead of reporting success with a leaked live-owner claim.
+                if _cleanup_attempt + 1 == _GENERATION_CLAIM_CLEANUP_RETRIES:
+                    raise RuntimeError(
+                        f"LOCKED_UNKNOWN: could not release generation claim at {path}"
+                    ) from exc
                 time.sleep(0.005)
-            except OSError:
-                # Preserve unexpected ownership evidence for explicit recovery.
-                break
+            except OSError as exc:
+                raise RuntimeError(
+                    f"LOCKED_UNKNOWN: could not release generation claim at {path}: {exc}"
+                ) from exc
 
 
 # ---------------------------------------------------------------------------

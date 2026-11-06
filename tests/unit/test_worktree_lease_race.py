@@ -11,6 +11,8 @@ import traceback
 import uuid
 from pathlib import Path
 
+import pytest
+
 
 def _git(*args: str, cwd: Path) -> None:
     subprocess.run(
@@ -34,6 +36,9 @@ def _lease_worker(root: str, ready_queue, start_event, queue, iterations: int) -
         wl.process_identity.current_process_identity = lambda: (worker_pid, worker_start)
         canonical_root = worktree.resolve()
         wl.lock_paths.resolve_git_common_dir = lambda _root: canonical_root / ".git"
+        # This stress case verifies cross-process arbitration only. The separate
+        # ledger-fsync test below covers durability; disabling fsync here keeps
+        # the 20-run Windows stability check bounded.
         wl.os.fsync = lambda fd: None
         ready_queue.put(("ready", os.getpid()))
         if not start_event.wait(timeout=20):
@@ -152,7 +157,8 @@ def test_multiprocess_lease_race_has_unique_increasing_generations_and_no_temps(
     )._worktree_lease_path(root))
     leftovers = [p.name for p in lease_path.parent.iterdir()
                  if p.name.startswith(lease_path.name) and p.name != lease_path.name
-                 and ("tmp" in p.name or "pub" in p.name or "tombstone" in p.name)]
+                 and ("tmp" in p.name or "pub" in p.name or "tombstone" in p.name
+                      or p.name.endswith(".generation-claim"))]
     assert leftovers == []
 
 
@@ -229,3 +235,53 @@ def test_generation_claim_retries_when_removed_between_stat_and_read(tmp_path, m
     monkeypatch.setattr(Path, "stat", stat_then_remove)
     with wl._generation_claim(root):
         assert state["removed"]
+
+
+def test_generation_claim_wait_is_bounded_for_live_owner(tmp_path):
+    from ultimate_pipeline.governance.single_writer import worktree_lock as wl
+
+    root = tmp_path / "live-claim-timeout-worktree"
+    root.mkdir()
+    _git("init", cwd=root)
+    _git("commit", "--allow-empty", "-m", "init", cwd=root)
+    claim_path = wl._generation_claim_path(root)
+    claim_path.parent.mkdir(parents=True, exist_ok=True)
+    pid, start_identity = wl.process_identity.current_process_identity()
+    claim_path.write_text(
+        json.dumps(
+            {"pid": pid, "start_identity": start_identity or "", "token": "live-test-claim"}
+        ),
+        encoding="utf-8",
+    )
+    old_time = time.time() - 2.0
+    os.utime(claim_path, (old_time, old_time))
+
+    started = time.monotonic()
+    with pytest.raises(RuntimeError, match="timed out waiting for generation claim"):
+        with wl._generation_claim(root, timeout_s=0.05):
+            raise AssertionError("a live owner must keep its claim")
+    assert time.monotonic() - started < 1.0
+    assert claim_path.is_file(), "the live owner's claim must not be deleted on timeout"
+
+
+def test_generation_claim_cleanup_failure_is_reported(tmp_path, monkeypatch):
+    from ultimate_pipeline.governance.single_writer import worktree_lock as wl
+
+    root = tmp_path / "claim-cleanup-failure-worktree"
+    root.mkdir()
+    _git("init", cwd=root)
+    _git("commit", "--allow-empty", "-m", "init", cwd=root)
+    claim_path = wl._generation_claim_path(root)
+    original_unlink = Path.unlink
+
+    def deny_claim_cleanup(path, *args, **kwargs):
+        if path == claim_path:
+            raise PermissionError("injected claim cleanup denial")
+        return original_unlink(path, *args, **kwargs)
+
+    monkeypatch.setattr(Path, "unlink", deny_claim_cleanup)
+    monkeypatch.setattr(wl, "_GENERATION_CLAIM_CLEANUP_RETRIES", 3)
+    with pytest.raises(RuntimeError, match="could not release generation claim"):
+        with wl._generation_claim(root):
+            assert claim_path.is_file()
+    assert claim_path.is_file(), "failed cleanup must remain visible for recovery"
