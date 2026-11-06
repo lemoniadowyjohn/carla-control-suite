@@ -1,4 +1,25 @@
-"""Validate the top-level final release receipt without treating missing evidence as PASS."""
+"""Validate the top-level final release receipt without treating missing evidence as PASS.
+
+ARCHITECTURAL DISTINCTION: SCHEMA_VALID != RELEASE_ADMISSIBLE.
+
+This function performs SCHEMA-ONLY validation: it checks that required
+sections exist and that status values belong to the allowed vocabulary.
+It does NOT determine whether a receipt is admissible for release promotion.
+
+A receipt where all sections have status NOT_RUN is schema-valid (PASS from
+this function) but NOT release-admissible. Release admission requires
+additional checks beyond schema validity:
+    * All mandatory sections must have status PASS (not NOT_RUN, FAIL, or BLOCKED)
+    * Identity digests must match actual artifact bytes
+    * Runtime certification must be available (CARLA runtime certified)
+
+No production caller promotes based on validate() output alone. Callers must
+implement their own admission logic that checks actual section statuses,
+identity digests, and runtime certification before promoting a release.
+
+This function intentionally does NOT implement release admission logic, to
+avoid creating a competing release authority.
+"""
 from __future__ import annotations
 
 import argparse

@@ -17,8 +17,10 @@ Determinism note:
 from __future__ import annotations
 
 import json
+import os
 import platform
 import subprocess
+import tempfile
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, Optional
@@ -32,14 +34,55 @@ def _utc_now() -> str:
     return datetime.now(timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z")
 
 
+def _repo_root() -> Path:
+    """Repository root for git operations, resolved from this module's location.
+
+    Walks up from the module directory to find the directory containing .git.
+    On multi-worktree machines this ensures git operations always bind to the
+    actual source repository, never to the current working directory.
+    """
+    current = Path(__file__).resolve().parent
+    while current != current.parent:
+        if (current / ".git").is_dir():
+            return current
+        current = current.parent
+    return current
+
+
+def _atomic_write_text(path: Path, text: str) -> None:
+    """Write text atomically via temp file + fsync + os.replace.
+
+    Prevents partial/corrupt files if the process crashes mid-write.
+    """
+    path.parent.mkdir(parents=True, exist_ok=True)
+    fd, tmp_name = tempfile.mkstemp(
+        dir=str(path.parent), prefix=f".{path.name}.", suffix=".tmp"
+    )
+    tmp = Path(tmp_name)
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8", newline="\n") as handle:
+            handle.write(text)
+            handle.flush()
+            os.fsync(handle.fileno())
+        os.replace(str(tmp), str(path))
+    except BaseException:
+        try:
+            tmp.unlink()
+        except OSError:
+            pass
+        raise
+
+
 def sha256_file(path: Path, chunk_size: int = 1024 * 1024) -> str:
     """Compute SHA-256 hash of a file. Wrapper for backward compatibility."""
     return _sha256_file(path, chunk_size=chunk_size)
 
 
-def _try_cmd(cmd: list[str]) -> Optional[str]:
+def _try_cmd(cmd: list[str], cwd: Optional[Path] = None) -> Optional[str]:
     try:
-        out = subprocess.check_output(cmd, stderr=subprocess.STDOUT, text=True).strip()
+        out = subprocess.check_output(
+            cmd, stderr=subprocess.STDOUT, text=True, cwd=str(cwd) if cwd else None
+        ).strip()
         return out or None
     except Exception:
         return None
@@ -91,8 +134,8 @@ def update_run_manifest(
     env.setdefault("os", platform.platform())
     env.setdefault("python", platform.python_version())
     env.setdefault("machine", platform.machine())
-    env.setdefault("git_commit", _try_cmd(["git", "rev-parse", "HEAD"]))
-    env.setdefault("git_status_porcelain", _try_cmd(["git", "status", "--porcelain"]))
+    env.setdefault("git_commit", _try_cmd(["git", "rev-parse", "HEAD"], cwd=_repo_root()))
+    env.setdefault("git_status_porcelain", _try_cmd(["git", "status", "--porcelain"], cwd=_repo_root()))
 
     if gps_bounds is not None:
         manifest["gps_bounds_wgs84"] = gps_bounds
@@ -124,5 +167,5 @@ def update_run_manifest(
         n = manifest.setdefault("notes", {})
         n.update(notes)
 
-    path.write_text(json.dumps(manifest, indent=2, ensure_ascii=False), encoding="utf-8")
+    _atomic_write_text(path, json.dumps(manifest, indent=2, ensure_ascii=False))
     return path
