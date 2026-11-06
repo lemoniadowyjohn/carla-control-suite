@@ -6,7 +6,8 @@
 |--------------|---------|-----------|--------|--------|---------|
 | Contract Tests | `pytest ultimate_pipeline/tests/test_contracts.py -q` | 136 | 136 | 0 | 0 |
 | Deterministic Alignment | `pytest ultimate_pipeline/tests/test_deterministic_alignment.py -q` | 16 | 16 | 0 | 0 |
-| Total | — | 152 | 152 | 0 | 0 |
+| RQ3 Manifest Verifier | `pytest tests/unit/test_o17_rq3_dataset_manifest_verifier.py -q` | 5 | 5 | 0 | 0 |
+| Total | — | 157 | 157 | 0 | 0 |
 
 ## Key Test Results
 
@@ -25,6 +26,13 @@
   - Malformed geometry skipping
   - Centroid computation correctness
   - GPS bounds project validity
+
+### RQ3 Manifest Verifier (5/5 PASS)
+- `test_valid_manifest_without_paired_is_incomplete` — correctly returns INCOMPLETE without paired manifest
+- `test_valid_manifest_with_paired_passes` — correctly returns PASS for matching paired manifests
+- `test_duplicate_frames_fail` — correctly fails on duplicate frame IDs
+- `test_missing_frames_fail` — correctly fails when missing_frames declared
+- `test_paired_contract_mismatch_fails` — correctly fails on contract field mismatch
 
 ### Boolean Fix Regressions
 8 boolean coercion fixes verified with direct source inspection:
@@ -61,13 +69,20 @@ cd "C:/Users/admin/PycharmProjects/gpt4/pythonProject3/carla_-main_v17"
 ```
 Result: 16 passed
 
+### RQ3 Manifest Verifier Tests
+```
+cd "C:/Users/admin/PycharmProjects/gpt4/pythonProject3/carla_-main_v17"
+& "C:/Users/admin/PycharmProjects/gpt4/pythonProject3/.venv/Scripts/python.exe" -m pytest tests/unit/test_o17_rq3_dataset_manifest_verifier.py -q --tb=short
+```
+Result: 5 passed
+
 ### Boolean Fix Verification
 Each boolean fix verified by reading source change and confirming `is True` pattern replaces `bool(...)` or truthiness checks on `.get("ok")`.
 
 ## Skipped / External Tests
 - Tests requiring live CARLA runtime: NOT_RUN (not authorized)
 - Expensive model training tests: NOT_RUN
-- W-D 26-test acceptance suite: NOT_RUN (pending execution)
+- W-D 26-test acceptance suite: NOT_RUN (pending execution; test selection definition not recoverable)
 - W-B RQ5 remaining 3 commits: NOT_COMMITTED
 - T2b lease tests: OPEN_DELEGATED (Codex worktree)
 - F15b certification tests: OPEN_DELEGATED (Codex worktree)
