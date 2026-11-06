@@ -97,11 +97,31 @@ def _git_state(repo_root: Path) -> Dict[str, Any]:
     branch = _run(["git", "branch", "--show-current"], repo_root)
     status = _run(["git", "status", "--short"], repo_root)
     remotes = _run(["git", "remote", "-v"], repo_root)
+
+    # Determine git inspection status. A failed git status command must not
+    # be serialized as a clean checkout.
+    if not status["ok"]:
+        git_status = "GIT_INSPECTION_FAILED"
+        dirty = None  # Unknown: cannot determine if dirty or clean
+    elif not head["ok"]:
+        git_status = "GIT_INSPECTION_FAILED"
+        dirty = None
+    elif not branch["ok"]:
+        git_status = "GIT_INSPECTION_FAILED"
+        dirty = None
+    elif bool(status["stdout"]):
+        git_status = "DIRTY_VERIFIED"
+        dirty = True
+    else:
+        git_status = "CLEAN_VERIFIED"
+        dirty = False
+
     return {
         "repo_root": repo_root.as_posix(),
         "branch": branch["stdout"] or "UNKNOWN",
         "head": head["stdout"] or "UNKNOWN",
-        "dirty": bool(status["stdout"]),
+        "dirty": dirty,
+        "git_status": git_status,
         "status_short": status["stdout"].splitlines() if status["stdout"] else [],
         "remotes": remotes["stdout"].splitlines() if remotes["stdout"] else [],
     }
