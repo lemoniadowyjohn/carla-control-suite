@@ -37,7 +37,11 @@ class CumulativeGateRunner:
                 # Single normalization authority shared with
                 # QualityGateManager._finalize_gate so both runners must
                 # always agree on the same (possibly malformed) report.
-                ok = bool(normalize_gate_result(report)["ok"])
+                ok = normalize_gate_result(report)["ok"]
+                if isinstance(ok, bool):
+                    ok = ok
+                else:
+                    ok = False
             else:
                 # A gate function is contractually Callable[[], dict]. A
                 # non-dict return (e.g. a gate implementation missing its

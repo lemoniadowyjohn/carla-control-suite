@@ -40,10 +40,15 @@ def _safe_int(value: Any, default: int = 0) -> int:
 
 def _report_status(report: Dict[str, Any]) -> Tuple[bool, str]:
     if not isinstance(report, dict):
-        return True, "unknown"
+        return False, "unknown"
     if "ok" in report:
-        ok = bool(report.get("ok"))
-        return ok, "pass" if ok else "fail"
+        ok_val = report.get("ok")
+        # Only explicit booleans authorize pass/fail. Non-boolean truthy
+        # values (e.g. the string "false") must not be coerced to True.
+        if isinstance(ok_val, bool):
+            return ok_val, "pass" if ok_val else "fail"
+        # Non-boolean ok value is malformed: fail-closed.
+        return False, "fail"
     status = str(report.get("status", "")).strip().lower()
     if status in {"fail", "failed", "error"}:
         return False, status
@@ -51,7 +56,14 @@ def _report_status(report: Dict[str, Any]) -> Tuple[bool, str]:
         return True, "skipped"
     if _safe_int(report.get("n_errors", 0)) > 0:
         return False, "fail"
-    return True, "pass"
+    if status in {"pass", "passed", "ok", "success"}:
+        return True, "pass"
+    # Empty status with explicit n_errors check: legacy pass behavior.
+    # Completely empty status (no evidence at all): fail-closed.
+    if not status and "n_errors" in report:
+        return True, "pass"
+    # Unknown non-empty status, or empty status with no evidence: fail-closed.
+    return False, "fail"
 
 
 def _extract_issue_counts(report: Dict[str, Any]) -> Dict[str, int]:
@@ -315,7 +327,9 @@ def build_pipeline_health_summary(
         else:
             overall_ok = not summary["malformed_gate_reports"]
             for gate_data in summary["gates"].values():
-                if not gate_data.get("ok", True):
+                gate_data_ok_val = gate_data.get("ok", True)
+                gate_data_ok = gate_data_ok_val if isinstance(gate_data_ok_val, bool) else False
+                if not gate_data_ok:
                     overall_ok = False
                     break
             if expected and (missing or skipped):

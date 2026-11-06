@@ -251,7 +251,9 @@ def evaluate_visual_smoke_report(
         if not isinstance(item, dict):
             missing_views.append(view)
             continue
-        if not bool(item.get("ok", False)):
+        item_ok_val = item.get("ok", False)
+        item_ok = item_ok_val if isinstance(item_ok_val, bool) else False
+        if not item_ok:
             failed_views.append(view)
         path_text = str(item.get("path") or "").strip()
         if require_files:
@@ -264,7 +266,9 @@ def evaluate_visual_smoke_report(
                 if not p.exists() or p.stat().st_size <= 0:
                     missing_files.append(view)
 
-    ok = bool(report.get("ok", False)) and not missing_views and not failed_views and not missing_files
+    report_ok_val = report.get("ok", False)
+    report_ok = report_ok_val if isinstance(report_ok_val, bool) else False
+    ok = report_ok and not missing_views and not failed_views and not missing_files
     reason_parts: List[str] = []
     if missing_views:
         reason_parts.append("missing_views:" + ",".join(missing_views))
@@ -272,7 +276,9 @@ def evaluate_visual_smoke_report(
         reason_parts.append("failed_views:" + ",".join(failed_views))
     if missing_files:
         reason_parts.append("missing_files:" + ",".join(missing_files))
-    if not bool(report.get("load_ok", report.get("ok", False))):
+    load_ok_val = report.get("load_ok", report.get("ok", False))
+    load_ok = load_ok_val if isinstance(load_ok_val, bool) else False
+    if not load_ok:
         reason_parts.append("map_load_failed_or_missing")
     return {
         "ok": ok,
