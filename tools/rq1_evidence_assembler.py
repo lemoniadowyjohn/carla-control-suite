@@ -168,6 +168,7 @@ def main() -> int:
         run_id = wrapper.get("run_id")
         invocation_id = wrapper.get("invocation_id")
         started_at_utc = wrapper.get("started_at_utc")
+        run_output_root = wrapper.get("run_output_root")
         matrix_run = matrix_runs.get(run_id)
         child_identities = identities_for_child(child)
         if (
@@ -178,6 +179,8 @@ def main() -> int:
             or not invocation_id
             or not isinstance(started_at_utc, str)
             or not started_at_utc
+            or not isinstance(run_output_root, str)
+            or not Path(run_output_root).is_absolute()
             or matrix_run is None
             or matrix_run.get("run") != run_index
             or matrix_run.get("valid") is not True
@@ -192,6 +195,7 @@ def main() -> int:
             "run_id": run_id,
             "invocation_id": invocation_id,
             "started_at_utc": started_at_utc,
+            "run_output_root": str(Path(run_output_root).resolve()),
             "source_sha": child.get("git_sha"),
             "input_sha256": child.get("input_sha256"),
             "output_identity_sha256": sha256_of_jsonable(child_identities),

@@ -18,19 +18,21 @@ Key gates (fail-closed):
     adjudicator is RQ1/RQ2 scoped);
   * unlabeled RQ5B data can never support a generalization-accuracy claim
     (RQ5 contract claim_boundary);
-  * RQ1 AUTHORITATIVE requires exactly the required valid run count (>=5,
-    per frozen five-run protocol) and all frozen metric identities
+  * RQ1 AUTHORITATIVE requires a run count declared by the governing protocol
+    and all required metric identities
     (raw/normalized/structural repeatability evidence present);
   * RQ2 respects the frozen bounded local-hull claim boundary: whole-map
     scope work alone can never upgrade the claim beyond BOUNDED.
 """
 from __future__ import annotations
 
+from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
 ADJUDICATOR_VERSION = "research-claim-adjudicator/v2"
 
-# Frozen protocol requirement for RQ1 five-run determinism evidence.
+# Operational guard only; the checked-in thesis contract does not declare a
+# required RQ1 run count, so this value cannot authorize scientific claims.
 RQ1_REQUIRED_VALID_RUNS = 5
 RQ1_REQUIRED_METRIC_IDS = {
     "raw_hash_repeatability",
@@ -56,6 +58,22 @@ def _contract_statuses() -> List[str]:
     from research.evidence.schemas import CLAIM_STATUSES
 
     return list(CLAIM_STATUSES)
+
+
+def rq1_required_valid_runs_from_contract() -> Optional[int]:
+    """Return an RQ1 run count only when the governing contract declares it."""
+    import yaml
+
+    from research.evidence.schemas import REPO_ROOT
+
+    try:
+        document = yaml.safe_load(
+            (REPO_ROOT / "research" / "thesis_rq_contract.yaml").read_text(encoding="utf-8")
+        )
+        count = document["research_questions"]["RQ1"].get("required_valid_runs")
+        return count if type(count) is int and count > 0 else None
+    except (OSError, KeyError, TypeError, AttributeError, yaml.YAMLError):
+        return None
 
 
 def _check_bindings(receipt: Dict[str, Any]) -> Tuple[Optional[str], Dict[str, Any]]:
@@ -129,7 +147,7 @@ def adjudicate_rq1(
     sufficient).
     """
     from research.evidence.schemas import (
-        EXPERIMENT_RECEIPT_SCHEMA_V2,
+        EXPERIMENT_RECEIPT_SCHEMA_V3,
         RESEARCH_CONTRACT_SHA256,
         load_claim_statuses,
     )
@@ -139,6 +157,16 @@ def adjudicate_rq1(
     contract = current_contract_sha256 or RESEARCH_CONTRACT_SHA256
     problems: List[str] = []
     detail: Dict[str, Any] = {"gate": "rq1_five_run"}
+
+    frozen_run_count = rq1_required_valid_runs_from_contract()
+    if frozen_run_count is None:
+        problems.append("governing RQ1 protocol does not specify required_valid_runs")
+        return _claim("RQ1", "NOT_RUN", None, problems, statuses, contract, detail)
+    if required_valid_runs != frozen_run_count:
+        problems.append(
+            f"requested run count {required_valid_runs} disagrees with governing protocol count {frozen_run_count}"
+        )
+        return _claim("RQ1", "NOT_RUN", None, problems, statuses, contract, detail)
 
     if not run_receipts:
         return _claim("RQ1", "NOT_RUN", "no experiment receipts", problems, statuses, contract)
@@ -153,11 +181,14 @@ def adjudicate_rq1(
         if missing_metrics:
             problems.append(f"missing RQ1 metric identities: {sorted(missing_metrics)}")
             continue
-        if r.get("schema") != EXPERIMENT_RECEIPT_SCHEMA_V2:
+        if r.get("schema") != EXPERIMENT_RECEIPT_SCHEMA_V3:
             problems.append(
-                "RQ1 receipt lacks v2 run identity; legacy schema remains readable "
+                "RQ1 receipt lacks v3 run identity; legacy schemas remain readable "
                 "but cannot establish distinct campaign runs"
             )
+            continue
+        if r.get("source_dirty") is not False:
+            problems.append("RQ1 receipt source is dirty; authoritative admission requires clean committed source")
             continue
         valid.append(r)
 
@@ -173,12 +204,19 @@ def adjudicate_rq1(
     identities = [r["run_identity"] for r in valid]
     run_ids = [identity["run_id"] for identity in identities]
     run_indices = [identity["run_index"] for identity in identities]
+    run_roots = [str(Path(identity["run_output_root"]).resolve()) for identity in identities]
+    output_sets = [
+        tuple(sorted(str(Path(entry["path"]).resolve()) for entry in receipt["outputs"]))
+        for receipt in valid
+    ]
     invocation_ids = {identity["invocation_id"] for identity in identities}
     metric_payload_bindings = {r["raw_metric_payload_sha256"] for r in valid}
     if (
         len(valid) != required_valid_runs
         or len(set(run_ids)) != required_valid_runs
         or len(set(run_indices)) != required_valid_runs
+        or len(set(run_roots)) != required_valid_runs
+        or len(set(output_sets)) != required_valid_runs
         or len(invocation_ids) != 1
         or len(metric_payload_bindings) != required_valid_runs
     ):

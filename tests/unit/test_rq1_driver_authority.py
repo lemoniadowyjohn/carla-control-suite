@@ -17,8 +17,14 @@ def test_non_frozen_run_count_is_pilot_and_never_success():
     assert campaign_exit_code(requested_runs=4, valid_run_count=4, matrix={}) == PILOT_EXIT_CODE
 
 
-def test_only_complete_bound_five_run_matrix_can_return_success():
-    from tools.rq1b_five_run_driver import RQ1_REQUIRED_VALID_RUNS, campaign_exit_code
+def test_checked_in_contract_does_not_claim_a_frozen_rq1_count():
+    from research.evidence.claim_adjudicator import rq1_required_valid_runs_from_contract
+
+    assert rq1_required_valid_runs_from_contract() is None
+
+
+def test_no_run_count_is_authorized_until_protocol_declares_it():
+    from tools.rq1b_five_run_driver import PILOT_EXIT_CODE, RQ1_REQUIRED_VALID_RUNS, campaign_exit_code
 
     matrix = {
         "schema": "rq1_full_determinism_matrix/v2",
@@ -38,16 +44,7 @@ def test_only_complete_bound_five_run_matrix_can_return_success():
             valid_run_count=RQ1_REQUIRED_VALID_RUNS,
             matrix=matrix,
         )
-        == 0
-    )
-    matrix["per_run"].pop()
-    assert (
-        campaign_exit_code(
-            requested_runs=RQ1_REQUIRED_VALID_RUNS,
-            valid_run_count=RQ1_REQUIRED_VALID_RUNS,
-            matrix=matrix,
-        )
-        != 0
+        == PILOT_EXIT_CODE
     )
 
 

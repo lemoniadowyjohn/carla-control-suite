@@ -43,7 +43,10 @@ sys.path.insert(0, str(REPO))
 
 from research.rq1_determinism_matrix import build_determinism_matrix
 from research.evidence.canonical import git_head_sha
-from research.evidence.claim_adjudicator import RQ1_REQUIRED_VALID_RUNS
+from research.evidence.claim_adjudicator import (
+    RQ1_REQUIRED_VALID_RUNS,
+    rq1_required_valid_runs_from_contract,
+)
 
 EXPECTED_XODR_SHA = "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8"
 
@@ -203,14 +206,15 @@ def validate_child_binding(
 def campaign_exit_code(
     *, requested_runs: int, valid_run_count: int, matrix: Dict[str, Any]
 ) -> int:
-    """Only the frozen required run count and a complete equal matrix can pass."""
-    if requested_runs != RQ1_REQUIRED_VALID_RUNS:
+    """Only a contract-declared run count and a complete matrix can pass."""
+    required_runs = rq1_required_valid_runs_from_contract()
+    if required_runs is None or requested_runs != required_runs:
         return PILOT_EXIT_CODE
-    if valid_run_count != RQ1_REQUIRED_VALID_RUNS:
+    if valid_run_count != required_runs:
         return 1
     if matrix.get("schema") != "rq1_full_determinism_matrix/v2":
         return 1
-    if matrix.get("valid_run_count") != RQ1_REQUIRED_VALID_RUNS:
+    if matrix.get("valid_run_count") != required_runs:
         return 1
     if not all(
         matrix.get(key) is True
@@ -222,10 +226,10 @@ def campaign_exit_code(
     per_run = matrix.get("per_run")
     if (
         not isinstance(per_run, list)
-        or len(per_run) != RQ1_REQUIRED_VALID_RUNS
+        or len(per_run) != required_runs
         or any(not isinstance(row, dict) or row.get("valid") is not True for row in per_run)
-        or len({row.get("run_id") for row in per_run}) != RQ1_REQUIRED_VALID_RUNS
-        or len({row.get("run") for row in per_run}) != RQ1_REQUIRED_VALID_RUNS
+        or len({row.get("run_id") for row in per_run}) != required_runs
+        or len({row.get("run") for row in per_run}) != required_runs
     ):
         return 1
     return 0
@@ -317,6 +321,7 @@ def run_one(
         "run_id": f"rq1b_run{run_idx:02d}",
         "invocation_id": invocation_id,
         "started_at_utc": started_at_utc,
+        "run_output_root": str(run_dir.resolve()),
         "input_xodr_sha256": EXPECTED_XODR_SHA,
         "input_xodr_path": pinned["resolved_path"],
         "command": " ".join(cmd),
@@ -350,13 +355,26 @@ def main() -> int:
     args = ap.parse_args()
 
     out_base = args.output_base
-    if args.runs != RQ1_REQUIRED_VALID_RUNS:
+    required_runs = rq1_required_valid_runs_from_contract()
+    if required_runs is None:
+        print(
+            json.dumps(
+                {
+                    "status": "PILOT",
+                    "reason": "governing RQ1 protocol does not specify required_valid_runs",
+                },
+                indent=2,
+            ),
+            flush=True,
+        )
+        return PILOT_EXIT_CODE
+    if args.runs != required_runs:
         print(
             json.dumps(
                 {
                     "status": "PILOT",
                     "runs_requested": args.runs,
-                    "required_runs": RQ1_REQUIRED_VALID_RUNS,
+                    "required_runs": required_runs,
                     "reason": "RQ1 claim admission requires the frozen run count",
                 },
                 indent=2,

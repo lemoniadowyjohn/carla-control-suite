@@ -10,6 +10,7 @@ Covers:
 from __future__ import annotations
 
 import json
+import sys
 from pathlib import Path
 
 import pytest
@@ -183,13 +184,29 @@ class TestExperimentReceiptSchema:
 # adjudicator
 # ---------------------------------------------------------------------------
 class TestAdjudicatorRQ1:
+    @pytest.fixture(autouse=True)
+    def _test_protocol_count(self, monkeypatch, tmp_path):
+        # Exercise the admission mechanics with an explicit test-only protocol
+        # count; production stays blocked while the frozen contract omits it.
+        monkeypatch.setattr(
+            "research.evidence.claim_adjudicator.rq1_required_valid_runs_from_contract",
+            lambda: 5,
+        )
+        self._tmp_path = tmp_path
+
     def _runs(self, n=5, *, raw_different=False, **overrides):
         from research.evidence.canonical import sha256_of_jsonable
 
         contract_path = REPO / "research" / "thesis_rq_contract.yaml"
         contract_sha = sha256_file(contract_path)
 
-        return [
+        runs = []
+        for i in range(n):
+            run_root = self._tmp_path / f"run_{i:02d}"
+            run_root.mkdir(parents=True, exist_ok=True)
+            output_path = run_root / "output.json"
+            output_path.write_text(f"output-{i}", encoding="utf-8")
+            runs.append(
             json.loads(
                 json.dumps(
                     build_experiment_receipt(
@@ -221,8 +238,8 @@ class TestAdjudicatorRQ1:
                             ],
                             output_paths=[
                                 {
-                                    "path": "research/thesis_rq_contract.yaml",
-                                    "sha256": contract_sha,
+                                    "path": str(output_path),
+                                    "sha256": sha256_file(output_path),
                                 }
                             ],
                             **overrides,
@@ -239,12 +256,13 @@ class TestAdjudicatorRQ1:
                                     (chr(ord("b") + i) * 64) if raw_different else "b" * 64
                                 )
                             ),
+                            "run_output_root": str(run_root.resolve()),
                         },
                     )
                 )
             )
-            for i in range(n)
-        ]
+            )
+        return runs
 
     def test_authoritative_requires_exact_valid_run_count_and_metrics(self):
         claim = adjudicate_rq1(self._runs(5), _matrix())
@@ -300,6 +318,25 @@ class TestAdjudicatorRQ1:
         r0["dirty_reason"] = None
         claim = adjudicate_rq1([r0] + self._runs(4), _matrix())
         assert claim["claim_status"] == "NOT_RUN"
+
+    def test_dirty_source_with_reason_still_cannot_admit_rq1(self):
+        runs = self._runs(5)
+        for receipt in runs:
+            receipt["source_dirty"] = True
+            receipt["dirty_reason"] = "operator explanation"
+        claim = adjudicate_rq1(runs, _matrix())
+        assert claim["claim_status"] == "NOT_RUN"
+        assert any("source is dirty" in p for p in claim["adjudication"]["problems"])
+
+    def test_same_physical_output_cannot_be_relabelled_as_five_runs(self):
+        runs = self._runs(5)
+        first = runs[0]["outputs"]
+        for receipt in runs[1:]:
+            receipt["outputs"] = first
+            receipt["run_identity"]["run_output_root"] = runs[0]["run_identity"]["run_output_root"]
+        claim = adjudicate_rq1(runs, _matrix())
+        assert claim["claim_status"] == "NOT_RUN"
+        assert any("distinct runs" in p for p in claim["adjudication"]["problems"])
 
     def test_mismatched_identities_bounded_not_authoritative(self):
         matrix = _matrix(
@@ -557,6 +594,57 @@ def gap_for_tileset(matrix):
 
 def test_adjudicator_version_recorded():
     assert ADJUDICATOR_VERSION
+
+
+@pytest.mark.parametrize("escape_field", ["inputs", "outputs"])
+def test_v3_receipt_rejects_artifact_path_outside_authorized_root(tmp_path, escape_field):
+    contract_path = REPO / "research" / "thesis_rq_contract.yaml"
+    contract_sha = sha256_file(contract_path)
+    outside = Path(sys.executable).resolve()
+    safe_output = tmp_path / "output.json"
+    if escape_field == "outputs":
+        input_paths = [{"path": str(contract_path), "sha256": contract_sha}]
+        output_paths = [{"path": str(outside), "sha256": "2" * 64}]
+        message = "outputs artifact escapes"
+    else:
+        input_paths = [{"path": str(outside), "sha256": "2" * 64}]
+        output_paths = [{"path": str(safe_output), "sha256": "3" * 64}]
+        message = "inputs artifact escapes"
+    with pytest.raises(ValueError, match=message):
+        build_experiment_receipt(
+            rq_id="RQ1",
+            metric_ids=[
+                "raw_hash_repeatability",
+                "normalized_hash_repeatability",
+                "structural_signature_repeatability",
+                "byte_nondeterminism_source",
+            ],
+            git_sha="0" * 40,
+            source_dirty=False,
+            dirty_reason=None,
+            protocol_path=str(contract_path),
+            protocol_sha256=contract_sha,
+            input_paths=input_paths,
+            map_identities={"scope": "test"},
+            settings_digest="1" * 64,
+            runtime={"python": "test"},
+            seeds=[0],
+            output_paths=output_paths,
+            raw_metric_payload={"x": 1},
+            statistics_method="test",
+            execution_status="COMPLETED",
+            claim_boundary="test",
+            run_identity={
+                "run_index": 0,
+                "run_id": "run-0",
+                "invocation_id": "invocation",
+                "started_at_utc": "2026-11-06T00:00:00Z",
+                "source_sha": "0" * 40,
+                "input_sha256": "3" * 64,
+                "output_identity_sha256": "4" * 64,
+                "run_output_root": str(tmp_path.resolve()),
+            },
+        )
 
 
 # ---------------------------------------------------------------------------

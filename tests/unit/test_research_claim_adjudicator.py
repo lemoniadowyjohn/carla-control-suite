@@ -60,7 +60,7 @@ def test_adjudication_refuses_missing_bound_input_even_if_frozen(tmp_path: Path)
     )
 
     assert claim["claim_status"] == "NOT_RUN"
-    assert any("missing" in problem for problem in claim["adjudication"]["problems"])
+    assert any("required_valid_runs" in problem for problem in claim["adjudication"]["problems"])
 
 
 def test_adjudication_refuses_one_receipt_repeated_as_five_runs(tmp_path: Path):
@@ -91,7 +91,7 @@ def test_adjudication_refuses_one_receipt_repeated_as_five_runs(tmp_path: Path):
     )
 
     assert claim["claim_status"] == "NOT_RUN"
-    assert any("distinct" in problem for problem in claim["adjudication"]["problems"])
+    assert any("required_valid_runs" in problem for problem in claim["adjudication"]["problems"])
 
 
 def test_rq1_assembler_refuses_missing_or_mismatched_declared_final_xodr(tmp_path: Path):

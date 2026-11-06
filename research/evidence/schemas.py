@@ -109,6 +109,7 @@ except ValueError:
 
 EXPERIMENT_RECEIPT_SCHEMA_V1 = "rq_experiment_receipt/v1"
 EXPERIMENT_RECEIPT_SCHEMA_V2 = "rq_experiment_receipt/v2"
+EXPERIMENT_RECEIPT_SCHEMA_V3 = "rq_experiment_receipt/v3"
 # Compatibility alias for callers that still construct the original v1 shape.
 EXPERIMENT_RECEIPT_SCHEMA = EXPERIMENT_RECEIPT_SCHEMA_V1
 CLAIM_RECEIPT_SCHEMA = "rq_claim_receipt/v1"
@@ -215,7 +216,7 @@ def build_experiment_receipt(
     _, current_contract_sha256 = _load_contract_authority()
     receipt: Dict[str, Any] = {
         "schema": (
-            EXPERIMENT_RECEIPT_SCHEMA_V2
+            EXPERIMENT_RECEIPT_SCHEMA_V3
             if run_identity is not None
             else EXPERIMENT_RECEIPT_SCHEMA_V1
         ),
@@ -258,10 +259,14 @@ def validate_receipt(
     for key in _REQUIRED_EXPERIMENT_KEYS:
         _require(key in receipt, f"missing required field '{key}'")
     _require(
-        receipt["schema"] in {EXPERIMENT_RECEIPT_SCHEMA_V1, EXPERIMENT_RECEIPT_SCHEMA_V2},
+        receipt["schema"] in {
+            EXPERIMENT_RECEIPT_SCHEMA_V1,
+            EXPERIMENT_RECEIPT_SCHEMA_V2,
+            EXPERIMENT_RECEIPT_SCHEMA_V3,
+        },
         "wrong schema",
     )
-    if receipt["schema"] == EXPERIMENT_RECEIPT_SCHEMA_V2:
+    if receipt["schema"] in {EXPERIMENT_RECEIPT_SCHEMA_V2, EXPERIMENT_RECEIPT_SCHEMA_V3}:
         identity = receipt.get("run_identity")
         _require(isinstance(identity, dict), "v2 run_identity must be an object")
         identity_keys = {
@@ -273,6 +278,8 @@ def validate_receipt(
             "input_sha256",
             "output_identity_sha256",
         }
+        if receipt["schema"] == EXPERIMENT_RECEIPT_SCHEMA_V3:
+            identity_keys.add("run_output_root")
         _require(identity_keys <= set(identity), "v2 run_identity fields are incomplete")
         _require(
             type(identity["run_index"]) is int and identity["run_index"] >= 0,
@@ -293,6 +300,41 @@ def validate_receipt(
                 and all(c in "0123456789abcdef" for c in identity[key].lower()),
                 f"v2 {key} must be a hex SHA256 digest",
             )
+        if receipt["schema"] == EXPERIMENT_RECEIPT_SCHEMA_V3:
+            _require(
+                isinstance(identity["run_output_root"], str) and bool(identity["run_output_root"]),
+                "v3 run_output_root must be a non-empty absolute path",
+            )
+            run_root = Path(identity["run_output_root"])
+            _require(run_root.is_absolute(), "v3 run_output_root must be absolute")
+            run_root = run_root.resolve()
+            repo = REPO_ROOT.resolve()
+            protocol_path = Path(receipt["protocol"]["path"])
+            if not protocol_path.is_absolute():
+                protocol_path = repo / protocol_path
+            try:
+                _require(
+                    protocol_path.resolve().is_relative_to(repo),
+                    "v3 protocol path escapes repository root",
+                )
+            except (OSError, RuntimeError, ValueError) as exc:
+                raise ValueError(f"invalid research receipt: v3 protocol path is unresolvable: {exc}") from exc
+            for label, entries in (("inputs", receipt["inputs"]), ("outputs", receipt["outputs"])):
+                for entry in entries:
+                    _require(isinstance(entry, dict), f"v3 {label} entry must be an object")
+                    _require(isinstance(entry.get("path"), str) and bool(entry["path"]), f"v3 {label} path missing")
+                    path = Path(entry["path"])
+                    if not path.is_absolute():
+                        path = run_root / path if label == "outputs" else repo / path
+                    try:
+                        resolved = path.resolve()
+                    except (OSError, RuntimeError, ValueError) as exc:
+                        raise ValueError(f"invalid research receipt: v3 {label} path is unresolvable: {exc}") from exc
+                    allowed_root = run_root if label == "outputs" else repo
+                    _require(
+                        resolved.is_relative_to(allowed_root),
+                        f"v3 {label} artifact escapes its authorized root",
+                    )
     _, current_contract_sha256 = _load_contract_authority()
     _require(
         isinstance(receipt["contract_sha256"], str)
