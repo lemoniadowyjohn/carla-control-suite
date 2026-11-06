@@ -6,10 +6,12 @@ on:
       - hardening/ci-failure-investigator-v1
     paths:
       - ".github/workflows/carla-ci-investigator.md"
+      - ".github/workflows/carla-ci-investigator.lock.yml"
       - ".github/workflows/carla-ci-investigator-compile-check.yml"
   pull_request:
     paths:
       - ".github/workflows/carla-ci-investigator.md"
+      - ".github/workflows/carla-ci-investigator.lock.yml"
       - ".github/workflows/carla-ci-investigator-compile-check.yml"
   workflow_dispatch:
 
