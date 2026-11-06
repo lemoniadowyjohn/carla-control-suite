@@ -35,21 +35,38 @@ def sha256_file(path: str | Path) -> str:
 
 
 def is_dirty_worktree(repo_root: str | Path) -> bool:
-    """True when the tracked worktree differs from HEAD (untracked files ignored).
+    """True when tracked source changed or untracked Python could be imported.
 
-    Untracked scratch files (logs, artifacts) do not change published code
-    identity; tracked modifications do.
+    Untracked non-source artifacts (logs, reports, generated data) do not
+    change published code identity.  Untracked ``.py`` files are included:
+    they can shadow or add importable code even when every tracked file still
+    matches HEAD.
     """
     import subprocess
 
-    out = subprocess.run(
+    tracked = subprocess.run(
         ["git", "status", "--porcelain", "--untracked-files=no"],
         cwd=str(repo_root),
         capture_output=True,
         text=True,
         check=False,
     )
-    return bool(out.stdout.strip()) or out.returncode != 0
+    if tracked.stdout.strip() or tracked.returncode != 0:
+        return True
+
+    untracked = subprocess.run(
+        ["git", "ls-files", "--others", "--exclude-standard", "-z"],
+        cwd=str(repo_root),
+        capture_output=True,
+        check=False,
+    )
+    if untracked.returncode != 0:
+        return True
+    return any(
+        path.lower().endswith(b".py")
+        for path in untracked.stdout.split(b"\0")
+        if path
+    )
 
 
 def git_head_sha(repo_root: str | Path) -> str:
