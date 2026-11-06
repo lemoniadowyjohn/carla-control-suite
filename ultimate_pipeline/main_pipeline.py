@@ -807,7 +807,8 @@ def run_junction_link_integrity_gate(
     patch_report_path = out_root / "junction_link_patch_report.json"
 
     lane_pre = check_lane_link_targets_exist(str(in_path))
-    lane_pre_ok = bool(lane_pre.get("ok", False))
+    lane_pre_ok_val = lane_pre.get("ok", False)
+    lane_pre_ok = lane_pre_ok_val if isinstance(lane_pre_ok_val, bool) else False
     lane_pre_issues = int(lane_pre.get("num_issues", 0) or 0)
     selected_xodr = in_path
 
@@ -854,7 +855,8 @@ def run_junction_link_integrity_gate(
         selected_xodr = patched_out
 
         lane_post = check_lane_link_targets_exist(str(selected_xodr))
-        lane_post_ok = bool(lane_post.get("ok", False))
+        lane_post_ok_val = lane_post.get("ok", False)
+        lane_post_ok = lane_post_ok_val if isinstance(lane_post_ok_val, bool) else False
         lane_post_issues = int(lane_post.get("num_issues", 0) or 0)
         report["patch_enabled"] = True
         report["lane_link_target_gate_pre"] = {
@@ -1962,7 +1964,9 @@ if str(_repo_root) not in sys.path:
                     preanchor_block = getattr(self, "_preanchor_manifest", None)
                     if not isinstance(preanchor_block, dict):
                         preanchor_block = {"applied": False}
-                    if not bool(preanchor_block.get("applied", False)):
+                    preanchor_applied_val = preanchor_block.get("applied", False)
+                    preanchor_applied = preanchor_applied_val if isinstance(preanchor_applied_val, bool) else False
+                    if not preanchor_applied:
                         preanchor_block = {"applied": False}
                     manifest_obj["preanchor"] = preanchor_block
                     Path(manifest_path).write_text(
@@ -2091,7 +2095,8 @@ if str(_repo_root) not in sys.path:
                     timeout_s=10.0,
                     skip_api=self._carla_isolation_enabled(),  # In isolation mode, only TCP probe
                 )
-                self._carla_reachable = bool(preflight_result.get("ok", False))
+                self._carla_reachable_val = preflight_result.get("ok", False)
+                self._carla_reachable = self._carla_reachable_val if isinstance(self._carla_reachable_val, bool) else False
                 if self._carla_reachable:
                     print(f"[PREFLIGHT] CARLA reachable at {host}:{port}")
                 else:
@@ -2124,7 +2129,9 @@ if str(_repo_root) not in sys.path:
         # Default OFF (backward compatible).
         require_carla = os.getenv("UP_REQUIRE_CARLA_FOR_THESIS", "").strip().lower() in ("1", "true", "yes", "on")
         if require_carla and bool(getattr(self.settings, "THESIS_STRICT", False)):
-            if not bool(preflight_result.get("reachable")):
+            reachable_val = preflight_result.get("reachable")
+            reachable = reachable_val if isinstance(reachable_val, bool) else False
+            if not reachable:
                 raise RuntimeError(
                     "UP_REQUIRE_CARLA_FOR_THESIS=1 but CARLA server is unreachable (127.0.0.1:2000). "
                     "Start CARLA (CarlaUE4) or disable UP_REQUIRE_CARLA_FOR_THESIS."
@@ -2289,7 +2296,9 @@ if str(_repo_root) not in sys.path:
                         json.dump(seam_report, f, indent=2, default=str)
                 except Exception as e:
                     print(f"[STEP 8] elevation autofix failed: {e}")
-            if not seam_report.get("ok", True):
+            seam_ok_val = seam_report.get("ok", True)
+            seam_ok = seam_ok_val if isinstance(seam_ok_val, bool) else False
+            if not seam_ok:
                 raise RuntimeError(
                     "❌ Elevation seam gate failed after final XODR generation."
                 )
@@ -3771,7 +3780,9 @@ if str(_repo_root) not in sys.path:
 
         _write_artifact(report=report, error_text=None)
 
-        if not report.get("ok", True):
+        seam_ok_val2 = report.get("ok", True)
+        seam_ok2 = seam_ok_val2 if isinstance(seam_ok_val2, bool) else False
+        if not seam_ok2:
             if fail_closed:
                 raise RuntimeError(
                     f"❌ Geometric continuity gate failed ({context}): "
