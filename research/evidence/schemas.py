@@ -58,13 +58,8 @@ def load_claim_statuses(contract_path: Optional[Path] = None) -> List[str]:
     """
     path = Path(contract_path) if contract_path else CONTRACT_PATH
     try:
-        import yaml  # runtime optional dependency
-
-        doc = yaml.safe_load(path.read_text(encoding="utf-8"))
-        statuses = doc.get("statuses")
-        if not isinstance(statuses, list) or not statuses:
-            return list(CLAIM_STATUSES_FALLBACK)
-        return [str(s) for s in statuses]
+        statuses, _ = _load_contract_authority(path)
+        return statuses
     except Exception as exc:  # pragma: no cover - defensive path
         # Fail closed to the frozen fallback list, but make the fallback
         # VISIBLE: a corrupted/unreadable contract must not silently pass
@@ -78,11 +73,39 @@ def load_claim_statuses(contract_path: Optional[Path] = None) -> List[str]:
         return list(CLAIM_STATUSES_FALLBACK)
 
 
+def _load_contract_authority(contract_path: Optional[Path] = None) -> tuple[List[str], str]:
+    """Load the current governing contract and its exact-byte digest.
+
+    This is the admission path. Unlike ``load_claim_statuses``' display
+    fallback, it never substitutes built-in values when the governing file is
+    missing, malformed, empty, or lacks a valid status list.
+    """
+    path = Path(contract_path) if contract_path else CONTRACT_PATH
+    try:
+        raw = path.read_bytes()
+        if not raw:
+            raise ValueError("contract file is empty")
+        import yaml
+
+        doc = yaml.safe_load(raw)
+        statuses = doc.get("statuses") if isinstance(doc, dict) else None
+        if (
+            not isinstance(statuses, list)
+            or not statuses
+            or any(not isinstance(status, str) or not status for status in statuses)
+        ):
+            raise ValueError("contract statuses must be a non-empty string list")
+        return statuses, hashlib.sha256(raw).hexdigest()
+    except Exception as exc:
+        raise ValueError(f"governing RQ contract unavailable or invalid at {path}: {exc}") from exc
+
+
 CLAIM_STATUSES: List[str] = load_claim_statuses()
 
-RESEARCH_CONTRACT_SHA256 = (
-    sha256_file(CONTRACT_PATH) if CONTRACT_PATH.is_file() else RESEARCH_CONTRACT_SHA256_FALLBACK
-)
+try:
+    _, RESEARCH_CONTRACT_SHA256 = _load_contract_authority()
+except ValueError:
+    RESEARCH_CONTRACT_SHA256 = RESEARCH_CONTRACT_SHA256_FALLBACK
 
 EXPERIMENT_RECEIPT_SCHEMA = "rq_experiment_receipt/v1"
 CLAIM_RECEIPT_SCHEMA = "rq_claim_receipt/v1"
@@ -176,6 +199,7 @@ def build_experiment_receipt(
             "dirty source requires an explicit documented reason "
             "(evidence is otherwise inadmissible)"
         )
+    _, current_contract_sha256 = _load_contract_authority()
     receipt: Dict[str, Any] = {
         "schema": EXPERIMENT_RECEIPT_SCHEMA,
         "generated_at_utc": None,  # filled by caller to keep hash stable
@@ -195,7 +219,7 @@ def build_experiment_receipt(
         "statistics_method": str(statistics_method),
         "execution_status": execution_status,
         "claim_boundary": str(claim_boundary),
-        "contract_sha256": RESEARCH_CONTRACT_SHA256,
+        "contract_sha256": current_contract_sha256,
     }
     validate_receipt(receipt, verify=False)
     return receipt
@@ -210,7 +234,13 @@ def validate_receipt(receipt: Dict[str, Any], verify: bool = False) -> None:
     for key in _REQUIRED_EXPERIMENT_KEYS:
         _require(key in receipt, f"missing required field '{key}'")
     _require(receipt["schema"] == EXPERIMENT_RECEIPT_SCHEMA, "wrong schema")
-    _require(receipt["contract_sha256"] == RESEARCH_CONTRACT_SHA256, "RQ contract drift")
+    _, current_contract_sha256 = _load_contract_authority()
+    _require(
+        isinstance(receipt["contract_sha256"], str)
+        and len(receipt["contract_sha256"]) == 64
+        and receipt["contract_sha256"] == current_contract_sha256,
+        "RQ contract missing, invalid, or drifted",
+    )
     _require(receipt["protocol"].get("sha256"), "missing protocol SHA256")
     _require(bool(receipt["metric_ids"]), "metric_ids must be non-empty")
     _require(bool(receipt["git_sha"]), "missing git SHA")
@@ -245,11 +275,14 @@ def build_claim_receipt(
     contract_sha256: str,
 ) -> Dict[str, Any]:
     """Construct one adjudicated claim receipt (no metrics computed here)."""
-    if claim_status not in CLAIM_STATUSES:
+    current_statuses, current_contract_sha256 = _load_contract_authority()
+    if claim_status not in current_statuses:
         raise ValueError(
             f"claim status '{claim_status}' is not an authorized status "
-            f"(allowed from contract: {CLAIM_STATUSES})"
+            f"(allowed from contract: {current_statuses})"
         )
+    if contract_sha256 != current_contract_sha256:
+        raise ValueError("claim contract SHA256 is missing or does not match governing RQ contract")
     claim = {
         "schema": CLAIM_RECEIPT_SCHEMA,
         "rq_id": str(rq_id),
@@ -271,9 +304,18 @@ def claim_digest(claim: Dict[str, Any]) -> str:
 
 def build_closure_matrix(entries: List[Dict[str, Any]]) -> Dict[str, Any]:
     """RQ -> claim-digest mapping for the closure gate."""
+    statuses, contract_sha256 = _load_contract_authority()
     norm: Dict[str, Any] = {}
     for e in entries:
         _require({"rq_id", "claim_status", "claim_receipt_sha256"} <= set(e), "closure entry malformed")
+        _require(e["claim_status"] in statuses, "closure entry has unauthorized claim status")
+        _require(
+            isinstance(e["claim_receipt_sha256"], str)
+            and len(e["claim_receipt_sha256"]) == 64
+            and all(c in "0123456789abcdef" for c in e["claim_receipt_sha256"].lower()),
+            "closure entry claim receipt digest is not SHA256",
+        )
+        _require(str(e["rq_id"]) not in norm, "duplicate RQ closure entry")
         norm[str(e["rq_id"])] = {
             "claim_status": e["claim_status"],
             "claim_receipt_sha256": e["claim_receipt_sha256"],
@@ -281,7 +323,7 @@ def build_closure_matrix(entries: List[Dict[str, Any]]) -> Dict[str, Any]:
     return {
         "schema": CLOSURE_MATRIX_SCHEMA,
         "entries": norm,
-        "contract_sha256": RESEARCH_CONTRACT_SHA256,
+        "contract_sha256": contract_sha256,
     }
 
 
