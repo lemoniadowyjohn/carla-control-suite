@@ -233,6 +233,8 @@ def main() -> int:
     receipt: Dict[str, Any] = {
         "schema": RECEIPT_SCHEMA,
         "run": run_idx,
+        "invocation_id": os.environ.get("UP_RQ1B_INVOCATION_ID"),
+        "invocation_started_at_utc": os.environ.get("UP_RQ1B_STARTED_AT_UTC"),
         "mode": "B",
         "status": status,
         "error": error,

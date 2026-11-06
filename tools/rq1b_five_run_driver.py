@@ -33,6 +33,7 @@ import os
 import subprocess
 import sys
 import time
+import uuid
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional
@@ -41,6 +42,8 @@ REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO))
 
 from research.rq1_determinism_matrix import build_determinism_matrix
+from research.evidence.canonical import git_head_sha
+from research.evidence.claim_adjudicator import RQ1_REQUIRED_VALID_RUNS
 
 EXPECTED_XODR_SHA = "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8"
 
@@ -50,6 +53,7 @@ EXPECTED_XODR_SHA = "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e9
 # (attempt-1's historical receipt showed FAILED_TIMEOUT at 7200s for the
 # same full-pipeline mode).
 RUN_TIMEOUT_S = 28800
+PILOT_EXIT_CODE = 3
 
 PINNED_OSM = "campaigns/ingolstadt_cooked_perception_v1/source/ingolstadt_authoritative.osm"
 PINNED_BUILDINGS = (
@@ -107,7 +111,13 @@ GOVERNED_VARS = {
 }
 
 
-def build_child_env(run_dir: Path, run_idx: int) -> Dict[str, str]:
+def build_child_env(
+    run_dir: Path,
+    run_idx: int,
+    *,
+    invocation_id: str,
+    started_at_utc: str,
+) -> Dict[str, str]:
     """Whitelist child environment.  Cold runs: no shared cache between runs."""
     cache_root = run_dir / "cache"
     tmp_root = run_dir / "tmp"
@@ -125,13 +135,109 @@ def build_child_env(run_dir: Path, run_idx: int) -> Dict[str, str]:
             env[key] = value_fn()
     env["UP_RUN_TAG"] = f"rq1b_run{run_idx:02d}"
     env["PYTHONPYCACHEPREFIX"] = str(pycache_root)
+    env["UP_RQ1B_INVOCATION_ID"] = invocation_id
+    env["UP_RQ1B_STARTED_AT_UTC"] = started_at_utc
     env["TEMP"] = str(tmp_root)
     env["TMP"] = str(tmp_root)
     env.setdefault("PYTHONIOENCODING", "utf-8")
     return env
 
 
-def run_one(run_idx: int, out_base: Path, timeout_s: int = RUN_TIMEOUT_S) -> Dict[str, Any]:
+def ensure_fresh_campaign_root(run_root: Path) -> Path:
+    """Create an empty campaign root; reject any prior run/artifact content."""
+    run_root = Path(run_root)
+    if run_root.exists():
+        if not run_root.is_dir() or any(run_root.iterdir()):
+            raise RuntimeError(f"non-empty run directory: {run_root}")
+    else:
+        run_root.mkdir(parents=True, exist_ok=False)
+    return run_root
+
+
+def validate_child_binding(
+    child: Dict[str, Any],
+    *,
+    run_idx: int,
+    run_dir: Path,
+    source_sha: str,
+    input_sha: str,
+    invocation_id: Optional[str] = None,
+    started_at_utc: Optional[str] = None,
+) -> Optional[str]:
+    """Return a fail-closed reason when a child receipt is stale or misbound."""
+    if child.get("schema") != "rq1_run_receipt/v2":
+        return "child_receipt_schema_mismatch"
+    if child.get("status") != "ok":
+        return "child_status_not_ok"
+    if child.get("run") != run_idx:
+        return "child_run_index_mismatch"
+    if child.get("git_sha") != source_sha:
+        return "child_source_sha_mismatch"
+    if child.get("input_sha256") != input_sha:
+        return "child_input_sha256_mismatch"
+    if invocation_id is not None and child.get("invocation_id") != invocation_id:
+        return "child_invocation_id_mismatch"
+    if started_at_utc is not None and child.get("invocation_started_at_utc") != started_at_utc:
+        return "child_invocation_start_mismatch"
+    output_dir = child.get("out_dir")
+    if not output_dir:
+        return "child_output_directory_missing"
+    output_path = Path(output_dir)
+    if not output_path.is_absolute():
+        output_path = REPO / output_path
+    root = Path(run_dir).resolve()
+    try:
+        output_path = output_path.resolve()
+        if not output_path.is_relative_to(root):
+            return "child_output_directory_outside_run"
+    except (OSError, RuntimeError, ValueError):
+        return "child_output_directory_unresolvable"
+    xodr_sha = child.get("xodr_sha256")
+    if not isinstance(xodr_sha, str) or len(xodr_sha) != 64 or any(
+        c not in "0123456789abcdef" for c in xodr_sha.lower()
+    ):
+        return "child_output_identity_missing_or_invalid"
+    return None
+
+
+def campaign_exit_code(
+    *, requested_runs: int, valid_run_count: int, matrix: Dict[str, Any]
+) -> int:
+    """Only the frozen required run count and a complete equal matrix can pass."""
+    if requested_runs != RQ1_REQUIRED_VALID_RUNS:
+        return PILOT_EXIT_CODE
+    if valid_run_count != RQ1_REQUIRED_VALID_RUNS:
+        return 1
+    if matrix.get("schema") != "rq1_full_determinism_matrix/v2":
+        return 1
+    if matrix.get("valid_run_count") != RQ1_REQUIRED_VALID_RUNS:
+        return 1
+    if not all(
+        matrix.get(key) is True
+        for key in ("all_raw_equal", "all_normalized_equal", "all_structural_equal")
+    ):
+        return 1
+    if matrix.get("divergence_classification") != "NO_DIFFERENCE":
+        return 1
+    per_run = matrix.get("per_run")
+    if (
+        not isinstance(per_run, list)
+        or len(per_run) != RQ1_REQUIRED_VALID_RUNS
+        or any(not isinstance(row, dict) or row.get("valid") is not True for row in per_run)
+        or len({row.get("run_id") for row in per_run}) != RQ1_REQUIRED_VALID_RUNS
+        or len({row.get("run") for row in per_run}) != RQ1_REQUIRED_VALID_RUNS
+    ):
+        return 1
+    return 0
+
+
+def run_one(
+    run_idx: int,
+    out_base: Path,
+    timeout_s: int = RUN_TIMEOUT_S,
+    *,
+    invocation_id: str,
+) -> Dict[str, Any]:
     from ultimate_pipeline.carla_tools.map_registry import verify_pinned_map
 
     pinned = verify_pinned_map("auto_map_of_record")
@@ -143,8 +249,14 @@ def run_one(run_idx: int, out_base: Path, timeout_s: int = RUN_TIMEOUT_S) -> Dic
         )
 
     run_dir = out_base / f"run_{run_idx:02d}"
-    run_dir.mkdir(parents=True, exist_ok=True)
-    env = build_child_env(run_dir, run_idx)
+    run_dir.mkdir(parents=True, exist_ok=False)
+    started_at_utc = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
+    env = build_child_env(
+        run_dir,
+        run_idx,
+        invocation_id=invocation_id,
+        started_at_utc=started_at_utc,
+    )
 
     cmd = [sys.executable, str(REPO / "tools" / "rq1b_full_pipeline.py"), str(run_idx), str(out_base)]
     t0 = time.time()
@@ -179,10 +291,32 @@ def run_one(run_idx: int, out_base: Path, timeout_s: int = RUN_TIMEOUT_S) -> Dic
         return_code = proc.returncode
 
     receipts = sorted(run_dir.glob("rq1b_run_*_receipt.json"))
+    child_receipt: Optional[Dict[str, Any]] = None
+    binding_problem: Optional[str] = None
+    if len(receipts) == 1:
+        try:
+            child_receipt = json.loads(receipts[0].read_text(encoding="utf-8"))
+            binding_problem = validate_child_binding(
+                child_receipt,
+                run_idx=run_idx,
+                run_dir=run_dir,
+                source_sha=git_head_sha(REPO),
+                input_sha=EXPECTED_XODR_SHA,
+                invocation_id=invocation_id,
+                started_at_utc=started_at_utc,
+            )
+        except (OSError, json.JSONDecodeError) as exc:
+            binding_problem = f"child_receipt_unreadable:{type(exc).__name__}"
+    elif receipts:
+        binding_problem = "multiple_child_receipts"
+    else:
+        binding_problem = "child_receipt_missing"
     receipt: Dict[str, Any] = {
-        "schema": "rq1b_run_wrapper_receipt/v1",
+        "schema": "rq1b_run_wrapper_receipt/v2",
         "run_index": run_idx,
         "run_id": f"rq1b_run{run_idx:02d}",
+        "invocation_id": invocation_id,
+        "started_at_utc": started_at_utc,
         "input_xodr_sha256": EXPECTED_XODR_SHA,
         "input_xodr_path": pinned["resolved_path"],
         "command": " ".join(cmd),
@@ -193,11 +327,12 @@ def run_one(run_idx: int, out_base: Path, timeout_s: int = RUN_TIMEOUT_S) -> Dic
         "isolated": True,
         "shared_cache": False,
         "env_policy": "whitelist+governed (no inherited overrides)",
-        "receipt_found": bool(receipts),
+        "receipt_found": child_receipt is not None and binding_problem is None,
+        "receipt_binding_problem": binding_problem,
         "generated_at_utc": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
     }
-    if receipts:
-        receipt["child_receipt"] = json.loads(receipts[0].read_text(encoding="utf-8"))
+    if child_receipt is not None:
+        receipt["child_receipt"] = child_receipt
         receipt["child_receipt_path"] = str(receipts[0])
     return receipt
 
@@ -215,12 +350,38 @@ def main() -> int:
     args = ap.parse_args()
 
     out_base = args.output_base
-    out_base.mkdir(parents=True, exist_ok=True)
+    if args.runs != RQ1_REQUIRED_VALID_RUNS:
+        print(
+            json.dumps(
+                {
+                    "status": "PILOT",
+                    "runs_requested": args.runs,
+                    "required_runs": RQ1_REQUIRED_VALID_RUNS,
+                    "reason": "RQ1 claim admission requires the frozen run count",
+                },
+                indent=2,
+            ),
+            flush=True,
+        )
+        return PILOT_EXIT_CODE
+    try:
+        ensure_fresh_campaign_root(out_base)
+    except RuntimeError as exc:
+        print(json.dumps({"status": "PILOT", "reason": str(exc)}, indent=2), flush=True)
+        return PILOT_EXIT_CODE
+    invocation_id = str(uuid.uuid4())
 
     receipts: List[Dict[str, Any]] = []
     for i in range(args.runs):
         print(f"=== RQ1B run {i:02d} ===", flush=True)
-        receipts.append(run_one(i, out_base, timeout_s=args.timeout_per_run))
+        receipts.append(
+            run_one(
+                i,
+                out_base,
+                timeout_s=args.timeout_per_run,
+                invocation_id=invocation_id,
+            )
+        )
         print(
             f"    rc={receipts[-1]['return_code']} dur={receipts[-1]['duration_s']}s "
             f"receipt={receipts[-1]['receipt_found']}",
@@ -254,29 +415,27 @@ def main() -> int:
         json.dumps(full_matrix, indent=2, sort_keys=True, default=str) + "\n", encoding="utf-8"
     )
     legacy_matrix = {
-        "schema": "rq1b_five_run_matrix/v1",
+        "schema": "rq1b_five_run_matrix/v2",
         "generated_at_utc": full_matrix["generated_at_utc"],
         "input_xodr_sha256": EXPECTED_XODR_SHA,
         "runs_requested": args.runs,
         "runs_completed": run_count,
+        "valid_run_count": valid_run_count,
         "all_returncode_zero": full_matrix["all_returncode_zero"],
         "all_receipts_present": full_matrix["all_receipts_present"],
         "any_timed_out": full_matrix["any_timed_out"],
+        "determinism": matrix,
         "receipts": receipts,
     }
     (out_base / "RQ1B_FIVE_RUN_MATRIX.json").write_text(
         json.dumps(legacy_matrix, indent=2, sort_keys=True, default=str) + "\n", encoding="utf-8"
     )
     print(json.dumps({k: v for k, v in full_matrix.items() if k != "receipts"}, indent=2))
-    campaign_ok = (
-        args.runs > 0
-        and valid_run_count == args.runs
-        and matrix["all_raw_equal"]
-        and matrix["all_normalized_equal"]
-        and matrix["all_structural_equal"]
-        and matrix["divergence_classification"] == "NO_DIFFERENCE"
+    return campaign_exit_code(
+        requested_runs=args.runs,
+        valid_run_count=valid_run_count,
+        matrix=matrix,
     )
-    return 0 if campaign_ok else 1
 
 
 if __name__ == "__main__":
