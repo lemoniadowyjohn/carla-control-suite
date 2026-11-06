@@ -1,0 +1,63 @@
+name: CARLA investigator source validation
+
+on:
+  push:
+    branches:
+      - hardening/ci-failure-investigator-v1
+    paths:
+      - ".github/workflows/carla-ci-investigator.md"
+      - ".github/workflows/carla-ci-investigator-compile-check.yml"
+  pull_request:
+    paths:
+      - ".github/workflows/carla-ci-investigator.md"
+      - ".github/workflows/carla-ci-investigator-compile-check.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: carla-investigator-compile-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  compile-and-validate:
+    name: Validate and compile gh-aw source
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout candidate commit
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          persist-credentials: false
+      - name: Install pinned gh-aw extension
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh extension install github/gh-aw --pin v1.0.1
+      - name: Compile source with strict validation
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh aw version
+          gh aw compile carla-ci-investigator --validate --strict
+          test -s .github/workflows/carla-ci-investigator.lock.yml
+      - name: Audit compiled permissions and triggers
+        shell: python
+        run: |
+          from pathlib import Path
+          path = Path(".github/workflows/carla-ci-investigator.lock.yml")
+          data = path.read_text(encoding="utf-8")
+          # Compiled job graph must receive a separate human review before activation.
+          for bad in ("pull_request_target:", "repository_dispatch:", "workflow_run:"):
+              assert bad not in data, f"unexpected trigger: {bad}"
+          print("Compiled file present; no privileged auto-event trigger found")
+      - name: Upload compiled candidate (not deployed)
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: carla-investigator-ghaw-lock-candidate
+          path: .github/workflows/carla-ci-investigator.lock.yml
+          if-no-files-found: error
+          retention-days: 7
