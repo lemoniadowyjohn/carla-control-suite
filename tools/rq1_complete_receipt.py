@@ -6,6 +6,7 @@ import copy
 import hashlib
 import json
 import os
+import subprocess
 import sys
 import time
 from datetime import datetime, timezone
@@ -23,72 +24,20 @@ from ultimate_pipeline.core.xodr_sanitizer import XODRSanitizer
 from ultimate_pipeline.tools.xodr_coordinate_report import _extract_planview_points_stream as extract_road_geometry_start_points
 
 
-def _sha256(path: Path) -> str:
-    h = hashlib.sha256()
-    with path.open("rb") as f:
-        for chunk in iter(lambda: f.read(1024 * 1024), b""):
-            h.update(chunk)
-    return h.hexdigest()
-
-
-def _hash_dict(obj: Any) -> str:
-    return hashlib.sha256(
-        json.dumps(obj, sort_keys=True, separators=(",", ":"), ensure_ascii=True).encode()
-    ).hexdigest()
-
-
-def _compute_structural_signature(xodr_path: Path) -> str:
+def _git_commit_hash(worktree: Path) -> str:
     try:
-        points = extract_road_geometry_start_points(xodr_path)
-        if not points:
-            return ""
-        data = [[float(p[0]), float(p[1])] for p in points]
-        return _hash_dict(data)
+        result = subprocess.run(
+            ["git", "rev-parse", "HEAD"],
+            cwd=str(worktree),
+            capture_output=True,
+            text=True,
+            timeout=10,
+        )
+        if result.returncode == 0:
+            return result.stdout.strip()
     except Exception:
-        return ""
-
-
-def _compute_feature_counts(xodr_path: Path) -> dict[str, int]:
-    import xml.etree.ElementTree as ET
-    try:
-        tree = ET.parse(str(xodr_path))
-        root = tree.getroot()
-        counts = {}
-        for road in root.findall("road"):
-            for geo in road.findall(".//geometry"):
-                gtype = (
-                    geo.find("line") is not None and "line" or
-                    geo.find("arc") is not None and "arc" or
-                    geo.find("spiral") is not None and "spiral" or
-                    geo.find("poly3") is not None and "poly3" or "unknown"
-                )
-                counts[gtype] = counts.get(gtype, 0) + 1
-            for lane in road.findall(".//lane"):
-                ltype = lane.get("type", "unknown")
-                counts[f"lane_{ltype}"] = counts.get(f"lane_{ltype}", 0) + 1
-        return counts
-    except Exception:
-        return {}
-
-
-def _compute_topology_counts(xodr_path: Path) -> dict[str, int]:
-    import xml.etree.ElementTree as ET
-    try:
-        tree = ET.parse(str(xodr_path))
-        root = tree.getroot()
-        counts = {
-            "roads": len(root.findall("road")),
-            "junctions": len(root.findall("junction")),
-            "connections": 0,
-            "lane_links": 0,
-        }
-        for junction in root.findall("junction"):
-            for conn in junction.findall("connection"):
-                counts["connections"] += 1
-                counts["lane_links"] += len(list(conn.findall("laneLink")))
-        return counts
-    except Exception:
-        return {}
+        pass
+    return "unknown"
 
 
 def _compute_settings_hash(settings: Any) -> str:
@@ -102,26 +51,6 @@ def _compute_settings_hash(settings: Any) -> str:
             except Exception:
                 pass
     return _hash_dict(settings_dict)
-
-
-def _compute_tileset_digest(output_dir: Path) -> str:
-    tiles = sorted(output_dir.rglob("*.fbx")) + sorted(output_dir.rglob("*.xodr"))
-    if not tiles:
-        return ""
-    h = hashlib.sha256()
-    for t in tiles:
-        h.update(t.read_bytes())
-    return h.hexdigest()
-
-
-def _compute_map_acceptance_digest(output_dir: Path) -> str:
-    acceptance_files = sorted(output_dir.rglob("*acceptance*.json"))
-    if not acceptance_files:
-        return ""
-    h = hashlib.sha256()
-    for f in acceptance_files:
-        h.update(f.read_bytes())
-    return h.hexdigest()
 
 
 def main() -> int:
@@ -171,21 +100,20 @@ def main() -> int:
     if not normalized_xodr.exists():
         try:
             XODRSanitizer.sanitize_xodr(str(in_xodr), str(out_base / "normalized.xodr"))
-            normalized_xodr = out_base / "normalized.xodr"
         except Exception:
             pass
 
     normalized_xodr_sha256 = _sha256(normalized_xodr) if normalized_xodr.exists() else ""
     structural_signature = _sha256(Path(in_xodr))  # simplified
-    feature_counts = {}
-    topology_counts = {}
-    tileset_digest = ""
-    map_acceptance_digest = ""
+    feature_counts = _compute_feature_counts(in_xodr)
+    topology_counts = _compute_topology_counts(in_xodr)
+    tileset_digest = _compute_tileset_digest(out_path) if out_path.exists() else ""
+    map_acceptance_digest = _compute_map_acceptance_digest(out_path) if out_path.exists() else ""
     settings_hash = _compute_settings_hash(SETTINGS)
 
     receipt = {
         "schema": "rq1_run_receipt/v1",
-        "run_index": 0,
+        "run_index": run_idx,
         "status": "ok" if status == "ok" else "FAILED",
         "error": error,
         "duration_s": round(time.time() - t0, 1),
@@ -193,17 +121,17 @@ def main() -> int:
         "input_sha256": pinned.get("sha256_actual", ""),
         "normalized_xodr_sha256": normalized_xodr_sha256,
         "structural_signature": structural_signature,
-        "feature_counts": {},
-        "topology_counts": {},
+        "feature_counts": feature_counts,
+        "topology_counts": topology_counts,
         "output_path": str(out_base),
-        "tileset_digest": "",
-        "map_acceptance_digest": "",
+        "tileset_digest": tileset_digest,
+        "map_acceptance_digest": map_acceptance_digest,
         "final_receipt_digest": "",
         "per_stage_hashes": {},
         "per_stage_durations": {"total": round(dur, 1)},
         "per_stage_status": {"pipeline": status},
         "generated_at_utc": datetime.now(timezone.utc).isoformat(),
-        "git_commit": "local_working_tree",
+        "git_commit": git_commit_hash(WORKTREE),
         "settings_hash": settings_hash,
     }
 
@@ -219,14 +147,10 @@ def main() -> int:
         "error": error,
         "duration_s": receipt["duration_s"],
         "input_sha256": receipt["input_sha256"],
-        "normalized_xodr_sha256": normalized_xodr_sha256,
-        "structural_signature": structural_signature,
+        "normalized_xodr_sha256": receipt["normalized_xodr_sha256"],
+        "structural_signature": receipt["structural_signature"],
         "receipt_path": str(receipt_path),
         "receipt_sha256": receipt["final_receipt_digest"],
     }, indent=1))
 
     return 0 if status == "ok" else 1
-
-
-if __name__ == "__main__":
-    raise SystemExit(main())
