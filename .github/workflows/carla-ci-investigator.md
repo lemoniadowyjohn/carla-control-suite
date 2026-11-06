@@ -19,6 +19,7 @@ tools:
     toolsets: [repos, actions]
     allowed-repos:
       - lemoniadowyjohn/carla-control-suite
+    min-integrity: approved
 safe-outputs:
   create-issue: false
   report-failure-as-issue: false
