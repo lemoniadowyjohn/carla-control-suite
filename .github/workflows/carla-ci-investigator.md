@@ -21,9 +21,14 @@ tools:
       - lemoniadowyjohn/carla-control-suite
     min-integrity: approved
 safe-outputs:
+  staged: true
   create-issue: false
   report-failure-as-issue: false
   report-failed-jobs: false
+  report-missing-tool: false
+  report-missing-data: false
+  noop:
+    report-as-issue: false
 ---
 
 # CARLA CI Failure Investigator (read-only pilot)
