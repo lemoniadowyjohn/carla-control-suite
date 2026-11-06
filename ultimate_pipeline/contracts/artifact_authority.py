@@ -65,6 +65,7 @@ from ultimate_pipeline.contracts.stage_capabilities import (
     FINAL_ARTIFACT_PUBLISHED,
     STRUCTURE_FROZEN,
 )
+from ultimate_pipeline.contracts.stage_contracts import QualityStatus
 
 
 class ArtifactAuthorityError(RuntimeError):
@@ -87,7 +88,10 @@ class FinalArtifactReceiptError(ArtifactAuthorityError):
 # final artifact by this content-addressed receipt, never by directory order,
 # filename order, or filesystem timestamps.
 FINAL_ARTIFACT_RECEIPT_FILENAME = "final_artifact_receipt.json"
-FINAL_ARTIFACT_RECEIPT_SCHEMA_VERSION = 1
+FINAL_ARTIFACT_RECEIPT_SCHEMA_VERSION = 2
+_SUPPORTED_FINAL_ARTIFACT_RECEIPT_SCHEMA_VERSIONS = frozenset({1, 2})
+_PUBLICATION_STATUS_PUBLISHED = "PUBLISHED"
+_PUBLICATION_STATUS_ACCEPTANCE_FAILED = "ACCEPTANCE_FAILED"
 
 
 # ---------------------------------------------------------------------------
@@ -335,13 +339,56 @@ def _required_mapping(receipt: Dict[str, Any], key: str) -> Dict[str, Any]:
     return value
 
 
+def _literal_spec_publication_reason(certification: Any) -> Optional[str]:
+    """Return why *certification* cannot authorize publication, if any.
+
+    The recovered graph is explicitly diagnostic: only the literal-spec
+    result may grant publication, and only its canonical QualityStatus PASS
+    value does so.
+    """
+    if not isinstance(certification, dict):
+        return "literal-spec topology certification is missing"
+    if certification.get("status") == "CERTIFICATION_FAILED":
+        return "literal-spec topology certification failed to execute"
+    spec_status = certification.get("SPEC_TOPOLOGY")
+    if spec_status is None:
+        return "literal-spec topology certification is missing SPEC_TOPOLOGY"
+    if spec_status != QualityStatus.PASS.value:
+        return (
+            "literal-spec topology certification is not PASS "
+            f"(SPEC_TOPOLOGY={spec_status!r})"
+        )
+    return None
+
+
+def _has_v2_lifecycle_artifact(root: Path) -> bool:
+    """Whether this run contains v2 lifecycle evidence beside a legacy receipt."""
+    for name in ("signal_index.json", "final_run_verdict.json"):
+        try:
+            with (root / name).open("r", encoding="utf-8") as handle:
+                payload = json.load(handle)
+        except (OSError, json.JSONDecodeError):
+            continue
+        if not isinstance(payload, dict):
+            continue
+        version = payload.get("schema_version")
+        if isinstance(version, int) and version >= 2:
+            return True
+        schema = str(payload.get("schema") or "")
+        if schema.endswith("/v2") or schema.endswith("_v2"):
+            return True
+    return False
+
+
 def resolve_final_artifact_receipt(run_dir: str) -> Path:
     """Resolve a production final XODR from its explicit receipt.
 
     The resolver verifies the declared path, byte count, byte hash, structure
     fingerprint, acceptance receipt binding, and required lifecycle state. It
     deliberately does *not* inspect mtimes, glob candidate XODRs, or use a
-    filename tiebreaker.
+    filename tiebreaker.  Schema v1 receipts remain readable for historical
+    runs, but a v1 receipt cannot be treated as a fresh publication when the
+    same run contains v2 lifecycle evidence.
     """
     root = Path(run_dir).resolve()
     receipt_path = root / FINAL_ARTIFACT_RECEIPT_FILENAME
@@ -358,7 +405,11 @@ def resolve_final_artifact_receipt(run_dir: str) -> Path:
         ) from exc
     if not isinstance(receipt, dict):
         raise FinalArtifactReceiptError("Final-artifact receipt root must be an object")
-    if receipt.get("schema_version") != FINAL_ARTIFACT_RECEIPT_SCHEMA_VERSION:
+    schema_version = receipt.get("schema_version")
+    if (
+        type(schema_version) is not int
+        or schema_version not in _SUPPORTED_FINAL_ARTIFACT_RECEIPT_SCHEMA_VERSIONS
+    ):
         raise FinalArtifactReceiptError(
             "Unsupported or missing final-artifact receipt schema_version"
         )
@@ -367,6 +418,10 @@ def resolve_final_artifact_receipt(run_dir: str) -> Path:
     if receipt.get("run_id") != root.name:
         raise FinalArtifactReceiptError(
             f"Receipt run_id {receipt.get('run_id')!r} does not bind run directory {root.name!r}"
+        )
+    if schema_version == 1 and _has_v2_lifecycle_artifact(root):
+        raise FinalArtifactReceiptError(
+            "Legacy v1 receipt cannot be a fresh publication beside v2 lifecycle evidence"
         )
 
     final_xodr = _required_mapping(receipt, "final_xodr")
@@ -406,6 +461,26 @@ def resolve_final_artifact_receipt(run_dir: str) -> Path:
         raise FinalArtifactReceiptError("Receipt created_at_utc trace is required")
     if not isinstance(receipt.get("producer_stage"), str):
         raise FinalArtifactReceiptError("Receipt producer_stage is required")
+
+    # v2 made publication an explicit, fail-closed state.  v1 remains
+    # accepted for historical receipts whose published capability is the only
+    # durable state available; it is deliberately distinguishable from v2.
+    if schema_version >= 2:
+        if receipt.get("publication_status") != _PUBLICATION_STATUS_PUBLISHED:
+            raise FinalArtifactReceiptError(
+                "Receipt is not published: publication_status must be PUBLISHED"
+            )
+        acceptance_status = _required_mapping(receipt, "map_acceptance_status")
+        if acceptance_status.get("valid_for_experiments") is not True:
+            raise FinalArtifactReceiptError(
+                "Receipt is not published: map acceptance is not valid for experiments"
+            )
+        certification = receipt.get("topology_certification")
+        certification_reason = _literal_spec_publication_reason(certification)
+        if certification_reason:
+            raise FinalArtifactReceiptError(
+                f"Receipt is not published: {certification_reason}"
+            )
 
     acceptance = _required_mapping(receipt, "acceptance_receipt")
     acceptance_path = acceptance.get("path")
@@ -751,9 +826,35 @@ class ArtifactAuthorityLedger:
                 "A final-artifact receipt requires source_manifest_identity.inputs_manifest_sha256"
             )
 
-        # Publish the capability before serialising its state.  The receipt
-        # itself is the durable evidence for this capability.
-        self.provide(FINAL_ARTIFACT_PUBLISHED, stage, evidence=final_sha)
+        # A final receipt may document a failed acceptance, but that document
+        # must never itself be a publication capability.  Missing acceptance
+        # truth is a failure, not an implicit pass.  Certification failures
+        # are represented explicitly by the pipeline and are equally
+        # non-publishable.
+        publication_reasons: List[str] = []
+        if acceptance.get("valid_for_experiments") is not True:
+            publication_reasons.append("map acceptance is not valid for experiments")
+        certification_reason = _literal_spec_publication_reason(certification)
+        if certification_reason:
+            publication_reasons.append(certification_reason)
+        publication_status = (
+            _PUBLICATION_STATUS_PUBLISHED
+            if not publication_reasons
+            else _PUBLICATION_STATUS_ACCEPTANCE_FAILED
+        )
+
+        # Publish the capability only before serialising a successful packet.
+        # If this ledger was previously published and is being asked to record
+        # a later failure, revoke the in-memory capability so the failure
+        # receipt cannot inherit a stale published state.
+        if publication_status == _PUBLICATION_STATUS_PUBLISHED:
+            self.provide(FINAL_ARTIFACT_PUBLISHED, stage, evidence=final_sha)
+        elif self.holds(FINAL_ARTIFACT_PUBLISHED):
+            self.invalidate(
+                FINAL_ARTIFACT_PUBLISHED,
+                stage,
+                reason="final receipt records failed acceptance or certification",
+            )
 
         receipt: Dict[str, Any] = {
             # Resolver-facing, content-addressed contract.  Timestamps are
@@ -788,7 +889,10 @@ class ArtifactAuthorityLedger:
                 },
             },
             # Compatibility detail retained for existing evidence readers.
-            "schema": "final_artifact_authority/v1",
+            "schema": "final_artifact_authority/v2",
+            "status": publication_status,
+            "publication_status": publication_status,
+            "publication_reasons": publication_reasons,
             "generated_at_utc": _utc_now(),
             "final_artifact_path": final_artifact_path,
             "final_artifact_sha256": final_sha,
