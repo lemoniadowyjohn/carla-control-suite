@@ -44,25 +44,21 @@ jobs:
           gh aw version
           gh aw compile carla-ci-investigator --validate --strict
           test -s .github/workflows/carla-ci-investigator.lock.yml
-      - name: Audit compiled permissions and triggers
+      - name: Enforce read-only staged compiled workflow
         shell: python
         run: |
           from pathlib import Path
-          path = Path(".github/workflows/carla-ci-investigator.lock.yml")
-          data = path.read_text(encoding="utf-8")
-          # Compiled job graph must receive a separate human review before activation.
-          for bad in ("pull_request_target:", "repository_dispatch:", "workflow_run:"):
+          import re
+          data = Path(".github/workflows/carla-ci-investigator.lock.yml").read_text(encoding="utf-8")
+          assert "  workflow_dispatch:" in data, "manual dispatch trigger missing"
+          for bad in ("pull_request_target:", "repository_dispatch:", "workflow_run:", "  schedule:"):
               assert bad not in data, f"unexpected trigger: {bad}"
-          print("Compiled file present; no privileged auto-event trigger found")
-      - name: Print compiled candidate in bounded review chunks
-        shell: python
-        run: |
-          from pathlib import Path
-          import json
-          content = Path(".github/workflows/carla-ci-investigator.lock.yml").read_text(encoding="utf-8")
-          print(f"@@GH_AW_LENGTH:{len(content)}")
-          for offset in range(0, len(content), 3000):
-              print(f"@@GH_AW_CHUNK:{offset//3000:05d}:" + json.dumps(content[offset:offset+3000]))
+          assert not re.search(r"(?m)^\\s*(?:contents|actions|issues|pull-requests): write\\s*$", data), "compiled job granted repository write permissions"
+          assert '"staged":true' in data or "GH_AW_SAFE_OUTPUTS_STAGED" in data, "safe outputs not staged"
+          assert "create-issue: false" in Path(".github/workflows/carla-ci-investigator.md").read_text(), "issue creation not disabled"
+          print("PASS: manual-only, staged, no repository write permissions")
+      - name: Ensure compiled lock is committed and fresh
+        run: git diff --exit-code -- .github/workflows/carla-ci-investigator.lock.yml
       - name: Upload compiled candidate (not deployed)
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
