@@ -57,7 +57,9 @@ jobs:
       - name: Enforce coverage gate
         run: coverage report --fail-under=90
       - name: Dependency vulnerability audit
-        run: pip-audit
+        # Audit installed third-party dependencies; the in-repo editable package
+        # is not published on PyPI and is verified by the source/test gates.
+        run: pip-audit --skip-editable
       - name: Reproducible package build
         run: python -m build
       - name: PASS-path smoke test
