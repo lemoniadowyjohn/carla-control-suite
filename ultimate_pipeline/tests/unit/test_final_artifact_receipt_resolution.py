@@ -24,6 +24,8 @@ from ultimate_pipeline.contracts.stage_capabilities import (
     FINAL_ARTIFACT_PUBLISHED,
     STRUCTURE_FROZEN,
 )
+from ultimate_pipeline.contracts.stage_contracts import QualityStatus
+from ultimate_pipeline.signals.index import STATUS_PASS, normalize_signal_status
 
 
 XODR = """<?xml version=\"1.0\" encoding=\"UTF-8\"?>
@@ -34,7 +36,9 @@ XODR = """<?xml version=\"1.0\" encoding=\"UTF-8\"?>
 </road></OpenDRIVE>"""
 
 
-def _write_receipt(run_dir: Path, final_name: str = "published.xodr") -> Path:
+def _write_receipt(
+    run_dir: Path, final_name: str = "published.xodr", *, schema_version: int = 1
+) -> Path:
     final = run_dir / final_name
     final.write_text(XODR, encoding="utf-8")
     parent = run_dir / "08h3_parent.xodr"
@@ -44,7 +48,7 @@ def _write_receipt(run_dir: Path, final_name: str = "published.xodr") -> Path:
     source_manifest = run_dir / "inputs_manifest.json"
     source_manifest.write_text('{"inputs": {}}', encoding="utf-8")
     receipt = {
-        "schema_version": 1,
+        "schema_version": schema_version,
         "receipt_kind": "final_artifact_receipt",
         "run_id": run_dir.name,
         "created_at_utc": "2026-09-19T00:00:00+00:00",
@@ -69,7 +73,19 @@ def _write_receipt(run_dir: Path, final_name: str = "published.xodr") -> Path:
             "invalidated": {},
         },
         "structure_fingerprint": compute_structure_fingerprint(str(final)),
+        "final_artifact_sha256": sha256_file(str(final)),
     }
+    if schema_version == 2:
+        receipt.update(
+            {
+                "schema": "final_artifact_authority/v2",
+                "publication_status": "PUBLISHED",
+                "map_acceptance_status": {"valid_for_experiments": True},
+                "topology_certification": {
+                    "SPEC_TOPOLOGY": QualityStatus.PASS.value
+                },
+            }
+        )
     (run_dir / FINAL_ARTIFACT_RECEIPT_FILENAME).write_text(
         json.dumps(receipt), encoding="utf-8"
     )
@@ -145,3 +161,38 @@ def test_v1_receipt_is_not_a_fresh_publication_beside_v2_lifecycle_evidence(
 
     with pytest.raises(FinalArtifactReceiptError, match="Legacy v1 receipt"):
         resolve_final_artifact_receipt(str(run_dir))
+
+
+@pytest.mark.parametrize(
+    "schema_version,accepted",
+    [
+        (1, True),
+        (2, True),
+        (None, False),
+        (True, False),
+        (False, False),
+        ("2", False),
+        (2.0, False),
+        (0, False),
+        (-1, False),
+        (3, False),
+    ],
+)
+def test_resolver_and_normalizer_agree_on_receipt_schema_version(
+    tmp_path: Path, schema_version: object, accepted: bool
+):
+    run_dir = tmp_path / "pipeline_out"
+    run_dir.mkdir()
+    _write_receipt(run_dir, schema_version=2)
+    receipt_path = run_dir / FINAL_ARTIFACT_RECEIPT_FILENAME
+    receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
+    receipt["schema_version"] = schema_version
+    receipt_path.write_text(json.dumps(receipt), encoding="utf-8")
+
+    normalized = normalize_signal_status("FINAL_ARTIFACT_RECEIPT", receipt)
+    assert (normalized == STATUS_PASS) is accepted
+    if accepted:
+        assert resolve_final_artifact_receipt(str(run_dir)).is_file()
+    else:
+        with pytest.raises(FinalArtifactReceiptError, match="schema_version"):
+            resolve_final_artifact_receipt(str(run_dir))

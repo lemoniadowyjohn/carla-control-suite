@@ -16,6 +16,9 @@ import json
 import os
 from typing import Any
 
+from ultimate_pipeline.contracts.artifact_authority import (
+    FINAL_ARTIFACT_RECEIPT_SCHEMA_VERSION,
+)
 from ultimate_pipeline.signals.registry import (
     SIGNAL_REGISTRY,
     artifact_relpath,
@@ -229,9 +232,15 @@ def normalize_signal_status(
             if not (isinstance(fp, dict) and fp.get("sha256")):
                 return STATUS_INCOMPLETE
             schema_version = payload.get("schema_version")
+            if type(schema_version) is not int:
+                return STATUS_INCOMPLETE
             if schema_version == 1 and legacy_receipt_in_v2_run:
                 return STATUS_INCOMPLETE
-            if isinstance(schema_version, int) and schema_version >= 2:
+            if schema_version == 1:
+                return STATUS_PASS
+            if schema_version > FINAL_ARTIFACT_RECEIPT_SCHEMA_VERSION or schema_version < 2:
+                return STATUS_INCOMPLETE
+            if schema_version >= 2:
                 publication_status = payload.get("publication_status")
                 if publication_status == "ACCEPTANCE_FAILED":
                     return STATUS_FAIL

@@ -225,6 +225,21 @@ def test_legacy_v1_receipt_is_readable_but_not_current_v2_run_publication():
     )
 
 
+@pytest.mark.parametrize(
+    "schema_version", [None, True, False, "2", 2.0, 0, -1, 3]
+)
+def test_final_artifact_receipt_malformed_or_unsupported_schema_is_incomplete(
+    schema_version,
+):
+    payload = {
+        "schema_version": schema_version,
+        "publication_status": "PUBLISHED",
+        "final_artifact_sha256": "a" * 64,
+        "structure_fingerprint": {"sha256": "b" * 64},
+    }
+    assert normalize_signal_status("FINAL_ARTIFACT_RECEIPT", payload) == STATUS_INCOMPLETE
+
+
 # --- verdict against a healthy and a mutated run ----------------------------
 
 def test_debug_profile_with_complete_evidence_passes(tmp_path, clean_env):
@@ -344,7 +359,9 @@ def test_receipt_digest_mismatch_is_reported_as_identity_failure(tmp_path, clean
     (tmp_path / "final_artifact_receipt.json").write_text(
         json.dumps(
             {
-                "schema": "final_artifact_receipt/v1",
+                "schema": "final_artifact_receipt/v2",
+                "schema_version": 2,
+                "publication_status": "PUBLISHED",
                 "final_artifact_sha256": "f" * 64,
                 "structure_fingerprint": {"sha256": "1" * 64},
             }

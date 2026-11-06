@@ -406,7 +406,10 @@ def resolve_final_artifact_receipt(run_dir: str) -> Path:
     if not isinstance(receipt, dict):
         raise FinalArtifactReceiptError("Final-artifact receipt root must be an object")
     schema_version = receipt.get("schema_version")
-    if schema_version not in _SUPPORTED_FINAL_ARTIFACT_RECEIPT_SCHEMA_VERSIONS:
+    if (
+        type(schema_version) is not int
+        or schema_version not in _SUPPORTED_FINAL_ARTIFACT_RECEIPT_SCHEMA_VERSIONS
+    ):
         raise FinalArtifactReceiptError(
             "Unsupported or missing final-artifact receipt schema_version"
         )
