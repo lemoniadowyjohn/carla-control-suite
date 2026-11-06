@@ -205,10 +205,16 @@ def adjudicate_rq1(
     run_ids = [identity["run_id"] for identity in identities]
     run_indices = [identity["run_index"] for identity in identities]
     run_roots = [str(Path(identity["run_output_root"]).resolve()) for identity in identities]
-    output_sets = [
-        tuple(sorted(str(Path(entry["path"]).resolve()) for entry in receipt["outputs"]))
-        for receipt in valid
-    ]
+    output_sets = []
+    for receipt, identity in zip(valid, identities):
+        run_root = Path(identity["run_output_root"]).resolve()
+        output_paths = []
+        for entry in receipt["outputs"]:
+            path = Path(entry["path"])
+            if not path.is_absolute():
+                path = run_root / path
+            output_paths.append(str(path.resolve()))
+        output_sets.append(tuple(sorted(output_paths)))
     invocation_ids = {identity["invocation_id"] for identity in identities}
     metric_payload_bindings = {r["raw_metric_payload_sha256"] for r in valid}
     if (

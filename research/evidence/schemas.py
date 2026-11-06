@@ -149,9 +149,12 @@ def validate_artifact_list(
     verify: bool,
     *,
     repo_root: Optional[Path] = None,
+    relative_root: Optional[Path] = None,
 ) -> None:
     _require(isinstance(entries, list) and entries, f"{label} must be a non-empty list")
-    root = Path(repo_root) if repo_root is not None else REPO_ROOT
+    root = Path(relative_root) if relative_root is not None else (
+        Path(repo_root) if repo_root is not None else REPO_ROOT
+    )
     for entry in entries:
         _require("path" in entry and entry["path"], f"{label} entry missing path")
         _require("sha256" in entry and entry["sha256"], f"{label} entry missing sha256")
@@ -362,7 +365,16 @@ def validate_receipt(
         if pp.is_file():
             _require(sha256_file(pp) == proto["sha256"], "protocol sha mismatch")
         validate_artifact_list(receipt["inputs"], "inputs", verify, repo_root=root)
-        validate_artifact_list(receipt["outputs"], "outputs", verify, repo_root=root)
+        output_root = None
+        if receipt["schema"] == EXPERIMENT_RECEIPT_SCHEMA_V3:
+            output_root = Path(receipt["run_identity"]["run_output_root"]).resolve()
+        validate_artifact_list(
+            receipt["outputs"],
+            "outputs",
+            verify,
+            repo_root=root,
+            relative_root=output_root,
+        )
 
 
 def receipt_digest(receipt: Dict[str, Any]) -> str:

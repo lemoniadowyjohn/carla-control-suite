@@ -338,6 +338,17 @@ class TestAdjudicatorRQ1:
         assert claim["claim_status"] == "NOT_RUN"
         assert any("distinct runs" in p for p in claim["adjudication"]["problems"])
 
+    def test_relative_v3_outputs_resolve_against_each_run_root(self):
+        from research.evidence.schemas import validate_receipt
+
+        runs = self._runs(5)
+        for receipt in runs:
+            output_path = Path(receipt["outputs"][0]["path"])
+            receipt["outputs"][0]["path"] = output_path.name
+            validate_receipt(receipt, verify=True)
+        claim = adjudicate_rq1(runs, _matrix())
+        assert claim["claim_status"] == "AUTHORITATIVE", claim["adjudication"]["problems"]
+
     def test_mismatched_identities_bounded_not_authoritative(self):
         matrix = _matrix(
             all_raw_equal=False,
