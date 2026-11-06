@@ -53,7 +53,7 @@ jobs:
           assert "  workflow_dispatch:" in data, "manual dispatch trigger missing"
           for bad in ("pull_request_target:", "repository_dispatch:", "workflow_run:", "  schedule:"):
               assert bad not in data, f"unexpected trigger: {bad}"
-          assert not re.search(r"(?m)^\\s*(?:contents|actions|issues|pull-requests): write\\s*$", data), "compiled job granted repository write permissions"
+          assert not re.search(r"(?m)^\s*(?:contents|actions|issues|pull-requests): write\s*$", data), "compiled job granted repository write permissions"
           assert '"staged":true' in data or "GH_AW_SAFE_OUTPUTS_STAGED" in data, "safe outputs not staged"
           assert "create-issue: false" in Path(".github/workflows/carla-ci-investigator.md").read_text(), "issue creation not disabled"
           print("PASS: manual-only, staged, no repository write permissions")
