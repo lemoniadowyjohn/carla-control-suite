@@ -1,0 +1,58 @@
+{
+  "schema": "carla_v241_gate_evidence/v2",
+  "created_at_utc": null,
+  "repo": "lemoniadowyjohn/carla-control-suite",
+  "scope": "V24.1 independent acceptance and release prerequisites",
+  "reported_wb": {
+    "commit": "f07efe9765232615b5ebc42ade94b3459bc3d52a",
+    "tree": "2078f556ff51832f7c86005b12e9b50acdcd51d0",
+    "operator_reported_tests": {
+      "passed": 100,
+      "failed": 0,
+      "warnings": 6,
+      "exit_code": 0,
+      "duration_seconds": 28.05,
+      "log_path": "G:/tmp/v241-wb-finalization-repro.log"
+    },
+    "evidence_status": "OPERATOR_REPORTED"
+  },
+  "candidate": {
+    "reported_abbrev": "8fcd8c79",
+    "resolved_full_sha": null,
+    "tree_sha": null,
+    "status": "BLOCKED_SOURCE"
+  },
+  "actual_worktree": null,
+  "host": null,
+  "os": null,
+  "python": null,
+  "provider_review": {
+    "model_id": null,
+    "provider_family": null,
+    "codex_family_independence_proven": false,
+    "exact_wb_commit_reviewed": false,
+    "verdict": "PENDING_REVIEW",
+    "receipt_sha256": null
+  },
+  "commands": [],
+  "gates": {
+    "wb_focused": "FOCUSED_VERIFIED_LOCAL_REPORTED",
+    "wb_cross_family": "PENDING_REVIEW",
+    "wf_independent": "PENDING_REVIEW",
+    "wd_acceptance": "BLOCKED_OWNER_AUTH",
+    "disk_capacity": "BLOCKED_ENV_DISK",
+    "combined_candidate": "NOT_EXECUTED",
+    "full_suite": "NOT_EXECUTED",
+    "wheel_sdist": "NOT_EXECUTED",
+    "linux_ci": "NOT_EXECUTED",
+    "windows_native": "NOT_EXECUTED",
+    "remote_ci": "NOT_EXECUTED",
+    "independent_final_review": "NOT_EXECUTED",
+    "auth_08_publication": "BLOCKED_AUTH",
+    "publication": "NOT_EXECUTED"
+  },
+  "blocked_reasons": [
+    "Template; not an executed evidence receipt"
+  ],
+  "final_verdict": "PARTIAL_WITH_EXACT_BLOCKERS"
+}

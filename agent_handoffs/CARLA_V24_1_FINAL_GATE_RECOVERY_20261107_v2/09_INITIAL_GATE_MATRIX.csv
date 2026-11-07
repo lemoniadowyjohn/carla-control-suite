@@ -1,0 +1,15 @@
+gate,owner,status,primary_evidence,prerequisite,next_action
+W-B focused source,Codex/Operator,FOCUSED_VERIFIED_LOCAL_REPORTED,G:/tmp/v241-wb-finalization-repro.log,verify exact local commit/tree,archive full log and source identity
+W-B cross-provider,Claude different family,PENDING_REVIEW,,provider independence and exact W-B SHA,complete read-only verdict
+W-F source-stage geometry,Claude independent,PENDING_REVIEW,,resolve actual W-F full commit,verify frozen GAP-026 and directed topology
+W-D original acceptance,Integration owner,BLOCKED_OWNER_AUTH,,recover original 26 nodeids or authorize separately named replacement,document owner authority
+Disk headroom,Runner owner,BLOCKED_ENV_DISK,,C 455MB D 548MB reported,read-only census and safe runner
+V24.1 candidate integration,Codex coordinator,NOT_EXECUTED,,W-B W-F WD approval and lock/authority,prepare isolated candidate
+Full offline suite,Runner owner,NOT_EXECUTED,,safe capacity and exact candidate,run without filtering
+Wheel and sdist,Runner owner,NOT_EXECUTED,,safe capacity and exact candidate,build and verify
+Windows native,Runner owner,NOT_EXECUTED,,authorized Windows executor and exact candidate,run real native tests
+Linux CI,Runner owner,NOT_EXECUTED,,approved Linux runner and exact candidate,run and preserve receipts
+Remote exact-SHA CI,Runner owner,NOT_EXECUTED,,permission for remote GitHub actions and exact candidate,run hosted jobs
+Final independent review,Claude separate reviewer,NOT_EXECUTED,,all technical gates complete,review exact integrated SHA
+AUTH-08 publication,Operator,BLOCKED_AUTH,,authentic scoped grant,verify signed source before publication
+Candidate publication,Operator,BLOCKED_AUTH,,all prior and publication authorization,no push merge or deployment
