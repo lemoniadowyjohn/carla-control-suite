@@ -244,20 +244,35 @@ class TestEnvironmentWhitelist:
         }
         for k, v in poison.items():
             monkeypatch.setenv(k, v)
-        env = build_child_env(tmp_path, 3)
+        env = build_child_env(
+            tmp_path,
+            3,
+            invocation_id="test-invocation",
+            started_at_utc="2026-11-07T00:00:00Z",
+        )
         for k in poison:
             assert k not in env, f"{k} leaked into the child env"
 
     def test_governed_var_values_always_pinned(self, tmp_path, monkeypatch):
         monkeypatch.setenv("UP_OSM_FILE", "/evil/other.osm")
         monkeypatch.setenv("UP_RUN_TAG", "attacker_tag")
-        env = build_child_env(tmp_path, 3)
+        env = build_child_env(
+            tmp_path,
+            3,
+            invocation_id="test-invocation",
+            started_at_utc="2026-11-07T00:00:00Z",
+        )
         assert env["UP_OSM_FILE"].endswith("ingolstadt_authoritative.osm")
         assert env["UP_RUN_TAG"] == "rq1b_run03"
 
     def test_governed_pins_explicit(self, tmp_path, monkeypatch):
         monkeypatch.setenv("UP_OSM_FILE", "/evil/other.osm")
-        env = build_child_env(tmp_path, 0)
+        env = build_child_env(
+            tmp_path,
+            0,
+            invocation_id="test-invocation",
+            started_at_utc="2026-11-07T00:00:00Z",
+        )
         assert env["UP_OSM_FILE"].endswith("ingolstadt_authoritative.osm")
         assert env["UP_PINNED_BUILDINGS_SOURCE"].endswith("ingolstadt_buildings_overpass.json")
         assert env["UP_DISABLE_OSM_DOWNLOAD"] == "1"
@@ -274,7 +289,12 @@ class TestEnvironmentWhitelist:
         monkeypatch.setenv("UP_MAP", "Grid0821")
         monkeypatch.setenv("UP_DISABLE_OFFLINE", "1")
         monkeypatch.setenv("UP_OVERRIDE_SOURCE_INPUT", "x")
-        env = build_child_env(tmp_path, 1)
+        env = build_child_env(
+            tmp_path,
+            1,
+            invocation_id="test-invocation",
+            started_at_utc="2026-11-07T00:00:00Z",
+        )
         assert "UP_MAP" not in env
         assert "UP_DISABLE_OFFLINE" not in env
         assert "UP_OVERRIDE_SOURCE_INPUT" not in env
