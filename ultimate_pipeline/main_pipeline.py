@@ -45,6 +45,7 @@ if __name__ == "__main__" and ("--help" in _sys.argv or "-h" in _sys.argv):
 import os
 import json
 import hashlib
+import inspect
 import importlib
 import subprocess
 import statistics
@@ -65,6 +66,40 @@ if TYPE_CHECKING:  # pragma: no cover
 from ultimate_pipeline.utils.paths import city_dir
 from ultimate_pipeline.quality.lane_width_invariants import default_report_path
 from ultimate_pipeline.contracts.gate_runner import CumulativeGateRunner
+
+
+class TerminalPublicationLeaseLost(RuntimeError):
+    """Raised when terminal publication no longer owns its fencing generation."""
+
+
+def _directory_setting_path(settings, name: str) -> str:
+    """Resolve a settings directory without creating it when supported.
+
+    Injected legacy settings objects without the ``create`` keyword must keep
+    their path resolvers side-effect-free; directory creation belongs to
+    ``run()`` after output-root lease acquisition.
+    """
+    method = getattr(settings, name)
+    try:
+        accepts_create = "create" in inspect.signature(method).parameters
+    except (TypeError, ValueError):
+        accepts_create = False
+    return str(method(create=False) if accepts_create else method())
+
+
+def _assert_terminal_publication_lease(lease, scope_root: Path, stage: str) -> None:
+    from ultimate_pipeline.governance.single_writer.worktree_lock import (
+        lease_is_current,
+    )
+
+    if (
+        Path(lease.worktree_root).resolve() != scope_root.resolve()
+        or not lease_is_current(lease)
+    ):
+        raise TerminalPublicationLeaseLost(
+            f"TERMINAL_FAILED(LEASE_LOST) before {stage}: lease is stale, "
+            "missing, or superseded"
+        )
 
 from ultimate_pipeline.quality.lane_width_invariants import (
     enforce_lane_width_invariants_on_root,
@@ -910,8 +945,8 @@ class MainPipeline:
     def __init__(self, settings=None):
         self.settings = settings if settings is not None else _get_settings()
         _validate_global_safety_settings(self.settings)
-        self.out_dir = self.settings.output_dir()
-        ensure_dir(self.out_dir)
+        self.out_dir = _directory_setting_path(self.settings, "output_dir")
+        self.logs_dir = _directory_setting_path(self.settings, "logs_dir")
 
         # Terminal run identity (generated once at admission)
         self._run_id = generate_run_id()
@@ -919,14 +954,16 @@ class MainPipeline:
         self._source_sha = get_source_sha()
         self._profile = get_effective_profile(self.settings)
         self._settings_digest = compute_settings_digest(self.settings)
-        write_run_identity(self.out_dir, self._run_id, self._source_sha, self._profile, self._settings_digest, self._run_started_at)
+        # run_identity.json is written by run() after the output-root lease is
+        # acquired, so constructing a second publisher cannot overwrite an
+        # active run's provenance.
 
         # Optional preanchoring provenance (opt-in; default OFF)
         self._preanchor_manifest: dict = {"applied": False}
         self._sumo_repair_meta: dict = {"enabled": False}
 
         self.vreport = ValidationReport(run_id=self._run_id)
-        self.qgate = QualityGateManager(self.vreport, logs_dir=self.settings.logs_dir())
+        self.qgate = QualityGateManager(self.vreport, logs_dir=self.logs_dir)
 
         # 🚗 CARLA client (reliable, with recovery)
         self.client: Optional[carla.Client] = None
@@ -956,23 +993,57 @@ class MainPipeline:
         message: str | None = None,
         error: str | None = None,
     ) -> None:
+        payload = {
+            "status": str(status),
+            "stage": str(stage),
+            "message": message,
+            "error": error,
+            "out_dir": self.out_dir,
+            "timestamp": datetime.now().isoformat(),
+        }
+        status_path = Path(self.out_dir) / "run_status.json"
+        temp_path = status_path.with_name(
+            f".{status_path.name}.{os.getpid()}.{uuid.uuid4().hex}.tmp"
+        )
+        fd = os.open(str(temp_path), os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o600)
         try:
-            payload = {
-                "status": str(status),
-                "stage": str(stage),
-                "message": message,
-                "error": error,
-                "out_dir": self.out_dir,
-                "timestamp": datetime.now().isoformat(),
-            }
-            with open(
-                os.path.join(self.out_dir, "run_status.json"), "w", encoding="utf-8"
-            ) as f:
-                json.dump(payload, f, indent=2, ensure_ascii=True)
-        except Exception:
-            pass
+            with os.fdopen(fd, "w", encoding="utf-8", newline="\n") as stream:
+                json.dump(payload, stream, indent=2, ensure_ascii=True)
+                stream.write("\n")
+                stream.flush()
+                os.fsync(stream.fileno())
+            os.replace(temp_path, status_path)
+            if os.name != "nt":
+                try:
+                    directory_fd = os.open(str(status_path.parent), os.O_RDONLY)
+                except OSError:
+                    directory_fd = None
+                if directory_fd is not None:
+                    try:
+                        os.fsync(directory_fd)
+                    finally:
+                        os.close(directory_fd)
+        except BaseException:
+            try:
+                temp_path.unlink(missing_ok=True)
+            except OSError:
+                pass
+            raise
 
     def _mark_stage(self, stage: str, *, message: str | None = None) -> None:
+        lease = getattr(self, "_run_output_lease", None)
+        if lease is not None:
+            from ultimate_pipeline.governance.single_writer.worktree_lock import (
+                renew_worktree_lease,
+            )
+            try:
+                self._run_output_lease = renew_worktree_lease(
+                    Path(lease.worktree_root), lease.owner_token, lease.lease_id
+                )
+            except Exception as exc:
+                raise TerminalPublicationLeaseLost(
+                    f"TERMINAL_FAILED(LEASE_LOST) while entering stage {stage}: {exc}"
+                ) from exc
         self._run_stage = str(stage)
         self._write_run_status(status="running", stage=self._run_stage, message=message)
 
@@ -1744,10 +1815,48 @@ if str(_repo_root) not in sys.path:
         - on success: returns self.out_dir
         - on failure: writes crash artifacts into self.out_dir and re-raises
         """
-        # Revoke any stale SUCCESS from a previous run before mutating state.
-        self._revoke_stale_success()
-
+        terminal_lease = None
+        terminal_success_published = False
+        terminal_owner_token = uuid.uuid4().hex
+        terminal_root = Path(self.out_dir).expanduser().resolve()
         try:
+            # Hold the output-root lease across admission, stale-success
+            # revocation, pipeline mutations, and final publication. Locking
+            # only the terminal tail lets a losing run corrupt the winner.
+            from ultimate_pipeline.governance.single_writer.worktree_lock import (
+                acquire_worktree_lease,
+                release_lease,
+            )
+
+            try:
+                terminal_lease = acquire_worktree_lease(
+                    terminal_root,
+                    purpose="terminal_publication",
+                    owner_token=terminal_owner_token,
+                )
+            except Exception as lease_exc:
+                detail = str(lease_exc)
+                self._run_stage = (
+                    "LOCKED_UNKNOWN"
+                    if any(
+                        marker in detail
+                        for marker in (
+                            "LOCKED_UNKNOWN",
+                            "BLOCKED_MALFORMED_LEASE",
+                        )
+                    )
+                    else "LOCKED"
+                )
+                raise RuntimeError(
+                    f"TERMINAL_FAILED({self._run_stage}): {detail}"
+                ) from lease_exc
+            self._run_output_lease = terminal_lease
+
+            # No shared output is touched until the lease is held.
+            self._revoke_stale_success()
+            ensure_dir(self.out_dir)
+            ensure_dir(self.settings.logs_dir())
+            self._write_run_identity()
             settings_blob = json.dumps(
                 {
                     k: getattr(self.settings, k)
@@ -1778,12 +1887,19 @@ if str(_repo_root) not in sys.path:
             # 2. Final run verdict (uses actual profile & settings)
             from ultimate_pipeline.signals.verdict import write_final_run_verdict
             final_xodr_path = self._find_final_xodr()
+            _assert_terminal_publication_lease(
+                terminal_lease, terminal_root, "VERDICT_COMPUTED"
+            )
             write_final_run_verdict(
                 self.out_dir,
                 profile=self._profile,
                 settings=self.settings,
                 final_xodr=final_xodr_path,
             )
+            _assert_terminal_publication_lease(
+                terminal_lease, terminal_root, "VERDICT_COMPUTED"
+            )
+            self._mark_stage("VERDICT_COMPUTED")
 
             # 3. Registry-derived mandatory pack finalization
             from ultimate_pipeline.signals.registry import mandatory_pack_artifacts
@@ -1796,22 +1912,93 @@ if str(_repo_root) not in sys.path:
                 final_xodr_path,
                 settings=self.settings,
             )
-            finalize_run_pack(self.out_dir, mandatory, emit_success=True)
+            _assert_terminal_publication_lease(
+                terminal_lease, terminal_root, "PACK_WRITTEN"
+            )
+            finalize_run_pack(self.out_dir, mandatory, emit_success=False)
+            _assert_terminal_publication_lease(
+                terminal_lease, terminal_root, "PACK_WRITTEN"
+            )
+            self._mark_stage("PACK_WRITTEN")
 
-            # 4. Post-publication verification
+            # 4. Verify the durable pack before promoting the terminal marker.
             verify_result = verify_run_pack(self.out_dir)
             if verify_result.get("status") != "PASS":
                 raise RuntimeError(
                     f"Terminal pack verification failed: {verify_result.get('problems', [])}"
                 )
 
-            # 5. Terminal run status (only after full chain passes)
+            # Persist terminal status before publishing SUCCESS. Re-read it
+            # afterwards because _write_run_status is intentionally best-effort.
             self._write_run_status(status="ok", stage="done")
+            run_status = Path(self.out_dir) / "run_status.json"
+            try:
+                status_payload = json.loads(run_status.read_text(encoding="utf-8"))
+            except (OSError, ValueError) as status_exc:
+                raise RuntimeError(
+                    f"terminal run status was not durably written: {status_exc}"
+                ) from status_exc
+            if status_payload.get("status") != "ok" or status_payload.get("stage") != "done":
+                raise RuntimeError("terminal run status does not record the current PASS")
+
+            _assert_terminal_publication_lease(
+                terminal_lease, terminal_root, "SUCCESS promotion"
+            )
+            from ultimate_pipeline.utils.finalize_run_pack import write_success_txt
+            write_success_txt(self.out_dir, summary="main_pipeline")
+            terminal_success_published = True
+            verify_result = verify_run_pack(self.out_dir)
+            if verify_result.get("status") != "PASS":
+                raise RuntimeError(
+                    f"Published terminal pack verification failed: {verify_result.get('problems', [])}"
+                )
+
+            # The lease remains held through SUCCESS publication and final
+            # verification; release failure invalidates this publisher's result.
+            try:
+                released = release_lease(terminal_lease)
+            except Exception as release_exc:
+                self._run_stage = "LEASE_LOST"
+                raise TerminalPublicationLeaseLost(
+                    f"TERMINAL_FAILED(LEASE_LOST): lease release failed: {release_exc}"
+                ) from release_exc
+            terminal_lease = None
+            self._run_output_lease = None
+            if not released:
+                self._run_stage = "LEASE_LOST"
+                raise TerminalPublicationLeaseLost(
+                    "TERMINAL_FAILED(LEASE_LOST): lease release did not confirm ownership"
+                )
             return self.out_dir
-        except Exception as e:
+        except BaseException as e:
+            lease_lost = isinstance(e, TerminalPublicationLeaseLost)
+            if lease_lost or terminal_success_published:
+                # Revoke only the marker produced by this terminal attempt.
+                # SUCCESS is a single file and its removal is fail-closed.
+                try:
+                    (Path(self.out_dir) / "SUCCESS.txt").unlink(missing_ok=True)
+                except OSError:
+                    pass
             # Keep console signal for local debugging
             print("❌ PIPELINE CRASHED:", e)
             traceback.print_exc()
+
+            # A contender that did not acquire the output-root lease has no
+            # authority to alter any existing run evidence or status.
+            if terminal_lease is None:
+                # A process interruption can arrive after the lease record is
+                # published but before Python assigns the returned object to
+                # terminal_lease. Release only this attempt's preselected token;
+                # it cannot remove another publisher's lease.
+                try:
+                    from ultimate_pipeline.governance.single_writer.worktree_lock import (
+                        release_worktree_lease,
+                    )
+
+                    release_worktree_lease(terminal_root, terminal_owner_token)
+                except Exception:
+                    pass
+                raise
 
             # Best-effort crash artifacts (thesis/reproducibility friendly)
             try:
@@ -1832,7 +2019,9 @@ if str(_repo_root) not in sys.path:
                         indent=2,
                     )
                 self._write_run_status(
-                    status="failed", stage=self._run_stage, error=str(e)
+                    status="TERMINAL_FAILED" if lease_lost else "failed",
+                    stage="LEASE_LOST" if lease_lost else self._run_stage,
+                    error=str(e),
                 )
             except Exception as artifact_exc:
                 # Never mask the real failure due to artifact-writing issues.
@@ -1841,6 +2030,20 @@ if str(_repo_root) not in sys.path:
                     f"⚠️ Failed to write crash/status artifacts while handling pipeline failure: {artifact_exc}",
                     flush=True,
                 )
+
+            finally:
+                # Keep ownership through crash/status evidence publication too.
+                if terminal_lease is not None:
+                    try:
+                        from ultimate_pipeline.governance.single_writer.worktree_lock import release_lease
+                        release_lease(terminal_lease)
+                    except Exception as release_exc:
+                        print(
+                            f"⚠️ Failed to release output-root lease during failure handling: {release_exc}",
+                            flush=True,
+                        )
+                    terminal_lease = None
+                    self._run_output_lease = None
 
             # IMPORTANT: re-raise so callers (scripts/HPC) get a non-zero exit
             raise

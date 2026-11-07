@@ -11,9 +11,11 @@ Distinct from:
 * the repository-global shared-Git-metadata lock in :mod:`common_git_lock`,
   which gates refs, objects and the worktree registry.
 
-Leases are registered in the repository's **common** Git directory and keyed by
-a SHA-256 digest of the canonical worktree path. The previous scheme flattened
-the path into a filename, so ``C:\\a\\b`` and ``C:\\a_b`` produced the same file,
+Leases for repository worktrees are registered in their repository's **common**
+Git directory; external output roots keep the lease record beneath that root so
+independent clones publishing there share one authority. Records are keyed by a
+SHA-256 digest of the canonical scope path. The previous scheme flattened the
+path into a filename, so ``C:\\a\\b`` and ``C:\\a_b`` produced the same file,
 and the lease directory was anchored to whichever checkout happened to run the
 code, so two worktrees running different copies shared no authority at all.
 
@@ -158,19 +160,38 @@ class WorktreeLease:
 # paths
 # ---------------------------------------------------------------------------
 
-def _repo_root_for(worktree_root: Path) -> Path:
-    """Repository that owns ``worktree_root``.
+def _repo_root_for(worktree_root: Path) -> Path | None:
+    """Git namespace for the scope, including output roots outside the repo.
 
-    Resolution starts at the worktree itself, so a linked worktree resolves to
-    the same common directory as the main checkout.
+    A scope is usually a worktree (or a directory below it). Pipeline output
+    roots may be configured elsewhere, so if no ancestor is in a repository,
+    anchor their hashed lease record under the output root so separate clones
+    contend on the same record. The scope path remains the lease identity.
     """
-    return worktree_root
+    scope = Path(worktree_root).resolve()
+    for candidate in (scope, *scope.parents):
+        if (candidate / ".git").exists():
+            return candidate
+    # External scopes need a namespace shared by every process targeting that
+    # root, including processes launched from different clones. Their lease
+    # records are therefore stored under the scope itself by _worktree_lease_path.
+    return None
 
 
 def _worktree_lease_path(worktree_root: Path) -> Path:
     """Collision-safe lease path for one worktree."""
     worktree_root = Path(worktree_root).resolve()
-    return lock_paths.worktree_lease_path(_repo_root_for(worktree_root), worktree_root)
+    repo_root = _repo_root_for(worktree_root)
+    if repo_root is not None:
+        return lock_paths.worktree_lease_path(repo_root, worktree_root)
+    path = (
+        worktree_root
+        / lock_paths.AGENT_LOCKS_DIRNAME
+        / lock_paths.WORKTREE_LEASES_DIRNAME
+        / f"{lock_paths.worktree_identity(worktree_root)}.lease.json"
+    )
+    path.parent.mkdir(parents=True, exist_ok=True)
+    return path
 
 
 def _ledger_path(worktree_root: Path) -> Path:
@@ -519,6 +540,27 @@ def validate_lease(lease: WorktreeLease) -> bool:
     return True
 
 
+def lease_is_current(lease: WorktreeLease) -> bool:
+    """Verify that the published record still matches this exact owner.
+
+    A caller-held dataclass and matching generation number alone do not prove
+    current ownership: the lease ID and owner token must match on disk too.
+    """
+    if not validate_lease(lease):
+        return False
+    try:
+        current = _read_lease(Path(lease.worktree_root))
+    except (OSError, RuntimeError, MalformedLeaseError):
+        return False
+    return bool(
+        current
+        and current.status == "active"
+        and current.generation == lease.generation
+        and current.lease_id == lease.lease_id
+        and _token_eq(current.owner_token, lease.owner_token)
+    )
+
+
 def current_generation(scope_path: Path) -> int:
     """Return the latest generation number for a scope path, or 0 if absent.
 
@@ -545,7 +587,7 @@ def current_generation(scope_path: Path) -> int:
 def release_lease(lease: WorktreeLease) -> bool:
     """Release the lease with the exact owner token. Token-less release fails closed."""
     worktree_root = Path(lease.worktree_root)
-    return wl.release_worktree_lease(worktree_root, lease.owner_token, lease.lease_id)
+    return release_worktree_lease(worktree_root, lease.owner_token, lease.lease_id)
 
 
 # ---------------------------------------------------------------------------
@@ -677,6 +719,7 @@ def acquire_worktree_lease(
     worktree_root: Path,
     purpose: str = "",
     lease_minutes: int = DEFAULT_LEASE_MINUTES,
+    owner_token: str | None = None,
 ) -> WorktreeLease:
     """Acquire exclusive mutation authority over one worktree.
 
@@ -743,6 +786,7 @@ def acquire_worktree_lease(
                 worktree_identity=lock_paths.worktree_identity(worktree_root),
                 worktree_name=worktree_root.name,
                 purpose=purpose,
+                owner_token=owner_token or uuid.uuid4().hex,
                 generation=generation,
                 holder_pid=pid,
                 holder_ppid=os.getppid(),

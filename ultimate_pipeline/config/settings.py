@@ -1597,18 +1597,21 @@ class Settings:
     # -----------------------------------------------------------------
     # DIRECTORY UTILITIES
     # -----------------------------------------------------------------
-    def output_dir(self) -> str:
+    def output_dir(self, *, create: bool = True) -> str:
         if self.OUTPUT_DIR_OVERRIDE:
             d = self.OUTPUT_DIR_OVERRIDE
-            os.makedirs(d, exist_ok=True)
+            if create:
+                os.makedirs(d, exist_ok=True)
             return d
         d = os.path.join(self.BASE_OUTPUT_DIR, self.timestamp)
-        os.makedirs(d, exist_ok=True)
+        if create:
+            os.makedirs(d, exist_ok=True)
         return d
 
-    def logs_dir(self) -> str:
-        p = os.path.join(self.output_dir(), "logs")
-        os.makedirs(p, exist_ok=True)
+    def logs_dir(self, *, create: bool = True) -> str:
+        p = os.path.join(self.output_dir(create=create), "logs")
+        if create:
+            os.makedirs(p, exist_ok=True)
         return p
 
     def stage_dir(self) -> str:
