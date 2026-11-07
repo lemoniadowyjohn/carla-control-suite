@@ -1,0 +1,15 @@
+claim_id,claim,observed_evidence,verdict,necessary_next_evidence
+C01,PR #25 head a952f377,GitHub actual dfa6ffff at time checked,STALE_DESCRIPTION,update PR notes with historical/current SHAs without rebasing
+C02,CI absent on current PR head,exact-sha push run 42292278556 with failure,CONTRADICTED,link actual run and check jobs
+C03,All 30 failures due CARLA absent,non-CARLA assertion/mirror/lock failures visible,CONTRADICTED,per-nodeid trace classification and repeat
+C04,V26-A seven root causes,local V26-A report inaccessible,UNVERIFIED,group IDs roots signatures receipts and recurrence
+C05,52 offline tests passing 17+16+19,reported counts only,UNVERIFIED,pytest XML logs with cwd SHA env and hashes
+C06,V26-B complete,also reported finishing remaining deliverables,INCONSISTENT_STATUS,separate file created vs hash verified vs report finalized
+C07,RQ1 entrypoint fixed,source still references undefined names,CONTRADICTED_SOURCE,isolated unit subprocess negative test and Codex correction
+C08,RQ3 paired PASS proves scientific quality,quality_comparison NOT_RUN even when manifest PASS,UNSUPPORTED,actual capture files independent experiments and metrics
+C09,W-D reconstructed 26 tests equivalent to original,selection missing and approval pending,NOT_ESTABLISHED,recover selection or formal integration-owner authorization
+C10,Candidate b ready/published,AUTH-08 pending,AUTH_BLOCKED,artifact plus authorization and recorded publication
+C11,W-B RQ5 complete,three Codex commits reportedly pending,PARTIAL_USER_REPORTED,complete source chain + independent acceptance
+C12,GAP-026 can be fixed by tolerance,forbidden by stated frozen contract,DISALLOWED,no cosmetic final XODR edits
+C13,Live success without RPC,explicitly prohibited by authorization,safety BLOCKED,actual response with nonce map/server identity
+C14,PR reviews approve release,no reviews found on GitHub,BLOCKED,distinct independent review exact final SHA

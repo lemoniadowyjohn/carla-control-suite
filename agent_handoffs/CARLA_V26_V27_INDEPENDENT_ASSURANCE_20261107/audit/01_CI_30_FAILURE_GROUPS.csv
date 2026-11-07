@@ -1,0 +1,8 @@
+bucket,symptom_group,failed_tests,assessment_not_root_cause_certification,required_followup,evidence,production_owner
+CI-A,quality gate verdict / stale truthiness test,1,SOURCE_OR_CONTRACT,quality manager + normalize_gate_result; retain strict booleans,tests/unit via exact CI log,Codex code; OpenCode acceptance
+CI-B,submission mirror drift,1,SOURCE_DRIFT,loader canonical vs submission mirror,test_duplicate_module_drift,Codex implementation
+CI-C,Windows C: volume hard-coded on Linux,1,PLATFORM_TEST_CONTRACT,"test_storage_gate OS-specific target, no fake success",test_real_volume_measures_free_space,Codex tests CI
+CI-D,common-git lock competing winners,1,RACE_SUSPECTED,real concurrent writers; evaluate publish/read/stale TOCTOU,test_concurrent_acquire_has_exactly_one_winner,Codex T2b
+CI-E,orchestration identity and reconcile,3,SOURCE_OR_CONTRACT,"PID alone, live lease, process start identity",tests/unit/test_orchestration_hardening.py,Codex T2b
+CI-F,Windows mutex API called under Linux,21,PLATFORM_TEST_CONTRACT,kernel32 None -> CreateMutexW AttributeError; Windows proof required,tests/unit/test_single_writer_arbitration.py,Codex T2b + CI
+CI-G,subprocess race / owner denial no RESULT,2,DOWNSTREAM_OR_REAL_RACE_UNRESOLVED,"traceback/process exit, can be downstream of missing mutex; independent verification",test_01_simultaneous_acquisition_race; test_09_owner_crash_releases_mutex,Codex T2b + CI

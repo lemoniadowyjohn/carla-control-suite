@@ -1,0 +1,38 @@
+{
+  "inspected_at_utc_date": "2026-11-07",
+  "repo": "lemoniadowyjohn/carla-control-suite",
+  "pr": 25,
+  "pr_state": "open",
+  "draft": true,
+  "merged": false,
+  "head_sha": "dfa6ffff07c38d0cc09507c52b3328900ef2d900",
+  "base_ref": "integration/post-pr16-final-20261102",
+  "base_sha": "1a36b560a69286841d4c42973cf00258a38f56c1",
+  "ci": {
+    "run_id": 42292278556,
+    "event": "push",
+    "head_sha": "dfa6ffff07c38d0cc09507c52b3328900ef2d900",
+    "conclusion": "failure",
+    "job_offline_tests": "failure",
+    "offline_release_gate": "skipped",
+    "passed": 7911,
+    "failed": 30,
+    "skipped": 73,
+    "xfailed": 3,
+    "warnings": 293,
+    "collected": 8016,
+    "collection_skipped": 1,
+    "duration_seconds": 747.58
+  },
+  "pr_reviews_returned": 0,
+  "source_read_only": true,
+  "local_v26_folders_inspected": false,
+  "source_flags": [
+    "rq1 undefined helper references",
+    "rq3 paired manifest PASS with quality NOT_RUN and optional capture paths",
+    "unconditional Win32 lock path tests on Linux",
+    "Git common lock concurrent double winner failure",
+    "loader source/mirror drift",
+    "quality gate truthiness expectation conflict"
+  ]
+}

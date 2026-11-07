@@ -1,0 +1,35 @@
+{
+  "schema": "carla_ia_v27_evidence/v1",
+  "repo": "lemoniadowyjohn/carla-control-suite",
+  "inspected_baseline_sha": "dfa6ffff07c38d0cc09507c52b3328900ef2d900",
+  "candidate_sha": null,
+  "workstream": "OPENCODE_V27",
+  "operator_authorization": {
+    "status": "NOT_VERIFIED",
+    "authorization_ids": [],
+    "evidence_paths": []
+  },
+  "environment": {
+    "os": null,
+    "python": null,
+    "cwd": null,
+    "worktree": null,
+    "git_status": null
+  },
+  "commands": [],
+  "gate_statuses": {
+    "offline_tests": "NOT_EXECUTED",
+    "scientific_admission": "NOT_EXECUTED",
+    "carla_rpc": "BLOCKED_AUTH",
+    "production_release": "BLOCKED_AUTH"
+  },
+  "external_runtime": {
+    "status": "BLOCKED_AUTH",
+    "actual_rpc_response_receipt": null,
+    "server_identity": null
+  },
+  "blockers": [
+    "Template only: no test commands executed"
+  ],
+  "conclusion": "NOT_EXECUTED"
+}
