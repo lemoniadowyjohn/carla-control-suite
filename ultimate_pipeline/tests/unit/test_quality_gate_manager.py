@@ -15,6 +15,8 @@ from __future__ import annotations
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
+import pytest
+
 from ultimate_pipeline.core.validation_report import ValidationReport
 from ultimate_pipeline.quality.quality_gate_manager import QualityGateManager
 
@@ -249,7 +251,10 @@ def test_finalize_gate_unrecognized_status_is_fail_closed():
     assert "g" in qgate.get_failures()
 
 
-def test_finalize_gate_non_falsey_ok_is_truthy_pass():
+@pytest.mark.parametrize("non_boolean_ok", ["yes", "true", "false", "0", 0, 1, None])
+def test_finalize_gate_non_boolean_ok_is_fail_closed(non_boolean_ok):
+    # The `ok` field is a literal-Boolean contract. A truthy string or integer
+    # cannot authorize PASS, even when a second field says status="pass".
     qgate = _new_gate()
-    qgate._finalize_gate("g", {"ok": "yes", "status": "pass"})
-    assert qgate.get_failures() == {}
+    qgate._finalize_gate("g", {"ok": non_boolean_ok, "status": "pass"})
+    assert "g" in qgate.get_failures()
