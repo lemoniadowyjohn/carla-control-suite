@@ -370,6 +370,51 @@ def test_renew_requires_the_exact_token(worktree):
         wl.release_worktree_lease(worktree, lease.owner_token, lease.lease_id)
 
 
+def test_renew_refuses_when_generation_was_superseded(worktree, monkeypatch):
+    """F1: a renew that lost its claim (successor published) must refuse.
+
+    The caller's in-memory view is generation 1; a successor has since
+    published generation 999 with a different token. The fenced claim must
+    detect the mismatch and refuse rather than clobber the successor.
+    """
+    stale = wl.acquire_worktree_lease(worktree, purpose="old")
+    path = _lease_path_for(worktree)
+    record = json.loads(path.read_text(encoding="utf-8"))
+    record.update({"lease_id": "b-lease", "owner_token": "b-token", "generation": 999})
+    path.write_text(json.dumps(record), encoding="utf-8")
+
+    real_read = wl._read_lease
+    calls = []
+
+    def racing_read(root):
+        calls.append(root)
+        if len(calls) == 1:
+            return stale  # stale in-memory view: generation 1, old token
+        return real_read(root)
+
+    monkeypatch.setattr(wl, "_read_lease", racing_read)
+
+    with pytest.raises(RuntimeError, match="superseded"):
+        wl.renew_worktree_lease(worktree, stale.owner_token, stale.lease_id)
+    assert json.loads(path.read_text(encoding="utf-8"))["owner_token"] == "b-token"
+
+
+def test_renew_by_a_successor_extends_the_new_generation(worktree):
+    first = wl.acquire_worktree_lease(worktree, purpose="renew-a")
+    wl.release_worktree_lease(worktree, first.owner_token, first.lease_id)
+    second = wl.acquire_worktree_lease(worktree, purpose="renew-b")
+    try:
+        renewed = wl.renew_worktree_lease(
+            worktree, second.owner_token, second.lease_id, lease_minutes=480
+        )
+        assert renewed.generation == second.generation
+        assert renewed.lease_id == second.lease_id
+        assert renewed.owner_token == second.owner_token
+        assert renewed.expires_at > second.expires_at
+    finally:
+        wl.release_worktree_lease(worktree, second.owner_token, second.lease_id)
+
+
 # --------------------------------------------------------------------------
 # expiry semantics
 # --------------------------------------------------------------------------

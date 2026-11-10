@@ -581,7 +581,18 @@ def renew_worktree_lease(
     lease_id: Optional[str] = None,
     lease_minutes: int = DEFAULT_LEASE_MINUTES,
 ) -> WorktreeLease:
-    """Extend a still-owned lease. Requires exact token and matching identity."""
+    """Extend a still-owned lease. Requires exact token and matching identity.
+
+    F1 (GAP-052B renewal-TOCTOU): renewal is fenced, not read-then-write.
+
+    The published lease is first claimed by an atomic rename onto an
+    owner-specific tombstone and verified against ``lease_id``, ``owner_token``
+    and ``generation``; only then is the renewed record written back. A
+    successor that published between the initial read and the write cannot be
+    silently clobbered: the claim fails, the tombstone is restored untouched,
+    and renewal refuses. This mirrors the ABA-safe shape already used by
+    :func:`release_worktree_lease`.
+    """
     worktree_root = Path(worktree_root).resolve()
     current = _require_mine(_read_lease(worktree_root), owner_token, lease_id, "renew")
 
@@ -596,18 +607,33 @@ def renew_worktree_lease(
             f"(published pid={current.holder_pid}, caller pid={pid})"
         )
 
-    latest = _read_lease(worktree_root)
-    if latest is None or latest.generation != current.generation or not _token_eq(
-        latest.owner_token, owner_token
-    ):
+    claimed, tomb = _claim_by_rename(
+        worktree_root,
+        "renew",
+        _lease_matches(current.lease_id, current.owner_token, current.generation),
+    )
+    if not claimed or tomb is None:
         raise RuntimeError(
             f"cannot renew: generation {current.generation} was superseded "
-            f"before renewal completed; refusing"
+            f"before renewal claimed the lease; refusing"
         )
 
-    updated = WorktreeLease.from_json(current.to_json())
-    updated.expires_at = _utc_in(lease_minutes * 60)
-    _write_lease(updated)
+    try:
+        updated = WorktreeLease.from_json(current.to_json())
+        updated.expires_at = _utc_in(lease_minutes * 60)
+        _write_payload(_worktree_lease_path(worktree_root), updated.to_json())
+    except BaseException:
+        # Restore the claimed lease rather than leaving a hole for a successor.
+        try:
+            os.replace(tomb, _worktree_lease_path(worktree_root))
+        except OSError:
+            pass
+        raise
+    finally:
+        try:
+            tomb.unlink()
+        except OSError:
+            pass
     return updated
 
 
