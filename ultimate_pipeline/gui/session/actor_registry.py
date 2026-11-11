@@ -6,6 +6,10 @@ Two rules the registry enforces:
   create is never destroyed, even if asked to.
 * **Sensors are torn down before their parent.** CARLA requires this; tearing
   down the parent first orphans the sensor and leaks it.
+* **A producer must be proven stopped before its actor is destroyed.** If
+  ``stop()`` raises or the sensor still reports ``is_listening``, the destroy
+  is refused and the actor stays registered. Leaking a live producer is safer
+  than destroying storage it may still write to.
 
 Liveness is checked by calling ``is_alive()`` as a **method**. The repository
 has four sites that treat it as an attribute (Q21). This adapter calls it as a
@@ -67,8 +71,8 @@ class OwnedActorRegistry:
         self._actors: dict[int, ActorRecord] = {}
         #: actors observed but NOT created by us; never destroyed
         self._external: set[int] = set()
-        #: surfaced swallowed exceptions (e.g. a sensor stop() failure that
-        #: did not block destroy) -- never invisible, never fatal
+        #: surfaced refused teardowns (e.g. a sensor stop() failure); never
+        #: invisible, never fatal to the registry
         self.diagnostics: list[Diagnostic] = []
 
     # -- registration ------------------------------------------------------
@@ -124,23 +128,46 @@ class OwnedActorRegistry:
                     remediation="call destroy_sensors_for() before destroy()",
                 )
 
-            # A sensor must stop listening before its actor is destroyed
-            # (same ordering as carla_tools/sensor_registry.py). A failed
-            # stop must never prevent destroy -- that would leak the actor.
+            # A sensor must stop producing before its actor is destroyed.
+            # Fail-closed: a failed or unverified stop means destroy is
+            # refused, because destroying a live producer's actor is a
+            # use-after-free hazard. The actor stays registered so teardown
+            # can be retried and the leak is never hidden.
             if record.is_sensor:
                 stop = getattr(record.actor, "stop", None)
                 if callable(stop):
                     try:
                         stop()
                     except Exception as exc:
-                        # Destroy proceeds (a failed stop must not leak the
-                        # actor) but the failure is surfaced, never hidden.
                         self.diagnostics.append(Diagnostic(
-                            kind="SWALLOWED_EXCEPTION",
+                            kind="PRODUCER_STOP_FAILED",
                             subject=f"sensor {actor_id} stop()",
                             detail=f"{type(exc).__name__}: {exc}",
                             source="ultimate_pipeline/gui/session/actor_registry.py",
                         ))
+                        return Result.failure(
+                            f"refusing destroy: sensor {actor_id} stop() raised "
+                            f"{type(exc).__name__}: {exc}",
+                            error_class="SensorStopError",
+                            remediation="retry stop() until the producer is "
+                                        "proven stopped, then destroy",
+                            state_restored=True,
+                        )
+                listening = getattr(record.actor, "is_listening", None)
+                if listening:
+                    self.diagnostics.append(Diagnostic(
+                        kind="PRODUCER_STILL_LIVE",
+                        subject=f"sensor {actor_id} is_listening",
+                        detail=repr(listening),
+                        source="ultimate_pipeline/gui/session/actor_registry.py",
+                    ))
+                    return Result.failure(
+                        f"refusing destroy: sensor {actor_id} still reports "
+                        f"is_listening={listening!r} after stop()",
+                        error_class="SensorStopError",
+                        remediation="wait for the producer to stop, then destroy",
+                        state_restored=True,
+                    )
             try:
                 record.actor.destroy()
             except Exception as exc:

@@ -142,13 +142,19 @@ class SensorFeedBridge(QObject):
         if not self._sensors.sensor_ids():
             self._timer.stop()
         if not result.ok:
-            return {}
-        value = result.value or {}
+            return {
+                "ok": False,
+                "invalidated": [],
+                "backend_failures": {"invalidate_all": result.reason},
+                "error_class": result.error_class,
+            }
+        value = dict(result.value or {})
+        value["ok"] = not value.get("backend_failures")
         failures = value.get("backend_failures", {})
-        text = (f"SENSORS INVALIDATED · {reason} · "
+        text = (f"SENSORS INVALIDATED — {reason} — "
                 f"{len(value.get('invalidated', []))} channel(s)")
         if failures:
-            text += f" · backend failures: {failures}"
+            text += f" — backend failures: {failures}"
         self.activity.emit(text)
         return value
 

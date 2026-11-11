@@ -7,6 +7,8 @@ import tempfile
 from dataclasses import asdict, dataclass
 from pathlib import Path
 
+from ultimate_pipeline.gui.repo_authority import repository_write
+
 SCHEMA = "carla-ops-experiment-plan/v1"
 EXPERIMENTS = (
     "Road grade / elevation analysis", "OpenDRIVE topology and junction continuity",
@@ -46,20 +48,23 @@ def save_plan(plan: ExperimentPlan, target: str | Path) -> Path:
     path = Path(target)
     if path.suffix.lower() != ".json":
         raise ValueError("plan must be written to a .json file")
-    path.parent.mkdir(parents=True, exist_ok=True)
-    temp_path = None
-    try:
-        with tempfile.NamedTemporaryFile(mode="w", encoding="utf-8", dir=path.parent,
-                                         prefix=".plan_", suffix=".tmp", delete=False) as tmp:
-            temp_path = Path(tmp.name)
-            json.dump(asdict(plan), tmp, sort_keys=True, indent=2)
-            tmp.flush()
-            os.fsync(tmp.fileno())
-        os.replace(temp_path, path)
-        return path
-    finally:
-        if temp_path is not None:
-            temp_path.unlink(missing_ok=True)
+    with repository_write(path, "GUI save experiment plan"):
+        path.parent.mkdir(parents=True, exist_ok=True)
+        temp_path = None
+        try:
+            with tempfile.NamedTemporaryFile(
+                mode="w", encoding="utf-8", dir=path.parent,
+                prefix=".plan_", suffix=".tmp", delete=False,
+            ) as tmp:
+                temp_path = Path(tmp.name)
+                json.dump(asdict(plan), tmp, sort_keys=True, indent=2)
+                tmp.flush()
+                os.fsync(tmp.fileno())
+            os.replace(temp_path, path)
+            return path
+        finally:
+            if temp_path is not None:
+                temp_path.unlink(missing_ok=True)
 
 
 def read_plan(target: str | Path) -> ExperimentPlan:

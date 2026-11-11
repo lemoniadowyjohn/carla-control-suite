@@ -74,23 +74,50 @@ def test_sensor_instance_calls_stop_before_destroy():
     assert calls == ["stop", "destroy"], f"expected stop then destroy, got {calls}"
 
 
-def test_sensor_instance_stop_failure_still_destroys():
-    """If stop() fails, destroy() is still attempted."""
-    from ultimate_pipeline.carla_tools.sensor_registry import SensorInstance, SensorSpec
+def test_sensor_instance_stop_failure_refuses_destroy():
+    """If stop() fails, destroy() is refused and the actor is preserved."""
+    from ultimate_pipeline.carla_tools.sensor_registry import (
+        SensorInstance, SensorSpec, SensorStopError,
+    )
 
     calls = []
 
     class FakeActor:
         def stop(self):
+            calls.append("stop")
             raise RuntimeError("stop failed")
 
         def destroy(self):
             calls.append("destroy")
 
     spec = SensorSpec(blueprint="sensor.camera.rgb")
-    inst = SensorInstance(spec=spec, actor=FakeActor(), id="cam1")
-    inst.destroy()  # should not raise
-    assert calls == ["destroy"]
+    actor = FakeActor()
+    inst = SensorInstance(spec=spec, actor=actor, id="cam1")
+    with pytest.raises(SensorStopError):
+        inst.destroy()
+    assert calls == ["stop"]
+    assert inst.actor is actor
+
+
+def test_sensor_instance_refuses_destroy_while_still_listening():
+    """A post-stop liveness signal is proof, not a warning to ignore."""
+    from ultimate_pipeline.carla_tools.sensor_registry import (
+        SensorInstance, SensorSpec, SensorStopError,
+    )
+
+    class FakeActor:
+        is_listening = True
+
+        def stop(self):
+            pass
+
+        def destroy(self):
+            raise AssertionError("destroy must not run while listening")
+
+    inst = SensorInstance(spec=SensorSpec(blueprint="sensor.lidar.ray_cast"),
+                          actor=FakeActor(), id="lidar1")
+    with pytest.raises(SensorStopError):
+        inst.destroy()
 
 
 # ----------------------------------------------------------------------
@@ -98,10 +125,17 @@ def test_sensor_instance_stop_failure_still_destroys():
 # ----------------------------------------------------------------------
 
 
-def test_train_yolo_raises_without_ultralytics():
-    """train_and_eval_model raises RuntimeError when Ultralytics not installed."""
+def test_train_yolo_raises_without_ultralytics(monkeypatch):
+    """train_and_eval_model raises RuntimeError when Ultralytics is absent.
+
+    The candidate/CI venv may legitimately have ultralytics installed
+    (requirements-yolo.txt), so absence is simulated rather than assumed.
+    """
+    import sys
+
     from ultimate_pipeline.hpc.train_yolo import train_and_eval_model
 
+    monkeypatch.setitem(sys.modules, "ultralytics", None)
     with pytest.raises(RuntimeError) as exc:
         train_and_eval_model({})
     assert "Ultralytics not installed" in str(exc.value)

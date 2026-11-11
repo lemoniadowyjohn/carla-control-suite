@@ -3,6 +3,10 @@ from dataclasses import dataclass, field
 from typing import Any, Callable
 
 
+class SensorStopError(RuntimeError):
+    """A producer could not be proven stopped, so its actor was not destroyed."""
+
+
 @dataclass
 class SensorSpec:
     blueprint: str
@@ -27,20 +31,32 @@ class SensorInstance:
     id: str
 
     def destroy(self) -> None:
-        if self.actor is not None:
-            # CARLA requires sensors to be stopped before destruction.
-            # Failing to call stop() orphans the sensor and leaks it.
+        """Stop the producer, prove it stopped, then destroy the actor.
+
+        Fail-closed: if ``stop()`` raises or the actor still reports
+        ``is_listening`` afterwards, nothing is destroyed and the actor
+        reference is kept. Destroying storage while a producer may still be
+        live is exactly the use-after-free this ordering exists to prevent.
+        """
+        if self.actor is None:
+            return
+        stop = getattr(self.actor, "stop", None)
+        if callable(stop):
             try:
-                stop = getattr(self.actor, "stop", None)
-                if callable(stop):
-                    stop()
-            except Exception:
-                # Stop failure is logged but we still attempt destroy.
-                pass
-            try:
-                self.actor.destroy()
-            finally:
-                self.actor = None
+                stop()
+            except Exception as exc:
+                raise SensorStopError(
+                    f"sensor {self.id!r} stop() failed; refusing destroy "
+                    f"while producer liveness is unproven: {exc}"
+                ) from exc
+        listening = getattr(self.actor, "is_listening", None)
+        if listening:
+            raise SensorStopError(
+                f"sensor {self.id!r} still reports is_listening={listening!r} "
+                f"after stop(); refusing destroy"
+            )
+        self.actor.destroy()
+        self.actor = None
 
     def listen(self, callback: Callable) -> None:
         if self.actor is not None:
@@ -64,14 +80,26 @@ class SensorRegistry:
         return self._sensors.get(sensor_id)
 
     def remove(self, sensor_id: str) -> None:
-        instance = self._sensors.pop(sensor_id, None)
-        if instance:
-            instance.destroy()
+        instance = self._sensors.get(sensor_id)
+        if instance is None:
+            return
+        instance.destroy()
+        self._sensors.pop(sensor_id, None)
 
     def clear(self) -> None:
-        for instance in list(self._sensors.values()):
-            instance.destroy()
-        self._sensors.clear()
+        failures: list[str] = []
+        for sensor_id, instance in list(self._sensors.items()):
+            try:
+                instance.destroy()
+            except Exception as exc:
+                failures.append(f"{sensor_id}: {exc}")
+                continue
+            self._sensors.pop(sensor_id, None)
+        if failures:
+            raise SensorStopError(
+                "refusing to clear sensors whose producers were not proven "
+                f"stopped: {'; '.join(failures)}"
+            )
 
     def spawn(
         self,

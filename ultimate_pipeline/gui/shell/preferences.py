@@ -15,6 +15,8 @@ from dataclasses import dataclass, field, fields
 from pathlib import Path
 from typing import Any
 
+from ultimate_pipeline.gui.repo_authority import repository_write
+
 __all__ = ["PREFS_SCHEMA", "UIPreferences", "SecretRejected", "SAFE_KEYS"]
 
 PREFS_SCHEMA = "carla-gui-ui-prefs/v1"
@@ -61,18 +63,19 @@ class UIPreferences:
 
 
 def _atomic_write(path: Path, text: str) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    handle = tempfile.NamedTemporaryFile(
-        "w", encoding="utf-8", dir=str(path.parent), delete=False, newline="\n")
-    try:
-        with handle as stream:
-            stream.write(text)
-            stream.flush()
-            os.fsync(stream.fileno())
-        os.replace(handle.name, path)
-    except BaseException:
-        Path(handle.name).unlink(missing_ok=True)
-        raise
+    with repository_write(path, "GUI UI preferences write"):
+        path.parent.mkdir(parents=True, exist_ok=True)
+        handle = tempfile.NamedTemporaryFile(
+            "w", encoding="utf-8", dir=str(path.parent), delete=False, newline="\n")
+        try:
+            with handle as stream:
+                stream.write(text)
+                stream.flush()
+                os.fsync(stream.fileno())
+            os.replace(handle.name, path)
+        except BaseException:
+            Path(handle.name).unlink(missing_ok=True)
+            raise
 
 
 def _secret_bearing(value: Any, path: str = "") -> list[str]:

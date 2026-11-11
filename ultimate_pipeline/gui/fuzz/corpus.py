@@ -26,6 +26,8 @@ from enum import Enum
 from pathlib import Path
 from typing import Any, Iterable
 
+from ultimate_pipeline.gui.repo_authority import repository_write
+
 from ultimate_pipeline.gui.results import Result
 
 __all__ = [
@@ -112,12 +114,13 @@ class CorpusStore:
 
     # -- write -------------------------------------------------------------
     def _atomic_write(self, target: Path, text: str) -> None:
-        tmp = target.with_suffix(".json.tmp")
-        with tmp.open("w", encoding="utf-8", newline="\n") as handle:
-            handle.write(text)
-            handle.flush()
-            os.fsync(handle.fileno())
-        os.replace(tmp, target)
+        with repository_write(target, "GUI corpus write"):
+            tmp = target.with_suffix(".json.tmp")
+            with tmp.open("w", encoding="utf-8", newline="\n") as handle:
+                handle.write(text)
+                handle.flush()
+                os.fsync(handle.fileno())
+            os.replace(tmp, target)
 
     def add(self, payload: Any, *, kind: str = CorpusKind.SEED.value,
             expected_outcome: str = "", provenance: dict | None = None,

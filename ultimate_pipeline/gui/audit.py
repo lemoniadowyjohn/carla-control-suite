@@ -22,6 +22,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Iterable
 
+from ultimate_pipeline.gui.repo_authority import repository_write
+
 __all__ = ["AuditJournal", "redact", "AUDIT_SCHEMA", "DEFAULT_RETENTION_RECORDS"]
 
 AUDIT_SCHEMA = "audit-journal/v1"
@@ -126,17 +128,18 @@ class AuditJournal:
 
     def _apply_retention(self) -> None:
         """Trim the file to the retention bound, preserving the newest records."""
-        if not self.path.exists():
-            self.path.touch()
-            return
-        with self.path.open("r", encoding="utf-8") as handle:
-            lines = [ln for ln in (raw.strip() for raw in handle) if ln]
-        if len(lines) <= self.retention_records:
-            return
-        kept = lines[-self.retention_records:]
-        tmp = self.path.with_suffix(self.path.suffix + ".tmp")
-        tmp.write_text("\n".join(kept) + "\n", encoding="utf-8")
-        os.replace(tmp, self.path)
+        with repository_write(self.path, "GUI audit retention"):
+            if not self.path.exists():
+                self.path.touch()
+                return
+            with self.path.open("r", encoding="utf-8") as handle:
+                lines = [ln for ln in (raw.strip() for raw in handle) if ln]
+            if len(lines) <= self.retention_records:
+                return
+            kept = lines[-self.retention_records:]
+            tmp = self.path.with_suffix(self.path.suffix + ".tmp")
+            tmp.write_text("\n".join(kept) + "\n", encoding="utf-8")
+            os.replace(tmp, self.path)
 
     # -- public API --------------------------------------------------------
     @property
@@ -167,16 +170,17 @@ class AuditJournal:
                 "confirmation_class": confirmation_class,
                 "outcome": outcome,
             }
-            with self.path.open("a", encoding="utf-8") as handle:
-                handle.write(json.dumps(record, sort_keys=True) + "\n")
-                handle.flush()
-                os.fsync(handle.fileno())
-            self._lines += 1
-            # Retention is enforced on every append, not only on open, so a
-            # long-lived GUI session cannot grow the journal without bound.
-            if self._lines > self.retention_records:
-                self._apply_retention()
-                self._lines = self._count_lines()
+            with repository_write(self.path, "GUI audit append"):
+                with self.path.open("a", encoding="utf-8") as handle:
+                    handle.write(json.dumps(record, sort_keys=True) + "\n")
+                    handle.flush()
+                    os.fsync(handle.fileno())
+                self._lines += 1
+                # Retention is enforced on every append, not only on open, so a
+                # long-lived GUI session cannot grow the journal without bound.
+                if self._lines > self.retention_records:
+                    self._apply_retention()
+                    self._lines = self._count_lines()
         return record
 
     def record(self, action: str, **kwargs: Any) -> dict[str, Any]:

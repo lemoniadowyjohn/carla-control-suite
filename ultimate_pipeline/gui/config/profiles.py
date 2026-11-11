@@ -38,6 +38,7 @@ from ultimate_pipeline.gui.config.validation import (
     ValidationReport,
     validate_profile,
 )
+from ultimate_pipeline.gui.repo_authority import repository_write
 
 __all__ = [
     "PROFILE_SCHEMA", "SUPPORTED_SCHEMA_VERSIONS", "SECRET_MARKER",
@@ -191,10 +192,13 @@ class ProfileStore:
             "secret_values_withheld": secrets,
         }
         target = self.path_for(profile.name)
-        backup = self._backup(target)
-        self._atomic_write(target, json.dumps(payload, indent=2, sort_keys=True) + "\n")
-        return {"path": str(target), "backup": str(backup) if backup else None,
-                "secret_values_withheld": secrets}
+        with repository_write(target, "GUI export settings profile"):
+            backup = self._backup(target)
+            self._atomic_write(
+                target, json.dumps(payload, indent=2, sort_keys=True) + "\n")
+            return {"path": str(target),
+                    "backup": str(backup) if backup else None,
+                    "secret_values_withheld": secrets}
 
     # -- import ------------------------------------------------------------
     def load(self, name: str) -> Profile:

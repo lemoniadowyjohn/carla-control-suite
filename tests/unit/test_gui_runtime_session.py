@@ -24,7 +24,9 @@ from ultimate_pipeline.gui.session.runtime_session import (
     MAP_LOAD,
     MAP_MISMATCH,
     REASONS,
+    RuntimeChangeRefused,
     RuntimeSession,
+    WorldChangeIntent,
     WorldChangedEvent,
 )
 
@@ -440,6 +442,103 @@ def test_maps_panel_resolve_client_prefers_session_client(app):
     session.bind_world(DummyWorld(), map_identity="Town01",
                        reason=MAP_LOAD, client=session_local_client)
     assert panel._resolve_client() is session_local_client
+
+
+def test_prepare_change_runs_hooks_and_reports_intent(app):
+    session = RuntimeSession()
+    seen = []
+    session.subscribe_before_change(seen.append)
+
+    intent = session.prepare_change(
+        reason=MAP_LOAD, source="test", map_identity="Town02")
+
+    assert isinstance(intent, WorldChangeIntent)
+    assert seen == [intent]
+    assert intent.map_identity == "Town02"
+    assert session.generation == 0, "pre-change must not bump generation"
+
+
+def test_prepare_change_refuses_when_a_release_hook_fails(app):
+    session = RuntimeSession()
+
+    def cannot_release(_intent):
+        raise RuntimeError("sensor still listening")
+
+    session.subscribe_before_change(cannot_release)
+    with pytest.raises(RuntimeChangeRefused, match="sensor still listening"):
+        session.prepare_change(
+            reason=MAP_LOAD, source="test", map_identity="Town02")
+    assert session.generation == 0
+    assert any("sensor still listening" in e for e in session.subscriber_errors)
+
+
+def test_map_load_calls_pre_change_before_load_world(app, monkeypatch):
+    from ultimate_pipeline.gui.control_center import maps_panel as maps_mod
+    from ultimate_pipeline.gui.control_center.maps_panel import MapsPanel
+
+    session = RuntimeSession()
+    client = FakeCarlaClient()
+    panel = MapsPanel(client=client, authority=SessionAuthority.EXCLUSIVE_WORLD,
+                      runtime_session=session)
+    order = []
+    session.subscribe_before_change(lambda intent: order.append("prepare"))
+    original_load = client.load_world
+
+    def observed_load(name):
+        order.append("load_world")
+        return original_load(name)
+
+    client.load_world = observed_load
+    _select_map(panel, "/Game/Carla/Maps/Town01")
+    monkeypatch.setattr(
+        maps_mod.QMessageBox, "question",
+        lambda *a, **k: maps_mod.QMessageBox.StandardButton.Yes,
+    )
+    panel.load_selected_map()
+
+    assert order == ["prepare", "load_world"]
+
+
+def test_map_load_is_refused_when_pre_change_release_fails(app, monkeypatch):
+    from ultimate_pipeline.gui.control_center import maps_panel as maps_mod
+    from ultimate_pipeline.gui.control_center.maps_panel import MapsPanel
+
+    session = RuntimeSession()
+    client = FakeCarlaClient()
+    panel = MapsPanel(client=client, authority=SessionAuthority.EXCLUSIVE_WORLD,
+                      runtime_session=session)
+
+    def cannot_release(_intent):
+        raise RuntimeError("native sensor release failed")
+
+    session.subscribe_before_change(cannot_release)
+    _select_map(panel, "/Game/Carla/Maps/Town01")
+    monkeypatch.setattr(
+        maps_mod.QMessageBox, "question",
+        lambda *a, **k: maps_mod.QMessageBox.StandardButton.Yes,
+    )
+    panel.load_selected_map()
+
+    assert client.load_calls == [], "RPC must not run after a refused release"
+    assert "REFUSED" in panel.load_report.toPlainText()
+    assert session.generation == 0
+
+
+def test_feeds_pre_change_hook_refuses_load_when_sensor_release_fails(app):
+    from ultimate_pipeline.gui.control_center.feeds import FeedsPanel
+
+    class FailingBridge:
+        def invalidate_attachments(self, reason):
+            return {"ok": False, "backend_failures": {"cam1": "still listening"}}
+
+    session = RuntimeSession()
+    panel = FeedsPanel(runtime_session=session)
+    panel.sensor_bridge = FailingBridge()
+
+    with pytest.raises(RuntimeChangeRefused, match="still listening"):
+        session.prepare_change(
+            reason=MAP_LOAD, source="maps_panel", map_identity="Town02")
+    assert session.generation == 0
 
 
 # =================================================== weather panel wiring

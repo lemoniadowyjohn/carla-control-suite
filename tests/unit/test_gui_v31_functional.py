@@ -208,6 +208,38 @@ def test_weather_no_readback_marks_not_verified():
     assert cloudiness["status"] == "WRITTEN_NOT_VERIFIED"
 
 
+def test_weather_partial_write_is_rolled_back_and_verified():
+    """A rejected batch must not leave the accepted fields applied."""
+    world = FakeWorld()
+    world._weather.cloudiness = 10.0
+    world._weather.fog_density = 20.0
+
+    result = apply_weather(world, {"cloudiness": 50.0, "precipitation": 999.0})
+
+    assert not result.ok
+    assert result.state_restored is True
+    assert world._weather.cloudiness == 10.0
+    assert world._weather.fog_density == 20.0
+    assert len(world.set_weather_calls) == 2, "write then rollback"
+
+
+def test_weather_rollback_failure_is_not_reported_as_restored():
+    """If the rollback write fails, state_restored must not claim success."""
+    class RollbackFailsWorld(FakeWorld):
+        def set_weather(self, params):
+            if self.set_weather_calls:
+                raise RuntimeError("rollback RPC failed")
+            super().set_weather(params)
+
+    world = RollbackFailsWorld()
+    world._weather.cloudiness = 10.0
+    result = apply_weather(world, {"cloudiness": 50.0, "precipitation": 999.0})
+
+    assert not result.ok
+    assert result.state_restored is False
+    assert world._weather.cloudiness == 50.0, "failed restore leaves new value"
+
+
 def test_weather_verified_applied_on_fresh_readback():
     """Fresh readback matching requested value yields VERIFIED_APPLIED."""
     world = FakeWorld()

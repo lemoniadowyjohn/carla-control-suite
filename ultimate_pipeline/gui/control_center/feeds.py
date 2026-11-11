@@ -128,6 +128,32 @@ class FeedsPanel(QWidget):
             # subscribers at publish time instead.
             self._unsubscribe_runtime = runtime_session.subscribe(
                 self._on_runtime_world_changed)
+            self._unsubscribe_runtime_before = (
+                runtime_session.subscribe_before_change(
+                    self._on_runtime_before_change))
+
+    def _on_runtime_before_change(self, intent):
+        """Fail-closed release hook: drop producers before load_world().
+
+        If the backend cannot prove every native sensor stopped, raise so
+        RuntimeSession refuses the map change. The old world is still alive
+        at this point; replacing it now would orphan a live producer.
+        """
+        self.stop()
+        self._frame_index = 0
+        if self.sensor_bridge is not None:
+            outcome = self.sensor_bridge.invalidate_attachments(intent.reason)
+            if outcome.get("ok") is False:
+                raise RuntimeError(
+                    "native sensor release failed before world change: "
+                    f"{outcome.get('backend_failures') or outcome}"
+                )
+        self.state.setText(
+            f"RELEASING FOR {intent.reason} — frame caches invalidated, "
+            "native producers detached"
+            if self.sensor_bridge is not None else
+            f"RELEASING FOR {intent.reason} — frame caches invalidated"
+        )
 
     def _on_runtime_world_changed(self, event):
         """Invalidation subscriber: drop every frame cache on a binding change.

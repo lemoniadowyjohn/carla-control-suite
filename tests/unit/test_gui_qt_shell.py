@@ -10,7 +10,9 @@ from __future__ import annotations
 
 import json
 import os
+import subprocess
 import sys
+import textwrap
 import threading
 from pathlib import Path
 
@@ -94,10 +96,29 @@ def test_T_QT_04_map_identity_is_unbound_not_a_guess(window):
     assert window.registry.badges.map_identity == "UNBOUND"
 
 
-def test_T_QT_05_launch_does_not_import_carla_or_ml(registry):
-    assert "carla" not in sys.modules
-    assert "torch" not in sys.modules
-    assert registry.badges.mode == AppMode.MOCK.value
+def test_T_QT_05_launch_does_not_import_carla_or_ml():
+    # A fresh interpreter is required: earlier tests in a full-suite process
+    # may already have imported torch/carla for unrelated modules, which says
+    # nothing about what launching the shell imports.
+    code = textwrap.dedent("""
+        import sys
+        from ultimate_pipeline.gui.shell.services import AppMode, build_registry
+        registry = build_registry()
+        assert registry.badges.mode == AppMode.MOCK.value
+        assert "carla" not in sys.modules
+        assert "torch" not in sys.modules
+        print("OK")
+    """)
+    env = os.environ.copy()
+    env.pop("PYTHONPATH", None)
+    env["QT_QPA_PLATFORM"] = "offscreen"
+    result = subprocess.run(
+        [sys.executable, "-c", code],
+        cwd=str(Path(__file__).resolve().parents[2]),
+        capture_output=True, text=True, env=env, timeout=120,
+    )
+    assert result.returncode == 0, result.stderr
+    assert "OK" in result.stdout
 
 
 def test_T_QT_06_offline_mode_requires_no_simulator(app, registry):

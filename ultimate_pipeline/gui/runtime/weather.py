@@ -15,6 +15,7 @@ Two rules:
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from types import SimpleNamespace
 from typing import Any
 
 from ultimate_pipeline.gui.results import Result
@@ -110,6 +111,41 @@ def _coerce(field_name: str, value: Any) -> Any:
     return value
 
 
+def _restore_weather(world: Any, snapshot: dict[str, float],
+                     parameters_factory: Any) -> bool | None:
+    """Best-effort rollback of a failed weather write, then verify it.
+
+    Returns ``True`` only when the pre-write values were re-applied AND a
+    fresh readback confirms them. ``False`` means the restore was attempted
+    or required but is not proven. ``None`` means there was nothing to
+    restore because no pre-write state could be observed.
+    """
+    if not snapshot:
+        return None
+    try:
+        if parameters_factory is None:
+            import carla
+
+            params = carla.WeatherParameters(**snapshot)
+        else:
+            params = SimpleNamespace(**snapshot)
+        world.set_weather(params)
+    except Exception:
+        return False
+    try:
+        readback = world.get_weather()
+    except Exception:
+        return False
+    for governed, wanted in snapshot.items():
+        try:
+            actual = float(getattr(readback, governed))
+        except (AttributeError, TypeError, ValueError):
+            return False
+        if abs(actual - wanted) > READBACK_TOLERANCE:
+            return False
+    return True
+
+
 def apply_weather(world: Any, requested: dict[str, Any],
                   parameters_factory: Any = None) -> Result:
     """Apply governed weather fields through ``world.set_weather``.
@@ -170,6 +206,23 @@ def apply_weather(world: Any, requested: dict[str, Any],
             value=WeatherApplication(statuses).as_dict(),
         )
 
+    # Snapshot before any write. A scalar copy is taken deliberately:
+    # CARLA fakes may return a live object that set_weather() mutates in
+    # place, so holding the object itself would not restore the old state.
+    # This snapshot seeds unrequested fields and drives rollback; it is
+    # never used as verification evidence.
+    pre_write: dict[str, float] = {}
+    try:
+        readback_before = world.get_weather()
+    except Exception:
+        readback_before = None
+    if readback_before is not None:
+        for governed in WEATHER_GOVERNED_FIELDS:
+            try:
+                pre_write[governed] = float(getattr(readback_before, governed))
+            except (AttributeError, TypeError, ValueError):
+                continue
+
     try:
         if parameters_factory is not None:
             parameters = parameters_factory(accepted)
@@ -177,21 +230,10 @@ def apply_weather(world: Any, requested: dict[str, Any],
             import carla
 
             # carla.WeatherParameters(**accepted) would reset every unrequested
-            # field to its constructor default. Seed those from a pre-write
-            # snapshot (best effort; verification below is independent of it).
+            # field to its constructor default. Seed those from the snapshot.
             merged: dict[str, Any] = dict(accepted)
-            try:
-                pre_write = world.get_weather()
-            except Exception:
-                pre_write = None
-            if pre_write is not None:
-                for governed in WEATHER_GOVERNED_FIELDS:
-                    if governed in merged:
-                        continue
-                    try:
-                        merged[governed] = float(getattr(pre_write, governed))
-                    except (AttributeError, TypeError, ValueError):
-                        continue
+            for governed, value in pre_write.items():
+                merged.setdefault(governed, value)
             parameters = carla.WeatherParameters(**merged)
     except Exception as exc:
         # Building parameters must never escape apply_weather as a bare
@@ -205,9 +247,15 @@ def apply_weather(world: Any, requested: dict[str, Any],
     try:
         world.set_weather(parameters)
     except Exception as exc:
-        return Result.failure(f"world.set_weather failed: {exc}",
-                              error_class="WeatherApplyError",
-                              value=WeatherApplication(statuses).as_dict())
+        restored = _restore_weather(world, pre_write, parameters_factory)
+        return Result.failure(
+            f"world.set_weather failed: {exc}",
+            error_class="WeatherApplyError",
+            remediation=("previous weather was restored" if restored is True
+                         else "previous weather could NOT be verified restored"),
+            value=WeatherApplication(statuses).as_dict(),
+            state_restored=restored,
+        )
 
     # Fresh readback: query get_weather() AFTER set_weather, never before
     fresh_readback = None
@@ -251,10 +299,14 @@ def apply_weather(world: Any, requested: dict[str, Any],
     else:
         error_class = "WeatherReadbackMismatch"
         reason = "weather applied but not every field verified"
+    restored = _restore_weather(world, pre_write, parameters_factory)
     return Result.failure(
         reason,
         error_class=error_class,
-        remediation="inspect the per-field statuses; do NOT treat this as applied",
+        remediation=("weather write rolled back and previous state verified"
+                     if restored is True
+                     else "inspect the per-field statuses; do NOT treat this "
+                          "as applied"),
         value=application.as_dict(),
-        state_restored=None,
+        state_restored=restored,
     )

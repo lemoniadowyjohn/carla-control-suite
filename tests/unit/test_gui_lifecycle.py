@@ -130,7 +130,7 @@ def test_T_LIFE_04_sensor_listeners_stop_before_destroy():
     assert sensor.calls == ["stop", "destroy"]
 
 
-def test_T_LIFE_04_stop_failure_still_destroys_but_destroy_failure_reports():
+def test_T_LIFE_04_stop_failure_refuses_destroy_and_keeps_actor():
     registry = OwnedActorRegistry()
 
     class _StopFails(_RecordingSensor):
@@ -140,8 +140,12 @@ def test_T_LIFE_04_stop_failure_still_destroys_but_destroy_failure_reports():
 
     sensor = _StopFails()
     registry.register(8, sensor, kind="sensor")
-    assert registry.destroy(8).ok is True
-    assert sensor.calls == ["stop", "destroy"]
+    outcome = registry.destroy(8)
+    assert outcome.ok is False
+    assert outcome.error_class == "SensorStopError"
+    assert sensor.calls == ["stop"]
+    assert sensor.alive is True
+    assert registry.actor_ids() == (8,)
 
     class _DestroyFails(_RecordingSensor):
         def destroy(self) -> None:
@@ -288,7 +292,7 @@ def test_T_LIFE_09b_refused_close_runs_no_shutdown_hooks(app):
 
 
 # ============================================================ T-LIFE-10
-def test_T_LIFE_10_swallowed_stop_failure_recorded_as_diagnostic():
+def test_T_LIFE_10_stop_failure_is_surfaced_and_destroy_is_refused():
     registry = OwnedActorRegistry()
 
     class _StopFails(_RecordingSensor):
@@ -299,17 +303,20 @@ def test_T_LIFE_10_swallowed_stop_failure_recorded_as_diagnostic():
     sensor = _StopFails()
     registry.register(8, sensor, kind="sensor")
     outcome = registry.destroy(8)
-    assert outcome.ok is True, "destroy must proceed despite stop failure"
-    assert sensor.calls == ["stop", "destroy"]
+    assert outcome.ok is False, "destroy must not proceed while stop is unproven"
+    assert outcome.error_class == "SensorStopError"
+    assert sensor.calls == ["stop"]
+    assert registry.actor_ids() == (8,)
     kinds = [d.kind for d in registry.diagnostics]
-    assert kinds == ["SWALLOWED_EXCEPTION"]
+    assert kinds == ["PRODUCER_STOP_FAILED"]
     assert "sensor 8 stop()" in registry.diagnostics[0].subject
     assert "stop failed" in registry.diagnostics[0].detail
 
     report = registry.cleanup_report()
-    assert report.ok is True
+    assert report.ok is False
+    assert report.value["leaked_ids"] == (8,)
     assert len(report.value["diagnostics"]) == 1, (
-        "cleanup evidence must carry the swallowed failure")
+        "cleanup evidence must carry the refused stop")
 
 
 # ============================================================ T-LIFE-11

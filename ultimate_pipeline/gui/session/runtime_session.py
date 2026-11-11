@@ -32,7 +32,8 @@ from typing import Any, Callable
 from ultimate_pipeline.gui.health import SessionAuthority
 
 __all__ = [
-    "WorldChangedEvent", "RuntimeSession",
+    "WorldChangedEvent", "WorldChangeIntent", "RuntimeSession",
+    "RuntimeChangeRefused",
     "INITIAL", "MAP_LOAD", "MAP_MISMATCH", "LOAD_FAILURE",
     "BINDING_FAILURE", "DISCONNECT", "REASONS",
 ]
@@ -89,6 +90,26 @@ class WorldChangedEvent:
         }
 
 
+@dataclass(frozen=True)
+class WorldChangeIntent:
+    """The planned binding change, published *before* the world is replaced."""
+
+    reason: str
+    source: str
+    map_identity: str
+
+    def as_dict(self) -> dict:
+        return {
+            "reason": self.reason,
+            "source": self.source,
+            "map_identity": self.map_identity,
+        }
+
+
+class RuntimeChangeRefused(RuntimeError):
+    """A pre-change subscriber could not release the old world safely."""
+
+
 class RuntimeSession:
     """Shared client/world binding with generation-stamped change events."""
 
@@ -107,6 +128,7 @@ class RuntimeSession:
         self._world = world
         self._map_identity = _require_identity(map_identity)
         self._subscribers: list[Callable[[WorldChangedEvent], None]] = []
+        self._before_subscribers: list[Callable[[WorldChangeIntent], None]] = []
         self._subscriber_errors: deque[str] = deque(maxlen=32)
         self._last_event: WorldChangedEvent | None = None
 
@@ -163,6 +185,7 @@ class RuntimeSession:
                 "client_bound": self._client is not None,
                 "authority": str(getattr(self._authority, "value", self._authority)),
                 "subscriber_count": len(self._subscribers),
+                "before_change_subscriber_count": len(self._before_subscribers),
                 "subscriber_errors": list(self._subscriber_errors),
                 "last_event": (self._last_event.as_dict()
                                if self._last_event is not None else None),
@@ -190,6 +213,62 @@ class RuntimeSession:
                         return
 
         return unsubscribe
+
+    def subscribe_before_change(
+        self, callback: Callable[[WorldChangeIntent], None]
+    ):
+        """Register a pre-change release hook; returns an unsubscribe fn.
+
+        Hooks run synchronously before ``client.load_world``. Unlike post
+        subscribers, a failing pre-change hook **blocks** the change: a map
+        load must not replace a world that still has live sensor producers.
+        """
+        if not callable(callback):
+            raise TypeError("before-change subscriber must be callable")
+        with self._lock:
+            self._before_subscribers.append(callback)
+
+        def unsubscribe() -> None:
+            with self._lock:
+                for index, item in enumerate(self._before_subscribers):
+                    if item is callback:
+                        del self._before_subscribers[index]
+                        return
+
+        return unsubscribe
+
+    def prepare_change(
+        self, *, reason: str, source: str, map_identity: str
+    ) -> WorldChangeIntent:
+        """Run pre-change hooks; refuse the change if any of them fails.
+
+        This method does not mutate the binding. It is the caller's
+        obligation to invoke it immediately before the destructive RPC.
+        """
+        _require_reason(reason)
+        _require_identity(map_identity)
+        if not isinstance(source, str):
+            raise TypeError("source must be a string")
+        intent = WorldChangeIntent(
+            reason=reason, source=source, map_identity=map_identity
+        )
+        with self._lock:
+            subscribers = list(self._before_subscribers)
+        errors: list[str] = []
+        for callback in subscribers:
+            try:
+                callback(intent)
+            except Exception as exc:  # noqa: BLE001 -- collect every failure
+                errors.append(f"{type(callback).__name__}: "
+                              f"{type(exc).__name__}: {exc}")
+        if errors:
+            with self._lock:
+                self._subscriber_errors.extend(errors)
+            raise RuntimeChangeRefused(
+                "refusing world change because pre-change release failed: "
+                + "; ".join(errors)
+            )
+        return intent
 
     # -- mutation of the binding (the only event sources) ------------------
     def bind_world(

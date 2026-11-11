@@ -258,12 +258,17 @@ def test_T_DIAG_03_compare_labels_provenance_prominently(tmp_path):
     assert payload["comparable"] is True
 
 
-def test_T_DIAG_04_export_scrubs_private_paths_and_contains_no_secrets(tmp_path):
-    path = tmp_path / "e.json"
-    path.write_text(json.dumps({"git_sha": "new",
-                                "p": r"C:\Users\michal\secret\run.json"}), encoding="utf-8")
+def test_T_DIAG_04_export_scrubs_private_paths_and_contains_no_secrets():
+    # The record path itself must be scrubbed. Build it explicitly instead of
+    # relying on tmp_path happening to live under C:\Users (CI and the
+    # candidate harness relocate TMP outside the user profile).
+    from ultimate_pipeline.gui.jobs.governance import EvidenceRecord
+
     browser = EvidenceBrowser(current_sha="new")
-    result = browser.export([browser.inspect("e", path)])
+    record = EvidenceRecord(name="e", path=r"C:\Users\michal\secret\run.json",
+                            schema_ok=True, sha_ok=True, revision_ok=True,
+                            age_seconds=0.0, detail="")
+    result = browser.export([record])
     assert result.ok is True
     blob = json.dumps(result.unwrap())
     # the payload is never exported at all, so no secret can leak

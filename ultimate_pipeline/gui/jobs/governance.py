@@ -381,7 +381,7 @@ _PRIVATE_PATH_RE = re.compile(r"(?i)([A-Z]:\\Users\\[^\\\s\"']+)")
 
 def scrub_sensitive_paths(text: str) -> str:
     """Remove private absolute paths before export."""
-    return _PRIVATE_PATH_RE.sub(r"\1[PRIVATE]", text)
+    return _PRIVATE_PATH_RE.sub("[PRIVATE]", text)
 
 
 @dataclass(frozen=True)

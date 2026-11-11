@@ -386,6 +386,24 @@ class MapsPanel(QWidget):
             self.load_report.setPlainText("Map load cancelled by operator.")
             return
 
+        # Release old-world producers BEFORE the destructive RPC. If any
+        # dependent panel cannot invalidate (e.g. sensor stop unproven), the
+        # load is refused rather than orphaning a live producer.
+        session = self.runtime_session
+        if session is not None:
+            try:
+                session.prepare_change(
+                    reason="MAP_LOAD", source="maps_panel", map_identity=map_name
+                )
+            except Exception as exc:
+                self.load_report.setPlainText(
+                    f"REFUSED: could not release the current world before "
+                    f"loading '{map_name}'.\n"
+                    f"{type(exc).__name__}: {exc}\n"
+                    "No load_world() call was made."
+                )
+                return
+
         # Every outcome below (success, mismatch, exception) rebinds when
         # possible and emits world_changed: a load RPC can fail AFTER the
         # server switched levels (timeout, dropped response), so stale

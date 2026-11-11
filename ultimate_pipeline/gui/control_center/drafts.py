@@ -11,6 +11,8 @@ from PyQt6.QtWidgets import (
     QPlainTextEdit, QVBoxLayout, QWidget,
 )
 
+from ultimate_pipeline.gui.repo_authority import repository_write
+
 from .widgets import action, section, text_label
 
 # Bounds are only local proposal-editor constraints; NOT CARLA-server verification.
@@ -63,19 +65,22 @@ def export_draft(path: str | Path, route: str, values: dict) -> Path:
         raise ValueError("draft destination must be a JSON file")
     record = {"schema": "carla-ops-operator-draft/v1", "route": route,
               "state": "REQUESTED_NOT_APPLIED", "values": values}
-    target.parent.mkdir(parents=True, exist_ok=True)
-    tmp_path = None
-    try:
-        with tempfile.NamedTemporaryFile("w", encoding="utf-8", dir=target.parent,
-                                         delete=False, prefix=".draft_") as stream:
-            tmp_path = Path(stream.name)
-            json.dump(record, stream, indent=2, sort_keys=True)
-            stream.flush()
-            os.fsync(stream.fileno())
-        os.replace(tmp_path, target)
-    finally:
-        if tmp_path is not None:
-            tmp_path.unlink(missing_ok=True)
+    with repository_write(target, "GUI save operator draft"):
+        target.parent.mkdir(parents=True, exist_ok=True)
+        tmp_path = None
+        try:
+            with tempfile.NamedTemporaryFile(
+                "w", encoding="utf-8", dir=target.parent,
+                delete=False, prefix=".draft_",
+            ) as stream:
+                tmp_path = Path(stream.name)
+                json.dump(record, stream, indent=2, sort_keys=True)
+                stream.flush()
+                os.fsync(stream.fileno())
+            os.replace(tmp_path, target)
+        finally:
+            if tmp_path is not None:
+                tmp_path.unlink(missing_ok=True)
     return target
 
 

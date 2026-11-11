@@ -9,8 +9,12 @@ Run with QT_QPA_PLATFORM=offscreen.
 
 from __future__ import annotations
 
+import os
+import subprocess
 import sys
+import textwrap
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Any
 
 import pytest
@@ -198,13 +202,27 @@ def test_experiment_registry_default_is_unavailable_not_empty():
 
 
 def test_experiment_registry_never_imports_carla():
-    """Importing the real registry pulls main_pipeline and therefore CARLA."""
-    from ultimate_pipeline.gui.shell.pages import runtime
-
-    model = ScenarioModel()
-    model.rows()
-    assert "carla" not in sys.modules
-    assert runtime is not None
+    """Importing the runtime pages must not pull CARLA into the process."""
+    code = textwrap.dedent("""
+        import sys
+        from ultimate_pipeline.gui.shell.pages import runtime
+        from ultimate_pipeline.gui.shell.viewmodels import ScenarioModel
+        model = ScenarioModel()
+        model.rows()
+        assert "carla" not in sys.modules
+        assert runtime is not None
+        print("OK")
+    """)
+    env = os.environ.copy()
+    env.pop("PYTHONPATH", None)
+    env["QT_QPA_PLATFORM"] = "offscreen"
+    result = subprocess.run(
+        [sys.executable, "-c", code],
+        cwd=str(Path(__file__).resolve().parents[2]),
+        capture_output=True, text=True, env=env, timeout=120,
+    )
+    assert result.returncode == 0, result.stderr
+    assert "OK" in result.stdout
 
 
 def test_injected_experiment_registry_is_reported():
@@ -303,21 +321,37 @@ def test_route_10_stays_a_placeholder(app):
     assert "10_perception_localization" not in PAGE_FACTORIES
 
 
-def test_mock_mode_imports_no_heavy_modules(app):
-    from ultimate_pipeline.gui.shell.main_window import MainWindow
-    from ultimate_pipeline.gui.shell.services import build_registry
-
-    window = MainWindow(build_registry())
-    window.show()
-    try:
-        for route in ("01_home", "04_world_time", "09_calibration_workbench",
-                      "12_operational_fuzzer", "15_job_control"):
-            window.navigate(route)
-            window.refresh_current()
-        assert "carla" not in sys.modules
-        assert "torch" not in sys.modules
-    finally:
-        window.close()
+def test_mock_mode_imports_no_heavy_modules():
+    # Run in a fresh interpreter: this suite's own modules may import torch
+    # (via ultralytics) before this test, which is unrelated to mock launch.
+    code = textwrap.dedent("""
+        import sys
+        from ultimate_pipeline.gui.shell.main_window import MainWindow, create_application
+        from ultimate_pipeline.gui.shell.services import build_registry
+        app = create_application([])
+        window = MainWindow(build_registry())
+        window.show()
+        try:
+            for route in ("01_home", "04_world_time", "09_calibration_workbench",
+                          "12_operational_fuzzer", "15_job_control"):
+                window.navigate(route)
+                window.refresh_current()
+            assert "carla" not in sys.modules
+            assert "torch" not in sys.modules
+        finally:
+            window.close()
+        print("OK")
+    """)
+    env = os.environ.copy()
+    env.pop("PYTHONPATH", None)
+    env["QT_QPA_PLATFORM"] = "offscreen"
+    result = subprocess.run(
+        [sys.executable, "-c", code],
+        cwd=str(Path(__file__).resolve().parents[2]),
+        capture_output=True, text=True, env=env, timeout=120,
+    )
+    assert result.returncode == 0, result.stderr
+    assert "OK" in result.stdout
 
 
 def test_every_runtime_model_declares_something_blocked(app):
