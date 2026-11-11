@@ -304,6 +304,74 @@ class TestStaleSuccessRevocation:
         assert (tmp_path / "SUCCESS.txt").exists()
 
 
+class TestTerminalAuthority11RunIdentityPlacement:
+    """Terminal authority #11: run_identity.json placement must be fail-closed.
+
+    write_run_identity must not silently swallow write failures. A run that
+    cannot place its run_identity.json must not proceed.
+    """
+
+    def test_write_run_identity_succeeds_in_out_dir(self, tmp_path: Path):
+        from ultimate_pipeline.core.terminal_authority import write_run_identity
+
+        write_run_identity(
+            str(tmp_path),
+            "run-1",
+            "0" * 64,
+            "structural_release",
+            "0" * 64,
+            "2026-01-01T00:00:00Z",
+        )
+        assert (tmp_path / "run_identity.json").is_file()
+        import json
+        data = json.loads((tmp_path / "run_identity.json").read_text())
+        assert data["run_id"] == "run-1"
+        assert data["source_sha"] == "0" * 64
+
+    def test_write_run_identity_refuses_to_write_outside_out_dir(self, tmp_path: Path):
+        """Terminal authority #11: run_identity.json must not appear in cwd."""
+        from ultimate_pipeline.core.terminal_authority import write_run_identity
+
+        cwd_before = set(os.listdir())
+        write_run_identity(
+            str(tmp_path),
+            "run-2",
+            "0" * 64,
+            "structural_release",
+            "0" * 64,
+            "2026-01-01T00:00:00Z",
+        )
+        cwd_after = set(os.listdir())
+        new_files = cwd_after - cwd_before
+        assert "run_identity.json" not in new_files, (
+            "Terminal authority #11 violation: run_identity.json appeared in cwd"
+        )
+
+    def test_write_run_identity_fails_closed_on_write_error(self, tmp_path: Path, monkeypatch):
+        """Terminal authority #11: a write failure must raise, not be silently swallowed."""
+        from ultimate_pipeline.core.terminal_authority import write_run_identity
+
+        # Make the target directory unwritable
+        real_open = open
+
+        def failing_open(*args, **kwargs):
+            if args[0].endswith("run_identity.json"):
+                raise PermissionError("Permission denied")
+            return real_open(*args, **kwargs)
+
+        monkeypatch.setattr("builtins.open", failing_open)
+
+        with pytest.raises(RuntimeError, match="Terminal authority #11"):
+            write_run_identity(
+                str(tmp_path),
+                "run-3",
+                "0" * 64,
+                "structural_release",
+                "0" * 64,
+                "2026-01-01T00:00:00Z",
+            )
+
+
 class TestStaleEvidenceRejection:
     """Stale artifacts (from previous runs) must be rejected by the verdict."""
 
