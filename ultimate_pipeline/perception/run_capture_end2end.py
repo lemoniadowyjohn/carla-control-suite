@@ -67,61 +67,87 @@ def _tail_file(path: Path, n_lines: int = 30) -> list[str]:
 
 
 def _ready_probe(host: str, port: int, *, timeout_s: float, sleep_s: float = 0.3) -> dict:
+    """Bound RPC/map readiness to the remaining monotonic budget.
+
+    Do not require an advancing frame or call world.tick(): an externally
+    owned synchronous world does not advance without its designated tick
+    owner. Capture owns frame/timestamp validation after this handshake.
+    CARLA transport must honor Client.set_timeout for each RPC.
+    """
+    import math
+
+    timeout_s = float(timeout_s)
+    sleep_s = float(sleep_s)
+    if not math.isfinite(timeout_s) or timeout_s <= 0:
+        return {"ok": False, "last_error": "invalid_readiness_timeout"}
+    if not math.isfinite(sleep_s) or sleep_s < 0:
+        return {"ok": False, "last_error": "invalid_readiness_sleep"}
+    try:
+        client_timeout_s = float(os.environ.get("UP_CARLA_CLIENT_TIMEOUT_S", "180"))
+    except ValueError:
+        return {"ok": False, "last_error": "invalid_client_timeout"}
+    if not math.isfinite(client_timeout_s) or client_timeout_s <= 0:
+        return {"ok": False, "last_error": "invalid_client_timeout"}
+
     carla, err = _try_import_carla()
     if carla is None:
-        return {"ok": False, "error": f"carla_import_failed: {err}"}
+        return {"ok": False, "last_error": f"carla_import_failed: {err}"}
 
-    deadline = time.time() + float(timeout_s)
-    client_timeout_s = float(os.environ.get("UP_CARLA_CLIENT_TIMEOUT_S", "180"))
+    deadline = time.monotonic() + timeout_s
     report = {
         "host": str(host),
         "port": int(port),
-        "timeout_s": float(timeout_s),
-        "sleep_s": float(sleep_s),
-        "client_timeout_s": float(client_timeout_s),
+        "timeout_s": timeout_s,
+        "sleep_s": sleep_s,
+        "client_timeout_s": client_timeout_s,
         "ok": False,
+        "status": "RPC_NOT_READY",
         "attempts": [],
         "last_error": None,
     }
-    while time.time() < deadline:
-        attempt = {"ts": time.time(), "connect_ok": False, "get_world_ok": False, "get_map_ok": False,
-                   "tick_ok": False, "frame_a": None, "frame_b": None, "elapsed_a": None, "elapsed_b": None}
+    while time.monotonic() < deadline:
+        attempt = {
+            "ts": time.time(), "connect_ok": False,
+            "get_world_ok": False, "get_map_ok": False,
+            "tick_ok": None, "sync_world": None,
+        }
         try:
             client = carla.Client(str(host), int(port))
-            client.set_timeout(float(client_timeout_s))
             attempt["connect_ok"] = True
-
+            remaining = deadline - time.monotonic()
+            if remaining <= 0:
+                raise TimeoutError("readiness_budget_exhausted")
+            client.set_timeout(min(client_timeout_s, remaining))
             world = client.get_world()
             attempt["get_world_ok"] = True
 
-            try:
-                _ = world.get_map().name
-                attempt["get_map_ok"] = True
-            except Exception as exc:
-                attempt["get_map_ok"] = False
-                raise RuntimeError(f"get_map_failed: {exc}")
+            remaining = deadline - time.monotonic()
+            if remaining <= 0:
+                raise TimeoutError("readiness_budget_exhausted")
+            client.set_timeout(min(client_timeout_s, remaining))
+            _ = world.get_map().name
+            attempt["get_map_ok"] = True
 
-            snap_a = world.get_snapshot()
-            time.sleep(float(sleep_s))
-            snap_b = world.get_snapshot()
-            frame_a = int(getattr(snap_a, "frame", -1))
-            frame_b = int(getattr(snap_b, "frame", -1))
-            elapsed_a = float(getattr(getattr(snap_a, "timestamp", None), "elapsed_seconds", -1.0))
-            elapsed_b = float(getattr(getattr(snap_b, "timestamp", None), "elapsed_seconds", -1.0))
-            attempt["frame_a"] = frame_a
-            attempt["frame_b"] = frame_b
-            attempt["elapsed_a"] = elapsed_a
-            attempt["elapsed_b"] = elapsed_b
-            attempt["tick_ok"] = (frame_b != frame_a) or (elapsed_b > elapsed_a)
-            if attempt["tick_ok"]:
-                report["ok"] = True
-                report["attempts"].append(attempt)
-                return report
-            report["last_error"] = "frames_not_advancing"
+            # Settings are optional diagnostics; no frame advancement is
+            # attempted from a second, potentially non-owning controller.
+            remaining = deadline - time.monotonic()
+            if remaining > 0:
+                try:
+                    client.set_timeout(min(client_timeout_s, remaining))
+                    attempt["sync_world"] = bool(world.get_settings().synchronous_mode)
+                except Exception as exc:
+                    attempt["settings_error"] = str(exc)
+            report["ok"] = True
+            report["status"] = "RPC_MAP_READY_FRAMES_UNVERIFIED"
+            report["attempts"].append(attempt)
+            return report
         except Exception as exc:
             report["last_error"] = str(exc)
         report["attempts"].append(attempt)
-        time.sleep(float(sleep_s))
+        remaining = deadline - time.monotonic()
+        if remaining > 0 and sleep_s > 0:
+            time.sleep(min(sleep_s, remaining))
+    report["status"] = "RPC_READINESS_TIMEOUT"
     return report
 
 
@@ -177,7 +203,7 @@ def parse_args(argv: Optional[list[str]] = None) -> argparse.Namespace:
     # Optional CARLA server management
     ap.add_argument("--carla-exe", default=None, help="Path to CarlaUE4.exe. If set (or env UP_CARLA_EXE), starts CARLA.")
     ap.add_argument("--carla-flags", default=None, help="Extra flags for CARLA executable (shell-split string). If omitted, uses carla_server.DEFAULT_FLAGS.")
-    ap.add_argument("--kill-stale", action="store_true", help="Kill stale CarlaUE4.exe before starting (Windows only)")
+    ap.add_argument("--kill-stale", action="store_true", help="Deprecated unsafe legacy option; unowned process killing is refused")
 
     args = ap.parse_args(argv)
 
