@@ -292,8 +292,18 @@ def adjudicate_rq1(
         problems.append("matrix per-run identities do not match the five admissible receipts")
         return _claim("RQ1", "NOT_RUN", None, problems, statuses, contract, detail)
     gaps = determinism_matrix.get("identity_gaps")
-    if not isinstance(gaps, list) or gaps:
-        problems.append("missing, divergent or absent matrix identity_gaps evidence")
+    if not isinstance(gaps, list):
+        problems.append("matrix identity_gaps evidence missing or malformed")
+        return _claim("RQ1", "NOT_RUN", None, problems, statuses, contract, detail)
+    if any(not isinstance(gap, dict) or not gap.get("identity") for gap in gaps):
+        problems.append("matrix identity_gaps contains malformed entries")
+        return _claim("RQ1", "NOT_RUN", None, problems, statuses, contract, detail)
+    gap_names = {gap["identity"] for gap in gaps}
+    if gap_names & {"input_identity", "settings_digest"}:
+        problems.append("RQ1 runs use mixed source inputs or settings")
+        return _claim("RQ1", "NOT_RUN", None, problems, statuses, contract, detail)
+    if gaps and all(all_equal.values()):
+        problems.append("matrix summary falsely says equal despite divergent measured identities")
         return _claim("RQ1", "NOT_RUN", None, problems, statuses, contract, detail)
 
     if not all(all_equal.values()):
@@ -311,6 +321,9 @@ def adjudicate_rq1(
             contract,
             detail,
         )
+    if gaps:
+        problems.append(f"RQ1 non-identity artifact gaps remain: {sorted(gap_names)}")
+        return _claim("RQ1", "BOUNDED", None, problems, statuses, contract, detail)
     if determinism_matrix.get("divergence_classification") != "NO_DIFFERENCE":
         problems.append(
             "divergence classification is not NO_DIFFERENCE: "
