@@ -143,3 +143,103 @@ def test_legacy_checkpoint_cannot_be_used_for_latent_metrics(tmp_path):
     torch.save({"model_state": {"w": torch.ones(1)}, "cfg": {"node_dim": 1}}, ckpt)
     with pytest.raises(ValueError, match="verified metadata checkpoint"):
         runner._load_encoder(str(ckpt), torch.device("cpu"))
+
+
+@pytest.mark.parametrize("entrypoint", ["whole", "per_tile"])
+def test_checkpoint_width_mode_used_for_actual_map_graphs(
+    tmp_path, monkeypatch, entrypoint
+):
+    from torch_geometric.data import Data
+
+    monkeypatch.setattr(
+        runner, "collapse_verdict",
+        lambda *args, **kwargs: {"status": "ok", "verdict": "NOT_COLLAPSED"},
+    )
+    seen = []
+
+    class Encoder:
+        _v94_graph_width_mode = "polynomial"
+        _v94_graph_strict = True
+
+        def __call__(self, batch):
+            return torch.ones((batch.num_graphs, 4), dtype=torch.float32)
+
+    monkeypatch.setattr(runner, "_load_encoder", lambda *args: Encoder())
+    monkeypatch.setattr(
+        runner, "checkpoint_provenance_label",
+        lambda *args: "VERIFIED_CRYPTOGRAPHIC_PROVENANCE",
+    )
+
+    def build(path, **kwargs):
+        seen.append((str(path), kwargs))
+        return Data(
+            x=torch.ones((2, 12), dtype=torch.float32),
+            edge_index=torch.tensor([[0], [1]], dtype=torch.long),
+        )
+
+    monkeypatch.setattr(runner.MapGraphBuilder, "build_from_xodr", build)
+    ckpt = tmp_path / "model.pt"
+    ckpt.write_bytes(b"synthetic-not-a-real-checkpoint")
+    if entrypoint == "whole":
+        out = runner.compute_whole_map_latent_gap(
+            "manual.xodr", "auto.xodr", str(ckpt)
+        )
+    else:
+        manual_dir = tmp_path / "manual"
+        auto_dir = tmp_path / "auto"
+        manual_dir.mkdir()
+        auto_dir.mkdir()
+        for folder in (manual_dir, auto_dir):
+            (folder / "tile.xodr").write_text("<OpenDRIVE/>", encoding="utf-8")
+        out = runner.compute_per_tile_latent_gap(
+            str(manual_dir), str(auto_dir), str(ckpt), str(tmp_path / "metrics.json")
+        )
+    assert out["enabled"] is True
+    assert len(seen) == 2
+    assert all(
+        kwargs == {"width_mode": "polynomial", "strict": True}
+        for _, kwargs in seen
+    )
+
+
+def test_collapse_screening_uses_exact_training_width_and_strictness(
+    tmp_path, monkeypatch
+):
+    from types import SimpleNamespace
+    from torch_geometric.data import Data
+    from ultimate_pipeline.domain_gap_gnn import collapse_check
+
+    class Encoder:
+        cfg = SimpleNamespace(node_dim=12)
+        _v94_graph_width_mode = "polynomial"
+        _v94_graph_strict = True
+
+        def __call__(self, batch):
+            return torch.eye(batch.num_graphs, dtype=torch.float32)
+
+    seen = []
+
+    class Dataset:
+        def __init__(self, tiles_dir, **kwargs):
+            seen.append(kwargs)
+
+        def __len__(self):
+            return 5
+
+        def __getitem__(self, item):
+            return Data(
+                x=torch.ones((2, 12), dtype=torch.float32),
+                edge_index=torch.tensor([[0], [1]], dtype=torch.long),
+            )
+
+    monkeypatch.setattr(collapse_check, "_load_model", lambda *args: Encoder())
+    monkeypatch.setattr(collapse_check, "MapTileDataset", Dataset)
+    ckpt = tmp_path / "model.pt"
+    ckpt.write_bytes(b"synthetic")
+    tiles_dir = tmp_path / "tiles"
+    tiles_dir.mkdir()
+    out = collapse_check.run_collapse_check(
+        checkpoint=ckpt, tiles_dir=tiles_dir, out_path=tmp_path / "collapse.json"
+    )
+    assert out["verdict"] == "NOT_COLLAPSED"
+    assert seen == [{"width_mode": "polynomial", "strict": True}]
