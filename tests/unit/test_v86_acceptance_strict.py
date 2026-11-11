@@ -348,7 +348,11 @@ def test_map_acceptance_signal_requires_release_eligibility(payload, expected):
     assert release_acceptance_status(payload) == expected
 
 
-@pytest.mark.parametrize("profile", ["structural_release", "STRUCTURAL_RELEASE"])
+@pytest.mark.parametrize(
+    "profile",
+    ["structural_release", "STRUCTURAL_RELEASE", "carla_release", "visual_build", "VISUAL_RELEASE",
+     "perception_research", "PERCEPTION_RELEASE", ""],
+)
 def test_release_profiles_apply_release_acceptance_policy(profile):
     from ultimate_pipeline.signals.index import apply_release_acceptance_policy, normalize_signal_status
 
@@ -360,7 +364,7 @@ def test_release_profiles_apply_release_acceptance_policy(profile):
     assert apply_release_acceptance_policy("MAP_ACCEPTANCE", "PASS", good, profile) == "PASS"
 
 
-@pytest.mark.parametrize("profile", ["debug", "visual_build", "perception_research"])
+@pytest.mark.parametrize("profile", ["debug", "DEVELOPMENT", "EXPERIMENTAL_UNSAFE", "scenario_augmentation"])
 def test_non_release_profiles_keep_experiment_semantics(profile):
     from ultimate_pipeline.signals.index import apply_release_acceptance_policy
 

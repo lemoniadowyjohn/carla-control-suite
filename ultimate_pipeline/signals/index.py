@@ -189,11 +189,12 @@ def release_acceptance_status(payload: Any) -> str:
     return STATUS_INCOMPLETE
 
 
-#: Profiles whose verdict is a release/publication claim (V86 A9). This is NOT
-#: MAP_ACCEPTANCE's ``required_release_profiles``, which lists every profile
-#: that needs the signal at all, including debug/build/research runs.
-#: Widening this set is an explicit owner policy decision.
-RELEASE_GRADE_PROFILES = frozenset({"structural_release"})
+#: Profiles whose verdict is a release claim (V86 A9). Mirrors settings.py
+#: ``_apply_release_profile``: every profile except DEVELOPMENT and
+#: EXPERIMENTAL_UNSAFE (both alias to ``debug``) is release. VISUAL_RELEASE and
+#: PERCEPTION_RELEASE alias to visual_build / perception_research. This is NOT
+#: MAP_ACCEPTANCE's ``required_release_profiles``, which also lists ``debug``.
+RELEASE_GRADE_PROFILES = frozenset({"structural_release", "visual_build", "perception_research"})
 
 
 def apply_release_acceptance_policy(signal_id: str, status: str, payload: Any, profile: str) -> str:
