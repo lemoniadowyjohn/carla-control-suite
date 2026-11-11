@@ -40,10 +40,26 @@ def _cross_mean_cosine(a: torch.Tensor, b: torch.Tensor) -> float:
 
 
 def _load_model(checkpoint_path: Path) -> MapEncoder:
-    ckpt = torch.load(str(checkpoint_path), map_location="cpu")
-    cfg = MapEncoderConfig(**ckpt["cfg"])
+    from . import gnn_provenance as prov
+    from .graph_builder import graph_schema_hash
+
+    state, meta, label = prov.load_checkpoint(checkpoint_path)
+    if meta is None or label != prov.VERIFIED_CRYPTOGRAPHIC_PROVENANCE:
+        raise ValueError("collapse check requires a metadata-verified checkpoint")
+    width_mode = str(meta.get("training_config", {}).get("width_mode", "legacy"))
+    if meta.get("graph_schema_sha256") != graph_schema_hash(width_mode=width_mode):
+        raise ValueError("collapse check checkpoint graph schema mismatch")
+    model_cfg = meta["model_config"]
+    cfg = MapEncoderConfig(
+        node_dim=int(model_cfg["node_dim"]),
+        hidden_dim=int(model_cfg.get("hidden_dim", 128)),
+        num_layers=int(model_cfg.get("num_layers", 3)),
+        dropout=float(model_cfg.get("dropout", 0.1)),
+        out_dim=int(model_cfg.get("out_dim", 128)),
+        normalize_embedding=bool(model_cfg.get("normalize_embedding", True)),
+    )
     model = MapEncoder(cfg)
-    model.load_state_dict(ckpt["model_state"])
+    model.load_state_dict(state)
     model.eval()
     return model
 
