@@ -1,0 +1,211 @@
+{
+  "version": "1.0",
+  "generated_utc": "2026-11-06T23:00:00Z",
+  "source_sha": "dfa6ffff07c38d0cc09507c52b3328900ef2d900",
+  "source_base": "c69b60d2fe4ac018136ea0fa26e435a09c15dd73",
+  "campaign": "OpenCode V25 - Parallel Integration Assurance",
+  "worktree": "C:/G/wt/opencode-v25-integration-assurance",
+  "branch": "review/opencode-v25-integration-assurance",
+  "gates": [
+    {
+      "gate_id": "P1",
+      "name": "INTEGRATION_PLAN_VERIFIED",
+      "status": "COMPLETE",
+      "evidence": "reports/02_INTEGRATION_DEPENDENCY_GRAPH.md",
+      "description": "Cross-worktree integration dependency graph verified"
+    },
+    {
+      "gate_id": "P2",
+      "name": "CI_FAILURES_CLASSIFIED",
+      "status": "COMPLETE",
+      "evidence": "reports/03_CI_FAILURE_CLASSIFICATION.csv",
+      "description": "All CI failures classified with evidence"
+    },
+    {
+      "gate_id": "P3",
+      "name": "WD_EVIDENCE_READY",
+      "status": "PARTIALLY_COMPLETE",
+      "evidence": "reports/06_WD_26_TEST_RECOVERY.md",
+      "description": "W-D 26-test acceptance evidence recovered (RECONSTRUCTED_ACCEPTANCE_CANDIDATE)"
+    },
+    {
+      "gate_id": "P4",
+      "name": "SOURCE_AUTHORITY_REVIEWED",
+      "status": "COMPLETE",
+      "evidence": "reports/04_SOURCE_MIRROR_AUTHORITY.md",
+      "description": "Source/mirror/package authority established"
+    },
+    {
+      "gate_id": "P5",
+      "name": "RESEARCH_EVIDENCE_CLASSIFIED",
+      "status": "COMPLETE",
+      "evidence": "reports/09_RQ1_RQ5_EVIDENCE_MATRIX.csv",
+      "description": "RQ1-RQ5 evidence matrix with classifications"
+    },
+    {
+      "gate_id": "P6",
+      "name": "GUI_CONTRACT_REVIEWED",
+      "status": "COMPLETE",
+      "evidence": "reports/10_GUI_RUNTIME_CONTRACT.md",
+      "description": "GUI/backend runtime interface contracts documented"
+    },
+    {
+      "gate_id": "P7",
+      "name": "ACCEPTANCE_HARNESS_VERIFIED",
+      "status": "PARTIALLY_COMPLETE",
+      "evidence": "reports/11_INTEGRATION_TEST_MANIFEST.json",
+      "description": "Integration test manifest and harness created"
+    },
+    {
+      "gate_id": "CODEX_HANDOFF",
+      "name": "CODEX_HANDOFF_READY",
+      "status": "PARTIALLY_COMPLETE",
+      "evidence": "reports/13_CODEX_V24_HANDOFF.md",
+      "description": "Codex V24 handoff package prepared"
+    }
+  ],
+  "test_selections": [
+    {
+      "name": "contract_tests",
+      "command": "python -m pytest tests/unit/test_o17_rq3_dataset_manifest_verifier.py -q --tb=short",
+      "expected_count": 5,
+      "expected_result": "PASS",
+      "platform": "all",
+      "owner": "OpenCode",
+      "timeout_seconds": 60
+    },
+    {
+      "name": "boolean_regressions",
+      "command": "python -m pytest tests/unit/test_o19_final_release_receipt.py -q --tb=short",
+      "expected_count": 8,
+      "expected_result": "PASS",
+      "platform": "all",
+      "owner": "OpenCode",
+      "timeout_seconds": 60
+    },
+    {
+      "name": "deterministic_alignment",
+      "command": "python -m pytest tests/unit/test_deterministic_alignment.py -q --tb=short",
+      "expected_count": 16,
+      "expected_result": "PASS",
+      "platform": "all",
+      "owner": "OpenCode",
+      "timeout_seconds": 60
+    },
+    {
+      "name": "negative_controls",
+      "command": "python -m pytest tests/integration/opencode_v25/ -q --tb=short",
+      "expected_count": 0,
+      "expected_result": "PASS",
+      "platform": "all",
+      "owner": "OpenCode",
+      "timeout_seconds": 120
+    },
+    {
+      "name": "wd_acceptance_26",
+      "command": "python -m pytest F:/wt/v_29560b52/tests/ -q --tb=short",
+      "expected_count": 26,
+      "expected_result": "PASS",
+      "platform": "all",
+      "owner": "Integration owner",
+      "timeout_seconds": 300,
+      "blocked": true,
+      "reason": "TEST_SELECTION_UNVERIFIED - 26 node IDs not recoverable"
+    }
+  ],
+  "source_authority": {
+    "artifacts.py": {
+      "authoritative_sha": "dfa6ffff07c38d0cc09507c52b3328900ef2d900",
+      "owner": "OpenCode",
+      "status": "PUBLISHED",
+      "mirror_drift": "DIVERGENT",
+      "checks": ["is True coercion", "git commit hash", "compute metrics", "digest generation"]
+    },
+    "gate_runner.py": {
+      "authoritative_sha": "dfa6ffff07c38d0cc09507c52b3328900ef2d900",
+      "owner": "OpenCode",
+      "status": "PUBLISHED",
+      "mirror_drift": "DIVERGENT",
+      "checks": ["exit-code contract"]
+    },
+    "carla_preflight.py": {
+      "authoritative_sha": "dfa6ffff07c38d0cc09507c52b3328900ef2d900",
+      "owner": "OpenCode + Codex T2b",
+      "status": "PARTIALLY_COMPLETE",
+      "mirror_drift": "DIVERGENT",
+      "checks": ["lease authority fencing", "exit-code contract"]
+    },
+    "rq1_complete_receipt.py": {
+      "authoritative_sha": "dfa6ffff07c38d0cc09507c52b3328900ef2d900",
+      "owner": "OpenCode",
+      "status": "PUBLISHED",
+      "mirror_drift": "DIVERGENT",
+      "checks": ["name error fix", "run index", "git hash", "real metrics", "digests", "settings hash"]
+    },
+    "rq3_dataset_manifest_verifier.py": {
+      "authoritative_sha": "dfa6ffff07c38d0cc09507c52b3328900ef2d900",
+      "owner": "OpenCode",
+      "status": "PUBLISHED",
+      "mirror_drift": "DIVERGENT",
+      "checks": ["frame_ids", "timestamps", "dimensions", "modalities", "capture_files", "missing_frames", "quality_evaluated", "map_identity", "sensor_transform", "class_map", "route"]
+    }
+  },
+  "blockers": [
+    {
+      "blocker_id": "WD_26_TEST",
+      "description": "W-D 26-test acceptance selection not recoverable from prior evidence",
+      "status": "RECONSTRUCTED_ACCEPTANCE_CANDIDATE",
+      "owner": "Integration owner",
+      "required_action": "Approve replacement acceptance suite or recover original 26 node IDs"
+    },
+    {
+      "blocker_id": "RQ5_COMMITS",
+      "description": "3 remaining RQ5 commits pending in Codex W-B worktree",
+      "status": "PARTIALLY_COMPLETE",
+      "owner": "Codex V24",
+      "required_action": "Complete RQ5 commits in F:/carla-worktrees/rq5-sightb-20261009"
+    },
+    {
+      "blocker_id": "T2B_LEASE",
+      "description": "Terminal lease authority pending in Codex T2b worktree",
+      "status": "OPEN_DELEGATED",
+      "owner": "Codex V24",
+      "required_action": "Complete terminal lease implementation in E:/wt/prod_68868f76"
+    },
+    {
+      "blocker_id": "F15B_CERTIFICATION",
+      "description": "Artifact certification pending in Codex F15b worktree",
+      "status": "OPEN_DELEGATED",
+      "owner": "Codex V24",
+      "required_action": "Complete artifact certification in F:/wt-gap055-base"
+    },
+    {
+      "blocker_id": "W_F_GEOMETRY",
+      "description": "Geometry review REQUIRES_CHANGES",
+      "status": "REQUIRES_CHANGES",
+      "owner": "Claude/Codex",
+      "required_action": "Resolve geometry review comments before W-D validation"
+    },
+    {
+      "blocker_id": "CANDIDATE_B_PUBLICATION",
+      "description": "Candidate b publication requires AUTH-08 authorization",
+      "status": "AUTH_PENDING",
+      "owner": "Operator",
+      "required_action": "Operator authorization required for Candidate b publication"
+    }
+  ],
+  "rq_evidence": [
+    {"rq": "RQ1", "status": "OFFLINE_VERIFIED", "classification": "OFFLINE_VERIFIED"},
+    {"rq": "RQ2", "status": "IMPLEMENTED", "classification": "IMPLEMENTED"},
+    {"rq": "RQ3", "status": "OFFLINE_VERIFIED", "classification": "OFFLINE_VERIFIED"},
+    {"rq": "RQ4", "status": "OFFLINE_VERIFIED", "classification": "OFFLINE_VERIFIED"},
+    {"rq": "RQ5", "status": "PARTIALLY_COMPLETE", "classification": "BLOCKED_EXTERNAL"}
+  ],
+  "ci_failures": [
+    {"failure_id": "C1", "family": "offline_tests", "classification": "PLATFORM_INCOMPATIBILITY", "affected_shas": ["a952f377", "dfa6ffff"], "jobs": ["128117726289", "128148471115"]}
+  ],
+  "verification_command": "python -m pytest tests/unit/test_o17_rq3_dataset_manifest_verifier.py tests/unit/test_o19_final_release_receipt.py tests/unit/test_deterministic_alignment.py -q --tb=short",
+  "expected_test_count": 157,
+  "expected_pass_count": 157,
+  "sha_tree_reference": "dfa6ffff07c38d0cc09507c52b3328900ef2d900"
+}

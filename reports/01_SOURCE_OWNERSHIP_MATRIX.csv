@@ -1,0 +1,11 @@
+Component_ID,Authoritative_Branch,Owner,Current_SHA,Tests,Integration_Status,Source_Files,Key_Changed_Functions,Required_Predecessors,Potential_Conflicts,Required_Review,Notes
+V23,review/v21-consolidation-audit-20261106,OpenCode,dfa6ffff,157(136+16+5),Published,contracts/artifacts.py;core/carla_opendrive_loader.py;core/carla_preflight.py;tools/rq1_complete_receipt.py;tools/rq3_dataset_manifest_verifier.py,artifacts.py::ok_bool,None,None,None,"8 commits; test-passing: 157 total"
+T2b,E:/wt/prod_68868f76,Codex,varies,Unverified,OPEN_DELEGATED,lease authority files,"terminal lease acquire/release",None,None,None,"Fenced terminal lease; CODEX-OWNED; do not edit"
+F15b,F:/wt-gap055-base,Codex,varies,Unverified,OPEN_DELEGATED,artifact certification files,"certify_ingolstadt validation chain",None,None,None,"Fail-closed artifact certification; CODEX-OWNED"
+W-F,E:/wt/research-gap070-reversed-stubs-20261104,Claude/Codex,varies,Unverified,REQUIRES_CHANGES,geometry implementation,lane topology / junction connector snap,None,None,None,"Geometry review REQUIRES_CHANGES; geometric dependencies on contract layers"
+W-B,F:/carla-worktrees/rq5-sightb-20261009,Codex,varies,Pending,PARTIALLY_COMPLETE,RQ5 experiment orchestration,checkpoint provenance / map selection,None,None,None,"3 remaining uncommitted RQ5 commits"
+W-D,F:/wt/v_29560b52,Integration owner,6b9b6fb,Unverified,TEST_SELECTION_UNVERIFIED,implimate pipeline acceptance,26 acceptance tests,None,None,None,"26-test suite definition not recoverable from prior evidence"
+Candidate_b,G:/wt/candidate-approved-20261105,Operator,71e222af,Verified_Separate,AUTH_PENDING,run_identity.json + candidate changes,separate publication; AUTH-08 approval required,None,None,None,"Cannot merge into V21 review branch automatically"
+Shared_Contracts,shared,OpenCode,base=c69b60d,Multi,Published,artifacts.py,ok coercion / artifact paths,"none","none","none","All contract modules shared across Codex worktrees"
+Single_Writer,shared,OpenCode,base=c69b60d,Verified,Published,runner lock,canonical writer lock repo_lock,"none","none","none","Repository concurrency contract shared across all worktrees"
+Gate_Runner,shared,OpenCode,base=c69b60d,Updated,Updated,gate runner logic,exit code / release contract,"none","none","none","V23 passed; rest pass under later tests"

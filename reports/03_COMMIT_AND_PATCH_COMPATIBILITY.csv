@@ -1,0 +1,13 @@
+RQ,Component,Change_Type,Lines_Added,Lines_Deleted,Risk_Level,Impact_Affected,Dependencies,Fix_Status
+RQ1,artifacts.py,refactoring,147,-16,MEDIUM,Boolean coercion (is True),gate_runner.py exit codes,FIXED
+RQ1,experiment_config.py,minor,7,0,LOW,config validation,none,FIXED
+RQ1,gate_runner.py,contract,6,0,HIGH,exit-code contract,F15b artifact certification,FIXED
+RQ1,stage_contracts.py,minor,6,0,LOW,stage validation,none,FIXED
+RQ2,carla_opendrive_loader.py,minor,7,0,LOW,ok coercion handling,artifacts.py,FIXED
+RQ3,carla_preflight.py,major,639,-1169,MEDIUM,lease authority fencing,T2b lease authority,PARTIAL
+RQ3,carla_utils.py,major,1448,-1169,MEDIUM,utility refactoring,carla_preflight.py,FIXED
+RQ3,run_manifest.py,contract,299,0,LOW,manifest generation,artifacts.py,FIXED
+RQ3,rq1_complete_receipt.py,fix,126,0,LOW,name error,run index,git hash,FIXED
+RQ3,rq3_dataset_manifest_verifier.py,fix,154,0,LOW,8 new checks,manifest validation,FIXED
+RQ4,final_release_receipt.py,minor,23,0,LOW,receipt formatting,none,FIXED
+RQ5,W-B checkpoint provenance,partial,unverified,unverified,BLOCKED_EXTERNAL,3 remaining commits,Codex W-B worktree,PENDING
