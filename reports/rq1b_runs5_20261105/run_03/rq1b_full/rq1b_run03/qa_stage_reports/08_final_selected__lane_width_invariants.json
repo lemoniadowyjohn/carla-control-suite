@@ -1,0 +1,25 @@
+{
+  "ok": true,
+  "severity": "pass",
+  "defaults": {
+    "default_width_m": 3.5,
+    "lane_types": [
+      "driving",
+      "shoulder",
+      "sidewalk",
+      "border",
+      "parking",
+      "biking",
+      "restricted",
+      "none"
+    ]
+  },
+  "totals": {
+    "missing_width_lanes_found": 0,
+    "missing_width_lanes_fixed": 0,
+    "missing_width_lanes_unfixed": 0
+  },
+  "examples": [],
+  "stage": "08_final_selected",
+  "xodr_path": "reports\\rq1b_runs5_20261105\\run_03\\rq1b_full\\rq1b_run03\\08_final_rq1b_run03.xodr"
+}

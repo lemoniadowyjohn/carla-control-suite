@@ -1,0 +1,22 @@
+{
+  "CARLA_VISUAL_READY": "no",
+  "PERCEPTION_READY": "no",
+  "carla_visual_smoke_gate": {
+    "ok": false,
+    "reason": "carla_visual_smoke_gate_missing",
+    "status": "missing"
+  },
+  "carla_visual_smoke_gate_report_path": "reports\\rq1b_runs5_20261105\\run_01\\rq1b_full\\rq1b_run01\\final_visual_smoke\\carla_visual_smoke_gate.json",
+  "failed_check_count": 0,
+  "junction_connector_risk_ok": null,
+  "junction_connector_risk_report_available": false,
+  "junction_connector_risk_report_path": "reports\\rq1b_runs5_20261105\\run_01\\rq1b_full\\rq1b_run01\\junction_connector_risk.json",
+  "overlap_pair_count": 0,
+  "perception_gate_reason": "blocked_until_carla_visual_smoke_gate_passes",
+  "recommended_readiness_gate_command": "python -m ultimate_pipeline.tools.final_map_readiness_gate --xodr reports\\rq1b_runs5_20261105\\run_01\\rq1b_full\\rq1b_run01\\08_final_rq1b_run01.xodr --visual-gate-report reports\\rq1b_runs5_20261105\\run_01\\rq1b_full\\rq1b_run01\\final_visual_smoke\\carla_visual_smoke_gate.json",
+  "recommended_visual_gate_command": "python -m ultimate_pipeline.tools.carla_visual_smoke_gate --xodr reports\\rq1b_runs5_20261105\\run_01\\rq1b_full\\rq1b_run01\\08_final_rq1b_run01.xodr --out reports\\rq1b_runs5_20261105\\run_01\\rq1b_full\\rq1b_run01\\final_visual_smoke --strict",
+  "schema": "final_selected_xodr_status_v1",
+  "selected_xodr_path": "reports\\rq1b_runs5_20261105\\run_01\\rq1b_full\\rq1b_run01\\08_final_rq1b_run01.xodr",
+  "sha256": "ea64b97923abab712a29d6c7fca090e9d7c1f6abaf32ca238805a716cc4005ce",
+  "worst_junction_sample": []
+}

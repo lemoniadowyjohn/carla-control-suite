@@ -1,0 +1,2563 @@
+{
+  "ok": true,
+  "eps_z": 0.5,
+  "num_roads": 32266,
+  "num_links_checked": 0,
+  "num_junction_connector_links_checked": 45176,
+  "num_issues": 0,
+  "num_junction_connector_issues": 254,
+  "issues": [],
+  "junction_connector_issues": [
+    {
+      "from_road": "51808",
+      "to_road": "47570",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 370.916,
+      "z_to_end": 371.47359809935284,
+      "dz": 0.5575980993528447,
+      "warnings": []
+    },
+    {
+      "from_road": "51812",
+      "to_road": "42284",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 371.335172,
+      "z_to_end": 370.6943138975465,
+      "dz": 0.6408581024534783,
+      "warnings": []
+    },
+    {
+      "from_road": "51848",
+      "to_road": "46294",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 380.498125,
+      "z_to_end": 379.57772246976504,
+      "dz": 0.9204025302349805,
+      "warnings": []
+    },
+    {
+      "from_road": "51848",
+      "to_road": "51149",
+      "link_kind": "successor",
+      "contact_point": "start",
+      "z_from_end": 379.4250785611999,
+      "z_to_start": 380.033792,
+      "dz": 0.6087134388001232,
+      "warnings": []
+    },
+    {
+      "from_road": "51856",
+      "to_road": "42892",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 370.842258,
+      "z_to_end": 370.04291234213224,
+      "dz": 0.7993456578677751,
+      "warnings": []
+    },
+    {
+      "from_road": "51942",
+      "to_road": "42899",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 367.640836,
+      "z_to_end": 368.2313136112779,
+      "dz": 0.5904776112779473,
+      "warnings": []
+    },
+    {
+      "from_road": "52027",
+      "to_road": "44828",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 381.480417,
+      "z_to_end": 380.66251008110896,
+      "dz": 0.8179069188910262,
+      "warnings": []
+    },
+    {
+      "from_road": "52053",
+      "to_road": "51655",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 383.676006,
+      "z_to_end": 382.9252318350189,
+      "dz": 0.7507741649810669,
+      "warnings": []
+    },
+    {
+      "from_road": "52307",
+      "to_road": "42942",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 366.282477,
+      "z_to_end": 365.75475396463395,
+      "dz": 0.5277230353660229,
+      "warnings": []
+    },
+    {
+      "from_road": "52406",
+      "to_road": "47306",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 370.784284,
+      "z_to_end": 370.11513957078193,
+      "dz": 0.669144429218079,
+      "warnings": []
+    },
+    {
+      "from_road": "52465",
+      "to_road": "46311",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 370.743393,
+      "z_to_end": 370.08472411260516,
+      "dz": 0.6586688873948674,
+      "warnings": []
+    },
+    {
+      "from_road": "52468",
+      "to_road": "46313",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 368.961989,
+      "z_to_end": 369.56040668844963,
+      "dz": 0.5984176884496151,
+      "warnings": []
+    },
+    {
+      "from_road": "52471",
+      "to_road": "46651",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 367.439813,
+      "z_to_end": 367.9415625998745,
+      "dz": 0.5017495998744721,
+      "warnings": []
+    },
+    {
+      "from_road": "52480",
+      "to_road": "47657",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 369.800071,
+      "z_to_end": 370.32333036508436,
+      "dz": 0.5232593650843569,
+      "warnings": []
+    },
+    {
+      "from_road": "52481",
+      "to_road": "47657",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 370.851774,
+      "z_to_end": 370.32333036508436,
+      "dz": 0.5284436349156181,
+      "warnings": []
+    },
+    {
+      "from_road": "52481",
+      "to_road": "50256",
+      "link_kind": "successor",
+      "contact_point": "start",
+      "z_from_end": 369.46658179644913,
+      "z_to_start": 370.009487,
+      "dz": 0.5429052035508448,
+      "warnings": []
+    },
+    {
+      "from_road": "52594",
+      "to_road": "48711",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 374.376082,
+      "z_to_end": 375.36643946712456,
+      "dz": 0.9903574671245678,
+      "warnings": []
+    },
+    {
+      "from_road": "52595",
+      "to_road": "43952",
+      "link_kind": "successor",
+      "contact_point": "start",
+      "z_from_end": 374.548588,
+      "z_to_start": 374.040712,
+      "dz": 0.5078760000000102,
+      "warnings": []
+    },
+    {
+      "from_road": "52599",
+      "to_road": "43952",
+      "link_kind": "successor",
+      "contact_point": "start",
+      "z_from_end": 374.669454,
+      "z_to_start": 374.040712,
+      "dz": 0.6287419999999884,
+      "warnings": []
+    },
+    {
+      "from_road": "53317",
+      "to_road": "43056",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 382.862064,
+      "z_to_end": 382.0482449286031,
+      "dz": 0.8138190713968925,
+      "warnings": []
+    },
+    {
+      "from_road": "53320",
+      "to_road": "45084",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 383.220018,
+      "z_to_end": 382.6316669977998,
+      "dz": 0.5883510022001701,
+      "warnings": []
+    },
+    {
+      "from_road": "53324",
+      "to_road": "46872",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 383.973476,
+      "z_to_end": 384.5368845186016,
+      "dz": 0.5634085186015909,
+      "warnings": []
+    },
+    {
+      "from_road": "53846",
+      "to_road": "48120",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 376.794116,
+      "z_to_end": 377.51288475772714,
+      "dz": 0.7187687577271618,
+      "warnings": []
+    },
+    {
+      "from_road": "53909",
+      "to_road": "45885",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 372.67897,
+      "z_to_end": 372.1299692694022,
+      "dz": 0.5490007305978111,
+      "warnings": []
+    },
+    {
+      "from_road": "53955",
+      "to_road": "51136",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 367.274959,
+      "z_to_end": 367.9247277734214,
+      "dz": 0.6497687734213855,
+      "warnings": []
+    },
+    {
+      "from_road": "53980",
+      "to_road": "47861",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 373.450614,
+      "z_to_end": 372.26208554633905,
+      "dz": 1.188528453660922,
+      "warnings": []
+    },
+    {
+      "from_road": "53980",
+      "to_road": "43151",
+      "link_kind": "successor",
+      "contact_point": "start",
+      "z_from_end": 372.2156586791556,
+      "z_to_start": 372.804479,
+      "dz": 0.5888203208444338,
+      "warnings": []
+    },
+    {
+      "from_road": "53981",
+      "to_road": "43151",
+      "link_kind": "successor",
+      "contact_point": "start",
+      "z_from_end": 372.21596465844885,
+      "z_to_start": 372.804479,
+      "dz": 0.5885143415511607,
+      "warnings": []
+    },
+    {
+      "from_road": "53983",
+      "to_road": "43161",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 370.204087,
+      "z_to_end": 370.9799897186271,
+      "dz": 0.7759027186270941,
+      "warnings": []
+    },
+    {
+      "from_road": "53985",
+      "to_road": "43151",
+      "link_kind": "successor",
+      "contact_point": "start",
+      "z_from_end": 372.289573,
+      "z_to_start": 372.804479,
+      "dz": 0.5149059999999963,
+      "warnings": []
+    },
+    {
+      "from_road": "54074",
+      "to_road": "46430",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 369.369938,
+      "z_to_end": 368.8580708612437,
+      "dz": 0.5118671387563154,
+      "warnings": []
+    },
+    {
+      "from_road": "54223",
+      "to_road": "43184",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 373.412702,
+      "z_to_end": 374.0870811004145,
+      "dz": 0.6743791004144555,
+      "warnings": []
+    },
+    {
+      "from_road": "54229",
+      "to_road": "47900",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 368.06817,
+      "z_to_end": 368.6565103008584,
+      "dz": 0.5883403008583628,
+      "warnings": []
+    },
+    {
+      "from_road": "54245",
+      "to_road": "46663",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 371.358804,
+      "z_to_end": 370.7398850602421,
+      "dz": 0.6189189397579185,
+      "warnings": []
+    },
+    {
+      "from_road": "54323",
+      "to_road": "45834",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 365.421436,
+      "z_to_end": 366.0107232106268,
+      "dz": 0.5892872106267646,
+      "warnings": []
+    },
+    {
+      "from_road": "54534",
+      "to_road": "47950",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 367.54998,
+      "z_to_end": 366.8893275675655,
+      "dz": 0.6606524324345173,
+      "warnings": []
+    },
+    {
+      "from_road": "54797",
+      "to_road": "45942",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 375.683647,
+      "z_to_end": 376.928269,
+      "dz": 1.2446219999999926,
+      "warnings": []
+    },
+    {
+      "from_road": "54797",
+      "to_road": "51105",
+      "link_kind": "successor",
+      "contact_point": "start",
+      "z_from_end": 377.603060416,
+      "z_to_start": 376.968027,
+      "dz": 0.6350334159999989,
+      "warnings": []
+    },
+    {
+      "from_road": "54876",
+      "to_road": "47273",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 376.449462,
+      "z_to_end": 377.4189453766031,
+      "dz": 0.9694833766031365,
+      "warnings": []
+    },
+    {
+      "from_road": "54968",
+      "to_road": "46531",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 376.095078,
+      "z_to_end": 377.29605488368253,
+      "dz": 1.2009768836825288,
+      "warnings": []
+    },
+    {
+      "from_road": "55169",
+      "to_road": "43332",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 368.090984,
+      "z_to_end": 368.64635851717713,
+      "dz": 0.5553745171771425,
+      "warnings": []
+    },
+    {
+      "from_road": "55806",
+      "to_road": "43427",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 371.274392,
+      "z_to_end": 370.77197225131084,
+      "dz": 0.5024197486891353,
+      "warnings": []
+    },
+    {
+      "from_road": "56098",
+      "to_road": "44523",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 368.284407,
+      "z_to_end": 367.753717990243,
+      "dz": 0.5306890097569976,
+      "warnings": []
+    },
+    {
+      "from_road": "56230",
+      "to_road": "48246",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 370.559969,
+      "z_to_end": 370.0013999835564,
+      "dz": 0.5585690164436414,
+      "warnings": []
+    },
+    {
+      "from_road": "56294",
+      "to_road": "48307",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 378.261756,
+      "z_to_end": 378.8222669899556,
+      "dz": 0.5605109899556169,
+      "warnings": []
+    },
+    {
+      "from_road": "56519",
+      "to_road": "44506",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 374.690909,
+      "z_to_end": 375.70883022159046,
+      "dz": 1.017921221590484,
+      "warnings": []
+    },
+    {
+      "from_road": "56519",
+      "to_road": "47083",
+      "link_kind": "successor",
+      "contact_point": "start",
+      "z_from_end": 376.2610131464489,
+      "z_to_start": 375.678237,
+      "dz": 0.5827761464488503,
+      "warnings": []
+    },
+    {
+      "from_road": "56540",
+      "to_road": "50301",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 380.910457,
+      "z_to_end": 381.87599498696795,
+      "dz": 0.965537986967945,
+      "warnings": []
+    },
+    {
+      "from_road": "56540",
+      "to_road": "45289",
+      "link_kind": "successor",
+      "contact_point": "start",
+      "z_from_end": 382.82987806200003,
+      "z_to_start": 382.262146,
+      "dz": 0.5677320620000614,
+      "warnings": []
+    },
+    {
+      "from_road": "57031",
+      "to_road": "43627",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 369.935282,
+      "z_to_end": 370.4568143448208,
+      "dz": 0.5215323448208551,
+      "warnings": []
+    },
+    {
+      "from_road": "57483",
+      "to_road": "43688",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 380.624837,
+      "z_to_end": 380.1094741676651,
+      "dz": 0.5153628323349153,
+      "warnings": []
+    },
+    {
+      "from_road": "57484",
+      "to_road": "43688",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 379.50486,
+      "z_to_end": 380.1094741676651,
+      "dz": 0.6046141676650905,
+      "warnings": []
+    },
+    {
+      "from_road": "57485",
+      "to_road": "44077",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 383.366707,
+      "z_to_end": 382.751012356423,
+      "dz": 0.615694643577001,
+      "warnings": []
+    },
+    {
+      "from_road": "57540",
+      "to_road": "48441",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 380.164213,
+      "z_to_end": 380.69319470406236,
+      "dz": 0.5289817040623461,
+      "warnings": []
+    },
+    {
+      "from_road": "57604",
+      "to_road": "46965",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 378.827029,
+      "z_to_end": 379.38014863487797,
+      "dz": 0.5531196348779872,
+      "warnings": []
+    },
+    {
+      "from_road": "57967",
+      "to_road": "51405",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 382.764499,
+      "z_to_end": 381.7827820795047,
+      "dz": 0.9817169204952734,
+      "warnings": []
+    },
+    {
+      "from_road": "58101",
+      "to_road": "50574",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 381.341514,
+      "z_to_end": 380.66707845064167,
+      "dz": 0.6744355493583498,
+      "warnings": []
+    },
+    {
+      "from_road": "58251",
+      "to_road": "42237",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 378.523457,
+      "z_to_end": 377.75401997109685,
+      "dz": 0.7694370289031554,
+      "warnings": []
+    },
+    {
+      "from_road": "58270",
+      "to_road": "43822",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 377.743827,
+      "z_to_end": 377.23836964597024,
+      "dz": 0.5054573540297724,
+      "warnings": []
+    },
+    {
+      "from_road": "58850",
+      "to_road": "50216",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 404.09522,
+      "z_to_end": 403.1808029233192,
+      "dz": 0.9144170766807633,
+      "warnings": []
+    },
+    {
+      "from_road": "58851",
+      "to_road": "50216",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 403.786522,
+      "z_to_end": 403.1808029233192,
+      "dz": 0.6057190766807707,
+      "warnings": []
+    },
+    {
+      "from_road": "58852",
+      "to_road": "50216",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 404.028596,
+      "z_to_end": 403.1808029233192,
+      "dz": 0.8477930766807731,
+      "warnings": []
+    },
+    {
+      "from_road": "59129",
+      "to_road": "48717",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 374.455696,
+      "z_to_end": 375.0606803613238,
+      "dz": 0.6049843613238295,
+      "warnings": []
+    },
+    {
+      "from_road": "59142",
+      "to_road": "43962",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 379.425732,
+      "z_to_end": 378.792491940236,
+      "dz": 0.6332400597639776,
+      "warnings": []
+    },
+    {
+      "from_road": "59195",
+      "to_road": "50890",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 377.967581,
+      "z_to_end": 377.13018237744427,
+      "dz": 0.8373986225557246,
+      "warnings": []
+    },
+    {
+      "from_road": "59195",
+      "to_road": "46798",
+      "link_kind": "successor",
+      "contact_point": "start",
+      "z_from_end": 376.4624330798078,
+      "z_to_start": 376.994774,
+      "dz": 0.5323409201922118,
+      "warnings": []
+    },
+    {
+      "from_road": "59270",
+      "to_road": "45183",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 377.304654,
+      "z_to_end": 376.66002776398386,
+      "dz": 0.6446262360161654,
+      "warnings": []
+    },
+    {
+      "from_road": "59861",
+      "to_road": "42254",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 368.842282,
+      "z_to_end": 369.5846949780441,
+      "dz": 0.7424129780441149,
+      "warnings": []
+    },
+    {
+      "from_road": "59960",
+      "to_road": "46592",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 369.353978,
+      "z_to_end": 368.8519350175469,
+      "dz": 0.5020429824530765,
+      "warnings": []
+    },
+    {
+      "from_road": "59977",
+      "to_road": "48860",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 377.929083,
+      "z_to_end": 377.3509046330725,
+      "dz": 0.5781783669274887,
+      "warnings": []
+    },
+    {
+      "from_road": "59986",
+      "to_road": "48864",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 375.798928,
+      "z_to_end": 376.51803467257065,
+      "dz": 0.7191066725706605,
+      "warnings": []
+    },
+    {
+      "from_road": "59987",
+      "to_road": "44076",
+      "link_kind": "successor",
+      "contact_point": "start",
+      "z_from_end": 377.199819,
+      "z_to_start": 376.685868,
+      "dz": 0.5139509999999632,
+      "warnings": []
+    },
+    {
+      "from_road": "60374",
+      "to_road": "46316",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 387.41982,
+      "z_to_end": 386.32248175568236,
+      "dz": 1.0973382443176547,
+      "warnings": []
+    },
+    {
+      "from_road": "60374",
+      "to_road": "50627",
+      "link_kind": "successor",
+      "contact_point": "start",
+      "z_from_end": 385.648047098,
+      "z_to_start": 386.207341,
+      "dz": 0.559293901999979,
+      "warnings": []
+    },
+    {
+      "from_road": "61274",
+      "to_road": "49186",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 380.341347,
+      "z_to_end": 379.8296773575195,
+      "dz": 0.5116696424805127,
+      "warnings": []
+    },
+    {
+      "from_road": "61549",
+      "to_road": "44363",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 373.205077,
+      "z_to_end": 372.5833112877679,
+      "dz": 0.6217657122321043,
+      "warnings": []
+    },
+    {
+      "from_road": "61776",
+      "to_road": "49226",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 376.033818,
+      "z_to_end": 376.6235706220006,
+      "dz": 0.5897526220006171,
+      "warnings": []
+    },
+    {
+      "from_road": "61804",
+      "to_road": "45223",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 381.354404,
+      "z_to_end": 379.7480978042883,
+      "dz": 1.6063061957116815,
+      "warnings": []
+    },
+    {
+      "from_road": "61804",
+      "to_road": "50206",
+      "link_kind": "successor",
+      "contact_point": "start",
+      "z_from_end": 380.1439498985656,
+      "z_to_start": 380.937185,
+      "dz": 0.7932351014343908,
+      "warnings": []
+    },
+    {
+      "from_road": "61805",
+      "to_road": "50206",
+      "link_kind": "successor",
+      "contact_point": "start",
+      "z_from_end": 380.07008439945804,
+      "z_to_start": 380.937185,
+      "dz": 0.8671006005419599,
+      "warnings": []
+    },
+    {
+      "from_road": "61808",
+      "to_road": "50206",
+      "link_kind": "successor",
+      "contact_point": "start",
+      "z_from_end": 379.97557017787636,
+      "z_to_start": 380.937185,
+      "dz": 0.9616148221236358,
+      "warnings": []
+    },
+    {
+      "from_road": "61814",
+      "to_road": "46515",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 370.967629,
+      "z_to_end": 371.5241775803498,
+      "dz": 0.5565485803497836,
+      "warnings": []
+    },
+    {
+      "from_road": "61890",
+      "to_road": "44438",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 383.144972,
+      "z_to_end": 382.59756615602913,
+      "dz": 0.5474058439708642,
+      "warnings": []
+    },
+    {
+      "from_road": "61897",
+      "to_road": "49288",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 380.898914,
+      "z_to_end": 381.431993,
+      "dz": 0.5330789999999865,
+      "warnings": []
+    },
+    {
+      "from_road": "61909",
+      "to_road": "50530",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 377.446992,
+      "z_to_end": 378.3337598691373,
+      "dz": 0.8867678691372589,
+      "warnings": []
+    },
+    {
+      "from_road": "61910",
+      "to_road": "50530",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 377.817766,
+      "z_to_end": 378.3337598691373,
+      "dz": 0.5159938691372759,
+      "warnings": []
+    },
+    {
+      "from_road": "61913",
+      "to_road": "51502",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 378.42504,
+      "z_to_end": 379.22026599840325,
+      "dz": 0.7952259984032253,
+      "warnings": []
+    },
+    {
+      "from_road": "61917",
+      "to_road": "49289",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 379.555316,
+      "z_to_end": 380.0957845855232,
+      "dz": 0.5404685855231719,
+      "warnings": []
+    },
+    {
+      "from_road": "62070",
+      "to_road": "45632",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 379.991219,
+      "z_to_end": 379.2787040866513,
+      "dz": 0.7125149133486843,
+      "warnings": []
+    },
+    {
+      "from_road": "62087",
+      "to_road": "45376",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 376.794773,
+      "z_to_end": 377.32488475899163,
+      "dz": 0.5301117589916089,
+      "warnings": []
+    },
+    {
+      "from_road": "62999",
+      "to_road": "45830",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 380.139037,
+      "z_to_end": 380.7935130219839,
+      "dz": 0.6544760219839532,
+      "warnings": []
+    },
+    {
+      "from_road": "63788",
+      "to_road": "44823",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 367.6439,
+      "z_to_end": 368.1746326927288,
+      "dz": 0.5307326927288045,
+      "warnings": []
+    },
+    {
+      "from_road": "63837",
+      "to_road": "45665",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 379.210087,
+      "z_to_end": 379.9536488514333,
+      "dz": 0.7435618514332987,
+      "warnings": []
+    },
+    {
+      "from_road": "64109",
+      "to_road": "49670",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 372.910278,
+      "z_to_end": 371.724371839658,
+      "dz": 1.1859061603420287,
+      "warnings": []
+    },
+    {
+      "from_road": "64109",
+      "to_road": "44881",
+      "link_kind": "successor",
+      "contact_point": "start",
+      "z_from_end": 370.990856936,
+      "z_to_start": 371.582638,
+      "dz": 0.5917810639999743,
+      "warnings": []
+    },
+    {
+      "from_road": "64199",
+      "to_road": "49791",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 381.715698,
+      "z_to_end": 382.7476892167832,
+      "dz": 1.03199121678324,
+      "warnings": []
+    },
+    {
+      "from_road": "64199",
+      "to_road": "44899",
+      "link_kind": "successor",
+      "contact_point": "start",
+      "z_from_end": 383.30363504459257,
+      "z_to_start": 382.724474,
+      "dz": 0.5791610445925812,
+      "warnings": []
+    },
+    {
+      "from_road": "64209",
+      "to_road": "45231",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 400.243159,
+      "z_to_end": 401.0791245934989,
+      "dz": 0.8359655934988837,
+      "warnings": []
+    },
+    {
+      "from_road": "64210",
+      "to_road": "45231",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 401.725015,
+      "z_to_end": 401.0791245934989,
+      "dz": 0.6458904065011097,
+      "warnings": []
+    },
+    {
+      "from_road": "64346",
+      "to_road": "44941",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 376.83055,
+      "z_to_end": 376.2899112343476,
+      "dz": 0.5406387656524316,
+      "warnings": []
+    },
+    {
+      "from_road": "64348",
+      "to_road": "46705",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 377.189405,
+      "z_to_end": 376.5364361508122,
+      "dz": 0.6529688491878005,
+      "warnings": []
+    },
+    {
+      "from_road": "64883",
+      "to_road": "46935",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 374.043279,
+      "z_to_end": 373.54046108345256,
+      "dz": 0.5028179165474285,
+      "warnings": []
+    },
+    {
+      "from_road": "64900",
+      "to_road": "50038",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 378.715765,
+      "z_to_end": 377.635495,
+      "dz": 1.0802699999999845,
+      "warnings": []
+    },
+    {
+      "from_road": "64900",
+      "to_road": "50039",
+      "link_kind": "successor",
+      "contact_point": "start",
+      "z_from_end": 377.53500428925537,
+      "z_to_start": 378.122337,
+      "dz": 0.5873327107446471,
+      "warnings": []
+    },
+    {
+      "from_road": "65007",
+      "to_road": "50088",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 380.084483,
+      "z_to_end": 380.60962068180686,
+      "dz": 0.525137681806882,
+      "warnings": []
+    },
+    {
+      "from_road": "65029",
+      "to_road": "51213",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 382.638033,
+      "z_to_end": 382.1372472159706,
+      "dz": 0.5007857840294037,
+      "warnings": []
+    },
+    {
+      "from_road": "65049",
+      "to_road": "46320",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 384.251881,
+      "z_to_end": 383.58547989043626,
+      "dz": 0.6664011095637647,
+      "warnings": []
+    },
+    {
+      "from_road": "65264",
+      "to_road": "45223",
+      "link_kind": "successor",
+      "contact_point": "start",
+      "z_from_end": 377.285448056138,
+      "z_to_start": 376.526411,
+      "dz": 0.7590370561380269,
+      "warnings": []
+    },
+    {
+      "from_road": "65267",
+      "to_road": "45223",
+      "link_kind": "successor",
+      "contact_point": "start",
+      "z_from_end": 377.256746,
+      "z_to_start": 376.526411,
+      "dz": 0.730335000000025,
+      "warnings": []
+    },
+    {
+      "from_road": "65268",
+      "to_road": "50206",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 377.042436,
+      "z_to_end": 377.71549814088706,
+      "dz": 0.6730621408870547,
+      "warnings": []
+    },
+    {
+      "from_road": "65269",
+      "to_road": "50206",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 377.069754,
+      "z_to_end": 377.71549814088706,
+      "dz": 0.645744140887075,
+      "warnings": []
+    },
+    {
+      "from_road": "65270",
+      "to_road": "50206",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 378.445832,
+      "z_to_end": 377.71549814088706,
+      "dz": 0.7303338591129318,
+      "warnings": []
+    },
+    {
+      "from_road": "65340",
+      "to_road": "45237",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 379.449706,
+      "z_to_end": 380.230379956429,
+      "dz": 0.7806739564289842,
+      "warnings": []
+    },
+    {
+      "from_road": "65603",
+      "to_road": "50329",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 372.516943,
+      "z_to_end": 373.0489267742316,
+      "dz": 0.5319837742315485,
+      "warnings": []
+    },
+    {
+      "from_road": "65670",
+      "to_road": "51050",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 367.69841,
+      "z_to_end": 368.44427442190806,
+      "dz": 0.7458644219080384,
+      "warnings": []
+    },
+    {
+      "from_road": "66367",
+      "to_road": "50575",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 371.998964,
+      "z_to_end": 372.72971478411114,
+      "dz": 0.7307507841111374,
+      "warnings": []
+    },
+    {
+      "from_road": "67097",
+      "to_road": "45986",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 370.08336,
+      "z_to_end": 370.80326972755455,
+      "dz": 0.7199097275545228,
+      "warnings": []
+    },
+    {
+      "from_road": "67098",
+      "to_road": "45986",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 370.0846,
+      "z_to_end": 370.80326972755455,
+      "dz": 0.7186697275545271,
+      "warnings": []
+    },
+    {
+      "from_road": "67099",
+      "to_road": "45986",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 371.442772,
+      "z_to_end": 370.80326972755455,
+      "dz": 0.6395022724454407,
+      "warnings": []
+    },
+    {
+      "from_road": "67132",
+      "to_road": "48548",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 376.771377,
+      "z_to_end": 375.54367000090826,
+      "dz": 1.2277069990917084,
+      "warnings": []
+    },
+    {
+      "from_road": "67132",
+      "to_road": "46003",
+      "link_kind": "successor",
+      "contact_point": "start",
+      "z_from_end": 376.771377,
+      "z_to_start": 377.383271,
+      "dz": 0.6118940000000066,
+      "warnings": []
+    },
+    {
+      "from_road": "67135",
+      "to_road": "51178",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 375.727578,
+      "z_to_end": 376.419836,
+      "dz": 0.6922579999999812,
+      "warnings": []
+    },
+    {
+      "from_road": "67135",
+      "to_road": "48548",
+      "link_kind": "successor",
+      "contact_point": "start",
+      "z_from_end": 379.6534121207771,
+      "z_to_start": 378.552407,
+      "dz": 1.1010051207770744,
+      "warnings": []
+    },
+    {
+      "from_road": "67140",
+      "to_road": "49293",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 378.804914,
+      "z_to_end": 377.1060213520679,
+      "dz": 1.698892647932098,
+      "warnings": []
+    },
+    {
+      "from_road": "67310",
+      "to_road": "46376",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 374.252522,
+      "z_to_end": 373.6358975962973,
+      "dz": 0.6166244037027013,
+      "warnings": []
+    },
+    {
+      "from_road": "67312",
+      "to_road": "46376",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 374.893225,
+      "z_to_end": 373.6358975962973,
+      "dz": 1.257327403702675,
+      "warnings": []
+    },
+    {
+      "from_road": "67312",
+      "to_road": "51573",
+      "link_kind": "successor",
+      "contact_point": "start",
+      "z_from_end": 372.973803758,
+      "z_to_start": 373.556324,
+      "dz": 0.5825202420000437,
+      "warnings": []
+    },
+    {
+      "from_road": "67313",
+      "to_road": "51573",
+      "link_kind": "successor",
+      "contact_point": "start",
+      "z_from_end": 373.03533791937156,
+      "z_to_start": 373.556324,
+      "dz": 0.520986080628461,
+      "warnings": []
+    },
+    {
+      "from_road": "67314",
+      "to_road": "51573",
+      "link_kind": "successor",
+      "contact_point": "start",
+      "z_from_end": 373.05599122708327,
+      "z_to_start": 373.556324,
+      "dz": 0.5003327729167495,
+      "warnings": []
+    },
+    {
+      "from_road": "67316",
+      "to_road": "51307",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 369.616412,
+      "z_to_end": 370.73357436133784,
+      "dz": 1.1171623613378188,
+      "warnings": []
+    },
+    {
+      "from_road": "67316",
+      "to_road": "46096",
+      "link_kind": "successor",
+      "contact_point": "start",
+      "z_from_end": 371.53583255800004,
+      "z_to_start": 370.867141,
+      "dz": 0.6686915580000345,
+      "warnings": []
+    },
+    {
+      "from_road": "67354",
+      "to_road": "46704",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 380.886686,
+      "z_to_end": 380.20277178544853,
+      "dz": 0.6839142145514643,
+      "warnings": []
+    },
+    {
+      "from_road": "67448",
+      "to_road": "46800",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 372.742382,
+      "z_to_end": 373.3143485362376,
+      "dz": 0.5719665362375963,
+      "warnings": []
+    },
+    {
+      "from_road": "67491",
+      "to_road": "46197",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 383.93948,
+      "z_to_end": 382.92342967560205,
+      "dz": 1.016050324397952,
+      "warnings": []
+    },
+    {
+      "from_road": "67491",
+      "to_road": "46479",
+      "link_kind": "successor",
+      "contact_point": "start",
+      "z_from_end": 382.25240754848517,
+      "z_to_start": 382.760177,
+      "dz": 0.5077694515148323,
+      "warnings": []
+    },
+    {
+      "from_road": "67576",
+      "to_road": "51519",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 371.628353,
+      "z_to_end": 370.5864118432569,
+      "dz": 1.0419411567431212,
+      "warnings": []
+    },
+    {
+      "from_road": "67576",
+      "to_road": "46269",
+      "link_kind": "successor",
+      "contact_point": "start",
+      "z_from_end": 370.55156624687794,
+      "z_to_start": 371.072944,
+      "dz": 0.5213777531220671,
+      "warnings": []
+    },
+    {
+      "from_road": "67590",
+      "to_road": "51149",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 382.520832,
+      "z_to_end": 382.00370953368446,
+      "dz": 0.5171224663155272,
+      "warnings": []
+    },
+    {
+      "from_road": "67595",
+      "to_road": "51714",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 374.391692,
+      "z_to_end": 375.2308914656438,
+      "dz": 0.8391994656438442,
+      "warnings": []
+    },
+    {
+      "from_road": "67635",
+      "to_road": "49774",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 386.053864,
+      "z_to_end": 384.83555302560785,
+      "dz": 1.218310974392125,
+      "warnings": []
+    },
+    {
+      "from_road": "67635",
+      "to_road": "46463",
+      "link_kind": "successor",
+      "contact_point": "start",
+      "z_from_end": 383.934775136,
+      "z_to_start": 384.702642,
+      "dz": 0.767866864000041,
+      "warnings": []
+    },
+    {
+      "from_road": "67637",
+      "to_road": "46460",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 385.626185,
+      "z_to_end": 385.0898278788866,
+      "dz": 0.5363571211134399,
+      "warnings": []
+    },
+    {
+      "from_road": "67727",
+      "to_road": "51743",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 370.777413,
+      "z_to_end": 369.538767,
+      "dz": 1.238646000000017,
+      "warnings": []
+    },
+    {
+      "from_road": "67832",
+      "to_road": "51432",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 376.389951,
+      "z_to_end": 375.00767311446305,
+      "dz": 1.3822778855369506,
+      "warnings": []
+    },
+    {
+      "from_road": "67832",
+      "to_road": "46446",
+      "link_kind": "successor",
+      "contact_point": "start",
+      "z_from_end": 373.8335915546058,
+      "z_to_start": 374.522473,
+      "dz": 0.6888814453942018,
+      "warnings": []
+    },
+    {
+      "from_road": "67835",
+      "to_road": "51532",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 373.965016,
+      "z_to_end": 372.47492966065397,
+      "dz": 1.4900863393460213,
+      "warnings": []
+    },
+    {
+      "from_road": "67836",
+      "to_road": "51532",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 373.700963,
+      "z_to_end": 372.47492966065397,
+      "dz": 1.2260333393460314,
+      "warnings": []
+    },
+    {
+      "from_road": "67836",
+      "to_road": "51418",
+      "link_kind": "successor",
+      "contact_point": "start",
+      "z_from_end": 373.780745007448,
+      "z_to_start": 374.529591,
+      "dz": 0.7488459925519919,
+      "warnings": []
+    },
+    {
+      "from_road": "67837",
+      "to_road": "51532",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 371.338417,
+      "z_to_end": 372.47492966065397,
+      "dz": 1.1365126606539775,
+      "warnings": []
+    },
+    {
+      "from_road": "67840",
+      "to_road": "49879",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 371.732841,
+      "z_to_end": 372.8404356377528,
+      "dz": 1.1075946377528112,
+      "warnings": []
+    },
+    {
+      "from_road": "67841",
+      "to_road": "49879",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 373.532367,
+      "z_to_end": 372.8404356377528,
+      "dz": 0.6919313622472032,
+      "warnings": []
+    },
+    {
+      "from_road": "67853",
+      "to_road": "46466",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 381.407419,
+      "z_to_end": 380.27836255869397,
+      "dz": 1.1290564413060338,
+      "warnings": []
+    },
+    {
+      "from_road": "67853",
+      "to_road": "46465",
+      "link_kind": "successor",
+      "contact_point": "start",
+      "z_from_end": 381.31357373371486,
+      "z_to_start": 381.879532,
+      "dz": 0.5659582662851221,
+      "warnings": []
+    },
+    {
+      "from_road": "67857",
+      "to_road": "46459",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 380.217663,
+      "z_to_end": 379.3772916625954,
+      "dz": 0.8403713374046333,
+      "warnings": []
+    },
+    {
+      "from_road": "67860",
+      "to_road": "46465",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 383.482728,
+      "z_to_end": 382.91594536129753,
+      "dz": 0.5667826387024775,
+      "warnings": []
+    },
+    {
+      "from_road": "67881",
+      "to_road": "46607",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 380.416047,
+      "z_to_end": 379.86876783497246,
+      "dz": 0.5472791650275326,
+      "warnings": []
+    },
+    {
+      "from_road": "67900",
+      "to_road": "47746",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 378.484932,
+      "z_to_end": 378.9969025222278,
+      "dz": 0.5119705222277844,
+      "warnings": []
+    },
+    {
+      "from_road": "67928",
+      "to_road": "51761",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 374.768379,
+      "z_to_end": 374.1542779674322,
+      "dz": 0.6141010325677598,
+      "warnings": []
+    },
+    {
+      "from_road": "67967",
+      "to_road": "51675",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 379.143276,
+      "z_to_end": 378.3383453395296,
+      "dz": 0.8049306604704043,
+      "warnings": []
+    },
+    {
+      "from_road": "67968",
+      "to_road": "51675",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 376.681343,
+      "z_to_end": 378.3383453395296,
+      "dz": 1.6570023395295834,
+      "warnings": []
+    },
+    {
+      "from_road": "67968",
+      "to_road": "51506",
+      "link_kind": "successor",
+      "contact_point": "start",
+      "z_from_end": 380.75430605768537,
+      "z_to_start": 379.616616,
+      "dz": 1.1376900576853473,
+      "warnings": []
+    },
+    {
+      "from_road": "67969",
+      "to_road": "51675",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 378.857258,
+      "z_to_end": 378.3383453395296,
+      "dz": 0.5189126604703915,
+      "warnings": []
+    },
+    {
+      "from_road": "67969",
+      "to_road": "51507",
+      "link_kind": "successor",
+      "contact_point": "start",
+      "z_from_end": 378.857258,
+      "z_to_start": 379.376008,
+      "dz": 0.5187500000000114,
+      "warnings": []
+    },
+    {
+      "from_road": "67972",
+      "to_road": "50246",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 380.27522,
+      "z_to_end": 379.5805186509631,
+      "dz": 0.6947013490369045,
+      "warnings": []
+    },
+    {
+      "from_road": "67972",
+      "to_road": "51506",
+      "link_kind": "successor",
+      "contact_point": "start",
+      "z_from_end": 380.27522,
+      "z_to_start": 379.616616,
+      "dz": 0.6586039999999684,
+      "warnings": []
+    },
+    {
+      "from_road": "67973",
+      "to_road": "46643",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 379.893921,
+      "z_to_end": 379.1354418494189,
+      "dz": 0.7584791505810813,
+      "warnings": []
+    },
+    {
+      "from_road": "68167",
+      "to_road": "47162",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 370.77124,
+      "z_to_end": 369.82612541648416,
+      "dz": 0.9451145835158172,
+      "warnings": []
+    },
+    {
+      "from_road": "68265",
+      "to_road": "49228",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 373.084943,
+      "z_to_end": 372.49342793897335,
+      "dz": 0.5915150610266551,
+      "warnings": []
+    },
+    {
+      "from_road": "68288",
+      "to_road": "46853",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 377.331721,
+      "z_to_end": 377.8793537561728,
+      "dz": 0.5476327561727885,
+      "warnings": []
+    },
+    {
+      "from_road": "68535",
+      "to_road": "50221",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 374.016314,
+      "z_to_end": 374.55217180936035,
+      "dz": 0.5358578093603228,
+      "warnings": []
+    },
+    {
+      "from_road": "68579",
+      "to_road": "48683",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 372.161765,
+      "z_to_end": 371.6567016242505,
+      "dz": 0.5050633757495007,
+      "warnings": []
+    },
+    {
+      "from_road": "68587",
+      "to_road": "42817",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 372.359467,
+      "z_to_end": 371.6928185882216,
+      "dz": 0.6666484117783966,
+      "warnings": []
+    },
+    {
+      "from_road": "68587",
+      "to_road": "47703",
+      "link_kind": "successor",
+      "contact_point": "start",
+      "z_from_end": 372.359467,
+      "z_to_start": 372.882362,
+      "dz": 0.5228950000000054,
+      "warnings": []
+    },
+    {
+      "from_road": "68591",
+      "to_road": "49473",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 371.100988,
+      "z_to_end": 371.93187167362686,
+      "dz": 0.8308836736268859,
+      "warnings": []
+    },
+    {
+      "from_road": "68591",
+      "to_road": "50888",
+      "link_kind": "successor",
+      "contact_point": "start",
+      "z_from_end": 371.3802310643214,
+      "z_to_start": 370.808359,
+      "dz": 0.5718720643213828,
+      "warnings": []
+    },
+    {
+      "from_road": "68595",
+      "to_road": "50679",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 373.229653,
+      "z_to_end": 372.6042390700635,
+      "dz": 0.6254139299364851,
+      "warnings": []
+    },
+    {
+      "from_road": "69005",
+      "to_road": "50980",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 380.161336,
+      "z_to_end": 379.2096889304054,
+      "dz": 0.9516470695946282,
+      "warnings": []
+    },
+    {
+      "from_road": "69028",
+      "to_road": "51449",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 383.505428,
+      "z_to_end": 382.96615148347024,
+      "dz": 0.5392765165297533,
+      "warnings": []
+    },
+    {
+      "from_road": "69029",
+      "to_road": "50889",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 371.434303,
+      "z_to_end": 370.84778887903684,
+      "dz": 0.5865141209631588,
+      "warnings": []
+    },
+    {
+      "from_road": "69304",
+      "to_road": "42377",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 376.509198,
+      "z_to_end": 377.2769147034835,
+      "dz": 0.7677167034834724,
+      "warnings": []
+    },
+    {
+      "from_road": "69455",
+      "to_road": "42392",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 400.895716,
+      "z_to_end": 401.41978028282693,
+      "dz": 0.5240642828269415,
+      "warnings": []
+    },
+    {
+      "from_road": "69471",
+      "to_road": "46794",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 382.543363,
+      "z_to_end": 381.99826176826593,
+      "dz": 0.5451012317340655,
+      "warnings": []
+    },
+    {
+      "from_road": "69475",
+      "to_road": "42393",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 382.816468,
+      "z_to_end": 383.33659104172403,
+      "dz": 0.5201230417240481,
+      "warnings": []
+    },
+    {
+      "from_road": "69653",
+      "to_road": "51192",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 377.986885,
+      "z_to_end": 378.61140779085207,
+      "dz": 0.6245227908520974,
+      "warnings": []
+    },
+    {
+      "from_road": "69738",
+      "to_road": "50247",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 383.255252,
+      "z_to_end": 383.8136597481991,
+      "dz": 0.5584077481991017,
+      "warnings": []
+    },
+    {
+      "from_road": "69758",
+      "to_road": "50114",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 381.106633,
+      "z_to_end": 380.4084977457181,
+      "dz": 0.6981352542819081,
+      "warnings": []
+    },
+    {
+      "from_road": "69763",
+      "to_road": "43712",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 382.187714,
+      "z_to_end": 381.65040512890556,
+      "dz": 0.5373088710944671,
+      "warnings": []
+    },
+    {
+      "from_road": "69770",
+      "to_road": "46499",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 375.621626,
+      "z_to_end": 375.0789416215168,
+      "dz": 0.5426843784832158,
+      "warnings": []
+    },
+    {
+      "from_road": "69920",
+      "to_road": "45632",
+      "link_kind": "successor",
+      "contact_point": "start",
+      "z_from_end": 379.86632,
+      "z_to_start": 379.326692,
+      "dz": 0.5396279999999933,
+      "warnings": []
+    },
+    {
+      "from_road": "69939",
+      "to_road": "45095",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 379.012948,
+      "z_to_end": 379.6778586594406,
+      "dz": 0.6649106594405794,
+      "warnings": []
+    },
+    {
+      "from_road": "69941",
+      "to_road": "46888",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 379.316077,
+      "z_to_end": 378.6249921223179,
+      "dz": 0.6910848776821013,
+      "warnings": []
+    },
+    {
+      "from_road": "70034",
+      "to_road": "44377",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 388.164041,
+      "z_to_end": 388.83674114999314,
+      "dz": 0.6727001499931475,
+      "warnings": []
+    },
+    {
+      "from_road": "70035",
+      "to_road": "44377",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 388.137448,
+      "z_to_end": 388.83674114999314,
+      "dz": 0.6992931499931387,
+      "warnings": []
+    },
+    {
+      "from_road": "70036",
+      "to_road": "44377",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 388.213806,
+      "z_to_end": 388.83674114999314,
+      "dz": 0.6229351499931681,
+      "warnings": []
+    },
+    {
+      "from_road": "70037",
+      "to_road": "44377",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 389.458409,
+      "z_to_end": 388.83674114999314,
+      "dz": 0.6216678500068724,
+      "warnings": []
+    },
+    {
+      "from_road": "70269",
+      "to_road": "51165",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 382.556107,
+      "z_to_end": 381.99228800606625,
+      "dz": 0.5638189939337508,
+      "warnings": []
+    },
+    {
+      "from_road": "70467",
+      "to_road": "45601",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 376.919041,
+      "z_to_end": 377.81190087034344,
+      "dz": 0.8928598703434432,
+      "warnings": []
+    },
+    {
+      "from_road": "70467",
+      "to_road": "47101",
+      "link_kind": "successor",
+      "contact_point": "start",
+      "z_from_end": 378.41883799813706,
+      "z_to_start": 377.918504,
+      "dz": 0.50033399813708,
+      "warnings": []
+    },
+    {
+      "from_road": "70646",
+      "to_road": "47268",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 378.550697,
+      "z_to_end": 377.691425,
+      "dz": 0.8592720000000327,
+      "warnings": []
+    },
+    {
+      "from_road": "70655",
+      "to_road": "46985",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 376.614384,
+      "z_to_end": 376.085654,
+      "dz": 0.5287299999999959,
+      "warnings": []
+    },
+    {
+      "from_road": "70656",
+      "to_road": "46985",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 376.593038,
+      "z_to_end": 376.085654,
+      "dz": 0.5073840000000018,
+      "warnings": []
+    },
+    {
+      "from_road": "70688",
+      "to_road": "46061",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 372.206755,
+      "z_to_end": 372.85572266438766,
+      "dz": 0.6489676643876692,
+      "warnings": []
+    },
+    {
+      "from_road": "70745",
+      "to_road": "50978",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 375.276597,
+      "z_to_end": 374.7119038335922,
+      "dz": 0.5646931664077783,
+      "warnings": []
+    },
+    {
+      "from_road": "70746",
+      "to_road": "50978",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 375.30748,
+      "z_to_end": 374.7119038335922,
+      "dz": 0.5955761664077954,
+      "warnings": []
+    },
+    {
+      "from_road": "70821",
+      "to_road": "51174",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 379.949855,
+      "z_to_end": 378.84583546033247,
+      "dz": 1.1040195396675472,
+      "warnings": []
+    },
+    {
+      "from_road": "70821",
+      "to_road": "47020",
+      "link_kind": "successor",
+      "contact_point": "start",
+      "z_from_end": 378.6913866580664,
+      "z_to_start": 379.269393,
+      "dz": 0.5780063419335875,
+      "warnings": []
+    },
+    {
+      "from_road": "70822",
+      "to_road": "47020",
+      "link_kind": "successor",
+      "contact_point": "start",
+      "z_from_end": 378.7445309971201,
+      "z_to_start": 379.269393,
+      "dz": 0.5248620028798996,
+      "warnings": []
+    },
+    {
+      "from_road": "71134",
+      "to_road": "51163",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 368.656119,
+      "z_to_end": 368.11814967765855,
+      "dz": 0.5379693223414392,
+      "warnings": []
+    },
+    {
+      "from_road": "71138",
+      "to_road": "42899",
+      "link_kind": "successor",
+      "contact_point": "start",
+      "z_from_end": 368.9601250160667,
+      "z_to_start": 369.577889,
+      "dz": 0.6177639839333438,
+      "warnings": []
+    },
+    {
+      "from_road": "71142",
+      "to_road": "42899",
+      "link_kind": "successor",
+      "contact_point": "start",
+      "z_from_end": 369.04103025378924,
+      "z_to_start": 369.577889,
+      "dz": 0.5368587462107826,
+      "warnings": []
+    },
+    {
+      "from_road": "71147",
+      "to_road": "42899",
+      "link_kind": "successor",
+      "contact_point": "start",
+      "z_from_end": 369.072446,
+      "z_to_start": 369.577889,
+      "dz": 0.5054430000000139,
+      "warnings": []
+    },
+    {
+      "from_road": "71151",
+      "to_road": "47547",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 369.141066,
+      "z_to_end": 368.57132205563676,
+      "dz": 0.5697439443632675,
+      "warnings": []
+    },
+    {
+      "from_road": "71152",
+      "to_road": "47547",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 368.06588,
+      "z_to_end": 368.57132205563676,
+      "dz": 0.5054420556367631,
+      "warnings": []
+    },
+    {
+      "from_road": "71362",
+      "to_road": "49771",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 370.030339,
+      "z_to_end": 369.5227655610396,
+      "dz": 0.5075734389604349,
+      "warnings": []
+    },
+    {
+      "from_road": "71363",
+      "to_road": "49771",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 370.134655,
+      "z_to_end": 369.5227655610396,
+      "dz": 0.6118894389604179,
+      "warnings": []
+    },
+    {
+      "from_road": "71386",
+      "to_road": "48938",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 384.971571,
+      "z_to_end": 384.29887895740313,
+      "dz": 0.6726920425968501,
+      "warnings": []
+    },
+    {
+      "from_road": "71403",
+      "to_road": "47522",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 378.645589,
+      "z_to_end": 379.71641385173564,
+      "dz": 1.070824851735665,
+      "warnings": []
+    },
+    {
+      "from_road": "71446",
+      "to_road": "45898",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 369.037618,
+      "z_to_end": 369.6662826070872,
+      "dz": 0.6286646070872166,
+      "warnings": []
+    },
+    {
+      "from_road": "71561",
+      "to_road": "47093",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 375.461708,
+      "z_to_end": 374.18663180105153,
+      "dz": 1.2750761989484545,
+      "warnings": []
+    },
+    {
+      "from_road": "71561",
+      "to_road": "42572",
+      "link_kind": "successor",
+      "contact_point": "start",
+      "z_from_end": 373.394639164,
+      "z_to_start": 374.024689,
+      "dz": 0.630049836000012,
+      "warnings": []
+    },
+    {
+      "from_road": "71863",
+      "to_road": "46063",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 367.172308,
+      "z_to_end": 368.12483925375415,
+      "dz": 0.9525312537541595,
+      "warnings": []
+    },
+    {
+      "from_road": "71864",
+      "to_road": "47174",
+      "link_kind": "successor",
+      "contact_point": "start",
+      "z_from_end": 368.734603,
+      "z_to_start": 368.118551,
+      "dz": 0.6160519999999678,
+      "warnings": []
+    },
+    {
+      "from_road": "71868",
+      "to_road": "47174",
+      "link_kind": "successor",
+      "contact_point": "start",
+      "z_from_end": 368.634927587945,
+      "z_to_start": 368.118551,
+      "dz": 0.5163765879449898,
+      "warnings": []
+    },
+    {
+      "from_road": "71869",
+      "to_road": "47173",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 371.353273,
+      "z_to_end": 370.6864568341172,
+      "dz": 0.6668161658827785,
+      "warnings": []
+    },
+    {
+      "from_road": "72089",
+      "to_road": "42638",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 377.665518,
+      "z_to_end": 378.22780244960563,
+      "dz": 0.5622844496056132,
+      "warnings": []
+    },
+    {
+      "from_road": "72090",
+      "to_road": "47203",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 378.551773,
+      "z_to_end": 377.8724728286413,
+      "dz": 0.6793001713587046,
+      "warnings": []
+    },
+    {
+      "from_road": "72091",
+      "to_road": "47203",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 378.500888,
+      "z_to_end": 377.8724728286413,
+      "dz": 0.6284151713586539,
+      "warnings": []
+    },
+    {
+      "from_road": "72097",
+      "to_road": "49284",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 380.682489,
+      "z_to_end": 379.60427806005674,
+      "dz": 1.078210939943233,
+      "warnings": []
+    },
+    {
+      "from_road": "72098",
+      "to_road": "49284",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 380.619147,
+      "z_to_end": 379.60427806005674,
+      "dz": 1.0148689399432556,
+      "warnings": []
+    },
+    {
+      "from_road": "72115",
+      "to_road": "47212",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 378.596049,
+      "z_to_end": 379.1123193184677,
+      "dz": 0.5162703184677184,
+      "warnings": []
+    },
+    {
+      "from_road": "72145",
+      "to_road": "47208",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 379.439533,
+      "z_to_end": 380.507106034734,
+      "dz": 1.067573034734039,
+      "warnings": []
+    },
+    {
+      "from_road": "72146",
+      "to_road": "47208",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 379.103203,
+      "z_to_end": 380.507106034734,
+      "dz": 1.4039030347340145,
+      "warnings": []
+    },
+    {
+      "from_road": "72147",
+      "to_road": "47208",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 378.986981,
+      "z_to_end": 380.507106034734,
+      "dz": 1.5201250347340078,
+      "warnings": []
+    },
+    {
+      "from_road": "72153",
+      "to_road": "49283",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 382.610061,
+      "z_to_end": 384.5804240332384,
+      "dz": 1.9703630332384137,
+      "warnings": []
+    },
+    {
+      "from_road": "72158",
+      "to_road": "42633",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 382.679248,
+      "z_to_end": 381.989577965266,
+      "dz": 0.6896700347339788,
+      "warnings": []
+    },
+    {
+      "from_road": "72544",
+      "to_road": "48710",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 373.837456,
+      "z_to_end": 374.53769626387094,
+      "dz": 0.7002402638709668,
+      "warnings": []
+    },
+    {
+      "from_road": "72544",
+      "to_road": "48711",
+      "link_kind": "successor",
+      "contact_point": "start",
+      "z_from_end": 371.5815558098346,
+      "z_to_start": 372.082951,
+      "dz": 0.5013951901653968,
+      "warnings": []
+    },
+    {
+      "from_road": "72545",
+      "to_road": "48710",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 373.853593,
+      "z_to_end": 374.53769626387094,
+      "dz": 0.6841032638709521,
+      "warnings": []
+    },
+    {
+      "from_road": "72546",
+      "to_road": "48710",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 375.15367,
+      "z_to_end": 374.53769626387094,
+      "dz": 0.6159737361290354,
+      "warnings": []
+    },
+    {
+      "from_road": "72548",
+      "to_road": "48711",
+      "link_kind": "successor",
+      "contact_point": "start",
+      "z_from_end": 371.4892578977608,
+      "z_to_start": 372.082951,
+      "dz": 0.5936931022391718,
+      "warnings": []
+    },
+    {
+      "from_road": "72549",
+      "to_road": "43952",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 371.527011,
+      "z_to_end": 370.7572233024367,
+      "dz": 0.769787697563288,
+      "warnings": []
+    },
+    {
+      "from_road": "72551",
+      "to_road": "43952",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 370.16353,
+      "z_to_end": 370.7572233024367,
+      "dz": 0.5936933024367477,
+      "warnings": []
+    },
+    {
+      "from_road": "73117",
+      "to_road": "42743",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 375.058648,
+      "z_to_end": 374.55399004877916,
+      "dz": 0.5046579512208496,
+      "warnings": []
+    },
+    {
+      "from_road": "73488",
+      "to_road": "45142",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 381.900417,
+      "z_to_end": 382.4446007855284,
+      "dz": 0.5441837855283893,
+      "warnings": []
+    },
+    {
+      "from_road": "73782",
+      "to_road": "42818",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 373.95278,
+      "z_to_end": 373.3931137746886,
+      "dz": 0.5596662253114459,
+      "warnings": []
+    },
+    {
+      "from_road": "73786",
+      "to_road": "47703",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 375.027744,
+      "z_to_end": 375.77718503368584,
+      "dz": 0.749441033685855,
+      "warnings": []
+    },
+    {
+      "from_road": "73787",
+      "to_road": "47703",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 376.38718,
+      "z_to_end": 375.77718503368584,
+      "dz": 0.6099949663141615,
+      "warnings": []
+    },
+    {
+      "from_road": "73809",
+      "to_road": "51292",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 369.780187,
+      "z_to_end": 369.17789507848994,
+      "dz": 0.6022919215100728,
+      "warnings": []
+    },
+    {
+      "from_road": "73888",
+      "to_road": "42184",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 370.76847,
+      "z_to_end": 371.33223192151,
+      "dz": 0.5637619215100358,
+      "warnings": []
+    },
+    {
+      "from_road": "73937",
+      "to_road": "47734",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 376.110906,
+      "z_to_end": 375.49150872073216,
+      "dz": 0.6193972792678437,
+      "warnings": []
+    },
+    {
+      "from_road": "73940",
+      "to_road": "42841",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 375.28594,
+      "z_to_end": 375.84273706536106,
+      "dz": 0.5567970653610814,
+      "warnings": []
+    },
+    {
+      "from_road": "73947",
+      "to_road": "42840",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 378.918721,
+      "z_to_end": 379.583417254016,
+      "dz": 0.6646962540160075,
+      "warnings": []
+    },
+    {
+      "from_road": "73948",
+      "to_road": "42840",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 378.799492,
+      "z_to_end": 379.583417254016,
+      "dz": 0.783925254016026,
+      "warnings": []
+    },
+    {
+      "from_road": "73949",
+      "to_road": "42840",
+      "link_kind": "predecessor",
+      "contact_point": "end",
+      "z_from_start": 380.227104,
+      "z_to_end": 379.583417254016,
+      "dz": 0.6436867459839846,
+      "warnings": []
+    }
+  ],
+  "warnings": [],
+  "offset_solver": {
+    "enabled": true,
+    "applied": true,
+    "reason": "strict_auto_enabled",
+    "explicit_env_override": false,
+    "strict_mode": true,
+    "roads_with_offsets": 32265,
+    "components": 1,
+    "max_abs_offset_m": 4.9417040744675464
+  }
+}

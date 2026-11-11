@@ -1,0 +1,62 @@
+{
+  "created_utc": "2026-11-05T13:20:54Z",
+  "updated_utc": "2026-11-05T13:20:54Z",
+  "env": {
+    "os": "Windows-11-10.0.26300-SP0",
+    "python": "3.12.2",
+    "machine": "AMD64",
+    "git_commit": "361958ca2a37188269c1d693fe8b14ab993d1789",
+    "git_status_porcelain": "?? reports/architecture_gate/TILE_COOK_RUNTIME_PROFILE_361958ca.json\n?? reports/architecture_gate/TILE_COOK_RUNTIME_PROFILE_361958ca.md\n?? reports/recovered/rq1b_host_reboot_attempt4_20261105.tar.gz\n?? reports/recovered/rq1b_reprodefect_attempt1_20261021/\n?? reports/recovered/rq1b_server_restart_attempt2_20261021.tar.gz\n?? reports/recovered/rq1b_server_restart_attempt3_20261021.tar.gz\n?? reports/rq1b_runs/run_04/\n?? reports/rq1b_runs5_20261105/"
+  },
+  "gps_bounds_wgs84": {
+    "lat_min": 48.74935649548228,
+    "lon_min": 11.422268084715878,
+    "lat_max": 48.77444431571603,
+    "lon_max": 11.47882091528412
+  },
+  "settings": {
+    "snapshot_sha256": "45c3a84bb80812dad8e6ea106c9692bbb08ab7536ed245d38df6e6402808ec93",
+    "snapshot_md5": "2286a01dc8fe06665cd3373f9dd78b34",
+    "schema_version": "1.0"
+  },
+  "inputs": {
+    "OSM_FILE": {
+      "path": "H:\\opencode\\rq12-closure\\campaigns\\ingolstadt_cooked_perception_v1\\source\\ingolstadt_authoritative.osm",
+      "exists": true,
+      "size_bytes": 11154738,
+      "sha256": "b9e074656f744c31e6aabb0a16e6b2246824ca74e202ea2c316ff7f22364f24f",
+      "md5": "395355b0274a664c683f39b7d1b8d81b"
+    },
+    "DEM_TIF": {
+      "path": "H:\\opencode\\rq12-closure\\cities\\ingolstadt\\dem\\dem_ing.tif",
+      "exists": true,
+      "size_bytes": 1711684,
+      "sha256": "3cfa665dde3782a015502beaf457854db2f639d01008a386c925d171e41f4ff8",
+      "md5": "3d1d7a67ce44a4b296fb15beedad7d5e"
+    },
+    "SENSOR_CALIB_JSON": {
+      "path": "H:\\opencode\\rq12-closure\\ultimate_pipeline\\sensors\\calib_data.json",
+      "exists": true,
+      "size_bytes": 5016,
+      "sha256": "d3ff2660b11ca56d16c6185e82d1b4c7fa94c5db27bb3469558442d79f4e97d9",
+      "md5": "c7a4de1c7f650136c67df69d159dba83"
+    },
+    "INPUT_XODR": {
+      "path": "H:\\opencode\\rq12-closure\\campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_map_of_record_20260916_232831.xodr",
+      "exists": true,
+      "size_bytes": 149799632,
+      "sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+      "md5": "c389a67536f3e3e5c7bc43f15118f018"
+    }
+  },
+  "notes": {
+    "purpose": "thesis_provenance",
+    "strict_mode": false,
+    "sim_gate_enabled": false,
+    "offset_policy": null,
+    "gps_anchor_override_allowed": null
+  },
+  "preanchor": {
+    "applied": false
+  }
+}

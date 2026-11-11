@@ -1,0 +1,26 @@
+{
+  "final_xodr": "e2f08bc7a49daaf28f8986873a3ea8a1ef23186e9b4257543353ab34b873ed6b",
+  "enrichments_json": null,
+  "settings_snapshot": "4da549eb52ace0339be3b4266db5a9434f52060a7f7a702393aa1e4ae8510050",
+  "seed": 42,
+  "seeds": {
+    "deterministic_seed": 42,
+    "python_hash_seed": "0"
+  },
+  "env": {
+    "UP_CARLA_SAFE_MODE": "1",
+    "UP_DISABLE_OSM_DOWNLOAD": "1",
+    "UP_OFFLINE_ONLY": "1",
+    "UP_OSM_FILE": "H:\\opencode\\rq12-closure\\campaigns\\ingolstadt_cooked_perception_v1\\source\\ingolstadt_authoritative.osm",
+    "UP_PINNED_BUILDINGS_SOURCE": "H:\\opencode\\rq12-closure\\campaigns\\ingolstadt_cooked_perception_v1\\source\\ingolstadt_buildings_overpass.json",
+    "UP_RELEASE_PROFILE": "DEVELOPMENT",
+    "UP_RUN_TAG": "rq1b_run04",
+    "UP_CARLA_FALLBACK_ENABLED": "1",
+    "UP_CARLA_FALLBACK_MAPS": "Town10HD_Opt,Town05,Town03,Town01",
+    "UP_CARLA_RPC_PORT": "2000",
+    "UP_CARLA_STREAMING_PORT": "2001"
+  },
+  "python_version": "3.12.2 (tags/v3.12.2:6abddd9, Feb  6 2024, 21:26:36) [MSC v.1937 64 bit (AMD64)]",
+  "os_info": "Windows-11-10.0.26300-SP0",
+  "git_commit": "361958ca2a37188269c1d693fe8b14ab993d1789"
+}

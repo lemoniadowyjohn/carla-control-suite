@@ -1,0 +1,24 @@
+Traceback (most recent call last):
+  File "H:\opencode\rq12-closure\ultimate_pipeline\main_pipeline.py", line 1705, in run
+    self._run_internal()
+  File "H:\opencode\rq12-closure\ultimate_pipeline\main_pipeline.py", line 2260, in _run_internal
+    working_topology = self._step2_topology_semantics(sanitized, sumo_fixed)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "H:\opencode\rq12-closure\ultimate_pipeline\main_pipeline.py", line 3554, in _step2_topology_semantics
+    return _impl(self, sanitized, sumo_fixed)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "H:\opencode\rq12-closure\ultimate_pipeline\pipeline_stages\stage_02_topology_semantics.py", line 26, in _step2_topology_semantics
+    tree, root = load_xodr(sanitized)
+                 ^^^^^^^^^^^^^^^^^^^^
+  File "H:\opencode\rq12-closure\ultimate_pipeline\core\odr_io.py", line 19, in load_xodr
+    return read_xodr(path)
+           ^^^^^^^^^^^^^^^
+  File "H:\opencode\rq12-closure\ultimate_pipeline\core\file_utils.py", line 20, in read_xodr
+    tree = ET.parse(path)
+           ^^^^^^^^^^^^^^
+  File "C:\Users\admin\AppData\Local\Programs\Python\Python312\Lib\xml\etree\ElementTree.py", line 1204, in parse
+    tree.parse(source, parser)
+  File "C:\Users\admin\AppData\Local\Programs\Python\Python312\Lib\xml\etree\ElementTree.py", line 558, in parse
+    source = open(source, "rb")
+             ^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: 'reports\\rq1b_runs\\run_03\\rq1b_full\\rq1b_run03\\01_sanitized_rq1b_run03.xodr'

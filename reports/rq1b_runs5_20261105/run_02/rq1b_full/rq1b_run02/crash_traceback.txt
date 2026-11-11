@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "H:\opencode\rq12-closure\ultimate_pipeline\main_pipeline.py", line 1705, in run
+    self._run_internal()
+  File "H:\opencode\rq12-closure\ultimate_pipeline\main_pipeline.py", line 2570, in _run_internal
+    self._assert_structure_frozen_unchanged(final_out, "after_tiling")
+  File "H:\opencode\rq12-closure\ultimate_pipeline\main_pipeline.py", line 3370, in _assert_structure_frozen_unchanged
+    self.authority_ledger.assert_structure_unchanged(final_out, where=where)
+  File "H:\opencode\rq12-closure\ultimate_pipeline\contracts\artifact_authority.py", line 595, in assert_structure_unchanged
+    raise ArtifactAuthorityError(
+ultimate_pipeline.contracts.artifact_authority.ArtifactAuthorityError: STRUCTURE_FROZEN violated at 'after_tiling': structural aspects ['road_elevations'] changed after the structural freeze (baseline d456971f8e38addb... from 'reports\\rq1b_runs5_20261105\\run_02\\rq1b_full\\rq1b_run02\\08h5_g6_lane_coverage_repaired.xodr', now d3a8a02f1203a18e... from 'reports\\rq1b_runs5_20261105\\run_02\\rq1b_full\\rq1b_run02\\08h5_g6_lane_coverage_repaired.xodr'). A stage that must mutate structure has to invalidate STRUCTURE_FROZEN and force every derived artifact to be regenerated.

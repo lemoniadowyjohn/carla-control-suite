@@ -1,0 +1,34 @@
+{
+  "timestamp_utc": "2026-11-05T18:57:50.466815+00:00",
+  "roads_total": 32266,
+  "junctions_total": 3559,
+  "added_junction_links": 0,
+  "missing_road_to_junction_links_before": 0,
+  "missing_road_to_junction_links_after": 0,
+  "remaining_unlinked_nonjunction_roads": 0,
+  "suspicious_matches": [],
+  "link_slot_conflicts": [],
+  "notes": [
+    "No missing road-to-junction links were added."
+  ],
+  "missing_link_roads_non_junction_before": 0,
+  "junction_link_additions": 0,
+  "remaining_unlinked_incoming_roads": 0,
+  "remaining_unlinked_roads_non_junction": 0,
+  "remaining_unlinked_incoming_road_ids": [],
+  "remaining_unlinked_road_ids_non_junction": [],
+  "output_xodr_path": "08_final_rq1b_run03_linkpatched.xodr",
+  "input_xodr_sha256": "d32a8f1580f6b0693a2329f4d02ffb23b52d5d26f22b1e819f46e7a2a53d949b",
+  "output_xodr_sha256": "d32a8f1580f6b0693a2329f4d02ffb23b52d5d26f22b1e819f46e7a2a53d949b",
+  "modified": false,
+  "source_xodr_path": "H:\\opencode\\rq12-closure\\reports\\rq1b_runs5_20261105\\run_03\\rq1b_full\\rq1b_run03\\08_final_rq1b_run03.xodr",
+  "patch_enabled": true,
+  "lane_link_target_gate_pre": {
+    "ok": true,
+    "num_issues": 0
+  },
+  "lane_link_target_gate_post": {
+    "ok": true,
+    "num_issues": 0
+  }
+}

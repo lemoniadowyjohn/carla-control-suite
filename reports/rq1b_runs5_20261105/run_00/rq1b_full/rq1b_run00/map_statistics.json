@@ -1,0 +1,82 @@
+{
+  "roads": {
+    "count": 32266,
+    "total_length_m": 1487574.54530501,
+    "avg_length_m": 46.10346945097037,
+    "min_length_m": 0.1,
+    "max_length_m": 4666.29147002,
+    "length_histogram": {
+      "0-10": 5845,
+      "10-30": 17822,
+      "30-60": 2705,
+      "60-120": 2845,
+      "120-250": 2156,
+      "250-500": 652,
+      ">500": 241
+    }
+  },
+  "lanes": {
+    "total_lanes": 53630,
+    "avg_lanes_per_road": 1.6621211182049216,
+    "width_min": 2.0,
+    "width_avg": 2.8114412455715088,
+    "width_max": 3.75
+  },
+  "geometry": {
+    "geometry_counts": {
+      "line": 24610,
+      "spiral": 0,
+      "arc": 0,
+      "poly3": 0,
+      "paramPoly3": 193737
+    },
+    "curvature_min": 0.0,
+    "curvature_avg": 0.0,
+    "curvature_max": 0.0
+  },
+  "junctions": {
+    "count": 3559
+  },
+  "traffic": {
+    "traffic_lights": 0,
+    "traffic_lights_objects": 0,
+    "traffic_lights_signals": 0,
+    "signals_total": 33,
+    "speed_limit_distribution": {
+      "13": 9045,
+      "22": 773,
+      "27": 367,
+      "8": 12295,
+      "5": 265,
+      "19": 283,
+      "16": 316,
+      "2": 24,
+      "1": 2,
+      "39": 222,
+      "4": 145,
+      "10": 330,
+      "9": 640,
+      "3": 3626,
+      "6": 3110,
+      "12": 138,
+      "7": 1592,
+      "11": 778,
+      "20": 62,
+      "17": 5,
+      "15": 83,
+      "25": 51,
+      "18": 94,
+      "14": 14,
+      "21": 8,
+      "23": 10,
+      "30": 17,
+      "24": 1
+    }
+  },
+  "elevation": {
+    "min_z": 362.438944,
+    "max_z": 404.498101,
+    "z_range": 42.05915700000003
+  },
+  "success": true
+}

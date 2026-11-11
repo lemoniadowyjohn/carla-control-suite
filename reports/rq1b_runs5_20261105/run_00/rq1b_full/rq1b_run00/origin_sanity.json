@@ -1,0 +1,18 @@
+{
+  "ok": true,
+  "xodr_path": "reports\\rq1b_runs5_20261105\\run_00\\rq1b_full\\rq1b_run00\\08_final_rq1b_run00.xodr",
+  "warn_distance_m": 50000.0,
+  "fail_distance_m": 500000.0,
+  "bbox": {
+    "min_x": -1.978928092613,
+    "min_y": -1.66052176,
+    "max_x": 13267.063267,
+    "max_y": 14070.87507292
+  },
+  "centroid": {
+    "x": 6632.5421694536935,
+    "y": 7034.60727558
+  },
+  "centroid_distance_m": 9668.315010963626,
+  "warnings": []
+}

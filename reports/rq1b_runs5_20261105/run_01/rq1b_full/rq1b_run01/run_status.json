@@ -1,0 +1,8 @@
+{
+  "status": "failed",
+  "stage": "tiling",
+  "message": null,
+  "error": "STRUCTURE_FROZEN violated at 'after_tiling': structural aspects ['road_elevations'] changed after the structural freeze (baseline d456971f8e38addb... from 'reports\\\\rq1b_runs5_20261105\\\\run_01\\\\rq1b_full\\\\rq1b_run01\\\\08h5_g6_lane_coverage_repaired.xodr', now d3a8a02f1203a18e... from 'reports\\\\rq1b_runs5_20261105\\\\run_01\\\\rq1b_full\\\\rq1b_run01\\\\08h5_g6_lane_coverage_repaired.xodr'). A stage that must mutate structure has to invalidate STRUCTURE_FROZEN and force every derived artifact to be regenerated.",
+  "out_dir": "reports\\rq1b_runs5_20261105\\run_01\\rq1b_full\\rq1b_run01",
+  "timestamp": "2026-11-05T16:41:08.947770"
+}

@@ -1,0 +1,10 @@
+{
+  "ok": true,
+  "n_issues": 0,
+  "issues": [],
+  "tolerances": {
+    "lane_offset_eps": 0.05,
+    "lane_width_eps": 0.1
+  },
+  "xodr_path": "reports\\rq1b_runs5_20261105\\run_01\\rq1b_full\\rq1b_run01\\07_lanes_rq1b_run01.xodr"
+}

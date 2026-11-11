@@ -1,0 +1,9 @@
+{
+  "artifact_authority": "supplemental_visual_only",
+  "enabled": false,
+  "final_xodr": "reports\\rq1b_runs5_20261105\\run_02\\rq1b_full\\rq1b_run02\\08h5_g6_lane_coverage_repaired.xodr",
+  "final_xodr_sha256": "31fb09e34f364a1a11cafed3d3740ac3ba16cba4156c9cf14a365b31a93ba5c7",
+  "reason": "UP_ENABLE_OSM2WORLD/ENABLE_OSM2WORLD and Settings.ENABLE_OSM2WORLD are not enabled",
+  "road_authority": "OpenDRIVE",
+  "status": "NOT_RUN"
+}

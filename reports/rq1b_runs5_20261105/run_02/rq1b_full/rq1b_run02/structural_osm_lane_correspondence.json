@@ -1,0 +1,43 @@
+{
+  "correspondence": {
+    "conflicting_road_count": 3,
+    "conflicts": [
+      {
+        "conflicting_osm_way_ids": [
+          "23618526"
+        ],
+        "reason": "conflicting_high_confidence_osm_metadata",
+        "selected_osm_way_id": "23252508",
+        "xodr_road_id": "42953"
+      },
+      {
+        "conflicting_osm_way_ids": [
+          "718481107"
+        ],
+        "reason": "conflicting_high_confidence_osm_metadata",
+        "selected_osm_way_id": "718481105",
+        "xodr_road_id": "67308"
+      },
+      {
+        "conflicting_osm_way_ids": [
+          "1319081363"
+        ],
+        "reason": "conflicting_high_confidence_osm_metadata",
+        "selected_osm_way_id": "1319081355",
+        "xodr_road_id": "70418"
+      }
+    ],
+    "eligible_road_count": 83,
+    "match_class_counts": {
+      "AMBIGUOUS": 1515,
+      "EXACT": 4,
+      "HIGH": 98,
+      "UNMATCHED": 1440
+    },
+    "source_way_count": 3057
+  },
+  "eligible_road_count": 83,
+  "projected_way_count": 3057,
+  "source_way_count": 3057,
+  "status": "PASS"
+}

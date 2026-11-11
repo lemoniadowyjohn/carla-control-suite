@@ -1,0 +1,8 @@
+{
+  "status": "failed",
+  "stage": "topology_semantics",
+  "message": null,
+  "error": "[Errno 2] No such file or directory: 'reports\\\\rq1b_runs\\\\run_03\\\\rq1b_full\\\\rq1b_run03\\\\01_sanitized_rq1b_run03.xodr'",
+  "out_dir": "reports\\rq1b_runs\\run_03\\rq1b_full\\rq1b_run03",
+  "timestamp": "2026-10-21T01:08:23.369232"
+}

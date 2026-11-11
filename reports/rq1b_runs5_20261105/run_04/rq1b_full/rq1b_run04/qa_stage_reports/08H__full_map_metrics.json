@@ -1,0 +1,40 @@
+{
+  "road_count": 32266,
+  "junction_count": 3559,
+  "junction_connecting_roads": 22588,
+  "junction_lanes": 45994,
+  "lane_validity": {
+    "total": 85899,
+    "driving": 34300,
+    "non_driving": 51599,
+    "by_type": {
+      "sidewalk": 19328,
+      "none": 32269,
+      "driving": 34300,
+      "biking": 2
+    }
+  },
+  "total_lanelinks": 48982,
+  "connector_endpoint_errors": {
+    "total": 0,
+    "details": []
+  },
+  "elevation_continuity": {
+    "max_gradient": 5.22895,
+    "variance": 0.006714,
+    "num_segments": 22588
+  },
+  "graph_components": {
+    "count": 1,
+    "sizes": [
+      35825
+    ]
+  },
+  "seam_distribution": {
+    "p50_deg": 0.38,
+    "p95_deg": 5.22,
+    "max_deg": 157.81,
+    "num_seams": 186081
+  },
+  "ok": true
+}

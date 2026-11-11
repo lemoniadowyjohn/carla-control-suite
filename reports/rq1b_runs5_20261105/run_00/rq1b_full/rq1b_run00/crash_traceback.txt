@@ -1,0 +1,17 @@
+Traceback (most recent call last):
+  File "H:\opencode\rq12-closure\ultimate_pipeline\main_pipeline.py", line 1705, in run
+    self._run_internal()
+  File "H:\opencode\rq12-closure\ultimate_pipeline\main_pipeline.py", line 2485, in _run_internal
+    self._publish_final_artifact_authority(
+  File "H:\opencode\rq12-closure\ultimate_pipeline\main_pipeline.py", line 3177, in _publish_final_artifact_authority
+    fingerprint = ledger.freeze_structure(final_out, stage=stage)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "H:\opencode\rq12-closure\ultimate_pipeline\contracts\artifact_authority.py", line 567, in freeze_structure
+    fingerprint = compute_structure_fingerprint(artifact_path)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "H:\opencode\rq12-closure\ultimate_pipeline\contracts\artifact_authority.py", line 267, in compute_structure_fingerprint
+    lines = _aspect_lines(root)
+            ^^^^^^^^^^^^^^^^^^^
+  File "H:\opencode\rq12-closure\ultimate_pipeline\contracts\artifact_authority.py", line 165, in _aspect_lines
+    lines["plan_view"].append(
+MemoryError
