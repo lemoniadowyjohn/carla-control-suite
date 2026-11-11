@@ -161,18 +161,24 @@ def ensure_carla_server(
     extra_flags: Optional[Sequence[str]] = None,
     timeout_s: float = 120.0,
     kill_stale: bool = False,
+    attach_existing: bool = True,
     stdout_path: Optional[Path | str] = None,
     stderr_path: Optional[Path | str] = None,
-) -> subprocess.Popen:
-    """
-    Kill stale CARLA, start a new server with safe flags, and wait until it responds.
-    If CARLA is already reachable on the port, do nothing.
+) -> Optional[subprocess.Popen]:
+    """Start a new launch-owned server, or explicitly attach to a listener.
+
+    `attach_existing=False` forbids accidental mutation of another operator's
+    CARLA world. The default preserves legacy callers' external-attach mode.
     """
     if kill_stale:
         kill_stale_carla()  # Refuse regardless of current port occupancy.
     if wait_for_port(host, port, timeout_s=3.0):
+        if not attach_existing:
+            raise RuntimeError(
+                f"CARLA port {host}:{port} already occupied; refusing unowned attachment"
+            )
         _handshake_carla_ready(host=host, port=port)
-        return None  # type: ignore[return-value]
+        return None
 
     flags: List[str] = list(extra_flags or DEFAULT_FLAGS)
     if not any(str(f).startswith("-carla-rpc-port") for f in flags):
