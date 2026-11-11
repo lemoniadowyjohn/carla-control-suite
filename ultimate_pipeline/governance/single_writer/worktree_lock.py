@@ -684,39 +684,69 @@ def release_lease(lease: WorktreeLease) -> bool:
 # fencing
 # ---------------------------------------------------------------------------
 
+def _generation_marker_path(worktree_root: Path) -> Path:
+    ledger = _ledger_path(worktree_root)
+    return ledger.with_name(f"{ledger.name}.initialized")
+
+
+def _generation_high_water(worktree_root: Path) -> int:
+    """Read an intact monotonic ledger; missing initialized ledgers fail closed."""
+    path = _ledger_path(worktree_root)
+    marker = _generation_marker_path(worktree_root)
+    try:
+        marker_data = marker.read_bytes()
+    except FileNotFoundError:
+        marker_data = None  # Compatibility with older (unmarked) ledgers.
+    except OSError as exc:
+        raise RuntimeError(f"LOCKED_UNKNOWN: generation marker unreadable: {exc}") from exc
+    if marker_data is not None and marker_data != b"worktree-generation-ledger/v1\n":
+        raise RuntimeError("LOCKED_UNKNOWN: malformed generation initialization marker")
+    try:
+        raw = path.read_bytes()
+    except FileNotFoundError:
+        if marker_data is not None:
+            raise RuntimeError("LOCKED_UNKNOWN: initialized generation ledger is missing")
+        return 0
+    except OSError as exc:
+        raise RuntimeError(f"LOCKED_UNKNOWN: generation ledger unreadable: {exc}") from exc
+    if not raw or not raw.endswith(b"\n"):
+        raise RuntimeError("LOCKED_UNKNOWN: empty or partially written generation ledger")
+    try:
+        lines = raw.decode("ascii").splitlines()
+    except UnicodeError as exc:
+        raise RuntimeError("LOCKED_UNKNOWN: generation ledger is not ASCII") from exc
+    previous = 0
+    for line in lines:
+        if not line.isdigit() or int(line) <= previous:
+            raise RuntimeError("LOCKED_UNKNOWN: corrupt or nonmonotonic generation ledger")
+        previous = int(line)
+    return previous
+
+
 def _issue_generation(worktree_root: Path, floor: int = 0) -> int:
-    """Allocate the next fencing number; caller must hold _generation_claim."""
+    """Allocate and fsync the next monotonic generation under the claim."""
     path = _ledger_path(worktree_root)
     path.parent.mkdir(parents=True, exist_ok=True)
-    highest = max(0, int(floor))
-    try:
-        raw = path.read_text(encoding="ascii")
-    except FileNotFoundError:
-        raw = ""
-    except (OSError, UnicodeError) as exc:
-        raise RuntimeError(f"LOCKED_UNKNOWN: generation ledger unreadable: {exc}") from exc
-    previous = 0
-    if raw:
-        lines = raw.splitlines()
-        if not lines:
-            raise RuntimeError("LOCKED_UNKNOWN: generation ledger is empty/corrupt")
-        for line in lines:
-            if not line.isdigit() or int(line) <= previous:
-                raise RuntimeError("LOCKED_UNKNOWN: generation ledger is corrupt or non-monotonic")
-            previous = int(line)
-        highest = max(highest, previous)
-    nxt = highest + 1
+    high = _generation_high_water(worktree_root)
+    marker = _generation_marker_path(worktree_root)
+    if not marker.exists():
+        if not _publish_exclusive_bytes(marker, b"worktree-generation-ledger/v1\n"):
+            raise RuntimeError("LOCKED_UNKNOWN: generation marker publication raced")
+    nxt = max(0, high, int(floor)) + 1
     fd = os.open(str(path), os.O_CREAT | os.O_WRONLY | os.O_APPEND, 0o644)
     try:
         payload = f"{nxt}\n".encode("ascii")
         written = 0
         while written < len(payload):
-            written += os.write(fd, payload[written:])
+            count = os.write(fd, payload[written:])
+            if count <= 0:
+                raise OSError("generation ledger append made no progress")
+            written += count
         os.fsync(fd)
     finally:
         os.close(fd)
+    _fsync_dir(path.parent)
     return nxt
-
 
 # ---------------------------------------------------------------------------
 # ABA-safe claim
