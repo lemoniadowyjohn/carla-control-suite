@@ -6,7 +6,7 @@ GNN predicts embeddings, not validated OpenDRIVE geometry corrections. Until a
 provenance-bound corrective checkpoint, geometry projection, hard-gate adapter,
 and held-out validation exist, a request to refine must fail explicitly.
 
-This deliberately preserves the historical `run_inplace` arguments but
+This deliberately preserves the historical ``run_inplace`` arguments but
 never writes to the supplied XML tree or filesystem. A successful import or
 an unconfigured opt-out must never be interpreted as ML refinement success.
 """
