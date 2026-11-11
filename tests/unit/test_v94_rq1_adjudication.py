@@ -5,7 +5,6 @@ adjudicator. Each receipt has its own output and UTC acquisition time.
 """
 from __future__ import annotations
 
-from copy import deepcopy
 
 import pytest
 
