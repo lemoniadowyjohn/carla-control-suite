@@ -82,13 +82,13 @@ def _handshake_carla_ready(*, host: str, port: int) -> None:
     Each CARLA RPC timeout is capped to the remaining monotonic budget. CARLA's
     transport must honor set_timeout; hard-kill supervision is a separate gate.
     """
-    carla = _lazy_carla()
     client_timeout_s = _env_float("UP_CARLA_CLIENT_TIMEOUT_S", 180.0)
     ready_timeout_s = _env_float("UP_CARLA_READY_TIMEOUT_S", 180.0)
     if not 0 < ready_timeout_s < float("inf"):
         raise ValueError("UP_CARLA_READY_TIMEOUT_S must be positive and finite")
     if not 0 < client_timeout_s < float("inf"):
         raise ValueError("UP_CARLA_CLIENT_TIMEOUT_S must be positive and finite")
+    carla = _lazy_carla()
     deadline = time.monotonic() + ready_timeout_s
     last_error = None
     while time.monotonic() < deadline:
@@ -168,13 +168,13 @@ def ensure_carla_server(
     Kill stale CARLA, start a new server with safe flags, and wait until it responds.
     If CARLA is already reachable on the port, do nothing.
     """
+    if kill_stale:
+        kill_stale_carla()  # Refuse regardless of current port occupancy.
     if wait_for_port(host, port, timeout_s=3.0):
         _handshake_carla_ready(host=host, port=port)
         return None  # type: ignore[return-value]
 
     flags: List[str] = list(extra_flags or DEFAULT_FLAGS)
-    if kill_stale:
-        kill_stale_carla()  # Explicitly refuse the unsafe legacy CLI option.
     if not any(str(f).startswith("-carla-rpc-port") for f in flags):
         flags.append(f"-carla-rpc-port={int(port)}")
     if not any(str(f).startswith("-carla-streaming-port") for f in flags):
