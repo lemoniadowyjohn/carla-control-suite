@@ -1,0 +1,28 @@
+{
+  "xodr_path": "E:\\wt\\repair-map-realism-p0-837a8504\\ultimate_pipeline_out\\20261021_165726_800368\\06_geometry_frozen_20261021_165726_800368.xodr",
+  "dem_tif_path": "E:\\wt\\repair-map-realism-p0-837a8504\\cities\\ingolstadt\\dem\\dem_ing.tif",
+  "step_m": 2.0,
+  "max_samples": 250000,
+  "total_samples": 152334,
+  "covered_samples": 152334,
+  "coverage_ratio": 1.0,
+  "threshold": 0.6,
+  "ok": true,
+  "uncovered_examples": [],
+  "sampling_mode": "sampler",
+  "projected_bbox_wgs84": {
+    "minx": 11.41409935688968,
+    "miny": 48.74114719410474,
+    "maxx": 11.488924946538415,
+    "maxy": 48.782808659745584
+  },
+  "dem_bounds_wgs84": {
+    "minx": 11.312083322222236,
+    "miny": 48.67430556666666,
+    "maxx": 11.537361100000014,
+    "maxy": 48.836250011111105
+  },
+  "bbox_intersects_dem_bounds_wgs84": true,
+  "map_crs_source": "claimed_geoReference_ambiguous",
+  "header_offset_policy": "xodr_header"
+}

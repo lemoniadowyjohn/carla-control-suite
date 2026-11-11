@@ -1,0 +1,370 @@
+{
+  "frozen_at_utc": "2026-10-21T15:11:55.079159Z",
+  "manifest_path": "E:\\wt\\repair-map-realism-p0-837a8504\\ultimate_pipeline_out\\20261021_165726_800368\\tile_manifest.json",
+  "metadata_path": "E:\\wt\\repair-map-realism-p0-837a8504\\ultimate_pipeline_out\\20261021_165726_800368\\tile_metadata.json",
+  "schema_version": 1,
+  "tile_count": 72,
+  "tiles": [
+    {
+      "bytes": 50821,
+      "file": "tile_0_0.xodr",
+      "sha256": "33da542d012d4390446b52e339921c144a63bd1883e36c059f5161a3c1d735d4"
+    },
+    {
+      "bytes": 70042,
+      "file": "tile_0_1.xodr",
+      "sha256": "0dbec3bb18719b70413f68c6eb08bdfb72c6c7d141b2fb54998f31b486e66ab2"
+    },
+    {
+      "bytes": 236861,
+      "file": "tile_0_2.xodr",
+      "sha256": "93dff13bafec9f32e09cd06816b4bb2fb7c70c312a023adc65223457aa76caed"
+    },
+    {
+      "bytes": 559943,
+      "file": "tile_0_3.xodr",
+      "sha256": "1e0b4b24c615800926002ca105a46d95018f7a69a48b645bbb82cdb812c149c6"
+    },
+    {
+      "bytes": 502927,
+      "file": "tile_0_4.xodr",
+      "sha256": "a017a7d2c6fd506b9ff865fb2cec3407fd43e1410d804e1cc256ea485c5d22a8"
+    },
+    {
+      "bytes": 445865,
+      "file": "tile_0_5.xodr",
+      "sha256": "2750579ed9ef151388322a170fab95690cda103a3b1b24c84d9fe495c5ed512e"
+    },
+    {
+      "bytes": 277096,
+      "file": "tile_0_6.xodr",
+      "sha256": "c441673c50d222423da6333af952a4247303f92999e03771b92e85eb698fd0d2"
+    },
+    {
+      "bytes": 73227,
+      "file": "tile_10_7.xodr",
+      "sha256": "7a413edd2eaa64f55fd975b8e8490345975bc205523db712e1ab582638e753b3"
+    },
+    {
+      "bytes": 682872,
+      "file": "tile_1_0.xodr",
+      "sha256": "bcc570195cc9230e16737046b2845467290b570e223dbc1842bc66cd4693e617"
+    },
+    {
+      "bytes": 780381,
+      "file": "tile_1_1.xodr",
+      "sha256": "c40a10e7a1c0d16d2940bed4abdfddde08f347dcb1acb57cf0a9410fb5fb2e22"
+    },
+    {
+      "bytes": 870649,
+      "file": "tile_1_2.xodr",
+      "sha256": "08c3894dd7aaaf2b67779b02fb483eb7f233002939ed5a6b2387009d78c38557"
+    },
+    {
+      "bytes": 1192891,
+      "file": "tile_1_3.xodr",
+      "sha256": "8393da59e045acec1b4e6152c00e9d3ba6cb4002604a93119d51a39c67a85db0"
+    },
+    {
+      "bytes": 1247388,
+      "file": "tile_1_4.xodr",
+      "sha256": "206b546e8bacb17f86e2db00b18104c805dd436b2b6ec0e8623de31f4fd4e8e3"
+    },
+    {
+      "bytes": 880659,
+      "file": "tile_1_5.xodr",
+      "sha256": "4af490c7e3ff532b61a635d276925faa4c13e4f95e44b3bdab43cde2e1e02d7f"
+    },
+    {
+      "bytes": 247635,
+      "file": "tile_1_6.xodr",
+      "sha256": "788a575760e85af2fbc2f8fa3060fdb2139557c0e483228b7db441c85c28caad"
+    },
+    {
+      "bytes": 330918,
+      "file": "tile_2_0.xodr",
+      "sha256": "de74bd5b08cb533413599b03b73ff14b4d2f090be0a6f4136152a70b2a5c3b61"
+    },
+    {
+      "bytes": 1355290,
+      "file": "tile_2_1.xodr",
+      "sha256": "168f853e55a8165708e7dceb285e3ee5fb6d6369a58dc83d22f04732bda84689"
+    },
+    {
+      "bytes": 994662,
+      "file": "tile_2_2.xodr",
+      "sha256": "879daf22b20a0ce61209f1f929444211bffb8baf3af8601ff6ad37408db63e9b"
+    },
+    {
+      "bytes": 300002,
+      "file": "tile_2_3.xodr",
+      "sha256": "7ad03fd065f723146968b80b11747dfd1df306d7727bf30b9ee2d3d19648bedf"
+    },
+    {
+      "bytes": 802904,
+      "file": "tile_2_4.xodr",
+      "sha256": "f875d987d642b6f2010219e91708c9e0e6718f34cd63489855159a42dc5b795f"
+    },
+    {
+      "bytes": 1174266,
+      "file": "tile_2_5.xodr",
+      "sha256": "e243d873ed25d866877e3299ff68a21d193c8ad53e86b4dcff4ccede9961b97d"
+    },
+    {
+      "bytes": 556677,
+      "file": "tile_2_6.xodr",
+      "sha256": "cca2be492af4a78c280ae45c5459b39c19cba7158735b5ed66690e730dbbe8df"
+    },
+    {
+      "bytes": 65361,
+      "file": "tile_2_7.xodr",
+      "sha256": "2e038a6c3bcef308cdb3710eaa9e663cda4f42b77b8f665346afa8406c686972"
+    },
+    {
+      "bytes": 101146,
+      "file": "tile_3_0.xodr",
+      "sha256": "ffb6f0a2bec4e2f82a08d3e8f33ecbd985d37c61df2457d0b27409cbec7af745"
+    },
+    {
+      "bytes": 1035070,
+      "file": "tile_3_1.xodr",
+      "sha256": "7e2f4daadd6db59e81d8759d8da8c30c8a8858e0ccde739a90508a6626851887"
+    },
+    {
+      "bytes": 1029289,
+      "file": "tile_3_2.xodr",
+      "sha256": "3d463f22aa55d986b03a11c52318f4eef308c8f73390c8e2c05c6b9876d54dba"
+    },
+    {
+      "bytes": 826437,
+      "file": "tile_3_3.xodr",
+      "sha256": "4c83039b39bff45cbd8b286c3429acd73e906b78aaa3bb970fc50203e6b50416"
+    },
+    {
+      "bytes": 1115381,
+      "file": "tile_3_4.xodr",
+      "sha256": "35cc32d5d55cda00d9361cad510f3cc5371f755b267606e26e358b9f6e5078a8"
+    },
+    {
+      "bytes": 1341602,
+      "file": "tile_3_5.xodr",
+      "sha256": "f1ce726b3eb8cfb89bff0a85c5ad8bc72eeba140a664a1e6a62507254b428052"
+    },
+    {
+      "bytes": 904330,
+      "file": "tile_3_6.xodr",
+      "sha256": "7bdb34d2593a843f5a3b7a49c892e930c01d74b366a0de7372cb8878da867832"
+    },
+    {
+      "bytes": 63059,
+      "file": "tile_3_7.xodr",
+      "sha256": "2d9c089e88b0d5b6a460bef4563ca240c97a10374a7202c95e65de5257407681"
+    },
+    {
+      "bytes": 282951,
+      "file": "tile_4_0.xodr",
+      "sha256": "cd8e83d0bcf1533104aaca1888e8542a78b8868648cdbcef0f9c81d156ed8204"
+    },
+    {
+      "bytes": 1125508,
+      "file": "tile_4_1.xodr",
+      "sha256": "abf1894710a3cc6ab77df7130536a3731b4eafab21fba30a7c357949b4aff6f6"
+    },
+    {
+      "bytes": 703920,
+      "file": "tile_4_2.xodr",
+      "sha256": "87eb27400138d6501e79fd00d2f88c5ab58273f19bce9239e2cee1f7b86683e7"
+    },
+    {
+      "bytes": 828198,
+      "file": "tile_4_3.xodr",
+      "sha256": "6014969ed975dc5812fc8a29b0f41c308a197245870d8544f2b65a4c28f7fe9a"
+    },
+    {
+      "bytes": 602835,
+      "file": "tile_4_4.xodr",
+      "sha256": "92f2c42c354e43d3ec3ede8a9a32732ef1d22f47fb64f129a321c6ffc0e3827e"
+    },
+    {
+      "bytes": 1292632,
+      "file": "tile_4_5.xodr",
+      "sha256": "75f89383154cc372b8b99dd1a24584c1d66eab8fa10db6c2494dd3ca6beb749c"
+    },
+    {
+      "bytes": 822233,
+      "file": "tile_4_6.xodr",
+      "sha256": "140052fa52700c822f62b7c440ddc28371d3bf83a2bbfe227d4aecda0b863429"
+    },
+    {
+      "bytes": 168062,
+      "file": "tile_5_0.xodr",
+      "sha256": "06c32e45cddab449f74a1c1529cbf2be9d6d3c2266790a786b61c15919a7553e"
+    },
+    {
+      "bytes": 406905,
+      "file": "tile_5_1.xodr",
+      "sha256": "48109fa61a817d5c699fd71a88b8e667ad6571738a2e486445302928b4534958"
+    },
+    {
+      "bytes": 611754,
+      "file": "tile_5_2.xodr",
+      "sha256": "7ecec69a8ddfe083faebf1c042510d7b5ae9e4c2c926f7e71181fa9ea6fbabc5"
+    },
+    {
+      "bytes": 828216,
+      "file": "tile_5_3.xodr",
+      "sha256": "9f52ec5e2d4a81f14b2de1b6199f1b58eb320f3c62eed138ee0b4d4e05b9ae02"
+    },
+    {
+      "bytes": 381496,
+      "file": "tile_5_4.xodr",
+      "sha256": "16efffc817c5b4ec86ad062d657895bac5856995141ef7e8e096c7971c95b819"
+    },
+    {
+      "bytes": 908805,
+      "file": "tile_5_5.xodr",
+      "sha256": "fd114b8bdd17545a5e92a0faf5f3e9b924219409ec4dee032cae3099a8a07384"
+    },
+    {
+      "bytes": 1280656,
+      "file": "tile_5_6.xodr",
+      "sha256": "133487fbac8d357f741bd80bf6f30a61f0ea16d1aabd7c29b74ece30da1a7445"
+    },
+    {
+      "bytes": 226129,
+      "file": "tile_5_7.xodr",
+      "sha256": "81d31df84e5a766cf0f5d802e1843d7b5ca484edc8361f72efdc60d4611d754b"
+    },
+    {
+      "bytes": 527456,
+      "file": "tile_6_1.xodr",
+      "sha256": "fed2fd1e3e3959169f279f64d03babb4a19a409c88bfd0ba0161ae0073f7bc27"
+    },
+    {
+      "bytes": 740737,
+      "file": "tile_6_2.xodr",
+      "sha256": "47de8fbf1f9c58b7178184f55ed98beed14a45efbd64c84922b1f769dea22cbf"
+    },
+    {
+      "bytes": 160400,
+      "file": "tile_6_3.xodr",
+      "sha256": "74f65ff3120884453aa2a3b1107738f123adf42b81f19bde5f7bb2e3d615d8df"
+    },
+    {
+      "bytes": 133325,
+      "file": "tile_6_4.xodr",
+      "sha256": "5e05d81d3efb747901ce907356893787da79f1b873ab33c437d3d2c70938946f"
+    },
+    {
+      "bytes": 831322,
+      "file": "tile_6_5.xodr",
+      "sha256": "131762133a1b05c2001e7bb1880219f2a04ba1dd2b931f0812082d63cacdb4a5"
+    },
+    {
+      "bytes": 1116903,
+      "file": "tile_6_6.xodr",
+      "sha256": "8de2b93461ecfc5cd71dcd73ab623e9e5a4e16421ed5e2969899247b7e9d445e"
+    },
+    {
+      "bytes": 350192,
+      "file": "tile_6_7.xodr",
+      "sha256": "054778b7c6ac978189e03e4ce31fdccbd700904ae5cb39767ef686f66f6d4a68"
+    },
+    {
+      "bytes": 5648,
+      "file": "tile_7_1.xodr",
+      "sha256": "8b017a8d9590b34825f154af03f1a5c8bab3a00539a6254aeded569c19e4842b"
+    },
+    {
+      "bytes": 104791,
+      "file": "tile_7_2.xodr",
+      "sha256": "7c1c9a0d50785c3b5ac04b6dd6f6c143fc6b36fef77cb547efae5b97f70282e9"
+    },
+    {
+      "bytes": 605931,
+      "file": "tile_7_5.xodr",
+      "sha256": "53b826dd11f6e0cd0ea22fd1617851f9c9ac44a477b2023cdf43a6a5f5c8711a"
+    },
+    {
+      "bytes": 1360469,
+      "file": "tile_7_6.xodr",
+      "sha256": "e90fae38d6f15db36ef8a659e2a4d565412b6698a133db7c1d067044ea6daf89"
+    },
+    {
+      "bytes": 322071,
+      "file": "tile_7_7.xodr",
+      "sha256": "51421581be5de14f1920b1bf7a43e308960e5f059a96b7663fe1736817ddefdb"
+    },
+    {
+      "bytes": 93718,
+      "file": "tile_8_0.xodr",
+      "sha256": "46ecf8eeacdb84a8622d8ea2d8103a412385801e3a3358767100d36e6cfd64c7"
+    },
+    {
+      "bytes": 239032,
+      "file": "tile_8_1.xodr",
+      "sha256": "6c5c348db7cc8b13ba0b33a991d0c40dc4cb6e8446b1e79ccda86863a24bd949"
+    },
+    {
+      "bytes": 408543,
+      "file": "tile_8_2.xodr",
+      "sha256": "eb02bee37a4276ea8bcc6ecdaa01d92cabf90c27571542166ea25bbe42cb1fe3"
+    },
+    {
+      "bytes": 115589,
+      "file": "tile_8_3.xodr",
+      "sha256": "63e7c03f56a7c0ebc1aebe9529a58719850d6ba9136d4925e73278fe7e5670fa"
+    },
+    {
+      "bytes": 228033,
+      "file": "tile_8_5.xodr",
+      "sha256": "4c6c84c362956cd0b953774c3035e5b2663b74c8da165973e1e79214d687f013"
+    },
+    {
+      "bytes": 1181172,
+      "file": "tile_8_6.xodr",
+      "sha256": "2f05f4e43a587dc653ede26d479bbe810a89e149f88cc676489205d7f5a827e0"
+    },
+    {
+      "bytes": 493543,
+      "file": "tile_8_7.xodr",
+      "sha256": "048d69ed3002018a00b7bcba9889f5af3e4ee7ffd634a12d2ac7f9f3366ebb3e"
+    },
+    {
+      "bytes": 96024,
+      "file": "tile_9_0.xodr",
+      "sha256": "f6ffc60d36ddaac2968ace7bf9c286596ee01f374197f954591a44c30cf1f1ad"
+    },
+    {
+      "bytes": 312745,
+      "file": "tile_9_1.xodr",
+      "sha256": "1d865d5f77de92d46ec86fd43f5da413e9cff97f68db035a0718e7234293cc88"
+    },
+    {
+      "bytes": 540096,
+      "file": "tile_9_2.xodr",
+      "sha256": "f744d232865e979e1e0ee2cef4071765298783d2b1ce4b7b45c2a2e84060728f"
+    },
+    {
+      "bytes": 262253,
+      "file": "tile_9_3.xodr",
+      "sha256": "6006782ecd85d7cfe83b136a7fa379c95a611d6b903e56a3d53b6738b244fed6"
+    },
+    {
+      "bytes": 41331,
+      "file": "tile_9_5.xodr",
+      "sha256": "fb542d867ebed70032095f744e73228e805f7487bea403d633957511333da257"
+    },
+    {
+      "bytes": 158416,
+      "file": "tile_9_6.xodr",
+      "sha256": "2d3a789d10e006436613a186e94e89b3eafd37c4ab47777999ae818e4266a03e"
+    },
+    {
+      "bytes": 208105,
+      "file": "tile_9_7.xodr",
+      "sha256": "28f6d85b20c86a0b48e9e927a287c42aef37519b28bbea267f528546363a6aae"
+    }
+  ],
+  "tileset_digest_sha256": "60421bfa7562d6d29eb5802cd6b124bf661ca1ece2434e0233d3f60f70a9ddbb"
+}

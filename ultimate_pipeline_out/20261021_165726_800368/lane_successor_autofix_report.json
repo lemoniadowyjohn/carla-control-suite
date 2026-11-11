@@ -1,0 +1,13 @@
+{
+  "xodr": "E:\\wt\\repair-map-realism-p0-837a8504\\ultimate_pipeline_out\\20261021_165726_800368\\08h5_g6_lane_coverage_repaired.xodr",
+  "allow_dead_ends": true,
+  "broken_count": 1,
+  "broken": [
+    {
+      "road_id": "10335",
+      "lane_id": "1",
+      "junction": "-1",
+      "reason": "missing_successor"
+    }
+  ]
+}

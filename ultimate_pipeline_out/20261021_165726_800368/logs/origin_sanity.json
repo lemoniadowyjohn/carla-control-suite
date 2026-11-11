@@ -1,0 +1,20 @@
+{
+  "ok": false,
+  "xodr_path": "E:\\wt\\repair-map-realism-p0-837a8504\\ultimate_pipeline_out\\20261021_165726_800368\\08h5_g6_lane_coverage_repaired.xodr",
+  "warn_distance_m": 50000.0,
+  "fail_distance_m": 500000.0,
+  "bbox": {
+    "min_x": 838645.037594,
+    "min_y": 5464783.88993599,
+    "max_x": 843654.20097829,
+    "max_y": 5468748.00183333
+  },
+  "centroid": {
+    "x": 841149.6192861451,
+    "y": 5466765.94588466
+  },
+  "centroid_distance_m": 5531099.5822810335,
+  "warnings": [
+    "centroid distance 5531099.6m exceeds fail threshold"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "ok": true,
+  "n_issues": 0,
+  "issues": [],
+  "tolerances": {
+    "lane_offset_eps": 0.05,
+    "lane_width_eps": 0.1
+  },
+  "xodr_path": "E:\\wt\\repair-map-realism-p0-837a8504\\ultimate_pipeline_out\\20261021_165726_800368\\08h5_g6_lane_coverage_repaired.xodr"
+}

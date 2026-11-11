@@ -1,0 +1,32 @@
+{
+  "ok": true,
+  "reason": "",
+  "threshold": 0.6,
+  "total_samples": 148,
+  "valid_samples": 148,
+  "nodata_samples": 0,
+  "out_of_bounds_samples": 0,
+  "invalid_samples": 0,
+  "valid_ratio": 1.0,
+  "dem_path": "E:\\wt\\repair-map-realism-p0-837a8504\\cities\\ingolstadt\\dem\\dem_ing.tif",
+  "dem_crs": "EPSG:4326",
+  "dem_bounds": [
+    11.312083322222236,
+    48.67430556666666,
+    11.537361100000014,
+    48.836250011111105
+  ],
+  "crs_conversion_applied": true,
+  "xodr_proj": "+proj=tmerc +datum=WGS84 +units=m +no_defs",
+  "sample_stats": {
+    "min_z": 364.00701904296875,
+    "max_z": 384.7848815917969,
+    "mean_z": 370.72465205836943
+  },
+  "warnings": [
+    "road '9834': sample at s=94.238 failed (local s outside geometry); point skipped",
+    "road '10530': sample at s=328.067 failed (local s outside geometry); point skipped"
+  ],
+  "sampled_map_points_inside_dem_fraction": 1.0,
+  "nodata_fraction_at_samples": 0.0
+}

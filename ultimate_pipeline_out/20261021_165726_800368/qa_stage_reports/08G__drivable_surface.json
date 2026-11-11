@@ -1,0 +1,90 @@
+{
+  "total_holes": 5,
+  "total_seams": 2,
+  "total_drops": 3,
+  "total_dead_connections": 0,
+  "total_issues": 10,
+  "holes": [
+    {
+      "road_id": "8797",
+      "s": 0.0,
+      "gap_m": 50.0,
+      "type": "lane_section_gap",
+      "from_lane": -1,
+      "to_lane": -1
+    },
+    {
+      "road_id": "8797",
+      "s": 0.0,
+      "gap_m": 50.0,
+      "type": "lane_section_gap",
+      "from_lane": -2,
+      "to_lane": -2
+    },
+    {
+      "road_id": "8797",
+      "s": 0.0,
+      "gap_m": 50.0,
+      "type": "lane_section_gap",
+      "from_lane": -3,
+      "to_lane": -3
+    },
+    {
+      "road_id": "9240",
+      "s": 0.0,
+      "gap_m": 89.538,
+      "type": "lane_section_gap",
+      "from_lane": -1,
+      "to_lane": -1
+    },
+    {
+      "road_id": "9240",
+      "s": 0.0,
+      "gap_m": 89.538,
+      "type": "lane_section_gap",
+      "from_lane": -2,
+      "to_lane": -2
+    }
+  ],
+  "seams": [
+    {
+      "road_id": "9240",
+      "s": 0.0,
+      "heading_deg": 17.39,
+      "from_lane": -1,
+      "to_lane": -1
+    },
+    {
+      "road_id": "9240",
+      "s": 0.0,
+      "heading_deg": 17.39,
+      "from_lane": -2,
+      "to_lane": -2
+    }
+  ],
+  "drops": [
+    {
+      "road_id": "8797",
+      "s": 0.0,
+      "z_diff_m": 0.968,
+      "from_lane": -1,
+      "to_lane": -1
+    },
+    {
+      "road_id": "8797",
+      "s": 0.0,
+      "z_diff_m": 0.968,
+      "from_lane": -2,
+      "to_lane": -2
+    },
+    {
+      "road_id": "8797",
+      "s": 0.0,
+      "z_diff_m": 0.968,
+      "from_lane": -3,
+      "to_lane": -3
+    }
+  ],
+  "dead_connections": [],
+  "ok": false
+}

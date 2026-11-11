@@ -1,0 +1,15 @@
+{
+  "connectors_examined": 4024,
+  "connectors_snapped": 825,
+  "geometries_rechained": 0,
+  "skipped_missing_incoming": 0,
+  "skipped_missing_connecting": 0,
+  "skipped_missing_geometries": 0,
+  "skipped_missing_pose": 0,
+  "skipped_end_contact_point": 0,
+  "skip_ambiguous": true,
+  "skipped_ambiguous": 117,
+  "classified_exact_topology": 115,
+  "classified_inferred_high": 3792,
+  "classified_ambiguous": 117
+}

@@ -1,0 +1,5 @@
+{
+  "exception_type": "ArtifactAuthorityError",
+  "message": "STRUCTURE_FROZEN violated at 'after_tiling': structural aspects ['road_elevations'] changed after the structural freeze (baseline ce7a20c0a1a5c312... from 'E:\\\\wt\\\\repair-map-realism-p0-837a8504\\\\ultimate_pipeline_out\\\\20261021_165726_800368\\\\08h5_g6_lane_coverage_repaired.xodr', now a32b26a8cce1f9dc... from 'E:\\\\wt\\\\repair-map-realism-p0-837a8504\\\\ultimate_pipeline_out\\\\20261021_165726_800368\\\\08h5_g6_lane_coverage_repaired.xodr'). A stage that must mutate structure has to invalidate STRUCTURE_FROZEN and force every derived artifact to be regenerated.",
+  "out_dir": "E:\\wt\\repair-map-realism-p0-837a8504\\ultimate_pipeline_out\\20261021_165726_800368"
+}

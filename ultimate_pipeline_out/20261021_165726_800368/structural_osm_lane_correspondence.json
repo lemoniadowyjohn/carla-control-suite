@@ -1,0 +1,18 @@
+{
+  "correspondence": {
+    "conflicting_road_count": 0,
+    "conflicts": [],
+    "eligible_road_count": 32,
+    "match_class_counts": {
+      "AMBIGUOUS": 468,
+      "EXACT": 0,
+      "HIGH": 39,
+      "UNMATCHED": 2550
+    },
+    "source_way_count": 3057
+  },
+  "eligible_road_count": 32,
+  "projected_way_count": 3057,
+  "source_way_count": 3057,
+  "status": "PASS"
+}

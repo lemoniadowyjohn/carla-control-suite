@@ -1,0 +1,4239 @@
+{
+  "max_abs_a_after": 0.0,
+  "max_abs_a_before": 3.5,
+  "max_abs_a_limit": 0.5,
+  "num_checked": 4024,
+  "num_fixed": 604,
+  "num_remaining_violations": 0,
+  "offenders": [
+    {
+      "action": "zeroed",
+      "junction_id": "643",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "10573"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "643",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "10579"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "643",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "10582"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "682",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "10587"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "682",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "10592"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "335",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "10601"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "341",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "10610"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "633",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "10616"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "84",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "10625"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "84",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "10628"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "345",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "10633"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "345",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "10636"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "102",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "10646"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "532",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "10651"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "532",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "10654"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "243",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "10657"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "243",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "10662"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "534",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "10669"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "534",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "10673"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "534",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "10677"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "163",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "10681"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "59",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "10686"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "59",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "10689"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "152",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "10700"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "292",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "10707"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "292",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "10714"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "612",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "10717"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "612",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "10720"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "612",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "10723"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "307",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "10727"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "307",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "10731"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "307",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "10738"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "315",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "10741"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "315",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "10746"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "160",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "10750"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "160",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "10757"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "561",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "10764"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "561",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "10767"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "561",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "10770"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "47",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "10773"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "297",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "10793"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "297",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "10797"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "53",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "10801"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "53",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "10808"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "53",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "10812"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "303",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "10819"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "303",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "10824"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "683",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "10827"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "683",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "10830"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "36",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "10840"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "36",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "10842"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "308",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "10851"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "308",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "10855"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "311",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "10862"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "311",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "10866"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "311",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "10870"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "654",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "10874"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "684",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "10876"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "284",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "10880"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "439",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "10892"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "439",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "10895"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "265",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "10908"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "558",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "10911"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "558",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "10916"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "468",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "10920"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "582",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "10925"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "523",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "10946"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "4",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "10953"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "4",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "10957"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "4",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "10964"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "661",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "10971"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "661",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "10975"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "661",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "10979"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "26",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "10982"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "26",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "10987"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "685",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "10990"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "685",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "10993"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "685",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "10996"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "189",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11000"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "189",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11004"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "189",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11008"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "189",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11012"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "686",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11013"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "190",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11016"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "190",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11019"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "190",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11022"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "187",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11025"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "187",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11028"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "187",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11031"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "687",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11032"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "660",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11035"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "660",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11038"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "660",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11041"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "599",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11046"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "377",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11052"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "377",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11055"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "377",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11058"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "688",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11061"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "644",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11065"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "689",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11066"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "690",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11069"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "690",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11074"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "494",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11078"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "694",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11086"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "116",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11097"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "116",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11100"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "21",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11103"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "21",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11112"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "692",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11119"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "693",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11123"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "665",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11130"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "665",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11133"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "364",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11136"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "364",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11139"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "364",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11142"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "60",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11145"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "60",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11148"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "443",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11154"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "440",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11159"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "442",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11161"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "459",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11167"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "441",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11171"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "547",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11188"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "547",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11193"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "666",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11196"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "666",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11199"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "252",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11202"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "252",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11205"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "252",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11208"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "107",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11213"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "555",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11220"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "521",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11240"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "696",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11256"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "466",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11267"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "697",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11274"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "697",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11277"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "401",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11280"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "401",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11283"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "402",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11289"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "402",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11294"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "502",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11296"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "698",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11299"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "698",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11302"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "467",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11307"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "467",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11312"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "699",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11321"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "699",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11326"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "400",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11329"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "400",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11332"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "400",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11335"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "700",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11340"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "85",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11345"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "85",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11348"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "301",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11350"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "166",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11356"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "166",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11359"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "166",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11362"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "501",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11365"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "501",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11368"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "501",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11374"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "167",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11377"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "167",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11380"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "167",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11383"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "300",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11387"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "18",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11411"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "492",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11416"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "23",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11421"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "23",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11424"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "24",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11433"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "24",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11440"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "30",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11451"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "30",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11454"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "30",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11457"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "664",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11471"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "34",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11476"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "34",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11479"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "40",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11500"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "42",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11511"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "42",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11516"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "228",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11519"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "228",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11524"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "49",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11525"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "48",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11529"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "48",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11533"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "48",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11540"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "367",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11545"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "367",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11548"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "256",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11551"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "256",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11554"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "51",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11557"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "52",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11561"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "52",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11565"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "52",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11569"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "55",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11572"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "55",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11575"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "54",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11580"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "56",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11594"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "149",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11606"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "149",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11609"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "62",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11618"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "61",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11623"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "63",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11632"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "64",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11641"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "67",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11663"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "619",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11680"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "68",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11687"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "70",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11714"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "69",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11721"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "69",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11724"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "69",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11727"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "86",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11735"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "86",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11739"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "86",
+      "new_a": 0.0,
+      "old_a": 3.2,
+      "road_id": "11746"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "234",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11759"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "90",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11763"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "93",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11765"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "92",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11767"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "98",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11771"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "100",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11774"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "100",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11779"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "99",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11782"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "99",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11785"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "99",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11788"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "672",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11790"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "104",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11797"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "103",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11802"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "462",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11815"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "462",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11819"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "106",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11826"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "108",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11829"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "108",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11832"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "108",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11835"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "110",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11836"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "109",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11846"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "109",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11850"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "118",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11861"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "123",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11865"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "123",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11868"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "123",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11871"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "122",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11874"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "122",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11877"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "216",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11882"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "216",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11887"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "124",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11890"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "121",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11906"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "121",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11909"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "121",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11912"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "120",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11915"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "120",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11918"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "120",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11921"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "127",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11925"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "127",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11929"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "127",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11933"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "127",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11937"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "139",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11951"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "139",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11955"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "140",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11959"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "140",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11963"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "140",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11967"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "140",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11971"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "250",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11974"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "250",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11977"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "143",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11992"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "146",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "11997"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "146",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12014"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "147",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12021"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "147",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12025"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "147",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12029"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "148",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12034"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "148",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12037"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "151",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12039"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "151",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12043"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "150",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12046"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "155",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12052"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "155",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12056"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "154",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12061"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "158",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12064"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "158",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12069"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "157",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12074"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "157",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12078"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "162",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12088"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "165",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12097"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "165",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12102"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "169",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12109"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "169",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12113"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "169",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12117"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "168",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12133"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "170",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12145"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "170",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12149"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "170",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12156"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "171",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12159"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "171",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12164"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "172",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12171"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "172",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12175"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "172",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12183"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "174",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12187"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "174",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12191"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "174",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12195"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "174",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12199"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "562",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12202"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "176",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12209"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "176",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12212"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "176",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12215"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "175",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12219"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "175",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12223"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "175",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12227"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "175",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12231"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "177",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12234"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "177",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12239"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "178",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12246"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "178",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12253"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "179",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12258"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "180",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12264"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "180",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12271"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "449",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12275"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "181",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12279"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "183",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12286"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "183",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12290"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "183",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12294"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "182",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12295"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "185",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12299"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "185",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12306"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "191",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12312"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "191",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12317"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "196",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12326"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "196",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12329"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "197",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12334"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "197",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12339"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "199",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12344"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "484",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12348"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "200",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12359"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "200",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12364"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "201",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12367"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "201",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12372"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "202",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12377"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "203",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12392"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "572",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12407"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "572",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12410"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "206",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12418"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "671",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12424"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "671",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12427"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "205",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12430"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "211",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12435"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "215",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12464"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "221",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12479"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "220",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12484"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "222",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12487"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "222",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12490"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "222",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12493"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "229",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12513"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "230",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12522"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "232",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12532"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "232",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12536"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "231",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12539"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "231",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12542"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "233",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12557"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "235",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12558"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "236",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12562"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "91",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12574"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "91",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12577"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "91",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12580"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "238",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12585"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "239",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12596"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "249",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12606"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "249",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12609"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "249",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12612"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "248",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12620"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "248",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12624"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "248",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12628"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "258",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12638"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "225",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12657"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "245",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12686"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "245",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12692"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "2",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12702"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "2",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12705"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "2",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12708"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "286",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12729"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "287",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12738"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "288",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12747"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "289",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12750"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "290",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12765"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "291",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12771"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "291",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12776"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "129",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12779"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "129",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12782"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "294",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12790"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "296",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12797"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "298",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12810"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "276",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12820"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "304",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12824"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "304",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12831"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "304",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12835"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "309",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12846"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "309",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12849"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "97",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12858"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "97",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12861"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "97",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12864"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "313",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12867"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "314",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12874"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "319",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12877"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "319",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12880"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "319",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12883"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "318",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12886"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "318",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12891"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "320",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12896"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "320",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12899"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "323",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12912"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "322",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12915"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "322",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12918"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "325",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12929"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "326",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12932"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "326",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12935"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "327",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12940"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "327",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12943"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "328",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12950"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "329",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12953"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "329",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12956"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "193",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12966"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "336",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12981"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "673",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12984"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "673",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "12989"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "342",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13004"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "343",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13005"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "344",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13008"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "344",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13011"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "344",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13014"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "346",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13017"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "346",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13020"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "349",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13024"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "353",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13037"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "674",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13047"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "674",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13052"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "357",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13059"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "363",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13070"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "363",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13073"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "366",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13074"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "365",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13077"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "365",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13080"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "368",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13090"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "369",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13093"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "369",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13096"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "624",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13102"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "675",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13109"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "675",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13112"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "371",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13118"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "371",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13121"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "370",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13122"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "374",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13129"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "375",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13130"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "376",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13133"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "376",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13136"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "50",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13142"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "50",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13145"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "50",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13148"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "159",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13156"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "159",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13160"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "159",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13164"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "403",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13171"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "405",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13186"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "413",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13203"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "425",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13227"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "251",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13234"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "434",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13235"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "677",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13238"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "677",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13241"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "677",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13244"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "437",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13247"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "45",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13255"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "652",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13263"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "565",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13268"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "565",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13273"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "463",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13279"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "463",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13282"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "472",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13291"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "678",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13294"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "477",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13304"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "479",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13305"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "478",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13306"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "244",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13321"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "188",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13327"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "188",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13330"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "188",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13333"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "450",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13338"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "450",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13341"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "450",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13344"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "491",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13345"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "495",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13350"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "498",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13359"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "503",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13362"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "347",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13366"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "347",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13376"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "586",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13384"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "586",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13388"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "679",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13391"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "679",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13396"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "518",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13401"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "522",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13420"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "524",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13427"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "524",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13430"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "525",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13443"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "527",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13448"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "528",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13453"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "184",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13460"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "184",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13463"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "184",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13466"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "533",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13471"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "533",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13474"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "535",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13478"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "535",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13485"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "537",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13493"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "544",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13512"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "545",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13521"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "545",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13524"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "546",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13525"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "548",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13528"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "549",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13535"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "549",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13538"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "549",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13541"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "550",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13546"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "529",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13555"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "551",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13562"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "552",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13565"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "451",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13583"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "559",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13586"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "486",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13591"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "564",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13596"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "564",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13599"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "566",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13602"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "566",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13605"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "566",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13608"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "499",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13611"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "567",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13615"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "573",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13619"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "262",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13629"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "681",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13636"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "615",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13655"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "588",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13661"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "589",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13664"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "600",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13677"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "600",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13682"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "281",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13683"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "614",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13701"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "613",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13702"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "702",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13703"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "115",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13706"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "134",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13710"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "133",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13716"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "461",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13725"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "223",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13738"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "223",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13741"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "223",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13744"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "626",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13747"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "626",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13750"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "623",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13753"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "628",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13761"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "704",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13781"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "704",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13783"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "362",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13803"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "651",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13807"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "648",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13810"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "130",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13840"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "130",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13843"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "447",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13849"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "447",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13852"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "447",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13855"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "317",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13871"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "263",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13881"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "658",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13889"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "246",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13900"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "592",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13936"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "302",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "13982"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "285",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "14060"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "285",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "14064"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "285",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "14071"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "293",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "14130"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "293",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "14137"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "295",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "14161"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "611",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "14189"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "431",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "14220"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "431",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "14223"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "629",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "14310"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "629",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "14316"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "271",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "14337"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "271",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "14345"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "271",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "14349"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "87",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "14374"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "87",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "14377"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "379",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "14404"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "378",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "14423"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "378",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "14429"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "310",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "14496"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "272",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "14516"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "348",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "14529"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "330",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "14534"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "504",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "14540"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "352",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "14545"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "352",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "14548"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "352",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "14551"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "556",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "14558"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "556",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "14562"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "237",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "14565"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "237",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "14568"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "237",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "14571"
+    },
+    {
+      "action": "zeroed",
+      "junction_id": "5",
+      "new_a": 0.0,
+      "old_a": 3.5,
+      "road_id": "14592"
+    }
+  ],
+  "ok": true
+}

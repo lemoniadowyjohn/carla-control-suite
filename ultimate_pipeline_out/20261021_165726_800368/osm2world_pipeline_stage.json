@@ -1,0 +1,9 @@
+{
+  "artifact_authority": "supplemental_visual_only",
+  "enabled": false,
+  "final_xodr": "E:\\wt\\repair-map-realism-p0-837a8504\\ultimate_pipeline_out\\20261021_165726_800368\\08h5_g6_lane_coverage_repaired.xodr",
+  "final_xodr_sha256": "3f7a9180ccd27db34b3cfa192a248ea0aa35f4ea261c8317f6f6b01a91be3d53",
+  "reason": "UP_ENABLE_OSM2WORLD/ENABLE_OSM2WORLD and Settings.ENABLE_OSM2WORLD are not enabled",
+  "road_authority": "OpenDRIVE",
+  "status": "NOT_RUN"
+}

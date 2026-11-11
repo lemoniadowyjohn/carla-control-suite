@@ -1,0 +1,22 @@
+{
+  "ok": true,
+  "eps_z": 0.5,
+  "num_roads": 5781,
+  "num_links_checked": 0,
+  "num_junction_connector_links_checked": 8030,
+  "num_issues": 0,
+  "num_junction_connector_issues": 0,
+  "issues": [],
+  "junction_connector_issues": [],
+  "warnings": [],
+  "offset_solver": {
+    "enabled": true,
+    "applied": true,
+    "reason": "strict_auto_enabled",
+    "explicit_env_override": false,
+    "strict_mode": true,
+    "roads_with_offsets": 5780,
+    "components": 1,
+    "max_abs_offset_m": 4.5349045041896295e-05
+  }
+}

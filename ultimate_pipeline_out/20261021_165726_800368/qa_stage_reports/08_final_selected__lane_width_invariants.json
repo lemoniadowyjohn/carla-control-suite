@@ -1,0 +1,25 @@
+{
+  "ok": true,
+  "severity": "pass",
+  "defaults": {
+    "default_width_m": 3.5,
+    "lane_types": [
+      "driving",
+      "shoulder",
+      "sidewalk",
+      "border",
+      "parking",
+      "biking",
+      "restricted",
+      "none"
+    ]
+  },
+  "totals": {
+    "missing_width_lanes_found": 0,
+    "missing_width_lanes_fixed": 0,
+    "missing_width_lanes_unfixed": 0
+  },
+  "examples": [],
+  "stage": "08_final_selected",
+  "xodr_path": "E:\\wt\\repair-map-realism-p0-837a8504\\ultimate_pipeline_out\\20261021_165726_800368\\08_final_20261021_165726_800368.xodr"
+}

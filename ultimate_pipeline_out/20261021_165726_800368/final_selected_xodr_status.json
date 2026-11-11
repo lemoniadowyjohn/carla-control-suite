@@ -1,0 +1,22 @@
+{
+  "CARLA_VISUAL_READY": "no",
+  "PERCEPTION_READY": "no",
+  "carla_visual_smoke_gate": {
+    "ok": false,
+    "reason": "carla_visual_smoke_gate_missing",
+    "status": "missing"
+  },
+  "carla_visual_smoke_gate_report_path": "E:\\wt\\repair-map-realism-p0-837a8504\\ultimate_pipeline_out\\20261021_165726_800368\\final_visual_smoke\\carla_visual_smoke_gate.json",
+  "failed_check_count": 0,
+  "junction_connector_risk_ok": null,
+  "junction_connector_risk_report_available": false,
+  "junction_connector_risk_report_path": "E:\\wt\\repair-map-realism-p0-837a8504\\ultimate_pipeline_out\\20261021_165726_800368\\junction_connector_risk.json",
+  "overlap_pair_count": 0,
+  "perception_gate_reason": "blocked_until_carla_visual_smoke_gate_passes",
+  "recommended_readiness_gate_command": "python -m ultimate_pipeline.tools.final_map_readiness_gate --xodr E:\\wt\\repair-map-realism-p0-837a8504\\ultimate_pipeline_out\\20261021_165726_800368\\08_final_20261021_165726_800368.xodr --visual-gate-report E:\\wt\\repair-map-realism-p0-837a8504\\ultimate_pipeline_out\\20261021_165726_800368\\final_visual_smoke\\carla_visual_smoke_gate.json",
+  "recommended_visual_gate_command": "python -m ultimate_pipeline.tools.carla_visual_smoke_gate --xodr E:\\wt\\repair-map-realism-p0-837a8504\\ultimate_pipeline_out\\20261021_165726_800368\\08_final_20261021_165726_800368.xodr --out E:\\wt\\repair-map-realism-p0-837a8504\\ultimate_pipeline_out\\20261021_165726_800368\\final_visual_smoke --strict",
+  "schema": "final_selected_xodr_status_v1",
+  "selected_xodr_path": "E:\\wt\\repair-map-realism-p0-837a8504\\ultimate_pipeline_out\\20261021_165726_800368\\08_final_20261021_165726_800368.xodr",
+  "sha256": "fb322e0e61792c3bc3e4785be548ec436d8ea6042e1bf87c4bddbfca09ee217b",
+  "worst_junction_sample": []
+}

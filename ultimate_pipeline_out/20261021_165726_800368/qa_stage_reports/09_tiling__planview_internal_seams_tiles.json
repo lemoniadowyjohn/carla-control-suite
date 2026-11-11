@@ -1,0 +1,1538 @@
+{
+  "ok": true,
+  "total_tiles": 72,
+  "failed_tiles": [],
+  "tile_reports": [
+    {
+      "tile": "tile_0_0.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "eps_hdg_only_deg": 5.0,
+        "num_roads": 6,
+        "num_pairs_checked": 76,
+        "num_seams": 0,
+        "roads_checked": 4,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "heading_only_discontinuities": [],
+        "num_heading_only_discontinuities": 0,
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_0_1.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "eps_hdg_only_deg": 5.0,
+        "num_roads": 5,
+        "num_pairs_checked": 132,
+        "num_seams": 0,
+        "roads_checked": 4,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "heading_only_discontinuities": [],
+        "num_heading_only_discontinuities": 0,
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_0_2.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "eps_hdg_only_deg": 5.0,
+        "num_roads": 56,
+        "num_pairs_checked": 222,
+        "num_seams": 0,
+        "roads_checked": 15,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "heading_only_discontinuities": [
+          {
+            "road_id": "10506",
+            "from_geom_index": 15,
+            "to_geom_index": 16,
+            "xy_gap_m": 1.3241187402120029e-08,
+            "hdg_delta_rad": -0.7234170799999999,
+            "hdg_delta_deg": -41.448745511677835
+          }
+        ],
+        "num_heading_only_discontinuities": 1,
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_0_3.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "eps_hdg_only_deg": 5.0,
+        "num_roads": 84,
+        "num_pairs_checked": 478,
+        "num_seams": 0,
+        "roads_checked": 31,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "heading_only_discontinuities": [
+          {
+            "road_id": "9204",
+            "from_geom_index": 20,
+            "to_geom_index": 21,
+            "xy_gap_m": 1.4360668707755186e-08,
+            "hdg_delta_rad": -0.42998521999999983,
+            "hdg_delta_deg": -24.636338359004185
+          },
+          {
+            "road_id": "10506",
+            "from_geom_index": 15,
+            "to_geom_index": 16,
+            "xy_gap_m": 1.3241187402120029e-08,
+            "hdg_delta_rad": -0.7234170799999999,
+            "hdg_delta_deg": -41.448745511677835
+          }
+        ],
+        "num_heading_only_discontinuities": 2,
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_0_4.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "eps_hdg_only_deg": 5.0,
+        "num_roads": 67,
+        "num_pairs_checked": 590,
+        "num_seams": 0,
+        "roads_checked": 27,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "heading_only_discontinuities": [
+          {
+            "road_id": "10509",
+            "from_geom_index": 6,
+            "to_geom_index": 7,
+            "xy_gap_m": 1.0076484181164951e-08,
+            "hdg_delta_rad": 0.52406979,
+            "hdg_delta_deg": 30.026987137307355
+          },
+          {
+            "road_id": "10509",
+            "from_geom_index": 7,
+            "to_geom_index": 8,
+            "xy_gap_m": 1.9095306835294144e-08,
+            "hdg_delta_rad": -0.52855469,
+            "hdg_delta_deg": -30.283952978845576
+          }
+        ],
+        "num_heading_only_discontinuities": 2,
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_0_5.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "eps_hdg_only_deg": 5.0,
+        "num_roads": 81,
+        "num_pairs_checked": 633,
+        "num_seams": 0,
+        "roads_checked": 28,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "heading_only_discontinuities": [],
+        "num_heading_only_discontinuities": 0,
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_0_6.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "eps_hdg_only_deg": 5.0,
+        "num_roads": 58,
+        "num_pairs_checked": 351,
+        "num_seams": 0,
+        "roads_checked": 14,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "heading_only_discontinuities": [],
+        "num_heading_only_discontinuities": 0,
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_10_7.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "eps_hdg_only_deg": 5.0,
+        "num_roads": 2,
+        "num_pairs_checked": 198,
+        "num_seams": 0,
+        "roads_checked": 2,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "heading_only_discontinuities": [],
+        "num_heading_only_discontinuities": 0,
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_1_0.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "eps_hdg_only_deg": 5.0,
+        "num_roads": 166,
+        "num_pairs_checked": 571,
+        "num_seams": 0,
+        "roads_checked": 40,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "heading_only_discontinuities": [],
+        "num_heading_only_discontinuities": 0,
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_1_1.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "eps_hdg_only_deg": 5.0,
+        "num_roads": 125,
+        "num_pairs_checked": 1137,
+        "num_seams": 0,
+        "roads_checked": 45,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "heading_only_discontinuities": [],
+        "num_heading_only_discontinuities": 0,
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_1_2.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "eps_hdg_only_deg": 5.0,
+        "num_roads": 188,
+        "num_pairs_checked": 987,
+        "num_seams": 0,
+        "roads_checked": 52,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "heading_only_discontinuities": [
+          {
+            "road_id": "10506",
+            "from_geom_index": 15,
+            "to_geom_index": 16,
+            "xy_gap_m": 1.3241187402120029e-08,
+            "hdg_delta_rad": -0.7234170799999999,
+            "hdg_delta_deg": -41.448745511677835
+          }
+        ],
+        "num_heading_only_discontinuities": 1,
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_1_3.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "eps_hdg_only_deg": 5.0,
+        "num_roads": 268,
+        "num_pairs_checked": 971,
+        "num_seams": 0,
+        "roads_checked": 67,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "heading_only_discontinuities": [
+          {
+            "road_id": "10506",
+            "from_geom_index": 15,
+            "to_geom_index": 16,
+            "xy_gap_m": 1.3241187402120029e-08,
+            "hdg_delta_rad": -0.7234170799999999,
+            "hdg_delta_deg": -41.448745511677835
+          }
+        ],
+        "num_heading_only_discontinuities": 1,
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_1_4.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "eps_hdg_only_deg": 5.0,
+        "num_roads": 230,
+        "num_pairs_checked": 1129,
+        "num_seams": 0,
+        "roads_checked": 65,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "heading_only_discontinuities": [
+          {
+            "road_id": "10509",
+            "from_geom_index": 6,
+            "to_geom_index": 7,
+            "xy_gap_m": 1.0076484181164951e-08,
+            "hdg_delta_rad": 0.52406979,
+            "hdg_delta_deg": 30.026987137307355
+          },
+          {
+            "road_id": "10509",
+            "from_geom_index": 7,
+            "to_geom_index": 8,
+            "xy_gap_m": 1.9095306835294144e-08,
+            "hdg_delta_rad": -0.52855469,
+            "hdg_delta_deg": -30.283952978845576
+          }
+        ],
+        "num_heading_only_discontinuities": 2,
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_1_5.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "eps_hdg_only_deg": 5.0,
+        "num_roads": 186,
+        "num_pairs_checked": 1070,
+        "num_seams": 0,
+        "roads_checked": 50,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "heading_only_discontinuities": [],
+        "num_heading_only_discontinuities": 0,
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_1_6.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "eps_hdg_only_deg": 5.0,
+        "num_roads": 41,
+        "num_pairs_checked": 329,
+        "num_seams": 0,
+        "roads_checked": 12,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "heading_only_discontinuities": [],
+        "num_heading_only_discontinuities": 0,
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_2_0.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "eps_hdg_only_deg": 5.0,
+        "num_roads": 66,
+        "num_pairs_checked": 316,
+        "num_seams": 0,
+        "roads_checked": 12,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "heading_only_discontinuities": [],
+        "num_heading_only_discontinuities": 0,
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_2_1.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "eps_hdg_only_deg": 5.0,
+        "num_roads": 257,
+        "num_pairs_checked": 1686,
+        "num_seams": 0,
+        "roads_checked": 74,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "heading_only_discontinuities": [],
+        "num_heading_only_discontinuities": 0,
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_2_2.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "eps_hdg_only_deg": 5.0,
+        "num_roads": 228,
+        "num_pairs_checked": 916,
+        "num_seams": 0,
+        "roads_checked": 52,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "heading_only_discontinuities": [],
+        "num_heading_only_discontinuities": 0,
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_2_3.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "eps_hdg_only_deg": 5.0,
+        "num_roads": 64,
+        "num_pairs_checked": 353,
+        "num_seams": 0,
+        "roads_checked": 13,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "heading_only_discontinuities": [
+          {
+            "road_id": "10292",
+            "from_geom_index": 61,
+            "to_geom_index": 62,
+            "xy_gap_m": 1.508196326038022e-08,
+            "hdg_delta_rad": 1.2650542418256094,
+            "hdg_delta_deg": 72.48226891172965
+          },
+          {
+            "road_id": "10292",
+            "from_geom_index": 62,
+            "to_geom_index": 63,
+            "xy_gap_m": 1.3612630304424226e-08,
+            "hdg_delta_rad": -0.6190727599999999,
+            "hdg_delta_deg": -35.470256359515325
+          }
+        ],
+        "num_heading_only_discontinuities": 2,
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_2_4.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "eps_hdg_only_deg": 5.0,
+        "num_roads": 177,
+        "num_pairs_checked": 912,
+        "num_seams": 0,
+        "roads_checked": 37,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "heading_only_discontinuities": [
+          {
+            "road_id": "10292",
+            "from_geom_index": 61,
+            "to_geom_index": 62,
+            "xy_gap_m": 1.508196326038022e-08,
+            "hdg_delta_rad": 1.2650542418256094,
+            "hdg_delta_deg": 72.48226891172965
+          },
+          {
+            "road_id": "10292",
+            "from_geom_index": 62,
+            "to_geom_index": 63,
+            "xy_gap_m": 1.3612630304424226e-08,
+            "hdg_delta_rad": -0.6190727599999999,
+            "hdg_delta_deg": -35.470256359515325
+          }
+        ],
+        "num_heading_only_discontinuities": 2,
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_2_5.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "eps_hdg_only_deg": 5.0,
+        "num_roads": 258,
+        "num_pairs_checked": 1288,
+        "num_seams": 0,
+        "roads_checked": 69,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "heading_only_discontinuities": [],
+        "num_heading_only_discontinuities": 0,
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_2_6.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "eps_hdg_only_deg": 5.0,
+        "num_roads": 113,
+        "num_pairs_checked": 682,
+        "num_seams": 0,
+        "roads_checked": 32,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "heading_only_discontinuities": [],
+        "num_heading_only_discontinuities": 0,
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_2_7.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "eps_hdg_only_deg": 5.0,
+        "num_roads": 3,
+        "num_pairs_checked": 164,
+        "num_seams": 0,
+        "roads_checked": 2,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "heading_only_discontinuities": [],
+        "num_heading_only_discontinuities": 0,
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_3_0.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "eps_hdg_only_deg": 5.0,
+        "num_roads": 13,
+        "num_pairs_checked": 170,
+        "num_seams": 0,
+        "roads_checked": 4,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "heading_only_discontinuities": [],
+        "num_heading_only_discontinuities": 0,
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_3_1.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "eps_hdg_only_deg": 5.0,
+        "num_roads": 278,
+        "num_pairs_checked": 761,
+        "num_seams": 0,
+        "roads_checked": 57,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "heading_only_discontinuities": [],
+        "num_heading_only_discontinuities": 0,
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_3_2.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "eps_hdg_only_deg": 5.0,
+        "num_roads": 236,
+        "num_pairs_checked": 973,
+        "num_seams": 0,
+        "roads_checked": 49,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "heading_only_discontinuities": [],
+        "num_heading_only_discontinuities": 0,
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_3_3.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "eps_hdg_only_deg": 5.0,
+        "num_roads": 168,
+        "num_pairs_checked": 988,
+        "num_seams": 0,
+        "roads_checked": 39,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "heading_only_discontinuities": [
+          {
+            "road_id": "9397",
+            "from_geom_index": 0,
+            "to_geom_index": 1,
+            "xy_gap_m": 2.3524250070167116e-07,
+            "hdg_delta_rad": 0.5301464899999999,
+            "hdg_delta_deg": 30.3751564006745
+          },
+          {
+            "road_id": "9397",
+            "from_geom_index": 1,
+            "to_geom_index": 2,
+            "xy_gap_m": 1.611458881999272e-08,
+            "hdg_delta_rad": -0.5277338600000006,
+            "hdg_delta_deg": -30.236922884147887
+          }
+        ],
+        "num_heading_only_discontinuities": 2,
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_3_4.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "eps_hdg_only_deg": 5.0,
+        "num_roads": 249,
+        "num_pairs_checked": 1269,
+        "num_seams": 0,
+        "roads_checked": 65,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "heading_only_discontinuities": [
+          {
+            "road_id": "9397",
+            "from_geom_index": 0,
+            "to_geom_index": 1,
+            "xy_gap_m": 2.3524250070167116e-07,
+            "hdg_delta_rad": 0.5301464899999999,
+            "hdg_delta_deg": 30.3751564006745
+          },
+          {
+            "road_id": "9397",
+            "from_geom_index": 1,
+            "to_geom_index": 2,
+            "xy_gap_m": 1.611458881999272e-08,
+            "hdg_delta_rad": -0.5277338600000006,
+            "hdg_delta_deg": -30.236922884147887
+          }
+        ],
+        "num_heading_only_discontinuities": 2,
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_3_5.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "eps_hdg_only_deg": 5.0,
+        "num_roads": 293,
+        "num_pairs_checked": 1088,
+        "num_seams": 0,
+        "roads_checked": 71,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "heading_only_discontinuities": [],
+        "num_heading_only_discontinuities": 0,
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_3_6.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "eps_hdg_only_deg": 5.0,
+        "num_roads": 201,
+        "num_pairs_checked": 712,
+        "num_seams": 0,
+        "roads_checked": 49,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "heading_only_discontinuities": [
+          {
+            "road_id": "10102",
+            "from_geom_index": 0,
+            "to_geom_index": 1,
+            "xy_gap_m": 4.679838019013819e-09,
+            "hdg_delta_rad": 0.3307770400000001,
+            "hdg_delta_deg": 18.952128351830016
+          },
+          {
+            "road_id": "10102",
+            "from_geom_index": 1,
+            "to_geom_index": 2,
+            "xy_gap_m": 1.9893058914033534e-09,
+            "hdg_delta_rad": 0.4126251000000005,
+            "hdg_delta_deg": 23.641676751163576
+          }
+        ],
+        "num_heading_only_discontinuities": 2,
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_3_7.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "eps_hdg_only_deg": 5.0,
+        "num_roads": 2,
+        "num_pairs_checked": 164,
+        "num_seams": 0,
+        "roads_checked": 2,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "heading_only_discontinuities": [],
+        "num_heading_only_discontinuities": 0,
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_4_0.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "eps_hdg_only_deg": 5.0,
+        "num_roads": 40,
+        "num_pairs_checked": 464,
+        "num_seams": 0,
+        "roads_checked": 10,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "heading_only_discontinuities": [],
+        "num_heading_only_discontinuities": 0,
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_4_1.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "eps_hdg_only_deg": 5.0,
+        "num_roads": 281,
+        "num_pairs_checked": 833,
+        "num_seams": 0,
+        "roads_checked": 44,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "heading_only_discontinuities": [],
+        "num_heading_only_discontinuities": 0,
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_4_2.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "eps_hdg_only_deg": 5.0,
+        "num_roads": 138,
+        "num_pairs_checked": 596,
+        "num_seams": 0,
+        "roads_checked": 36,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "heading_only_discontinuities": [],
+        "num_heading_only_discontinuities": 0,
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_4_3.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "eps_hdg_only_deg": 5.0,
+        "num_roads": 121,
+        "num_pairs_checked": 1195,
+        "num_seams": 0,
+        "roads_checked": 34,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "heading_only_discontinuities": [],
+        "num_heading_only_discontinuities": 0,
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_4_4.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "eps_hdg_only_deg": 5.0,
+        "num_roads": 120,
+        "num_pairs_checked": 685,
+        "num_seams": 0,
+        "roads_checked": 35,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "heading_only_discontinuities": [],
+        "num_heading_only_discontinuities": 0,
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_4_5.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "eps_hdg_only_deg": 5.0,
+        "num_roads": 344,
+        "num_pairs_checked": 883,
+        "num_seams": 0,
+        "roads_checked": 76,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "heading_only_discontinuities": [],
+        "num_heading_only_discontinuities": 0,
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_4_6.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "eps_hdg_only_deg": 5.0,
+        "num_roads": 199,
+        "num_pairs_checked": 527,
+        "num_seams": 0,
+        "roads_checked": 42,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "heading_only_discontinuities": [],
+        "num_heading_only_discontinuities": 0,
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_5_0.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "eps_hdg_only_deg": 5.0,
+        "num_roads": 18,
+        "num_pairs_checked": 260,
+        "num_seams": 0,
+        "roads_checked": 8,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "heading_only_discontinuities": [],
+        "num_heading_only_discontinuities": 0,
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_5_1.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "eps_hdg_only_deg": 5.0,
+        "num_roads": 80,
+        "num_pairs_checked": 436,
+        "num_seams": 0,
+        "roads_checked": 19,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "heading_only_discontinuities": [],
+        "num_heading_only_discontinuities": 0,
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_5_2.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "eps_hdg_only_deg": 5.0,
+        "num_roads": 73,
+        "num_pairs_checked": 1146,
+        "num_seams": 0,
+        "roads_checked": 20,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "heading_only_discontinuities": [],
+        "num_heading_only_discontinuities": 0,
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_5_3.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "eps_hdg_only_deg": 5.0,
+        "num_roads": 134,
+        "num_pairs_checked": 1251,
+        "num_seams": 0,
+        "roads_checked": 36,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "heading_only_discontinuities": [],
+        "num_heading_only_discontinuities": 0,
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_5_4.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "eps_hdg_only_deg": 5.0,
+        "num_roads": 62,
+        "num_pairs_checked": 612,
+        "num_seams": 0,
+        "roads_checked": 21,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "heading_only_discontinuities": [],
+        "num_heading_only_discontinuities": 0,
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_5_5.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "eps_hdg_only_deg": 5.0,
+        "num_roads": 175,
+        "num_pairs_checked": 1116,
+        "num_seams": 0,
+        "roads_checked": 46,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "heading_only_discontinuities": [],
+        "num_heading_only_discontinuities": 0,
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_5_6.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "eps_hdg_only_deg": 5.0,
+        "num_roads": 250,
+        "num_pairs_checked": 1763,
+        "num_seams": 0,
+        "roads_checked": 67,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "heading_only_discontinuities": [],
+        "num_heading_only_discontinuities": 0,
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_5_7.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "eps_hdg_only_deg": 5.0,
+        "num_roads": 11,
+        "num_pairs_checked": 561,
+        "num_seams": 0,
+        "roads_checked": 7,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "heading_only_discontinuities": [],
+        "num_heading_only_discontinuities": 0,
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_6_1.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "eps_hdg_only_deg": 5.0,
+        "num_roads": 106,
+        "num_pairs_checked": 723,
+        "num_seams": 0,
+        "roads_checked": 29,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "heading_only_discontinuities": [],
+        "num_heading_only_discontinuities": 0,
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_6_2.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "eps_hdg_only_deg": 5.0,
+        "num_roads": 92,
+        "num_pairs_checked": 1386,
+        "num_seams": 0,
+        "roads_checked": 30,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "heading_only_discontinuities": [],
+        "num_heading_only_discontinuities": 0,
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_6_3.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "eps_hdg_only_deg": 5.0,
+        "num_roads": 9,
+        "num_pairs_checked": 353,
+        "num_seams": 0,
+        "roads_checked": 4,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "heading_only_discontinuities": [],
+        "num_heading_only_discontinuities": 0,
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_6_4.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "eps_hdg_only_deg": 5.0,
+        "num_roads": 4,
+        "num_pairs_checked": 317,
+        "num_seams": 0,
+        "roads_checked": 4,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "heading_only_discontinuities": [],
+        "num_heading_only_discontinuities": 0,
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_6_5.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "eps_hdg_only_deg": 5.0,
+        "num_roads": 127,
+        "num_pairs_checked": 1172,
+        "num_seams": 0,
+        "roads_checked": 34,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "heading_only_discontinuities": [],
+        "num_heading_only_discontinuities": 0,
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_6_6.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "eps_hdg_only_deg": 5.0,
+        "num_roads": 163,
+        "num_pairs_checked": 1986,
+        "num_seams": 0,
+        "roads_checked": 56,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "heading_only_discontinuities": [],
+        "num_heading_only_discontinuities": 0,
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_6_7.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "eps_hdg_only_deg": 5.0,
+        "num_roads": 14,
+        "num_pairs_checked": 890,
+        "num_seams": 0,
+        "roads_checked": 11,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "heading_only_discontinuities": [],
+        "num_heading_only_discontinuities": 0,
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_7_1.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "eps_hdg_only_deg": 5.0,
+        "num_roads": 1,
+        "num_pairs_checked": 0,
+        "num_seams": 0,
+        "roads_checked": 0,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "heading_only_discontinuities": [],
+        "num_heading_only_discontinuities": 0,
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_7_2.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "eps_hdg_only_deg": 5.0,
+        "num_roads": 4,
+        "num_pairs_checked": 240,
+        "num_seams": 0,
+        "roads_checked": 4,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "heading_only_discontinuities": [],
+        "num_heading_only_discontinuities": 0,
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_7_5.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "eps_hdg_only_deg": 5.0,
+        "num_roads": 113,
+        "num_pairs_checked": 765,
+        "num_seams": 0,
+        "roads_checked": 38,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "heading_only_discontinuities": [],
+        "num_heading_only_discontinuities": 0,
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_7_6.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "eps_hdg_only_deg": 5.0,
+        "num_roads": 249,
+        "num_pairs_checked": 1824,
+        "num_seams": 0,
+        "roads_checked": 67,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "heading_only_discontinuities": [],
+        "num_heading_only_discontinuities": 0,
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_7_7.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "eps_hdg_only_deg": 5.0,
+        "num_roads": 23,
+        "num_pairs_checked": 738,
+        "num_seams": 0,
+        "roads_checked": 9,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "heading_only_discontinuities": [],
+        "num_heading_only_discontinuities": 0,
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_8_0.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "eps_hdg_only_deg": 5.0,
+        "num_roads": 2,
+        "num_pairs_checked": 260,
+        "num_seams": 0,
+        "roads_checked": 2,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "heading_only_discontinuities": [],
+        "num_heading_only_discontinuities": 0,
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_8_1.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "eps_hdg_only_deg": 5.0,
+        "num_roads": 25,
+        "num_pairs_checked": 472,
+        "num_seams": 0,
+        "roads_checked": 8,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "heading_only_discontinuities": [],
+        "num_heading_only_discontinuities": 0,
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_8_2.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "eps_hdg_only_deg": 5.0,
+        "num_roads": 51,
+        "num_pairs_checked": 701,
+        "num_seams": 0,
+        "roads_checked": 16,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "heading_only_discontinuities": [],
+        "num_heading_only_discontinuities": 0,
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_8_3.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "eps_hdg_only_deg": 5.0,
+        "num_roads": 8,
+        "num_pairs_checked": 246,
+        "num_seams": 0,
+        "roads_checked": 6,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "heading_only_discontinuities": [],
+        "num_heading_only_discontinuities": 0,
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_8_5.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "eps_hdg_only_deg": 5.0,
+        "num_roads": 36,
+        "num_pairs_checked": 353,
+        "num_seams": 0,
+        "roads_checked": 12,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "heading_only_discontinuities": [],
+        "num_heading_only_discontinuities": 0,
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_8_6.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "eps_hdg_only_deg": 5.0,
+        "num_roads": 246,
+        "num_pairs_checked": 1292,
+        "num_seams": 0,
+        "roads_checked": 55,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "heading_only_discontinuities": [],
+        "num_heading_only_discontinuities": 0,
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_8_7.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "eps_hdg_only_deg": 5.0,
+        "num_roads": 83,
+        "num_pairs_checked": 798,
+        "num_seams": 0,
+        "roads_checked": 21,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "heading_only_discontinuities": [],
+        "num_heading_only_discontinuities": 0,
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_9_0.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "eps_hdg_only_deg": 5.0,
+        "num_roads": 3,
+        "num_pairs_checked": 260,
+        "num_seams": 0,
+        "roads_checked": 2,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "heading_only_discontinuities": [],
+        "num_heading_only_discontinuities": 0,
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_9_1.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "eps_hdg_only_deg": 5.0,
+        "num_roads": 50,
+        "num_pairs_checked": 510,
+        "num_seams": 0,
+        "roads_checked": 15,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "heading_only_discontinuities": [],
+        "num_heading_only_discontinuities": 0,
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_9_2.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "eps_hdg_only_deg": 5.0,
+        "num_roads": 111,
+        "num_pairs_checked": 694,
+        "num_seams": 0,
+        "roads_checked": 32,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "heading_only_discontinuities": [],
+        "num_heading_only_discontinuities": 0,
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_9_3.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "eps_hdg_only_deg": 5.0,
+        "num_roads": 53,
+        "num_pairs_checked": 366,
+        "num_seams": 0,
+        "roads_checked": 17,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "heading_only_discontinuities": [],
+        "num_heading_only_discontinuities": 0,
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_9_5.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "eps_hdg_only_deg": 5.0,
+        "num_roads": 2,
+        "num_pairs_checked": 96,
+        "num_seams": 0,
+        "roads_checked": 2,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "heading_only_discontinuities": [],
+        "num_heading_only_discontinuities": 0,
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_9_6.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "eps_hdg_only_deg": 5.0,
+        "num_roads": 8,
+        "num_pairs_checked": 382,
+        "num_seams": 0,
+        "roads_checked": 8,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "heading_only_discontinuities": [],
+        "num_heading_only_discontinuities": 0,
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_9_7.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy_m": 0.2,
+        "eps_hdg_only_deg": 5.0,
+        "num_roads": 12,
+        "num_pairs_checked": 522,
+        "num_seams": 0,
+        "roads_checked": 6,
+        "seams_found": 0,
+        "max_seam_m": 0.0,
+        "worst_road_id": "",
+        "seams": [],
+        "heading_only_discontinuities": [],
+        "num_heading_only_discontinuities": 0,
+        "warnings": []
+      }
+    }
+  ]
+}

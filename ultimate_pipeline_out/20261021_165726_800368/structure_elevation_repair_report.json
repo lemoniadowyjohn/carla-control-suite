@@ -1,0 +1,5 @@
+{
+  "ok": false,
+  "INCOMPLETE": true,
+  "reason": "terrain_sampler_unavailable: F1 CRS contract unresolved: cannot establish the geographic frame of E:\\wt\\repair-map-realism-p0-837a8504\\ultimate_pipeline_out\\20261021_165726_800368\\06_geometry_frozen_20261021_165726_800368.xodr (verdict=UNRESOLVED, reason=osm_source_unavailable). DEM sampling fails closed. Provide the OSM source or a resolvable geoReference."
+}

@@ -1,0 +1,827 @@
+{
+  "missing_junction_ids_referenced": [
+    "103",
+    "147",
+    "154",
+    "158",
+    "175",
+    "185",
+    "186",
+    "20",
+    "200",
+    "209",
+    "21",
+    "213",
+    "216",
+    "226",
+    "259",
+    "270",
+    "279",
+    "34",
+    "358",
+    "374",
+    "375",
+    "385",
+    "40",
+    "405",
+    "406",
+    "414",
+    "416",
+    "420",
+    "423",
+    "432",
+    "433",
+    "434",
+    "458",
+    "469",
+    "476",
+    "490",
+    "498",
+    "503",
+    "526",
+    "532",
+    "541",
+    "573",
+    "575",
+    "58",
+    "580",
+    "582",
+    "589",
+    "590",
+    "592",
+    "60",
+    "602",
+    "603",
+    "604",
+    "605",
+    "609",
+    "610",
+    "611",
+    "612",
+    "613",
+    "614",
+    "615",
+    "618",
+    "643",
+    "647",
+    "657",
+    "667",
+    "672",
+    "673",
+    "676",
+    "687",
+    "7",
+    "719",
+    "745",
+    "78"
+  ],
+  "num_junctions_in_file": 800,
+  "num_removed": 143,
+  "num_roads_affected": 139,
+  "ok": true,
+  "removals": [
+    {
+      "contact_point": null,
+      "link_type": "predecessor",
+      "missing_junction_id": "7",
+      "road_id": "8953"
+    },
+    {
+      "contact_point": null,
+      "link_type": "predecessor",
+      "missing_junction_id": "20",
+      "road_id": "8960"
+    },
+    {
+      "contact_point": null,
+      "link_type": "successor",
+      "missing_junction_id": "21",
+      "road_id": "8960"
+    },
+    {
+      "contact_point": null,
+      "link_type": "successor",
+      "missing_junction_id": "34",
+      "road_id": "8970"
+    },
+    {
+      "contact_point": null,
+      "link_type": "successor",
+      "missing_junction_id": "40",
+      "road_id": "8975"
+    },
+    {
+      "contact_point": null,
+      "link_type": "predecessor",
+      "missing_junction_id": "58",
+      "road_id": "8991"
+    },
+    {
+      "contact_point": null,
+      "link_type": "predecessor",
+      "missing_junction_id": "60",
+      "road_id": "8993"
+    },
+    {
+      "contact_point": null,
+      "link_type": "predecessor",
+      "missing_junction_id": "78",
+      "road_id": "9008"
+    },
+    {
+      "contact_point": null,
+      "link_type": "predecessor",
+      "missing_junction_id": "103",
+      "road_id": "9023"
+    },
+    {
+      "contact_point": null,
+      "link_type": "successor",
+      "missing_junction_id": "147",
+      "road_id": "9057"
+    },
+    {
+      "contact_point": null,
+      "link_type": "successor",
+      "missing_junction_id": "154",
+      "road_id": "9062"
+    },
+    {
+      "contact_point": null,
+      "link_type": "predecessor",
+      "missing_junction_id": "158",
+      "road_id": "9065"
+    },
+    {
+      "contact_point": null,
+      "link_type": "predecessor",
+      "missing_junction_id": "175",
+      "road_id": "9077"
+    },
+    {
+      "contact_point": null,
+      "link_type": "predecessor",
+      "missing_junction_id": "185",
+      "road_id": "9084"
+    },
+    {
+      "contact_point": null,
+      "link_type": "predecessor",
+      "missing_junction_id": "186",
+      "road_id": "9085"
+    },
+    {
+      "contact_point": null,
+      "link_type": "predecessor",
+      "missing_junction_id": "200",
+      "road_id": "9096"
+    },
+    {
+      "contact_point": null,
+      "link_type": "predecessor",
+      "missing_junction_id": "209",
+      "road_id": "9106"
+    },
+    {
+      "contact_point": null,
+      "link_type": "successor",
+      "missing_junction_id": "213",
+      "road_id": "9110"
+    },
+    {
+      "contact_point": null,
+      "link_type": "predecessor",
+      "missing_junction_id": "216",
+      "road_id": "9112"
+    },
+    {
+      "contact_point": null,
+      "link_type": "predecessor",
+      "missing_junction_id": "226",
+      "road_id": "9120"
+    },
+    {
+      "contact_point": null,
+      "link_type": "successor",
+      "missing_junction_id": "259",
+      "road_id": "9150"
+    },
+    {
+      "contact_point": null,
+      "link_type": "predecessor",
+      "missing_junction_id": "270",
+      "road_id": "9159"
+    },
+    {
+      "contact_point": null,
+      "link_type": "successor",
+      "missing_junction_id": "279",
+      "road_id": "9165"
+    },
+    {
+      "contact_point": null,
+      "link_type": "predecessor",
+      "missing_junction_id": "358",
+      "road_id": "9245"
+    },
+    {
+      "contact_point": null,
+      "link_type": "successor",
+      "missing_junction_id": "374",
+      "road_id": "9263"
+    },
+    {
+      "contact_point": null,
+      "link_type": "successor",
+      "missing_junction_id": "375",
+      "road_id": "9264"
+    },
+    {
+      "contact_point": null,
+      "link_type": "successor",
+      "missing_junction_id": "385",
+      "road_id": "9277"
+    },
+    {
+      "contact_point": null,
+      "link_type": "predecessor",
+      "missing_junction_id": "405",
+      "road_id": "9303"
+    },
+    {
+      "contact_point": null,
+      "link_type": "successor",
+      "missing_junction_id": "406",
+      "road_id": "9303"
+    },
+    {
+      "contact_point": null,
+      "link_type": "predecessor",
+      "missing_junction_id": "414",
+      "road_id": "9312"
+    },
+    {
+      "contact_point": null,
+      "link_type": "predecessor",
+      "missing_junction_id": "416",
+      "road_id": "9313"
+    },
+    {
+      "contact_point": null,
+      "link_type": "successor",
+      "missing_junction_id": "420",
+      "road_id": "9318"
+    },
+    {
+      "contact_point": null,
+      "link_type": "predecessor",
+      "missing_junction_id": "423",
+      "road_id": "9321"
+    },
+    {
+      "contact_point": null,
+      "link_type": "predecessor",
+      "missing_junction_id": "432",
+      "road_id": "9331"
+    },
+    {
+      "contact_point": null,
+      "link_type": "successor",
+      "missing_junction_id": "433",
+      "road_id": "9332"
+    },
+    {
+      "contact_point": null,
+      "link_type": "predecessor",
+      "missing_junction_id": "434",
+      "road_id": "9333"
+    },
+    {
+      "contact_point": null,
+      "link_type": "predecessor",
+      "missing_junction_id": "458",
+      "road_id": "9367"
+    },
+    {
+      "contact_point": null,
+      "link_type": "predecessor",
+      "missing_junction_id": "469",
+      "road_id": "9378"
+    },
+    {
+      "contact_point": null,
+      "link_type": "predecessor",
+      "missing_junction_id": "476",
+      "road_id": "9385"
+    },
+    {
+      "contact_point": null,
+      "link_type": "predecessor",
+      "missing_junction_id": "490",
+      "road_id": "9400"
+    },
+    {
+      "contact_point": null,
+      "link_type": "successor",
+      "missing_junction_id": "498",
+      "road_id": "9409"
+    },
+    {
+      "contact_point": null,
+      "link_type": "successor",
+      "missing_junction_id": "503",
+      "road_id": "9415"
+    },
+    {
+      "contact_point": null,
+      "link_type": "predecessor",
+      "missing_junction_id": "526",
+      "road_id": "9444"
+    },
+    {
+      "contact_point": null,
+      "link_type": "predecessor",
+      "missing_junction_id": "532",
+      "road_id": "9455"
+    },
+    {
+      "contact_point": null,
+      "link_type": "predecessor",
+      "missing_junction_id": "541",
+      "road_id": "9481"
+    },
+    {
+      "contact_point": null,
+      "link_type": "predecessor",
+      "missing_junction_id": "573",
+      "road_id": "9525"
+    },
+    {
+      "contact_point": null,
+      "link_type": "successor",
+      "missing_junction_id": "575",
+      "road_id": "9526"
+    },
+    {
+      "contact_point": null,
+      "link_type": "predecessor",
+      "missing_junction_id": "580",
+      "road_id": "9535"
+    },
+    {
+      "contact_point": null,
+      "link_type": "predecessor",
+      "missing_junction_id": "582",
+      "road_id": "9539"
+    },
+    {
+      "contact_point": null,
+      "link_type": "successor",
+      "missing_junction_id": "589",
+      "road_id": "9549"
+    },
+    {
+      "contact_point": null,
+      "link_type": "predecessor",
+      "missing_junction_id": "590",
+      "road_id": "9551"
+    },
+    {
+      "contact_point": null,
+      "link_type": "successor",
+      "missing_junction_id": "592",
+      "road_id": "9558"
+    },
+    {
+      "contact_point": null,
+      "link_type": "successor",
+      "missing_junction_id": "602",
+      "road_id": "9580"
+    },
+    {
+      "contact_point": null,
+      "link_type": "predecessor",
+      "missing_junction_id": "603",
+      "road_id": "9582"
+    },
+    {
+      "contact_point": null,
+      "link_type": "predecessor",
+      "missing_junction_id": "604",
+      "road_id": "9583"
+    },
+    {
+      "contact_point": null,
+      "link_type": "predecessor",
+      "missing_junction_id": "605",
+      "road_id": "9584"
+    },
+    {
+      "contact_point": null,
+      "link_type": "successor",
+      "missing_junction_id": "609",
+      "road_id": "9589"
+    },
+    {
+      "contact_point": null,
+      "link_type": "predecessor",
+      "missing_junction_id": "610",
+      "road_id": "9590"
+    },
+    {
+      "contact_point": null,
+      "link_type": "successor",
+      "missing_junction_id": "611",
+      "road_id": "9591"
+    },
+    {
+      "contact_point": null,
+      "link_type": "predecessor",
+      "missing_junction_id": "612",
+      "road_id": "9592"
+    },
+    {
+      "contact_point": null,
+      "link_type": "successor",
+      "missing_junction_id": "613",
+      "road_id": "9593"
+    },
+    {
+      "contact_point": null,
+      "link_type": "predecessor",
+      "missing_junction_id": "614",
+      "road_id": "9594"
+    },
+    {
+      "contact_point": null,
+      "link_type": "predecessor",
+      "missing_junction_id": "615",
+      "road_id": "9595"
+    },
+    {
+      "contact_point": null,
+      "link_type": "successor",
+      "missing_junction_id": "618",
+      "road_id": "9597"
+    },
+    {
+      "contact_point": null,
+      "link_type": "successor",
+      "missing_junction_id": "643",
+      "road_id": "9649"
+    },
+    {
+      "contact_point": null,
+      "link_type": "successor",
+      "missing_junction_id": "647",
+      "road_id": "9657"
+    },
+    {
+      "contact_point": null,
+      "link_type": "successor",
+      "missing_junction_id": "657",
+      "road_id": "9670"
+    },
+    {
+      "contact_point": null,
+      "link_type": "predecessor",
+      "missing_junction_id": "667",
+      "road_id": "9686"
+    },
+    {
+      "contact_point": null,
+      "link_type": "successor",
+      "missing_junction_id": "672",
+      "road_id": "9697"
+    },
+    {
+      "contact_point": null,
+      "link_type": "predecessor",
+      "missing_junction_id": "673",
+      "road_id": "9699"
+    },
+    {
+      "contact_point": null,
+      "link_type": "predecessor",
+      "missing_junction_id": "676",
+      "road_id": "9707"
+    },
+    {
+      "contact_point": null,
+      "link_type": "predecessor",
+      "missing_junction_id": "687",
+      "road_id": "9743"
+    },
+    {
+      "contact_point": null,
+      "link_type": "successor",
+      "missing_junction_id": "7",
+      "road_id": "9757"
+    },
+    {
+      "contact_point": null,
+      "link_type": "predecessor",
+      "missing_junction_id": "21",
+      "road_id": "9766"
+    },
+    {
+      "contact_point": null,
+      "link_type": "successor",
+      "missing_junction_id": "20",
+      "road_id": "9766"
+    },
+    {
+      "contact_point": null,
+      "link_type": "predecessor",
+      "missing_junction_id": "34",
+      "road_id": "9773"
+    },
+    {
+      "contact_point": null,
+      "link_type": "predecessor",
+      "missing_junction_id": "40",
+      "road_id": "9779"
+    },
+    {
+      "contact_point": null,
+      "link_type": "successor",
+      "missing_junction_id": "58",
+      "road_id": "9800"
+    },
+    {
+      "contact_point": null,
+      "link_type": "successor",
+      "missing_junction_id": "60",
+      "road_id": "9802"
+    },
+    {
+      "contact_point": null,
+      "link_type": "successor",
+      "missing_junction_id": "78",
+      "road_id": "9816"
+    },
+    {
+      "contact_point": null,
+      "link_type": "successor",
+      "missing_junction_id": "103",
+      "road_id": "9832"
+    },
+    {
+      "contact_point": null,
+      "link_type": "predecessor",
+      "missing_junction_id": "719",
+      "road_id": "9838"
+    },
+    {
+      "contact_point": null,
+      "link_type": "predecessor",
+      "missing_junction_id": "147",
+      "road_id": "9878"
+    },
+    {
+      "contact_point": null,
+      "link_type": "predecessor",
+      "missing_junction_id": "154",
+      "road_id": "9892"
+    },
+    {
+      "contact_point": null,
+      "link_type": "successor",
+      "missing_junction_id": "158",
+      "road_id": "9895"
+    },
+    {
+      "contact_point": null,
+      "link_type": "successor",
+      "missing_junction_id": "175",
+      "road_id": "9915"
+    },
+    {
+      "contact_point": null,
+      "link_type": "predecessor",
+      "missing_junction_id": "745",
+      "road_id": "9937"
+    },
+    {
+      "contact_point": null,
+      "link_type": "successor",
+      "missing_junction_id": "200",
+      "road_id": "9941"
+    },
+    {
+      "contact_point": null,
+      "link_type": "successor",
+      "missing_junction_id": "209",
+      "road_id": "9971"
+    },
+    {
+      "contact_point": null,
+      "link_type": "predecessor",
+      "missing_junction_id": "213",
+      "road_id": "9976"
+    },
+    {
+      "contact_point": null,
+      "link_type": "successor",
+      "missing_junction_id": "216",
+      "road_id": "9978"
+    },
+    {
+      "contact_point": null,
+      "link_type": "successor",
+      "missing_junction_id": "226",
+      "road_id": "9986"
+    },
+    {
+      "contact_point": null,
+      "link_type": "predecessor",
+      "missing_junction_id": "259",
+      "road_id": "10033"
+    },
+    {
+      "contact_point": null,
+      "link_type": "successor",
+      "missing_junction_id": "270",
+      "road_id": "10043"
+    },
+    {
+      "contact_point": null,
+      "link_type": "predecessor",
+      "missing_junction_id": "279",
+      "road_id": "10049"
+    },
+    {
+      "contact_point": null,
+      "link_type": "successor",
+      "missing_junction_id": "358",
+      "road_id": "10156"
+    },
+    {
+      "contact_point": null,
+      "link_type": "predecessor",
+      "missing_junction_id": "374",
+      "road_id": "10176"
+    },
+    {
+      "contact_point": null,
+      "link_type": "predecessor",
+      "missing_junction_id": "375",
+      "road_id": "10177"
+    },
+    {
+      "contact_point": null,
+      "link_type": "predecessor",
+      "missing_junction_id": "385",
+      "road_id": "10190"
+    },
+    {
+      "contact_point": null,
+      "link_type": "predecessor",
+      "missing_junction_id": "406",
+      "road_id": "10217"
+    }
+  ],
+  "removals_truncated": true,
+  "repair_type": "missing_junction_link_repair",
+  "roads_affected": [
+    "10033",
+    "10043",
+    "10049",
+    "10156",
+    "10176",
+    "10177",
+    "10190",
+    "10217",
+    "10231",
+    "10232",
+    "10237",
+    "10240",
+    "10254",
+    "10255",
+    "10256",
+    "10293",
+    "10306",
+    "10338",
+    "10349",
+    "10355",
+    "10428",
+    "10443",
+    "10496",
+    "10569",
+    "10570",
+    "10581",
+    "10585",
+    "10595",
+    "10597",
+    "10603",
+    "10648",
+    "10650",
+    "10651",
+    "10652",
+    "10662",
+    "10663",
+    "10664",
+    "10665",
+    "10670",
+    "10671",
+    "10672",
+    "10674",
+    "10752",
+    "10763",
+    "10809",
+    "10863",
+    "10877",
+    "10880",
+    "10888",
+    "10935",
+    "8953",
+    "8960",
+    "8970",
+    "8975",
+    "8991",
+    "8993",
+    "9008",
+    "9023",
+    "9057",
+    "9062",
+    "9065",
+    "9077",
+    "9084",
+    "9085",
+    "9096",
+    "9106",
+    "9110",
+    "9112",
+    "9120",
+    "9150",
+    "9159",
+    "9165",
+    "9245",
+    "9263",
+    "9264",
+    "9277",
+    "9303",
+    "9312",
+    "9313",
+    "9318",
+    "9321",
+    "9331",
+    "9332",
+    "9333",
+    "9367",
+    "9378",
+    "9385",
+    "9400",
+    "9409",
+    "9415",
+    "9444",
+    "9455",
+    "9481",
+    "9525",
+    "9526",
+    "9535",
+    "9539",
+    "9549",
+    "9551",
+    "9558",
+    "9580",
+    "9582",
+    "9583",
+    "9584",
+    "9589",
+    "9590",
+    "9591",
+    "9592",
+    "9593",
+    "9594",
+    "9595",
+    "9597",
+    "9649",
+    "9657",
+    "9670",
+    "9686",
+    "9697",
+    "9699",
+    "9707",
+    "9743",
+    "9757",
+    "9766",
+    "9773",
+    "9779",
+    "9800",
+    "9802",
+    "9816",
+    "9832",
+    "9838",
+    "9878",
+    "9892",
+    "9895",
+    "9915",
+    "9937",
+    "9941",
+    "9971",
+    "9976",
+    "9978",
+    "9986"
+  ]
+}

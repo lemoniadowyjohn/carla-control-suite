@@ -1,0 +1,5 @@
+{
+  "error": "\n\u274c CARLA-FATAL: lane connectivity invariant violated\n\nCARLA requires every driving lane to have a successor.\nThe following lanes are invalid:\n\nRoad 8790 lane -2: missing <successor>\nRoad 8791 lane -2: missing <successor>\nRoad 8796 lane -3: missing <successor>\nRoad 8797 lane -3: missing <successor>\nRoad 8797 lane -4: missing <successor>\nRoad 8801 lane -3: missing <successor>\nRoad 8805 lane -2: missing <successor>\nRoad 8813 lane -3: missing <successor>\nRoad 8814 lane -2: missing <successor>\nRoad 8815 lane -2: missing <successor>\nRoad 8819 lane -3: missing <successor>\nRoad 8849 lane -2: missing <successor>\nRoad 8850 lane -3: missing <successor>\nRoad 8871 lane -3: missing <successor>\nRoad 8950 lane -2: missing <successor>\nRoad 9080 lane -3: missing <successor>\nRoad 9095 lane -2: missing <successor>\nRoad 9128 lane -4: missing <successor>\nRoad 9130 lane -3: missing <successor>\nRoad 9130 lane -4: missing <successor>\n\nTotal broken lanes: 150\n\nFix lane links BEFORE CARLA load.\n",
+  "stage": 8,
+  "policy": "VALIDATION_ONLY"
+}

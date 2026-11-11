@@ -1,0 +1,20 @@
+{
+  "final_xodr": "52a74adf2b8bbd44a7a0287ed677e765b2278ba3a4705dd620bf544ac168b70f",
+  "enrichments_json": null,
+  "settings_snapshot": "9e4c3d006507d26d6bfe1985c35c9276aa96005d86e96fdd078110ab6c3745ec",
+  "seed": 42,
+  "seeds": {
+    "deterministic_seed": 42,
+    "python_hash_seed": null
+  },
+  "env": {
+    "UP_CARLA_EXE": "E:\\CARLA\\CARLA_0.9.16\\CarlaUE4.exe",
+    "UP_CARLA_FALLBACK_ENABLED": "1",
+    "UP_CARLA_FALLBACK_MAPS": "Town10HD_Opt,Town05,Town03,Town01",
+    "UP_CARLA_RPC_PORT": "2000",
+    "UP_CARLA_STREAMING_PORT": "2001"
+  },
+  "python_version": "3.12.2 (tags/v3.12.2:6abddd9, Feb  6 2024, 21:26:36) [MSC v.1937 64 bit (AMD64)]",
+  "os_info": "Windows-11-10.0.26300-SP0",
+  "git_commit": "0c08412feeadecbecb22bfa06fb49e4a2d7aa78a"
+}

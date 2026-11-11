@@ -1,0 +1,2163 @@
+{
+  "schema": "map_acceptance_v1",
+  "run_id": "20261021_165726_800368",
+  "final_xodr_path": "E:\\wt\\repair-map-realism-p0-837a8504\\ultimate_pipeline_out\\20261021_165726_800368\\08h5_g6_lane_coverage_repaired.xodr",
+  "final_xodr_sha256": "3f7a9180ccd27db34b3cfa192a248ea0aa35f4ea261c8317f6f6b01a91be3d53",
+  "valid_for_experiments": false,
+  "hard_fail_reasons": [
+    {
+      "gate": "lane_section_successors",
+      "reason": "broken_count=1"
+    },
+    {
+      "gate": "origin_sanity",
+      "reason": "gate_failed"
+    },
+    {
+      "gate": "enrichment_completeness",
+      "reason": "functional_signals_count=0 and traffic_light_object_count=0"
+    }
+  ],
+  "soft_warnings": [
+    {
+      "gate": "component_reachability",
+      "reason": "5 isolated lane components (largest=0.977133)"
+    }
+  ],
+  "metrics": {
+    "seam_stats": {
+      "count": 20,
+      "total_jump_samples": 45879,
+      "bad_fraction": 0.000435929292268794,
+      "max_bad_fraction": 0.002,
+      "max_jump": 2.792275000000018,
+      "p95_jump": 0.1960550000000012
+    },
+    "elevation_stats": {
+      "z_min": 362.62082000000004,
+      "z_max": 385.591058,
+      "z_range": 22.970237999999938
+    },
+    "geometric_continuity_ok": true,
+    "lane_ok": false,
+    "lane_successor_missing_count": 1,
+    "length_invariant_violations": 0,
+    "length_invariant_tol_m": 1e-09,
+    "origin_centroid_distance_m": 5531099.5822810335,
+    "junction_integrity_ok": true,
+    "junction_integrity_issue_count": 0,
+    "lane_width_continuity_ok": true,
+    "lane_width_continuity_issue_count": 0,
+    "lane_geometry_continuity_ok": true,
+    "lane_geometry_continuity_issue_count": 0,
+    "buildings_count": 5704,
+    "functional_signals_count": 0,
+    "traffic_light_object_count": 0,
+    "component_reachability_spec_status": "pass",
+    "component_reachability_recovery_status": "pass",
+    "largest_component_fraction_spec": 0.977133,
+    "lane_component_count_spec": 13,
+    "isolated_components_spec": [
+      {
+        "component_id": "8795:0:-3",
+        "lane_count": 1,
+        "roads": [
+          "8795"
+        ],
+        "lanes": [
+          {
+            "road_id": "8795",
+            "lane_section_index": 0,
+            "lane_id": "-3"
+          }
+        ]
+      },
+      {
+        "component_id": "9588:0:-2",
+        "lane_count": 1,
+        "roads": [
+          "9588"
+        ],
+        "lanes": [
+          {
+            "road_id": "9588",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          }
+        ]
+      },
+      {
+        "component_id": "9602:0:-3",
+        "lane_count": 1,
+        "roads": [
+          "9602"
+        ],
+        "lanes": [
+          {
+            "road_id": "9602",
+            "lane_section_index": 0,
+            "lane_id": "-3"
+          }
+        ]
+      },
+      {
+        "component_id": "9674:0:-2",
+        "lane_count": 1,
+        "roads": [
+          "9674"
+        ],
+        "lanes": [
+          {
+            "road_id": "9674",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          }
+        ]
+      },
+      {
+        "component_id": "9677:0:-2",
+        "lane_count": 1,
+        "roads": [
+          "9677"
+        ],
+        "lanes": [
+          {
+            "road_id": "9677",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          }
+        ]
+      }
+    ],
+    "problematic_components_spec": [
+      {
+        "component_id": "14185:0:-2",
+        "lane_count": 60,
+        "roads": [
+          "14185",
+          "14217",
+          "14227",
+          "14228",
+          "14230",
+          "14233",
+          "14331",
+          "14333",
+          "14351",
+          "14352",
+          "14402",
+          "14407",
+          "14410",
+          "14411",
+          "8793",
+          "8794",
+          "8795",
+          "8796",
+          "8797",
+          "9129",
+          "9130",
+          "9131",
+          "9132",
+          "9134",
+          "9168",
+          "9170",
+          "9171",
+          "9173",
+          "9483"
+        ],
+        "lanes": [
+          {
+            "road_id": "14185",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "14217",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "14227",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "14228",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "14230",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "14233",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "14331",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "14331",
+            "lane_section_index": 0,
+            "lane_id": "-3"
+          },
+          {
+            "road_id": "14333",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "14333",
+            "lane_section_index": 0,
+            "lane_id": "-3"
+          },
+          {
+            "road_id": "14333",
+            "lane_section_index": 0,
+            "lane_id": "-4"
+          },
+          {
+            "road_id": "14351",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "14352",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "14402",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "14402",
+            "lane_section_index": 0,
+            "lane_id": "-3"
+          },
+          {
+            "road_id": "14402",
+            "lane_section_index": 0,
+            "lane_id": "-4"
+          },
+          {
+            "road_id": "14407",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "14407",
+            "lane_section_index": 0,
+            "lane_id": "-3"
+          },
+          {
+            "road_id": "14407",
+            "lane_section_index": 0,
+            "lane_id": "-4"
+          },
+          {
+            "road_id": "14410",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "14410",
+            "lane_section_index": 0,
+            "lane_id": "-3"
+          },
+          {
+            "road_id": "14410",
+            "lane_section_index": 0,
+            "lane_id": "-4"
+          },
+          {
+            "road_id": "14411",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "14411",
+            "lane_section_index": 0,
+            "lane_id": "-3"
+          },
+          {
+            "road_id": "8793",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "8794",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "8795",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "8796",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "8796",
+            "lane_section_index": 0,
+            "lane_id": "-3"
+          },
+          {
+            "road_id": "8797",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "8797",
+            "lane_section_index": 0,
+            "lane_id": "-3"
+          },
+          {
+            "road_id": "8797",
+            "lane_section_index": 1,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "8797",
+            "lane_section_index": 1,
+            "lane_id": "-3"
+          },
+          {
+            "road_id": "8797",
+            "lane_section_index": 1,
+            "lane_id": "-4"
+          },
+          {
+            "road_id": "9129",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "9129",
+            "lane_section_index": 0,
+            "lane_id": "-3"
+          },
+          {
+            "road_id": "9129",
+            "lane_section_index": 0,
+            "lane_id": "-4"
+          },
+          {
+            "road_id": "9130",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "9130",
+            "lane_section_index": 0,
+            "lane_id": "-3"
+          },
+          {
+            "road_id": "9130",
+            "lane_section_index": 0,
+            "lane_id": "-4"
+          },
+          {
+            "road_id": "9130",
+            "lane_section_index": 0,
+            "lane_id": "-5"
+          },
+          {
+            "road_id": "9131",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "9132",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "9134",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "9168",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "9168",
+            "lane_section_index": 0,
+            "lane_id": "-3"
+          },
+          {
+            "road_id": "9168",
+            "lane_section_index": 0,
+            "lane_id": "-4"
+          },
+          {
+            "road_id": "9170",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "9170",
+            "lane_section_index": 0,
+            "lane_id": "-3"
+          },
+          {
+            "road_id": "9170",
+            "lane_section_index": 0,
+            "lane_id": "-4"
+          },
+          {
+            "road_id": "9171",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "9171",
+            "lane_section_index": 0,
+            "lane_id": "-3"
+          },
+          {
+            "road_id": "9171",
+            "lane_section_index": 0,
+            "lane_id": "-4"
+          },
+          {
+            "road_id": "9171",
+            "lane_section_index": 0,
+            "lane_id": "-5"
+          },
+          {
+            "road_id": "9173",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "9173",
+            "lane_section_index": 0,
+            "lane_id": "-3"
+          },
+          {
+            "road_id": "9483",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "9483",
+            "lane_section_index": 0,
+            "lane_id": "-3"
+          },
+          {
+            "road_id": "9483",
+            "lane_section_index": 0,
+            "lane_id": "-4"
+          },
+          {
+            "road_id": "9483",
+            "lane_section_index": 0,
+            "lane_id": "-5"
+          }
+        ]
+      },
+      {
+        "component_id": "14240:0:-2",
+        "lane_count": 23,
+        "roads": [
+          "14240",
+          "14355",
+          "14356",
+          "14357",
+          "14360",
+          "14383",
+          "14385",
+          "8818",
+          "9135",
+          "9144",
+          "9145",
+          "9146",
+          "9147",
+          "9364",
+          "9365"
+        ],
+        "lanes": [
+          {
+            "road_id": "14240",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "14355",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "14356",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "14357",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "14360",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "14383",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "14383",
+            "lane_section_index": 0,
+            "lane_id": "-3"
+          },
+          {
+            "road_id": "14385",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "14385",
+            "lane_section_index": 0,
+            "lane_id": "-3"
+          },
+          {
+            "road_id": "8818",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "9135",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "9144",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "9144",
+            "lane_section_index": 0,
+            "lane_id": "-3"
+          },
+          {
+            "road_id": "9145",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "9145",
+            "lane_section_index": 0,
+            "lane_id": "-3"
+          },
+          {
+            "road_id": "9145",
+            "lane_section_index": 0,
+            "lane_id": "-4"
+          },
+          {
+            "road_id": "9146",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "9146",
+            "lane_section_index": 0,
+            "lane_id": "-3"
+          },
+          {
+            "road_id": "9147",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "9364",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "9365",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "9365",
+            "lane_section_index": 0,
+            "lane_id": "-3"
+          },
+          {
+            "road_id": "9365",
+            "lane_section_index": 0,
+            "lane_id": "-4"
+          }
+        ]
+      },
+      {
+        "component_id": "14181:0:-3",
+        "lane_count": 21,
+        "roads": [
+          "14181",
+          "14183",
+          "14286",
+          "14303",
+          "14327",
+          "14329",
+          "14354",
+          "14400",
+          "9127",
+          "9128",
+          "9133",
+          "9136",
+          "9137",
+          "9166",
+          "9167",
+          "9169",
+          "9172"
+        ],
+        "lanes": [
+          {
+            "road_id": "14181",
+            "lane_section_index": 0,
+            "lane_id": "-3"
+          },
+          {
+            "road_id": "14183",
+            "lane_section_index": 0,
+            "lane_id": "-3"
+          },
+          {
+            "road_id": "14286",
+            "lane_section_index": 0,
+            "lane_id": "-3"
+          },
+          {
+            "road_id": "14303",
+            "lane_section_index": 0,
+            "lane_id": "-3"
+          },
+          {
+            "road_id": "14327",
+            "lane_section_index": 0,
+            "lane_id": "-3"
+          },
+          {
+            "road_id": "14329",
+            "lane_section_index": 0,
+            "lane_id": "-3"
+          },
+          {
+            "road_id": "14354",
+            "lane_section_index": 0,
+            "lane_id": "-3"
+          },
+          {
+            "road_id": "14400",
+            "lane_section_index": 0,
+            "lane_id": "-3"
+          },
+          {
+            "road_id": "9127",
+            "lane_section_index": 0,
+            "lane_id": "-3"
+          },
+          {
+            "road_id": "9128",
+            "lane_section_index": 0,
+            "lane_id": "-3"
+          },
+          {
+            "road_id": "9128",
+            "lane_section_index": 0,
+            "lane_id": "-4"
+          },
+          {
+            "road_id": "9133",
+            "lane_section_index": 0,
+            "lane_id": "-3"
+          },
+          {
+            "road_id": "9133",
+            "lane_section_index": 0,
+            "lane_id": "-4"
+          },
+          {
+            "road_id": "9136",
+            "lane_section_index": 0,
+            "lane_id": "-3"
+          },
+          {
+            "road_id": "9137",
+            "lane_section_index": 0,
+            "lane_id": "-3"
+          },
+          {
+            "road_id": "9166",
+            "lane_section_index": 0,
+            "lane_id": "-3"
+          },
+          {
+            "road_id": "9167",
+            "lane_section_index": 0,
+            "lane_id": "-3"
+          },
+          {
+            "road_id": "9167",
+            "lane_section_index": 0,
+            "lane_id": "-4"
+          },
+          {
+            "road_id": "9169",
+            "lane_section_index": 0,
+            "lane_id": "-3"
+          },
+          {
+            "road_id": "9172",
+            "lane_section_index": 0,
+            "lane_id": "-3"
+          },
+          {
+            "road_id": "9172",
+            "lane_section_index": 0,
+            "lane_id": "-4"
+          }
+        ]
+      },
+      {
+        "component_id": "14181:0:-2",
+        "lane_count": 17,
+        "roads": [
+          "14181",
+          "14183",
+          "14286",
+          "14303",
+          "14327",
+          "14329",
+          "14354",
+          "14400",
+          "9127",
+          "9128",
+          "9133",
+          "9136",
+          "9137",
+          "9166",
+          "9167",
+          "9169",
+          "9172"
+        ],
+        "lanes": [
+          {
+            "road_id": "14181",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "14183",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "14286",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "14303",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "14327",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "14329",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "14354",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "14400",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "9127",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "9128",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "9133",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "9136",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "9137",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "9166",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "9167",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "9169",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "9172",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          }
+        ]
+      },
+      {
+        "component_id": "10253:0:-2",
+        "lane_count": 11,
+        "roads": [
+          "10253",
+          "10328",
+          "10405",
+          "10624",
+          "11343",
+          "11733",
+          "14284",
+          "14315",
+          "9505",
+          "9506",
+          "9844"
+        ],
+        "lanes": [
+          {
+            "road_id": "10253",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "10328",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "10405",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "10624",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "11343",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "11733",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "14284",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "14315",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "9505",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "9506",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "9844",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          }
+        ]
+      },
+      {
+        "component_id": "10274:0:-2",
+        "lane_count": 9,
+        "roads": [
+          "10274",
+          "10768",
+          "13675",
+          "13679",
+          "13831",
+          "9443",
+          "9602",
+          "9630",
+          "9661"
+        ],
+        "lanes": [
+          {
+            "road_id": "10274",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "10768",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "13675",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "13679",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "13831",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "9443",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "9602",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "9630",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "9661",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          }
+        ]
+      },
+      {
+        "component_id": "14351:0:-3",
+        "lane_count": 6,
+        "roads": [
+          "14351",
+          "14352",
+          "9131",
+          "9132",
+          "9134"
+        ],
+        "lanes": [
+          {
+            "road_id": "14351",
+            "lane_section_index": 0,
+            "lane_id": "-3"
+          },
+          {
+            "road_id": "14352",
+            "lane_section_index": 0,
+            "lane_id": "-3"
+          },
+          {
+            "road_id": "9131",
+            "lane_section_index": 0,
+            "lane_id": "-3"
+          },
+          {
+            "road_id": "9132",
+            "lane_section_index": 0,
+            "lane_id": "-3"
+          },
+          {
+            "road_id": "9132",
+            "lane_section_index": 0,
+            "lane_id": "-4"
+          },
+          {
+            "road_id": "9134",
+            "lane_section_index": 0,
+            "lane_id": "-3"
+          }
+        ]
+      },
+      {
+        "component_id": "8795:0:-3",
+        "lane_count": 1,
+        "roads": [
+          "8795"
+        ],
+        "lanes": [
+          {
+            "road_id": "8795",
+            "lane_section_index": 0,
+            "lane_id": "-3"
+          }
+        ]
+      },
+      {
+        "component_id": "9588:0:-2",
+        "lane_count": 1,
+        "roads": [
+          "9588"
+        ],
+        "lanes": [
+          {
+            "road_id": "9588",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          }
+        ]
+      },
+      {
+        "component_id": "9602:0:-3",
+        "lane_count": 1,
+        "roads": [
+          "9602"
+        ],
+        "lanes": [
+          {
+            "road_id": "9602",
+            "lane_section_index": 0,
+            "lane_id": "-3"
+          }
+        ]
+      },
+      {
+        "component_id": "9674:0:-2",
+        "lane_count": 1,
+        "roads": [
+          "9674"
+        ],
+        "lanes": [
+          {
+            "road_id": "9674",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          }
+        ]
+      },
+      {
+        "component_id": "9677:0:-2",
+        "lane_count": 1,
+        "roads": [
+          "9677"
+        ],
+        "lanes": [
+          {
+            "road_id": "9677",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          }
+        ]
+      }
+    ],
+    "unmatched_cross_links_spec": 0,
+    "unmatched_cross_link_details_spec": [],
+    "topology_production_evidence": "LITERAL_SPEC",
+    "lane_component_count": 13,
+    "lane_count_total": 6647,
+    "largest_component_fraction": 0.977133,
+    "largest_component_lane_count": 6495,
+    "isolated_lane_component_count": 5,
+    "isolated_components": [
+      {
+        "component_id": "8795:0:-3",
+        "lane_count": 1,
+        "roads": [
+          "8795"
+        ],
+        "lanes": [
+          {
+            "road_id": "8795",
+            "lane_section_index": 0,
+            "lane_id": "-3"
+          }
+        ]
+      },
+      {
+        "component_id": "9588:0:-2",
+        "lane_count": 1,
+        "roads": [
+          "9588"
+        ],
+        "lanes": [
+          {
+            "road_id": "9588",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          }
+        ]
+      },
+      {
+        "component_id": "9602:0:-3",
+        "lane_count": 1,
+        "roads": [
+          "9602"
+        ],
+        "lanes": [
+          {
+            "road_id": "9602",
+            "lane_section_index": 0,
+            "lane_id": "-3"
+          }
+        ]
+      },
+      {
+        "component_id": "9674:0:-2",
+        "lane_count": 1,
+        "roads": [
+          "9674"
+        ],
+        "lanes": [
+          {
+            "road_id": "9674",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          }
+        ]
+      },
+      {
+        "component_id": "9677:0:-2",
+        "lane_count": 1,
+        "roads": [
+          "9677"
+        ],
+        "lanes": [
+          {
+            "road_id": "9677",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          }
+        ]
+      }
+    ],
+    "problematic_components": [
+      {
+        "component_id": "14185:0:-2",
+        "lane_count": 60,
+        "roads": [
+          "14185",
+          "14217",
+          "14227",
+          "14228",
+          "14230",
+          "14233",
+          "14331",
+          "14333",
+          "14351",
+          "14352",
+          "14402",
+          "14407",
+          "14410",
+          "14411",
+          "8793",
+          "8794",
+          "8795",
+          "8796",
+          "8797",
+          "9129",
+          "9130",
+          "9131",
+          "9132",
+          "9134",
+          "9168",
+          "9170",
+          "9171",
+          "9173",
+          "9483"
+        ],
+        "lanes": [
+          {
+            "road_id": "14185",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "14217",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "14227",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "14228",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "14230",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "14233",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "14331",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "14331",
+            "lane_section_index": 0,
+            "lane_id": "-3"
+          },
+          {
+            "road_id": "14333",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "14333",
+            "lane_section_index": 0,
+            "lane_id": "-3"
+          },
+          {
+            "road_id": "14333",
+            "lane_section_index": 0,
+            "lane_id": "-4"
+          },
+          {
+            "road_id": "14351",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "14352",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "14402",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "14402",
+            "lane_section_index": 0,
+            "lane_id": "-3"
+          },
+          {
+            "road_id": "14402",
+            "lane_section_index": 0,
+            "lane_id": "-4"
+          },
+          {
+            "road_id": "14407",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "14407",
+            "lane_section_index": 0,
+            "lane_id": "-3"
+          },
+          {
+            "road_id": "14407",
+            "lane_section_index": 0,
+            "lane_id": "-4"
+          },
+          {
+            "road_id": "14410",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "14410",
+            "lane_section_index": 0,
+            "lane_id": "-3"
+          },
+          {
+            "road_id": "14410",
+            "lane_section_index": 0,
+            "lane_id": "-4"
+          },
+          {
+            "road_id": "14411",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "14411",
+            "lane_section_index": 0,
+            "lane_id": "-3"
+          },
+          {
+            "road_id": "8793",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "8794",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "8795",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "8796",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "8796",
+            "lane_section_index": 0,
+            "lane_id": "-3"
+          },
+          {
+            "road_id": "8797",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "8797",
+            "lane_section_index": 0,
+            "lane_id": "-3"
+          },
+          {
+            "road_id": "8797",
+            "lane_section_index": 1,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "8797",
+            "lane_section_index": 1,
+            "lane_id": "-3"
+          },
+          {
+            "road_id": "8797",
+            "lane_section_index": 1,
+            "lane_id": "-4"
+          },
+          {
+            "road_id": "9129",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "9129",
+            "lane_section_index": 0,
+            "lane_id": "-3"
+          },
+          {
+            "road_id": "9129",
+            "lane_section_index": 0,
+            "lane_id": "-4"
+          },
+          {
+            "road_id": "9130",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "9130",
+            "lane_section_index": 0,
+            "lane_id": "-3"
+          },
+          {
+            "road_id": "9130",
+            "lane_section_index": 0,
+            "lane_id": "-4"
+          },
+          {
+            "road_id": "9130",
+            "lane_section_index": 0,
+            "lane_id": "-5"
+          },
+          {
+            "road_id": "9131",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "9132",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "9134",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "9168",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "9168",
+            "lane_section_index": 0,
+            "lane_id": "-3"
+          },
+          {
+            "road_id": "9168",
+            "lane_section_index": 0,
+            "lane_id": "-4"
+          },
+          {
+            "road_id": "9170",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "9170",
+            "lane_section_index": 0,
+            "lane_id": "-3"
+          },
+          {
+            "road_id": "9170",
+            "lane_section_index": 0,
+            "lane_id": "-4"
+          },
+          {
+            "road_id": "9171",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "9171",
+            "lane_section_index": 0,
+            "lane_id": "-3"
+          },
+          {
+            "road_id": "9171",
+            "lane_section_index": 0,
+            "lane_id": "-4"
+          },
+          {
+            "road_id": "9171",
+            "lane_section_index": 0,
+            "lane_id": "-5"
+          },
+          {
+            "road_id": "9173",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "9173",
+            "lane_section_index": 0,
+            "lane_id": "-3"
+          },
+          {
+            "road_id": "9483",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "9483",
+            "lane_section_index": 0,
+            "lane_id": "-3"
+          },
+          {
+            "road_id": "9483",
+            "lane_section_index": 0,
+            "lane_id": "-4"
+          },
+          {
+            "road_id": "9483",
+            "lane_section_index": 0,
+            "lane_id": "-5"
+          }
+        ]
+      },
+      {
+        "component_id": "14240:0:-2",
+        "lane_count": 23,
+        "roads": [
+          "14240",
+          "14355",
+          "14356",
+          "14357",
+          "14360",
+          "14383",
+          "14385",
+          "8818",
+          "9135",
+          "9144",
+          "9145",
+          "9146",
+          "9147",
+          "9364",
+          "9365"
+        ],
+        "lanes": [
+          {
+            "road_id": "14240",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "14355",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "14356",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "14357",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "14360",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "14383",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "14383",
+            "lane_section_index": 0,
+            "lane_id": "-3"
+          },
+          {
+            "road_id": "14385",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "14385",
+            "lane_section_index": 0,
+            "lane_id": "-3"
+          },
+          {
+            "road_id": "8818",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "9135",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "9144",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "9144",
+            "lane_section_index": 0,
+            "lane_id": "-3"
+          },
+          {
+            "road_id": "9145",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "9145",
+            "lane_section_index": 0,
+            "lane_id": "-3"
+          },
+          {
+            "road_id": "9145",
+            "lane_section_index": 0,
+            "lane_id": "-4"
+          },
+          {
+            "road_id": "9146",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "9146",
+            "lane_section_index": 0,
+            "lane_id": "-3"
+          },
+          {
+            "road_id": "9147",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "9364",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "9365",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "9365",
+            "lane_section_index": 0,
+            "lane_id": "-3"
+          },
+          {
+            "road_id": "9365",
+            "lane_section_index": 0,
+            "lane_id": "-4"
+          }
+        ]
+      },
+      {
+        "component_id": "14181:0:-3",
+        "lane_count": 21,
+        "roads": [
+          "14181",
+          "14183",
+          "14286",
+          "14303",
+          "14327",
+          "14329",
+          "14354",
+          "14400",
+          "9127",
+          "9128",
+          "9133",
+          "9136",
+          "9137",
+          "9166",
+          "9167",
+          "9169",
+          "9172"
+        ],
+        "lanes": [
+          {
+            "road_id": "14181",
+            "lane_section_index": 0,
+            "lane_id": "-3"
+          },
+          {
+            "road_id": "14183",
+            "lane_section_index": 0,
+            "lane_id": "-3"
+          },
+          {
+            "road_id": "14286",
+            "lane_section_index": 0,
+            "lane_id": "-3"
+          },
+          {
+            "road_id": "14303",
+            "lane_section_index": 0,
+            "lane_id": "-3"
+          },
+          {
+            "road_id": "14327",
+            "lane_section_index": 0,
+            "lane_id": "-3"
+          },
+          {
+            "road_id": "14329",
+            "lane_section_index": 0,
+            "lane_id": "-3"
+          },
+          {
+            "road_id": "14354",
+            "lane_section_index": 0,
+            "lane_id": "-3"
+          },
+          {
+            "road_id": "14400",
+            "lane_section_index": 0,
+            "lane_id": "-3"
+          },
+          {
+            "road_id": "9127",
+            "lane_section_index": 0,
+            "lane_id": "-3"
+          },
+          {
+            "road_id": "9128",
+            "lane_section_index": 0,
+            "lane_id": "-3"
+          },
+          {
+            "road_id": "9128",
+            "lane_section_index": 0,
+            "lane_id": "-4"
+          },
+          {
+            "road_id": "9133",
+            "lane_section_index": 0,
+            "lane_id": "-3"
+          },
+          {
+            "road_id": "9133",
+            "lane_section_index": 0,
+            "lane_id": "-4"
+          },
+          {
+            "road_id": "9136",
+            "lane_section_index": 0,
+            "lane_id": "-3"
+          },
+          {
+            "road_id": "9137",
+            "lane_section_index": 0,
+            "lane_id": "-3"
+          },
+          {
+            "road_id": "9166",
+            "lane_section_index": 0,
+            "lane_id": "-3"
+          },
+          {
+            "road_id": "9167",
+            "lane_section_index": 0,
+            "lane_id": "-3"
+          },
+          {
+            "road_id": "9167",
+            "lane_section_index": 0,
+            "lane_id": "-4"
+          },
+          {
+            "road_id": "9169",
+            "lane_section_index": 0,
+            "lane_id": "-3"
+          },
+          {
+            "road_id": "9172",
+            "lane_section_index": 0,
+            "lane_id": "-3"
+          },
+          {
+            "road_id": "9172",
+            "lane_section_index": 0,
+            "lane_id": "-4"
+          }
+        ]
+      },
+      {
+        "component_id": "14181:0:-2",
+        "lane_count": 17,
+        "roads": [
+          "14181",
+          "14183",
+          "14286",
+          "14303",
+          "14327",
+          "14329",
+          "14354",
+          "14400",
+          "9127",
+          "9128",
+          "9133",
+          "9136",
+          "9137",
+          "9166",
+          "9167",
+          "9169",
+          "9172"
+        ],
+        "lanes": [
+          {
+            "road_id": "14181",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "14183",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "14286",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "14303",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "14327",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "14329",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "14354",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "14400",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "9127",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "9128",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "9133",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "9136",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "9137",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "9166",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "9167",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "9169",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "9172",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          }
+        ]
+      },
+      {
+        "component_id": "10253:0:-2",
+        "lane_count": 11,
+        "roads": [
+          "10253",
+          "10328",
+          "10405",
+          "10624",
+          "11343",
+          "11733",
+          "14284",
+          "14315",
+          "9505",
+          "9506",
+          "9844"
+        ],
+        "lanes": [
+          {
+            "road_id": "10253",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "10328",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "10405",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "10624",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "11343",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "11733",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "14284",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "14315",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "9505",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "9506",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "9844",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          }
+        ]
+      },
+      {
+        "component_id": "10274:0:-2",
+        "lane_count": 9,
+        "roads": [
+          "10274",
+          "10768",
+          "13675",
+          "13679",
+          "13831",
+          "9443",
+          "9602",
+          "9630",
+          "9661"
+        ],
+        "lanes": [
+          {
+            "road_id": "10274",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "10768",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "13675",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "13679",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "13831",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "9443",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "9602",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "9630",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          },
+          {
+            "road_id": "9661",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          }
+        ]
+      },
+      {
+        "component_id": "14351:0:-3",
+        "lane_count": 6,
+        "roads": [
+          "14351",
+          "14352",
+          "9131",
+          "9132",
+          "9134"
+        ],
+        "lanes": [
+          {
+            "road_id": "14351",
+            "lane_section_index": 0,
+            "lane_id": "-3"
+          },
+          {
+            "road_id": "14352",
+            "lane_section_index": 0,
+            "lane_id": "-3"
+          },
+          {
+            "road_id": "9131",
+            "lane_section_index": 0,
+            "lane_id": "-3"
+          },
+          {
+            "road_id": "9132",
+            "lane_section_index": 0,
+            "lane_id": "-3"
+          },
+          {
+            "road_id": "9132",
+            "lane_section_index": 0,
+            "lane_id": "-4"
+          },
+          {
+            "road_id": "9134",
+            "lane_section_index": 0,
+            "lane_id": "-3"
+          }
+        ]
+      },
+      {
+        "component_id": "8795:0:-3",
+        "lane_count": 1,
+        "roads": [
+          "8795"
+        ],
+        "lanes": [
+          {
+            "road_id": "8795",
+            "lane_section_index": 0,
+            "lane_id": "-3"
+          }
+        ]
+      },
+      {
+        "component_id": "9588:0:-2",
+        "lane_count": 1,
+        "roads": [
+          "9588"
+        ],
+        "lanes": [
+          {
+            "road_id": "9588",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          }
+        ]
+      },
+      {
+        "component_id": "9602:0:-3",
+        "lane_count": 1,
+        "roads": [
+          "9602"
+        ],
+        "lanes": [
+          {
+            "road_id": "9602",
+            "lane_section_index": 0,
+            "lane_id": "-3"
+          }
+        ]
+      },
+      {
+        "component_id": "9674:0:-2",
+        "lane_count": 1,
+        "roads": [
+          "9674"
+        ],
+        "lanes": [
+          {
+            "road_id": "9674",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          }
+        ]
+      },
+      {
+        "component_id": "9677:0:-2",
+        "lane_count": 1,
+        "roads": [
+          "9677"
+        ],
+        "lanes": [
+          {
+            "road_id": "9677",
+            "lane_section_index": 0,
+            "lane_id": "-2"
+          }
+        ]
+      }
+    ],
+    "unmatched_cross_links": 0,
+    "unmatched_cross_link_details": []
+  },
+  "linked_artifacts": {},
+  "linked_artifact_sha256": {},
+  "provenance": {
+    "tool": "map_acceptance",
+    "git_sha": "0c08412feeadecbecb22bfa06fb49e4a2d7aa78a",
+    "python_version": "3.12.2"
+  },
+  "valid": false,
+  "failed_gates": [
+    "lane_section_successors",
+    "origin_sanity",
+    "enrichment_completeness"
+  ],
+  "acceptance_artifact": "E:\\wt\\repair-map-realism-p0-837a8504\\ultimate_pipeline_out\\20261021_165726_800368\\artifacts\\20261021_165726_800368\\map_acceptance.json",
+  "acceptance_artifact_sha256": "bcbf44c364203ae6e98d979ac39702575c8c3e364c0da29f6bf9609b6383a3f4",
+  "payload_sha256": "dc89b579b5baeeba2793b34dd98a208a1a99a039b91e8f3200bef94b5425a314"
+}

@@ -1,0 +1,6898 @@
+{
+  "ok": false,
+  "total_tiles": 72,
+  "failed_tiles": [
+    "tile_0_2.xodr",
+    "tile_0_3.xodr",
+    "tile_0_6.xodr",
+    "tile_1_0.xodr",
+    "tile_1_2.xodr",
+    "tile_1_3.xodr",
+    "tile_1_4.xodr",
+    "tile_1_5.xodr",
+    "tile_2_0.xodr",
+    "tile_2_2.xodr",
+    "tile_2_3.xodr",
+    "tile_2_4.xodr",
+    "tile_2_5.xodr",
+    "tile_2_6.xodr",
+    "tile_3_1.xodr",
+    "tile_3_2.xodr",
+    "tile_3_3.xodr",
+    "tile_3_4.xodr",
+    "tile_3_5.xodr",
+    "tile_3_6.xodr",
+    "tile_4_1.xodr",
+    "tile_4_4.xodr",
+    "tile_4_5.xodr",
+    "tile_4_6.xodr",
+    "tile_5_1.xodr",
+    "tile_5_2.xodr",
+    "tile_5_4.xodr",
+    "tile_5_5.xodr",
+    "tile_5_6.xodr",
+    "tile_6_1.xodr",
+    "tile_6_2.xodr",
+    "tile_6_3.xodr",
+    "tile_6_5.xodr",
+    "tile_6_6.xodr",
+    "tile_7_6.xodr",
+    "tile_7_7.xodr",
+    "tile_8_6.xodr",
+    "tile_8_7.xodr",
+    "tile_9_1.xodr",
+    "tile_9_2.xodr",
+    "tile_9_3.xodr"
+  ],
+  "tile_reports": [
+    {
+      "tile": "tile_0_0.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy": 0.05,
+        "eps_hdg": 0.01,
+        "num_roads": 6,
+        "num_junctions": 0,
+        "num_signals": 0,
+        "issues": [],
+        "seam_endpoint_issues": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_0_1.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy": 0.05,
+        "eps_hdg": 0.01,
+        "num_roads": 5,
+        "num_junctions": 0,
+        "num_signals": 0,
+        "issues": [],
+        "seam_endpoint_issues": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_0_2.xodr",
+      "report": {
+        "ok": false,
+        "eps_xy": 0.05,
+        "eps_hdg": 0.01,
+        "num_roads": 56,
+        "num_junctions": 0,
+        "num_signals": 0,
+        "issues": [
+          {
+            "type": "orphan_road_link",
+            "from_road": "13675",
+            "to_road": "10274",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "13676",
+            "to_road": "10274",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "13676",
+            "to_road": "10234",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "13677",
+            "to_road": "10274",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "13677",
+            "to_road": "9550",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "13678",
+            "to_road": "9443",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "13678",
+            "to_road": "9550",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "13679",
+            "to_road": "9443",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "13680",
+            "to_road": "10234",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "13681",
+            "to_road": "9550",
+            "link_kind": "successor"
+          }
+        ],
+        "seam_endpoint_issues": [
+          {
+            "from_road": "13675",
+            "to_road": "10274",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 10274",
+            "warnings": []
+          },
+          {
+            "from_road": "13676",
+            "to_road": "10274",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 10274",
+            "warnings": []
+          },
+          {
+            "from_road": "13676",
+            "to_road": "10234",
+            "link_kind": "successor",
+            "error": "linked road id not found: 10234",
+            "warnings": []
+          },
+          {
+            "from_road": "13677",
+            "to_road": "10274",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 10274",
+            "warnings": []
+          },
+          {
+            "from_road": "13677",
+            "to_road": "9550",
+            "link_kind": "successor",
+            "error": "linked road id not found: 9550",
+            "warnings": []
+          },
+          {
+            "from_road": "13678",
+            "to_road": "9443",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9443",
+            "warnings": []
+          },
+          {
+            "from_road": "13678",
+            "to_road": "9550",
+            "link_kind": "successor",
+            "error": "linked road id not found: 9550",
+            "warnings": []
+          },
+          {
+            "from_road": "13679",
+            "to_road": "9443",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9443",
+            "warnings": []
+          },
+          {
+            "from_road": "13680",
+            "to_road": "10234",
+            "link_kind": "successor",
+            "error": "linked road id not found: 10234",
+            "warnings": []
+          },
+          {
+            "from_road": "13681",
+            "to_road": "9550",
+            "link_kind": "successor",
+            "error": "linked road id not found: 9550",
+            "warnings": []
+          }
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_0_3.xodr",
+      "report": {
+        "ok": false,
+        "eps_xy": 0.05,
+        "eps_hdg": 0.01,
+        "num_roads": 84,
+        "num_junctions": 0,
+        "num_signals": 0,
+        "issues": [
+          {
+            "type": "orphan_road_link",
+            "from_road": "13936",
+            "to_road": "10350",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "13936",
+            "to_road": "9431",
+            "link_kind": "successor"
+          }
+        ],
+        "seam_endpoint_issues": [
+          {
+            "from_road": "13936",
+            "to_road": "10350",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 10350",
+            "warnings": []
+          },
+          {
+            "from_road": "13936",
+            "to_road": "9431",
+            "link_kind": "successor",
+            "error": "linked road id not found: 9431",
+            "warnings": []
+          }
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_0_4.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy": 0.05,
+        "eps_hdg": 0.01,
+        "num_roads": 67,
+        "num_junctions": 0,
+        "num_signals": 0,
+        "issues": [],
+        "seam_endpoint_issues": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_0_5.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy": 0.05,
+        "eps_hdg": 0.01,
+        "num_roads": 81,
+        "num_junctions": 0,
+        "num_signals": 0,
+        "issues": [],
+        "seam_endpoint_issues": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_0_6.xodr",
+      "report": {
+        "ok": false,
+        "eps_xy": 0.05,
+        "eps_hdg": 0.01,
+        "num_roads": 58,
+        "num_junctions": 0,
+        "num_signals": 0,
+        "issues": [
+          {
+            "type": "orphan_road_link",
+            "from_road": "12650",
+            "to_road": "9098",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "12651",
+            "to_road": "9098",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "12651",
+            "to_road": "9006",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "12652",
+            "to_road": "9967",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "12652",
+            "to_road": "10035",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "12653",
+            "to_road": "9967",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "12654",
+            "to_road": "9006",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "12655",
+            "to_road": "10035",
+            "link_kind": "successor"
+          }
+        ],
+        "seam_endpoint_issues": [
+          {
+            "from_road": "12650",
+            "to_road": "9098",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9098",
+            "warnings": []
+          },
+          {
+            "from_road": "12651",
+            "to_road": "9098",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9098",
+            "warnings": []
+          },
+          {
+            "from_road": "12651",
+            "to_road": "9006",
+            "link_kind": "successor",
+            "error": "linked road id not found: 9006",
+            "warnings": []
+          },
+          {
+            "from_road": "12652",
+            "to_road": "9967",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9967",
+            "warnings": []
+          },
+          {
+            "from_road": "12652",
+            "to_road": "10035",
+            "link_kind": "successor",
+            "error": "linked road id not found: 10035",
+            "warnings": []
+          },
+          {
+            "from_road": "12653",
+            "to_road": "9967",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9967",
+            "warnings": []
+          },
+          {
+            "from_road": "12654",
+            "to_road": "9006",
+            "link_kind": "successor",
+            "error": "linked road id not found: 9006",
+            "warnings": []
+          },
+          {
+            "from_road": "12655",
+            "to_road": "10035",
+            "link_kind": "successor",
+            "error": "linked road id not found: 10035",
+            "warnings": []
+          }
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_10_7.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy": 0.05,
+        "eps_hdg": 0.01,
+        "num_roads": 2,
+        "num_junctions": 0,
+        "num_signals": 0,
+        "issues": [],
+        "seam_endpoint_issues": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_1_0.xodr",
+      "report": {
+        "ok": false,
+        "eps_xy": 0.05,
+        "eps_hdg": 0.01,
+        "num_roads": 166,
+        "num_junctions": 0,
+        "num_signals": 0,
+        "issues": [
+          {
+            "type": "orphan_road_link",
+            "from_road": "12216",
+            "to_road": "9001",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "12216",
+            "to_road": "10045",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "12217",
+            "to_road": "9001",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "12218",
+            "to_road": "9001",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "12219",
+            "to_road": "9001",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "12219",
+            "to_road": "9962",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "12220",
+            "to_road": "9962",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "12221",
+            "to_road": "10045",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "12225",
+            "to_road": "9962",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "12226",
+            "to_road": "10045",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "12228",
+            "to_road": "9110",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "12229",
+            "to_road": "9110",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "12230",
+            "to_road": "9110",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "12230",
+            "to_road": "9962",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "12231",
+            "to_road": "9110",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "12231",
+            "to_road": "10045",
+            "link_kind": "successor"
+          }
+        ],
+        "seam_endpoint_issues": [
+          {
+            "from_road": "12216",
+            "to_road": "9001",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9001",
+            "warnings": []
+          },
+          {
+            "from_road": "12216",
+            "to_road": "10045",
+            "link_kind": "successor",
+            "error": "linked road id not found: 10045",
+            "warnings": []
+          },
+          {
+            "from_road": "12217",
+            "to_road": "9001",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9001",
+            "warnings": []
+          },
+          {
+            "from_road": "12218",
+            "to_road": "9001",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9001",
+            "warnings": []
+          },
+          {
+            "from_road": "12219",
+            "to_road": "9001",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9001",
+            "warnings": []
+          },
+          {
+            "from_road": "12219",
+            "to_road": "9962",
+            "link_kind": "successor",
+            "error": "linked road id not found: 9962",
+            "warnings": []
+          },
+          {
+            "from_road": "12220",
+            "to_road": "9962",
+            "link_kind": "successor",
+            "error": "linked road id not found: 9962",
+            "warnings": []
+          },
+          {
+            "from_road": "12221",
+            "to_road": "10045",
+            "link_kind": "successor",
+            "error": "linked road id not found: 10045",
+            "warnings": []
+          },
+          {
+            "from_road": "12225",
+            "to_road": "9962",
+            "link_kind": "successor",
+            "error": "linked road id not found: 9962",
+            "warnings": []
+          },
+          {
+            "from_road": "12226",
+            "to_road": "10045",
+            "link_kind": "successor",
+            "error": "linked road id not found: 10045",
+            "warnings": []
+          },
+          {
+            "from_road": "12228",
+            "to_road": "9110",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9110",
+            "warnings": []
+          },
+          {
+            "from_road": "12229",
+            "to_road": "9110",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9110",
+            "warnings": []
+          },
+          {
+            "from_road": "12230",
+            "to_road": "9110",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9110",
+            "warnings": []
+          },
+          {
+            "from_road": "12230",
+            "to_road": "9962",
+            "link_kind": "successor",
+            "error": "linked road id not found: 9962",
+            "warnings": []
+          },
+          {
+            "from_road": "12231",
+            "to_road": "9110",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9110",
+            "warnings": []
+          },
+          {
+            "from_road": "12231",
+            "to_road": "10045",
+            "link_kind": "successor",
+            "error": "linked road id not found: 10045",
+            "warnings": []
+          }
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_1_1.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy": 0.05,
+        "eps_hdg": 0.01,
+        "num_roads": 125,
+        "num_junctions": 0,
+        "num_signals": 0,
+        "issues": [],
+        "seam_endpoint_issues": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_1_2.xodr",
+      "report": {
+        "ok": false,
+        "eps_xy": 0.05,
+        "eps_hdg": 0.01,
+        "num_roads": 188,
+        "num_junctions": 0,
+        "num_signals": 0,
+        "issues": [
+          {
+            "type": "orphan_road_link",
+            "from_road": "11449",
+            "to_road": "8810",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "11450",
+            "to_road": "8810",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "11451",
+            "to_road": "8810",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "11451",
+            "to_road": "9813",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "11452",
+            "to_road": "9813",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "11456",
+            "to_road": "9813",
+            "link_kind": "successor"
+          }
+        ],
+        "seam_endpoint_issues": [
+          {
+            "from_road": "11449",
+            "to_road": "8810",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 8810",
+            "warnings": []
+          },
+          {
+            "from_road": "11450",
+            "to_road": "8810",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 8810",
+            "warnings": []
+          },
+          {
+            "from_road": "11451",
+            "to_road": "8810",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 8810",
+            "warnings": []
+          },
+          {
+            "from_road": "11451",
+            "to_road": "9813",
+            "link_kind": "successor",
+            "error": "linked road id not found: 9813",
+            "warnings": []
+          },
+          {
+            "from_road": "11452",
+            "to_road": "9813",
+            "link_kind": "successor",
+            "error": "linked road id not found: 9813",
+            "warnings": []
+          },
+          {
+            "from_road": "11456",
+            "to_road": "9813",
+            "link_kind": "successor",
+            "error": "linked road id not found: 9813",
+            "warnings": []
+          }
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_1_3.xodr",
+      "report": {
+        "ok": false,
+        "eps_xy": 0.05,
+        "eps_hdg": 0.01,
+        "num_roads": 268,
+        "num_junctions": 0,
+        "num_signals": 0,
+        "issues": [
+          {
+            "type": "orphan_road_link",
+            "from_road": "11081",
+            "to_road": "9774",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "11082",
+            "to_road": "10517",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "11083",
+            "to_road": "10517",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "11084",
+            "to_road": "9774",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "11449",
+            "to_road": "8810",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "11450",
+            "to_road": "8810",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "11450",
+            "to_road": "10126",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "11451",
+            "to_road": "8810",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "11451",
+            "to_road": "9813",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "11452",
+            "to_road": "9283",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "11452",
+            "to_road": "9813",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "11453",
+            "to_road": "9283",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "11454",
+            "to_road": "9283",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "11454",
+            "to_road": "10126",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "11455",
+            "to_road": "10126",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "11456",
+            "to_road": "9813",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "12648",
+            "to_road": "9204",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "12649",
+            "to_road": "9204",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "14140",
+            "to_road": "9313",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "14142",
+            "to_road": "9290",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "14143",
+            "to_road": "9290",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "14143",
+            "to_road": "9313",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "14144",
+            "to_road": "9313",
+            "link_kind": "successor"
+          }
+        ],
+        "seam_endpoint_issues": [
+          {
+            "from_road": "11081",
+            "to_road": "9774",
+            "link_kind": "successor",
+            "error": "linked road id not found: 9774",
+            "warnings": []
+          },
+          {
+            "from_road": "11082",
+            "to_road": "10517",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 10517",
+            "warnings": []
+          },
+          {
+            "from_road": "11083",
+            "to_road": "10517",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 10517",
+            "warnings": []
+          },
+          {
+            "from_road": "11084",
+            "to_road": "9774",
+            "link_kind": "successor",
+            "error": "linked road id not found: 9774",
+            "warnings": []
+          },
+          {
+            "from_road": "11449",
+            "to_road": "8810",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 8810",
+            "warnings": []
+          },
+          {
+            "from_road": "11450",
+            "to_road": "8810",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 8810",
+            "warnings": []
+          },
+          {
+            "from_road": "11450",
+            "to_road": "10126",
+            "link_kind": "successor",
+            "error": "linked road id not found: 10126",
+            "warnings": []
+          },
+          {
+            "from_road": "11451",
+            "to_road": "8810",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 8810",
+            "warnings": []
+          },
+          {
+            "from_road": "11451",
+            "to_road": "9813",
+            "link_kind": "successor",
+            "error": "linked road id not found: 9813",
+            "warnings": []
+          },
+          {
+            "from_road": "11452",
+            "to_road": "9283",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9283",
+            "warnings": []
+          },
+          {
+            "from_road": "11452",
+            "to_road": "9813",
+            "link_kind": "successor",
+            "error": "linked road id not found: 9813",
+            "warnings": []
+          },
+          {
+            "from_road": "11453",
+            "to_road": "9283",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9283",
+            "warnings": []
+          },
+          {
+            "from_road": "11454",
+            "to_road": "9283",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9283",
+            "warnings": []
+          },
+          {
+            "from_road": "11454",
+            "to_road": "10126",
+            "link_kind": "successor",
+            "error": "linked road id not found: 10126",
+            "warnings": []
+          },
+          {
+            "from_road": "11455",
+            "to_road": "10126",
+            "link_kind": "successor",
+            "error": "linked road id not found: 10126",
+            "warnings": []
+          },
+          {
+            "from_road": "11456",
+            "to_road": "9813",
+            "link_kind": "successor",
+            "error": "linked road id not found: 9813",
+            "warnings": []
+          },
+          {
+            "from_road": "12648",
+            "to_road": "9204",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9204",
+            "warnings": []
+          },
+          {
+            "from_road": "12649",
+            "to_road": "9204",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9204",
+            "warnings": []
+          },
+          {
+            "from_road": "14140",
+            "to_road": "9313",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9313",
+            "warnings": []
+          },
+          {
+            "from_road": "14142",
+            "to_road": "9290",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9290",
+            "warnings": []
+          },
+          {
+            "from_road": "14143",
+            "to_road": "9290",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9290",
+            "warnings": []
+          },
+          {
+            "from_road": "14143",
+            "to_road": "9313",
+            "link_kind": "successor",
+            "error": "linked road id not found: 9313",
+            "warnings": []
+          },
+          {
+            "from_road": "14144",
+            "to_road": "9313",
+            "link_kind": "successor",
+            "error": "linked road id not found: 9313",
+            "warnings": []
+          }
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_1_4.xodr",
+      "report": {
+        "ok": false,
+        "eps_xy": 0.05,
+        "eps_hdg": 0.01,
+        "num_roads": 230,
+        "num_junctions": 0,
+        "num_signals": 0,
+        "issues": [
+          {
+            "type": "orphan_road_link",
+            "from_road": "10950",
+            "to_road": "9749",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "10950",
+            "to_road": "9804",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "10951",
+            "to_road": "9749",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "10952",
+            "to_road": "9749",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "10953",
+            "to_road": "9749",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "10953",
+            "to_road": "10469",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "10954",
+            "to_road": "10469",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "10955",
+            "to_road": "9804",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "10959",
+            "to_road": "10469",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "10960",
+            "to_road": "9804",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "10961",
+            "to_road": "8791",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "10962",
+            "to_road": "8791",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "10963",
+            "to_road": "8791",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "10963",
+            "to_road": "10469",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "10964",
+            "to_road": "8791",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "10964",
+            "to_road": "9804",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "13053",
+            "to_road": "10038",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "13056",
+            "to_road": "10038",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "13057",
+            "to_road": "9101",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "13058",
+            "to_road": "9101",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "13059",
+            "to_road": "9101",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "13059",
+            "to_road": "10038",
+            "link_kind": "successor"
+          }
+        ],
+        "seam_endpoint_issues": [
+          {
+            "from_road": "10950",
+            "to_road": "9749",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9749",
+            "warnings": []
+          },
+          {
+            "from_road": "10950",
+            "to_road": "9804",
+            "link_kind": "successor",
+            "error": "linked road id not found: 9804",
+            "warnings": []
+          },
+          {
+            "from_road": "10951",
+            "to_road": "9749",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9749",
+            "warnings": []
+          },
+          {
+            "from_road": "10952",
+            "to_road": "9749",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9749",
+            "warnings": []
+          },
+          {
+            "from_road": "10953",
+            "to_road": "9749",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9749",
+            "warnings": []
+          },
+          {
+            "from_road": "10953",
+            "to_road": "10469",
+            "link_kind": "successor",
+            "error": "linked road id not found: 10469",
+            "warnings": []
+          },
+          {
+            "from_road": "10954",
+            "to_road": "10469",
+            "link_kind": "successor",
+            "error": "linked road id not found: 10469",
+            "warnings": []
+          },
+          {
+            "from_road": "10955",
+            "to_road": "9804",
+            "link_kind": "successor",
+            "error": "linked road id not found: 9804",
+            "warnings": []
+          },
+          {
+            "from_road": "10959",
+            "to_road": "10469",
+            "link_kind": "successor",
+            "error": "linked road id not found: 10469",
+            "warnings": []
+          },
+          {
+            "from_road": "10960",
+            "to_road": "9804",
+            "link_kind": "successor",
+            "error": "linked road id not found: 9804",
+            "warnings": []
+          },
+          {
+            "from_road": "10961",
+            "to_road": "8791",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 8791",
+            "warnings": []
+          },
+          {
+            "from_road": "10962",
+            "to_road": "8791",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 8791",
+            "warnings": []
+          },
+          {
+            "from_road": "10963",
+            "to_road": "8791",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 8791",
+            "warnings": []
+          },
+          {
+            "from_road": "10963",
+            "to_road": "10469",
+            "link_kind": "successor",
+            "error": "linked road id not found: 10469",
+            "warnings": []
+          },
+          {
+            "from_road": "10964",
+            "to_road": "8791",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 8791",
+            "warnings": []
+          },
+          {
+            "from_road": "10964",
+            "to_road": "9804",
+            "link_kind": "successor",
+            "error": "linked road id not found: 9804",
+            "warnings": []
+          },
+          {
+            "from_road": "13053",
+            "to_road": "10038",
+            "link_kind": "successor",
+            "error": "linked road id not found: 10038",
+            "warnings": []
+          },
+          {
+            "from_road": "13056",
+            "to_road": "10038",
+            "link_kind": "successor",
+            "error": "linked road id not found: 10038",
+            "warnings": []
+          },
+          {
+            "from_road": "13057",
+            "to_road": "9101",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9101",
+            "warnings": []
+          },
+          {
+            "from_road": "13058",
+            "to_road": "9101",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9101",
+            "warnings": []
+          },
+          {
+            "from_road": "13059",
+            "to_road": "9101",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9101",
+            "warnings": []
+          },
+          {
+            "from_road": "13059",
+            "to_road": "10038",
+            "link_kind": "successor",
+            "error": "linked road id not found: 10038",
+            "warnings": []
+          }
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_1_5.xodr",
+      "report": {
+        "ok": false,
+        "eps_xy": 0.05,
+        "eps_hdg": 0.01,
+        "num_roads": 186,
+        "num_junctions": 0,
+        "num_signals": 0,
+        "issues": [
+          {
+            "type": "orphan_road_link",
+            "from_road": "11250",
+            "to_road": "9787",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "11250",
+            "to_road": "10556",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "11251",
+            "to_road": "9787",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "11252",
+            "to_road": "9787",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "11253",
+            "to_road": "10549",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "11254",
+            "to_road": "10556",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "11258",
+            "to_road": "10549",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "11259",
+            "to_road": "10556",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "11260",
+            "to_road": "9794",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "11261",
+            "to_road": "9794",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "11262",
+            "to_road": "9794",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "11262",
+            "to_road": "10549",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "12697",
+            "to_road": "9534",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "12698",
+            "to_road": "9448",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "12699",
+            "to_road": "9448",
+            "link_kind": "successor"
+          }
+        ],
+        "seam_endpoint_issues": [
+          {
+            "from_road": "11250",
+            "to_road": "9787",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9787",
+            "warnings": []
+          },
+          {
+            "from_road": "11250",
+            "to_road": "10556",
+            "link_kind": "successor",
+            "error": "linked road id not found: 10556",
+            "warnings": []
+          },
+          {
+            "from_road": "11251",
+            "to_road": "9787",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9787",
+            "warnings": []
+          },
+          {
+            "from_road": "11252",
+            "to_road": "9787",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9787",
+            "warnings": []
+          },
+          {
+            "from_road": "11253",
+            "to_road": "10549",
+            "link_kind": "successor",
+            "error": "linked road id not found: 10549",
+            "warnings": []
+          },
+          {
+            "from_road": "11254",
+            "to_road": "10556",
+            "link_kind": "successor",
+            "error": "linked road id not found: 10556",
+            "warnings": []
+          },
+          {
+            "from_road": "11258",
+            "to_road": "10549",
+            "link_kind": "successor",
+            "error": "linked road id not found: 10549",
+            "warnings": []
+          },
+          {
+            "from_road": "11259",
+            "to_road": "10556",
+            "link_kind": "successor",
+            "error": "linked road id not found: 10556",
+            "warnings": []
+          },
+          {
+            "from_road": "11260",
+            "to_road": "9794",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9794",
+            "warnings": []
+          },
+          {
+            "from_road": "11261",
+            "to_road": "9794",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9794",
+            "warnings": []
+          },
+          {
+            "from_road": "11262",
+            "to_road": "9794",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9794",
+            "warnings": []
+          },
+          {
+            "from_road": "11262",
+            "to_road": "10549",
+            "link_kind": "successor",
+            "error": "linked road id not found: 10549",
+            "warnings": []
+          },
+          {
+            "from_road": "12697",
+            "to_road": "9534",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9534",
+            "warnings": []
+          },
+          {
+            "from_road": "12698",
+            "to_road": "9448",
+            "link_kind": "successor",
+            "error": "linked road id not found: 9448",
+            "warnings": []
+          },
+          {
+            "from_road": "12699",
+            "to_road": "9448",
+            "link_kind": "successor",
+            "error": "linked road id not found: 9448",
+            "warnings": []
+          }
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_1_6.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy": 0.05,
+        "eps_hdg": 0.01,
+        "num_roads": 41,
+        "num_junctions": 0,
+        "num_signals": 0,
+        "issues": [],
+        "seam_endpoint_issues": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_2_0.xodr",
+      "report": {
+        "ok": false,
+        "eps_xy": 0.05,
+        "eps_hdg": 0.01,
+        "num_roads": 66,
+        "num_junctions": 0,
+        "num_signals": 0,
+        "issues": [
+          {
+            "type": "orphan_road_link",
+            "from_road": "12216",
+            "to_road": "9001",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "12216",
+            "to_road": "10045",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "12217",
+            "to_road": "9001",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "12218",
+            "to_road": "9001",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "12219",
+            "to_road": "9001",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "12219",
+            "to_road": "9962",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "12220",
+            "to_road": "9962",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "12221",
+            "to_road": "10045",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "12225",
+            "to_road": "9962",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "12226",
+            "to_road": "10045",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "12228",
+            "to_road": "9110",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "12229",
+            "to_road": "9110",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "12230",
+            "to_road": "9110",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "12230",
+            "to_road": "9962",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "12231",
+            "to_road": "9110",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "12231",
+            "to_road": "10045",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "13113",
+            "to_road": "10069",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "13116",
+            "to_road": "10069",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "13117",
+            "to_road": "10069",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "13119",
+            "to_road": "9163",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "13120",
+            "to_road": "9163",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "13121",
+            "to_road": "9163",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "13121",
+            "to_road": "10069",
+            "link_kind": "successor"
+          }
+        ],
+        "seam_endpoint_issues": [
+          {
+            "from_road": "12216",
+            "to_road": "9001",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9001",
+            "warnings": []
+          },
+          {
+            "from_road": "12216",
+            "to_road": "10045",
+            "link_kind": "successor",
+            "error": "linked road id not found: 10045",
+            "warnings": []
+          },
+          {
+            "from_road": "12217",
+            "to_road": "9001",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9001",
+            "warnings": []
+          },
+          {
+            "from_road": "12218",
+            "to_road": "9001",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9001",
+            "warnings": []
+          },
+          {
+            "from_road": "12219",
+            "to_road": "9001",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9001",
+            "warnings": []
+          },
+          {
+            "from_road": "12219",
+            "to_road": "9962",
+            "link_kind": "successor",
+            "error": "linked road id not found: 9962",
+            "warnings": []
+          },
+          {
+            "from_road": "12220",
+            "to_road": "9962",
+            "link_kind": "successor",
+            "error": "linked road id not found: 9962",
+            "warnings": []
+          },
+          {
+            "from_road": "12221",
+            "to_road": "10045",
+            "link_kind": "successor",
+            "error": "linked road id not found: 10045",
+            "warnings": []
+          },
+          {
+            "from_road": "12225",
+            "to_road": "9962",
+            "link_kind": "successor",
+            "error": "linked road id not found: 9962",
+            "warnings": []
+          },
+          {
+            "from_road": "12226",
+            "to_road": "10045",
+            "link_kind": "successor",
+            "error": "linked road id not found: 10045",
+            "warnings": []
+          },
+          {
+            "from_road": "12228",
+            "to_road": "9110",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9110",
+            "warnings": []
+          },
+          {
+            "from_road": "12229",
+            "to_road": "9110",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9110",
+            "warnings": []
+          },
+          {
+            "from_road": "12230",
+            "to_road": "9110",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9110",
+            "warnings": []
+          },
+          {
+            "from_road": "12230",
+            "to_road": "9962",
+            "link_kind": "successor",
+            "error": "linked road id not found: 9962",
+            "warnings": []
+          },
+          {
+            "from_road": "12231",
+            "to_road": "9110",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9110",
+            "warnings": []
+          },
+          {
+            "from_road": "12231",
+            "to_road": "10045",
+            "link_kind": "successor",
+            "error": "linked road id not found: 10045",
+            "warnings": []
+          },
+          {
+            "from_road": "13113",
+            "to_road": "10069",
+            "link_kind": "successor",
+            "error": "linked road id not found: 10069",
+            "warnings": []
+          },
+          {
+            "from_road": "13116",
+            "to_road": "10069",
+            "link_kind": "successor",
+            "error": "linked road id not found: 10069",
+            "warnings": []
+          },
+          {
+            "from_road": "13117",
+            "to_road": "10069",
+            "link_kind": "successor",
+            "error": "linked road id not found: 10069",
+            "warnings": []
+          },
+          {
+            "from_road": "13119",
+            "to_road": "9163",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9163",
+            "warnings": []
+          },
+          {
+            "from_road": "13120",
+            "to_road": "9163",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9163",
+            "warnings": []
+          },
+          {
+            "from_road": "13121",
+            "to_road": "9163",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9163",
+            "warnings": []
+          },
+          {
+            "from_road": "13121",
+            "to_road": "10069",
+            "link_kind": "successor",
+            "error": "linked road id not found: 10069",
+            "warnings": []
+          }
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_2_1.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy": 0.05,
+        "eps_hdg": 0.01,
+        "num_roads": 257,
+        "num_junctions": 0,
+        "num_signals": 0,
+        "issues": [],
+        "seam_endpoint_issues": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_2_2.xodr",
+      "report": {
+        "ok": false,
+        "eps_xy": 0.05,
+        "eps_hdg": 0.01,
+        "num_roads": 228,
+        "num_junctions": 0,
+        "num_signals": 0,
+        "issues": [
+          {
+            "type": "orphan_road_link",
+            "from_road": "11443",
+            "to_road": "9351",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "11444",
+            "to_road": "9351",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "11445",
+            "to_road": "10180",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "11781",
+            "to_road": "8979",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "11783",
+            "to_road": "9948",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "11784",
+            "to_road": "9948",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "11785",
+            "to_road": "9948",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "11785",
+            "to_road": "8979",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "11786",
+            "to_road": "8979",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "13988",
+            "to_road": "10406",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "13989",
+            "to_road": "10406",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "13990",
+            "to_road": "10406",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "13991",
+            "to_road": "10406",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "13992",
+            "to_road": "10406",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "14563",
+            "to_road": "9714",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "14564",
+            "to_road": "9714",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "14565",
+            "to_road": "9714",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "14565",
+            "to_road": "9345",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "14566",
+            "to_road": "9345",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "14570",
+            "to_road": "9345",
+            "link_kind": "successor"
+          }
+        ],
+        "seam_endpoint_issues": [
+          {
+            "from_road": "11443",
+            "to_road": "9351",
+            "link_kind": "successor",
+            "error": "linked road id not found: 9351",
+            "warnings": []
+          },
+          {
+            "from_road": "11444",
+            "to_road": "9351",
+            "link_kind": "successor",
+            "error": "linked road id not found: 9351",
+            "warnings": []
+          },
+          {
+            "from_road": "11445",
+            "to_road": "10180",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 10180",
+            "warnings": []
+          },
+          {
+            "from_road": "11781",
+            "to_road": "8979",
+            "link_kind": "successor",
+            "error": "linked road id not found: 8979",
+            "warnings": []
+          },
+          {
+            "from_road": "11783",
+            "to_road": "9948",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9948",
+            "warnings": []
+          },
+          {
+            "from_road": "11784",
+            "to_road": "9948",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9948",
+            "warnings": []
+          },
+          {
+            "from_road": "11785",
+            "to_road": "9948",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9948",
+            "warnings": []
+          },
+          {
+            "from_road": "11785",
+            "to_road": "8979",
+            "link_kind": "successor",
+            "error": "linked road id not found: 8979",
+            "warnings": []
+          },
+          {
+            "from_road": "11786",
+            "to_road": "8979",
+            "link_kind": "successor",
+            "error": "linked road id not found: 8979",
+            "warnings": []
+          },
+          {
+            "from_road": "13988",
+            "to_road": "10406",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 10406",
+            "warnings": []
+          },
+          {
+            "from_road": "13989",
+            "to_road": "10406",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 10406",
+            "warnings": []
+          },
+          {
+            "from_road": "13990",
+            "to_road": "10406",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 10406",
+            "warnings": []
+          },
+          {
+            "from_road": "13991",
+            "to_road": "10406",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 10406",
+            "warnings": []
+          },
+          {
+            "from_road": "13992",
+            "to_road": "10406",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 10406",
+            "warnings": []
+          },
+          {
+            "from_road": "14563",
+            "to_road": "9714",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9714",
+            "warnings": []
+          },
+          {
+            "from_road": "14564",
+            "to_road": "9714",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9714",
+            "warnings": []
+          },
+          {
+            "from_road": "14565",
+            "to_road": "9714",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9714",
+            "warnings": []
+          },
+          {
+            "from_road": "14565",
+            "to_road": "9345",
+            "link_kind": "successor",
+            "error": "linked road id not found: 9345",
+            "warnings": []
+          },
+          {
+            "from_road": "14566",
+            "to_road": "9345",
+            "link_kind": "successor",
+            "error": "linked road id not found: 9345",
+            "warnings": []
+          },
+          {
+            "from_road": "14570",
+            "to_road": "9345",
+            "link_kind": "successor",
+            "error": "linked road id not found: 9345",
+            "warnings": []
+          }
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_2_3.xodr",
+      "report": {
+        "ok": false,
+        "eps_xy": 0.05,
+        "eps_hdg": 0.01,
+        "num_roads": 64,
+        "num_junctions": 0,
+        "num_signals": 0,
+        "issues": [
+          {
+            "type": "orphan_road_link",
+            "from_road": "11443",
+            "to_road": "9351",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "11444",
+            "to_road": "9351",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "11445",
+            "to_road": "10180",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "11450",
+            "to_road": "10126",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "11452",
+            "to_road": "9283",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "11453",
+            "to_road": "9283",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "11454",
+            "to_road": "9283",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "11454",
+            "to_road": "10126",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "11455",
+            "to_road": "10126",
+            "link_kind": "successor"
+          }
+        ],
+        "seam_endpoint_issues": [
+          {
+            "from_road": "11443",
+            "to_road": "9351",
+            "link_kind": "successor",
+            "error": "linked road id not found: 9351",
+            "warnings": []
+          },
+          {
+            "from_road": "11444",
+            "to_road": "9351",
+            "link_kind": "successor",
+            "error": "linked road id not found: 9351",
+            "warnings": []
+          },
+          {
+            "from_road": "11445",
+            "to_road": "10180",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 10180",
+            "warnings": []
+          },
+          {
+            "from_road": "11450",
+            "to_road": "10126",
+            "link_kind": "successor",
+            "error": "linked road id not found: 10126",
+            "warnings": []
+          },
+          {
+            "from_road": "11452",
+            "to_road": "9283",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9283",
+            "warnings": []
+          },
+          {
+            "from_road": "11453",
+            "to_road": "9283",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9283",
+            "warnings": []
+          },
+          {
+            "from_road": "11454",
+            "to_road": "9283",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9283",
+            "warnings": []
+          },
+          {
+            "from_road": "11454",
+            "to_road": "10126",
+            "link_kind": "successor",
+            "error": "linked road id not found: 10126",
+            "warnings": []
+          },
+          {
+            "from_road": "11455",
+            "to_road": "10126",
+            "link_kind": "successor",
+            "error": "linked road id not found: 10126",
+            "warnings": []
+          }
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_2_4.xodr",
+      "report": {
+        "ok": false,
+        "eps_xy": 0.05,
+        "eps_hdg": 0.01,
+        "num_roads": 177,
+        "num_junctions": 0,
+        "num_signals": 0,
+        "issues": [
+          {
+            "type": "orphan_road_link",
+            "from_road": "14212",
+            "to_road": "9662",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "14213",
+            "to_road": "9662",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "14334",
+            "to_road": "10217",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "14335",
+            "to_road": "10217",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "14336",
+            "to_road": "10217",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "14336",
+            "to_road": "9421",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "14337",
+            "to_road": "10217",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "14337",
+            "to_road": "9420",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "14338",
+            "to_road": "10218",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "14338",
+            "to_road": "9420",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "14339",
+            "to_road": "10218",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "14340",
+            "to_road": "10218",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "14341",
+            "to_road": "10218",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "14341",
+            "to_road": "9421",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "14342",
+            "to_road": "9421",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "14343",
+            "to_road": "9420",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "14347",
+            "to_road": "9421",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "14348",
+            "to_road": "9420",
+            "link_kind": "successor"
+          }
+        ],
+        "seam_endpoint_issues": [
+          {
+            "from_road": "14212",
+            "to_road": "9662",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9662",
+            "warnings": []
+          },
+          {
+            "from_road": "14213",
+            "to_road": "9662",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9662",
+            "warnings": []
+          },
+          {
+            "from_road": "14334",
+            "to_road": "10217",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 10217",
+            "warnings": []
+          },
+          {
+            "from_road": "14335",
+            "to_road": "10217",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 10217",
+            "warnings": []
+          },
+          {
+            "from_road": "14336",
+            "to_road": "10217",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 10217",
+            "warnings": []
+          },
+          {
+            "from_road": "14336",
+            "to_road": "9421",
+            "link_kind": "successor",
+            "error": "linked road id not found: 9421",
+            "warnings": []
+          },
+          {
+            "from_road": "14337",
+            "to_road": "10217",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 10217",
+            "warnings": []
+          },
+          {
+            "from_road": "14337",
+            "to_road": "9420",
+            "link_kind": "successor",
+            "error": "linked road id not found: 9420",
+            "warnings": []
+          },
+          {
+            "from_road": "14338",
+            "to_road": "10218",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 10218",
+            "warnings": []
+          },
+          {
+            "from_road": "14338",
+            "to_road": "9420",
+            "link_kind": "successor",
+            "error": "linked road id not found: 9420",
+            "warnings": []
+          },
+          {
+            "from_road": "14339",
+            "to_road": "10218",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 10218",
+            "warnings": []
+          },
+          {
+            "from_road": "14340",
+            "to_road": "10218",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 10218",
+            "warnings": []
+          },
+          {
+            "from_road": "14341",
+            "to_road": "10218",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 10218",
+            "warnings": []
+          },
+          {
+            "from_road": "14341",
+            "to_road": "9421",
+            "link_kind": "successor",
+            "error": "linked road id not found: 9421",
+            "warnings": []
+          },
+          {
+            "from_road": "14342",
+            "to_road": "9421",
+            "link_kind": "successor",
+            "error": "linked road id not found: 9421",
+            "warnings": []
+          },
+          {
+            "from_road": "14343",
+            "to_road": "9420",
+            "link_kind": "successor",
+            "error": "linked road id not found: 9420",
+            "warnings": []
+          },
+          {
+            "from_road": "14347",
+            "to_road": "9421",
+            "link_kind": "successor",
+            "error": "linked road id not found: 9421",
+            "warnings": []
+          },
+          {
+            "from_road": "14348",
+            "to_road": "9420",
+            "link_kind": "successor",
+            "error": "linked road id not found: 9420",
+            "warnings": []
+          }
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_2_5.xodr",
+      "report": {
+        "ok": false,
+        "eps_xy": 0.05,
+        "eps_hdg": 0.01,
+        "num_roads": 258,
+        "num_junctions": 0,
+        "num_signals": 0,
+        "issues": [
+          {
+            "type": "orphan_road_link",
+            "from_road": "10898",
+            "to_road": "9744",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "10898",
+            "to_road": "9609",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "10899",
+            "to_road": "9744",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "10900",
+            "to_road": "10455",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "10901",
+            "to_road": "9609",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "10904",
+            "to_road": "10455",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "10905",
+            "to_road": "9609",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "10906",
+            "to_road": "10305",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "10907",
+            "to_road": "10305",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "10907",
+            "to_road": "10455",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "10908",
+            "to_road": "10305",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "10908",
+            "to_road": "9609",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "13024",
+            "to_road": "9092",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "13024",
+            "to_road": "10032",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "13319",
+            "to_road": "9254",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "13320",
+            "to_road": "9254",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "13321",
+            "to_road": "9254",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "13321",
+            "to_road": "10113",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "13322",
+            "to_road": "10113",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "14490",
+            "to_road": "9711",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "14491",
+            "to_road": "9711",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "14491",
+            "to_road": "10004",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "14492",
+            "to_road": "9054",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "14492",
+            "to_road": "10411",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "14493",
+            "to_road": "9054",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "14494",
+            "to_road": "10004",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "14495",
+            "to_road": "10411",
+            "link_kind": "successor"
+          }
+        ],
+        "seam_endpoint_issues": [
+          {
+            "from_road": "10898",
+            "to_road": "9744",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9744",
+            "warnings": []
+          },
+          {
+            "from_road": "10898",
+            "to_road": "9609",
+            "link_kind": "successor",
+            "error": "linked road id not found: 9609",
+            "warnings": []
+          },
+          {
+            "from_road": "10899",
+            "to_road": "9744",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9744",
+            "warnings": []
+          },
+          {
+            "from_road": "10900",
+            "to_road": "10455",
+            "link_kind": "successor",
+            "error": "linked road id not found: 10455",
+            "warnings": []
+          },
+          {
+            "from_road": "10901",
+            "to_road": "9609",
+            "link_kind": "successor",
+            "error": "linked road id not found: 9609",
+            "warnings": []
+          },
+          {
+            "from_road": "10904",
+            "to_road": "10455",
+            "link_kind": "successor",
+            "error": "linked road id not found: 10455",
+            "warnings": []
+          },
+          {
+            "from_road": "10905",
+            "to_road": "9609",
+            "link_kind": "successor",
+            "error": "linked road id not found: 9609",
+            "warnings": []
+          },
+          {
+            "from_road": "10906",
+            "to_road": "10305",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 10305",
+            "warnings": []
+          },
+          {
+            "from_road": "10907",
+            "to_road": "10305",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 10305",
+            "warnings": []
+          },
+          {
+            "from_road": "10907",
+            "to_road": "10455",
+            "link_kind": "successor",
+            "error": "linked road id not found: 10455",
+            "warnings": []
+          },
+          {
+            "from_road": "10908",
+            "to_road": "10305",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 10305",
+            "warnings": []
+          },
+          {
+            "from_road": "10908",
+            "to_road": "9609",
+            "link_kind": "successor",
+            "error": "linked road id not found: 9609",
+            "warnings": []
+          },
+          {
+            "from_road": "13024",
+            "to_road": "9092",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9092",
+            "warnings": []
+          },
+          {
+            "from_road": "13024",
+            "to_road": "10032",
+            "link_kind": "successor",
+            "error": "linked road id not found: 10032",
+            "warnings": []
+          },
+          {
+            "from_road": "13319",
+            "to_road": "9254",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9254",
+            "warnings": []
+          },
+          {
+            "from_road": "13320",
+            "to_road": "9254",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9254",
+            "warnings": []
+          },
+          {
+            "from_road": "13321",
+            "to_road": "9254",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9254",
+            "warnings": []
+          },
+          {
+            "from_road": "13321",
+            "to_road": "10113",
+            "link_kind": "successor",
+            "error": "linked road id not found: 10113",
+            "warnings": []
+          },
+          {
+            "from_road": "13322",
+            "to_road": "10113",
+            "link_kind": "successor",
+            "error": "linked road id not found: 10113",
+            "warnings": []
+          },
+          {
+            "from_road": "14490",
+            "to_road": "9711",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9711",
+            "warnings": []
+          },
+          {
+            "from_road": "14491",
+            "to_road": "9711",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9711",
+            "warnings": []
+          },
+          {
+            "from_road": "14491",
+            "to_road": "10004",
+            "link_kind": "successor",
+            "error": "linked road id not found: 10004",
+            "warnings": []
+          },
+          {
+            "from_road": "14492",
+            "to_road": "9054",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9054",
+            "warnings": []
+          },
+          {
+            "from_road": "14492",
+            "to_road": "10411",
+            "link_kind": "successor",
+            "error": "linked road id not found: 10411",
+            "warnings": []
+          },
+          {
+            "from_road": "14493",
+            "to_road": "9054",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9054",
+            "warnings": []
+          },
+          {
+            "from_road": "14494",
+            "to_road": "10004",
+            "link_kind": "successor",
+            "error": "linked road id not found: 10004",
+            "warnings": []
+          },
+          {
+            "from_road": "14495",
+            "to_road": "10411",
+            "link_kind": "successor",
+            "error": "linked road id not found: 10411",
+            "warnings": []
+          }
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_2_6.xodr",
+      "report": {
+        "ok": false,
+        "eps_xy": 0.05,
+        "eps_hdg": 0.01,
+        "num_roads": 113,
+        "num_junctions": 0,
+        "num_signals": 0,
+        "issues": [
+          {
+            "type": "orphan_road_link",
+            "from_road": "12049",
+            "to_road": "8901",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "12050",
+            "to_road": "8901",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "12051",
+            "to_road": "8901",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "12052",
+            "to_road": "8901",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "12052",
+            "to_road": "9880",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "12053",
+            "to_road": "9880",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "12836",
+            "to_road": "9051",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "12837",
+            "to_road": "10001",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "12839",
+            "to_road": "10001",
+            "link_kind": "successor"
+          }
+        ],
+        "seam_endpoint_issues": [
+          {
+            "from_road": "12049",
+            "to_road": "8901",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 8901",
+            "warnings": []
+          },
+          {
+            "from_road": "12050",
+            "to_road": "8901",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 8901",
+            "warnings": []
+          },
+          {
+            "from_road": "12051",
+            "to_road": "8901",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 8901",
+            "warnings": []
+          },
+          {
+            "from_road": "12052",
+            "to_road": "8901",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 8901",
+            "warnings": []
+          },
+          {
+            "from_road": "12052",
+            "to_road": "9880",
+            "link_kind": "successor",
+            "error": "linked road id not found: 9880",
+            "warnings": []
+          },
+          {
+            "from_road": "12053",
+            "to_road": "9880",
+            "link_kind": "successor",
+            "error": "linked road id not found: 9880",
+            "warnings": []
+          },
+          {
+            "from_road": "12836",
+            "to_road": "9051",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9051",
+            "warnings": []
+          },
+          {
+            "from_road": "12837",
+            "to_road": "10001",
+            "link_kind": "successor",
+            "error": "linked road id not found: 10001",
+            "warnings": []
+          },
+          {
+            "from_road": "12839",
+            "to_road": "10001",
+            "link_kind": "successor",
+            "error": "linked road id not found: 10001",
+            "warnings": []
+          }
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_2_7.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy": 0.05,
+        "eps_hdg": 0.01,
+        "num_roads": 3,
+        "num_junctions": 0,
+        "num_signals": 0,
+        "issues": [],
+        "seam_endpoint_issues": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_3_0.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy": 0.05,
+        "eps_hdg": 0.01,
+        "num_roads": 13,
+        "num_junctions": 0,
+        "num_signals": 0,
+        "issues": [],
+        "seam_endpoint_issues": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_3_1.xodr",
+      "report": {
+        "ok": false,
+        "eps_xy": 0.05,
+        "eps_hdg": 0.01,
+        "num_roads": 278,
+        "num_junctions": 0,
+        "num_signals": 0,
+        "issues": [
+          {
+            "type": "orphan_road_link",
+            "from_road": "11466",
+            "to_road": "10329",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "11466",
+            "to_road": "9643",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "11467",
+            "to_road": "10329",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "11468",
+            "to_road": "10329",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "11468",
+            "to_road": "9642",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "11469",
+            "to_road": "9642",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "11470",
+            "to_road": "9643",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "11472",
+            "to_road": "10330",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "11473",
+            "to_road": "10330",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "11473",
+            "to_road": "9642",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "12478",
+            "to_road": "10260",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "12480",
+            "to_road": "9492",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "12481",
+            "to_road": "9492",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "12482",
+            "to_road": "10260",
+            "link_kind": "successor"
+          }
+        ],
+        "seam_endpoint_issues": [
+          {
+            "from_road": "11466",
+            "to_road": "10329",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 10329",
+            "warnings": []
+          },
+          {
+            "from_road": "11466",
+            "to_road": "9643",
+            "link_kind": "successor",
+            "error": "linked road id not found: 9643",
+            "warnings": []
+          },
+          {
+            "from_road": "11467",
+            "to_road": "10329",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 10329",
+            "warnings": []
+          },
+          {
+            "from_road": "11468",
+            "to_road": "10329",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 10329",
+            "warnings": []
+          },
+          {
+            "from_road": "11468",
+            "to_road": "9642",
+            "link_kind": "successor",
+            "error": "linked road id not found: 9642",
+            "warnings": []
+          },
+          {
+            "from_road": "11469",
+            "to_road": "9642",
+            "link_kind": "successor",
+            "error": "linked road id not found: 9642",
+            "warnings": []
+          },
+          {
+            "from_road": "11470",
+            "to_road": "9643",
+            "link_kind": "successor",
+            "error": "linked road id not found: 9643",
+            "warnings": []
+          },
+          {
+            "from_road": "11472",
+            "to_road": "10330",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 10330",
+            "warnings": []
+          },
+          {
+            "from_road": "11473",
+            "to_road": "10330",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 10330",
+            "warnings": []
+          },
+          {
+            "from_road": "11473",
+            "to_road": "9642",
+            "link_kind": "successor",
+            "error": "linked road id not found: 9642",
+            "warnings": []
+          },
+          {
+            "from_road": "12478",
+            "to_road": "10260",
+            "link_kind": "successor",
+            "error": "linked road id not found: 10260",
+            "warnings": []
+          },
+          {
+            "from_road": "12480",
+            "to_road": "9492",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9492",
+            "warnings": []
+          },
+          {
+            "from_road": "12481",
+            "to_road": "9492",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9492",
+            "warnings": []
+          },
+          {
+            "from_road": "12482",
+            "to_road": "10260",
+            "link_kind": "successor",
+            "error": "linked road id not found: 10260",
+            "warnings": []
+          }
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_3_2.xodr",
+      "report": {
+        "ok": false,
+        "eps_xy": 0.05,
+        "eps_hdg": 0.01,
+        "num_roads": 236,
+        "num_junctions": 0,
+        "num_signals": 0,
+        "issues": [
+          {
+            "type": "orphan_road_link",
+            "from_road": "12381",
+            "to_road": "9917",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "12382",
+            "to_road": "9622",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "12383",
+            "to_road": "10316",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "12384",
+            "to_road": "10316",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "12385",
+            "to_road": "10316",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "12385",
+            "to_road": "9917",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "12386",
+            "to_road": "8944",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "12386",
+            "to_road": "9622",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "12387",
+            "to_road": "8944",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "12388",
+            "to_road": "8944",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "12389",
+            "to_road": "9917",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "12390",
+            "to_road": "9622",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "14090",
+            "to_road": "9554",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "14091",
+            "to_road": "9554",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "14092",
+            "to_road": "9554",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "14093",
+            "to_road": "9554",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "14093",
+            "to_road": "9557",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "14094",
+            "to_road": "9557",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "14099",
+            "to_road": "9557",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "14104",
+            "to_road": "9557",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "14109",
+            "to_road": "9557",
+            "link_kind": "successor"
+          }
+        ],
+        "seam_endpoint_issues": [
+          {
+            "from_road": "12381",
+            "to_road": "9917",
+            "link_kind": "successor",
+            "error": "linked road id not found: 9917",
+            "warnings": []
+          },
+          {
+            "from_road": "12382",
+            "to_road": "9622",
+            "link_kind": "successor",
+            "error": "linked road id not found: 9622",
+            "warnings": []
+          },
+          {
+            "from_road": "12383",
+            "to_road": "10316",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 10316",
+            "warnings": []
+          },
+          {
+            "from_road": "12384",
+            "to_road": "10316",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 10316",
+            "warnings": []
+          },
+          {
+            "from_road": "12385",
+            "to_road": "10316",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 10316",
+            "warnings": []
+          },
+          {
+            "from_road": "12385",
+            "to_road": "9917",
+            "link_kind": "successor",
+            "error": "linked road id not found: 9917",
+            "warnings": []
+          },
+          {
+            "from_road": "12386",
+            "to_road": "8944",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 8944",
+            "warnings": []
+          },
+          {
+            "from_road": "12386",
+            "to_road": "9622",
+            "link_kind": "successor",
+            "error": "linked road id not found: 9622",
+            "warnings": []
+          },
+          {
+            "from_road": "12387",
+            "to_road": "8944",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 8944",
+            "warnings": []
+          },
+          {
+            "from_road": "12388",
+            "to_road": "8944",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 8944",
+            "warnings": []
+          },
+          {
+            "from_road": "12389",
+            "to_road": "9917",
+            "link_kind": "successor",
+            "error": "linked road id not found: 9917",
+            "warnings": []
+          },
+          {
+            "from_road": "12390",
+            "to_road": "9622",
+            "link_kind": "successor",
+            "error": "linked road id not found: 9622",
+            "warnings": []
+          },
+          {
+            "from_road": "14090",
+            "to_road": "9554",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9554",
+            "warnings": []
+          },
+          {
+            "from_road": "14091",
+            "to_road": "9554",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9554",
+            "warnings": []
+          },
+          {
+            "from_road": "14092",
+            "to_road": "9554",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9554",
+            "warnings": []
+          },
+          {
+            "from_road": "14093",
+            "to_road": "9554",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9554",
+            "warnings": []
+          },
+          {
+            "from_road": "14093",
+            "to_road": "9557",
+            "link_kind": "successor",
+            "error": "linked road id not found: 9557",
+            "warnings": []
+          },
+          {
+            "from_road": "14094",
+            "to_road": "9557",
+            "link_kind": "successor",
+            "error": "linked road id not found: 9557",
+            "warnings": []
+          },
+          {
+            "from_road": "14099",
+            "to_road": "9557",
+            "link_kind": "successor",
+            "error": "linked road id not found: 9557",
+            "warnings": []
+          },
+          {
+            "from_road": "14104",
+            "to_road": "9557",
+            "link_kind": "successor",
+            "error": "linked road id not found: 9557",
+            "warnings": []
+          },
+          {
+            "from_road": "14109",
+            "to_road": "9557",
+            "link_kind": "successor",
+            "error": "linked road id not found: 9557",
+            "warnings": []
+          }
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_3_3.xodr",
+      "report": {
+        "ok": false,
+        "eps_xy": 0.05,
+        "eps_hdg": 0.01,
+        "num_roads": 168,
+        "num_junctions": 0,
+        "num_signals": 0,
+        "issues": [
+          {
+            "type": "orphan_road_link",
+            "from_road": "11050",
+            "to_road": "9124",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "11054",
+            "to_road": "9124",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "11056",
+            "to_road": "10057",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "11057",
+            "to_road": "10057",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "11058",
+            "to_road": "10057",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "11058",
+            "to_road": "9124",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "14091",
+            "to_road": "10481",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "14092",
+            "to_road": "9551",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "14094",
+            "to_road": "9555",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "14095",
+            "to_road": "9555",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "14096",
+            "to_road": "9555",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "14096",
+            "to_road": "10481",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "14097",
+            "to_road": "9555",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "14097",
+            "to_road": "9551",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "14098",
+            "to_road": "9305",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "14098",
+            "to_road": "9551",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "14099",
+            "to_road": "9305",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "14100",
+            "to_road": "9305",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "14101",
+            "to_road": "9305",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "14101",
+            "to_road": "10481",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "14102",
+            "to_road": "10481",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "14103",
+            "to_road": "9551",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "14107",
+            "to_road": "10481",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "14108",
+            "to_road": "9551",
+            "link_kind": "successor"
+          }
+        ],
+        "seam_endpoint_issues": [
+          {
+            "from_road": "11050",
+            "to_road": "9124",
+            "link_kind": "successor",
+            "error": "linked road id not found: 9124",
+            "warnings": []
+          },
+          {
+            "from_road": "11054",
+            "to_road": "9124",
+            "link_kind": "successor",
+            "error": "linked road id not found: 9124",
+            "warnings": []
+          },
+          {
+            "from_road": "11056",
+            "to_road": "10057",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 10057",
+            "warnings": []
+          },
+          {
+            "from_road": "11057",
+            "to_road": "10057",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 10057",
+            "warnings": []
+          },
+          {
+            "from_road": "11058",
+            "to_road": "10057",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 10057",
+            "warnings": []
+          },
+          {
+            "from_road": "11058",
+            "to_road": "9124",
+            "link_kind": "successor",
+            "error": "linked road id not found: 9124",
+            "warnings": []
+          },
+          {
+            "from_road": "14091",
+            "to_road": "10481",
+            "link_kind": "successor",
+            "error": "linked road id not found: 10481",
+            "warnings": []
+          },
+          {
+            "from_road": "14092",
+            "to_road": "9551",
+            "link_kind": "successor",
+            "error": "linked road id not found: 9551",
+            "warnings": []
+          },
+          {
+            "from_road": "14094",
+            "to_road": "9555",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9555",
+            "warnings": []
+          },
+          {
+            "from_road": "14095",
+            "to_road": "9555",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9555",
+            "warnings": []
+          },
+          {
+            "from_road": "14096",
+            "to_road": "9555",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9555",
+            "warnings": []
+          },
+          {
+            "from_road": "14096",
+            "to_road": "10481",
+            "link_kind": "successor",
+            "error": "linked road id not found: 10481",
+            "warnings": []
+          },
+          {
+            "from_road": "14097",
+            "to_road": "9555",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9555",
+            "warnings": []
+          },
+          {
+            "from_road": "14097",
+            "to_road": "9551",
+            "link_kind": "successor",
+            "error": "linked road id not found: 9551",
+            "warnings": []
+          },
+          {
+            "from_road": "14098",
+            "to_road": "9305",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9305",
+            "warnings": []
+          },
+          {
+            "from_road": "14098",
+            "to_road": "9551",
+            "link_kind": "successor",
+            "error": "linked road id not found: 9551",
+            "warnings": []
+          },
+          {
+            "from_road": "14099",
+            "to_road": "9305",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9305",
+            "warnings": []
+          },
+          {
+            "from_road": "14100",
+            "to_road": "9305",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9305",
+            "warnings": []
+          },
+          {
+            "from_road": "14101",
+            "to_road": "9305",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9305",
+            "warnings": []
+          },
+          {
+            "from_road": "14101",
+            "to_road": "10481",
+            "link_kind": "successor",
+            "error": "linked road id not found: 10481",
+            "warnings": []
+          },
+          {
+            "from_road": "14102",
+            "to_road": "10481",
+            "link_kind": "successor",
+            "error": "linked road id not found: 10481",
+            "warnings": []
+          },
+          {
+            "from_road": "14103",
+            "to_road": "9551",
+            "link_kind": "successor",
+            "error": "linked road id not found: 9551",
+            "warnings": []
+          },
+          {
+            "from_road": "14107",
+            "to_road": "10481",
+            "link_kind": "successor",
+            "error": "linked road id not found: 10481",
+            "warnings": []
+          },
+          {
+            "from_road": "14108",
+            "to_road": "9551",
+            "link_kind": "successor",
+            "error": "linked road id not found: 9551",
+            "warnings": []
+          }
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_3_4.xodr",
+      "report": {
+        "ok": false,
+        "eps_xy": 0.05,
+        "eps_hdg": 0.01,
+        "num_roads": 249,
+        "num_junctions": 0,
+        "num_signals": 0,
+        "issues": [
+          {
+            "type": "orphan_road_link",
+            "from_road": "13137",
+            "to_road": "9393",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "13138",
+            "to_road": "9393",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "13139",
+            "to_road": "9393",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "14234",
+            "to_road": "9576",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "14235",
+            "to_road": "9576",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "14257",
+            "to_road": "8848",
+            "link_kind": "successor"
+          }
+        ],
+        "seam_endpoint_issues": [
+          {
+            "from_road": "13137",
+            "to_road": "9393",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9393",
+            "warnings": []
+          },
+          {
+            "from_road": "13138",
+            "to_road": "9393",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9393",
+            "warnings": []
+          },
+          {
+            "from_road": "13139",
+            "to_road": "9393",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9393",
+            "warnings": []
+          },
+          {
+            "from_road": "14234",
+            "to_road": "9576",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9576",
+            "warnings": []
+          },
+          {
+            "from_road": "14235",
+            "to_road": "9576",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9576",
+            "warnings": []
+          },
+          {
+            "from_road": "14257",
+            "to_road": "8848",
+            "link_kind": "successor",
+            "error": "linked road id not found: 8848",
+            "warnings": []
+          }
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_3_5.xodr",
+      "report": {
+        "ok": false,
+        "eps_xy": 0.05,
+        "eps_hdg": 0.01,
+        "num_roads": 293,
+        "num_junctions": 0,
+        "num_signals": 0,
+        "issues": [
+          {
+            "type": "orphan_road_link",
+            "from_road": "12959",
+            "to_road": "10307",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "12959",
+            "to_road": "8933",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "12960",
+            "to_road": "10307",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "12961",
+            "to_road": "10307",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "12962",
+            "to_road": "10307",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "12962",
+            "to_road": "9240",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "12963",
+            "to_road": "9240",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "12964",
+            "to_road": "8933",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "12968",
+            "to_road": "9240",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "12969",
+            "to_road": "8933",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "12971",
+            "to_road": "9629",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "12972",
+            "to_road": "9629",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "12973",
+            "to_road": "9629",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "12973",
+            "to_road": "9240",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "12974",
+            "to_road": "9629",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "12974",
+            "to_road": "8933",
+            "link_kind": "successor"
+          }
+        ],
+        "seam_endpoint_issues": [
+          {
+            "from_road": "12959",
+            "to_road": "10307",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 10307",
+            "warnings": []
+          },
+          {
+            "from_road": "12959",
+            "to_road": "8933",
+            "link_kind": "successor",
+            "error": "linked road id not found: 8933",
+            "warnings": []
+          },
+          {
+            "from_road": "12960",
+            "to_road": "10307",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 10307",
+            "warnings": []
+          },
+          {
+            "from_road": "12961",
+            "to_road": "10307",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 10307",
+            "warnings": []
+          },
+          {
+            "from_road": "12962",
+            "to_road": "10307",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 10307",
+            "warnings": []
+          },
+          {
+            "from_road": "12962",
+            "to_road": "9240",
+            "link_kind": "successor",
+            "error": "linked road id not found: 9240",
+            "warnings": []
+          },
+          {
+            "from_road": "12963",
+            "to_road": "9240",
+            "link_kind": "successor",
+            "error": "linked road id not found: 9240",
+            "warnings": []
+          },
+          {
+            "from_road": "12964",
+            "to_road": "8933",
+            "link_kind": "successor",
+            "error": "linked road id not found: 8933",
+            "warnings": []
+          },
+          {
+            "from_road": "12968",
+            "to_road": "9240",
+            "link_kind": "successor",
+            "error": "linked road id not found: 9240",
+            "warnings": []
+          },
+          {
+            "from_road": "12969",
+            "to_road": "8933",
+            "link_kind": "successor",
+            "error": "linked road id not found: 8933",
+            "warnings": []
+          },
+          {
+            "from_road": "12971",
+            "to_road": "9629",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9629",
+            "warnings": []
+          },
+          {
+            "from_road": "12972",
+            "to_road": "9629",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9629",
+            "warnings": []
+          },
+          {
+            "from_road": "12973",
+            "to_road": "9629",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9629",
+            "warnings": []
+          },
+          {
+            "from_road": "12973",
+            "to_road": "9240",
+            "link_kind": "successor",
+            "error": "linked road id not found: 9240",
+            "warnings": []
+          },
+          {
+            "from_road": "12974",
+            "to_road": "9629",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9629",
+            "warnings": []
+          },
+          {
+            "from_road": "12974",
+            "to_road": "8933",
+            "link_kind": "successor",
+            "error": "linked road id not found: 8933",
+            "warnings": []
+          }
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_3_6.xodr",
+      "report": {
+        "ok": false,
+        "eps_xy": 0.05,
+        "eps_hdg": 0.01,
+        "num_roads": 201,
+        "num_junctions": 0,
+        "num_signals": 0,
+        "issues": [
+          {
+            "type": "orphan_road_link",
+            "from_road": "10799",
+            "to_road": "10448",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "10804",
+            "to_road": "10448",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "10805",
+            "to_road": "9735",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "10806",
+            "to_road": "9735",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "10807",
+            "to_road": "9735",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "10808",
+            "to_road": "9735",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "10808",
+            "to_road": "10448",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "10809",
+            "to_road": "10448",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "10814",
+            "to_road": "10448",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "14366",
+            "to_road": "9230",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "14367",
+            "to_road": "9230",
+            "link_kind": "predecessor"
+          }
+        ],
+        "seam_endpoint_issues": [
+          {
+            "from_road": "10799",
+            "to_road": "10448",
+            "link_kind": "successor",
+            "error": "linked road id not found: 10448",
+            "warnings": []
+          },
+          {
+            "from_road": "10804",
+            "to_road": "10448",
+            "link_kind": "successor",
+            "error": "linked road id not found: 10448",
+            "warnings": []
+          },
+          {
+            "from_road": "10805",
+            "to_road": "9735",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9735",
+            "warnings": []
+          },
+          {
+            "from_road": "10806",
+            "to_road": "9735",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9735",
+            "warnings": []
+          },
+          {
+            "from_road": "10807",
+            "to_road": "9735",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9735",
+            "warnings": []
+          },
+          {
+            "from_road": "10808",
+            "to_road": "9735",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9735",
+            "warnings": []
+          },
+          {
+            "from_road": "10808",
+            "to_road": "10448",
+            "link_kind": "successor",
+            "error": "linked road id not found: 10448",
+            "warnings": []
+          },
+          {
+            "from_road": "10809",
+            "to_road": "10448",
+            "link_kind": "successor",
+            "error": "linked road id not found: 10448",
+            "warnings": []
+          },
+          {
+            "from_road": "10814",
+            "to_road": "10448",
+            "link_kind": "successor",
+            "error": "linked road id not found: 10448",
+            "warnings": []
+          },
+          {
+            "from_road": "14366",
+            "to_road": "9230",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9230",
+            "warnings": []
+          },
+          {
+            "from_road": "14367",
+            "to_road": "9230",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9230",
+            "warnings": []
+          }
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_3_7.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy": 0.05,
+        "eps_hdg": 0.01,
+        "num_roads": 2,
+        "num_junctions": 0,
+        "num_signals": 0,
+        "issues": [],
+        "seam_endpoint_issues": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_4_0.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy": 0.05,
+        "eps_hdg": 0.01,
+        "num_roads": 40,
+        "num_junctions": 0,
+        "num_signals": 0,
+        "issues": [],
+        "seam_endpoint_issues": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_4_1.xodr",
+      "report": {
+        "ok": false,
+        "eps_xy": 0.05,
+        "eps_hdg": 0.01,
+        "num_roads": 281,
+        "num_junctions": 0,
+        "num_signals": 0,
+        "issues": [
+          {
+            "type": "orphan_road_link",
+            "from_road": "12318",
+            "to_road": "9909",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "12319",
+            "to_road": "9909",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "12319",
+            "to_road": "9928",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "12320",
+            "to_road": "8956",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "12320",
+            "to_road": "8936",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "12321",
+            "to_road": "8956",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "12322",
+            "to_road": "9928",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "12323",
+            "to_road": "8936",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "12478",
+            "to_road": "10260",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "12480",
+            "to_road": "9492",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "12481",
+            "to_road": "9492",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "12482",
+            "to_road": "10260",
+            "link_kind": "successor"
+          }
+        ],
+        "seam_endpoint_issues": [
+          {
+            "from_road": "12318",
+            "to_road": "9909",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9909",
+            "warnings": []
+          },
+          {
+            "from_road": "12319",
+            "to_road": "9909",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9909",
+            "warnings": []
+          },
+          {
+            "from_road": "12319",
+            "to_road": "9928",
+            "link_kind": "successor",
+            "error": "linked road id not found: 9928",
+            "warnings": []
+          },
+          {
+            "from_road": "12320",
+            "to_road": "8956",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 8956",
+            "warnings": []
+          },
+          {
+            "from_road": "12320",
+            "to_road": "8936",
+            "link_kind": "successor",
+            "error": "linked road id not found: 8936",
+            "warnings": []
+          },
+          {
+            "from_road": "12321",
+            "to_road": "8956",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 8956",
+            "warnings": []
+          },
+          {
+            "from_road": "12322",
+            "to_road": "9928",
+            "link_kind": "successor",
+            "error": "linked road id not found: 9928",
+            "warnings": []
+          },
+          {
+            "from_road": "12323",
+            "to_road": "8936",
+            "link_kind": "successor",
+            "error": "linked road id not found: 8936",
+            "warnings": []
+          },
+          {
+            "from_road": "12478",
+            "to_road": "10260",
+            "link_kind": "successor",
+            "error": "linked road id not found: 10260",
+            "warnings": []
+          },
+          {
+            "from_road": "12480",
+            "to_road": "9492",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9492",
+            "warnings": []
+          },
+          {
+            "from_road": "12481",
+            "to_road": "9492",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9492",
+            "warnings": []
+          },
+          {
+            "from_road": "12482",
+            "to_road": "10260",
+            "link_kind": "successor",
+            "error": "linked road id not found: 10260",
+            "warnings": []
+          }
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_4_2.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy": 0.05,
+        "eps_hdg": 0.01,
+        "num_roads": 138,
+        "num_junctions": 0,
+        "num_signals": 0,
+        "issues": [],
+        "seam_endpoint_issues": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_4_3.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy": 0.05,
+        "eps_hdg": 0.01,
+        "num_roads": 121,
+        "num_junctions": 0,
+        "num_signals": 0,
+        "issues": [],
+        "seam_endpoint_issues": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_4_4.xodr",
+      "report": {
+        "ok": false,
+        "eps_xy": 0.05,
+        "eps_hdg": 0.01,
+        "num_roads": 120,
+        "num_junctions": 0,
+        "num_signals": 0,
+        "issues": [
+          {
+            "type": "orphan_road_link",
+            "from_road": "12900",
+            "to_road": "10019",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "12903",
+            "to_road": "10019",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "12904",
+            "to_road": "9070",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "12905",
+            "to_road": "9070",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "12907",
+            "to_road": "9440",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "12908",
+            "to_road": "10230",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "12909",
+            "to_road": "10230",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "12910",
+            "to_road": "9440",
+            "link_kind": "successor"
+          }
+        ],
+        "seam_endpoint_issues": [
+          {
+            "from_road": "12900",
+            "to_road": "10019",
+            "link_kind": "successor",
+            "error": "linked road id not found: 10019",
+            "warnings": []
+          },
+          {
+            "from_road": "12903",
+            "to_road": "10019",
+            "link_kind": "successor",
+            "error": "linked road id not found: 10019",
+            "warnings": []
+          },
+          {
+            "from_road": "12904",
+            "to_road": "9070",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9070",
+            "warnings": []
+          },
+          {
+            "from_road": "12905",
+            "to_road": "9070",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9070",
+            "warnings": []
+          },
+          {
+            "from_road": "12907",
+            "to_road": "9440",
+            "link_kind": "successor",
+            "error": "linked road id not found: 9440",
+            "warnings": []
+          },
+          {
+            "from_road": "12908",
+            "to_road": "10230",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 10230",
+            "warnings": []
+          },
+          {
+            "from_road": "12909",
+            "to_road": "10230",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 10230",
+            "warnings": []
+          },
+          {
+            "from_road": "12910",
+            "to_road": "9440",
+            "link_kind": "successor",
+            "error": "linked road id not found: 9440",
+            "warnings": []
+          }
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_4_5.xodr",
+      "report": {
+        "ok": false,
+        "eps_xy": 0.05,
+        "eps_hdg": 0.01,
+        "num_roads": 344,
+        "num_junctions": 0,
+        "num_signals": 0,
+        "issues": [
+          {
+            "type": "orphan_road_link",
+            "from_road": "10817",
+            "to_road": "9049",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "10821",
+            "to_road": "9049",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "10822",
+            "to_road": "10000",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "10823",
+            "to_road": "10000",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "10824",
+            "to_road": "10000",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "10824",
+            "to_road": "9049",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "13869",
+            "to_road": "9626",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "13870",
+            "to_road": "10322",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "13871",
+            "to_road": "10322",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "13871",
+            "to_road": "9626",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "13872",
+            "to_road": "9626",
+            "link_kind": "successor"
+          }
+        ],
+        "seam_endpoint_issues": [
+          {
+            "from_road": "10817",
+            "to_road": "9049",
+            "link_kind": "successor",
+            "error": "linked road id not found: 9049",
+            "warnings": []
+          },
+          {
+            "from_road": "10821",
+            "to_road": "9049",
+            "link_kind": "successor",
+            "error": "linked road id not found: 9049",
+            "warnings": []
+          },
+          {
+            "from_road": "10822",
+            "to_road": "10000",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 10000",
+            "warnings": []
+          },
+          {
+            "from_road": "10823",
+            "to_road": "10000",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 10000",
+            "warnings": []
+          },
+          {
+            "from_road": "10824",
+            "to_road": "10000",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 10000",
+            "warnings": []
+          },
+          {
+            "from_road": "10824",
+            "to_road": "9049",
+            "link_kind": "successor",
+            "error": "linked road id not found: 9049",
+            "warnings": []
+          },
+          {
+            "from_road": "13869",
+            "to_road": "9626",
+            "link_kind": "successor",
+            "error": "linked road id not found: 9626",
+            "warnings": []
+          },
+          {
+            "from_road": "13870",
+            "to_road": "10322",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 10322",
+            "warnings": []
+          },
+          {
+            "from_road": "13871",
+            "to_road": "10322",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 10322",
+            "warnings": []
+          },
+          {
+            "from_road": "13871",
+            "to_road": "9626",
+            "link_kind": "successor",
+            "error": "linked road id not found: 9626",
+            "warnings": []
+          },
+          {
+            "from_road": "13872",
+            "to_road": "9626",
+            "link_kind": "successor",
+            "error": "linked road id not found: 9626",
+            "warnings": []
+          }
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_4_6.xodr",
+      "report": {
+        "ok": false,
+        "eps_xy": 0.05,
+        "eps_hdg": 0.01,
+        "num_roads": 199,
+        "num_junctions": 0,
+        "num_signals": 0,
+        "issues": [
+          {
+            "type": "orphan_road_link",
+            "from_road": "12793",
+            "to_road": "9044",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "12796",
+            "to_road": "9044",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "12798",
+            "to_road": "9996",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "12799",
+            "to_road": "9996",
+            "link_kind": "predecessor"
+          }
+        ],
+        "seam_endpoint_issues": [
+          {
+            "from_road": "12793",
+            "to_road": "9044",
+            "link_kind": "successor",
+            "error": "linked road id not found: 9044",
+            "warnings": []
+          },
+          {
+            "from_road": "12796",
+            "to_road": "9044",
+            "link_kind": "successor",
+            "error": "linked road id not found: 9044",
+            "warnings": []
+          },
+          {
+            "from_road": "12798",
+            "to_road": "9996",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9996",
+            "warnings": []
+          },
+          {
+            "from_road": "12799",
+            "to_road": "9996",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9996",
+            "warnings": []
+          }
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_5_0.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy": 0.05,
+        "eps_hdg": 0.01,
+        "num_roads": 18,
+        "num_junctions": 0,
+        "num_signals": 0,
+        "issues": [],
+        "seam_endpoint_issues": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_5_1.xodr",
+      "report": {
+        "ok": false,
+        "eps_xy": 0.05,
+        "eps_hdg": 0.01,
+        "num_roads": 80,
+        "num_junctions": 0,
+        "num_signals": 0,
+        "issues": [
+          {
+            "type": "orphan_road_link",
+            "from_road": "14179",
+            "to_road": "10528",
+            "link_kind": "successor"
+          }
+        ],
+        "seam_endpoint_issues": [
+          {
+            "from_road": "14179",
+            "to_road": "10528",
+            "link_kind": "successor",
+            "error": "linked road id not found: 10528",
+            "warnings": []
+          }
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_5_2.xodr",
+      "report": {
+        "ok": false,
+        "eps_xy": 0.05,
+        "eps_hdg": 0.01,
+        "num_roads": 73,
+        "num_junctions": 0,
+        "num_signals": 0,
+        "issues": [
+          {
+            "type": "orphan_road_link",
+            "from_road": "14179",
+            "to_road": "10528",
+            "link_kind": "successor"
+          }
+        ],
+        "seam_endpoint_issues": [
+          {
+            "from_road": "14179",
+            "to_road": "10528",
+            "link_kind": "successor",
+            "error": "linked road id not found: 10528",
+            "warnings": []
+          }
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_5_3.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy": 0.05,
+        "eps_hdg": 0.01,
+        "num_roads": 134,
+        "num_junctions": 0,
+        "num_signals": 0,
+        "issues": [],
+        "seam_endpoint_issues": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_5_4.xodr",
+      "report": {
+        "ok": false,
+        "eps_xy": 0.05,
+        "eps_hdg": 0.01,
+        "num_roads": 62,
+        "num_junctions": 0,
+        "num_signals": 0,
+        "issues": [
+          {
+            "type": "orphan_road_link",
+            "from_road": "11034",
+            "to_road": "10476",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "11036",
+            "to_road": "9755",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "11037",
+            "to_road": "9755",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "11038",
+            "to_road": "9755",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "11038",
+            "to_road": "10476",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "11039",
+            "to_road": "10476",
+            "link_kind": "successor"
+          }
+        ],
+        "seam_endpoint_issues": [
+          {
+            "from_road": "11034",
+            "to_road": "10476",
+            "link_kind": "successor",
+            "error": "linked road id not found: 10476",
+            "warnings": []
+          },
+          {
+            "from_road": "11036",
+            "to_road": "9755",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9755",
+            "warnings": []
+          },
+          {
+            "from_road": "11037",
+            "to_road": "9755",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9755",
+            "warnings": []
+          },
+          {
+            "from_road": "11038",
+            "to_road": "9755",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9755",
+            "warnings": []
+          },
+          {
+            "from_road": "11038",
+            "to_road": "10476",
+            "link_kind": "successor",
+            "error": "linked road id not found: 10476",
+            "warnings": []
+          },
+          {
+            "from_road": "11039",
+            "to_road": "10476",
+            "link_kind": "successor",
+            "error": "linked road id not found: 10476",
+            "warnings": []
+          }
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_5_5.xodr",
+      "report": {
+        "ok": false,
+        "eps_xy": 0.05,
+        "eps_hdg": 0.01,
+        "num_roads": 175,
+        "num_junctions": 0,
+        "num_signals": 0,
+        "issues": [
+          {
+            "type": "orphan_road_link",
+            "from_road": "12079",
+            "to_road": "8906",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "12080",
+            "to_road": "10242",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "12081",
+            "to_road": "9469",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "12082",
+            "to_road": "9469",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "12082",
+            "to_road": "8906",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "12083",
+            "to_road": "9883",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "12083",
+            "to_road": "10242",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "12084",
+            "to_road": "9883",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "13365",
+            "to_road": "10124",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "13367",
+            "to_road": "9276",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "13368",
+            "to_road": "9276",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "13369",
+            "to_road": "9276",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "13370",
+            "to_road": "10124",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "13374",
+            "to_road": "10124",
+            "link_kind": "successor"
+          }
+        ],
+        "seam_endpoint_issues": [
+          {
+            "from_road": "12079",
+            "to_road": "8906",
+            "link_kind": "successor",
+            "error": "linked road id not found: 8906",
+            "warnings": []
+          },
+          {
+            "from_road": "12080",
+            "to_road": "10242",
+            "link_kind": "successor",
+            "error": "linked road id not found: 10242",
+            "warnings": []
+          },
+          {
+            "from_road": "12081",
+            "to_road": "9469",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9469",
+            "warnings": []
+          },
+          {
+            "from_road": "12082",
+            "to_road": "9469",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9469",
+            "warnings": []
+          },
+          {
+            "from_road": "12082",
+            "to_road": "8906",
+            "link_kind": "successor",
+            "error": "linked road id not found: 8906",
+            "warnings": []
+          },
+          {
+            "from_road": "12083",
+            "to_road": "9883",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9883",
+            "warnings": []
+          },
+          {
+            "from_road": "12083",
+            "to_road": "10242",
+            "link_kind": "successor",
+            "error": "linked road id not found: 10242",
+            "warnings": []
+          },
+          {
+            "from_road": "12084",
+            "to_road": "9883",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9883",
+            "warnings": []
+          },
+          {
+            "from_road": "13365",
+            "to_road": "10124",
+            "link_kind": "successor",
+            "error": "linked road id not found: 10124",
+            "warnings": []
+          },
+          {
+            "from_road": "13367",
+            "to_road": "9276",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9276",
+            "warnings": []
+          },
+          {
+            "from_road": "13368",
+            "to_road": "9276",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9276",
+            "warnings": []
+          },
+          {
+            "from_road": "13369",
+            "to_road": "9276",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9276",
+            "warnings": []
+          },
+          {
+            "from_road": "13370",
+            "to_road": "10124",
+            "link_kind": "successor",
+            "error": "linked road id not found: 10124",
+            "warnings": []
+          },
+          {
+            "from_road": "13374",
+            "to_road": "10124",
+            "link_kind": "successor",
+            "error": "linked road id not found: 10124",
+            "warnings": []
+          }
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_5_6.xodr",
+      "report": {
+        "ok": false,
+        "eps_xy": 0.05,
+        "eps_hdg": 0.01,
+        "num_roads": 250,
+        "num_junctions": 0,
+        "num_signals": 0,
+        "issues": [
+          {
+            "type": "orphan_road_link",
+            "from_road": "14226",
+            "to_road": "9382",
+            "link_kind": "successor"
+          }
+        ],
+        "seam_endpoint_issues": [
+          {
+            "from_road": "14226",
+            "to_road": "9382",
+            "link_kind": "successor",
+            "error": "linked road id not found: 9382",
+            "warnings": []
+          }
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_5_7.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy": 0.05,
+        "eps_hdg": 0.01,
+        "num_roads": 11,
+        "num_junctions": 0,
+        "num_signals": 0,
+        "issues": [],
+        "seam_endpoint_issues": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_6_1.xodr",
+      "report": {
+        "ok": false,
+        "eps_xy": 0.05,
+        "eps_hdg": 0.01,
+        "num_roads": 106,
+        "num_junctions": 0,
+        "num_signals": 0,
+        "issues": [
+          {
+            "type": "orphan_road_link",
+            "from_road": "13948",
+            "to_road": "9585",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "13954",
+            "to_road": "9585",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "13959",
+            "to_road": "9585",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "13964",
+            "to_road": "9585",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "13999",
+            "to_road": "10417",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "14000",
+            "to_road": "10417",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "14001",
+            "to_road": "10417",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "14177",
+            "to_road": "10527",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "14178",
+            "to_road": "9174",
+            "link_kind": "successor"
+          }
+        ],
+        "seam_endpoint_issues": [
+          {
+            "from_road": "13948",
+            "to_road": "9585",
+            "link_kind": "successor",
+            "error": "linked road id not found: 9585",
+            "warnings": []
+          },
+          {
+            "from_road": "13954",
+            "to_road": "9585",
+            "link_kind": "successor",
+            "error": "linked road id not found: 9585",
+            "warnings": []
+          },
+          {
+            "from_road": "13959",
+            "to_road": "9585",
+            "link_kind": "successor",
+            "error": "linked road id not found: 9585",
+            "warnings": []
+          },
+          {
+            "from_road": "13964",
+            "to_road": "9585",
+            "link_kind": "successor",
+            "error": "linked road id not found: 9585",
+            "warnings": []
+          },
+          {
+            "from_road": "13999",
+            "to_road": "10417",
+            "link_kind": "successor",
+            "error": "linked road id not found: 10417",
+            "warnings": []
+          },
+          {
+            "from_road": "14000",
+            "to_road": "10417",
+            "link_kind": "successor",
+            "error": "linked road id not found: 10417",
+            "warnings": []
+          },
+          {
+            "from_road": "14001",
+            "to_road": "10417",
+            "link_kind": "successor",
+            "error": "linked road id not found: 10417",
+            "warnings": []
+          },
+          {
+            "from_road": "14177",
+            "to_road": "10527",
+            "link_kind": "successor",
+            "error": "linked road id not found: 10527",
+            "warnings": []
+          },
+          {
+            "from_road": "14178",
+            "to_road": "9174",
+            "link_kind": "successor",
+            "error": "linked road id not found: 9174",
+            "warnings": []
+          }
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_6_2.xodr",
+      "report": {
+        "ok": false,
+        "eps_xy": 0.05,
+        "eps_hdg": 0.01,
+        "num_roads": 92,
+        "num_junctions": 0,
+        "num_signals": 0,
+        "issues": [
+          {
+            "type": "orphan_road_link",
+            "from_road": "13993",
+            "to_road": "9452",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "13994",
+            "to_road": "9452",
+            "link_kind": "successor"
+          }
+        ],
+        "seam_endpoint_issues": [
+          {
+            "from_road": "13993",
+            "to_road": "9452",
+            "link_kind": "successor",
+            "error": "linked road id not found: 9452",
+            "warnings": []
+          },
+          {
+            "from_road": "13994",
+            "to_road": "9452",
+            "link_kind": "successor",
+            "error": "linked road id not found: 9452",
+            "warnings": []
+          }
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_6_3.xodr",
+      "report": {
+        "ok": false,
+        "eps_xy": 0.05,
+        "eps_hdg": 0.01,
+        "num_roads": 9,
+        "num_junctions": 0,
+        "num_signals": 0,
+        "issues": [
+          {
+            "type": "orphan_road_link",
+            "from_road": "13618",
+            "to_road": "10249",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "13620",
+            "to_road": "10478",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "13621",
+            "to_road": "10478",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "13621",
+            "to_road": "10249",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "13622",
+            "to_road": "9478",
+            "link_kind": "predecessor"
+          }
+        ],
+        "seam_endpoint_issues": [
+          {
+            "from_road": "13618",
+            "to_road": "10249",
+            "link_kind": "successor",
+            "error": "linked road id not found: 10249",
+            "warnings": []
+          },
+          {
+            "from_road": "13620",
+            "to_road": "10478",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 10478",
+            "warnings": []
+          },
+          {
+            "from_road": "13621",
+            "to_road": "10478",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 10478",
+            "warnings": []
+          },
+          {
+            "from_road": "13621",
+            "to_road": "10249",
+            "link_kind": "successor",
+            "error": "linked road id not found: 10249",
+            "warnings": []
+          },
+          {
+            "from_road": "13622",
+            "to_road": "9478",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9478",
+            "warnings": []
+          }
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_6_4.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy": 0.05,
+        "eps_hdg": 0.01,
+        "num_roads": 4,
+        "num_junctions": 0,
+        "num_signals": 0,
+        "issues": [],
+        "seam_endpoint_issues": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_6_5.xodr",
+      "report": {
+        "ok": false,
+        "eps_xy": 0.05,
+        "eps_hdg": 0.01,
+        "num_roads": 127,
+        "num_junctions": 0,
+        "num_signals": 0,
+        "issues": [
+          {
+            "type": "orphan_road_link",
+            "from_road": "11186",
+            "to_road": "9775",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "11187",
+            "to_road": "9775",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "11188",
+            "to_road": "9775",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "11188",
+            "to_road": "10525",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "11189",
+            "to_road": "10525",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "11192",
+            "to_road": "10525",
+            "link_kind": "successor"
+          }
+        ],
+        "seam_endpoint_issues": [
+          {
+            "from_road": "11186",
+            "to_road": "9775",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9775",
+            "warnings": []
+          },
+          {
+            "from_road": "11187",
+            "to_road": "9775",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9775",
+            "warnings": []
+          },
+          {
+            "from_road": "11188",
+            "to_road": "9775",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9775",
+            "warnings": []
+          },
+          {
+            "from_road": "11188",
+            "to_road": "10525",
+            "link_kind": "successor",
+            "error": "linked road id not found: 10525",
+            "warnings": []
+          },
+          {
+            "from_road": "11189",
+            "to_road": "10525",
+            "link_kind": "successor",
+            "error": "linked road id not found: 10525",
+            "warnings": []
+          },
+          {
+            "from_road": "11192",
+            "to_road": "10525",
+            "link_kind": "successor",
+            "error": "linked road id not found: 10525",
+            "warnings": []
+          }
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_6_6.xodr",
+      "report": {
+        "ok": false,
+        "eps_xy": 0.05,
+        "eps_hdg": 0.01,
+        "num_roads": 163,
+        "num_junctions": 0,
+        "num_signals": 0,
+        "issues": [
+          {
+            "type": "orphan_road_link",
+            "from_road": "11186",
+            "to_road": "9775",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "11187",
+            "to_road": "9775",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "11188",
+            "to_road": "9775",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "11188",
+            "to_road": "10525",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "11189",
+            "to_road": "10525",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "11192",
+            "to_road": "10525",
+            "link_kind": "successor"
+          }
+        ],
+        "seam_endpoint_issues": [
+          {
+            "from_road": "11186",
+            "to_road": "9775",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9775",
+            "warnings": []
+          },
+          {
+            "from_road": "11187",
+            "to_road": "9775",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9775",
+            "warnings": []
+          },
+          {
+            "from_road": "11188",
+            "to_road": "9775",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9775",
+            "warnings": []
+          },
+          {
+            "from_road": "11188",
+            "to_road": "10525",
+            "link_kind": "successor",
+            "error": "linked road id not found: 10525",
+            "warnings": []
+          },
+          {
+            "from_road": "11189",
+            "to_road": "10525",
+            "link_kind": "successor",
+            "error": "linked road id not found: 10525",
+            "warnings": []
+          },
+          {
+            "from_road": "11192",
+            "to_road": "10525",
+            "link_kind": "successor",
+            "error": "linked road id not found: 10525",
+            "warnings": []
+          }
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_6_7.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy": 0.05,
+        "eps_hdg": 0.01,
+        "num_roads": 14,
+        "num_junctions": 0,
+        "num_signals": 0,
+        "issues": [],
+        "seam_endpoint_issues": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_7_1.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy": 0.05,
+        "eps_hdg": 0.01,
+        "num_roads": 1,
+        "num_junctions": 0,
+        "num_signals": 0,
+        "issues": [],
+        "seam_endpoint_issues": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_7_2.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy": 0.05,
+        "eps_hdg": 0.01,
+        "num_roads": 4,
+        "num_junctions": 0,
+        "num_signals": 0,
+        "issues": [],
+        "seam_endpoint_issues": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_7_5.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy": 0.05,
+        "eps_hdg": 0.01,
+        "num_roads": 113,
+        "num_junctions": 0,
+        "num_signals": 0,
+        "issues": [],
+        "seam_endpoint_issues": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_7_6.xodr",
+      "report": {
+        "ok": false,
+        "eps_xy": 0.05,
+        "eps_hdg": 0.01,
+        "num_roads": 249,
+        "num_junctions": 0,
+        "num_signals": 0,
+        "issues": [
+          {
+            "type": "orphan_road_link",
+            "from_road": "13452",
+            "to_road": "9330",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "13454",
+            "to_road": "10161",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "13455",
+            "to_road": "10161",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "13456",
+            "to_road": "9330",
+            "link_kind": "successor"
+          }
+        ],
+        "seam_endpoint_issues": [
+          {
+            "from_road": "13452",
+            "to_road": "9330",
+            "link_kind": "successor",
+            "error": "linked road id not found: 9330",
+            "warnings": []
+          },
+          {
+            "from_road": "13454",
+            "to_road": "10161",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 10161",
+            "warnings": []
+          },
+          {
+            "from_road": "13455",
+            "to_road": "10161",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 10161",
+            "warnings": []
+          },
+          {
+            "from_road": "13456",
+            "to_road": "9330",
+            "link_kind": "successor",
+            "error": "linked road id not found: 9330",
+            "warnings": []
+          }
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_7_7.xodr",
+      "report": {
+        "ok": false,
+        "eps_xy": 0.05,
+        "eps_hdg": 0.01,
+        "num_roads": 23,
+        "num_junctions": 0,
+        "num_signals": 0,
+        "issues": [
+          {
+            "type": "orphan_road_link",
+            "from_road": "10918",
+            "to_road": "9233",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "10919",
+            "to_road": "9233",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "13451",
+            "to_road": "10137",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "13452",
+            "to_road": "9330",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "13454",
+            "to_road": "10161",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "13455",
+            "to_road": "10161",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "13455",
+            "to_road": "10137",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "13456",
+            "to_road": "9302",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "13456",
+            "to_road": "9330",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "13457",
+            "to_road": "9302",
+            "link_kind": "predecessor"
+          }
+        ],
+        "seam_endpoint_issues": [
+          {
+            "from_road": "10918",
+            "to_road": "9233",
+            "link_kind": "successor",
+            "error": "linked road id not found: 9233",
+            "warnings": []
+          },
+          {
+            "from_road": "10919",
+            "to_road": "9233",
+            "link_kind": "successor",
+            "error": "linked road id not found: 9233",
+            "warnings": []
+          },
+          {
+            "from_road": "13451",
+            "to_road": "10137",
+            "link_kind": "successor",
+            "error": "linked road id not found: 10137",
+            "warnings": []
+          },
+          {
+            "from_road": "13452",
+            "to_road": "9330",
+            "link_kind": "successor",
+            "error": "linked road id not found: 9330",
+            "warnings": []
+          },
+          {
+            "from_road": "13454",
+            "to_road": "10161",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 10161",
+            "warnings": []
+          },
+          {
+            "from_road": "13455",
+            "to_road": "10161",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 10161",
+            "warnings": []
+          },
+          {
+            "from_road": "13455",
+            "to_road": "10137",
+            "link_kind": "successor",
+            "error": "linked road id not found: 10137",
+            "warnings": []
+          },
+          {
+            "from_road": "13456",
+            "to_road": "9302",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9302",
+            "warnings": []
+          },
+          {
+            "from_road": "13456",
+            "to_road": "9330",
+            "link_kind": "successor",
+            "error": "linked road id not found: 9330",
+            "warnings": []
+          },
+          {
+            "from_road": "13457",
+            "to_road": "9302",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9302",
+            "warnings": []
+          }
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_8_0.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy": 0.05,
+        "eps_hdg": 0.01,
+        "num_roads": 2,
+        "num_junctions": 0,
+        "num_signals": 0,
+        "issues": [],
+        "seam_endpoint_issues": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_8_1.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy": 0.05,
+        "eps_hdg": 0.01,
+        "num_roads": 25,
+        "num_junctions": 0,
+        "num_signals": 0,
+        "issues": [],
+        "seam_endpoint_issues": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_8_2.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy": 0.05,
+        "eps_hdg": 0.01,
+        "num_roads": 51,
+        "num_junctions": 0,
+        "num_signals": 0,
+        "issues": [],
+        "seam_endpoint_issues": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_8_3.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy": 0.05,
+        "eps_hdg": 0.01,
+        "num_roads": 8,
+        "num_junctions": 0,
+        "num_signals": 0,
+        "issues": [],
+        "seam_endpoint_issues": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_8_5.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy": 0.05,
+        "eps_hdg": 0.01,
+        "num_roads": 36,
+        "num_junctions": 0,
+        "num_signals": 0,
+        "issues": [],
+        "seam_endpoint_issues": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_8_6.xodr",
+      "report": {
+        "ok": false,
+        "eps_xy": 0.05,
+        "eps_hdg": 0.01,
+        "num_roads": 246,
+        "num_junctions": 0,
+        "num_signals": 0,
+        "issues": [
+          {
+            "type": "orphan_road_link",
+            "from_road": "11827",
+            "to_road": "9856",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "11831",
+            "to_road": "9856",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "11833",
+            "to_road": "8864",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "11834",
+            "to_road": "8864",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "11835",
+            "to_road": "8864",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "11835",
+            "to_road": "9856",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "13431",
+            "to_road": "10135",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "13434",
+            "to_road": "10135",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "13435",
+            "to_road": "9300",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "13436",
+            "to_road": "9300",
+            "link_kind": "predecessor"
+          }
+        ],
+        "seam_endpoint_issues": [
+          {
+            "from_road": "11827",
+            "to_road": "9856",
+            "link_kind": "successor",
+            "error": "linked road id not found: 9856",
+            "warnings": []
+          },
+          {
+            "from_road": "11831",
+            "to_road": "9856",
+            "link_kind": "successor",
+            "error": "linked road id not found: 9856",
+            "warnings": []
+          },
+          {
+            "from_road": "11833",
+            "to_road": "8864",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 8864",
+            "warnings": []
+          },
+          {
+            "from_road": "11834",
+            "to_road": "8864",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 8864",
+            "warnings": []
+          },
+          {
+            "from_road": "11835",
+            "to_road": "8864",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 8864",
+            "warnings": []
+          },
+          {
+            "from_road": "11835",
+            "to_road": "9856",
+            "link_kind": "successor",
+            "error": "linked road id not found: 9856",
+            "warnings": []
+          },
+          {
+            "from_road": "13431",
+            "to_road": "10135",
+            "link_kind": "successor",
+            "error": "linked road id not found: 10135",
+            "warnings": []
+          },
+          {
+            "from_road": "13434",
+            "to_road": "10135",
+            "link_kind": "successor",
+            "error": "linked road id not found: 10135",
+            "warnings": []
+          },
+          {
+            "from_road": "13435",
+            "to_road": "9300",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9300",
+            "warnings": []
+          },
+          {
+            "from_road": "13436",
+            "to_road": "9300",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9300",
+            "warnings": []
+          }
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_8_7.xodr",
+      "report": {
+        "ok": false,
+        "eps_xy": 0.05,
+        "eps_hdg": 0.01,
+        "num_roads": 83,
+        "num_junctions": 0,
+        "num_signals": 0,
+        "issues": [
+          {
+            "type": "orphan_road_link",
+            "from_road": "13451",
+            "to_road": "10137",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "13455",
+            "to_road": "10137",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "13456",
+            "to_road": "9302",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "13457",
+            "to_road": "9302",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "13543",
+            "to_road": "9331",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "13544",
+            "to_road": "10162",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "13545",
+            "to_road": "10162",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "13546",
+            "to_road": "10162",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "13546",
+            "to_road": "9331",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "13547",
+            "to_road": "9331",
+            "link_kind": "successor"
+          }
+        ],
+        "seam_endpoint_issues": [
+          {
+            "from_road": "13451",
+            "to_road": "10137",
+            "link_kind": "successor",
+            "error": "linked road id not found: 10137",
+            "warnings": []
+          },
+          {
+            "from_road": "13455",
+            "to_road": "10137",
+            "link_kind": "successor",
+            "error": "linked road id not found: 10137",
+            "warnings": []
+          },
+          {
+            "from_road": "13456",
+            "to_road": "9302",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9302",
+            "warnings": []
+          },
+          {
+            "from_road": "13457",
+            "to_road": "9302",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9302",
+            "warnings": []
+          },
+          {
+            "from_road": "13543",
+            "to_road": "9331",
+            "link_kind": "successor",
+            "error": "linked road id not found: 9331",
+            "warnings": []
+          },
+          {
+            "from_road": "13544",
+            "to_road": "10162",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 10162",
+            "warnings": []
+          },
+          {
+            "from_road": "13545",
+            "to_road": "10162",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 10162",
+            "warnings": []
+          },
+          {
+            "from_road": "13546",
+            "to_road": "10162",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 10162",
+            "warnings": []
+          },
+          {
+            "from_road": "13546",
+            "to_road": "9331",
+            "link_kind": "successor",
+            "error": "linked road id not found: 9331",
+            "warnings": []
+          },
+          {
+            "from_road": "13547",
+            "to_road": "9331",
+            "link_kind": "successor",
+            "error": "linked road id not found: 9331",
+            "warnings": []
+          }
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_9_0.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy": 0.05,
+        "eps_hdg": 0.01,
+        "num_roads": 3,
+        "num_junctions": 0,
+        "num_signals": 0,
+        "issues": [],
+        "seam_endpoint_issues": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_9_1.xodr",
+      "report": {
+        "ok": false,
+        "eps_xy": 0.05,
+        "eps_hdg": 0.01,
+        "num_roads": 50,
+        "num_junctions": 0,
+        "num_signals": 0,
+        "issues": [
+          {
+            "type": "orphan_road_link",
+            "from_road": "11732",
+            "to_road": "10335",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "11733",
+            "to_road": "10253",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "11737",
+            "to_road": "10335",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "11738",
+            "to_road": "10253",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "11740",
+            "to_road": "9482",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "11741",
+            "to_road": "9482",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "11742",
+            "to_road": "9482",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "11742",
+            "to_road": "10335",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "11743",
+            "to_road": "9651",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "11743",
+            "to_road": "10253",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "11744",
+            "to_road": "9651",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "11745",
+            "to_road": "9651",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "11746",
+            "to_road": "9651",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "11746",
+            "to_road": "10335",
+            "link_kind": "successor"
+          }
+        ],
+        "seam_endpoint_issues": [
+          {
+            "from_road": "11732",
+            "to_road": "10335",
+            "link_kind": "successor",
+            "error": "linked road id not found: 10335",
+            "warnings": []
+          },
+          {
+            "from_road": "11733",
+            "to_road": "10253",
+            "link_kind": "successor",
+            "error": "linked road id not found: 10253",
+            "warnings": []
+          },
+          {
+            "from_road": "11737",
+            "to_road": "10335",
+            "link_kind": "successor",
+            "error": "linked road id not found: 10335",
+            "warnings": []
+          },
+          {
+            "from_road": "11738",
+            "to_road": "10253",
+            "link_kind": "successor",
+            "error": "linked road id not found: 10253",
+            "warnings": []
+          },
+          {
+            "from_road": "11740",
+            "to_road": "9482",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9482",
+            "warnings": []
+          },
+          {
+            "from_road": "11741",
+            "to_road": "9482",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9482",
+            "warnings": []
+          },
+          {
+            "from_road": "11742",
+            "to_road": "9482",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9482",
+            "warnings": []
+          },
+          {
+            "from_road": "11742",
+            "to_road": "10335",
+            "link_kind": "successor",
+            "error": "linked road id not found: 10335",
+            "warnings": []
+          },
+          {
+            "from_road": "11743",
+            "to_road": "9651",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9651",
+            "warnings": []
+          },
+          {
+            "from_road": "11743",
+            "to_road": "10253",
+            "link_kind": "successor",
+            "error": "linked road id not found: 10253",
+            "warnings": []
+          },
+          {
+            "from_road": "11744",
+            "to_road": "9651",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9651",
+            "warnings": []
+          },
+          {
+            "from_road": "11745",
+            "to_road": "9651",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9651",
+            "warnings": []
+          },
+          {
+            "from_road": "11746",
+            "to_road": "9651",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9651",
+            "warnings": []
+          },
+          {
+            "from_road": "11746",
+            "to_road": "10335",
+            "link_kind": "successor",
+            "error": "linked road id not found: 10335",
+            "warnings": []
+          }
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_9_2.xodr",
+      "report": {
+        "ok": false,
+        "eps_xy": 0.05,
+        "eps_hdg": 0.01,
+        "num_roads": 111,
+        "num_junctions": 0,
+        "num_signals": 0,
+        "issues": [
+          {
+            "type": "orphan_road_link",
+            "from_road": "11343",
+            "to_road": "10328",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "11344",
+            "to_road": "9571",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "11346",
+            "to_road": "8849",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "11346",
+            "to_road": "9571",
+            "link_kind": "successor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "11347",
+            "to_road": "8849",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "11348",
+            "to_road": "8849",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "11348",
+            "to_road": "10328",
+            "link_kind": "successor"
+          }
+        ],
+        "seam_endpoint_issues": [
+          {
+            "from_road": "11343",
+            "to_road": "10328",
+            "link_kind": "successor",
+            "error": "linked road id not found: 10328",
+            "warnings": []
+          },
+          {
+            "from_road": "11344",
+            "to_road": "9571",
+            "link_kind": "successor",
+            "error": "linked road id not found: 9571",
+            "warnings": []
+          },
+          {
+            "from_road": "11346",
+            "to_road": "8849",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 8849",
+            "warnings": []
+          },
+          {
+            "from_road": "11346",
+            "to_road": "9571",
+            "link_kind": "successor",
+            "error": "linked road id not found: 9571",
+            "warnings": []
+          },
+          {
+            "from_road": "11347",
+            "to_road": "8849",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 8849",
+            "warnings": []
+          },
+          {
+            "from_road": "11348",
+            "to_road": "8849",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 8849",
+            "warnings": []
+          },
+          {
+            "from_road": "11348",
+            "to_road": "10328",
+            "link_kind": "successor",
+            "error": "linked road id not found: 10328",
+            "warnings": []
+          }
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_9_3.xodr",
+      "report": {
+        "ok": false,
+        "eps_xy": 0.05,
+        "eps_hdg": 0.01,
+        "num_roads": 53,
+        "num_junctions": 0,
+        "num_signals": 0,
+        "issues": [
+          {
+            "type": "orphan_road_link",
+            "from_road": "14486",
+            "to_road": "9515",
+            "link_kind": "predecessor"
+          },
+          {
+            "type": "orphan_road_link",
+            "from_road": "14488",
+            "to_road": "9516",
+            "link_kind": "successor"
+          }
+        ],
+        "seam_endpoint_issues": [
+          {
+            "from_road": "14486",
+            "to_road": "9515",
+            "link_kind": "predecessor",
+            "error": "linked road id not found: 9515",
+            "warnings": []
+          },
+          {
+            "from_road": "14488",
+            "to_road": "9516",
+            "link_kind": "successor",
+            "error": "linked road id not found: 9516",
+            "warnings": []
+          }
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_9_5.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy": 0.05,
+        "eps_hdg": 0.01,
+        "num_roads": 2,
+        "num_junctions": 0,
+        "num_signals": 0,
+        "issues": [],
+        "seam_endpoint_issues": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_9_6.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy": 0.05,
+        "eps_hdg": 0.01,
+        "num_roads": 8,
+        "num_junctions": 0,
+        "num_signals": 0,
+        "issues": [],
+        "seam_endpoint_issues": [],
+        "warnings": []
+      }
+    },
+    {
+      "tile": "tile_9_7.xodr",
+      "report": {
+        "ok": true,
+        "eps_xy": 0.05,
+        "eps_hdg": 0.01,
+        "num_roads": 12,
+        "num_junctions": 0,
+        "num_signals": 0,
+        "issues": [],
+        "seam_endpoint_issues": [],
+        "warnings": []
+      }
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "ok": false,
+  "n_issues": 1,
+  "issues": [
+    {
+      "type": "lane_width",
+      "road_id": "10335",
+      "lane_id": "-1",
+      "boundary_s": 0.05,
+      "delta": 0.5,
+      "prev": 3.5,
+      "next": 3.0,
+      "threshold": 0.1
+    }
+  ],
+  "tolerances": {
+    "lane_offset_eps": 0.05,
+    "lane_width_eps": 0.1
+  },
+  "xodr_path": "E:\\wt\\repair-map-realism-p0-837a8504\\ultimate_pipeline_out\\20261021_165726_800368\\07_lanes_20261021_165726_800368.xodr"
+}

@@ -1,0 +1,907 @@
+{
+  "xodr": "E:\\wt\\repair-map-realism-p0-837a8504\\ultimate_pipeline_out\\20261021_165726_800368\\08_final_20261021_165726_800368.xodr",
+  "allow_dead_ends": true,
+  "broken_count": 150,
+  "broken": [
+    {
+      "road_id": "8790",
+      "lane_id": "-2",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "8791",
+      "lane_id": "-2",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "8796",
+      "lane_id": "-3",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "8797",
+      "lane_id": "-3",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "8797",
+      "lane_id": "-4",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "8801",
+      "lane_id": "-3",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "8805",
+      "lane_id": "-2",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "8813",
+      "lane_id": "-3",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "8814",
+      "lane_id": "-2",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "8815",
+      "lane_id": "-2",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "8819",
+      "lane_id": "-3",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "8849",
+      "lane_id": "-2",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "8850",
+      "lane_id": "-3",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "8871",
+      "lane_id": "-3",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "8950",
+      "lane_id": "-2",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "9080",
+      "lane_id": "-3",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "9095",
+      "lane_id": "-2",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "9128",
+      "lane_id": "-4",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "9130",
+      "lane_id": "-3",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "9130",
+      "lane_id": "-4",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "9130",
+      "lane_id": "-5",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "9132",
+      "lane_id": "-4",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "9133",
+      "lane_id": "-4",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "9138",
+      "lane_id": "-3",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "9139",
+      "lane_id": "-3",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "9142",
+      "lane_id": "-3",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "9143",
+      "lane_id": "-3",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "9145",
+      "lane_id": "-4",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "9146",
+      "lane_id": "-3",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "9153",
+      "lane_id": "-2",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "9155",
+      "lane_id": "-2",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "9156",
+      "lane_id": "-3",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "9158",
+      "lane_id": "-3",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "9158",
+      "lane_id": "-4",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "9159",
+      "lane_id": "-3",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "9161",
+      "lane_id": "-2",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "9162",
+      "lane_id": "-2",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "9165",
+      "lane_id": "-3",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "9165",
+      "lane_id": "-4",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "9167",
+      "lane_id": "-4",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "9171",
+      "lane_id": "-5",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "9172",
+      "lane_id": "-4",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "9175",
+      "lane_id": "-3",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "9176",
+      "lane_id": "-3",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "9177",
+      "lane_id": "-3",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "9178",
+      "lane_id": "-3",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "9180",
+      "lane_id": "-3",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "9182",
+      "lane_id": "-3",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "9187",
+      "lane_id": "-3",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "9213",
+      "lane_id": "-3",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "9221",
+      "lane_id": "-3",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "9234",
+      "lane_id": "-2",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "9241",
+      "lane_id": "-3",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "9242",
+      "lane_id": "-2",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "9243",
+      "lane_id": "-2",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "9265",
+      "lane_id": "-2",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "9274",
+      "lane_id": "-2",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "9278",
+      "lane_id": "-3",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "9279",
+      "lane_id": "-3",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "9280",
+      "lane_id": "-3",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "9283",
+      "lane_id": "-3",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "9287",
+      "lane_id": "-3",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "9292",
+      "lane_id": "-2",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "9305",
+      "lane_id": "-3",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "9305",
+      "lane_id": "-4",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "9351",
+      "lane_id": "-3",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "9353",
+      "lane_id": "-2",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "9357",
+      "lane_id": "-2",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "9365",
+      "lane_id": "-3",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "9365",
+      "lane_id": "-4",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "9366",
+      "lane_id": "-2",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "9378",
+      "lane_id": "-2",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "9378",
+      "lane_id": "-3",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "9396",
+      "lane_id": "-3",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "9406",
+      "lane_id": "-3",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "9413",
+      "lane_id": "-2",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "9419",
+      "lane_id": "-3",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "9419",
+      "lane_id": "-4",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "9427",
+      "lane_id": "-3",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "9452",
+      "lane_id": "-3",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "9455",
+      "lane_id": "-2",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "9457",
+      "lane_id": "-3",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "9458",
+      "lane_id": "-2",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "9464",
+      "lane_id": "-2",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "9483",
+      "lane_id": "-4",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "9483",
+      "lane_id": "-5",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "9484",
+      "lane_id": "-2",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "9486",
+      "lane_id": "-3",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "9497",
+      "lane_id": "-3",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "9504",
+      "lane_id": "-2",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "9534",
+      "lane_id": "-2",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "9537",
+      "lane_id": "-3",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "9537",
+      "lane_id": "-4",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "9540",
+      "lane_id": "-3",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "9540",
+      "lane_id": "-4",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "9545",
+      "lane_id": "-3",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "9546",
+      "lane_id": "-3",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "9552",
+      "lane_id": "-2",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "9553",
+      "lane_id": "-3",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "9555",
+      "lane_id": "-3",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "9567",
+      "lane_id": "-2",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "9568",
+      "lane_id": "-3",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "9572",
+      "lane_id": "-2",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "9578",
+      "lane_id": "-3",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "9578",
+      "lane_id": "-4",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "9583",
+      "lane_id": "-3",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "9585",
+      "lane_id": "-2",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "9593",
+      "lane_id": "-2",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "9629",
+      "lane_id": "-3",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "9653",
+      "lane_id": "-2",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "9678",
+      "lane_id": "-2",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "9749",
+      "lane_id": "-2",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "9765",
+      "lane_id": "-2",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "9807",
+      "lane_id": "-3",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "9811",
+      "lane_id": "-3",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "9891",
+      "lane_id": "-3",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "9960",
+      "lane_id": "-2",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "10069",
+      "lane_id": "-3",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "10069",
+      "lane_id": "-4",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "10074",
+      "lane_id": "-3",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "10111",
+      "lane_id": "-2",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "10119",
+      "lane_id": "-2",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "10209",
+      "lane_id": "-2",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "10218",
+      "lane_id": "-3",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "10268",
+      "lane_id": "-2",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "10287",
+      "lane_id": "-2",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "10303",
+      "lane_id": "-2",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "10325",
+      "lane_id": "-2",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "10326",
+      "lane_id": "-2",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "10327",
+      "lane_id": "-2",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "10330",
+      "lane_id": "-2",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "10335",
+      "lane_id": "1",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "10343",
+      "lane_id": "-3",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "10343",
+      "lane_id": "-4",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "10349",
+      "lane_id": "-2",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "10373",
+      "lane_id": "-2",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "10373",
+      "lane_id": "-3",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "10376",
+      "lane_id": "-3",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "10404",
+      "lane_id": "-2",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "10408",
+      "lane_id": "-3",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "10417",
+      "lane_id": "-3",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "10424",
+      "lane_id": "-3",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "10425",
+      "lane_id": "-3",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "10434",
+      "lane_id": "-4",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "10443",
+      "lane_id": "-4",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "10457",
+      "lane_id": "-3",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "10488",
+      "lane_id": "-2",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "10523",
+      "lane_id": "-3",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "10529",
+      "lane_id": "-2",
+      "junction": "-1",
+      "reason": "missing_successor"
+    },
+    {
+      "road_id": "10561",
+      "lane_id": "-2",
+      "junction": "-1",
+      "reason": "missing_successor"
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "enabled": true,
+  "applied": true,
+  "reason": "strict_auto_enabled",
+  "explicit_env_override": false,
+  "strict_mode": true,
+  "roads_with_offsets": 5780,
+  "components": 1,
+  "max_abs_offset_m": 4.5349045041896295e-05
+}

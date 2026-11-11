@@ -1,0 +1,18 @@
+{
+  "schema_version": "1.0",
+  "input_xodr": "E:\\wt\\repair-map-realism-p0-837a8504\\cities\\ingolstadt\\ingolstadt_osm_auto.xodr",
+  "output_xodr": "E:\\wt\\repair-map-realism-p0-837a8504\\ultimate_pipeline_out\\20261021_171332_417792\\01_sanitized_20261021_171332_417792.xodr",
+  "coordinates_json": "E:\\wt\\repair-map-realism-p0-837a8504\\ultimate_pipeline\\config\\coordinates.json",
+  "original_input_had_valid_georeference": false,
+  "policy_used": "force",
+  "action": "patched",
+  "reason": "forced",
+  "original_georeference_raw": "+proj=tmerc +datum=WGS84 +units=m +no_defs",
+  "original_georeference_normalized": "+proj=tmerc +datum=WGS84 +units=m +no_defs",
+  "final_georeference_raw": "+proj=tmerc +lat_0=0 +lon_0=0 +k=1 +x_0=-832671.676 +y_0=-5458671.104 +datum=WGS84 +units=m +no_defs",
+  "final_georeference_normalized": "+proj=tmerc +lat_0=0 +lon_0=0 +k=1 +x_0=-832671.676 +y_0=-5458671.104 +datum=WGS84 +units=m +no_defs",
+  "source_gps_bounds": {
+    "lat0": 48.74935649548228,
+    "lon0": 11.422268084715878
+  }
+}

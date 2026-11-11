@@ -1,0 +1,62 @@
+{
+  "created_utc": "2026-10-21T15:13:39Z",
+  "updated_utc": "2026-10-21T15:13:39Z",
+  "env": {
+    "os": "Windows-11-10.0.26300-SP0",
+    "python": "3.12.2",
+    "machine": "AMD64",
+    "git_commit": "0c08412feeadecbecb22bfa06fb49e4a2d7aa78a",
+    "git_status_porcelain": "M ultimate_pipeline/core/odr_io.py\n?? cities/ingolstadt/ingolstadt_osm_auto.xodr\n?? cities/ingolstadt/osm/ingolstadt.osm\n?? ultimate_pipeline_out/"
+  },
+  "gps_bounds_wgs84": {
+    "lat_min": 48.74935649548228,
+    "lon_min": 11.422268084715878,
+    "lat_max": 48.77444431571603,
+    "lon_max": 11.47882091528412
+  },
+  "settings": {
+    "snapshot_sha256": "f04229c2921efd54efad2dc3fd465599cf95ba6eae329ef17b596f1705ce4edf",
+    "snapshot_md5": "b351e2ed594b0e1db05da292ae98a0ee",
+    "schema_version": "1.0"
+  },
+  "inputs": {
+    "OSM_FILE": {
+      "path": "E:\\wt\\repair-map-realism-p0-837a8504\\cities\\ingolstadt\\osm\\ingolstadt.osm",
+      "exists": true,
+      "size_bytes": 64072834,
+      "sha256": "2063bd3192f5bdeb925e99e1e01dce68a80d2a138f95074986f606de2cdffd1d",
+      "md5": "b33b0c9d6b6b05e4a362710ff605aad0"
+    },
+    "DEM_TIF": {
+      "path": "E:\\wt\\repair-map-realism-p0-837a8504\\cities\\ingolstadt\\dem\\dem_ing.tif",
+      "exists": true,
+      "size_bytes": 1711684,
+      "sha256": "3cfa665dde3782a015502beaf457854db2f639d01008a386c925d171e41f4ff8",
+      "md5": "3d1d7a67ce44a4b296fb15beedad7d5e"
+    },
+    "SENSOR_CALIB_JSON": {
+      "path": "E:\\wt\\repair-map-realism-p0-837a8504\\ultimate_pipeline\\sensors\\calib_data.json",
+      "exists": true,
+      "size_bytes": 5016,
+      "sha256": "d3ff2660b11ca56d16c6185e82d1b4c7fa94c5db27bb3469558442d79f4e97d9",
+      "md5": "c7a4de1c7f650136c67df69d159dba83"
+    },
+    "INPUT_XODR": {
+      "path": "E:\\wt\\repair-map-realism-p0-837a8504\\cities\\ingolstadt\\ingolstadt_osm_auto.xodr",
+      "exists": true,
+      "size_bytes": 15779065,
+      "sha256": "f97449370e4ab2a4f604cdd6d8fb86df79d6e0904e882071c9898b6aa353b456",
+      "md5": "46cd0d62ccde563033b8f8b7fdbc42bf"
+    }
+  },
+  "notes": {
+    "purpose": "thesis_provenance",
+    "strict_mode": false,
+    "sim_gate_enabled": false,
+    "offset_policy": null,
+    "gps_anchor_override_allowed": null
+  },
+  "preanchor": {
+    "applied": false
+  }
+}

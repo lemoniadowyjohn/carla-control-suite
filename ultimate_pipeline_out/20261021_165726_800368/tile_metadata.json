@@ -1,0 +1,2097 @@
+{
+  "_settings_snapshot": {
+    "TILE_BUFFER_M": 20.0,
+    "ENABLE_HIGHWAY_AWARE_TILE_BUFFER": false,
+    "HIGHWAY_TILE_BUFFER_ALPHA": 0.15,
+    "PRESERVE_GLOBAL_LANE_TYPES_IN_TILES": true,
+    "ALLOW_SUCCESSOR_OUTSIDE_TILE": true
+  },
+  "tile_0_0.xodr": {
+    "file": "tile_0_0.xodr",
+    "path": "E:\\wt\\repair-map-realism-p0-837a8504\\ultimate_pipeline_out\\20261021_165726_800368\\tiles\\tile_0_0.xodr",
+    "i": 0,
+    "j": 0,
+    "bbox": {
+      "min_x": 839074.1096161337,
+      "min_y": 5464958.286890002,
+      "max_x": 839315.3311296352,
+      "max_y": 5465358.22575235
+    },
+    "bounds": [
+      839074.1096161337,
+      5464958.286890002,
+      839315.3311296352,
+      5465358.22575235
+    ],
+    "center": {
+      "x": 839194.7203728845,
+      "y": 5465158.256321176
+    },
+    "num_roads": 6,
+    "num_driving_lanes_xml": 6,
+    "num_driving_lanes_semantic": 6,
+    "is_drivable": true,
+    "drivable_in_full_map": true,
+    "spawn_candidate": true,
+    "has_local_successor": true
+  },
+  "tile_0_1.xodr": {
+    "file": "tile_0_1.xodr",
+    "path": "E:\\wt\\repair-map-realism-p0-837a8504\\ultimate_pipeline_out\\20261021_165726_800368\\tiles\\tile_0_1.xodr",
+    "i": 0,
+    "j": 1,
+    "bbox": {
+      "min_x": 839035.2077153942,
+      "min_y": 5465237.03212064,
+      "max_x": 839315.3311296352,
+      "max_y": 5465416.613204111
+    },
+    "bounds": [
+      839035.2077153942,
+      5465237.03212064,
+      839315.3311296352,
+      5465416.613204111
+    ],
+    "center": {
+      "x": 839175.2694225147,
+      "y": 5465326.822662376
+    },
+    "num_roads": 5,
+    "num_driving_lanes_xml": 5,
+    "num_driving_lanes_semantic": 5,
+    "is_drivable": true,
+    "drivable_in_full_map": true,
+    "spawn_candidate": true,
+    "has_local_successor": true
+  },
+  "tile_0_2.xodr": {
+    "file": "tile_0_2.xodr",
+    "path": "E:\\wt\\repair-map-realism-p0-837a8504\\ultimate_pipeline_out\\20261021_165726_800368\\tiles\\tile_0_2.xodr",
+    "i": 0,
+    "j": 2,
+    "bbox": {
+      "min_x": 839003.7735637946,
+      "min_y": 5465895.069185,
+      "max_x": 839309.2474203382,
+      "max_y": 5466356.887382962
+    },
+    "bounds": [
+      839003.7735637946,
+      5465895.069185,
+      839309.2474203382,
+      5466356.887382962
+    ],
+    "center": {
+      "x": 839156.5104920664,
+      "y": 5466125.978283981
+    },
+    "num_roads": 56,
+    "num_driving_lanes_xml": 65,
+    "num_driving_lanes_semantic": 65,
+    "is_drivable": true,
+    "drivable_in_full_map": true,
+    "spawn_candidate": true,
+    "has_local_successor": true
+  },
+  "tile_0_3.xodr": {
+    "file": "tile_0_3.xodr",
+    "path": "E:\\wt\\repair-map-realism-p0-837a8504\\ultimate_pipeline_out\\20261021_165726_800368\\tiles\\tile_0_3.xodr",
+    "i": 0,
+    "j": 3,
+    "bbox": {
+      "min_x": 838864.110974006,
+      "min_y": 5466124.92569201,
+      "max_x": 839309.2474203382,
+      "max_y": 5466819.8667459
+    },
+    "bounds": [
+      838864.110974006,
+      5466124.92569201,
+      839309.2474203382,
+      5466819.8667459
+    ],
+    "center": {
+      "x": 839086.6791971722,
+      "y": 5466472.3962189555
+    },
+    "num_roads": 84,
+    "num_driving_lanes_xml": 84,
+    "num_driving_lanes_semantic": 84,
+    "is_drivable": true,
+    "drivable_in_full_map": true,
+    "spawn_candidate": true,
+    "has_local_successor": true
+  },
+  "tile_0_4.xodr": {
+    "file": "tile_0_4.xodr",
+    "path": "E:\\wt\\repair-map-realism-p0-837a8504\\ultimate_pipeline_out\\20261021_165726_800368\\tiles\\tile_0_4.xodr",
+    "i": 0,
+    "j": 4,
+    "bbox": {
+      "min_x": 838772.187112,
+      "min_y": 5466706.676781,
+      "max_x": 839297.501464,
+      "max_y": 5467352.5431441795
+    },
+    "bounds": [
+      838772.187112,
+      5466706.676781,
+      839297.501464,
+      5467352.5431441795
+    ],
+    "center": {
+      "x": 839034.8442879999,
+      "y": 5467029.60996259
+    },
+    "num_roads": 67,
+    "num_driving_lanes_xml": 68,
+    "num_driving_lanes_semantic": 68,
+    "is_drivable": true,
+    "drivable_in_full_map": true,
+    "spawn_candidate": true,
+    "has_local_successor": true
+  },
+  "tile_0_5.xodr": {
+    "file": "tile_0_5.xodr",
+    "path": "E:\\wt\\repair-map-realism-p0-837a8504\\ultimate_pipeline_out\\20261021_165726_800368\\tiles\\tile_0_5.xodr",
+    "i": 0,
+    "j": 5,
+    "bbox": {
+      "min_x": 838645.037594,
+      "min_y": 5467254.903427987,
+      "max_x": 839517.25327122,
+      "max_y": 5468030.72179041
+    },
+    "bounds": [
+      838645.037594,
+      5467254.903427987,
+      839517.25327122,
+      5468030.72179041
+    ],
+    "center": {
+      "x": 839081.1454326101,
+      "y": 5467642.8126091985
+    },
+    "num_roads": 81,
+    "num_driving_lanes_xml": 96,
+    "num_driving_lanes_semantic": 96,
+    "is_drivable": true,
+    "drivable_in_full_map": true,
+    "spawn_candidate": true,
+    "has_local_successor": true
+  },
+  "tile_0_6.xodr": {
+    "file": "tile_0_6.xodr",
+    "path": "E:\\wt\\repair-map-realism-p0-837a8504\\ultimate_pipeline_out\\20261021_165726_800368\\tiles\\tile_0_6.xodr",
+    "i": 0,
+    "j": 6,
+    "bbox": {
+      "min_x": 838820.73583999,
+      "min_y": 5467702.36652212,
+      "max_x": 839517.25327122,
+      "max_y": 5468031.235172914
+    },
+    "bounds": [
+      838820.73583999,
+      5467702.36652212,
+      839517.25327122,
+      5468031.235172914
+    ],
+    "center": {
+      "x": 839168.994555605,
+      "y": 5467866.800847517
+    },
+    "num_roads": 58,
+    "num_driving_lanes_xml": 58,
+    "num_driving_lanes_semantic": 58,
+    "is_drivable": true,
+    "drivable_in_full_map": true,
+    "spawn_candidate": true,
+    "has_local_successor": true
+  },
+  "tile_10_7.xodr": {
+    "file": "tile_10_7.xodr",
+    "path": "E:\\wt\\repair-map-realism-p0-837a8504\\ultimate_pipeline_out\\20261021_165726_800368\\tiles\\tile_10_7.xodr",
+    "i": 10,
+    "j": 7,
+    "bbox": {
+      "min_x": 843340.90195933,
+      "min_y": 5468336.32405677,
+      "max_x": 843654.20097829,
+      "max_y": 5468448.755430423
+    },
+    "bounds": [
+      843340.90195933,
+      5468336.32405677,
+      843654.20097829,
+      5468448.755430423
+    ],
+    "center": {
+      "x": 843497.5514688101,
+      "y": 5468392.539743597
+    },
+    "num_roads": 2,
+    "num_driving_lanes_xml": 2,
+    "num_driving_lanes_semantic": 2,
+    "is_drivable": true,
+    "drivable_in_full_map": true,
+    "spawn_candidate": true,
+    "has_local_successor": false
+  },
+  "tile_1_0.xodr": {
+    "file": "tile_1_0.xodr",
+    "path": "E:\\wt\\repair-map-realism-p0-837a8504\\ultimate_pipeline_out\\20261021_165726_800368\\tiles\\tile_1_0.xodr",
+    "i": 1,
+    "j": 0,
+    "bbox": {
+      "min_x": 839077.3626715388,
+      "min_y": 5464783.889935937,
+      "max_x": 839692.773844,
+      "max_y": 5465358.22575235
+    },
+    "bounds": [
+      839077.3626715388,
+      5464783.889935937,
+      839692.773844,
+      5465358.22575235
+    ],
+    "center": {
+      "x": 839385.0682577693,
+      "y": 5465071.057844143
+    },
+    "num_roads": 166,
+    "num_driving_lanes_xml": 167,
+    "num_driving_lanes_semantic": 167,
+    "is_drivable": true,
+    "drivable_in_full_map": true,
+    "spawn_candidate": true,
+    "has_local_successor": true
+  },
+  "tile_1_1.xodr": {
+    "file": "tile_1_1.xodr",
+    "path": "E:\\wt\\repair-map-realism-p0-837a8504\\ultimate_pipeline_out\\20261021_165726_800368\\tiles\\tile_1_1.xodr",
+    "i": 1,
+    "j": 1,
+    "bbox": {
+      "min_x": 839039.93071342,
+      "min_y": 5465162.974159906,
+      "max_x": 839795.764218,
+      "max_y": 5465821.30058453
+    },
+    "bounds": [
+      839039.93071342,
+      5465162.974159906,
+      839795.764218,
+      5465821.30058453
+    ],
+    "center": {
+      "x": 839417.84746571,
+      "y": 5465492.137372218
+    },
+    "num_roads": 125,
+    "num_driving_lanes_xml": 135,
+    "num_driving_lanes_semantic": 135,
+    "is_drivable": true,
+    "drivable_in_full_map": true,
+    "spawn_candidate": true,
+    "has_local_successor": true
+  },
+  "tile_1_2.xodr": {
+    "file": "tile_1_2.xodr",
+    "path": "E:\\wt\\repair-map-realism-p0-837a8504\\ultimate_pipeline_out\\20261021_165726_800368\\tiles\\tile_1_2.xodr",
+    "i": 1,
+    "j": 2,
+    "bbox": {
+      "min_x": 839007.8348033517,
+      "min_y": 5465719.135973335,
+      "max_x": 839714.5927760291,
+      "max_y": 5466498.738660109
+    },
+    "bounds": [
+      839007.8348033517,
+      5465719.135973335,
+      839714.5927760291,
+      5466498.738660109
+    ],
+    "center": {
+      "x": 839361.2137896904,
+      "y": 5466108.937316722
+    },
+    "num_roads": 188,
+    "num_driving_lanes_xml": 239,
+    "num_driving_lanes_semantic": 239,
+    "is_drivable": true,
+    "drivable_in_full_map": true,
+    "spawn_candidate": true,
+    "has_local_successor": true
+  },
+  "tile_1_3.xodr": {
+    "file": "tile_1_3.xodr",
+    "path": "E:\\wt\\repair-map-realism-p0-837a8504\\ultimate_pipeline_out\\20261021_165726_800368\\tiles\\tile_1_3.xodr",
+    "i": 1,
+    "j": 3,
+    "bbox": {
+      "min_x": 839007.8348033517,
+      "min_y": 5466030.859234,
+      "max_x": 839710.96928168,
+      "max_y": 5466819.8667459
+    },
+    "bounds": [
+      839007.8348033517,
+      5466030.859234,
+      839710.96928168,
+      5466819.8667459
+    ],
+    "center": {
+      "x": 839359.4020425158,
+      "y": 5466425.36298995
+    },
+    "num_roads": 268,
+    "num_driving_lanes_xml": 321,
+    "num_driving_lanes_semantic": 321,
+    "is_drivable": true,
+    "drivable_in_full_map": true,
+    "spawn_candidate": true,
+    "has_local_successor": true
+  },
+  "tile_1_4.xodr": {
+    "file": "tile_1_4.xodr",
+    "path": "E:\\wt\\repair-map-realism-p0-837a8504\\ultimate_pipeline_out\\20261021_165726_800368\\tiles\\tile_1_4.xodr",
+    "i": 1,
+    "j": 4,
+    "bbox": {
+      "min_x": 838868.32863593,
+      "min_y": 5466564.05721392,
+      "max_x": 839710.96928168,
+      "max_y": 5467352.5431441795
+    },
+    "bounds": [
+      838868.32863593,
+      5466564.05721392,
+      839710.96928168,
+      5467352.5431441795
+    ],
+    "center": {
+      "x": 839289.648958805,
+      "y": 5466958.300179049
+    },
+    "num_roads": 230,
+    "num_driving_lanes_xml": 249,
+    "num_driving_lanes_semantic": 249,
+    "is_drivable": true,
+    "drivable_in_full_map": true,
+    "spawn_candidate": true,
+    "has_local_successor": true
+  },
+  "tile_1_5.xodr": {
+    "file": "tile_1_5.xodr",
+    "path": "E:\\wt\\repair-map-realism-p0-837a8504\\ultimate_pipeline_out\\20261021_165726_800368\\tiles\\tile_1_5.xodr",
+    "i": 1,
+    "j": 5,
+    "bbox": {
+      "min_x": 838887.4157690044,
+      "min_y": 5467234.122582,
+      "max_x": 839724.25186201,
+      "max_y": 5468030.72179041
+    },
+    "bounds": [
+      838887.4157690044,
+      5467234.122582,
+      839724.25186201,
+      5468030.72179041
+    ],
+    "center": {
+      "x": 839305.8338155071,
+      "y": 5467632.422186205
+    },
+    "num_roads": 186,
+    "num_driving_lanes_xml": 219,
+    "num_driving_lanes_semantic": 219,
+    "is_drivable": true,
+    "drivable_in_full_map": true,
+    "spawn_candidate": true,
+    "has_local_successor": true
+  },
+  "tile_1_6.xodr": {
+    "file": "tile_1_6.xodr",
+    "path": "E:\\wt\\repair-map-realism-p0-837a8504\\ultimate_pipeline_out\\20261021_165726_800368\\tiles\\tile_1_6.xodr",
+    "i": 1,
+    "j": 6,
+    "bbox": {
+      "min_x": 839092.5434129131,
+      "min_y": 5467702.36652212,
+      "max_x": 839724.25186201,
+      "max_y": 5468047.694297002
+    },
+    "bounds": [
+      839092.5434129131,
+      5467702.36652212,
+      839724.25186201,
+      5468047.694297002
+    ],
+    "center": {
+      "x": 839408.3976374615,
+      "y": 5467875.0304095615
+    },
+    "num_roads": 41,
+    "num_driving_lanes_xml": 41,
+    "num_driving_lanes_semantic": 41,
+    "is_drivable": true,
+    "drivable_in_full_map": true,
+    "spawn_candidate": true,
+    "has_local_successor": true
+  },
+  "tile_2_0.xodr": {
+    "file": "tile_2_0.xodr",
+    "path": "E:\\wt\\repair-map-realism-p0-837a8504\\ultimate_pipeline_out\\20261021_165726_800368\\tiles\\tile_2_0.xodr",
+    "i": 2,
+    "j": 0,
+    "bbox": {
+      "min_x": 839574.10726754,
+      "min_y": 5464933.9551362395,
+      "max_x": 840107.2095088856,
+      "max_y": 5465316.025177316
+    },
+    "bounds": [
+      839574.10726754,
+      5464933.9551362395,
+      840107.2095088856,
+      5465316.025177316
+    ],
+    "center": {
+      "x": 839840.6583882128,
+      "y": 5465124.990156777
+    },
+    "num_roads": 66,
+    "num_driving_lanes_xml": 78,
+    "num_driving_lanes_semantic": 78,
+    "is_drivable": true,
+    "drivable_in_full_map": true,
+    "spawn_candidate": true,
+    "has_local_successor": true
+  },
+  "tile_2_1.xodr": {
+    "file": "tile_2_1.xodr",
+    "path": "E:\\wt\\repair-map-realism-p0-837a8504\\ultimate_pipeline_out\\20261021_165726_800368\\tiles\\tile_2_1.xodr",
+    "i": 2,
+    "j": 1,
+    "bbox": {
+      "min_x": 839450.711297,
+      "min_y": 5464937.81539121,
+      "max_x": 840223.751495,
+      "max_y": 5465848.014829008
+    },
+    "bounds": [
+      839450.711297,
+      5464937.81539121,
+      840223.751495,
+      5465848.014829008
+    ],
+    "center": {
+      "x": 839837.2313959999,
+      "y": 5465392.915110109
+    },
+    "num_roads": 257,
+    "num_driving_lanes_xml": 313,
+    "num_driving_lanes_semantic": 313,
+    "is_drivable": true,
+    "drivable_in_full_map": true,
+    "spawn_candidate": true,
+    "has_local_successor": true
+  },
+  "tile_2_2.xodr": {
+    "file": "tile_2_2.xodr",
+    "path": "E:\\wt\\repair-map-realism-p0-837a8504\\ultimate_pipeline_out\\20261021_165726_800368\\tiles\\tile_2_2.xodr",
+    "i": 2,
+    "j": 2,
+    "bbox": {
+      "min_x": 839558.2039395437,
+      "min_y": 5465619.4040149655,
+      "max_x": 840223.27213602,
+      "max_y": 5466338.545078025
+    },
+    "bounds": [
+      839558.2039395437,
+      5465619.4040149655,
+      840223.27213602,
+      5466338.545078025
+    ],
+    "center": {
+      "x": 839890.7380377818,
+      "y": 5465978.974546496
+    },
+    "num_roads": 228,
+    "num_driving_lanes_xml": 340,
+    "num_driving_lanes_semantic": 340,
+    "is_drivable": true,
+    "drivable_in_full_map": true,
+    "spawn_candidate": true,
+    "has_local_successor": true
+  },
+  "tile_2_3.xodr": {
+    "file": "tile_2_3.xodr",
+    "path": "E:\\wt\\repair-map-realism-p0-837a8504\\ultimate_pipeline_out\\20261021_165726_800368\\tiles\\tile_2_3.xodr",
+    "i": 2,
+    "j": 3,
+    "bbox": {
+      "min_x": 839506.5194458818,
+      "min_y": 5466251.691855003,
+      "max_x": 840035.31744652,
+      "max_y": 5466946.13303741
+    },
+    "bounds": [
+      839506.5194458818,
+      5466251.691855003,
+      840035.31744652,
+      5466946.13303741
+    ],
+    "center": {
+      "x": 839770.9184462009,
+      "y": 5466598.912446206
+    },
+    "num_roads": 64,
+    "num_driving_lanes_xml": 88,
+    "num_driving_lanes_semantic": 88,
+    "is_drivable": true,
+    "drivable_in_full_map": true,
+    "spawn_candidate": true,
+    "has_local_successor": true
+  },
+  "tile_2_4.xodr": {
+    "file": "tile_2_4.xodr",
+    "path": "E:\\wt\\repair-map-realism-p0-837a8504\\ultimate_pipeline_out\\20261021_165726_800368\\tiles\\tile_2_4.xodr",
+    "i": 2,
+    "j": 4,
+    "bbox": {
+      "min_x": 839506.5194458818,
+      "min_y": 5466564.05721392,
+      "max_x": 840298.1627157709,
+      "max_y": 5467470.130057033
+    },
+    "bounds": [
+      839506.5194458818,
+      5466564.05721392,
+      840298.1627157709,
+      5467470.130057033
+    ],
+    "center": {
+      "x": 839902.3410808264,
+      "y": 5467017.093635477
+    },
+    "num_roads": 177,
+    "num_driving_lanes_xml": 225,
+    "num_driving_lanes_semantic": 225,
+    "is_drivable": true,
+    "drivable_in_full_map": true,
+    "spawn_candidate": true,
+    "has_local_successor": true
+  },
+  "tile_2_5.xodr": {
+    "file": "tile_2_5.xodr",
+    "path": "E:\\wt\\repair-map-realism-p0-837a8504\\ultimate_pipeline_out\\20261021_165726_800368\\tiles\\tile_2_5.xodr",
+    "i": 2,
+    "j": 5,
+    "bbox": {
+      "min_x": 839553.9944698935,
+      "min_y": 5467243.76729962,
+      "max_x": 840249.366989,
+      "max_y": 5467979.40388999
+    },
+    "bounds": [
+      839553.9944698935,
+      5467243.76729962,
+      840249.366989,
+      5467979.40388999
+    ],
+    "center": {
+      "x": 839901.6807294467,
+      "y": 5467611.585594805
+    },
+    "num_roads": 258,
+    "num_driving_lanes_xml": 340,
+    "num_driving_lanes_semantic": 340,
+    "is_drivable": true,
+    "drivable_in_full_map": true,
+    "spawn_candidate": true,
+    "has_local_successor": true
+  },
+  "tile_2_6.xodr": {
+    "file": "tile_2_6.xodr",
+    "path": "E:\\wt\\repair-map-realism-p0-837a8504\\ultimate_pipeline_out\\20261021_165726_800368\\tiles\\tile_2_6.xodr",
+    "i": 2,
+    "j": 6,
+    "bbox": {
+      "min_x": 839640.8301456256,
+      "min_y": 5467710.935097669,
+      "max_x": 840313.84485084,
+      "max_y": 5468524.85865074
+    },
+    "bounds": [
+      839640.8301456256,
+      5467710.935097669,
+      840313.84485084,
+      5468524.85865074
+    ],
+    "center": {
+      "x": 839977.3374982328,
+      "y": 5468117.896874204
+    },
+    "num_roads": 113,
+    "num_driving_lanes_xml": 117,
+    "num_driving_lanes_semantic": 117,
+    "is_drivable": true,
+    "drivable_in_full_map": true,
+    "spawn_candidate": true,
+    "has_local_successor": true
+  },
+  "tile_2_7.xodr": {
+    "file": "tile_2_7.xodr",
+    "path": "E:\\wt\\repair-map-realism-p0-837a8504\\ultimate_pipeline_out\\20261021_165726_800368\\tiles\\tile_2_7.xodr",
+    "i": 2,
+    "j": 7,
+    "bbox": {
+      "min_x": 840090.8132085925,
+      "min_y": 5467994.97850946,
+      "max_x": 840313.84485084,
+      "max_y": 5468529.7087877365
+    },
+    "bounds": [
+      840090.8132085925,
+      5467994.97850946,
+      840313.84485084,
+      5468529.7087877365
+    ],
+    "center": {
+      "x": 840202.3290297163,
+      "y": 5468262.343648598
+    },
+    "num_roads": 3,
+    "num_driving_lanes_xml": 3,
+    "num_driving_lanes_semantic": 3,
+    "is_drivable": true,
+    "drivable_in_full_map": true,
+    "spawn_candidate": true,
+    "has_local_successor": true
+  },
+  "tile_3_0.xodr": {
+    "file": "tile_3_0.xodr",
+    "path": "E:\\wt\\repair-map-realism-p0-837a8504\\ultimate_pipeline_out\\20261021_165726_800368\\tiles\\tile_3_0.xodr",
+    "i": 3,
+    "j": 0,
+    "bbox": {
+      "min_x": 840596.038914,
+      "min_y": 5464861.9816249795,
+      "max_x": 840943.78215583,
+      "max_y": 5465356.827102039
+    },
+    "bounds": [
+      840596.038914,
+      5464861.9816249795,
+      840943.78215583,
+      5465356.827102039
+    ],
+    "center": {
+      "x": 840769.910534915,
+      "y": 5465109.404363509
+    },
+    "num_roads": 13,
+    "num_driving_lanes_xml": 13,
+    "num_driving_lanes_semantic": 13,
+    "is_drivable": true,
+    "drivable_in_full_map": true,
+    "spawn_candidate": true,
+    "has_local_successor": true
+  },
+  "tile_3_1.xodr": {
+    "file": "tile_3_1.xodr",
+    "path": "E:\\wt\\repair-map-realism-p0-837a8504\\ultimate_pipeline_out\\20261021_165726_800368\\tiles\\tile_3_1.xodr",
+    "i": 3,
+    "j": 1,
+    "bbox": {
+      "min_x": 840048.32443427,
+      "min_y": 5465125.6428905185,
+      "max_x": 840943.78215583,
+      "max_y": 5465900.96598001
+    },
+    "bounds": [
+      840048.32443427,
+      5465125.6428905185,
+      840943.78215583,
+      5465900.96598001
+    ],
+    "center": {
+      "x": 840496.05329505,
+      "y": 5465513.304435264
+    },
+    "num_roads": 278,
+    "num_driving_lanes_xml": 279,
+    "num_driving_lanes_semantic": 279,
+    "is_drivable": true,
+    "drivable_in_full_map": true,
+    "spawn_candidate": true,
+    "has_local_successor": true
+  },
+  "tile_3_2.xodr": {
+    "file": "tile_3_2.xodr",
+    "path": "E:\\wt\\repair-map-realism-p0-837a8504\\ultimate_pipeline_out\\20261021_165726_800368\\tiles\\tile_3_2.xodr",
+    "i": 3,
+    "j": 2,
+    "bbox": {
+      "min_x": 840048.32443427,
+      "min_y": 5465713.865237927,
+      "max_x": 840816.434623,
+      "max_y": 5466355.668759643
+    },
+    "bounds": [
+      840048.32443427,
+      5465713.865237927,
+      840816.434623,
+      5466355.668759643
+    ],
+    "center": {
+      "x": 840432.379528635,
+      "y": 5466034.766998785
+    },
+    "num_roads": 236,
+    "num_driving_lanes_xml": 298,
+    "num_driving_lanes_semantic": 298,
+    "is_drivable": true,
+    "drivable_in_full_map": true,
+    "spawn_candidate": true,
+    "has_local_successor": true
+  },
+  "tile_3_3.xodr": {
+    "file": "tile_3_3.xodr",
+    "path": "E:\\wt\\repair-map-realism-p0-837a8504\\ultimate_pipeline_out\\20261021_165726_800368\\tiles\\tile_3_3.xodr",
+    "i": 3,
+    "j": 3,
+    "bbox": {
+      "min_x": 840177.0866032643,
+      "min_y": 5466161.1052119965,
+      "max_x": 840939.28339227,
+      "max_y": 5467033.733949004
+    },
+    "bounds": [
+      840177.0866032643,
+      5466161.1052119965,
+      840939.28339227,
+      5467033.733949004
+    ],
+    "center": {
+      "x": 840558.1849977672,
+      "y": 5466597.419580501
+    },
+    "num_roads": 168,
+    "num_driving_lanes_xml": 195,
+    "num_driving_lanes_semantic": 195,
+    "is_drivable": true,
+    "drivable_in_full_map": true,
+    "spawn_candidate": true,
+    "has_local_successor": true
+  },
+  "tile_3_4.xodr": {
+    "file": "tile_3_4.xodr",
+    "path": "E:\\wt\\repair-map-realism-p0-837a8504\\ultimate_pipeline_out\\20261021_165726_800368\\tiles\\tile_3_4.xodr",
+    "i": 3,
+    "j": 4,
+    "bbox": {
+      "min_x": 840025.651759,
+      "min_y": 5466697.20960799,
+      "max_x": 840939.28339227,
+      "max_y": 5467389.82297949
+    },
+    "bounds": [
+      840025.651759,
+      5466697.20960799,
+      840939.28339227,
+      5467389.82297949
+    ],
+    "center": {
+      "x": 840482.4675756351,
+      "y": 5467043.51629374
+    },
+    "num_roads": 249,
+    "num_driving_lanes_xml": 281,
+    "num_driving_lanes_semantic": 281,
+    "is_drivable": true,
+    "drivable_in_full_map": true,
+    "spawn_candidate": true,
+    "has_local_successor": true
+  },
+  "tile_3_5.xodr": {
+    "file": "tile_3_5.xodr",
+    "path": "E:\\wt\\repair-map-realism-p0-837a8504\\ultimate_pipeline_out\\20261021_165726_800368\\tiles\\tile_3_5.xodr",
+    "i": 3,
+    "j": 5,
+    "bbox": {
+      "min_x": 840011.96319599,
+      "min_y": 5467188.3347978,
+      "max_x": 840829.62907505,
+      "max_y": 5467863.76517811
+    },
+    "bounds": [
+      840011.96319599,
+      5467188.3347978,
+      840829.62907505,
+      5467863.76517811
+    ],
+    "center": {
+      "x": 840420.79613552,
+      "y": 5467526.049987955
+    },
+    "num_roads": 293,
+    "num_driving_lanes_xml": 307,
+    "num_driving_lanes_semantic": 307,
+    "is_drivable": true,
+    "drivable_in_full_map": true,
+    "spawn_candidate": true,
+    "has_local_successor": true
+  },
+  "tile_3_6.xodr": {
+    "file": "tile_3_6.xodr",
+    "path": "E:\\wt\\repair-map-realism-p0-837a8504\\ultimate_pipeline_out\\20261021_165726_800368\\tiles\\tile_3_6.xodr",
+    "i": 3,
+    "j": 6,
+    "bbox": {
+      "min_x": 840077.07880283,
+      "min_y": 5467699.6323309485,
+      "max_x": 840856.224197,
+      "max_y": 5468524.85865074
+    },
+    "bounds": [
+      840077.07880283,
+      5467699.6323309485,
+      840856.224197,
+      5468524.85865074
+    ],
+    "center": {
+      "x": 840466.6514999149,
+      "y": 5468112.245490844
+    },
+    "num_roads": 201,
+    "num_driving_lanes_xml": 238,
+    "num_driving_lanes_semantic": 238,
+    "is_drivable": true,
+    "drivable_in_full_map": true,
+    "spawn_candidate": true,
+    "has_local_successor": true
+  },
+  "tile_3_7.xodr": {
+    "file": "tile_3_7.xodr",
+    "path": "E:\\wt\\repair-map-realism-p0-837a8504\\ultimate_pipeline_out\\20261021_165726_800368\\tiles\\tile_3_7.xodr",
+    "i": 3,
+    "j": 7,
+    "bbox": {
+      "min_x": 840095.6745770334,
+      "min_y": 5467994.97850946,
+      "max_x": 840313.84485084,
+      "max_y": 5468524.85865074
+    },
+    "bounds": [
+      840095.6745770334,
+      5467994.97850946,
+      840313.84485084,
+      5468524.85865074
+    ],
+    "center": {
+      "x": 840204.7597139367,
+      "y": 5468259.9185801
+    },
+    "num_roads": 2,
+    "num_driving_lanes_xml": 2,
+    "num_driving_lanes_semantic": 2,
+    "is_drivable": true,
+    "drivable_in_full_map": true,
+    "spawn_candidate": true,
+    "has_local_successor": true
+  },
+  "tile_4_0.xodr": {
+    "file": "tile_4_0.xodr",
+    "path": "E:\\wt\\repair-map-realism-p0-837a8504\\ultimate_pipeline_out\\20261021_165726_800368\\tiles\\tile_4_0.xodr",
+    "i": 4,
+    "j": 0,
+    "bbox": {
+      "min_x": 840596.038914,
+      "min_y": 5464861.9816249795,
+      "max_x": 841258.4210380432,
+      "max_y": 5465516.351989891
+    },
+    "bounds": [
+      840596.038914,
+      5464861.9816249795,
+      841258.4210380432,
+      5465516.351989891
+    ],
+    "center": {
+      "x": 840927.2299760217,
+      "y": 5465189.166807435
+    },
+    "num_roads": 40,
+    "num_driving_lanes_xml": 40,
+    "num_driving_lanes_semantic": 40,
+    "is_drivable": true,
+    "drivable_in_full_map": true,
+    "spawn_candidate": true,
+    "has_local_successor": true
+  },
+  "tile_4_1.xodr": {
+    "file": "tile_4_1.xodr",
+    "path": "E:\\wt\\repair-map-realism-p0-837a8504\\ultimate_pipeline_out\\20261021_165726_800368\\tiles\\tile_4_1.xodr",
+    "i": 4,
+    "j": 1,
+    "bbox": {
+      "min_x": 840572.014597,
+      "min_y": 5465125.6428905185,
+      "max_x": 841258.4210380432,
+      "max_y": 5465900.96598001
+    },
+    "bounds": [
+      840572.014597,
+      5465125.6428905185,
+      841258.4210380432,
+      5465900.96598001
+    ],
+    "center": {
+      "x": 840915.2178175217,
+      "y": 5465513.304435264
+    },
+    "num_roads": 281,
+    "num_driving_lanes_xml": 281,
+    "num_driving_lanes_semantic": 281,
+    "is_drivable": true,
+    "drivable_in_full_map": true,
+    "spawn_candidate": true,
+    "has_local_successor": true
+  },
+  "tile_4_2.xodr": {
+    "file": "tile_4_2.xodr",
+    "path": "E:\\wt\\repair-map-realism-p0-837a8504\\ultimate_pipeline_out\\20261021_165726_800368\\tiles\\tile_4_2.xodr",
+    "i": 4,
+    "j": 2,
+    "bbox": {
+      "min_x": 840420.408202,
+      "min_y": 5465610.147477836,
+      "max_x": 841388.20689289,
+      "max_y": 5466376.46931847
+    },
+    "bounds": [
+      840420.408202,
+      5465610.147477836,
+      841388.20689289,
+      5466376.46931847
+    ],
+    "center": {
+      "x": 840904.307547445,
+      "y": 5465993.308398154
+    },
+    "num_roads": 138,
+    "num_driving_lanes_xml": 164,
+    "num_driving_lanes_semantic": 164,
+    "is_drivable": true,
+    "drivable_in_full_map": true,
+    "spawn_candidate": true,
+    "has_local_successor": true
+  },
+  "tile_4_3.xodr": {
+    "file": "tile_4_3.xodr",
+    "path": "E:\\wt\\repair-map-realism-p0-837a8504\\ultimate_pipeline_out\\20261021_165726_800368\\tiles\\tile_4_3.xodr",
+    "i": 4,
+    "j": 3,
+    "bbox": {
+      "min_x": 840470.2250489522,
+      "min_y": 5465959.5298938835,
+      "max_x": 841388.20689289,
+      "max_y": 5466840.701724822
+    },
+    "bounds": [
+      840470.2250489522,
+      5465959.5298938835,
+      841388.20689289,
+      5466840.701724822
+    ],
+    "center": {
+      "x": 840929.2159709211,
+      "y": 5466400.115809353
+    },
+    "num_roads": 121,
+    "num_driving_lanes_xml": 121,
+    "num_driving_lanes_semantic": 121,
+    "is_drivable": true,
+    "drivable_in_full_map": true,
+    "spawn_candidate": true,
+    "has_local_successor": true
+  },
+  "tile_4_4.xodr": {
+    "file": "tile_4_4.xodr",
+    "path": "E:\\wt\\repair-map-realism-p0-837a8504\\ultimate_pipeline_out\\20261021_165726_800368\\tiles\\tile_4_4.xodr",
+    "i": 4,
+    "j": 4,
+    "bbox": {
+      "min_x": 840580.8807509954,
+      "min_y": 5466648.875643851,
+      "max_x": 841343.45771109,
+      "max_y": 5467400.117958
+    },
+    "bounds": [
+      840580.8807509954,
+      5466648.875643851,
+      841343.45771109,
+      5467400.117958
+    ],
+    "center": {
+      "x": 840962.1692310427,
+      "y": 5467024.496800926
+    },
+    "num_roads": 120,
+    "num_driving_lanes_xml": 120,
+    "num_driving_lanes_semantic": 120,
+    "is_drivable": true,
+    "drivable_in_full_map": true,
+    "spawn_candidate": true,
+    "has_local_successor": true
+  },
+  "tile_4_5.xodr": {
+    "file": "tile_4_5.xodr",
+    "path": "E:\\wt\\repair-map-realism-p0-837a8504\\ultimate_pipeline_out\\20261021_165726_800368\\tiles\\tile_4_5.xodr",
+    "i": 4,
+    "j": 5,
+    "bbox": {
+      "min_x": 840516.4937539627,
+      "min_y": 5467188.3347978,
+      "max_x": 841241.6919069744,
+      "max_y": 5467830.341513113
+    },
+    "bounds": [
+      840516.4937539627,
+      5467188.3347978,
+      841241.6919069744,
+      5467830.341513113
+    ],
+    "center": {
+      "x": 840879.0928304686,
+      "y": 5467509.338155456
+    },
+    "num_roads": 344,
+    "num_driving_lanes_xml": 344,
+    "num_driving_lanes_semantic": 344,
+    "is_drivable": true,
+    "drivable_in_full_map": true,
+    "spawn_candidate": true,
+    "has_local_successor": true
+  },
+  "tile_4_6.xodr": {
+    "file": "tile_4_6.xodr",
+    "path": "E:\\wt\\repair-map-realism-p0-837a8504\\ultimate_pipeline_out\\20261021_165726_800368\\tiles\\tile_4_6.xodr",
+    "i": 4,
+    "j": 6,
+    "bbox": {
+      "min_x": 840594.33657797,
+      "min_y": 5467644.735581976,
+      "max_x": 841330.8405410647,
+      "max_y": 5468109.392887441
+    },
+    "bounds": [
+      840594.33657797,
+      5467644.735581976,
+      841330.8405410647,
+      5468109.392887441
+    ],
+    "center": {
+      "x": 840962.5885595174,
+      "y": 5467877.064234709
+    },
+    "num_roads": 199,
+    "num_driving_lanes_xml": 217,
+    "num_driving_lanes_semantic": 217,
+    "is_drivable": true,
+    "drivable_in_full_map": true,
+    "spawn_candidate": true,
+    "has_local_successor": true
+  },
+  "tile_5_0.xodr": {
+    "file": "tile_5_0.xodr",
+    "path": "E:\\wt\\repair-map-realism-p0-837a8504\\ultimate_pipeline_out\\20261021_165726_800368\\tiles\\tile_5_0.xodr",
+    "i": 5,
+    "j": 0,
+    "bbox": {
+      "min_x": 841094.9085862689,
+      "min_y": 5465137.13511,
+      "max_x": 841423.8899127592,
+      "max_y": 5465550.605563577
+    },
+    "bounds": [
+      841094.9085862689,
+      5465137.13511,
+      841423.8899127592,
+      5465550.605563577
+    ],
+    "center": {
+      "x": 841259.3992495141,
+      "y": 5465343.870336789
+    },
+    "num_roads": 18,
+    "num_driving_lanes_xml": 18,
+    "num_driving_lanes_semantic": 18,
+    "is_drivable": true,
+    "drivable_in_full_map": true,
+    "spawn_candidate": true,
+    "has_local_successor": true
+  },
+  "tile_5_1.xodr": {
+    "file": "tile_5_1.xodr",
+    "path": "E:\\wt\\repair-map-realism-p0-837a8504\\ultimate_pipeline_out\\20261021_165726_800368\\tiles\\tile_5_1.xodr",
+    "i": 5,
+    "j": 1,
+    "bbox": {
+      "min_x": 841094.9085862689,
+      "min_y": 5465137.13511,
+      "max_x": 841866.5434029846,
+      "max_y": 5466065.44157567
+    },
+    "bounds": [
+      841094.9085862689,
+      5465137.13511,
+      841866.5434029846,
+      5466065.44157567
+    ],
+    "center": {
+      "x": 841480.7259946268,
+      "y": 5465601.288342835
+    },
+    "num_roads": 80,
+    "num_driving_lanes_xml": 108,
+    "num_driving_lanes_semantic": 108,
+    "is_drivable": true,
+    "drivable_in_full_map": true,
+    "spawn_candidate": true,
+    "has_local_successor": true
+  },
+  "tile_5_2.xodr": {
+    "file": "tile_5_2.xodr",
+    "path": "E:\\wt\\repair-map-realism-p0-837a8504\\ultimate_pipeline_out\\20261021_165726_800368\\tiles\\tile_5_2.xodr",
+    "i": 5,
+    "j": 2,
+    "bbox": {
+      "min_x": 840871.1799670118,
+      "min_y": 5465711.21194666,
+      "max_x": 841796.0469825,
+      "max_y": 5466487.021148
+    },
+    "bounds": [
+      840871.1799670118,
+      5465711.21194666,
+      841796.0469825,
+      5466487.021148
+    ],
+    "center": {
+      "x": 841333.6134747559,
+      "y": 5466099.116547329
+    },
+    "num_roads": 73,
+    "num_driving_lanes_xml": 94,
+    "num_driving_lanes_semantic": 94,
+    "is_drivable": true,
+    "drivable_in_full_map": true,
+    "spawn_candidate": true,
+    "has_local_successor": true
+  },
+  "tile_5_3.xodr": {
+    "file": "tile_5_3.xodr",
+    "path": "E:\\wt\\repair-map-realism-p0-837a8504\\ultimate_pipeline_out\\20261021_165726_800368\\tiles\\tile_5_3.xodr",
+    "i": 5,
+    "j": 3,
+    "bbox": {
+      "min_x": 840871.1799670118,
+      "min_y": 5465959.5298938835,
+      "max_x": 841796.0469825,
+      "max_y": 5466830.580394205
+    },
+    "bounds": [
+      840871.1799670118,
+      5465959.5298938835,
+      841796.0469825,
+      5466830.580394205
+    ],
+    "center": {
+      "x": 841333.6134747559,
+      "y": 5466395.055144044
+    },
+    "num_roads": 134,
+    "num_driving_lanes_xml": 134,
+    "num_driving_lanes_semantic": 134,
+    "is_drivable": true,
+    "drivable_in_full_map": true,
+    "spawn_candidate": true,
+    "has_local_successor": true
+  },
+  "tile_5_4.xodr": {
+    "file": "tile_5_4.xodr",
+    "path": "E:\\wt\\repair-map-realism-p0-837a8504\\ultimate_pipeline_out\\20261021_165726_800368\\tiles\\tile_5_4.xodr",
+    "i": 5,
+    "j": 4,
+    "bbox": {
+      "min_x": 840954.6851739064,
+      "min_y": 5466690.27877902,
+      "max_x": 841656.7509020221,
+      "max_y": 5467424.554184028
+    },
+    "bounds": [
+      840954.6851739064,
+      5466690.27877902,
+      841656.7509020221,
+      5467424.554184028
+    ],
+    "center": {
+      "x": 841305.7180379643,
+      "y": 5467057.416481524
+    },
+    "num_roads": 62,
+    "num_driving_lanes_xml": 62,
+    "num_driving_lanes_semantic": 62,
+    "is_drivable": true,
+    "drivable_in_full_map": true,
+    "spawn_candidate": true,
+    "has_local_successor": true
+  },
+  "tile_5_5.xodr": {
+    "file": "tile_5_5.xodr",
+    "path": "E:\\wt\\repair-map-realism-p0-837a8504\\ultimate_pipeline_out\\20261021_165726_800368\\tiles\\tile_5_5.xodr",
+    "i": 5,
+    "j": 5,
+    "bbox": {
+      "min_x": 841017.96228934,
+      "min_y": 5467246.825716202,
+      "max_x": 841816.4148532145,
+      "max_y": 5467933.146548007
+    },
+    "bounds": [
+      841017.96228934,
+      5467246.825716202,
+      841816.4148532145,
+      5467933.146548007
+    ],
+    "center": {
+      "x": 841417.1885712773,
+      "y": 5467589.986132104
+    },
+    "num_roads": 175,
+    "num_driving_lanes_xml": 175,
+    "num_driving_lanes_semantic": 175,
+    "is_drivable": true,
+    "drivable_in_full_map": true,
+    "spawn_candidate": true,
+    "has_local_successor": true
+  },
+  "tile_5_6.xodr": {
+    "file": "tile_5_6.xodr",
+    "path": "E:\\wt\\repair-map-realism-p0-837a8504\\ultimate_pipeline_out\\20261021_165726_800368\\tiles\\tile_5_6.xodr",
+    "i": 5,
+    "j": 6,
+    "bbox": {
+      "min_x": 840944.2268008022,
+      "min_y": 5467681.330493989,
+      "max_x": 842136.104899,
+      "max_y": 5468748.00183333
+    },
+    "bounds": [
+      840944.2268008022,
+      5467681.330493989,
+      842136.104899,
+      5468748.00183333
+    ],
+    "center": {
+      "x": 841540.165849901,
+      "y": 5468214.66616366
+    },
+    "num_roads": 250,
+    "num_driving_lanes_xml": 356,
+    "num_driving_lanes_semantic": 356,
+    "is_drivable": true,
+    "drivable_in_full_map": true,
+    "spawn_candidate": true,
+    "has_local_successor": true
+  },
+  "tile_5_7.xodr": {
+    "file": "tile_5_7.xodr",
+    "path": "E:\\wt\\repair-map-realism-p0-837a8504\\ultimate_pipeline_out\\20261021_165726_800368\\tiles\\tile_5_7.xodr",
+    "i": 5,
+    "j": 7,
+    "bbox": {
+      "min_x": 841457.039341,
+      "min_y": 5468070.167961517,
+      "max_x": 842136.104899,
+      "max_y": 5468748.132540553
+    },
+    "bounds": [
+      841457.039341,
+      5468070.167961517,
+      842136.104899,
+      5468748.132540553
+    ],
+    "center": {
+      "x": 841796.57212,
+      "y": 5468409.150251035
+    },
+    "num_roads": 11,
+    "num_driving_lanes_xml": 21,
+    "num_driving_lanes_semantic": 21,
+    "is_drivable": true,
+    "drivable_in_full_map": true,
+    "spawn_candidate": true,
+    "has_local_successor": true
+  },
+  "tile_6_1.xodr": {
+    "file": "tile_6_1.xodr",
+    "path": "E:\\wt\\repair-map-realism-p0-837a8504\\ultimate_pipeline_out\\20261021_165726_800368\\tiles\\tile_6_1.xodr",
+    "i": 6,
+    "j": 1,
+    "bbox": {
+      "min_x": 841596.603919,
+      "min_y": 5465383.394122,
+      "max_x": 842118.934188,
+      "max_y": 5466066.441454
+    },
+    "bounds": [
+      841596.603919,
+      5465383.394122,
+      842118.934188,
+      5466066.441454
+    ],
+    "center": {
+      "x": 841857.7690535,
+      "y": 5465724.917788
+    },
+    "num_roads": 106,
+    "num_driving_lanes_xml": 174,
+    "num_driving_lanes_semantic": 174,
+    "is_drivable": true,
+    "drivable_in_full_map": true,
+    "spawn_candidate": true,
+    "has_local_successor": true
+  },
+  "tile_6_2.xodr": {
+    "file": "tile_6_2.xodr",
+    "path": "E:\\wt\\repair-map-realism-p0-837a8504\\ultimate_pipeline_out\\20261021_165726_800368\\tiles\\tile_6_2.xodr",
+    "i": 6,
+    "j": 2,
+    "bbox": {
+      "min_x": 841606.2921129,
+      "min_y": 5465549.349844,
+      "max_x": 842946.2727441407,
+      "max_y": 5467490.268377976
+    },
+    "bounds": [
+      841606.2921129,
+      5465549.349844,
+      842946.2727441407,
+      5467490.268377976
+    ],
+    "center": {
+      "x": 842276.2824285203,
+      "y": 5466519.809110988
+    },
+    "num_roads": 92,
+    "num_driving_lanes_xml": 133,
+    "num_driving_lanes_semantic": 133,
+    "is_drivable": true,
+    "drivable_in_full_map": true,
+    "spawn_candidate": true,
+    "has_local_successor": true
+  },
+  "tile_6_3.xodr": {
+    "file": "tile_6_3.xodr",
+    "path": "E:\\wt\\repair-map-realism-p0-837a8504\\ultimate_pipeline_out\\20261021_165726_800368\\tiles\\tile_6_3.xodr",
+    "i": 6,
+    "j": 3,
+    "bbox": {
+      "min_x": 841598.208303,
+      "min_y": 5465988.516481,
+      "max_x": 841796.0469825,
+      "max_y": 5467490.268377976
+    },
+    "bounds": [
+      841598.208303,
+      5465988.516481,
+      841796.0469825,
+      5467490.268377976
+    ],
+    "center": {
+      "x": 841697.12764275,
+      "y": 5466739.392429488
+    },
+    "num_roads": 9,
+    "num_driving_lanes_xml": 13,
+    "num_driving_lanes_semantic": 13,
+    "is_drivable": true,
+    "drivable_in_full_map": true,
+    "spawn_candidate": true,
+    "has_local_successor": true
+  },
+  "tile_6_4.xodr": {
+    "file": "tile_6_4.xodr",
+    "path": "E:\\wt\\repair-map-realism-p0-837a8504\\ultimate_pipeline_out\\20261021_165726_800368\\tiles\\tile_6_4.xodr",
+    "i": 6,
+    "j": 4,
+    "bbox": {
+      "min_x": 841245.930875,
+      "min_y": 5465988.516481,
+      "max_x": 841702.346117,
+      "max_y": 5467490.268377976
+    },
+    "bounds": [
+      841245.930875,
+      5465988.516481,
+      841702.346117,
+      5467490.268377976
+    ],
+    "center": {
+      "x": 841474.138496,
+      "y": 5466739.392429488
+    },
+    "num_roads": 4,
+    "num_driving_lanes_xml": 8,
+    "num_driving_lanes_semantic": 8,
+    "is_drivable": true,
+    "drivable_in_full_map": true,
+    "spawn_candidate": true,
+    "has_local_successor": true
+  },
+  "tile_6_5.xodr": {
+    "file": "tile_6_5.xodr",
+    "path": "E:\\wt\\repair-map-realism-p0-837a8504\\ultimate_pipeline_out\\20261021_165726_800368\\tiles\\tile_6_5.xodr",
+    "i": 6,
+    "j": 5,
+    "bbox": {
+      "min_x": 841381.46117899,
+      "min_y": 5465988.516481,
+      "max_x": 842325.74479271,
+      "max_y": 5468015.736992043
+    },
+    "bounds": [
+      841381.46117899,
+      5465988.516481,
+      842325.74479271,
+      5468015.736992043
+    ],
+    "center": {
+      "x": 841853.60298585,
+      "y": 5467002.126736522
+    },
+    "num_roads": 127,
+    "num_driving_lanes_xml": 160,
+    "num_driving_lanes_semantic": 160,
+    "is_drivable": true,
+    "drivable_in_full_map": true,
+    "spawn_candidate": true,
+    "has_local_successor": true
+  },
+  "tile_6_6.xodr": {
+    "file": "tile_6_6.xodr",
+    "path": "E:\\wt\\repair-map-realism-p0-837a8504\\ultimate_pipeline_out\\20261021_165726_800368\\tiles\\tile_6_6.xodr",
+    "i": 6,
+    "j": 6,
+    "bbox": {
+      "min_x": 841554.54256598,
+      "min_y": 5467681.330493989,
+      "max_x": 842567.2737971569,
+      "max_y": 5468748.00183333
+    },
+    "bounds": [
+      841554.54256598,
+      5467681.330493989,
+      842567.2737971569,
+      5468748.00183333
+    ],
+    "center": {
+      "x": 842060.9081815684,
+      "y": 5468214.66616366
+    },
+    "num_roads": 163,
+    "num_driving_lanes_xml": 224,
+    "num_driving_lanes_semantic": 224,
+    "is_drivable": true,
+    "drivable_in_full_map": true,
+    "spawn_candidate": true,
+    "has_local_successor": true
+  },
+  "tile_6_7.xodr": {
+    "file": "tile_6_7.xodr",
+    "path": "E:\\wt\\repair-map-realism-p0-837a8504\\ultimate_pipeline_out\\20261021_165726_800368\\tiles\\tile_6_7.xodr",
+    "i": 6,
+    "j": 7,
+    "bbox": {
+      "min_x": 841554.54256598,
+      "min_y": 5468070.167961517,
+      "max_x": 842567.2737971569,
+      "max_y": 5468748.00183333
+    },
+    "bounds": [
+      841554.54256598,
+      5468070.167961517,
+      842567.2737971569,
+      5468748.00183333
+    ],
+    "center": {
+      "x": 842060.9081815684,
+      "y": 5468409.084897423
+    },
+    "num_roads": 14,
+    "num_driving_lanes_xml": 23,
+    "num_driving_lanes_semantic": 23,
+    "is_drivable": true,
+    "drivable_in_full_map": true,
+    "spawn_candidate": true,
+    "has_local_successor": true
+  },
+  "tile_7_1.xodr": {
+    "file": "tile_7_1.xodr",
+    "path": "E:\\wt\\repair-map-realism-p0-837a8504\\ultimate_pipeline_out\\20261021_165726_800368\\tiles\\tile_7_1.xodr",
+    "i": 7,
+    "j": 1,
+    "bbox": {
+      "min_x": 842030.0379708161,
+      "min_y": 5465439.412579,
+      "max_x": 842118.934188,
+      "max_y": 5465480.745370594
+    },
+    "bounds": [
+      842030.0379708161,
+      5465439.412579,
+      842118.934188,
+      5465480.745370594
+    ],
+    "center": {
+      "x": 842074.4860794081,
+      "y": 5465460.078974796
+    },
+    "num_roads": 1,
+    "num_driving_lanes_xml": 2,
+    "num_driving_lanes_semantic": 2,
+    "is_drivable": true,
+    "drivable_in_full_map": true,
+    "spawn_candidate": true,
+    "has_local_successor": true
+  },
+  "tile_7_2.xodr": {
+    "file": "tile_7_2.xodr",
+    "path": "E:\\wt\\repair-map-realism-p0-837a8504\\ultimate_pipeline_out\\20261021_165726_800368\\tiles\\tile_7_2.xodr",
+    "i": 7,
+    "j": 2,
+    "bbox": {
+      "min_x": 842088.6309237242,
+      "min_y": 5465979.114544764,
+      "max_x": 842946.2727441407,
+      "max_y": 5466244.7470048675
+    },
+    "bounds": [
+      842088.6309237242,
+      5465979.114544764,
+      842946.2727441407,
+      5466244.7470048675
+    ],
+    "center": {
+      "x": 842517.4518339324,
+      "y": 5466111.930774815
+    },
+    "num_roads": 4,
+    "num_driving_lanes_xml": 4,
+    "num_driving_lanes_semantic": 4,
+    "is_drivable": true,
+    "drivable_in_full_map": true,
+    "spawn_candidate": true,
+    "has_local_successor": false
+  },
+  "tile_7_5.xodr": {
+    "file": "tile_7_5.xodr",
+    "path": "E:\\wt\\repair-map-realism-p0-837a8504\\ultimate_pipeline_out\\20261021_165726_800368\\tiles\\tile_7_5.xodr",
+    "i": 7,
+    "j": 5,
+    "bbox": {
+      "min_x": 842064.32662697,
+      "min_y": 5467516.071646712,
+      "max_x": 842785.65733206,
+      "max_y": 5467839.16411398
+    },
+    "bounds": [
+      842064.32662697,
+      5467516.071646712,
+      842785.65733206,
+      5467839.16411398
+    ],
+    "center": {
+      "x": 842424.991979515,
+      "y": 5467677.617880346
+    },
+    "num_roads": 113,
+    "num_driving_lanes_xml": 113,
+    "num_driving_lanes_semantic": 113,
+    "is_drivable": true,
+    "drivable_in_full_map": true,
+    "spawn_candidate": true,
+    "has_local_successor": true
+  },
+  "tile_7_6.xodr": {
+    "file": "tile_7_6.xodr",
+    "path": "E:\\wt\\repair-map-realism-p0-837a8504\\ultimate_pipeline_out\\20261021_165726_800368\\tiles\\tile_7_6.xodr",
+    "i": 7,
+    "j": 6,
+    "bbox": {
+      "min_x": 841554.54256598,
+      "min_y": 5467626.088861175,
+      "max_x": 842861.55320522,
+      "max_y": 5468748.00183333
+    },
+    "bounds": [
+      841554.54256598,
+      5467626.088861175,
+      842861.55320522,
+      5468748.00183333
+    ],
+    "center": {
+      "x": 842208.0478856,
+      "y": 5468187.045347253
+    },
+    "num_roads": 249,
+    "num_driving_lanes_xml": 253,
+    "num_driving_lanes_semantic": 253,
+    "is_drivable": true,
+    "drivable_in_full_map": true,
+    "spawn_candidate": true,
+    "has_local_successor": true
+  },
+  "tile_7_7.xodr": {
+    "file": "tile_7_7.xodr",
+    "path": "E:\\wt\\repair-map-realism-p0-837a8504\\ultimate_pipeline_out\\20261021_165726_800368\\tiles\\tile_7_7.xodr",
+    "i": 7,
+    "j": 7,
+    "bbox": {
+      "min_x": 841554.54256598,
+      "min_y": 5468100.013883,
+      "max_x": 842758.0979547371,
+      "max_y": 5468748.00183333
+    },
+    "bounds": [
+      841554.54256598,
+      5468100.013883,
+      842758.0979547371,
+      5468748.00183333
+    ],
+    "center": {
+      "x": 842156.3202603585,
+      "y": 5468424.007858165
+    },
+    "num_roads": 23,
+    "num_driving_lanes_xml": 26,
+    "num_driving_lanes_semantic": 26,
+    "is_drivable": true,
+    "drivable_in_full_map": true,
+    "spawn_candidate": true,
+    "has_local_successor": true
+  },
+  "tile_8_0.xodr": {
+    "file": "tile_8_0.xodr",
+    "path": "E:\\wt\\repair-map-realism-p0-837a8504\\ultimate_pipeline_out\\20261021_165726_800368\\tiles\\tile_8_0.xodr",
+    "i": 8,
+    "j": 0,
+    "bbox": {
+      "min_x": 843121.721047,
+      "min_y": 5465214.548266359,
+      "max_x": 843465.36567135,
+      "max_y": 5465627.025732025
+    },
+    "bounds": [
+      843121.721047,
+      5465214.548266359,
+      843465.36567135,
+      5465627.025732025
+    ],
+    "center": {
+      "x": 843293.5433591751,
+      "y": 5465420.786999192
+    },
+    "num_roads": 2,
+    "num_driving_lanes_xml": 2,
+    "num_driving_lanes_semantic": 2,
+    "is_drivable": true,
+    "drivable_in_full_map": true,
+    "spawn_candidate": true,
+    "has_local_successor": true
+  },
+  "tile_8_1.xodr": {
+    "file": "tile_8_1.xodr",
+    "path": "E:\\wt\\repair-map-realism-p0-837a8504\\ultimate_pipeline_out\\20261021_165726_800368\\tiles\\tile_8_1.xodr",
+    "i": 8,
+    "j": 1,
+    "bbox": {
+      "min_x": 843009.9432124709,
+      "min_y": 5465214.548266359,
+      "max_x": 843465.36567135,
+      "max_y": 5465893.34487274
+    },
+    "bounds": [
+      843009.9432124709,
+      5465214.548266359,
+      843465.36567135,
+      5465893.34487274
+    ],
+    "center": {
+      "x": 843237.6544419104,
+      "y": 5465553.946569549
+    },
+    "num_roads": 25,
+    "num_driving_lanes_xml": 38,
+    "num_driving_lanes_semantic": 38,
+    "is_drivable": true,
+    "drivable_in_full_map": true,
+    "spawn_candidate": true,
+    "has_local_successor": true
+  },
+  "tile_8_2.xodr": {
+    "file": "tile_8_2.xodr",
+    "path": "E:\\wt\\repair-map-realism-p0-837a8504\\ultimate_pipeline_out\\20261021_165726_800368\\tiles\\tile_8_2.xodr",
+    "i": 8,
+    "j": 2,
+    "bbox": {
+      "min_x": 842094.0537299851,
+      "min_y": 5465643.271537,
+      "max_x": 843194.1991706672,
+      "max_y": 5466391.626956361
+    },
+    "bounds": [
+      842094.0537299851,
+      5465643.271537,
+      843194.1991706672,
+      5466391.626956361
+    ],
+    "center": {
+      "x": 842644.1264503262,
+      "y": 5466017.44924668
+    },
+    "num_roads": 51,
+    "num_driving_lanes_xml": 53,
+    "num_driving_lanes_semantic": 53,
+    "is_drivable": true,
+    "drivable_in_full_map": true,
+    "spawn_candidate": true,
+    "has_local_successor": true
+  },
+  "tile_8_3.xodr": {
+    "file": "tile_8_3.xodr",
+    "path": "E:\\wt\\repair-map-realism-p0-837a8504\\ultimate_pipeline_out\\20261021_165726_800368\\tiles\\tile_8_3.xodr",
+    "i": 8,
+    "j": 3,
+    "bbox": {
+      "min_x": 842948.7435886916,
+      "min_y": 5466241.220602,
+      "max_x": 843194.1991706672,
+      "max_y": 5466391.626956361
+    },
+    "bounds": [
+      842948.7435886916,
+      5466241.220602,
+      843194.1991706672,
+      5466391.626956361
+    ],
+    "center": {
+      "x": 843071.4713796794,
+      "y": 5466316.42377918
+    },
+    "num_roads": 8,
+    "num_driving_lanes_xml": 8,
+    "num_driving_lanes_semantic": 8,
+    "is_drivable": true,
+    "drivable_in_full_map": true,
+    "spawn_candidate": true,
+    "has_local_successor": true
+  },
+  "tile_8_5.xodr": {
+    "file": "tile_8_5.xodr",
+    "path": "E:\\wt\\repair-map-realism-p0-837a8504\\ultimate_pipeline_out\\20261021_165726_800368\\tiles\\tile_8_5.xodr",
+    "i": 8,
+    "j": 5,
+    "bbox": {
+      "min_x": 842604.342054,
+      "min_y": 5467557.7184548825,
+      "max_x": 843396.94839596,
+      "max_y": 5467839.16411398
+    },
+    "bounds": [
+      842604.342054,
+      5467557.7184548825,
+      843396.94839596,
+      5467839.16411398
+    ],
+    "center": {
+      "x": 843000.6452249801,
+      "y": 5467698.441284431
+    },
+    "num_roads": 36,
+    "num_driving_lanes_xml": 36,
+    "num_driving_lanes_semantic": 36,
+    "is_drivable": true,
+    "drivable_in_full_map": true,
+    "spawn_candidate": true,
+    "has_local_successor": true
+  },
+  "tile_8_6.xodr": {
+    "file": "tile_8_6.xodr",
+    "path": "E:\\wt\\repair-map-realism-p0-837a8504\\ultimate_pipeline_out\\20261021_165726_800368\\tiles\\tile_8_6.xodr",
+    "i": 8,
+    "j": 6,
+    "bbox": {
+      "min_x": 842359.7173540212,
+      "min_y": 5467626.088861175,
+      "max_x": 843396.94839596,
+      "max_y": 5468444.664162
+    },
+    "bounds": [
+      842359.7173540212,
+      5467626.088861175,
+      843396.94839596,
+      5468444.664162
+    ],
+    "center": {
+      "x": 842878.3328749905,
+      "y": 5468035.376511587
+    },
+    "num_roads": 246,
+    "num_driving_lanes_xml": 247,
+    "num_driving_lanes_semantic": 247,
+    "is_drivable": true,
+    "drivable_in_full_map": true,
+    "spawn_candidate": true,
+    "has_local_successor": true
+  },
+  "tile_8_7.xodr": {
+    "file": "tile_8_7.xodr",
+    "path": "E:\\wt\\repair-map-realism-p0-837a8504\\ultimate_pipeline_out\\20261021_165726_800368\\tiles\\tile_8_7.xodr",
+    "i": 8,
+    "j": 7,
+    "bbox": {
+      "min_x": 842359.7173540212,
+      "min_y": 5468109.64178774,
+      "max_x": 843328.4499887,
+      "max_y": 5468594.07701903
+    },
+    "bounds": [
+      842359.7173540212,
+      5468109.64178774,
+      843328.4499887,
+      5468594.07701903
+    ],
+    "center": {
+      "x": 842844.0836713605,
+      "y": 5468351.859403385
+    },
+    "num_roads": 83,
+    "num_driving_lanes_xml": 84,
+    "num_driving_lanes_semantic": 84,
+    "is_drivable": true,
+    "drivable_in_full_map": true,
+    "spawn_candidate": true,
+    "has_local_successor": true
+  },
+  "tile_9_0.xodr": {
+    "file": "tile_9_0.xodr",
+    "path": "E:\\wt\\repair-map-realism-p0-837a8504\\ultimate_pipeline_out\\20261021_165726_800368\\tiles\\tile_9_0.xodr",
+    "i": 9,
+    "j": 0,
+    "bbox": {
+      "min_x": 843121.721047,
+      "min_y": 5465214.498803305,
+      "max_x": 843470.436700525,
+      "max_y": 5465627.025732025
+    },
+    "bounds": [
+      843121.721047,
+      5465214.498803305,
+      843470.436700525,
+      5465627.025732025
+    ],
+    "center": {
+      "x": 843296.0788737625,
+      "y": 5465420.762267665
+    },
+    "num_roads": 3,
+    "num_driving_lanes_xml": 3,
+    "num_driving_lanes_semantic": 3,
+    "is_drivable": true,
+    "drivable_in_full_map": true,
+    "spawn_candidate": true,
+    "has_local_successor": true
+  },
+  "tile_9_1.xodr": {
+    "file": "tile_9_1.xodr",
+    "path": "E:\\wt\\repair-map-realism-p0-837a8504\\ultimate_pipeline_out\\20261021_165726_800368\\tiles\\tile_9_1.xodr",
+    "i": 9,
+    "j": 1,
+    "bbox": {
+      "min_x": 843093.2178658446,
+      "min_y": 5465214.548266359,
+      "max_x": 843465.36567135,
+      "max_y": 5465975.63498475
+    },
+    "bounds": [
+      843093.2178658446,
+      5465214.548266359,
+      843465.36567135,
+      5465975.63498475
+    ],
+    "center": {
+      "x": 843279.2917685973,
+      "y": 5465595.0916255545
+    },
+    "num_roads": 50,
+    "num_driving_lanes_xml": 70,
+    "num_driving_lanes_semantic": 70,
+    "is_drivable": true,
+    "drivable_in_full_map": true,
+    "spawn_candidate": true,
+    "has_local_successor": true
+  },
+  "tile_9_2.xodr": {
+    "file": "tile_9_2.xodr",
+    "path": "E:\\wt\\repair-map-realism-p0-837a8504\\ultimate_pipeline_out\\20261021_165726_800368\\tiles\\tile_9_2.xodr",
+    "i": 9,
+    "j": 2,
+    "bbox": {
+      "min_x": 842948.7435886916,
+      "min_y": 5465723.22522414,
+      "max_x": 843587.657473,
+      "max_y": 5466453.8492679
+    },
+    "bounds": [
+      842948.7435886916,
+      5465723.22522414,
+      843587.657473,
+      5466453.8492679
+    ],
+    "center": {
+      "x": 843268.2005308458,
+      "y": 5466088.5372460205
+    },
+    "num_roads": 111,
+    "num_driving_lanes_xml": 126,
+    "num_driving_lanes_semantic": 126,
+    "is_drivable": true,
+    "drivable_in_full_map": true,
+    "spawn_candidate": true,
+    "has_local_successor": true
+  },
+  "tile_9_3.xodr": {
+    "file": "tile_9_3.xodr",
+    "path": "E:\\wt\\repair-map-realism-p0-837a8504\\ultimate_pipeline_out\\20261021_165726_800368\\tiles\\tile_9_3.xodr",
+    "i": 9,
+    "j": 3,
+    "bbox": {
+      "min_x": 842948.7435886916,
+      "min_y": 5466241.220602,
+      "max_x": 843587.657473,
+      "max_y": 5466453.8492679
+    },
+    "bounds": [
+      842948.7435886916,
+      5466241.220602,
+      843587.657473,
+      5466453.8492679
+    ],
+    "center": {
+      "x": 843268.2005308458,
+      "y": 5466347.53493495
+    },
+    "num_roads": 53,
+    "num_driving_lanes_xml": 54,
+    "num_driving_lanes_semantic": 54,
+    "is_drivable": true,
+    "drivable_in_full_map": true,
+    "spawn_candidate": true,
+    "has_local_successor": true
+  },
+  "tile_9_5.xodr": {
+    "file": "tile_9_5.xodr",
+    "path": "E:\\wt\\repair-map-realism-p0-837a8504\\ultimate_pipeline_out\\20261021_165726_800368\\tiles\\tile_9_5.xodr",
+    "i": 9,
+    "j": 5,
+    "bbox": {
+      "min_x": 842958.0534743291,
+      "min_y": 5467732.150976519,
+      "max_x": 843396.94839596,
+      "max_y": 5467782.99654348
+    },
+    "bounds": [
+      842958.0534743291,
+      5467732.150976519,
+      843396.94839596,
+      5467782.99654348
+    ],
+    "center": {
+      "x": 843177.5009351445,
+      "y": 5467757.573759999
+    },
+    "num_roads": 2,
+    "num_driving_lanes_xml": 2,
+    "num_driving_lanes_semantic": 2,
+    "is_drivable": true,
+    "drivable_in_full_map": true,
+    "spawn_candidate": true,
+    "has_local_successor": false
+  },
+  "tile_9_6.xodr": {
+    "file": "tile_9_6.xodr",
+    "path": "E:\\wt\\repair-map-realism-p0-837a8504\\ultimate_pipeline_out\\20261021_165726_800368\\tiles\\tile_9_6.xodr",
+    "i": 9,
+    "j": 6,
+    "bbox": {
+      "min_x": 842958.0534743291,
+      "min_y": 5467732.150976519,
+      "max_x": 843396.94839596,
+      "max_y": 5468331.2663914235
+    },
+    "bounds": [
+      842958.0534743291,
+      5467732.150976519,
+      843396.94839596,
+      5468331.2663914235
+    ],
+    "center": {
+      "x": 843177.5009351445,
+      "y": 5468031.708683971
+    },
+    "num_roads": 8,
+    "num_driving_lanes_xml": 8,
+    "num_driving_lanes_semantic": 8,
+    "is_drivable": true,
+    "drivable_in_full_map": true,
+    "spawn_candidate": true,
+    "has_local_successor": false
+  },
+  "tile_9_7.xodr": {
+    "file": "tile_9_7.xodr",
+    "path": "E:\\wt\\repair-map-realism-p0-837a8504\\ultimate_pipeline_out\\20261021_165726_800368\\tiles\\tile_9_7.xodr",
+    "i": 9,
+    "j": 7,
+    "bbox": {
+      "min_x": 842964.87001261,
+      "min_y": 5468109.64178774,
+      "max_x": 843654.20097829,
+      "max_y": 5468448.755430423
+    },
+    "bounds": [
+      842964.87001261,
+      5468109.64178774,
+      843654.20097829,
+      5468448.755430423
+    ],
+    "center": {
+      "x": 843309.53549545,
+      "y": 5468279.198609082
+    },
+    "num_roads": 12,
+    "num_driving_lanes_xml": 12,
+    "num_driving_lanes_semantic": 12,
+    "is_drivable": true,
+    "drivable_in_full_map": true,
+    "spawn_candidate": true,
+    "has_local_successor": true
+  }
+}
