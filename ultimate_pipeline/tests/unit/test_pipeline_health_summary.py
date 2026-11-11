@@ -41,11 +41,72 @@ def test_report_status_falls_back_to_n_errors_count():
 
 
 def test_report_status_defaults_to_pass_for_empty_dict():
-    assert _report_status({}) == (True, "pass")
+    # Empty dict has no recognizable status: fail-closed, never default to pass.
+    assert _report_status({}) == (False, "fail")
 
 
 def test_report_status_non_dict_input_treated_as_unknown_ok():
-    assert _report_status("not a dict") == (True, "unknown")
+    assert _report_status("not a dict") == (False, "unknown")
+
+
+# ---------------------------------------------------------------------------
+# R1.2 negative tests: pipeline-health gate fail-closed interpretation
+# ---------------------------------------------------------------------------
+
+
+def test_report_status_unknown_status_is_not_pass():
+    assert _report_status({"status": "UNKNOWN"}) == (False, "fail")
+
+
+def test_report_status_not_run_is_not_pass():
+    assert _report_status({"status": "NOT_RUN"}) == (False, "fail")
+
+
+def test_report_status_blocked_external_is_not_pass():
+    assert _report_status({"status": "BLOCKED_EXTERNAL"}) == (False, "fail")
+
+
+def test_report_status_incomplete_is_not_pass():
+    assert _report_status({"status": "INCOMPLETE"}) == (False, "fail")
+
+
+def test_report_status_waived_is_not_pass():
+    assert _report_status({"status": "WAIVED"}) == (False, "fail")
+
+
+def test_report_status_ok_field_string_false_is_not_pass():
+    # bool("false") is True, but the string "false" must not authorize pass.
+    assert _report_status({"ok": "false"}) == (False, "fail")
+
+
+def test_report_status_ok_field_null_is_not_pass():
+    assert _report_status({"ok": None}) == (False, "fail")
+
+
+def test_report_status_ok_field_zero_is_not_pass():
+    assert _report_status({"ok": 0}) == (False, "fail")
+
+
+def test_report_status_ok_field_one_is_not_pass():
+    # 1 is not a boolean; only explicit True/False authorize pass/fail.
+    assert _report_status({"ok": 1}) == (False, "fail")
+
+
+def test_report_status_empty_dict_is_not_pass():
+    assert _report_status({}) == (False, "fail")
+
+
+def test_report_status_missing_mandatory_gate_is_not_pass():
+    # A report with no status and no ok field: fail-closed.
+    assert _report_status({"some_other_key": "value"}) == (False, "fail")
+
+
+def test_report_status_explicit_pass_is_pass():
+    assert _report_status({"status": "PASS"}) == (True, "pass")
+
+
+def test_report_status_explicit_ok_true_is_pass():
+    assert _report_status({"ok": True}) == (True, "pass")
 
 
 # ---------------------------------------------------------------------------

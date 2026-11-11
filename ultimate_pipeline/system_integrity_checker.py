@@ -34,7 +34,7 @@ def readable(path: str) -> bool:
     try:
         with open(path, "rb"):
             return True
-    except:
+    except Exception:
         return False
 
 

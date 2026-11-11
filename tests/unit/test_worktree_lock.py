@@ -1,14 +1,3 @@
-"""Unit coverage for GAP-052 per-worktree mutation leases.
-
-`worktree_lock.acquire_worktree_lease` anchors its lease directory at
-`Path(__file__).resolve().parents[3]` -- i.e. the checkout that *contains*
-this module, not the worktree being leased. Every test here therefore
-monkeypatches `_get_worktree_leases_dir` into `tmp_path`, so no test ever
-reads or writes the real repository's `.agent_locks/` directory.
-
-No Windows-only API is called, so this file is collectable and runnable on
-ubuntu CI (GAP-055).
-"""
 import calendar
 import json
 import os
@@ -79,7 +68,14 @@ def _lease_path_for(worktree_root):
 
 
 def _read_raw(worktree_root):
-    return json.loads(_lease_path_for(worktree_root).read_text(encoding="utf-8"))
+    """Read lease JSON, returning None if file is absent or unparsable."""
+    lease_path = _lease_path_for(worktree_root)
+    if not lease_path.exists():
+        return None
+    try:
+        return json.loads(lease_path.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, OSError):
+        return None
 
 
 def _plant_lease(worktree_root, **overrides):
@@ -97,7 +93,6 @@ def _plant_lease(worktree_root, **overrides):
 def _utc_delta_seconds(stamp, fmt="%Y-%m-%dT%H:%M:%SZ"):
     """True UTC seconds from now until stamp (never local-time skewed)."""
     return calendar.timegm(time.strptime(stamp, fmt)) - time.time()
-
 
 # --------------------------------------------------------------------------
 # acquire: happy path and lease contents
@@ -319,15 +314,10 @@ def test_is_expired_fails_closed_on_a_malformed_timestamp():
     assert wl.WorktreeLease(expires_at="not-a-timestamp").is_expired() is True
 
 
-# GAP-052 regression: expiry must be computed in pure UTC. Each zone below has
-# DST active (dst offset != std offset) and the shim resolves mktime() with the
-# offset matching tm_isdst, exactly like a real DST-active host. Any return to
-# local-time conversion (time.mktime) makes the future-600s case read expired.
 _DST_ACTIVE_ZONES = [
     pytest.param(3600, 7200, id="europe-cest"),
     pytest.param(-18000, -14400, id="us-eastern-edt"),
 ]
-
 
 @pytest.mark.parametrize("std_east, dst_east", _DST_ACTIVE_ZONES)
 def test_is_expired_in_dst_active_zone_regression(monkeypatch, std_east, dst_east):
@@ -370,6 +360,7 @@ def test_release_removes_the_lease_file(leases_dir, worktree):
 
 def test_release_allows_reacquisition(leases_dir, worktree):
     first = wl.acquire_worktree_lease(worktree, purpose="first")
+
     assert wl.release_worktree_lease(worktree) is True
 
     second = wl.acquire_worktree_lease(worktree, purpose="second")
@@ -416,6 +407,7 @@ def test_list_worktree_leases_reports_acquired_roots(leases_dir, tmp_path):
     second_root = tmp_path / "wt_b"
     first_root.mkdir()
     second_root.mkdir()
+
     wl.acquire_worktree_lease(first_root, purpose="a")
     wl.acquire_worktree_lease(second_root, purpose="b")
 
@@ -439,6 +431,7 @@ def test_cleanup_removes_expired_and_keeps_active(leases_dir, tmp_path):
     live_root = tmp_path / "wt_live"
     stale_root.mkdir()
     live_root.mkdir()
+
     past = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(time.time() - 3600))
     _plant_lease(stale_root, expires_at=past, holder_pid=4242)
     wl.acquire_worktree_lease(live_root, purpose="live")
@@ -502,37 +495,182 @@ def test_read_only_session_reads_the_environment(leases_dir, worktree, monkeypat
     assert wl.read_only_session() is True
 
 
-def test_acquire_still_succeeds_under_read_only_session(leases_dir, worktree, monkeypatch):
-    """Documents the real behaviour: the guard is imported but never consulted."""
-    monkeypatch.setenv("READ_ONLY_SESSION", "1")
-
-    lease = wl.acquire_worktree_lease(worktree, purpose="read only session")
-
-    assert lease.status == "active"
-
-
-@pytest.mark.xfail(
-    strict=True,
-    reason="GAP-052 BUG: worktree_lock imports read_only_session (line 27) but never calls it, "
-           "so a READ_ONLY_SESSION process can still take a mutation lease",
-)
 def test_acquire_is_refused_under_read_only_session(leases_dir, worktree, monkeypatch):
     monkeypatch.setenv("READ_ONLY_SESSION", "1")
 
-    with pytest.raises(RuntimeError):
+    with pytest.raises(RuntimeError) as excinfo:
         wl.acquire_worktree_lease(worktree, purpose="should be refused")
 
+    assert "READ_ONLY_SESSION" in str(excinfo.value)
+    assert "refused" in str(excinfo.value).lower()
 
-@pytest.mark.xfail(
-    strict=True,
-    reason="GAP-052 BUG: acquire_worktree_lease treats an unparsable lease file as "
-           "'leased by another process' with no public recovery path, unlike common_git_lock",
-)
+
+def test_fail_closed_on_unparsable_lease_during_acquire(leases_dir, worktree):
+    """GAP-052B FAIL-CLOSED: an unparsable lease file must NOT be auto-deleted.
+
+    Writer A creates the lease path with O_EXCL but suspends before writing
+    JSON. Writer B then sees the empty file, fails to parse it, and must NOT
+    call _remove_lease -- that would delete A's live reservation.
+    """
+    lease_path = _lease_path_for(worktree)
+    lease_path.parent.mkdir(parents=True, exist_ok=True)
+    # Create an empty file (simulates O_EXCL create without JSON write)
+    lease_path.write_text("", encoding="utf-8")
+
+    with pytest.raises(RuntimeError) as excinfo:
+        wl.acquire_worktree_lease(worktree, purpose="should fail-closed")
+
+    assert "unparsable" in str(excinfo.value).lower() or "concurrent" in str(excinfo.value).lower()
+
+    # The empty file must STILL exist (A's reservation preserved)
+    assert lease_path.exists(), "Unparsable lease was auto-deleted -- LIVE RESERVATION LOST"
+
+
 def test_corrupt_lease_file_does_not_permanently_lock_the_worktree(leases_dir, worktree):
+    """GAP-052B: corrupt lease metadata requires manual recovery after fail-closed."""
     lease_path = _lease_path_for(worktree)
     lease_path.parent.mkdir(parents=True, exist_ok=True)
     lease_path.write_text("{ truncated json", encoding="utf-8")
 
-    lease = wl.acquire_worktree_lease(worktree, purpose="after corruption")
+    # Fail-closed: acquire must refuse rather than auto-delete the corrupt file
+    with pytest.raises(RuntimeError) as excinfo:
+        wl.acquire_worktree_lease(worktree, purpose="after corruption")
 
+    assert "unparsable" in str(excinfo.value).lower() or "concurrent" in str(excinfo.value).lower()
+    assert lease_path.exists()  # file preserved (do NOT delete active/live reservations)
+
+    # Manual recovery via force_recover_corrupt_lease removes the file
+    wl.force_recover_corrupt_lease(worktree)
+    assert not lease_path.exists()
+
+    # Then acquire succeeds after manual recovery
+    lease = wl.acquire_worktree_lease(worktree, purpose="after corruption")
     assert lease.status == "active"
+
+
+def test_concurrent_publication_race_never_deletes_active_reservation(leases_dir, worktree, monkeypatch):
+    """Writer B must never delete Writer A's live O_EXCL reservation."""
+    
+    # Barrier to synchronize: A opens file, then waits; B tries to acquire
+    a_opened = threading.Event()
+    a_can_write = threading.Event()
+    
+    real_open = wl.os.open
+    
+    def trapping_open(path, flags, mode=0o644):
+        if flags & os.O_CREAT and flags & os.O_EXCL:
+            # First exclusive create: create the file first, then signal
+            fd = real_open(path, flags, mode)
+            a_opened.set()  # signal that exclusive create happened
+            a_can_write.wait(timeout=5)  # wait for test to release JSON write
+            return fd
+        return real_open(path, flags, mode)
+    
+    monkeypatch.setattr(wl.os, "open", trapping_open)
+    
+    # Writer A: start acquiring (will pause after O_EXCL)
+    a_result = {}
+    def writer_a():
+        try:
+            lease = wl.acquire_worktree_lease(worktree, purpose="writer-a")
+            a_result["lease"] = lease
+            a_result["error"] = None
+        except Exception as e:
+            a_result["error"] = e
+    
+    thread_a = threading.Thread(target=writer_a)
+    thread_a.start()
+    
+    # Wait for A to open the file exclusively
+    assert a_opened.wait(timeout=5), "Writer A did not open lease file"
+    
+    # At this point: file exists but is empty (A hasn't written JSON)
+    # Verify A's file exists but is empty
+    assert _lease_path_for(worktree).exists()
+    assert _read_raw(worktree) is None  # empty/unparsable
+    
+    # Writer B: tries to acquire while A's file is live but empty
+    b_result = {}
+    def writer_b():
+        try:
+            lease = wl.acquire_worktree_lease(worktree, purpose="writer-b")
+            b_result["lease"] = lease
+            b_result["error"] = None
+        except RuntimeError as e:
+            b_result["error"] = e
+    
+    thread_b = threading.Thread(target=writer_b)
+    thread_b.start()
+    thread_b.join(timeout=5)
+    
+    # B must fail - it must NOT delete A's live reservation
+    assert "error" in b_result, f"Writer B should have failed, got {b_result}"
+    assert "unparsable" in str(b_result["error"]) or "concurrent" in str(b_result["error"])
+    
+    # A's file must still exist (not deleted by B)
+    assert _lease_path_for(worktree).exists(), "Writer B deleted A's live reservation!"
+    
+    # A's file must still be empty (A hasn't written JSON yet)
+    assert _read_raw(worktree) is None  # still empty
+    
+    # Release A and let it complete
+    a_can_write.set()
+    thread_a.join(timeout=5)
+    
+    # Verify exactly one owner exists (A)
+    leases = wl.list_worktree_leases()
+    assert len(leases) == 1
+    assert leases[0].lease_id == a_result["lease"].lease_id
+
+
+def test_force_recover_corrupt_lease_manual_recovery(leases_dir, worktree):
+    """Manual recovery via force_recover_corrupt_lease removes unparsable file."""
+    lease_path = _lease_path_for(worktree)
+    lease_path.parent.mkdir(parents=True, exist_ok=True)
+    lease_path.write_text("{ truncated json", encoding="utf-8")
+
+    # File exists but unparsable - auto-acquire would fail
+    with pytest.raises(RuntimeError):
+        wl.acquire_worktree_lease(worktree, purpose="should fail")
+
+    # Manual recovery removes the file
+    wl.force_recover_corrupt_lease(worktree)
+    assert not lease_path.exists()
+
+    # Then acquire succeeds
+    lease = wl.acquire_worktree_lease(worktree, purpose="after manual recovery")
+    assert lease.status == "active"
+
+
+
+def test_read_only_session_no_fs_side_effects(leases_dir, worktree, monkeypatch):
+    """Read-only session rejection must have zero filesystem side effects."""
+    monkeypatch.setenv("READ_ONLY_SESSION", "1")
+    # Under read-only session, acquire must raise RuntimeError without FS side effects
+    with pytest.raises(RuntimeError) as excinfo:
+        wl.acquire_worktree_lease(worktree, purpose="should be refused")
+    assert "READ_ONLY_SESSION" in str(excinfo.value)
+    # Verify no new .lease.json files were created
+    assert len(list(leases_dir.glob("*.lease.json"))) == 0
+
+
+def test_fencing_generation_monotonicity(leases_dir, worktree):
+    """lease_id should be unique per acquisition."""
+    lease1 = wl.acquire_worktree_lease(worktree, purpose="first")
+    release_lease = wl.release_worktree_lease(worktree, lease1.lease_id)
+    assert release_lease is True
+    
+    # Re-acquire after release - should get a different lease_id
+    lease2 = wl.acquire_worktree_lease(worktree, purpose="second")
+    assert lease1.lease_id != lease2.lease_id
+    assert len(lease1.lease_id) == 32  # uuid4 hex length
+
+
+def test_stale_lease_still_auto_recovered(leases_dir, worktree):
+    """A valid lease with expired status should still be auto-recovered."""
+    expired = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(time.time() - 3600))
+    _plant_lease(worktree, expires_at=expired, holder_pid=4242, purpose="stale")
+
+    fresh = wl.acquire_worktree_lease(worktree, purpose="fresh")
+    assert fresh.purpose == "fresh"
+    assert _read_raw(worktree)["lease_id"] == fresh.lease_id

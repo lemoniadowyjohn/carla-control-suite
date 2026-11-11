@@ -1,0 +1,1482 @@
+{
+  "ok": true,
+  "n_issues": 134,
+  "n_errors": 0,
+  "n_warnings": 134,
+  "issues": [
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "52029",
+        "road_length": 0.1,
+        "sum_geom": 0.00698203,
+        "rel": 0.9301797
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "52178",
+        "road_length": 0.1,
+        "sum_geom": 0.02980283,
+        "rel": 0.7019717
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "52355",
+        "road_length": 0.1,
+        "sum_geom": 0.00234486,
+        "rel": 0.9765514
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "52414",
+        "road_length": 0.1,
+        "sum_geom": 0.00200044,
+        "rel": 0.9799956
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "52456",
+        "road_length": 0.1,
+        "sum_geom": 0.00258387,
+        "rel": 0.9741613
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "52730",
+        "road_length": 0.1,
+        "sum_geom": 0.00238761,
+        "rel": 0.9761239
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "52734",
+        "road_length": 0.1,
+        "sum_geom": 0.00349385,
+        "rel": 0.9650614999999999
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "52878",
+        "road_length": 0.1,
+        "sum_geom": 0.00393299,
+        "rel": 0.9606701000000001
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "52903",
+        "road_length": 0.1,
+        "sum_geom": 0.00229034,
+        "rel": 0.9770966
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "53065",
+        "road_length": 0.1,
+        "sum_geom": 0.00141432,
+        "rel": 0.9858568000000001
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "53297",
+        "road_length": 0.1,
+        "sum_geom": 0.08152225,
+        "rel": 0.1847775
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "53329",
+        "road_length": 0.1,
+        "sum_geom": 0.00548507,
+        "rel": 0.9451493000000001
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "53703",
+        "road_length": 0.1,
+        "sum_geom": 0.00369057,
+        "rel": 0.9630943
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "53785",
+        "road_length": 0.1,
+        "sum_geom": 0.00114197,
+        "rel": 0.9885803
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "53979",
+        "road_length": 0.1,
+        "sum_geom": 0.00100367,
+        "rel": 0.9899633
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "53994",
+        "road_length": 0.1,
+        "sum_geom": 0.08740916,
+        "rel": 0.12590840000000006
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "54074",
+        "road_length": 0.1,
+        "sum_geom": 0.00349001,
+        "rel": 0.9650999
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "54599",
+        "road_length": 0.1,
+        "sum_geom": 0.00317841,
+        "rel": 0.9682158999999999
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "54601",
+        "road_length": 0.1,
+        "sum_geom": 8e-08,
+        "rel": 0.9999992
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "54606",
+        "road_length": 0.1,
+        "sum_geom": 0.00182864,
+        "rel": 0.9817136
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "54609",
+        "road_length": 0.1,
+        "sum_geom": 0.04564277,
+        "rel": 0.5435723
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "54960",
+        "road_length": 0.1,
+        "sum_geom": 0.00727295,
+        "rel": 0.9272705
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "55260",
+        "road_length": 0.1,
+        "sum_geom": 0.00366741,
+        "rel": 0.9633259000000001
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "55446",
+        "road_length": 0.1,
+        "sum_geom": 0.00230462,
+        "rel": 0.9769538000000001
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "55530",
+        "road_length": 0.1,
+        "sum_geom": 0.01657002,
+        "rel": 0.8342997999999999
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "55631",
+        "road_length": 0.1,
+        "sum_geom": 0.00356474,
+        "rel": 0.9643526
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "55850",
+        "road_length": 0.1,
+        "sum_geom": 0.0011744,
+        "rel": 0.9882559999999999
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "56415",
+        "road_length": 0.1,
+        "sum_geom": 0.04564522,
+        "rel": 0.5435478
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "56441",
+        "road_length": 0.1,
+        "sum_geom": 0.00454167,
+        "rel": 0.9545833
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "56448",
+        "road_length": 0.1,
+        "sum_geom": 0.00217618,
+        "rel": 0.9782382000000001
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "56452",
+        "road_length": 0.1,
+        "sum_geom": 0.0118669,
+        "rel": 0.881331
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "56494",
+        "road_length": 0.1,
+        "sum_geom": 0.03589181,
+        "rel": 0.6410819000000001
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "56649",
+        "road_length": 0.1,
+        "sum_geom": 0.00217142,
+        "rel": 0.9782858000000001
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "57029",
+        "road_length": 0.1,
+        "sum_geom": 0.00997715,
+        "rel": 0.9002285
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "57085",
+        "road_length": 0.1,
+        "sum_geom": 0.0012848,
+        "rel": 0.987152
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "57342",
+        "road_length": 0.1,
+        "sum_geom": 0.00154435,
+        "rel": 0.9845565000000001
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "57368",
+        "road_length": 0.1,
+        "sum_geom": 0.00167615,
+        "rel": 0.9832385
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "57401",
+        "road_length": 0.1,
+        "sum_geom": 0.00142465,
+        "rel": 0.9857535000000001
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "57418",
+        "road_length": 0.1,
+        "sum_geom": 0.0069139,
+        "rel": 0.930861
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "57451",
+        "road_length": 0.1,
+        "sum_geom": 0.00190143,
+        "rel": 0.9809857000000001
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "57919",
+        "road_length": 0.1,
+        "sum_geom": 1e-08,
+        "rel": 0.9999999
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "58391",
+        "road_length": 0.1,
+        "sum_geom": 0.08762472,
+        "rel": 0.12375280000000002
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "58538",
+        "road_length": 0.1,
+        "sum_geom": 0.01369701,
+        "rel": 0.8630299
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "58736",
+        "road_length": 0.1,
+        "sum_geom": 0.00151874,
+        "rel": 0.9848125999999999
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "58762",
+        "road_length": 0.1,
+        "sum_geom": 0.002503,
+        "rel": 0.97497
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "58932",
+        "road_length": 0.1,
+        "sum_geom": 0.01816962,
+        "rel": 0.8183038
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "58983",
+        "road_length": 0.1,
+        "sum_geom": 0.00663021,
+        "rel": 0.9336979000000001
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "59295",
+        "road_length": 0.1,
+        "sum_geom": 0.07513283,
+        "rel": 0.24867170000000008
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "59333",
+        "road_length": 0.1,
+        "sum_geom": 0.00601553,
+        "rel": 0.9398447
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "59339",
+        "road_length": 0.1,
+        "sum_geom": 0.00198278,
+        "rel": 0.9801721999999999
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "59527",
+        "road_length": 0.1,
+        "sum_geom": 0.00260346,
+        "rel": 0.9739654
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "59864",
+        "road_length": 0.1,
+        "sum_geom": 0.03076705,
+        "rel": 0.6923294999999999
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "59901",
+        "road_length": 0.1,
+        "sum_geom": 0.03004727,
+        "rel": 0.6995273
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "59965",
+        "road_length": 0.1,
+        "sum_geom": 0.01865019,
+        "rel": 0.8134981
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "60252",
+        "road_length": 0.1,
+        "sum_geom": 0.00414233,
+        "rel": 0.9585767000000001
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "60832",
+        "road_length": 0.1,
+        "sum_geom": 0.01326432,
+        "rel": 0.8673568
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "60868",
+        "road_length": 0.1,
+        "sum_geom": 0.0013412,
+        "rel": 0.986588
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "60872",
+        "road_length": 0.1,
+        "sum_geom": 0.00428952,
+        "rel": 0.9571048
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "61026",
+        "road_length": 0.1,
+        "sum_geom": 0.03374653,
+        "rel": 0.6625347
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "61047",
+        "road_length": 0.1,
+        "sum_geom": 0.00162893,
+        "rel": 0.9837107
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "61573",
+        "road_length": 0.1,
+        "sum_geom": 0.00618222,
+        "rel": 0.9381778
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "61786",
+        "road_length": 0.1,
+        "sum_geom": 0.01717553,
+        "rel": 0.8282447000000001
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "61976",
+        "road_length": 0.1,
+        "sum_geom": 0.01108934,
+        "rel": 0.8891066
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "62036",
+        "road_length": 0.1,
+        "sum_geom": 0.00443457,
+        "rel": 0.9556543000000001
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "62239",
+        "road_length": 0.1,
+        "sum_geom": 0.00313427,
+        "rel": 0.9686573
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "62599",
+        "road_length": 0.1,
+        "sum_geom": 0.03963572,
+        "rel": 0.6036428
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "63181",
+        "road_length": 0.1,
+        "sum_geom": 0.002756,
+        "rel": 0.9724400000000001
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "63217",
+        "road_length": 0.1,
+        "sum_geom": 0.00115624,
+        "rel": 0.9884376
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "63231",
+        "road_length": 0.1,
+        "sum_geom": 0.00141116,
+        "rel": 0.9858884000000001
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "63710",
+        "road_length": 0.1,
+        "sum_geom": 0.00765966,
+        "rel": 0.9234034
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "63926",
+        "road_length": 0.1,
+        "sum_geom": 0.00619839,
+        "rel": 0.9380161
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "64338",
+        "road_length": 0.1,
+        "sum_geom": 0.00208217,
+        "rel": 0.9791783000000001
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "64775",
+        "road_length": 0.1,
+        "sum_geom": 0.00029526,
+        "rel": 0.9970473999999999
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "64778",
+        "road_length": 0.1,
+        "sum_geom": 0.00294495,
+        "rel": 0.9705505
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "65156",
+        "road_length": 0.1,
+        "sum_geom": 0.02120963,
+        "rel": 0.7879037
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "65612",
+        "road_length": 0.1,
+        "sum_geom": 0.00674393,
+        "rel": 0.9325607
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "65786",
+        "road_length": 0.1,
+        "sum_geom": 0.01330654,
+        "rel": 0.8669346
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "66366",
+        "road_length": 0.1,
+        "sum_geom": 0.00170732,
+        "rel": 0.9829268
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "66450",
+        "road_length": 0.1,
+        "sum_geom": 0.00500156,
+        "rel": 0.9499844
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "66818",
+        "road_length": 0.1,
+        "sum_geom": 0.00624247,
+        "rel": 0.9375753
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "66870",
+        "road_length": 0.1,
+        "sum_geom": 0.00536837,
+        "rel": 0.9463163
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "67292",
+        "road_length": 0.1,
+        "sum_geom": 0.01641988,
+        "rel": 0.8358012
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "67524",
+        "road_length": 0.1,
+        "sum_geom": 0.00126962,
+        "rel": 0.9873038000000001
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "67579",
+        "road_length": 0.1,
+        "sum_geom": 0.00336807,
+        "rel": 0.9663193
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "67658",
+        "road_length": 0.1,
+        "sum_geom": 5e-08,
+        "rel": 0.9999995
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "67668",
+        "road_length": 0.1,
+        "sum_geom": 0.01183751,
+        "rel": 0.8816249
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "67798",
+        "road_length": 0.1,
+        "sum_geom": 1e-08,
+        "rel": 0.9999999
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "67985",
+        "road_length": 0.1,
+        "sum_geom": 0.01535858,
+        "rel": 0.8464142
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "69060",
+        "road_length": 0.1,
+        "sum_geom": 0.00209649,
+        "rel": 0.9790350999999999
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "69064",
+        "road_length": 0.1,
+        "sum_geom": 0.00265161,
+        "rel": 0.9734839000000001
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "69364",
+        "road_length": 0.1,
+        "sum_geom": 0.01846403,
+        "rel": 0.8153597000000001
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "69492",
+        "road_length": 0.1,
+        "sum_geom": 0.00130629,
+        "rel": 0.9869371
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "69573",
+        "road_length": 0.1,
+        "sum_geom": 0.00175364,
+        "rel": 0.9824636
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "69978",
+        "road_length": 0.1,
+        "sum_geom": 0.00663102,
+        "rel": 0.9336898
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "70223",
+        "road_length": 0.1,
+        "sum_geom": 0.03228179,
+        "rel": 0.6771821
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "70332",
+        "road_length": 0.1,
+        "sum_geom": 0.00123988,
+        "rel": 0.9876012000000001
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "70607",
+        "road_length": 0.1,
+        "sum_geom": 0.00332331,
+        "rel": 0.9667669000000001
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "70688",
+        "road_length": 0.1,
+        "sum_geom": 0.00893062,
+        "rel": 0.9106938
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "70763",
+        "road_length": 0.1,
+        "sum_geom": 0.02905218,
+        "rel": 0.7094782000000001
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "70862",
+        "road_length": 0.1,
+        "sum_geom": 0.02844378,
+        "rel": 0.7155622
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "70977",
+        "road_length": 0.1,
+        "sum_geom": 0.00498943,
+        "rel": 0.9501056999999999
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "70985",
+        "road_length": 0.1,
+        "sum_geom": 0.01029386,
+        "rel": 0.8970614
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "71156",
+        "road_length": 0.1,
+        "sum_geom": 0.00131415,
+        "rel": 0.9868585
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "71167",
+        "road_length": 0.1,
+        "sum_geom": 0.01566396,
+        "rel": 0.8433604
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "71190",
+        "road_length": 0.1,
+        "sum_geom": 0.00614934,
+        "rel": 0.9385066
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "71242",
+        "road_length": 0.1,
+        "sum_geom": 0.00105155,
+        "rel": 0.9894845
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "71474",
+        "road_length": 0.1,
+        "sum_geom": 0.0087564,
+        "rel": 0.912436
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "71739",
+        "road_length": 0.1,
+        "sum_geom": 0.0056937,
+        "rel": 0.9430630000000001
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "71771",
+        "road_length": 0.1,
+        "sum_geom": 0.00349193,
+        "rel": 0.9650807
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "71911",
+        "road_length": 0.1,
+        "sum_geom": 0.00874648,
+        "rel": 0.9125352
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "72025",
+        "road_length": 0.1,
+        "sum_geom": 0.0364053,
+        "rel": 0.635947
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "72053",
+        "road_length": 0.1,
+        "sum_geom": 0.00127931,
+        "rel": 0.9872069
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "72064",
+        "road_length": 0.1,
+        "sum_geom": 0.00226827,
+        "rel": 0.9773172999999999
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "72348",
+        "road_length": 0.1,
+        "sum_geom": 0.0149444,
+        "rel": 0.8505560000000001
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "72357",
+        "road_length": 0.1,
+        "sum_geom": 0.01249736,
+        "rel": 0.8750264
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "72361",
+        "road_length": 0.1,
+        "sum_geom": 0.00225542,
+        "rel": 0.9774458
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "72418",
+        "road_length": 0.1,
+        "sum_geom": 0.00104676,
+        "rel": 0.9895324000000001
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "72486",
+        "road_length": 0.1,
+        "sum_geom": 0.0043579,
+        "rel": 0.9564210000000001
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "72494",
+        "road_length": 0.1,
+        "sum_geom": 0.00332705,
+        "rel": 0.9667295
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "72564",
+        "road_length": 0.1,
+        "sum_geom": 0.00623451,
+        "rel": 0.9376549000000001
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "72575",
+        "road_length": 0.1,
+        "sum_geom": 0.0246442,
+        "rel": 0.753558
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "72600",
+        "road_length": 0.1,
+        "sum_geom": 0.00549818,
+        "rel": 0.9450181999999999
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "72632",
+        "road_length": 0.1,
+        "sum_geom": 0.00365553,
+        "rel": 0.9634446999999999
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "72636",
+        "road_length": 0.1,
+        "sum_geom": 0.00781911,
+        "rel": 0.9218088999999999
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "72738",
+        "road_length": 0.1,
+        "sum_geom": 0.00347576,
+        "rel": 0.9652424000000001
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "72835",
+        "road_length": 0.1,
+        "sum_geom": 0.00122708,
+        "rel": 0.9877292
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "73253",
+        "road_length": 0.1,
+        "sum_geom": 0.00156345,
+        "rel": 0.9843655000000001
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "73608",
+        "road_length": 0.1,
+        "sum_geom": 0.00253796,
+        "rel": 0.9746203999999999
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "73687",
+        "road_length": 0.1,
+        "sum_geom": 0.00643628,
+        "rel": 0.9356372
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "73874",
+        "road_length": 0.1,
+        "sum_geom": 0.01438964,
+        "rel": 0.8561036000000001
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "73877",
+        "road_length": 0.1,
+        "sum_geom": 0.01236846,
+        "rel": 0.8763154000000001
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "74232",
+        "road_length": 0.1,
+        "sum_geom": 0.00143138,
+        "rel": 0.9856862000000001
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "74236",
+        "road_length": 0.1,
+        "sum_geom": 0.0067435,
+        "rel": 0.932565
+      }
+    },
+    {
+      "severity": "warn",
+      "code": "road_length_mismatch",
+      "message": "Road length differs notably from sum(geometry.length). CARLA import may become unstable.",
+      "context": {
+        "road": "74479",
+        "road_length": 0.1,
+        "sum_geom": 0.00124959,
+        "rel": 0.9875041000000001
+      }
+    }
+  ]
+}

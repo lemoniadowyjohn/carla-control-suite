@@ -1,0 +1,418 @@
+{
+  "audit_timestamp": "2026-11-04T20:00:00Z",
+  "repository": "lemoniadowyjohn/carla-control-suite",
+  "integration_targets": {
+    "post_pr16": "integration/post-pr16-final-20261102 (1a36b560a)",
+    "production": "integration/production-large-map-20260918 (d72f57c6)"
+  },
+  "worktrees": [
+    {
+      "path": "C:/Users/admin/PycharmProjects/gpt4/pythonProject3/carla_-main",
+      "head": "3fd6f0f0a1ccd643abba0bfd93f9f3d0c923a567",
+      "branch": "gap052-mutation-lease-auth",
+      "detached": false,
+      "prunable": false,
+      "locked": false,
+      "volume": "C:",
+      "notes": "Current edit checkout; GAP-052 + GAP-052B patches implemented and verified"
+    },
+    {
+      "path": "C:/Users/admin/AppData/Local/Temp/opencode/wt_audit_837a8504",
+      "head": "837a8504b624dc90653aef3a48300abb3275e291",
+      "branch": "detached",
+      "detached": true,
+      "prunable": true,
+      "locked": false,
+      "volume": "C:",
+      "notes": "STALE_REGISTRATION: gitdir file points to non-existent location"
+    },
+    {
+      "path": "C:/Users/admin/PycharmProjects/gpt4/pythonProject3/carla-worktree",
+      "head": "d2c125662354b5b373ffd5d8d31b5f577ad46e17",
+      "branch": "detached",
+      "detached": true,
+      "prunable": false,
+      "locked": false,
+      "volume": "C:",
+      "notes": "Old detached checkout"
+    },
+    {
+      "path": "E:/CARLA/worktrees/new316-333-perception-hardening",
+      "head": "278968f9cfcbe2a26fd1249cadabeb1ef40d50be",
+      "branch": "fix/new316-333-perception-environment-20261001",
+      "detached": false,
+      "prunable": false,
+      "locked": false,
+      "volume": "E:",
+      "notes": "Perception hardening worktree"
+    },
+    {
+      "path": "E:/CARLA/worktrees/rq1-matrix-fix",
+      "head": "d12a03145793ae89d03a40f9ebf500ec59f3c761",
+      "branch": "fix/rq1-matrix-integrity-20261001",
+      "detached": false,
+      "prunable": false,
+      "locked": false,
+      "volume": "E:",
+      "notes": "RQ1 matrix integrity fix"
+    },
+    {
+      "path": "E:/CARLA/worktrees/wt-p1",
+      "head": "542b82e93b6bb866dc05e085480eecb3ceffbcc1",
+      "branch": "opencode/p1-runtime-capture-20261001",
+      "detached": false,
+      "prunable": false,
+      "locked": false,
+      "volume": "E:",
+      "notes": "OpenCode runtime capture"
+    },
+    {
+      "path": "E:/CARLA/worktrees/wt-p1-base",
+      "head": "233e452ff16db3d35ca717d0bf02e4779e86b258",
+      "branch": "detached",
+      "detached": true,
+      "prunable": false,
+      "locked": false,
+      "volume": "E:",
+      "notes": "Base for P1 runtime capture"
+    },
+    {
+      "path": "E:/CARLA/worktrees/wt-runtime-rig",
+      "head": "692b42391c29457fef30e19857352e3ef74be9b2",
+      "branch": "integration/opencode-runtime-rig-environment-closure-20261001",
+      "detached": false,
+      "prunable": false,
+      "locked": false,
+      "volume": "E:",
+      "notes": "Runtime rig environment closure"
+    },
+    {
+      "path": "E:/wt/fix-gap070-connector-snap-exit-20261103",
+      "head": "2cee039f235f2cff7c87fa1fce935154cdcf3cd8",
+      "branch": "fix/gap070-connector-snap-exit-20261103",
+      "detached": false,
+      "prunable": false,
+      "locked": false,
+      "volume": "E:",
+      "notes": "GAP-070 original candidate; Hermite refit + test fixes; NOT production-ready"
+    },
+    {
+      "path": "E:/wt/fix-gap070-connector-snap-safety-c1-20261104",
+      "head": "2cee039f235f2cff7c87fa1fce935154cdcf3cd8",
+      "branch": "fix/gap070-connector-snap-safety-c1-20261104",
+      "detached": false,
+      "prunable": false,
+      "locked": false,
+      "volume": "E:",
+      "notes": "C1 - GAP-070 geometry safety; clean, implementation not started, resource blocked"
+    },
+    {
+      "path": "E:/wt/investigate-gap070-stage-bisection-20261103",
+      "head": "743edd656d323feb5135e523eb214c53a74d9a9d",
+      "branch": "investigate/gap070-stage-bisection-20261103",
+      "detached": false,
+      "prunable": false,
+      "locked": false,
+      "volume": "E:",
+      "notes": "GAP-070 stage bisection evidence"
+    },
+    {
+      "path": "E:/wt/p0-tc-001-terminal-release-authority-20261104",
+      "head": "1a36b560a69286841d4c42973cf00258a38f56c1",
+      "branch": "fix/p0-tc-001-terminal-release-authority-20261104",
+      "detached": false,
+      "prunable": false,
+      "locked": false,
+      "volume": "E:",
+      "notes": "P0-TC-001 terminal release authority; implemented locally, verification pending"
+    },
+    {
+      "path": "E:/wt/post-pr16-remediation-20261023",
+      "head": "cc571fae75cadc688af0fc8a4dd6037727311413",
+      "branch": "fix/post-pr16-remediation-20261023",
+      "detached": false,
+      "prunable": false,
+      "locked": false,
+      "volume": "E:",
+      "notes": "Post-PR16 remediation"
+    },
+    {
+      "path": "E:/wt/prod_68868f76",
+      "head": "68868f763d22a630fc9ba8d818ed1919a7b8414d",
+      "branch": "detached",
+      "detached": true,
+      "prunable": false,
+      "locked": false,
+      "volume": "E:",
+      "notes": "Detached checkout at 68868f76"
+    },
+    {
+      "path": "E:/wt/repair-map-realism-p0-837a8504",
+      "head": "1a36b560a69286841d4c42973cf00258a38f56c1",
+      "branch": "integration/post-pr16-final-20261102",
+      "detached": false,
+      "prunable": false,
+      "locked": false,
+      "volume": "E:",
+      "notes": "Integration worktree for O8/O9/O10/O11 tasks; HEAD at a6d10396"
+    },
+    {
+      "path": "E:/wt/research-gap070-reversed-stubs-20261104",
+      "head": "06a31ed1e015614674a99c31811a651b751e8789",
+      "branch": "research/gap070-reversed-stubs-20261104",
+      "detached": false,
+      "prunable": false,
+      "locked": false,
+      "volume": "E:",
+      "notes": "GAP-079 reversed stubs research (X9b); contains unique evidence"
+    },
+    {
+      "path": "F:/carla-control-suite-worktrees/session-batch1-full-verify-20260913",
+      "head": "502dda260abb871b2333191bb33e1e7eecd1ece7",
+      "branch": "integration/production-large-map-20260918",
+      "detached": false,
+      "prunable": false,
+      "locked": false,
+      "volume": "F:",
+      "notes": "Production branch checkout; production-large-map-20260918"
+    },
+    {
+      "path": "F:/carla-worktrees/b15_A_rq1b",
+      "head": "40ead6e90b8d667a7006d3b1964dff88cf352b1d",
+      "branch": "b15-rq1b",
+      "detached": false,
+      "prunable": false,
+      "locked": false,
+      "volume": "F:",
+      "notes": "RQ1b batch worktree"
+    },
+    {
+      "path": "F:/carla-worktrees/lane_A1_rq1a-execution",
+      "head": "c3aece57b4b55543a6ce2a634fa42f25277ba503",
+      "branch": "rq1a-execution",
+      "detached": false,
+      "prunable": false,
+      "locked": false,
+      "volume": "F:",
+      "notes": "RQ1a lane execution"
+    },
+    {
+      "path": "F:/carla-worktrees/rq2-validate-20261008",
+      "head": "2159a358feff585be5646a7757b96257dd935d82",
+      "branch": "rq2-authority-validate-20261008",
+      "detached": false,
+      "prunable": false,
+      "locked": false,
+      "volume": "F:",
+      "notes": "RQ2 validation"
+    },
+    {
+      "path": "F:/carla-worktrees/rq5-isolation-20261009",
+      "head": "68868f763d22a630fc9ba8d818ed1919a7b8414d",
+      "branch": "fix/rq5-test-isolation-leak-20261009",
+      "detached": false,
+      "prunable": false,
+      "locked": false,
+      "volume": "F:",
+      "notes": "RQ5 isolation leak fix"
+    },
+    {
+      "path": "F:/carla-worktrees/rq5-sightb-20261009",
+      "head": "c54c11083f6549a68b79e8e0cfc4ddf2d9515b9a",
+      "branch": "rescue/rq5-sightb-cfc0cd9c",
+      "detached": false,
+      "prunable": false,
+      "locked": false,
+      "volume": "F:",
+      "notes": "RQ5 rescue branch"
+    },
+    {
+      "path": "F:/carla-worktrees/smoke-harden-20261009",
+      "head": "62f0d28859ec1dc21964cc74ec84f449d6c3a030",
+      "branch": "fix/carla-smoke-suite-skip-harden-20261009",
+      "detached": false,
+      "prunable": false,
+      "locked": false,
+      "volume": "F:",
+      "notes": "CARLA smoke suite hardening"
+    },
+    {
+      "path": "F:/p0-coord-frame-tile-placement-20261001",
+      "head": "41613305a0e6be8566e185f2ec1ed9dd7e8f9178",
+      "branch": "fix/p0-coord-frame-tile-placement-authority-20261001",
+      "detached": false,
+      "prunable": false,
+      "locked": false,
+      "volume": "F:",
+      "notes": "P0 coordinate frame tile placement"
+    },
+    {
+      "path": "F:/wt/authority-convergence-20261020",
+      "head": "837a8504b624dc90653aef3a48300abb3275e291",
+      "branch": "integration/authority-convergence-20261020",
+      "detached": false,
+      "prunable": false,
+      "locked": false,
+      "volume": "F:",
+      "notes": "Authority convergence integration"
+    },
+    {
+      "path": "F:/wt/carla-gui-integration-20261015",
+      "head": "3d7665fc361e17156c6552c83b98982fdfbeee4e",
+      "branch": "integration/carla-gui-integration-20261015",
+      "detached": false,
+      "prunable": false,
+      "locked": false,
+      "volume": "F:",
+      "notes": "CARLA GUI integration"
+    },
+    {
+      "path": "F:/wt/picks-20261015",
+      "head": "d0dcba97429945c2a4ae99b4244133048d193886",
+      "branch": "merge/picks-20261015",
+      "detached": false,
+      "prunable": false,
+      "locked": false,
+      "volume": "F:",
+      "notes": "Merge picks"
+    },
+    {
+      "path": "F:/wt/repair-c69b60d2-ci",
+      "head": "691e6426967511f0b77ac6e172819cb73fb47c28",
+      "branch": "repair/ci-admission-c69b60d2",
+      "detached": false,
+      "prunable": false,
+      "locked": false,
+      "volume": "F:",
+      "notes": "CI admission repair"
+    },
+    {
+      "path": "F:/wt/terminal-authority-4eb90436",
+      "head": "ba3c3975c9e892522b99db8b0cd36224497a370f",
+      "branch": "repair/terminal-authority-f34a12e6",
+      "detached": false,
+      "prunable": false,
+      "locked": false,
+      "volume": "F:",
+      "notes": "Terminal authority repair"
+    },
+    {
+      "path": "F:/wt/v_29560b52",
+      "head": "29560b52623aabc744b123fbe5f250f36090c9aa",
+      "branch": "detached",
+      "detached": true,
+      "prunable": false,
+      "locked": false,
+      "volume": "F:",
+      "notes": "Detached checkout"
+    },
+    {
+      "path": "F:/wt/verify-c69b60d2",
+      "head": "c69b60d2feff585be5646a7757b96257dd935d82",
+      "branch": "detached",
+      "detached": true,
+      "prunable": false,
+      "locked": false,
+      "volume": "F:",
+      "notes": "Verify c69b60d2"
+    },
+    {
+      "path": "F:/wt-gap055-base",
+      "head": "68868f763d22a630fc9ba8d818ed1919a7b8414d",
+      "branch": "detached",
+      "detached": true,
+      "prunable": false,
+      "locked": false,
+      "volume": "F:",
+      "notes": "GAP-055 base"
+    },
+    {
+      "path": "F:/wt-gap055-cand",
+      "head": "c736a9ce5792250f5d0c6a1fd4c78dc185f7243b",
+      "branch": "detached",
+      "detached": true,
+      "prunable": false,
+      "locked": false,
+      "volume": "F:",
+      "notes": "GAP-055 candidate"
+    },
+    {
+      "path": "G:/wt/acceptance-contract-hardening-20261021",
+      "head": "d3daf015eeb5088bb2296e31dd36dd7e4f0d61ac",
+      "branch": "fix/acceptance-contract-hardening-20261021",
+      "detached": false,
+      "prunable": false,
+      "locked": false,
+      "volume": "G:",
+      "notes": "Acceptance contract hardening"
+    },
+    {
+      "path": "G:/wt/production-convergence-20261020",
+      "head": "a9c9b6c167497893ccf97e86ec1858deaf69b306",
+      "branch": "integration/production-convergence-20261020",
+      "detached": false,
+      "prunable": false,
+      "locked": false,
+      "volume": "G:",
+      "notes": "Production convergence"
+    },
+    {
+      "path": "G:/wt/release-gate",
+      "head": "85b297411e2ba3cdf0a1516ecf75faf942d20bb4",
+      "branch": "fix/release-gate-opencv-provider-20261015",
+      "detached": false,
+      "prunable": false,
+      "locked": false,
+      "volume": "G:",
+      "notes": "Release gate OpenCV provider"
+    },
+    {
+      "path": "H:/opencode/rq12-closure",
+      "head": "361958ca2a37188269c1d693fe8b14ab993d1789",
+      "branch": "research/rq1-rq2-evidence-closure-20261020",
+      "detached": false,
+      "prunable": false,
+      "locked": true,
+      "volume": "H:",
+      "notes": "RQ1-RQ2 evidence closure; LOCKED initializing"
+    },
+    {
+      "path": "H:/wt/phase6-rq5-offline-20261021",
+      "head": "d74c0f171d1524ce27d1f64d93fcf930d199a062",
+      "branch": "phase6/rq5-offline-20261021",
+      "detached": false,
+      "prunable": false,
+      "locked": false,
+      "volume": "H:",
+      "notes": "Phase 6 RQ5 offline"
+    }
+  ],
+  "summary": {
+    "total_registered": 38,
+    "by_volume": {
+      "C:": 3,
+      "E:": 11,
+      "F:": 14,
+      "G:": 3,
+      "H:": 2
+    },
+    "by_status": {
+      "clean_detached": 8,
+      "clean_branch": 22,
+      "locked": 1,
+      "prunable_stale": 1
+    },
+    "active_protected": [
+      "E:/wt/fix-gap070-connector-snap-safety-c1-20261104",
+      "E:/wt/p0-tc-001-terminal-release-authority-20261104",
+      "C:/Users/admin/PycharmProjects/gpt4/pythonProject3/carla_-main",
+      "E:/wt/repair-map-realism-p0-837a8504"
+    ],
+    "evidence_bearing": [
+      "E:/wt/research-gap070-reversed-stubs-20261104",
+      "E:/wt/investigate-gap070-stage-bisection-20261103",
+      "E:/wt/fix-gap070-connector-snap-exit-20261103",
+      "F:/carla-control-suite-worktrees/session-batch1-full-verify-20260913"
+    ]
+  }
+}

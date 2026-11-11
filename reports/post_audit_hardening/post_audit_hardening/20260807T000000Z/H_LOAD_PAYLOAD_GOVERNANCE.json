@@ -1,0 +1,31 @@
+{
+  "generated_at_utc": "2026-08-07T21:14:05.900070+00:00",
+  "governed_payload": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260807T000000Z\\governed_payload.xodr",
+  "governed_payload_text_sha256": "3f7370ef5ff0a877b429ebca9d79f49827851d24d8608069b4414fcc093729e4",
+  "parent": {
+    "enriched_semantic_candidate": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260807T000000Z\\candidate_g_semantic_enriched.xodr",
+    "repaired": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_fixed_final.xodr"
+  },
+  "producer": "govern_load_payload.py",
+  "producer_commit": "21ffc321bd4a48bbea77e604489299c2cb1cac5b",
+  "q03": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260807T000000Z\\Q03_LOAD_PAYLOAD_MANIFEST.json",
+  "q04": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260807T000000Z\\Q04_GEOREFERENCE_SEMANTIC_DIFF.json",
+  "reconciliation": {
+    "contract_pass": true,
+    "enriched_candidate_lf_text_sha256": "d604ac393e12730ed276f5c865d0ef82c8a537b97bd8d79beeddd4c96863e470",
+    "enriched_candidate_raw_bytes_sha256": "8b60d8f428c7cdaca9d907963dbf89665df3584168a74805f66af86e63ce8cf4",
+    "governed_payload_lf_text_matches_manifest": true,
+    "governed_payload_raw_bytes_sha256": "3f7370ef5ff0a877b429ebca9d79f49827851d24d8608069b4414fcc093729e4",
+    "governed_payload_text_sha256": "3f7370ef5ff0a877b429ebca9d79f49827851d24d8608069b4414fcc093729e4",
+    "p04_payload_text_matches_recorded": true,
+    "p04_raw_bytes_sha256_matches_recorded_repaired": true,
+    "p04_recorded_payload_sha256": "516e329cb6fcec6adb041a4c5f39c48b4de6147b956c7dc2b7ab0c6746490453",
+    "repaired_candidate_lf_text_sha256": "516e329cb6fcec6adb041a4c5f39c48b4de6147b956c7dc2b7ab0c6746490453",
+    "repaired_candidate_raw_bytes_sha256": "80ebb0054afd73ffdd51960b48679ff4689c72ed0abe75af5b2ae10a51395699",
+    "runtime_to_opendrive_recorded": "9630d9f673fdea87058139d9e2241c7084dc2e2550674bba4bfffc78c6d0ae80"
+  },
+  "release_verifier_ok": true,
+  "run_id": "20260807T000000Z",
+  "stage": "H",
+  "verdict": "H_GOVERNED_PAYLOAD_EXACT"
+}

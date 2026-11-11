@@ -1,0 +1,731 @@
+{
+  "acceptance": {
+    "checks": {
+      "all_nonpositive_geometries_repaired": true,
+      "all_preexisting_nonpositive_geometries_touched": true,
+      "crosswalk_objects_preserved": true,
+      "elevation_segments_preserved": true,
+      "g19_clean_after": true,
+      "g19_clean_before": true,
+      "junctions_preserved": true,
+      "no_reference_repair_skips": true,
+      "nonzero_elevation_preserved": true,
+      "objects_preserved": true,
+      "preflight_error_count_zero": true,
+      "roads_preserved": true,
+      "roads_with_elevation_profile_preserved": true,
+      "signals_preserved": true
+    },
+    "pass": true
+  },
+  "after": {
+    "counts": {
+      "crosswalk_objects": 66,
+      "elevation_segments": 418243,
+      "junctions": 3646,
+      "nonzero_elevation_segments": 418243,
+      "objects": 66,
+      "roads": 32710,
+      "roads_with_elevation_profile": 32710,
+      "signal_references": 0,
+      "signals": 3467
+    },
+    "g19": {
+      "examples": [],
+      "max_excess_m": 0.0,
+      "roads_checked": 32710,
+      "violation_details": [],
+      "violations": 0
+    },
+    "nonpositive_geometry_details": []
+  },
+  "before": {
+    "counts": {
+      "crosswalk_objects": 66,
+      "elevation_segments": 418243,
+      "junctions": 3646,
+      "nonzero_elevation_segments": 418243,
+      "objects": 66,
+      "roads": 32710,
+      "roads_with_elevation_profile": 32710,
+      "signal_references": 0,
+      "signals": 3467
+    },
+    "g19": {
+      "examples": [],
+      "max_excess_m": 0.0,
+      "roads_checked": 32710,
+      "violation_details": [],
+      "violations": 0
+    },
+    "nonpositive_geometry_details": [
+      {
+        "geometry": {
+          "hdg": "0.00000000",
+          "length": "0.00000000",
+          "s": "0.00000000",
+          "x": "842522.97377485",
+          "y": "5461822.76775955"
+        },
+        "geometry_index": 0,
+        "geometry_length": "0.00000000",
+        "junction": "131",
+        "road_id": "50003",
+        "road_index": 10173,
+        "road_length": "0.10000000"
+      },
+      {
+        "geometry": {
+          "hdg": "-1.57079633",
+          "length": "0.00000000",
+          "s": "0.00000000",
+          "x": "836309.04775491",
+          "y": "5466534.95614020"
+        },
+        "geometry_index": 0,
+        "geometry_length": "0.00000000",
+        "junction": "1701",
+        "road_id": "51425",
+        "road_index": 11595,
+        "road_length": "0.10000000"
+      },
+      {
+        "geometry": {
+          "hdg": "0.00000000",
+          "length": "0.00000000",
+          "s": "0.00000000",
+          "x": "837230.32190013",
+          "y": "5466502.91481736"
+        },
+        "geometry_index": 0,
+        "geometry_length": "0.00000000",
+        "junction": "1087",
+        "road_id": "51646",
+        "road_index": 11816,
+        "road_length": "0.10000000"
+      },
+      {
+        "geometry": {
+          "hdg": "2.55359005",
+          "length": "0.00000000",
+          "s": "0.00000000",
+          "x": "841438.10946976",
+          "y": "5462926.86845523"
+        },
+        "geometry_index": 0,
+        "geometry_length": "0.00000000",
+        "junction": "1407",
+        "road_id": "52738",
+        "road_index": 12908,
+        "road_length": "0.10000000"
+      },
+      {
+        "geometry": {
+          "hdg": "0.00000000",
+          "length": "0.00000000",
+          "s": "0.00000000",
+          "x": "838895.39826788",
+          "y": "5460638.06928682"
+        },
+        "geometry_index": 0,
+        "geometry_length": "0.00000000",
+        "junction": "1259",
+        "road_id": "54261",
+        "road_index": 14431,
+        "road_length": "0.10000000"
+      },
+      {
+        "geometry": {
+          "hdg": "1.08246238",
+          "length": "0.00000000",
+          "s": "0.00000000",
+          "x": "834852.89448956",
+          "y": "5468801.92464699"
+        },
+        "geometry_index": 0,
+        "geometry_length": "0.00000000",
+        "junction": "646",
+        "road_id": "56874",
+        "road_index": 17044,
+        "road_length": "0.10000000"
+      },
+      {
+        "geometry": {
+          "hdg": "2.24043527",
+          "length": "0.00000000",
+          "s": "0.00000000",
+          "x": "837516.48134823",
+          "y": "5467174.69708937"
+        },
+        "geometry_index": 0,
+        "geometry_length": "0.00000000",
+        "junction": "1857",
+        "road_id": "57300",
+        "road_index": 17470,
+        "road_length": "0.10000000"
+      },
+      {
+        "geometry": {
+          "hdg": "-2.28962633",
+          "length": "0.00000000",
+          "s": "0.00000000",
+          "x": "837012.99957831",
+          "y": "5462118.27453396"
+        },
+        "geometry_index": 0,
+        "geometry_length": "0.00000000",
+        "junction": "237",
+        "road_id": "58404",
+        "road_index": 18574,
+        "road_length": "0.10000000"
+      },
+      {
+        "geometry": {
+          "hdg": "0.00000000",
+          "length": "0.00000000",
+          "s": "0.00000000",
+          "x": "835688.13043535",
+          "y": "5467812.99353740"
+        },
+        "geometry_index": 0,
+        "geometry_length": "0.00000000",
+        "junction": "2436",
+        "road_id": "62170",
+        "road_index": 22340,
+        "road_length": "0.10000000"
+      },
+      {
+        "geometry": {
+          "hdg": "3.14159265",
+          "length": "0.00000000",
+          "s": "0.00000000",
+          "x": "835144.81360799",
+          "y": "5469501.47374517"
+        },
+        "geometry_index": 0,
+        "geometry_length": "0.00000000",
+        "junction": "3004",
+        "road_id": "66369",
+        "road_index": 26539,
+        "road_length": "0.10000000"
+      },
+      {
+        "geometry": {
+          "hdg": "2.35619449",
+          "length": "0.00000000",
+          "s": "0.00000000",
+          "x": "838939.88319735",
+          "y": "5459563.44380243"
+        },
+        "geometry_index": 0,
+        "geometry_length": "0.00000000",
+        "junction": "2965",
+        "road_id": "68135",
+        "road_index": 28305,
+        "road_length": "0.10000000"
+      },
+      {
+        "geometry": {
+          "hdg": "1.57079633",
+          "length": "0.00000000",
+          "s": "0.00000000",
+          "x": "834298.68315310",
+          "y": "5469878.56590166"
+        },
+        "geometry_index": 0,
+        "geometry_length": "0.00000000",
+        "junction": "3476",
+        "road_id": "69106",
+        "road_index": 29276,
+        "road_length": "0.10000000"
+      }
+    ]
+  },
+  "generated_at_utc": "2026-08-15T07:24:17.717314+00:00",
+  "input_sha256": "7709d5c949f3cf05a1aebc17d5a974816b9f5c5f8be4405e3b254b62c6a16d61",
+  "input_xodr": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_elevated_safe.xodr",
+  "output_sha256": "90f1e4f7b7bc1876c7a29fa4ac862b218531fb367d0be73b91920f9411ad8982",
+  "output_xodr": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_elevated_safe_loadable.xodr",
+  "preflight_xodr_loadability": {
+    "available": true,
+    "error_classes": [],
+    "error_examples": [],
+    "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\E1B_LOADABILITY_REPAIR_PREFLIGHT\\preflight_report.json",
+    "summary": {
+      "checked_at_utc": "2026-08-15T07:23:16.427111+00:00",
+      "error_count": 0,
+      "status": "ok",
+      "warning_count": 81072
+    },
+    "warning_classes": [
+      {
+        "code": "missing_offset",
+        "count": 1,
+        "module": "carla_compat_gate"
+      },
+      {
+        "code": "elev_jump",
+        "count": 780,
+        "module": "strict_validator"
+      },
+      {
+        "code": "geom_xy_large",
+        "count": 80261,
+        "module": "strict_validator"
+      },
+      {
+        "code": "road_length_mismatch",
+        "count": 30,
+        "module": "strict_validator"
+      }
+    ],
+    "warning_examples": [
+      {
+        "code": "geom_xy_large",
+        "context": {
+          "idx": 0,
+          "road": "39830",
+          "x": 840138.71778614,
+          "y": 5464923.98146263
+        },
+        "message": "Geometry x/y very large; check geoReference/offset.",
+        "module": "strict_validator",
+        "severity": "warn"
+      },
+      {
+        "code": "geom_xy_large",
+        "context": {
+          "idx": 1,
+          "road": "39830",
+          "x": 840146.89235915,
+          "y": 5464921.10777763
+        },
+        "message": "Geometry x/y very large; check geoReference/offset.",
+        "module": "strict_validator",
+        "severity": "warn"
+      },
+      {
+        "code": "geom_xy_large",
+        "context": {
+          "idx": 2,
+          "road": "39830",
+          "x": 840153.08018602,
+          "y": 5464918.65631043
+        },
+        "message": "Geometry x/y very large; check geoReference/offset.",
+        "module": "strict_validator",
+        "severity": "warn"
+      },
+      {
+        "code": "geom_xy_large",
+        "context": {
+          "idx": 3,
+          "road": "39830",
+          "x": 840161.2356918,
+          "y": 5464913.28182013
+        },
+        "message": "Geometry x/y very large; check geoReference/offset.",
+        "module": "strict_validator",
+        "severity": "warn"
+      },
+      {
+        "code": "geom_xy_large",
+        "context": {
+          "idx": 4,
+          "road": "39830",
+          "x": 840170.88098311,
+          "y": 5464905.80796802
+        },
+        "message": "Geometry x/y very large; check geoReference/offset.",
+        "module": "strict_validator",
+        "severity": "warn"
+      },
+      {
+        "code": "geom_xy_large",
+        "context": {
+          "idx": 5,
+          "road": "39830",
+          "x": 840183.55293107,
+          "y": 5464891.307469
+        },
+        "message": "Geometry x/y very large; check geoReference/offset.",
+        "module": "strict_validator",
+        "severity": "warn"
+      },
+      {
+        "code": "geom_xy_large",
+        "context": {
+          "idx": 6,
+          "road": "39830",
+          "x": 840192.69264662,
+          "y": 5464880.84960908
+        },
+        "message": "Geometry x/y very large; check geoReference/offset.",
+        "module": "strict_validator",
+        "severity": "warn"
+      },
+      {
+        "code": "geom_xy_large",
+        "context": {
+          "idx": 0,
+          "road": "39831",
+          "x": 841328.89721974,
+          "y": 5461114.66734279
+        },
+        "message": "Geometry x/y very large; check geoReference/offset.",
+        "module": "strict_validator",
+        "severity": "warn"
+      },
+      {
+        "code": "geom_xy_large",
+        "context": {
+          "idx": 1,
+          "road": "39831",
+          "x": 841343.33391268,
+          "y": 5461109.65214511
+        },
+        "message": "Geometry x/y very large; check geoReference/offset.",
+        "module": "strict_validator",
+        "severity": "warn"
+      },
+      {
+        "code": "geom_xy_large",
+        "context": {
+          "idx": 2,
+          "road": "39831",
+          "x": 841354.41680916,
+          "y": 5461108.46725282
+        },
+        "message": "Geometry x/y very large; check geoReference/offset.",
+        "module": "strict_validator",
+        "severity": "warn"
+      },
+      {
+        "code": "geom_xy_large",
+        "context": {
+          "idx": 3,
+          "road": "39831",
+          "x": 841366.80013263,
+          "y": 5461109.84019438
+        },
+        "message": "Geometry x/y very large; check geoReference/offset.",
+        "module": "strict_validator",
+        "severity": "warn"
+      },
+      {
+        "code": "geom_xy_large",
+        "context": {
+          "idx": 4,
+          "road": "39831",
+          "x": 841377.25967024,
+          "y": 5461114.92576844
+        },
+        "message": "Geometry x/y very large; check geoReference/offset.",
+        "module": "strict_validator",
+        "severity": "warn"
+      },
+      {
+        "code": "geom_xy_large",
+        "context": {
+          "idx": 5,
+          "road": "39831",
+          "x": 841390.68150662,
+          "y": 5461123.63890169
+        },
+        "message": "Geometry x/y very large; check geoReference/offset.",
+        "module": "strict_validator",
+        "severity": "warn"
+      },
+      {
+        "code": "geom_xy_large",
+        "context": {
+          "idx": 0,
+          "road": "39832",
+          "x": 839734.79230827,
+          "y": 5460088.99713148
+        },
+        "message": "Geometry x/y very large; check geoReference/offset.",
+        "module": "strict_validator",
+        "severity": "warn"
+      },
+      {
+        "code": "geom_xy_large",
+        "context": {
+          "idx": 0,
+          "road": "39833",
+          "x": 839823.80242253,
+          "y": 5460200.72887934
+        },
+        "message": "Geometry x/y very large; check geoReference/offset.",
+        "module": "strict_validator",
+        "severity": "warn"
+      },
+      {
+        "code": "geom_xy_large",
+        "context": {
+          "idx": 1,
+          "road": "39833",
+          "x": 839823.67479492,
+          "y": 5460200.57489495
+        },
+        "message": "Geometry x/y very large; check geoReference/offset.",
+        "module": "strict_validator",
+        "severity": "warn"
+      },
+      {
+        "code": "geom_xy_large",
+        "context": {
+          "idx": 2,
+          "road": "39833",
+          "x": 839811.7667833,
+          "y": 5460186.00759709
+        },
+        "message": "Geometry x/y very large; check geoReference/offset.",
+        "module": "strict_validator",
+        "severity": "warn"
+      },
+      {
+        "code": "geom_xy_large",
+        "context": {
+          "idx": 3,
+          "road": "39833",
+          "x": 839806.43778304,
+          "y": 5460179.45640538
+        },
+        "message": "Geometry x/y very large; check geoReference/offset.",
+        "module": "strict_validator",
+        "severity": "warn"
+      },
+      {
+        "code": "geom_xy_large",
+        "context": {
+          "idx": 4,
+          "road": "39833",
+          "x": 839789.04111236,
+          "y": 5460157.80156473
+        },
+        "message": "Geometry x/y very large; check geoReference/offset.",
+        "module": "strict_validator",
+        "severity": "warn"
+      },
+      {
+        "code": "geom_xy_large",
+        "context": {
+          "idx": 0,
+          "road": "39834",
+          "x": 839946.78179574,
+          "y": 5460306.02513409
+        },
+        "message": "Geometry x/y very large; check geoReference/offset.",
+        "module": "strict_validator",
+        "severity": "warn"
+      }
+    ]
+  },
+  "reference_sha256": "6bac3570ce8f4230836ace27ec26155bbed58171567a6e0afd47e710c86dcb02",
+  "reference_xodr": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_final_repaired.xodr",
+  "repair": {
+    "changes": [
+      {
+        "geometry_index": 0,
+        "junction": "131",
+        "length_after": "0.10000000",
+        "length_before": "0.00000000",
+        "road_id": "50003",
+        "source": "reference_same_road_same_geometry_index"
+      },
+      {
+        "geometry_index": 0,
+        "junction": "1701",
+        "length_after": "0.10000000",
+        "length_before": "0.00000000",
+        "road_id": "51425",
+        "source": "reference_same_road_same_geometry_index"
+      },
+      {
+        "geometry_index": 0,
+        "junction": "1087",
+        "length_after": "0.10000000",
+        "length_before": "0.00000000",
+        "road_id": "51646",
+        "source": "reference_same_road_same_geometry_index"
+      },
+      {
+        "geometry_index": 0,
+        "junction": "1407",
+        "length_after": "0.10000000",
+        "length_before": "0.00000000",
+        "road_id": "52738",
+        "source": "reference_same_road_same_geometry_index"
+      },
+      {
+        "geometry_index": 0,
+        "junction": "1259",
+        "length_after": "0.10000000",
+        "length_before": "0.00000000",
+        "road_id": "54261",
+        "source": "reference_same_road_same_geometry_index"
+      },
+      {
+        "geometry_index": 0,
+        "junction": "646",
+        "length_after": "0.10000000",
+        "length_before": "0.00000000",
+        "road_id": "56874",
+        "source": "reference_same_road_same_geometry_index"
+      },
+      {
+        "geometry_index": 0,
+        "junction": "1857",
+        "length_after": "0.10000000",
+        "length_before": "0.00000000",
+        "road_id": "57300",
+        "source": "reference_same_road_same_geometry_index"
+      },
+      {
+        "geometry_index": 0,
+        "junction": "237",
+        "length_after": "0.10000000",
+        "length_before": "0.00000000",
+        "road_id": "58404",
+        "source": "reference_same_road_same_geometry_index"
+      },
+      {
+        "geometry_index": 0,
+        "junction": "2436",
+        "length_after": "0.10000000",
+        "length_before": "0.00000000",
+        "road_id": "62170",
+        "source": "reference_same_road_same_geometry_index"
+      },
+      {
+        "geometry_index": 0,
+        "junction": "3004",
+        "length_after": "0.10000000",
+        "length_before": "0.00000000",
+        "road_id": "66369",
+        "source": "reference_same_road_same_geometry_index"
+      },
+      {
+        "geometry_index": 0,
+        "junction": "2965",
+        "length_after": "0.10000000",
+        "length_before": "0.00000000",
+        "road_id": "68135",
+        "source": "reference_same_road_same_geometry_index"
+      },
+      {
+        "geometry_index": 0,
+        "junction": "3476",
+        "length_after": "0.10000000",
+        "length_before": "0.00000000",
+        "road_id": "69106",
+        "source": "reference_same_road_same_geometry_index"
+      }
+    ],
+    "examples": [
+      {
+        "geometry_index": 0,
+        "junction": "131",
+        "length_after": "0.10000000",
+        "length_before": "0.00000000",
+        "road_id": "50003",
+        "source": "reference_same_road_same_geometry_index"
+      },
+      {
+        "geometry_index": 0,
+        "junction": "1701",
+        "length_after": "0.10000000",
+        "length_before": "0.00000000",
+        "road_id": "51425",
+        "source": "reference_same_road_same_geometry_index"
+      },
+      {
+        "geometry_index": 0,
+        "junction": "1087",
+        "length_after": "0.10000000",
+        "length_before": "0.00000000",
+        "road_id": "51646",
+        "source": "reference_same_road_same_geometry_index"
+      },
+      {
+        "geometry_index": 0,
+        "junction": "1407",
+        "length_after": "0.10000000",
+        "length_before": "0.00000000",
+        "road_id": "52738",
+        "source": "reference_same_road_same_geometry_index"
+      },
+      {
+        "geometry_index": 0,
+        "junction": "1259",
+        "length_after": "0.10000000",
+        "length_before": "0.00000000",
+        "road_id": "54261",
+        "source": "reference_same_road_same_geometry_index"
+      },
+      {
+        "geometry_index": 0,
+        "junction": "646",
+        "length_after": "0.10000000",
+        "length_before": "0.00000000",
+        "road_id": "56874",
+        "source": "reference_same_road_same_geometry_index"
+      },
+      {
+        "geometry_index": 0,
+        "junction": "1857",
+        "length_after": "0.10000000",
+        "length_before": "0.00000000",
+        "road_id": "57300",
+        "source": "reference_same_road_same_geometry_index"
+      },
+      {
+        "geometry_index": 0,
+        "junction": "237",
+        "length_after": "0.10000000",
+        "length_before": "0.00000000",
+        "road_id": "58404",
+        "source": "reference_same_road_same_geometry_index"
+      },
+      {
+        "geometry_index": 0,
+        "junction": "2436",
+        "length_after": "0.10000000",
+        "length_before": "0.00000000",
+        "road_id": "62170",
+        "source": "reference_same_road_same_geometry_index"
+      },
+      {
+        "geometry_index": 0,
+        "junction": "3004",
+        "length_after": "0.10000000",
+        "length_before": "0.00000000",
+        "road_id": "66369",
+        "source": "reference_same_road_same_geometry_index"
+      },
+      {
+        "geometry_index": 0,
+        "junction": "2965",
+        "length_after": "0.10000000",
+        "length_before": "0.00000000",
+        "road_id": "68135",
+        "source": "reference_same_road_same_geometry_index"
+      },
+      {
+        "geometry_index": 0,
+        "junction": "3476",
+        "length_after": "0.10000000",
+        "length_before": "0.00000000",
+        "road_id": "69106",
+        "source": "reference_same_road_same_geometry_index"
+      }
+    ],
+    "geometry_lengths_changed": 12,
+    "mode": "reference_derived_zero_length_connector_repair",
+    "skipped": [],
+    "tol": 1e-06
+  },
+  "schema": "E1B_LOADABILITY_CONNECTOR_REPAIR/v1",
+  "verdict": "E1B_LOADABILITY_CONNECTOR_REPAIR_PASS"
+}

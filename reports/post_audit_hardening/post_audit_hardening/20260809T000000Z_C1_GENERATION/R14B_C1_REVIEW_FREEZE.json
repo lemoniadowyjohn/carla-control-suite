@@ -1,0 +1,34 @@
+{
+  "schema": "C1R_TAG_ANCHORED_V2",
+  "freeze_tag": "c1_freeze_20260809T000000Z_C1",
+  "parent_commit": "5f98a666a311437be0bccf916f7768d1cef61873",
+  "branch": "fix/post-audit-phase-e-junctions-roundabouts-20260803",
+  "parent_xodr": {
+    "path": "reports/post_audit_hardening/20260807T000000Z/candidate_g_semantic_enriched.xodr",
+    "sha256_lf_text": "d604ac393e12730ed276f5c865d0ef82c8a537b97bd8d79beeddd4c96863e470"
+  },
+  "candidate": {
+    "path": "reports/post_audit_hardening/20260809T000000Z_C1_GENERATION/candidate_crosswalk_enriched.xodr",
+    "sha256_lf_text": "16ea2ec134b10d07518c63e1bd42c4ffd8b96113d1a52c0fe448f201c004d11f",
+    "crosswalk_objects": 66
+  },
+  "protected_digest_categories": [
+    "PLANVIEW_DIGEST",
+    "ROAD_LINK_DIGEST",
+    "JUNCTION_DIGEST",
+    "LANELINK_DIGEST",
+    "LANESECTION_DIGEST",
+    "ELEVATION_DIGEST",
+    "COMBINED_STRUCTURAL_DIGEST",
+    "SIGNAL_ELEMENT_DIGEST",
+    "SIGNAL_REFERENCE_DIGEST",
+    "CONTROLLER_DIGEST",
+    "COMBINED_TRAFFIC_CONTROL_DIGEST"
+  ],
+  "flags": {
+    "head_commit_recorded": false,
+    "returns_commit_recorded": false,
+    "tag_object_sha_recorded": false,
+    "no_commits_after_tag": true
+  }
+}

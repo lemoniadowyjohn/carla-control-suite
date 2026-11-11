@@ -1,0 +1,134 @@
+{
+  "status": "ok",
+  "reason": "Converted to FBX (0.01 MB)",
+  "command_line": [
+    "E:\\Program Files\\Blender Foundation\\Blender 4.3\\blender.exe",
+    "--background",
+    "--python-exit-code",
+    "1",
+    "--python",
+    "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260804T130959Z\\artifacts\\blender_convert.py",
+    "--",
+    "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260804T130959Z\\artifacts\\ingolstadt_cooked_perception_v1_b9e07465_window_osm.obj",
+    "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260804T130959Z\\artifacts\\ingolstadt_cooked_perception_v1_b9e07465_window_osm.fbx",
+    "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260804T130959Z\\artifacts\\ingolstadt_cooked_perception_v1_b9e07465_window_osm.blender_manifest.json"
+  ],
+  "blender_version": "Blender 4.3.0",
+  "blender_exe": "E:\\Program Files\\Blender Foundation\\Blender 4.3\\blender.exe",
+  "blender_exe_hash": "e5c09e875471aa72fc8ae7437a92bb91c150cccccbc4a0dfafa6e2d29d2fb31b",
+  "script_hash": "1f63f0be20c2da9c4a527e81077d8fdf0bbf498e5ac86c803b28e82f4d9b94e2",
+  "input_obj": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260804T130959Z\\artifacts\\ingolstadt_cooked_perception_v1_b9e07465_window_osm.obj",
+  "output_fbx": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260804T130959Z\\artifacts\\ingolstadt_cooked_perception_v1_b9e07465_window_osm.fbx",
+  "input_hash": "88d153348f0045378a2de7510f168e9e5956df1ba173dce3c1d366f752e4a79b",
+  "output_hash": "dae9c8d457fd73fd69b243ab107df9437f1428ed2f16b005f990ce240e79bdd4",
+  "conversion_script": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260804T130959Z\\artifacts\\blender_convert.py",
+  "manifest": {
+    "blender_build_commit_time": "08:52",
+    "blender_version": "4.3.0",
+    "export_operator": "export_scene.fbx",
+    "export_options": {
+      "add_leaf_bones": false,
+      "apply_scale_options": "FBX_SCALE_NONE",
+      "apply_unit_scale": true,
+      "armature_nodetype": "NULL",
+      "axis_forward": "-Z",
+      "axis_up": "Y",
+      "bake_anim": false,
+      "batch_mode": "OFF",
+      "embed_textures": false,
+      "filepath": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260804T130959Z\\artifacts\\ingolstadt_cooked_perception_v1_b9e07465_window_osm.fbx",
+      "global_scale": 1.0,
+      "mesh_smooth_type": "OFF",
+      "object_types": [
+        "ARMATURE",
+        "EMPTY",
+        "MESH"
+      ],
+      "path_mode": "AUTO",
+      "primary_bone_axis": "Y",
+      "secondary_bone_axis": "X",
+      "use_custom_props": false,
+      "use_mesh_edges": false,
+      "use_mesh_modifiers": true,
+      "use_selection": false,
+      "use_tspace": false
+    },
+    "fbx_format": "binary",
+    "fbx_header": "Kaydara FBX Binary",
+    "fbx_signature": "Kaydara FBX Binary",
+    "fbx_version": "FBX binary int=7400",
+    "fbx_version_int": 7400,
+    "images_total": 0,
+    "import_operator": "wm.obj_import",
+    "import_options": {
+      "filepath": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260804T130959Z\\artifacts\\ingolstadt_cooked_perception_v1_b9e07465_window_osm.obj"
+    },
+    "input_obj_hash": "88d153348f0045378a2de7510f168e9e5956df1ba173dce3c1d366f752e4a79b",
+    "materials_total": 1,
+    "objects": [
+      {
+        "bounds": [
+          [
+            124.092003,
+            0.0,
+            256.535004
+          ],
+          [
+            124.092003,
+            0.0,
+            310.165985
+          ],
+          [
+            124.092003,
+            0.0,
+            310.165985
+          ],
+          [
+            124.092003,
+            0.0,
+            256.535004
+          ],
+          [
+            156.761993,
+            0.0,
+            256.535004
+          ],
+          [
+            156.761993,
+            0.0,
+            310.165985
+          ],
+          [
+            156.761993,
+            0.0,
+            310.165985
+          ],
+          [
+            156.761993,
+            0.0,
+            256.535004
+          ]
+        ],
+        "faces": 17,
+        "materials": [
+          "MAT_0_0"
+        ],
+        "name": "SurfaceArea2",
+        "type": "MESH",
+        "uv_layers": 0,
+        "vertices": 19
+      }
+    ],
+    "objects_total": 1,
+    "output_fbx_hash": "dae9c8d457fd73fd69b243ab107df9437f1428ed2f16b005f990ce240e79bdd4",
+    "scene_unit_scale": 1.0,
+    "scene_unit_system": "METRIC"
+  },
+  "start_time": "2026-08-04T15:11:14.654535",
+  "end_time": "2026-08-04T15:11:19.707037",
+  "duration_sec": 5.053,
+  "exit_code": 0,
+  "exception": "",
+  "stdout_log": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260804T130959Z\\artifacts\\blender_stdout.log",
+  "stderr_log": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260804T130959Z\\artifacts\\blender_stderr.log"
+}

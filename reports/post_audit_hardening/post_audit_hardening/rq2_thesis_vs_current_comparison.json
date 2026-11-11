@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "rq": "RQ2",
+  "status": "NOT_RUN",
+  "purpose": "Controlled thesis-era versus current comparison against the same Grid0828 manual reference",
+  "thesis_value": null,
+  "current_value": null,
+  "comparisons": [],
+  "required_controls": {
+    "crs": "same CRS for both arms",
+    "footprint": "same Grid0828 manual footprint",
+    "registration": "same registration implementation and parameters",
+    "road_sampling": "same road sampling implementation and parameters",
+    "matching_threshold": "same matching threshold",
+    "metric_implementation": "same metric implementation"
+  },
+  "available_evidence": [
+    "reports/post_audit_hardening/C14_RQ1_STRUCTURAL_GAP/manual_vs_auto.json",
+    "reports/post_audit_hardening/C14_RQ1_STRUCTURAL_GAP/curvature_recompute.json",
+    "reports/post_audit_hardening/C14_RQ1_STRUCTURAL_GAP/frechet_distance_local.json"
+  ],
+  "claim_boundary": "Current local evidence is not a thesis-vs-current controlled comparison and cannot prove improved map quality.",
+  "remaining_blocker": "A governed rerun must bind the thesis-era authoritative automatic artifact and the current map of record to the identical Grid0828 protocol before any better/worse verdict can be issued.",
+  "producer_commit": "2ad41e760a50460152bc04bf6e9b49efd127bbf4"
+}

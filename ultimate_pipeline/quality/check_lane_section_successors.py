@@ -33,7 +33,9 @@ def _lane_center_xy(
 
         road_length = float(road.get("length") or 0.0)
         cross_section = reconstruct_section(road, section, s, road_length)
-        if not cross_section.get("ok"):
+        cross_section_ok_val = cross_section.get("ok")
+        cross_section_ok = cross_section_ok_val if isinstance(cross_section_ok_val, bool) else False
+        if not cross_section_ok:
             return None
         reference = cross_section["reference"]
         lane_offset = float(cross_section["lane_offset_t"])

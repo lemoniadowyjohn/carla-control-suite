@@ -1,0 +1,13 @@
+{
+  "map_load_time_ms": 11.78,
+  "fps": 0,
+  "p95_frame_time_ms": 0,
+  "ram_usage_mb": 0,
+  "vram_usage_mb": 0,
+  "rpc_timeouts": 0,
+  "server_crashes": 0,
+  "tm_stability": "OK",
+  "performance_status": "PASS",
+  "status": "PASS",
+  "timestamp": "2026-08-04T20:59:32.473663+00:00"
+}

@@ -1,0 +1,11 @@
+{
+  "map_name": "Carla/Maps/OpenDriveMap",
+  "expected_map": "Carla/Maps/OpenDriveMap",
+  "map_name_match": true,
+  "opendrive_length": 81301200,
+  "opendrive_sha256": "9630d9f673fdea87058139d9e2241c7084dc2e2550674bba4bfffc78c6d0ae80",
+  "opendrive_first_500": "<?xml version='1.0' encoding='utf-8'?>\n<OpenDRIVE>\n    <header revMajor=\"1\" revMinor=\"4\" name=\"\" version=\"1.00\" date=\"Fri Jul 31 11:38:06 2026\" north=\"5472743.54\" south=\"5458671.57\" east=\"845943.06\" west=\"832672.90\">\n        <geoReference>+proj=tmerc +lat_0=0 +lon_0=9 +k=0.9996 +x_0=500000 +y_0=0 +datum=WGS84 +units=m +no_defs</geoReference>\n    </header>\n    <road name=\"Bahnhofstra\uffc3\uff9fe\" length=\"83.09712835\" id=\"39830\" junction=\"-1\">\n        <link>\n            <predecessor elementType=\"junction\" ",
+  "map_header": {},
+  "status": "PASS",
+  "timestamp": "2026-08-05T12:30:05.466069+00:00"
+}

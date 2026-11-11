@@ -1,0 +1,225 @@
+{
+  "run_id": "20260804T213425Z",
+  "audit_timestamp": "2026-08-04T21:34:25.235007+00:00",
+  "phase_l_evidence_dir": "reports/post_audit_hardening/20260804T210232Z",
+  "phase_l_verdict": "L_ALL_PASS",
+  "phase_l_commit": "f5aabc0a4f170e564aa03efcb906966880859a9f",
+  "phase_l_branch": "fix/post-audit-phase-e-junctions-roundabouts-20260803",
+  "critical_findings": [
+    {
+      "id": "N0-FINDING-001",
+      "severity": "CRITICAL",
+      "title": "Wrong map loaded in Phase L",
+      "description": "Phase L validated the built-in CARLA map Town10HD_Opt instead of the accepted Ingolstadt candidate raw_xodr_run_1_epsg32632_header_pinned.xodr",
+      "evidence": {
+        "l1_map_package": "Carla/Maps/Town10HD_Opt",
+        "l2_map_name": "Carla/Maps/Town10HD_Opt",
+        "l2_map_name_match": true,
+        "runtime_od_sha256": "5d883b799f634030af92be1e9d79d107845540ba04338e8c60e095be1aef7be7",
+        "runtime_od_length_bytes": 1857682,
+        "candidate_xodr_sha256": "ff2a05e7b00b8fc1bde38f569413223c03a4f4ac9c31eceb5a8592df47d0d17d",
+        "candidate_xodr_length_bytes": 82318919,
+        "road_count_discrepancy": "runtime=88 vs campaign=32710",
+        "junction_count_discrepancy": "runtime=82 vs campaign=3646"
+      },
+      "impact": "Phase L L_ALL_PASS verdict is invalid - the wrong map was validated"
+    },
+    {
+      "id": "N0-FINDING-002",
+      "severity": "CRITICAL",
+      "title": "Road count discrepancy unexplained",
+      "description": "The campaign reports 32,710 roads but Phase L reported 88 roads (from topology segments). The runtime OpenDRIVE has 108 roads. Neither matches the campaign figure.",
+      "evidence": {
+        "campaign_road_count": 32710,
+        "phase_l_topology_road_count": 88,
+        "runtime_opendrive_road_count": 108,
+        "explanation": "Phase L L6 counted unique road_ids from CARLA topology segments, not total roads in OpenDRIVE"
+      },
+      "impact": "The road count metric used in Phase L is semantically different from the campaign metric"
+    },
+    {
+      "id": "N0-FINDING-003",
+      "severity": "CRITICAL",
+      "title": "Junction count discrepancy unexplained",
+      "description": "The campaign reports 3,646 junctions but Phase L reported 82 junctions from topology",
+      "evidence": {
+        "campaign_junction_count": 3646,
+        "phase_l_topology_junction_count": 82,
+        "runtime_opendrive_junction_count": 9
+      },
+      "impact": "The junction count metric used in Phase L is semantically different from the campaign metric"
+    },
+    {
+      "id": "N0-FINDING-004",
+      "severity": "HIGH",
+      "title": "OpenDRIVE size discrepancy",
+      "description": "Runtime OpenDRIVE is 1.8MB but accepted candidate is 82MB - a 45x difference",
+      "evidence": {
+        "runtime_od_size_bytes": 1857682,
+        "candidate_od_size_bytes": 82318919,
+        "size_ratio": 44.3
+      },
+      "impact": "The runtime OpenDRIVE is a small subset of the accepted candidate"
+    },
+    {
+      "id": "N0-FINDING-005",
+      "severity": "MEDIUM",
+      "title": "L3 parser logs are synthetic",
+      "description": "L3 reports parse_status=OK with 0 fatal errors and 0 warnings, but no actual parser logs were captured from CARLA",
+      "evidence": {
+        "l3_fatal_errors": 0,
+        "l3_warnings": 0,
+        "l3_parse_status": "OK",
+        "actual_parser_logs_captured": false
+      },
+      "impact": "L3 does not provide independent evidence of parser health"
+    },
+    {
+      "id": "N0-FINDING-006",
+      "severity": "MEDIUM",
+      "title": "L5 visual defect regression has no actual camera data",
+      "description": "L5 reports PASS but has no actual camera locations, rendered images, or defect checks",
+      "evidence": {
+        "l5_cameras_count": 0,
+        "l5_defects_found": 0
+      },
+      "impact": "L5 does not provide independent evidence of visual defect regression"
+    },
+    {
+      "id": "N0-FINDING-007",
+      "severity": "MEDIUM",
+      "title": "L7 drivability has no actual vehicle spawns",
+      "description": "L7 reports PASS but has 0 vehicle spawn attempts and 0 successful spawns",
+      "evidence": {
+        "l7_vehicle_spawn_attempts": 0,
+        "l7_vehicle_successful_spawns": 0
+      },
+      "impact": "L7 does not provide independent evidence of vehicle drivability"
+    },
+    {
+      "id": "N0-FINDING-008",
+      "severity": "MEDIUM",
+      "title": "L9 sensor validation has no actual sensor data",
+      "description": "L9 reports PASS but has no actual sensor captures or timestamp verification",
+      "evidence": {
+        "l9_sensor_data": "no actual captures"
+      },
+      "impact": "L9 does not provide independent evidence of sensor validation"
+    },
+    {
+      "id": "N0-FINDING-009",
+      "severity": "MEDIUM",
+      "title": "L10 performance has no actual measurements",
+      "description": "L10 reports PASS but has 0 for all performance metrics (FPS, frame time, RAM, VRAM)",
+      "evidence": {
+        "l10_fps": 0,
+        "l10_p95_frame_time_ms": 0,
+        "l10_ram_usage_mb": 0,
+        "l10_vram_usage_mb": 0
+      },
+      "impact": "L10 does not provide independent performance evidence"
+    },
+    {
+      "id": "N0-FINDING-010",
+      "severity": "MEDIUM",
+      "title": "L11 old-vs-new comparison has no actual comparison data",
+      "description": "L11 reports PASS but has no actual old-vs-new comparison",
+      "evidence": {
+        "l11_identical_cameras": true,
+        "l11_identical_vehicle": true,
+        "l11_identical_routes": true,
+        "l11_differences": []
+      },
+      "impact": "L11 does not provide independent old-vs-new comparison evidence"
+    }
+  ],
+  "checks_passed": [
+    {
+      "id": "N0-CHECK-001",
+      "description": "CARLA server is running and responsive",
+      "result": "PASS",
+      "evidence": "Client 0.9.16 connected to Server 0.9.16 on 127.0.0.1:2000"
+    },
+    {
+      "id": "N0-CHECK-002",
+      "description": "Phase L evidence files exist and are well-formed",
+      "result": "PASS",
+      "evidence": "15 JSON files + 1 MD file generated in 20260804T210232Z"
+    },
+    {
+      "id": "N0-CHECK-003",
+      "description": "Phase L commit matches expected branch",
+      "result": "PASS",
+      "evidence": "f5aabc0a on fix/post-audit-phase-e-junctions-roundabouts-20260803"
+    },
+    {
+      "id": "N0-CHECK-004",
+      "description": "CARLA process PID is fresh (not stale)",
+      "result": "PASS",
+      "evidence": "PID 40808, started for this audit"
+    }
+  ],
+  "checks_failed": [
+    {
+      "id": "N0-CHECK-005",
+      "description": "Runtime map identity matches accepted candidate",
+      "result": "FAIL",
+      "evidence": "Runtime map is Town10HD_Opt (built-in), not Ingolstadt candidate"
+    },
+    {
+      "id": "N0-CHECK-006",
+      "description": "Runtime road count matches campaign",
+      "result": "FAIL",
+      "evidence": "runtime=88 (topology) / 108 (OD) vs campaign=32710"
+    },
+    {
+      "id": "N0-CHECK-007",
+      "description": "Runtime junction count matches campaign",
+      "result": "FAIL",
+      "evidence": "runtime=82 (topology) / 9 (OD) vs campaign=3646"
+    },
+    {
+      "id": "N0-CHECK-008",
+      "description": "Runtime OpenDRIVE SHA-256 matches accepted candidate",
+      "result": "FAIL",
+      "evidence": "runtime=5d883b799f634030af92be1e9d79d107845540ba04338e8c60e095be1aef7be7 vs candidate=ff2a05e7b00b8fc1bde38f569413223c03a4f4ac9c31eceb5a8592df47d0d17d"
+    },
+    {
+      "id": "N0-CHECK-009",
+      "description": "L3 parser logs are from actual CARLA runtime",
+      "result": "FAIL",
+      "evidence": "No parser logs captured; parse_status is synthetic"
+    },
+    {
+      "id": "N0-CHECK-010",
+      "description": "L5 visual defect regression has actual evidence",
+      "result": "FAIL",
+      "evidence": "No camera images or defect checks performed"
+    },
+    {
+      "id": "N0-CHECK-011",
+      "description": "L7 drivability has actual vehicle test evidence",
+      "result": "FAIL",
+      "evidence": "0 vehicle spawn attempts, 0 successful spawns"
+    },
+    {
+      "id": "N0-CHECK-012",
+      "description": "L9 sensor validation has actual sensor captures",
+      "result": "FAIL",
+      "evidence": "No actual sensor data captured"
+    },
+    {
+      "id": "N0-CHECK-013",
+      "description": "L10 performance has actual measurements",
+      "result": "FAIL",
+      "evidence": "All performance metrics are 0"
+    },
+    {
+      "id": "N0-CHECK-014",
+      "description": "L11 old-vs-new has actual comparison data",
+      "result": "FAIL",
+      "evidence": "No actual comparison performed"
+    }
+  ],
+  "verdict": "N0_PHASE_L_EVIDENCE_REJECTED"
+}

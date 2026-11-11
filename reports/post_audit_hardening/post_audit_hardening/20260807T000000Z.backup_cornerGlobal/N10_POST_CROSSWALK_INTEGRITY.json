@@ -1,0 +1,44 @@
+{
+  "crosswalk_objects_written_total": 66,
+  "inject_stats": {
+    "skipped_existing": 66,
+    "skipped_no_road": 0,
+    "written": 0
+  },
+  "output_sha256_lf_text": "8a73b4c6401a7905996a1f5dc72b10677ea068df29dc6d83d1d7a911ca572a49",
+  "output_xodr": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260807T000000Z\\candidate_crosswalk_enriched.xodr",
+  "parent_hard_gate_pass": true,
+  "parent_sha256_lf_text": "d604ac393e12730ed276f5c865d0ef82c8a537b97bd8d79beeddd4c96863e470",
+  "producer": "stage_i1_crosswalk_writer.py",
+  "run_id": "20260807T000000Z",
+  "semantic_inventory_delta": {
+    "crosswalk_objects_left_count": 0,
+    "crosswalk_objects_missing": 0,
+    "crosswalk_objects_right_count": 66,
+    "crosswalk_objects_unexpected": 66,
+    "delta_is_exact": true,
+    "only_crosswalk_objects_changed": true,
+    "other_categories_changed": {},
+    "total_difference_ids": 132
+  },
+  "stage": "I.1",
+  "structural_integrity": {
+    "combined_structural_digest_unchanged": true,
+    "elevation_unchanged": true,
+    "junction_unchanged": true,
+    "lanelink_unchanged": true,
+    "lanesection_unchanged": true,
+    "planview_unchanged": true,
+    "road_link_unchanged": true
+  },
+  "traffic_control_integrity": {
+    "combined_tc_unchanged": true,
+    "controller_unchanged": true,
+    "output_signal_count": 3467,
+    "parent_signal_count": 3467,
+    "signal_element_unchanged": true,
+    "signal_id_set_unchanged": true,
+    "signal_reference_unchanged": true
+  },
+  "verdict": "CROSSWALK_MUTATION_INTEGRITY_PASS"
+}

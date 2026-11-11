@@ -1,0 +1,28 @@
+{
+  "run_id": "20260804T214459Z",
+  "audit_timestamp": "2026-08-04T21:44:59.590320+00:00",
+  "phase": "N11",
+  "title": "Adversarial Negative Controls",
+  "controls": [
+    {
+      "fault_injected": "wrong_xodr",
+      "fault_detected": true,
+      "rejecting_gate": "N1 identity gate",
+      "evidence_path": "reports/post_audit_hardening\\20260804T214459Z_N1_RUNTIME_MAP_IDENTITY.json"
+    },
+    {
+      "fault_injected": "wrong_package",
+      "fault_detected": true,
+      "rejecting_gate": "N1 identity gate",
+      "evidence_path": "reports/post_audit_hardening\\20260804T214459Z_N1_RUNTIME_MAP_IDENTITY.json"
+    },
+    {
+      "fault_injected": "wrong_map_loaded",
+      "fault_detected": true,
+      "rejecting_gate": "N1 identity gate",
+      "evidence_path": "reports/post_audit_hardening\\20260804T214459Z_N1_RUNTIME_MAP_IDENTITY.json"
+    }
+  ],
+  "verdict": "N11_NEGATIVE_CONTROLS_PARTIAL",
+  "notes": "Only wrong-map negative controls were tested; other fault injections not performed"
+}

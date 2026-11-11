@@ -1,0 +1,34 @@
+{
+  "run_id": "20260804T214459Z",
+  "audit_timestamp": "2026-08-04T21:44:59.518559+00:00",
+  "phase": "N4",
+  "title": "Full-Map Spatial Coverage",
+  "coverage_grid": {
+    "map_name": "Town10HD_Opt",
+    "total_roads_observed": 108,
+    "total_roads_expected": 32710,
+    "coverage_ratio": 0.003302,
+    "total_junctions_observed": 9,
+    "total_junctions_expected": 3646,
+    "junction_coverage_ratio": 0.002468,
+    "total_waypoints_observed": 3066,
+    "total_spawn_points_observed": 155,
+    "total_crosswalks_observed": 80
+  },
+  "components_exercised": {
+    "connected_components": 1,
+    "total_connected_components_expected": "unknown (candidate has 32710 roads)",
+    "junction_classes_exercised": [
+      "default"
+    ],
+    "total_junction_classes_expected": "unknown",
+    "roundabouts_exercised": "unknown",
+    "bridges_exercised": "unknown",
+    "tunnels_exercised": "unknown",
+    "tile_boundaries_exercised": "unknown"
+  },
+  "historical_defect_locations_rechecked": 0,
+  "map_quadrants_covered": "partial (only Town10HD_Opt)",
+  "verdict": "N4_SPATIAL_COVERAGE_INCOMPLETE",
+  "notes": "Only Town10HD_Opt (built-in map) was tested, not the Ingolstadt candidate"
+}

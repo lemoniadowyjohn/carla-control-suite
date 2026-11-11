@@ -1,0 +1,82 @@
+{
+  "crs_verdict": "OSM2ODR_NATIVE_VERIFIED",
+  "fullmap_objs_vertices": 945,
+  "mapping": {
+    "xodr_x = origin_x + obj_x": true,
+    "xodr_y = origin_y - obj_z": true,
+    "xodr_z = obj_y": true
+  },
+  "nearest_road_residual_m": {
+    "count": 945,
+    "max_m": 508.307,
+    "mean_m": 109.899,
+    "median_m": 50.674,
+    "min_m": 0.073,
+    "p95_m": 479.593,
+    "p99_m": 499.575
+  },
+  "note": "Full-map OSM2World OBJ (64 objects) restricted to extract content (0 buildings/0 vegetation ways in authoritative extract); residual over full-map geometry.",
+  "obj_origin_native_frame": [
+    839966.726,
+    5465151.361
+  ],
+  "obj_origin_wgs84": [
+    48.749337350000005,
+    11.4324595
+  ],
+  "obj_path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260809T000000Z_C2_3DPACKAGE\\artifacts_fullmap\\scene.obj",
+  "outlier_vertices": [
+    {
+      "dist_m": 508.31,
+      "road_id": "64882",
+      "vertex_idx": 800
+    },
+    {
+      "dist_m": 508.05,
+      "road_id": "64882",
+      "vertex_idx": 801
+    },
+    {
+      "dist_m": 504.44,
+      "road_id": "64882",
+      "vertex_idx": 799
+    },
+    {
+      "dist_m": 501.76,
+      "road_id": "64882",
+      "vertex_idx": 851
+    },
+    {
+      "dist_m": 501.73,
+      "road_id": "64882",
+      "vertex_idx": 850
+    },
+    {
+      "dist_m": 501.48,
+      "road_id": "64882",
+      "vertex_idx": 849
+    },
+    {
+      "dist_m": 501.06,
+      "road_id": "64882",
+      "vertex_idx": 848
+    },
+    {
+      "dist_m": 500.51,
+      "road_id": "64882",
+      "vertex_idx": 847
+    },
+    {
+      "dist_m": 499.9,
+      "road_id": "64882",
+      "vertex_idx": 846
+    },
+    {
+      "dist_m": 499.71,
+      "road_id": "50030",
+      "vertex_idx": 802
+    }
+  ],
+  "producer": "stage_c2c_fullmap_alignment.py",
+  "xodr_roads_sampled": 32710
+}

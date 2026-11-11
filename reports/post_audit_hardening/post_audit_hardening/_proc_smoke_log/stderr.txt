@@ -1,0 +1,4 @@
+C:\Users\admin\PycharmProjects\gpt4\pythonProject3\carla_-main\scripts\proc_smoke.py:2: SyntaxWarning: invalid escape sequence '\C'
+  """
+C:\Users\admin\PycharmProjects\gpt4\pythonProject3\carla_-main\scripts\proc_smoke.py:84: SyntaxWarning: invalid escape sequence '\C'
+  """Launch CARLA server from E:\CARLA\CARLA_0.9.16\CarlaUE4.exe"""

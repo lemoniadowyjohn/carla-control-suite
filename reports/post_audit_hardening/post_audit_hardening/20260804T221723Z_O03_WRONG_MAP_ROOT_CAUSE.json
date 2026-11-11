@@ -1,0 +1,35 @@
+{
+  "run_id": "20260804T221723Z",
+  "timestamp": "2026-08-04T22:17:23.541844+00:00",
+  "phase": "O03",
+  "title": "Wrong Map Root Cause Analysis",
+  "root_cause": {
+    "primary": "Phase L never loaded the Ingolstadt candidate XODR",
+    "details": [
+      "Phase L validation script (phase_l_validation.py) did not accept an XODR path argument",
+      "Phase L never called client.load_world() or client.generate_opendrive_world()",
+      "Phase L connected to an already-running CARLA server that had Town10HD_Opt loaded as default",
+      "Phase L queried world.get_map() which returned the built-in Town10HD_Opt map",
+      "Phase L L2 compared map name against Town10HD_Opt (circular validation)",
+      "Phase L had no identity gate to verify the loaded map matched the expected candidate"
+    ],
+    "contributing_factors": [
+      "The CARLA server was started before Phase L ran, with Town10HD_Opt as the default map",
+      "No map-selection call was made in Phase L",
+      "The expected_map field in L2 was set to Town10HD_Opt rather than the Ingolstadt candidate",
+      "No runtime hash comparison was performed (source hash vs runtime hash)"
+    ]
+  },
+  "evidence": {
+    "phase_l_script": "phase_l_validation.py",
+    "phase_l_did_not_call_load_world": true,
+    "phase_l_did_not_call_generate_opendrive_world": true,
+    "phase_l_did_not_accept_xodr_argument": true,
+    "carla_server_default_map": "Town10HD_Opt",
+    "runtime_map_name": "Carla/Maps/Town10HD_Opt",
+    "expected_map_in_l2": "Carla/Maps/Town10HD_Opt",
+    "runtime_road_count": 108,
+    "candidate_road_count": 32710
+  },
+  "verdict": "O03_WRONG_MAP_ROOT_CAUSE_IDENTIFIED"
+}

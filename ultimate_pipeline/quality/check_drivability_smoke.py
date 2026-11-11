@@ -349,4 +349,6 @@ if __name__ == "__main__":
         num_ticks=args.ticks,
     )
     print(json.dumps(rep, indent=2))
-    sys.exit(0 if rep.get("ok", False) else 2)
+    rep_ok_val = rep.get("ok", False)
+    rep_ok = rep_ok_val if isinstance(rep_ok_val, bool) else False
+    sys.exit(0 if rep_ok else 2)

@@ -332,7 +332,9 @@ def _run_stage6_read_only_diagnostic(
         "xodr_semantic_changes": semantic_diff,
     }
     _write_stage6_containment_report(self, containment_report)
-    if not semantic_diff.get("ok", False):
+    semantic_diff_ok_val = semantic_diff.get("ok", False)
+    semantic_diff_ok = semantic_diff_ok_val if isinstance(semantic_diff_ok_val, bool) else False
+    if not semantic_diff_ok:
         raise RuntimeError(
             "BLOCKED_STAGE_ORDER_VIOLATION: Stage 6 containment detected protected "
             f"XODR semantic changes: {semantic_diff.get('changed')}"
@@ -690,7 +692,7 @@ def _step6_planview_continuity(
             (not strict_quality)
             and auto_repair_enabled
             and isinstance(seam_report, dict)
-            and not seam_report.get("ok", True)
+            and not (seam_report.get("ok", True) if isinstance(seam_report.get("ok", True), bool) else False)
         ):
             repair_report = auto_repair_tiny_planview_seams_in_file(
                 cont_out,

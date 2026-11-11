@@ -1,0 +1,206 @@
+{
+ "package": "docs/reviews/ARCH_X8_X9_20261104",
+ "evidence_class": "LOCAL_REPRODUCED_NOT_REMOTE_VERIFIED",
+ "statement": "All measurements were executed on one Windows workstation against local, untracked stage files. GitHub CI has NOT reproduced any of them. They become remotely verifiable only once the stage files are archived (ARCHIVE_PROPOSAL.md) and a second party re-runs REPRODUCE.md.",
+ "run": {
+  "run_id": "20261007_214826_524342",
+  "producing_pipeline_commit": "22cf39ab (from the run's own metadata; not re-verified here)",
+  "original_location": "reports/rq1_trial_runs/run_01/20261007_214826_524342/ (untracked, main checkout)"
+ },
+ "stage_files": [
+  {
+   "file": "01_sanitized_20261007_214826_524342.xodr",
+   "bytes": 149799632,
+   "sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+   "role": "stage 01 sanitized (equals the auto_map_of_record registry sha256)"
+  },
+  {
+   "file": "02_sumo_fixed_20261007_214826_524342.xodr",
+   "bytes": 138053233,
+   "sha256": "e511971e85031ed5343c2500b6019f5cd83ae9b79314613124ea887e4739c30f",
+   "role": "stage 02 netconvert repair"
+  },
+  {
+   "file": "03_topology_20261007_214826_524342.xodr",
+   "bytes": 138932131,
+   "sha256": "45c52059ec5b7d8d1e5f2f90a2f814bde465a923e7e77768c5f5e660790c721c",
+   "role": "stage 03 topology (byte-identical to stage 05; unexplained, see risk R-13)"
+  },
+  {
+   "file": "04_elevation_20261007_214826_524342.xodr",
+   "bytes": 119315952,
+   "sha256": "fb04441770a8ec3f0e32d981382791de8d6b9e2d3e0996293c14068c8d66308e",
+   "role": "stage 04 elevation"
+  },
+  {
+   "file": "05_planview_20261007_214826_524342.xodr",
+   "bytes": 138932131,
+   "sha256": "45c52059ec5b7d8d1e5f2f90a2f814bde465a923e7e77768c5f5e660790c721c",
+   "role": "stage 05 planview: INPUT to every GAP-070 measurement in this package"
+  },
+  {
+   "file": "06_continuity_20261007_214826_524342.xodr",
+   "bytes": 138980429,
+   "sha256": "2c0d79c43d140e1d8a34a01d9ef529528706a7441fbb715c29fbe10997b5d6b3",
+   "role": "stage 06 continuity (after the merged snap)"
+  },
+  {
+   "file": "06_geometry_frozen_20261007_214826_524342.xodr",
+   "bytes": 118490166,
+   "sha256": "c5bf2b15f6f31d079f54df36b1d883c6aef001cc5a7323775e8ef789c20075df",
+   "role": "stage 06 geometry freeze"
+  },
+  {
+   "file": "07_lanes_20261007_214826_524342.xodr",
+   "bytes": 121058244,
+   "sha256": "787870babc93644a8465cf32e29507fd5686b7650dd6a43ed0fd200fe05b6ba3",
+   "role": "stage 07 lanes (3,720 junction-exit kinks)"
+  }
+ ],
+ "stage_files_total_bytes": 1063561918,
+ "other_inputs": [
+  {
+   "file": "stub_inventory.json",
+   "source": "branch research/gap070-reversed-stubs-20261104 @06a31ed1 (local only, not on GitHub)",
+   "path_in_branch": "reports/production_readiness/20261104T000000Z_GAP070_REVERSED_STUBS/stub_inventory.json"
+  }
+ ],
+ "code_under_test": {
+  "gap070_candidate": {
+   "branch": "fix/gap070-connector-snap-exit-20261103",
+   "sha": "2cee039f235f2cff7c87fa1fce935154cdcf3cd8",
+   "on_github": true
+  },
+  "integration": {
+   "branch": "integration/post-pr16-final-20261102",
+   "sha": "1a36b560a69286841d4c42973cf00258a38f56c1",
+   "on_github": true
+  },
+  "geometry_kernel": {
+   "path": "ultimate_pipeline/geometry/opendrive_geometry_kernel.py",
+   "last_commit_touching_it_on_candidate": "b1a08caa03c7bf3feef7b5939ca67e60cefcc5b8"
+  }
+ },
+ "environment": {
+  "os": "Windows 11 Pro 10.0.26300",
+  "python": "3.12.2",
+  "shapely": "2.1.2",
+  "other": "standard library only (xml.etree, math, json)"
+ },
+ "scripts": [
+  {
+   "script": "x7_geom_audit.py",
+   "executed_sha256": "b8141e52ca39f6fd735ba95cc83e6e090fff75a0b1c46c5b00ee5c8d370d3b77",
+   "published_sha256": "6d3c7755bf5ab13945dd7ef971339c11db82c2bd8faf564111de68be22224a13",
+   "published_differs_only_in_path_configuration": true,
+   "path_leftovers": []
+  },
+  {
+   "script": "x7_examples.py",
+   "executed_sha256": "3e665c586e125705373f84609f94b122620c6a3662ab7791edd32631b23fa06c",
+   "published_sha256": "f6529e877399cafd3917df7e8ab27b82ae8ea2e08a97e202af3261bccfe30af2",
+   "published_differs_only_in_path_configuration": true,
+   "path_leftovers": []
+  },
+  {
+   "script": "uturn_count.py",
+   "executed_sha256": "afcfe103c933947c812ee1bb4c3d2f75c669bbb70f564adb2e937319b94bd88c",
+   "published_sha256": "df545f5b3c3f07d7b8dbd703b00f79ed178ca514a0720b7386d837be56fc0bcf",
+   "published_differs_only_in_path_configuration": true,
+   "path_leftovers": []
+  },
+  {
+   "script": "x9check.py",
+   "executed_sha256": "41eced22e29298fddc47cc3e294ecc473c8e40720153a00c06a1df82e0731840",
+   "published_sha256": "5dacdea0a96b1a0b5b17ee0eb3bdab4df776079002edaefc3c25057a56b8b11c",
+   "published_differs_only_in_path_configuration": true,
+   "path_leftovers": []
+  },
+  {
+   "script": "x7_crosscheck_kernel.py",
+   "executed_sha256": "0a9243550c7a53e53fd7f72abcba18c99bc71dd66f25f7615e9dc96e32c715d9",
+   "published_sha256": "0a9243550c7a53e53fd7f72abcba18c99bc71dd66f25f7615e9dc96e32c715d9",
+   "published_differs_only_in_path_configuration": false,
+   "path_leftovers": []
+  },
+  {
+   "script": "x7_displacement.py",
+   "executed_sha256": "b58f0a947c3b2b586d4ad183138b5585778b2208a2c044a9d53add443914c0b7",
+   "published_sha256": "b58f0a947c3b2b586d4ad183138b5585778b2208a2c044a9d53add443914c0b7",
+   "published_differs_only_in_path_configuration": false,
+   "path_leftovers": []
+  },
+  {
+   "script": "lane_border_check.py",
+   "executed_sha256": "49186be678ca9f4046bcb9204a8a7dc38041adfd923800b6ae5b871486b7dae0",
+   "published_sha256": "49186be678ca9f4046bcb9204a8a7dc38041adfd923800b6ae5b871486b7dae0",
+   "published_differs_only_in_path_configuration": false,
+   "path_leftovers": []
+  }
+ ],
+ "results": [
+  {
+   "result": "x7_geom_audit.json",
+   "original_sha256": "cafd72604178629a3c7550fda0de8ca3ab77d51fbb48d90f3157aa0bca56fc56",
+   "published_sha256": "654e036d3fcd405c0fe77a8ff0539911cab4e36f60ba5ed8f6207e9a5ff2d143",
+   "redacted_input_path": true
+  },
+  {
+   "result": "x7_crosscheck_kernel.json",
+   "original_sha256": "27c50f8c08f8678472d87b4ce94cb5b5db097361b79ee968af0bb19592a7c22a",
+   "published_sha256": "2d64bdc60bd0d76b27c077cde34379f0acc248b1e0167b48fbe85f51a5589439",
+   "redacted_input_path": false
+  }
+ ],
+ "executions": [
+  {
+   "script": "x7_geom_audit.py",
+   "params": "N=800 analytic samples per refit; kernel N=60 per geometry for the pre-snap baseline",
+   "input": "05_planview",
+   "output": "x7_geom_audit.json"
+  },
+  {
+   "script": "x7_crosscheck_kernel.py",
+   "params": "N=2000 kernel samples per refit",
+   "input": "05_planview",
+   "output": "x7_crosscheck_kernel.json"
+  },
+  {
+   "script": "x7_displacement.py",
+   "params": "lane-width match tolerance 0.01 m",
+   "input": "05_planview",
+   "output": "stdout (numbers quoted in ARCH002_INDEPENDENT_REVIEW.md)"
+  },
+  {
+   "script": "lane_border_check.py",
+   "params": "border match tolerance 0.01 m; laneOffset + width polynomials at the incoming end",
+   "input": "05_planview",
+   "output": "stdout (quoted in ARCH002_INDEPENDENT_REVIEW.md)"
+  },
+  {
+   "script": "uturn_count.py",
+   "params": "U-turn = required turn > 150 deg; coincident = < 0.01 m",
+   "input": "01, 02, 05",
+   "output": "stdout (quoted in CLAUDE_GEOMETRY_ARCHITECTURE_REVIEW.md)"
+  },
+  {
+   "script": "x9check.py",
+   "params": "-",
+   "input": "01, 02 + stub_inventory.json",
+   "output": "stdout"
+  },
+  {
+   "script": "x7_examples.py",
+   "params": "first/median/last refit ids",
+   "input": "05_planview + x7_geom_audit.json",
+   "output": "stdout"
+  }
+ ],
+ "reproduction_check_of_published_scripts": {
+  "x7_geom_audit.py": "re-run from the published path-free copy: result identical to the historical JSON (all fields except the redacted 'input')",
+  "x9check.py": "re-run from the published copy: 58/58 and 81/81, identical"
+ },
+ "not_reverified": [
+  "stdout-only results of x7_displacement.py, lane_border_check.py and uturn_count.py were not re-run from the published copies; they were executed once from the original copies"
+ ]
+}

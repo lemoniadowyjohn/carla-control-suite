@@ -1,0 +1,31 @@
+{
+  "checkpoint": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\C18_GNN_LATENT_GAP\\checkpoints\\map_encoder_epoch50.pt",
+  "epochs_completed": 50,
+  "final_loss": 2.453628,
+  "latent_gap": {
+    "determinism": {
+      "seed": 42,
+      "torch_deterministic": true
+    },
+    "enabled": true,
+    "encoder": {
+      "checkpoint": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\C18_GNN_LATENT_GAP\\checkpoints\\map_encoder_epoch50.pt",
+      "checkpoint_md5": "0f9cc638da2030eea4cf8657dac0a663",
+      "device": "cpu"
+    },
+    "metrics": {
+      "cosine_distance": 1.142302393913269,
+      "cosine_similarity": -0.14230239391326904,
+      "l1_mean": 0.10969069600105286,
+      "l2": 1.5114909410476685,
+      "mse": 0.01784847490489483
+    }
+  },
+  "pyg_available": true,
+  "status": "COMPLETE",
+  "tile_count": 529,
+  "tiles_dir": "campaigns\\ingolstadt_cooked_perception_v1\\regen\\20260819T153954Z\\pipeline_out\\tiles",
+  "timestamp": "2026-08-21T08:05:05.578183+00:00",
+  "torch_available": true,
+  "train_returncode": 0
+}

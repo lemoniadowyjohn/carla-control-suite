@@ -1,0 +1,62 @@
+{
+  "created_utc": "2026-10-21T15:53:13Z",
+  "updated_utc": "2026-10-21T15:53:13Z",
+  "env": {
+    "os": "Windows-11-10.0.26300-SP0",
+    "python": "3.12.2",
+    "machine": "AMD64",
+    "git_commit": "69c818be440464ac8c984e4659e75b72145a6e27",
+    "git_status_porcelain": "?? .agent_locks/worktree_leases/\n?? PERCEPTION_RIG_QUALIFICATION_c69b60d2.json\n?? PERCEPTION_RIG_QUALIFICATION_c69b60d2.md\n?? STORAGE_CLEANUP_RECEIPT_20261021_120000.json\n?? STORAGE_CLEANUP_RECEIPT_20261021_120000.md\n?? STORAGE_RECOVERY_AUDIT_20261021_120000.json\n?? STORAGE_RECOVERY_AUDIT_20261021_120000.md\n?? apply_merges.py\n?? build_worktree_matrix.py\n?? check_ci.py\n?? check_ci_logs.py\n?? check_commits.py\n?? check_commits_full.py\n?? check_final.py\n?? check_oracle_delta.py\n?? check_runtime.py\n?? cook_next_analysis.py\n?? debug_count.py\n?? debug_counts2.py\n?? debug_junction.py\n?? debug_junction2.py\n?? debug_junctions.py\n?? debug_map.py\n?? debug_missing.py\n?? debug_road_lanes.py\n?? debug_unique.py\n?? dist-ci/\n?? find_uncovered.py\n?? gap026_analyze.py\n?? gap026_report.py\n?? gap046_remeasure_arrows.py\n?? parse_page2.py\n?? parse_page3.py\n?? parse_runs.py\n?? parse_runs2.py\n?? pytest-collection-log.zip\n?? reports/PERCEPTION_RIG_QUALIFICATION_c69b60d2.json\n?? reports/PERCEPTION_RIG_QUALIFICATION_c69b60d2.md\n?? reports/carla_runtime/carla_run_20261021T001907Z_504c1b_REPORT.json\n?? reports/carla_runtime/carla_run_20261021T002434Z_da4a54_REPORT.json\n?? reports/carla_runtime/carla_run_20261021T111945Z_c4cb07_REPORT.json\n?? reports/gap048/07_lanes_GAP048_AFTER.xodr\n?? reports/gap048/07_lanes_GAP048_STAGE8_SIM.xodr\n?? reports/gap048/GAP048_THROUGH_JUNCTION_POPULATION.json\n?? reports/import_integrity/EXPECTED_VS_ACTUAL_BUILDING_ASSETS_FULL.json\n?? reports/rq1_trial_runs/run_01/20261007_202526_159392/01_sanitized_20261007_202526_159392.xodr\n?? reports/rq1_trial_runs/run_01/20261007_203931_088462/01_sanitized_20261007_203931_088462.xodr\n?? reports/rq1_trial_runs/run_01/20261007_214826_524342/01_sanitized_20261007_214826_524342.xodr\n?? reports/rq1_trial_runs/run_01/20261007_214826_524342/02_sumo_fixed_20261007_214826_524342.xodr\n?? reports/rq1_trial_runs/run_01/20261007_214826_524342/03_topology_20261007_214826_524342.xodr\n?? reports/rq1_trial_runs/run_01/20261007_214826_524342/04_elevation_20261007_214826_524342.xodr\n?? reports/rq1_trial_runs/run_01/20261007_214826_524342/05_planview_20261007_214826_524342.xodr\n?? reports/rq1_trial_runs/run_01/20261007_214826_524342/06_continuity_20261007_214826_524342.xodr\n?? reports/rq1_trial_runs/run_01/20261007_214826_524342/06_geometry_frozen_20261007_214826_524342.xodr\n?? reports/rq1_trial_runs/run_01/20261007_214826_524342/07_lanes_20261007_214826_524342.xodr\n?? reports/rq1_trial_runs/run_01/20261007_214826_524342/continuity_debug.json\n?? reports/rq1_trial_runs/run_01/20261007_214826_524342/geometry_validator_debug.json\n?? reports/rq1_trial_runs/run_01/20261007_214826_524342/lane_provenance_report.json\n?? reports/rq1_trial_runs/run_01/20261007_214826_524342/logs/geometric_continuity.json\n?? reports/rq1_trial_runs/run_01/20261007_214826_524342/logs/topology_lint.json\n?? reports/rq1_trial_runs/run_01/20261007_214826_524342/qa_stage_reports/06_continuity__geometric_continuity.json\n?? reports/rq1_trial_runs/run_01/20261007_214826_524342/stage6_containment_runtime.json\n?? reports/rq1_trial_runs_x2_verify/run_01/20261008_024449_086823/01_sanitized_20261008_024449_086823.xodr\n?? reports/rq1_trial_runs_x2_verify/run_01/20261008_024449_086823/02_sumo_fixed_20261008_024449_086823.xodr\n?? reports/rq1_trial_runs_x2_verify/run_01/20261008_024449_086823/03_topology_20261008_024449_086823.xodr\n?? reports/rq1_trial_runs_x2_verify/run_01/20261008_024449_086823/04_elevation_20261008_024449_086823.xodr\n?? reports/rq1_trial_runs_x2_verify/run_01/20261008_024449_086823/05_planview_20261008_024449_086823.xodr\n?? reports/rq1_trial_runs_x2_verify/run_01/20261008_024449_086823/06_continuity_20261008_024449_086823.xodr\n?? reports/rq1_trial_runs_x2_verify/run_01/20261008_024449_086823/06_geometry_frozen_20261008_024449_086823.xodr\n?? reports/rq1_trial_runs_x2_verify/run_01/20261008_024449_086823/07_lanes_20261008_024449_086823.xodr\n?? reports/rq1_trial_runs_x2_verify/run_01/20261008_024449_086823/08_final_20261008_024449_086823.xodr\n?? reports/rq1_trial_runs_x2_verify/run_01/20261008_024449_086823/08_final_20261008_024449_086823_laneSectionFixed.xodr\n?? reports/rq1_trial_runs_x2_verify/run_01/20261008_024449_086823/08_final_20261008_024449_086823_semantic.xodr\n?? reports/rq1_trial_runs_x2_verify/run_01/20261008_024449_086823/continuity_debug.json\n?? reports/rq1_trial_runs_x2_verify/run_01/20261008_024449_086823/geometry_validator_debug.json\n?? reports/rq1_trial_runs_x2_verify/run_01/20261008_024449_086823/lane_provenance_report.json\n?? reports/rq1_trial_runs_x2_verify/run_01/20261008_024449_086823/logs/geometric_continuity.json\n?? reports/rq1_trial_runs_x2_verify/run_01/20261008_024449_086823/logs/topology_lint.json\n?? reports/rq1_trial_runs_x2_verify/run_01/20261008_024449_086823/qa_stage_reports/06_continuity__geometric_continuity.json\n?? reports/rq1_trial_runs_x2_verify/run_01/20261008_024449_086823/stage6_containment_runtime.json\n?? reports/rq1b_runs/run_00/run_00/rq1b_full/rq1b_run00/01_sanitized_rq1b_run00.xodr\n?? reports/rq1b_runs/run_00/run_00/rq1b_full/rq1b_run00/02_sumo_fixed_rq1b_run00.xodr\n?? reports/rq1b_runs/run_00/run_00/rq1b_full/rq1b_run00/03_topology_rq1b_run00.xodr\n?? reports/rq1b_runs/run_00/run_00/rq1b_full/rq1b_run00/05_planview_rq1b_run00.xodr\n?? reports/rq1b_runs/run_00/run_00/rq1b_full/rq1b_run00/06_continuity_rq1b_run00.xodr\n?? reports/rq1b_runs/run_00/run_00/rq1b_full/rq1b_run00/continuity_debug.json\n?? reports/rq1b_runs/run_00/run_00/rq1b_full/rq1b_run00/logs/geometric_continuity.json\n?? reports/rq1b_runs/run_00/run_00/rq1b_full/rq1b_run00/logs/topology_lint.json\n?? reports/rq1b_runs/run_00/run_00/rq1b_full/rq1b_run00/qa_stage_reports/06_continuity__geometric_continuity.json\n?? reports/rq1b_runs/run_00/run_00/rq1b_full/rq1b_run00/stage6_containment_runtime.json\n?? run_gap026_production_detail.py\n?? run_gap049_diagnostic.py\n?? run_pipeline.py\n?? run_storage_audit_and_cleanup.py\n?? run_targeted_tests.py\n?? runs.json\n?? runs100.json\n?? runs_page2.json\n?? runs_page3.json\n?? stage8_rca_output/\n?? stage8_rca_output_autofix/\n?? staging_rq2/\n?? submission/infrastructure/ultimate_pipeline/enrichment/lane_successor_topology.py\n?? test_autofix_direct.py\n?? test_post_stage8_analysis.py\n?? test_stage8_rca.py\n?? test_stage8_rca_autofix.py\n?? tests/unit/test_blender_geometry_contract.py\n?? ultimate_pipeline_out/"
+  },
+  "gps_bounds_wgs84": {
+    "lat_min": 48.74935649548228,
+    "lon_min": 11.422268084715878,
+    "lat_max": 48.77444431571603,
+    "lon_max": 11.47882091528412
+  },
+  "settings": {
+    "snapshot_sha256": "6cf9844b690b02d64f412fed1d6f6d688995bcc14dc027b93c9e6b66541e1d17",
+    "snapshot_md5": "f0f3986f3e038e6e6ad22854841f1200",
+    "schema_version": "1.0"
+  },
+  "inputs": {
+    "OSM_FILE": {
+      "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\campaigns\\ingolstadt_cooked_perception_v1\\source\\ingolstadt_authoritative.osm",
+      "exists": true,
+      "size_bytes": 11154738,
+      "sha256": "b9e074656f744c31e6aabb0a16e6b2246824ca74e202ea2c316ff7f22364f24f",
+      "md5": "395355b0274a664c683f39b7d1b8d81b"
+    },
+    "DEM_TIF": {
+      "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\cities\\ingolstadt\\dem\\dem_ing.tif",
+      "exists": true,
+      "size_bytes": 1711684,
+      "sha256": "3cfa665dde3782a015502beaf457854db2f639d01008a386c925d171e41f4ff8",
+      "md5": "3d1d7a67ce44a4b296fb15beedad7d5e"
+    },
+    "SENSOR_CALIB_JSON": {
+      "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\ultimate_pipeline\\sensors\\calib_data.json",
+      "exists": true,
+      "size_bytes": 5076,
+      "sha256": "054a2d8b706ab8f6e5f7ef63c2e630a7bb7c3d0f3839afa943d2d10476679ce0",
+      "md5": "6c4a53158d91e8e196d5a2fe5a8006db"
+    },
+    "INPUT_XODR": {
+      "path": "E:\\wt\\repair-map-realism-p0-837a8504\\campaigns\\ingolstadt_cooked_perception_v1\\candidate\\raw_xodr_run_1.xodr",
+      "exists": true,
+      "size_bytes": 82318841,
+      "sha256": "6044a87d8d6e116b444fe4413a46ab97085033def004b62d011233f4ddc0e93d",
+      "md5": "b39573eb8583e484fd85ed7f8c4b03db"
+    }
+  },
+  "notes": {
+    "purpose": "thesis_provenance",
+    "strict_mode": false,
+    "sim_gate_enabled": false,
+    "offset_policy": null,
+    "gps_anchor_override_allowed": null
+  },
+  "preanchor": {
+    "applied": false
+  }
+}

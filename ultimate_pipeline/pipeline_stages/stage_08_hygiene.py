@@ -271,7 +271,10 @@ def _step8h_map_hygiene(self, final_out: str) -> str:
         )
 
     combined = {
-        "ok": all(bool(r.get("ok", True)) for r in reports.values()),
+        "ok": all(
+            (r.get("ok", True) if isinstance(r.get("ok", True), bool) else False)
+            for r in reports.values()
+        ),
         "input_xodr": str(input_path),
         "output_xodr": str(current_path),
         "stages": reports,

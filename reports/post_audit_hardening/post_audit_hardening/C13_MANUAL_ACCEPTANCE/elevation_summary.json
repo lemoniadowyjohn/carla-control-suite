@@ -1,0 +1,30 @@
+{
+  "coefficient_stats": {
+    "a": {
+      "max": 374.3911404733,
+      "min": 362.4238054183
+    },
+    "b": {
+      "max": 0.07885340213129,
+      "min": -0.08481399659192
+    },
+    "c": {
+      "max": 0.02114483011984,
+      "min": -0.0232397544624
+    },
+    "d": {
+      "max": 0.007951087675956,
+      "min": -0.007891238367222
+    }
+  },
+  "elevation_segment_count": 2553,
+  "invalid_coefficient_count": 0,
+  "max": 374.43916233971396,
+  "max_abs_grade_estimate": 0.08481429405261862,
+  "min": 362.4238054183,
+  "mode": "elevation_profile",
+  "road_count": 993,
+  "roads_with_elevation_profile": 993,
+  "span": 12.015356921413968,
+  "xodr_path": "E:\\CARLA\\CARLA_0.9.16\\CarlaUE4\\Content\\Grid0828\\Maps\\Grid0828\\OpenDrive\\Grid0828.xodr"
+}

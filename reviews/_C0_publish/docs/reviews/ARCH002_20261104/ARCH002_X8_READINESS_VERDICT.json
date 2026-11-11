@@ -1,0 +1,61 @@
+{
+  "review_id": "ARCH-002",
+  "date_utc": "2026-11-04",
+  "reviewer": "Claude Opus 5.5 (read-only)",
+  "verdict": "REQUIRES_SOURCE_HARDENING",
+  "verdict_rationale": "The required source change does not exist: no C1 commit (worktree clean at 2cee039f) and no O13 validator. In addition, new evidence shows the snap's premise is false. 19,195 of 22,588 connectors start on the inner border of their laneLink from-lane; 4,024 of 4,025 snap moves equal a cumulative incoming lane width. So the minimal source fix is to disable or lane-border-gate the snap, not to harden the Hermite refit.",
+  "secondary_blockers": {
+    "BLOCKED_BY_EVIDENCE": "C1 and O13 artifacts are missing; the stage inputs are local only (not remotely reproducible).",
+    "BLOCKED_BY_RESOURCES": "X8 needs >= 15 GB free on one non-quarantined drive; E: had 1.1 GB free during this review."
+  },
+  "baselines": {
+    "integration": "1a36b560a69286841d4c42973cf00258a38f56c1",
+    "gap070_candidate": "2cee039f235f2cff7c87fa1fce935154cdcf3cd8",
+    "c1_branch": "fix/gap070-connector-snap-safety-c1-20261104 @ 2cee039f (no changes)",
+    "o13": "not present"
+  },
+  "input_evidence": {
+    "file": "05_planview_20261007_214826_524342.xodr",
+    "sha256": "45c52059ec5b7d8d1e5f2f90a2f814bde465a923e7e77768c5f5e660790c721c",
+    "bytes": 138932131,
+    "evidence_class": "LOCAL_REPRODUCED_NOT_REMOTE_VERIFIED"
+  },
+  "objective_status": {
+    "A_reproduce_original_failure": "DONE (two independent methods; see the corrections table)",
+    "B_audit_C1": "NOT_RUN (input missing)",
+    "C_audit_O13": "NOT_RUN (input missing)",
+    "D_reassess_gap070_gap079": "DONE",
+    "E_x8_readiness": "DONE"
+  },
+  "reproduced_counts": {
+    "uturn_refits": 3375,
+    "uturn_direction_reversal_kernel_N2000": 3367,
+    "stationary_points_analytic_threshold_1e-6L": 2734,
+    "self_intersections_analytic_N800": 423,
+    "self_intersections_kernel_N2000": 426,
+    "length_mismatch_gt_10pct_non_uturn": 344,
+    "max_arc_over_length": 4.02,
+    "max_start_move_m": 14.0,
+    "moves_exceeding_connector_length": 26,
+    "moves_equal_cumulative_lane_width": 4024,
+    "connectors_start_on_from_lane_inner_border": 19195,
+    "connectors_total": 22588
+  },
+  "corrections_to_ARCH_X8_X9": [
+    "The stationary-point count 2,734 depends on the cut-off; 3,367 of 3,375 U-turn refits reverse direction (kernel sampling).",
+    "Self-intersections depend on sampling: 423 (N=800) vs 426 (N=2000).",
+    "The maximum arc/length is 4.02 (the review cited 3.7x for the top-curvature examples).",
+    "Road 68739 moved 10.5 m, not about 8 m; the maximum move is 14.0 m."
+  ],
+  "minimum_actions": [
+    "C1 (redirected): set the snap default OFF, or skip connectors whose start lies on a laneLink from-lane border; failing-first tests B1-B3, B11, B12.",
+    "O13 + a lane-centre continuity checker (report-only), with adversarial tests C1-C14.",
+    "X8 arms: C (snap off, now the candidate), A (merged snap), optional hardened snap; lane-centre comparison plus the full invariant matrix.",
+    "Free >= 15 GB; archive the stage inputs (C0) with operator approval."
+  ],
+  "not_demonstrated": [
+    "lane-centre continuity before/after the snap",
+    "lane consistency of the 3,393 non-border U-turn-type connectors",
+    "CARLA traversability (GAP-077)"
+  ]
+}

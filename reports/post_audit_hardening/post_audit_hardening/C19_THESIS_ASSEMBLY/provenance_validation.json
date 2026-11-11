@@ -1,0 +1,212 @@
+{
+  "inputs_manifest": {
+    "inputs": {
+      "buildings": {
+        "actual": "f3e8200118845910e136b478a68bd6eb67b985fef6357b98f76ecc6f520e30f5",
+        "expected": "f3e8200118845910e136b478a68bd6eb67b985fef6357b98f76ecc6f520e30f5",
+        "ok": true
+      },
+      "dem": {
+        "actual": "3cfa665dde3782a015502beaf457854db2f639d01008a386c925d171e41f4ff8",
+        "expected": "3cfa665dde3782a015502beaf457854db2f639d01008a386c925d171e41f4ff8",
+        "ok": true
+      },
+      "roads_osm": {
+        "actual": "b9e074656f744c31e6aabb0a16e6b2246824ca74e202ea2c316ff7f22364f24f",
+        "expected": "b9e074656f744c31e6aabb0a16e6b2246824ca74e202ea2c316ff7f22364f24f",
+        "ok": true
+      }
+    },
+    "ok": true
+  },
+  "ok": true,
+  "pinned_maps": [
+    {
+      "artifact": "auto_map_of_record",
+      "ok": true,
+      "role": "auto",
+      "sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8"
+    },
+    {
+      "artifact": "auto_map_of_record_reproregen2_superseded",
+      "ok": true,
+      "role": "auto",
+      "sha256": "2ca342d8ae4bee39b46e4f96329ee8f3752289468c7e62ac6e5b290c5fde4798"
+    },
+    {
+      "artifact": "auto_map_of_record_reproregen1_superseded",
+      "ok": true,
+      "role": "auto",
+      "sha256": "847d41bd11d85ff468f7e9611e1914959dad3b444ba83002911f20f86fd925bb"
+    },
+    {
+      "artifact": "auto_map_of_record_round6_elevationfix_superseded",
+      "ok": true,
+      "role": "auto",
+      "sha256": "cb85fc14420479bc5ddee432636c531df3a41377850f999960c484e530f78d46"
+    },
+    {
+      "artifact": "auto_map_of_record_round5_hygienefix_superseded",
+      "ok": true,
+      "role": "auto",
+      "sha256": "60a363258c29b22b4abd1151ea9aa6ab19510cf89107b72f3a2892c933ca0d75"
+    },
+    {
+      "artifact": "auto_map_of_record_deepaudit_superseded",
+      "ok": true,
+      "role": "auto",
+      "sha256": "e281367e5429533a25c809272de697e2a4166c042bf069f89daffbde7f638ba2"
+    },
+    {
+      "artifact": "auto_map_of_record_junctionfix_superseded",
+      "ok": true,
+      "role": "auto",
+      "sha256": "a5bd01be4ef480a09836cec89eb16f8a169f8f3d34527bc65e5d47707b162802"
+    },
+    {
+      "artifact": "auto_map_of_record_c29_superseded",
+      "ok": true,
+      "role": "auto",
+      "sha256": "744757f3f01da835269b5678eeb269cf5d534984213c551b9c475699aa73aec8"
+    },
+    {
+      "artifact": "manual_grid0828",
+      "ok": true,
+      "role": "manual",
+      "sha256": "5eaece230e02f6c1b2075db851894870790e86ac64710abb3465bcfc533e9b0c"
+    }
+  ],
+  "rq_table_claims": {
+    "claims_checked": [
+      {
+        "metric": "raw_hash_repeatability",
+        "provenance": "PASS",
+        "rq": "RQ1",
+        "via": "direct_hash:C15_RQ4_DOMAIN_RANDOMIZATION.json"
+      },
+      {
+        "metric": "normalized_hash_repeatability",
+        "provenance": "PASS",
+        "rq": "RQ1",
+        "via": "direct_hash:test_exp_osm_to_xodr_determinism_normalized.py"
+      },
+      {
+        "metric": "structural_signature_repeatability",
+        "provenance": "PASS",
+        "rq": "RQ1",
+        "via": "direct_hash:C15_RQ4_DOMAIN_RANDOMIZATION.json"
+      },
+      {
+        "metric": "byte_nondeterminism_source",
+        "provenance": "PASS",
+        "rq": "RQ1",
+        "via": "direct_hash:C15_RQ4_DOMAIN_RANDOMIZATION.json"
+      },
+      {
+        "metric": "natural_dr_present",
+        "note": "claim made but no artifact digest cited",
+        "provenance": "UNPINNED",
+        "rq": "RQ1"
+      },
+      {
+        "metric": "local_lane_width_gap",
+        "provenance": "PASS",
+        "rq": "RQ2",
+        "via": "superseded_pin:auto_map_of_record_c29_superseded"
+      },
+      {
+        "metric": "local_curvature_gap",
+        "provenance": "PASS",
+        "rq": "RQ2",
+        "via": "superseded_pin:auto_map_of_record_c29_superseded"
+      },
+      {
+        "metric": "local_curvature_wasserstein_gap",
+        "provenance": "PASS",
+        "rq": "RQ2",
+        "via": "superseded_pin:auto_map_of_record_c29_superseded"
+      },
+      {
+        "metric": "local_road_length_ratio_auto_over_manual",
+        "provenance": "PASS",
+        "rq": "RQ2",
+        "via": "superseded_pin:auto_map_of_record_c29_superseded"
+      },
+      {
+        "metric": "local_junction_ratio_auto_over_manual",
+        "provenance": "PASS",
+        "rq": "RQ2",
+        "via": "superseded_pin:auto_map_of_record_c29_superseded"
+      },
+      {
+        "metric": "local_road_count_ratio_auto_over_manual",
+        "provenance": "PASS",
+        "rq": "RQ2",
+        "via": "superseded_pin:auto_map_of_record_c29_superseded"
+      },
+      {
+        "metric": "local_auto_footprint_kept_fraction",
+        "provenance": "PASS",
+        "rq": "RQ2",
+        "via": "superseded_pin:auto_map_of_record_c29_superseded"
+      },
+      {
+        "metric": "whole_map_construction_layers_excluded_from_local_gap",
+        "provenance": "PASS",
+        "rq": "RQ2",
+        "via": "superseded_pin:auto_map_of_record_c29_superseded"
+      },
+      {
+        "metric": "whole_map_road_type_coverage_gap_context",
+        "provenance": "PASS",
+        "rq": "RQ2",
+        "via": "superseded_pin:auto_map_of_record_c29_superseded"
+      },
+      {
+        "metric": "local_building_density_gap",
+        "provenance": "PASS",
+        "rq": "RQ2",
+        "via": "superseded_pin:auto_map_of_record_c29_superseded"
+      },
+      {
+        "metric": "local_frechet_distance_median_m",
+        "provenance": "PASS",
+        "rq": "RQ2",
+        "via": "superseded_pin:auto_map_of_record_c29_superseded"
+      },
+      {
+        "metric": "perceptual_gap",
+        "provenance": "n/a (no claim)",
+        "rq": "RQ3"
+      },
+      {
+        "metric": "gnn_latent_cosine_distance",
+        "provenance": "PASS",
+        "rq": "RQ4",
+        "via": "direct_hash:aggregate_stats.json"
+      },
+      {
+        "metric": "explicit_dr_wired",
+        "note": "claim made but no artifact digest cited",
+        "provenance": "UNPINNED",
+        "rq": "RQ4"
+      },
+      {
+        "metric": "miou_auto_train_manual_eval",
+        "provenance": "n/a (no claim)",
+        "rq": "RQ5"
+      },
+      {
+        "metric": "domain_adaptation_coral_mmd",
+        "provenance": "n/a (no claim)",
+        "rq": "RQ5"
+      },
+      {
+        "metric": "real_unlabeled_shift_metrics",
+        "provenance": "n/a (no claim)",
+        "rq": "RQ5"
+      }
+    ],
+    "ok": true
+  }
+}

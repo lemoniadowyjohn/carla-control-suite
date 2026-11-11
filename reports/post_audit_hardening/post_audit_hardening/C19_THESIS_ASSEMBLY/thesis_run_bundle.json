@@ -1,0 +1,252 @@
+{
+  "bundle_kind": "thesis_run_bundle",
+  "c19_step_outputs": {
+    "contract_audit.json": {
+      "present": true,
+      "sha256": "b4005a6d7eefa4ed62db914853cce88860e6520d7cdd8b18b8b6c4b80d7775cd"
+    },
+    "provenance_validation.json": {
+      "present": true,
+      "sha256": "5ad22ab8353e2eff1435cf5a4187ca1874eda234b21585ce08a4c0e178b3a1a5"
+    },
+    "rq_tables.json": {
+      "present": true,
+      "sha256": "9cc70d0f410efa0de0f3bd93f3763e62b4b9d9ee3f79f9a6b59bb865241e4bec"
+    }
+  },
+  "claim_boundaries": [
+    {
+      "metric": "raw_hash_repeatability",
+      "note": "3 runs, 3 distinct raw sha256 values",
+      "rq": "RQ1",
+      "status": "AUTHORITATIVE"
+    },
+    {
+      "metric": "normalized_hash_repeatability",
+      "note": "Portable committed fixture proves timestamp-only changes normalize to one hash and structural changes remain detectable; large raw C15 XODRs remain optional integration artifacts",
+      "rq": "RQ1",
+      "status": "BOUNDED"
+    },
+    {
+      "metric": "structural_signature_repeatability",
+      "note": "3 runs, 3 distinct sha256 (byte-non-deterministic serialization, structure identical)",
+      "rq": "RQ1",
+      "status": "AUTHORITATIVE"
+    },
+    {
+      "metric": "byte_nondeterminism_source",
+      "note": "Osm2Odr(pinned OSM) is STRUCTURALLY deterministic (identical roads/junctions/length every run) but BYTE-non-deterministic (serialization ordering/IDs/metadata vary). Re-running yields the SAME map -> natural DR is ABSENT.",
+      "rq": "RQ1",
+      "status": "BOUNDED"
+    },
+    {
+      "metric": "natural_dr_present",
+      "note": "Osm2Odr(pinned OSM) is STRUCTURALLY deterministic (identical roads/junctions/length every run) but BYTE-non-deterministic (serialization ordering/IDs/metadata vary). Re-running yields the SAME map -> natural DR is ABSENT.",
+      "rq": "RQ1",
+      "status": "AUTHORITATIVE"
+    },
+    {
+      "metric": "local_lane_width_gap",
+      "note": "LOCAL manual-footprint comparison; directly comparable lane geometry, maps agree [footprint=hull]",
+      "rq": "RQ2",
+      "status": "BOUNDED"
+    },
+    {
+      "metric": "local_curvature_gap",
+      "note": "LOCAL manual-footprint comparison; range-sensitive histogram-L1, treat as a bounded structural signal, not a precise scalar [footprint=hull]",
+      "rq": "RQ2",
+      "status": "BOUNDED"
+    },
+    {
+      "metric": "local_curvature_wasserstein_gap",
+      "note": "LOCAL manual-footprint comparison; Wasserstein distance over absolute-curvature distributions, normalized by 0.2 1/m; range-robust companion to histogram-L1 [footprint=hull]",
+      "rq": "RQ2",
+      "status": "BOUNDED"
+    },
+    {
+      "metric": "local_road_length_ratio_auto_over_manual",
+      "note": "LOCAL manual-footprint ratio; measures road-network completeness inside Grid0828's area [footprint=hull] -- hull is tighter/preferred, bbox kept in local_registration.json for comparison (hull materially lowers this ratio vs. the legacy bbox footprint)",
+      "rq": "RQ2",
+      "status": "BOUNDED"
+    },
+    {
+      "metric": "local_junction_ratio_auto_over_manual",
+      "note": "LOCAL manual-footprint ratio; measures junction/detail completeness inside Grid0828's area [footprint=hull]",
+      "rq": "RQ2",
+      "status": "BOUNDED"
+    },
+    {
+      "metric": "local_road_count_ratio_auto_over_manual",
+      "note": "LOCAL manual-footprint ratio; separates structural completeness from whole-map scope [footprint=hull]",
+      "rq": "RQ2",
+      "status": "BOUNDED"
+    },
+    {
+      "metric": "local_auto_footprint_kept_fraction",
+      "note": "manual-footprint crop kept 3536 / 32267 auto roads; whole-map stats are scope context [footprint=hull]",
+      "rq": "RQ2",
+      "status": "BOUNDED"
+    },
+    {
+      "metric": "whole_map_construction_layers_excluded_from_local_gap",
+      "note": "traffic lights are a construction layer, not road-network structure, and are excluded from the LOCAL structural gap because Grid0828 does not model traffic lights at all (0 in the manual map) -- there is nothing in-footprint to compare against, independent of croppability. Reported at whole-map level as a construction/modeling-choice artifact.",
+      "rq": "RQ2",
+      "status": "BOUNDED"
+    },
+    {
+      "metric": "whole_map_road_type_coverage_gap_context",
+      "note": "whole-map context only; manual road types are a subset of auto's",
+      "rq": "RQ2",
+      "status": "BOUNDED"
+    },
+    {
+      "metric": "local_building_density_gap",
+      "note": "LOCAL manual-footprint building density comparison (C26): buildings recovered via outline cornerGlobal absolute positions and cropped in-footprint -- no longer excluded [footprint=hull]",
+      "rq": "RQ2",
+      "status": "BOUNDED"
+    },
+    {
+      "metric": "local_frechet_distance_median_m",
+      "note": "Thesis future-work #14, recomputed against the current local-registration methodology: mean=55.27961477346578m p90=128.01454419021908m over 895 matched road pairs (spacing=5.0m, threshold=50.0m); ~30-50x smaller than the delivered thesis's uncropped whole-network SE(2) number on every statistic -- see THESIS_ITEM14_FRECHET_DISTANCE_RECOMPUTED.md [footprint=hull]",
+      "rq": "RQ2",
+      "status": "BOUNDED"
+    },
+    {
+      "metric": "perceptual_gap",
+      "note": "paired capture not executed -- needs a live CARLA server (currently blocked by a livelock, see C20_TIER1_PROBE_20260821) or the C16 UE cook (blocked on a human operator)",
+      "rq": "RQ3",
+      "status": "DEFERRED_RUNTIME"
+    },
+    {
+      "metric": "gnn_latent_cosine_distance",
+      "note": "5-seed ensemble (seeds=[42, 43, 44, 45, 46]) trained on the UNION of both maps' tiles (resolves C18's OOD one-sided-training caveat); cosine_distance 95% bootstrap CI=[0.616146469116211, 0.6760465860366821], cosine_similarity 95% CI=[0.32272505164146426, 0.3838535487651825] (excludes zero/no-gap)",
+      "rq": "RQ4",
+      "status": "AUTHORITATIVE"
+    },
+    {
+      "metric": "explicit_dr_wired",
+      "note": "apply_n produces 5 distinct variants; deterministic given a seed, varies across seeds",
+      "rq": "RQ4",
+      "status": "AUTHORITATIVE"
+    },
+    {
+      "metric": "miou_auto_train_manual_eval",
+      "note": "RQ5(a): needs C17 paired captures (blocked -- see RQ3)",
+      "rq": "RQ5",
+      "status": "DEFERRED_RUNTIME"
+    },
+    {
+      "metric": "domain_adaptation_coral_mmd",
+      "note": "RQ5(a): needs C17 paired captures (blocked -- see RQ3)",
+      "rq": "RQ5",
+      "status": "DEFERRED_RUNTIME"
+    },
+    {
+      "metric": "real_unlabeled_shift_metrics",
+      "note": "RQ5(b): no real-world Ingolstadt dataset available on this machine (independent of the CARLA blocker)",
+      "rq": "RQ5",
+      "status": "DEFERRED_EXTERNAL_DATA"
+    }
+  ],
+  "evidence_reports": [
+    {
+      "path": "reports/post_audit_hardening/C14_RQ1_STRUCTURAL_GAP/C14_RQ1_REPORT.md",
+      "present": true,
+      "sha256": "b0e02ed69cbdfcc8164888816373a487c5f80406ba31a62bfa663b0af05a3ca8"
+    },
+    {
+      "path": "reports/post_audit_hardening/C15_RQ4_DR/C15_RQ4_REPORT.md",
+      "present": true,
+      "sha256": "b3ddd6f8437aa86cb40cadf9ed7877d179b3d4ad884f76feea46f4dd0b7317f9"
+    },
+    {
+      "path": "reports/post_audit_hardening/C18_GNN_LATENT_GAP/C18_GNN_LATENT_GAP_REPORT.md",
+      "present": true,
+      "sha256": "b36a56ce8f937eafd0d202e8234b481b2db50c59a62d24503afa24e23be805aa"
+    },
+    {
+      "path": "reports/post_audit_hardening/C17_rq2_perception_capture.md",
+      "present": true,
+      "sha256": "73b6ff64ba5a65a6cc68bb2c79900df788c677fc32226aa7596332a340a2fd57"
+    },
+    {
+      "path": "reports/post_audit_hardening/C13_manual_map_and_registry.md",
+      "present": true,
+      "sha256": "11a9a38a8a575bf610ea2c6a0bc5206e8e3fb3a5bced390db55cf7d98c23c5e3"
+    },
+    {
+      "path": "reports/post_audit_hardening/C20_CARLA_RUNTIME_UNBLOCK.md",
+      "present": true,
+      "sha256": "4f81b69580b473070abb623a4e427abfc9ad19d2d1abd2aca076248b5515ae83"
+    },
+    {
+      "path": "reports/post_audit_hardening/C20_TIER1_PROBE_20260821/FINDINGS.md",
+      "present": true,
+      "sha256": "f66e1085e52aa75d63d2cc0a0c953d057e653e49cfa8505119730e22a487ae70"
+    }
+  ],
+  "maps_by_sha": {
+    "auto_map_of_record": {
+      "bytes": 149799632,
+      "path": "campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_perception_map_of_record_20260916_232831.xodr",
+      "role": "auto",
+      "sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8"
+    },
+    "auto_map_of_record_c29_superseded": {
+      "bytes": 144385542,
+      "path": "campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_perception_map_of_record_20260819_160350_C29_BUILDING_PATCH.xodr",
+      "role": "auto",
+      "sha256": "744757f3f01da835269b5678eeb269cf5d534984213c551b9c475699aa73aec8"
+    },
+    "auto_map_of_record_deepaudit_superseded": {
+      "bytes": 148757289,
+      "path": "campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_perception_map_of_record_20260904_deepaudit.xodr",
+      "role": "auto",
+      "sha256": "e281367e5429533a25c809272de697e2a4166c042bf069f89daffbde7f638ba2"
+    },
+    "auto_map_of_record_junctionfix_superseded": {
+      "bytes": 148757286,
+      "path": "campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_perception_map_of_record_20260902_junctionfix.xodr",
+      "role": "auto",
+      "sha256": "a5bd01be4ef480a09836cec89eb16f8a169f8f3d34527bc65e5d47707b162802"
+    },
+    "auto_map_of_record_reproregen1_superseded": {
+      "bytes": 148949722,
+      "path": "campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_perception_map_of_record_20260905_180515.xodr",
+      "role": "auto",
+      "sha256": "847d41bd11d85ff468f7e9611e1914959dad3b444ba83002911f20f86fd925bb"
+    },
+    "auto_map_of_record_reproregen2_superseded": {
+      "bytes": 148949722,
+      "path": "campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_perception_map_of_record_20260905_202847.xodr",
+      "role": "auto",
+      "sha256": "2ca342d8ae4bee39b46e4f96329ee8f3752289468c7e62ac6e5b290c5fde4798"
+    },
+    "auto_map_of_record_round5_hygienefix_superseded": {
+      "bytes": 148950126,
+      "path": "campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_perception_map_of_record_20260904_214501.xodr",
+      "role": "auto",
+      "sha256": "60a363258c29b22b4abd1151ea9aa6ab19510cf89107b72f3a2892c933ca0d75"
+    },
+    "auto_map_of_record_round6_elevationfix_superseded": {
+      "bytes": 148949722,
+      "path": "campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_perception_map_of_record_20260905_131617.xodr",
+      "role": "auto",
+      "sha256": "cb85fc14420479bc5ddee432636c531df3a41377850f999960c484e530f78d46"
+    },
+    "manual_grid0828": {
+      "bytes": 66530869,
+      "path": "campaigns/ingolstadt_cooked_perception_v1/source/manual/Grid0828.xodr",
+      "role": "manual",
+      "sha256": "5eaece230e02f6c1b2075db851894870790e86ac64710abb3465bcfc533e9b0c"
+    }
+  },
+  "protocol_snapshot": {
+    "canonical_regen_entrypoint": "scripts/regen_map_of_record.py",
+    "git_branch": "docs/regen-stale-rq-tables-v1-20260917",
+    "git_commit": "25722002c2ad425a04b0bf4ea18d8690d5a618d3",
+    "git_dirty": true,
+    "inputs_manifest": "campaigns/ingolstadt_cooked_perception_v1/source/INPUTS_MANIFEST.json",
+    "note": "No protocol.py exists in this repo (referenced in earlier C13/C15 specs but never built) -- this snapshot captures what actually governs a run instead."
+  }
+}

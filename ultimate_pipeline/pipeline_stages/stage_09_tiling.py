@@ -283,7 +283,9 @@ def _step9_tiling(self, final_out: str) -> Optional[str]:
         for p in tile_paths:
             rep = check_fn(p)
             reports.append({"tile": os.path.basename(p), "report": rep})
-            if isinstance(rep, dict) and not rep.get("ok", True):
+            rep_ok_val = rep.get("ok", True) if isinstance(rep, dict) else False
+            rep_ok = rep_ok_val if isinstance(rep_ok_val, bool) else False
+            if isinstance(rep, dict) and not rep_ok:
                 failed.append(os.path.basename(p))
         return {
             "ok": len(failed) == 0,
@@ -329,7 +331,7 @@ def _step9_tiling(self, final_out: str) -> Optional[str]:
             (not strict_quality)
             and auto_repair_enabled
             and isinstance(seam_tiles_report, dict)
-            and not seam_tiles_report.get("ok", True)
+            and not (seam_tiles_report.get("ok", True) if isinstance(seam_tiles_report.get("ok", True), bool) else False)
         ):
             failed_tiles = set(seam_tiles_report.get("failed_tiles", []) or [])
             auto_repairs = []

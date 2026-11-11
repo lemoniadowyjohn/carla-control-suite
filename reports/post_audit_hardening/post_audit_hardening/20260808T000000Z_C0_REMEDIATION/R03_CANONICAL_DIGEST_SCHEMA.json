@@ -1,0 +1,40 @@
+{
+  "schema": "R03_CANONICAL_DIGEST_SCHEMA/v1",
+  "generated_at_utc": "2026-08-08T00:00:00Z",
+  "review_context": "CLAUDE_SEMANTIC_WRITE_CONTRACT_NEEDS_FIXES",
+  "defect_fixed": {
+    "previous_schema": "phase_q/signal_digest/v1",
+    "previous_behavior": "empty OR missing OR count-only all collapse to sha256(\"0\") = 5feceb66ffc86f38d952786c6d696c79c2dbc239dd4e91b46729d73a27fb57e9",
+    "evidence": "reports/post_audit_hardening/20260807T000000Z/S03_SEMANTIC_PARENT_AUTHORITY.json: signal_reference_digest == controller_digest == 5feceb66..."
+  },
+  "schema_version": "phase_q/signal_digest/v2",
+  "collections": [
+    {"tag": "SIGNAL_ELEMENT", "xml_source": "<signal> under <road> or <road><signals>", "record_fields": ["id","road_id","s","t","zOffset","hOffset","type","subtype","dynamic","country","name","value","unit","orientation","validities"], "container_paths": ["road/signals", "road/signal"]},
+    {"tag": "SIGNAL_REFERENCE", "xml_source": "<signalReference> under <road> or <road><signals>", "record_fields": ["id","s","t","type","subtype","validities"], "container_paths": ["road/signals", "road/signalReference"]},
+    {"tag": "CONTROLLER", "xml_source": "<controller> at root or under <controllers>", "record_fields": ["id","name","type","delay","plugin"], "container_paths": ["controllers", "controller"]}
+  ],
+  "states": {
+    "PRESENT": "at least one record",
+    "EMPTY_COLLECTION": "container element exists but zero records",
+    "MISSING_COLLECTION": "no container element anywhere in the document",
+    "PARSE_FAILURE": "XML parse failure; digest field = 'PARSE_FAILURE:<TAG>' and parse_failure=true"
+  },
+  "digest_construction": "sha256( \"phase_q/signal_digest/v2\" + SEP + \"<TAG>:<STATE>\" + SEP + \"<count>\" + (SEP + flat_record)* )",
+  "record_canonicalization": {
+    "number_format": "repr(float) with -0.0 -> 0.0 (no trailing zeros)",
+    "id_normalization": "norm_id (leading-zero normalized, string)",
+    "validities": "sorted tuple of (lane, from, to, direction, side)",
+    "ordering": "records sorted by flat serialization string (document order does not affect digest)",
+    "separator": "\\x1f (unit separator)"
+  },
+  "discriminators": {
+    "empty_vs_missing": "state differs (EMPTY_COLLECTION vs MISSING_COLLECTION) -> digests differ",
+    "empty_vs_parse_failure": "PARSE_FAILURE digest is a sentinel string, not a hex sha256 of an empty payload",
+    "adding_one_reference": "count changes 0->1 and record appended -> reference digest and combined digest change",
+    "adding_one_controller": "same for controller digest and combined digest",
+    "semantic_mutation": "any record field change alters the record flat string -> digest changes",
+    "canonical_ordering": "sorted records -> reordering XML elements does not change the digest"
+  },
+  "frozen_authority": "R04_SEMANTIC_PARENT_AUTHORITY.json (recomputed under this schema for the 3467-signal parent; v1 values kept as historical comparison)",
+  "entrypoint": "phase_q/signal_digest.py: traffic_control_digests_v2 / traffic_control_digests_v2_from_text (v1 functions unchanged)"
+}

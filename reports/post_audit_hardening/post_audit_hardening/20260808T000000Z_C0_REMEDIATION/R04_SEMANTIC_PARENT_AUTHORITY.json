@@ -1,0 +1,86 @@
+{
+ "schema": "R04_SEMANTIC_PARENT_AUTHORITY/v1",
+ "generated_at_utc": "2026-08-08T00:00:00Z",
+ "branch": "fix/post-audit-phase-e-junctions-roundabouts-20260803",
+ "semantic_parent": {
+  "name": "candidate_g_semantic_enriched",
+  "role": "accepted 3467-signal parent (re-frozen after digest fix)",
+  "path": "reports/post_audit_hardening/20260807T000000Z/candidate_g_semantic_enriched.xodr",
+  "sha256_raw_bytes": "8b60d8f428c7cdaca9d907963dbf89665df3584168a74805f66af86e63ce8cf4",
+  "sha256_lf_text": "d604ac393e12730ed276f5c865d0ef82c8a537b97bd8d79beeddd4c96863e470",
+  "descended_from_repaired": true,
+  "repaired_parent": "campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_fixed_final.xodr (enrichment forbidden: zero-signal repaired candidate)"
+ },
+ "counts": {
+  "roads": 32710,
+  "junctions": 3646,
+  "laneSections": 32710,
+  "signals": 3467,
+  "signalReferences": 0,
+  "controllers": 0,
+  "objects": 0,
+  "lanes": 84781,
+  "roadMarks": 84781
+ },
+ "connector_repair_ids": [
+  "50003",
+  "51425",
+  "51646",
+  "52738",
+  "54261",
+  "56874",
+  "57300",
+  "58404",
+  "62170",
+  "66369",
+  "68135",
+  "69106"
+ ],
+ "structural_digests": {
+  "schema": "phase_q/structural_digest/v1",
+  "planview_digest": "e4b4402a2644e2905410d34d083d6255dbfc47fd29068ff93eac333f6b49f06a",
+  "road_link_digest": "645f1a8fdc2e77f0e52e7727fc6daa0fc97bab564ab7c618bc4ce390c1183975",
+  "junction_digest": "ba65c039e348dcb5e6fdc9ee370327ccab132d232fcf7263ac1da7ef92aae6d6",
+  "lanelink_digest": "fcfad5c3ced7f66350ab41bab4a6784f3459c4ac1dedbc6d4f54c8775d13a662",
+  "lanesection_digest": "31c8e0447ef70bef60f84393e739d703ea7da7e6785b9b133d27276087ae8c56",
+  "elevation_digest": "18618e75687e32edb8030fc3b9c686d10d3aaa1b000442f4f97ea99cf5af8291",
+  "roads": 32710,
+  "junctions": 3646,
+  "combined_structural_digest": "b30d96781ea61d5822e24c5eb6812048cc98b9c82f70357f5b9e65c67b3a8353"
+ },
+ "traffic_control_digests_v2": {
+  "schema": "phase_q/signal_digest/v2",
+  "schema_version": "1.4",
+  "signal_count": 3467,
+  "signal_reference_count": 0,
+  "controller_count": 0,
+  "signal_element_state": "PRESENT",
+  "signal_reference_state": "EMPTY_COLLECTION",
+  "controller_state": "MISSING_COLLECTION",
+  "parse_failure": false,
+  "signal_element_digest": "60c0aaa43c9fbc902f6c85af099a6f507c9b5fec82ae19059be02ba576025899",
+  "signal_reference_digest": "05e7e68b022a92ebac4bb540c7084861d4e6a9ac15844267e177775d3621d1d2",
+  "controller_digest": "2dcf1445b95e8a6de00d941528d0df50ebaa1ecd47b9ae12b40874cf3c97062f",
+  "combined_traffic_control_digest": "b48272854cc2c995ebf327d397111d712f118c5f5973940ea139620c034dfbbb"
+ },
+ "traffic_control_v1_historical": {
+  "note": "pre-C0 frozen values (S03); v1 schema kept for historical comparison only",
+  "signal_reference_digest": "5feceb66ffc86f38d952786c6d696c79c2dbc239dd4e91b46729d73a27fb57e9",
+  "controller_digest": "5feceb66ffc86f38d952786c6d696c79c2dbc239dd4e91b46729d73a27fb57e9",
+  "defect": "count-only sha256(0) collapse"
+ },
+ "hard_gates_to_c0_acceptance": {
+  "roads_32710": true,
+  "junctions_3646": true,
+  "signals_3467": true,
+  "laneSections_32710": true,
+  "signal_id_count_3467": true,
+  "12_connector_repairs_present": true,
+  "structural_digests_valid": true,
+  "traffic_control_v2_frozen": true,
+  "traffic_control_v2_states": true,
+  "combined_structural_digest_hex": true
+ },
+ "all_hard_gates_pass": true,
+ "verdict": "SEMANTIC_PARENT_FROZEN_V2"
+}

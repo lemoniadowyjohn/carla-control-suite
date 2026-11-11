@@ -86,16 +86,25 @@ def _reason_from_report(report: Dict[str, Any]) -> str:
 
 def _determine_report_ok(report: Dict[str, Any]) -> Optional[bool]:
     if "ok" in report:
-        return bool(report.get("ok"))
+        ok_val = report.get("ok")
+        if isinstance(ok_val, bool):
+            return ok_val
+        return False
     decision = report.get("decision")
     if isinstance(decision, dict) and "pass" in decision:
-        return bool(decision.get("pass"))
+        pass_val = decision.get("pass")
+        if isinstance(pass_val, bool):
+            return pass_val
+        return False
     return None
 
 
 def _determine_lane_ok(report: Dict[str, Any]) -> Optional[bool]:
     if "ok" in report:
-        return bool(report.get("ok"))
+        ok_val = report.get("ok")
+        if isinstance(ok_val, bool):
+            return ok_val
+        return False
     if "still_broken_count" in report:
         return int(report.get("still_broken_count") or 0) == 0
     if "broken_count" in report:

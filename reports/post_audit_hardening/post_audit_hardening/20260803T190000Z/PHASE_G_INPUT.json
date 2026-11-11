@@ -1,0 +1,40 @@
+{
+  "byte_sha256_lf_variant_matches_f7_record": false,
+  "checks": {
+    "f7_evidence_verdict_verified": true,
+    "f7_recorded_path_matches": true,
+    "f7_recorded_sha_matches_byte_identity": true,
+    "phase_e_freeze_record_validated_by_f7": true,
+    "road_count_32710": true
+  },
+  "g0_verdict": "PHASE_G_INPUT_ACCEPTED",
+  "generated_at_utc": "2026-08-03T18:09:14.804104+00:00",
+  "input_candidate": {
+    "byte_sha256": "ac2513e815b22e3a691a9d5f7640c4164b56ee0f53813b9067f0581396e369ba",
+    "canonical_semantic_sha256": "6fbe69777c5bdaa922a9e5d3943644e69089783ed8e3543c2a6b23c09de48ec1",
+    "connector_geometry_hash": "418d4f665a0dff2ba1ee83e85584e76ffa84a0a4ec73d9385b84aa82d8a13754",
+    "contactpoint_hash": "541f8ea6af7f716b19767c451562ece9d87ba91da10c8f377bfc69d3d3c24052",
+    "elevation_profile_hash": "44b2c6701c3c492355978c7d1029dbc7d8da6f80f322cbbe48370b7bac9b6228",
+    "junction_structure_hash": "20a70cfcee1f38e7485d913fd818fc7aaa88777c98e2df9f0a1c27609b351785",
+    "lane_topology_hash": "3547b06a2acd3106952b296fc16e266b9afc65b70a58bc3a6ed3bef02aff12b0",
+    "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260803T160000Z\\candidate_f5_bounded_offsets.xodr",
+    "planview_hash": "20a8c59eaa112daac3e1b8fdae519037ff1a09662e48f83eeb4083e2aef345e2",
+    "road_count": 32710,
+    "road_length_hash": "d9cac90beff8911020398bdec7a213eddf7d0db7dff34e7091d655c4bef00cd7",
+    "road_link_hash": "df42d88ac61abf7b145065ae951c596e0bc2fa2163ad947b00c587cb232c41fd"
+  },
+  "line_ending_variants": {
+    "as_stored": "ac2513e815b22e3a691a9d5f7640c4164b56ee0f53813b9067f0581396e369ba",
+    "crlf_normalized": "e7e15693cda4aab7f42cffe88a52934e29531a070178f1614db2320db3824ad8",
+    "lf_normalized": "ac2513e815b22e3a691a9d5f7640c4164b56ee0f53813b9067f0581396e369ba"
+  },
+  "phase": "G",
+  "phase_f_freeze": {
+    "f7_evidence_path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260803T180000Z\\PHASE_F_ELEVATION_VERIFIED.json",
+    "f7_recorded_candidate_path": "C:/Users/admin/PycharmProjects/gpt4/pythonProject3/carla_-main/reports/post_audit_hardening/20260803T160000Z/candidate_f5_bounded_offsets.xodr",
+    "f7_recorded_sha256": "e7e15693cda4aab7f42cffe88a52934e29531a070178f1614db2320db3824ad8",
+    "f7_verdict": "PHASE_F_ELEVATION_VERIFIED"
+  },
+  "producer": "ultimate_pipeline/tools/phase_g0_handoff.py",
+  "run_id": "20260803T190000Z"
+}

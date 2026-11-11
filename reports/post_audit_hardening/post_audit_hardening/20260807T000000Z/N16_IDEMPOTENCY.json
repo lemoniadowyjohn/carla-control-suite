@@ -1,0 +1,9 @@
+{
+  "written_new": 0,
+  "sha256_lf_text_unchanged": true,
+  "skipped_existing": 66,
+  "note": "re-run over existing candidate",
+  "stage": "I.1",
+  "test": "T19",
+  "run_id": "20260807T000000Z"
+}

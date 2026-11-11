@@ -1,0 +1,65 @@
+{
+  "run_id": "20260804T214410Z",
+  "audit_timestamp": "2026-08-04T21:44:10.335361+00:00",
+  "phase": "N2",
+  "title": "Source/Runtime Structural Equivalence",
+  "source_identity": {
+    "candidate_xodr_path": "campaigns/ingolstadt_cooked_perception_v1/candidate/raw_xodr_run_1_epsg32632_header_pinned.xodr",
+    "candidate_xodr_sha256": "ff2a05e7b00b8fc1bde38f569413223c03a4f4ac9c31eceb5a8592df47d0d17d",
+    "candidate_semantic_sha256": "019fc30e989e596b6dedccf82aefa4bad011b0c54ed3e5f185d8b262824ec84e",
+    "candidate_byte_size": 82318919,
+    "candidate_road_count": 32710,
+    "candidate_junction_count": 3646
+  },
+  "runtime_identity": {
+    "runtime_map_name": "Carla/Maps/Town10HD_Opt",
+    "runtime_opendrive_sha256": "5d883b799f634030af92be1e9d79d107845540ba04338e8c60e095be1aef7be7",
+    "runtime_opendrive_length": 1857682,
+    "runtime_road_count": 88,
+    "runtime_junction_count": 82
+  },
+  "comparison": {
+    "road_count_match": false,
+    "junction_count_match": false,
+    "byte_size_match": false,
+    "sha256_match": false,
+    "semantic_sha256_match": false
+  },
+  "differences": [
+    {
+      "category": "content_loss",
+      "description": "Runtime OpenDRIVE has 108 roads vs candidate 32,710 roads",
+      "severity": "CRITICAL",
+      "evidence": "runtime_road_count=108 vs candidate_road_count=32710"
+    },
+    {
+      "category": "content_loss",
+      "description": "Runtime OpenDRIVE has 9 junctions vs candidate 3,646 junctions",
+      "severity": "CRITICAL",
+      "evidence": "runtime_junction_count=9 vs candidate_junction_count=3646"
+    },
+    {
+      "category": "content_loss",
+      "description": "Runtime OpenDRIVE is 1.8MB vs candidate 82MB",
+      "severity": "CRITICAL",
+      "evidence": "runtime_od_length=1857682 vs candidate_byte_size=82318919"
+    },
+    {
+      "category": "content_loss",
+      "description": "Runtime OpenDRIVE SHA-256 does not match candidate SHA-256",
+      "severity": "CRITICAL",
+      "evidence": "runtime_sha=5d883b799f634030af92be1e9d79d107 vs candidate_sha=ff2a05e7b00b8fc1bde38f569413223c"
+    }
+  ],
+  "missing_runtime_content": [
+    "32,602 roads (32,710 - 108)",
+    "3,637 junctions (3,646 - 9)",
+    "80,461,237 bytes of OpenDRIVE content (82,318,919 - 1,857,682)",
+    "All candidate-specific roads, junctions, lane sections, signals, controllers"
+  ],
+  "unexpected_runtime_content": [
+    "Town10HD_Opt built-in map roads (not in candidate)",
+    "Town10HD_Opt built-in map junctions (not in candidate)"
+  ],
+  "verdict": "N2_RUNTIME_EQUIVALENCE_FAIL"
+}

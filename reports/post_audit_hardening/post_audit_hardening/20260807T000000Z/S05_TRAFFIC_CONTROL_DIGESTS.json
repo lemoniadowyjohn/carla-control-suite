@@ -1,0 +1,14 @@
+{
+  "combined_traffic_control_digest": "393ddad4861370ffd126da28bd1cd8416adf039eac1163d9d3e5772566dbf1c5",
+  "controller_count": 0,
+  "controller_digest": "5feceb66ffc86f38d952786c6d696c79c2dbc239dd4e91b46729d73a27fb57e9",
+  "expected_signal_count": 3467,
+  "repaired_parent_combined": "5e7a6059a8e97e456b80fdc5d416408db37bc09f6c001f2c6311d10d272f36d7",
+  "run_id": "20260807T000000Z",
+  "schema": "phase_q/signal_digest/v1",
+  "signal_count": 3467,
+  "signal_count_matches": true,
+  "signal_element_digest": "0ac4a46686227999fb0bbdb4d264b4d2cdc2312195efff7d4e039a1ac35e8df1",
+  "signal_reference_count": 0,
+  "signal_reference_digest": "5feceb66ffc86f38d952786c6d696c79c2dbc239dd4e91b46729d73a27fb57e9"
+}

@@ -1,0 +1,157 @@
+{
+  "entries": {
+    "fullmap_mesh/scene.obj": {
+      "bytes": 398450258,
+      "sha256": "a147f4fe9e34d8b8a6f32aaddd9de144f2b79e70b5c798fd2d5c7ab3476b9c2e"
+    },
+    "fullmap_mesh/scene.obj.mtl": {
+      "bytes": 8069,
+      "sha256": "536e10e7be4b59a0537aeababb359dbfdc73925535a13ca69bf40a59a2dd79fb"
+    },
+    "fullmap_mesh/scene_roads.obj": {
+      "bytes": 16611751,
+      "sha256": "27b6052bed266b428c371c8189933e6178c08d35f5a94f0e3a4f03267d4d9903"
+    },
+    "visual_layer/artifacts_fbx/blender_status.json": {
+      "bytes": 67824803,
+      "sha256": "251c6757f65d68042ec28377d47ab48ba3039775a400c2192e0ca85189d15a7f"
+    },
+    "visual_layer/artifacts_fbx/blender_stderr.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "visual_layer/artifacts_fbx/blender_stdout.log": {
+      "bytes": 388,
+      "sha256": "54e05b5cc86d45cd2835bf9ff163edece8ce31d8e5c71e522c839ac25b6ea8be"
+    },
+    "visual_layer/artifacts_fbx/scene.blender_manifest.json": {
+      "bytes": 60858083,
+      "sha256": "2499c25047f30d19a2fd3a97bf7736d1119fb111af2713e41fc3811630bc3548"
+    },
+    "visual_layer/artifacts_fbx/scene.fbx": {
+      "bytes": 226279516,
+      "sha256": "3808645c8e1d5259ffaf1805c66b396fa25712766d1633add62c55eed4178d1b"
+    },
+    "visual_layer/artifacts_visual/osm2world_scene_obj_stderr.log": {
+      "bytes": 14399,
+      "sha256": "ed1cb118cceacb7fed57b50028e7d00d62b54d3c19179246fcaad389dd6f8ffe"
+    },
+    "visual_layer/artifacts_visual/osm2world_scene_obj_stdout.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "visual_layer/artifacts_visual/scene.obj": {
+      "bytes": 390751147,
+      "sha256": "15cdccbcd3374b79e63b590e6e591b9f4e4aa9b7abda6b260fb6f553e2d1907e"
+    },
+    "visual_layer/artifacts_visual/scene.obj.mtl": {
+      "bytes": 8069,
+      "sha256": "536e10e7be4b59a0537aeababb359dbfdc73925535a13ca69bf40a59a2dd79fb"
+    },
+    "visual_osm_merged/ingolstadt_visual_merged.osm": {
+      "bytes": 41695457,
+      "sha256": "0ce538320c1f86885ddbf14e2becc1040feeb0f292efa0d1572c9198f2e97563"
+    },
+    "visual_osm_merged/ingolstadt_visual_merged_clean.osm": {
+      "bytes": 40542221,
+      "sha256": "61892da81b8e0b48f41acc90f9e12df83b1cb64b13ff7c5db913c17f17186725"
+    },
+    "visual_osm_raw/strip_0.osm": {
+      "bytes": 3014638,
+      "sha256": "5b31c27e4985797d5a8a4f07b531ab0996161ad265abd691f1d0ae1838b1fec9"
+    },
+    "visual_osm_raw/strip_1a.osm": {
+      "bytes": 5147675,
+      "sha256": "464329ac758bbd2ce8cbace844161a47db1a02335c4e444d8446c65087227376"
+    },
+    "visual_osm_raw/strip_1b_east.osm": {
+      "bytes": 1696030,
+      "sha256": "489fdf04cbf3ee1021cf77fb62db314f0acbc12a22ffe3d9df45d8df187703a5"
+    },
+    "visual_osm_raw/strip_1b_west.osm": {
+      "bytes": 1261388,
+      "sha256": "278c66a0dfd469d80b2e9a64e7b99b893c12c6fecc5f385281b059e96f2c1fff"
+    },
+    "visual_osm_raw/strip_2a_east.osm": {
+      "bytes": 2205005,
+      "sha256": "d60651f90f6aa389b1924c51d8d6bb21c7af16dca5d4e342cb7d925615384145"
+    },
+    "visual_osm_raw/strip_2aw_a1a.osm": {
+      "bytes": 22081,
+      "sha256": "1f3bae4fba2e8378ebe45a9f1a46e931a83055447b935c3f7930a426911e195f"
+    },
+    "visual_osm_raw/strip_2aw_a1b.osm": {
+      "bytes": 20117,
+      "sha256": "cae4180cf7ff3cfa5c683bc72b511109dc042a3cd2eac46a530b7cbd32ea5a42"
+    },
+    "visual_osm_raw/strip_2aw_a2a.osm": {
+      "bytes": 246274,
+      "sha256": "992a659522da68083d2be0808970c331704ec2e3e9e40da9840d95d4a4c37c2e"
+    },
+    "visual_osm_raw/strip_2aw_a2b.osm": {
+      "bytes": 324867,
+      "sha256": "175836267bd8e1168fa7ccfb93e5334b5402d6aab580d19f1268c678643818e6"
+    },
+    "visual_osm_raw/strip_2aw_a3.osm": {
+      "bytes": 35593,
+      "sha256": "06c7516fb0eed2870134e3a465c59cd57bf46e7d6b4c2cd2648740125717fa57"
+    },
+    "visual_osm_raw/strip_2aw_a4a.osm": {
+      "bytes": 364672,
+      "sha256": "8fe95c21429328a912cd669ce23e9f40a61253382a08f32b7cab4563be32c433"
+    },
+    "visual_osm_raw/strip_2aw_a4b.osm": {
+      "bytes": 338285,
+      "sha256": "174a087c6e77de21e4e57de0242e5eaf04dc57c4029f3819f7f4016aa6dd2964"
+    },
+    "visual_osm_raw/strip_2aw_b1.osm": {
+      "bytes": 36123,
+      "sha256": "130ced6e1294725ba5199ade7ca3257082698af4dd1d1e3ff3d64ae823518242"
+    },
+    "visual_osm_raw/strip_2aw_b2.osm": {
+      "bytes": 532055,
+      "sha256": "366d647e9c10b0f55e8b631457fab3df7359ff6bf0a935df37b75da643bcd607"
+    },
+    "visual_osm_raw/strip_2aw_b3a.osm": {
+      "bytes": 34583,
+      "sha256": "8a3ca788a8fe027ef6bbc3ebfcec1f93dd5bb5d9729a84304ff1fe512c915a42"
+    },
+    "visual_osm_raw/strip_2aw_b3b.osm": {
+      "bytes": 86167,
+      "sha256": "3a25370f7e06a035732f93a579a96f2666d0134b8a25bbcc9ef6c33e3a4819b9"
+    },
+    "visual_osm_raw/strip_2aw_b4a.osm": {
+      "bytes": 226543,
+      "sha256": "1b97b5cd6bbffaff942ca21f5ce35b5ebfc0299fb3195d03e38c0aa229caa3a1"
+    },
+    "visual_osm_raw/strip_2aw_b4b.osm": {
+      "bytes": 309135,
+      "sha256": "193e8c937884d788b0deb41d8d4a756b38f4db2c3e1d0cb0c6384c8e92060924"
+    },
+    "visual_osm_raw/strip_2b_east.osm": {
+      "bytes": 1921601,
+      "sha256": "0d524a250308034d5bb1817e5a4a2202f4609b08391370b97e68848099cf3839"
+    },
+    "visual_osm_raw/strip_2b_west.osm": {
+      "bytes": 2704030,
+      "sha256": "34495657acee43677414c772f7db20371bc4a48cdc72acaf26fd6d781d599e0f"
+    },
+    "visual_osm_raw/strip_3.osm": {
+      "bytes": 12354011,
+      "sha256": "02db02c1d66b4a859215add7fc42b6b2050132750dee20caac1eaaa9b9a0f8b7"
+    },
+    "visual_osm_raw/strip_4.osm": {
+      "bytes": 9148965,
+      "sha256": "3fa76eab740d7fe5d81b0d1241b434b6f0fd71e9b049be7ae383cf53a8fa474d"
+    },
+    "visual_osm_raw/strip_5_north.osm": {
+      "bytes": 4860078,
+      "sha256": "c96e5e7eb32f5ebe2a9a76d7d19a141c9bf6496be89c530b7f688a138a3d8286"
+    }
+  },
+  "entry_count": 37,
+  "note": "raw 3D interchange artifacts gitignored; byte-exact disk sha256 recorded here (tracked).",
+  "producer": "reconcile_c2r2_hashes (binary sha256)",
+  "run_dir": "reports/post_audit_hardening/20260810T000000Z_C2_REMEDIATION",
+  "schema": "C2_RAW_ARTIFACTS_STATUS/v1"
+}

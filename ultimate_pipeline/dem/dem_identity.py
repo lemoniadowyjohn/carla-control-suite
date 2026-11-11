@@ -213,7 +213,9 @@ def dem_coverage_gate(
     - sampled_map_points_inside_dem_fraction: requires sampled points (computed elsewhere)
     - nodata_fraction_at_samples: requires sampled points (computed elsewhere)
     """
-    if not identity.get("ok", False):
+    identity_ok_val = identity.get("ok", False)
+    identity_ok = identity_ok_val if isinstance(identity_ok_val, bool) else False
+    if not identity_ok:
         return {"ok": False, "reason": f"dem_identity:{identity.get('reason')}"}
     if map_extent_wgs84 is None:
         return {"ok": False, "reason": "map_extent_unavailable"}
@@ -266,7 +268,9 @@ def dem_identity_valid(
     *,
     required_fields: tuple = ("crs", "vertical_datum", "sha256"),
 ) -> bool:
-    if not identity.get("ok", False):
+    identity_ok_val = identity.get("ok", False)
+    identity_ok = identity_ok_val if isinstance(identity_ok_val, bool) else False
+    if not identity_ok:
         return False
     for field in required_fields:
         if not identity.get(field):

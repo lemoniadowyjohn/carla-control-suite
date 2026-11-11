@@ -1,0 +1,50 @@
+{
+  "run_id": "20260813T075853Z",
+  "audit_timestamp": "2026-08-13T07:59:04.665091+00:00",
+  "phase_l_verdict": "f5aabc0a4f170e564aa03efcb906966880859a9f",
+  "verdict": "PHASE_N_CERTIFIER_REJECTED",
+  "rejections": [
+    {
+      "gate": "G2",
+      "code": "WRONG_CANDIDATE_HASH",
+      "reason": "candidate hash does not match signed candidate",
+      "evidence": "rep_sha256=80ebb0054afd73ffdd51960b48679ff4689c72ed0abe75af5b2ae10a51395699"
+    },
+    {
+      "gate": "G5",
+      "code": "ZERO_FPS_MARKED_PASS",
+      "reason": "zero FPS marked PASS",
+      "evidence": "fps=0 status=PASS"
+    },
+    {
+      "gate": "G6",
+      "code": "ZERO_VEHICLE_SPAWNS_MARKED_PASS",
+      "reason": "zero vehicle spawns marked PASS",
+      "evidence": "spawns=0 status=PASS"
+    },
+    {
+      "gate": "G7",
+      "code": "MISSING_OLD_VS_NEW_MARKED_PASS",
+      "reason": "old-vs-new missing evidence marked PASS",
+      "evidence": "status=PASS differences=[]"
+    },
+    {
+      "gate": "G14",
+      "code": "SEMANTIC_EQUIVALENCE",
+      "reason": "semantic equivalence ok for this compatible profile",
+      "evidence": "semantic_equiv_verdict=SEMANTIC_EQUIVALENCE_PENDING"
+    },
+    {
+      "gate": "G15",
+      "code": "NO_SEMANTIC_COUNTS",
+      "reason": "no semantic category counts",
+      "evidence": "no semantic counts"
+    },
+    {
+      "gate": "G18",
+      "code": "MANUALLY_EDITED_PASS_JSON",
+      "reason": "manual-edit guard",
+      "evidence": "signature_present=False"
+    }
+  ]
+}

@@ -376,7 +376,7 @@ def repair_drop_invalid_lane_links(
         "in_path": str(inp),
         "out_path": str(outp),
         "removed_count": int(removed),
-        "post_ok": bool(post.get("ok", False)),
+        "post_ok": bool(post.get("ok", False)) if isinstance(post.get("ok", False), bool) else False,
         "post_num_issues": int(post.get("num_issues", 0) or 0),
     }
 
@@ -386,7 +386,9 @@ def assert_lane_link_targets_exist(
     allow_dead_ends: bool = True,
 ) -> Dict[str, Any]:
     rep = check_lane_link_targets_exist(xodr_path, lane_types=lane_types, allow_dead_ends=allow_dead_ends)
-    if not rep.get("ok", False):
+    rep_ok_val = rep.get("ok", False)
+    rep_ok = rep_ok_val if isinstance(rep_ok_val, bool) else False
+    if not rep_ok:
         raise RuntimeError(f"lane_link_targets_exist failed: {rep.get('num_issues')} issues")
     return rep
 

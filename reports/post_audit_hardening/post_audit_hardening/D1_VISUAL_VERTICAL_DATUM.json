@@ -1,0 +1,59 @@
+{
+  "schema": "D1_VISUAL_VERTICAL_DATUM/v1",
+  "date": "2026-08-15",
+  "verdict": "VISUAL_VERTICAL_DATUM_WARP_GREEN_WITH_CAVEATS",
+  "input_obj": {
+    "path": "reports/post_audit_hardening/20260810T000000Z_C2_REMEDIATION/visual_layer/artifacts_visual/scene.obj",
+    "sha256": "15cdccbcd3374b79e63b590e6e591b9f4e4aa9b7abda6b260fb6f553e2d1907e"
+  },
+  "output_obj": {
+    "path": "reports/post_audit_hardening/20260810T000000Z_C2_REMEDIATION/visual_layer/artifacts_visual/scene_dem_elevated.obj",
+    "sha256": "6f98898fbc5691795a995c23c8a1b6844b772e1bbe6312a131855fcf7db83bbe",
+    "committed": false
+  },
+  "dem": {
+    "path": "cities/ingolstadt/dem/dem_ing.tif",
+    "sha256": "3cfa665dde3782a015502beaf457854db2f639d01008a386c925d171e41f4ff8",
+    "crs": "WGS84",
+    "bounds": {
+      "left": 11.312083322222236,
+      "bottom": 48.67430556666666,
+      "right": 11.537361100000014,
+      "top": 48.836250011111105
+    }
+  },
+  "xodr_check": {
+    "path": "campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_perception_drivable_width_faithful.xodr",
+    "sha256": "928e5b2397c9eb85448542178766ce8093f4f4457dabf4a7e2c86952b5898b2b",
+    "sampled_points": 2000,
+    "dem_missing": 0,
+    "mean_abs_residual_m": 1.4384650422331464,
+    "median_abs_residual_m": 0.8791742602598731,
+    "p95_abs_residual_m": 4.615595578221814,
+    "max_abs_residual_m": 9.725169444921903,
+    "threshold_p95_m": 10.0,
+    "verdict": "PASS"
+  },
+  "mesh_warp": {
+    "vertices_total": 3159722,
+    "vertices_warped": 3158262,
+    "dem_missing": 1460,
+    "missing_ratio": 0.00046206596656288117,
+    "original_y_min_m": -0.5,
+    "original_y_max_m": 200.0,
+    "dem_height_min_m": 355.04486083984375,
+    "dem_height_max_m": 431.9171447753906,
+    "warped_y_min_m": 355.04486083984375,
+    "warped_y_max_m": 566.0661926269531
+  },
+  "tests": {
+    "red": "missing module import failed as expected",
+    "targeted_final": "4 passed in 0.17s",
+    "full_suite_final": "698 passed, 49 warnings in 162.29s"
+  },
+  "escalate_to_claude": [
+    "1460 visual vertices were outside DEM coverage or otherwise unsampled and were left unchanged.",
+    "D3 is still required to prove the Unreal/CARLA import transform is applied exactly once.",
+    "D4 cook dry-run should crop or reject visual geometry outside the thesis bbox if needed."
+  ]
+}

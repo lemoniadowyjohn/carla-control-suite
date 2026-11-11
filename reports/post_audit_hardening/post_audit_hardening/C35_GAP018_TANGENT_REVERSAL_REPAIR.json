@@ -1,0 +1,87 @@
+{
+  "schema_version": 1,
+  "gap": "GAP-018",
+  "base_sha": "f195ba0b5d6df3f085573c5e996ff9d0f11a975f",
+  "implementation_sha": "db6a538973aebb12b80ec38f304075ab0413d80e",
+  "branch": "feature/gap-018-tangent-reversal-20260909",
+  "status": "PASS_OFFLINE_CANDIDATE",
+  "source": {
+    "map_of_record_sha256": "2ca342d8ae4bee39b46e4f96329ee8f3752289468c7e62ac6e5b290c5fde4798",
+    "road_id": "45622",
+    "geometry_pair": [60, 61],
+    "param_poly3": {
+      "p_range": "normalized",
+      "b_u": 1.85997989,
+      "c_u": -1.45592098,
+      "d_u": 0.0,
+      "du_dp_roots": [0.6387640248167864]
+    },
+    "position_gap_m": 3.939102116649553e-07,
+    "heading_delta_deg": 179.99999991872727
+  },
+  "root_cause": {
+    "producer": "SUMO netconvert invoked by pipeline stage 02",
+    "historical_command_option": "--geometry.remove true",
+    "first_observed_artifact": "02_sumo_fixed_20260905_195253_736636.xodr",
+    "unsafe_heading_smoothing": false,
+    "geometry_remove_false_experiment": {
+      "output_sha256": "8d1e10e2a23e3170ec0bffc9ad739dd5fdc229096351c99baa10fdb2ced291d8",
+      "heading_only_discontinuities": 77,
+      "near_180_count": 1,
+      "defect_road_id": "47183"
+    }
+  },
+  "repair": {
+    "algorithm": "five deterministic paramPoly3 circular-arc approximations",
+    "detection": {
+      "requires_du_dp_sign_reversal": true,
+      "max_position_gap_m": 0.2,
+      "min_tangent_reversal_deg": 170.0
+    },
+    "transactional": true,
+    "source_max_abs_curvature": 3.8385058066479245,
+    "replacement_max_abs_curvature": 2.203638558025961,
+    "endpoint_gap_m": 6.558459564010244e-12,
+    "endpoint_heading_gap_rad": 2.524647157997606e-12,
+    "curvatures": [
+      1.4239086301695032,
+      -2.027401162643994,
+      -2.18889395747328,
+      -0.8691101808415228,
+      1.52370975354721
+    ]
+  },
+  "candidate": {
+    "path": "D:\\carla-control-suite-experiments\\gap-018-tangent-reversal-20260909\\candidate_repaired_parampoly3.xodr",
+    "sha256": "e2f2cd77fdd5359e539433869f0a5ac25e1ef0115ffc467cd43245424ca8de68",
+    "heading_only_discontinuities": {
+      "before": 82,
+      "after": 81
+    },
+    "structural_signature_match": true,
+    "strict_xodr": {
+      "baseline": {"errors": 0, "warnings": 134},
+      "candidate": {"errors": 0, "warnings": 134}
+    },
+    "offline_acceptance": "valid_for_experiments=true",
+    "new_isolated_components": 0
+  },
+  "determinism": {
+    "runs": 2,
+    "byte_equal": true,
+    "report_equal": true,
+    "in_memory_xml_sha256": "e1476b3d9470e328733821f747b865b3e05046a846b7f518fc60959b50812991"
+  },
+  "tests": {
+    "focused": "94 passed",
+    "full_offline": "1427 passed, 1 skipped, 61 warnings, 173.27 s"
+  },
+  "map_of_record_mutated": false,
+  "frozen_evidence_mutated": false,
+  "live_carla": "NOT_RUN",
+  "limitations": [
+    "The repair is fail-closed and applies only to the exact folded-paramPoly3 plus near-pi successor signature.",
+    "No claim is made that the other 81 remaining heading-only discontinuities have the same root cause.",
+    "No live CARLA runtime import was executed."
+  ]
+}

@@ -1,0 +1,70 @@
+{
+  "verdict": "PARTIAL_CANDIDATE_NOT_PINNED_RETRACTED",
+  "RETRACTION": "The earlier CLEAN_REGEN_PINNED verdict was WRONG -- an overclaim from an INCOMPLETE gate set and a mismatched G19 tolerance. The candidate FAILS the real acceptance criteria: G19 has 798 certifier-tolerance length-invariant violations, geometric_continuity has 27193 offending segments (identical to Codex's independent candidate -> upstream Osm2Odr/planView defect), and signals=0 (not enriched). map_acceptance.py (commit 665ac688) now fails closed on continuity evidence. Pin retracted; artifact is DIAGNOSTIC-ONLY. Aligns with Codex verdict PARTIAL_CANDIDATE_PRODUCED_NOT_PINNED.",
+  "failed_acceptance_gates": {
+    "G19": {"pass": false, "violations": 798, "roads_checked": 32297, "max_excess_m": 1.000012161966879e-08, "note": "Confirmed with run_n_certify._length_invariant_evidence using the certification tolerance of 1e-9. The earlier C0 gate reported 0 because it used a looser tolerance."},
+    "geometric_continuity": {"pass": false, "offending_segments": 27193, "heading_jump_max_rad": 3.14159, "note": "gate was non-strict in this run so pipeline proceeded; identical count in Codex candidate 83418373"},
+    "signals": {"pass": false, "count": 0, "note": "not the enriched map of record"}
+  },
+  "diagnostic_candidate": {
+    "path": "campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_osm_auto_regen_20260815T211116Z.xodr",
+    "sha256": "471bea48b273307f70d4c049c5ac5ecb79de6c9584bdee30e80c9874882a0ead",
+    "bytes": 134982690,
+    "roads": 32297,
+    "junctions": 3568
+  },
+  "provenance_chain": {
+    "osm_path": "campaigns/ingolstadt_cooked_perception_v1/source/ingolstadt_authoritative.osm",
+    "osm_sha256": "b9e074656f744c31e6aabb0a16e6b2246824ca74e202ea2c316ff7f22364f24f",
+    "osm_bytes": 11154738,
+    "seed_xodr_sha256": "f02fe381a2c9be9db81b3c7dc0fdf094d8f8225e2b3413c0fe97f2ce6b382075",
+    "seed_via": "carla.Osm2Odr.convert (offline, deterministic, 11.2s)",
+    "final_candidate_sha256": "471bea48b273307f70d4c049c5ac5ecb79de6c9584bdee30e80c9874882a0ead",
+    "pipeline_minutes": 50.0
+  },
+  "offline_gates": {
+    "G-WIDTH": {"pass": true, "n": 53716, "min": 0.2, "max": 3.5, "median": 3.5, "stdev": 0.721, "frac_near_6.0m": 0.0},
+    "G-ELEV":  {"pass": true, "n_records": 32297, "min": 361.85, "max": 408.67, "span": 46.82, "median": 371.02},
+    "G19":     {"pass": false, "issue_count": 798, "roads_checked": 32297, "max_excess_m": 1.000012161966879e-08, "note": "certifier helper result; all excesses are <=1e-6m but >1e-9m"},
+    "G-SCHEMA":{"pass": true, "root": "OpenDRIVE", "roads": 32297, "junctions": 3568}
+  },
+  "exact_regen_config": {
+    "note": "This map is NOT reproducible from DEFAULT settings. A clean checkout requires the env below plus the tracked SUMO frame-preservation fix. Deterministic given this exact config.",
+    "env": {
+      "UP_DISABLE_CARLA": "1",
+      "UP_PREANCHOR_INPUT_XODR": "0",
+      "UP_MANUAL_XODR": "E:\\CARLA\\CARLA_0.9.16\\CarlaUE4\\Content\\Grid0828\\Maps\\Grid0828\\OpenDrive\\Grid0828.xodr",
+      "UP_AUTOFIX_LANE_SUCCESSORS": "1",
+      "UP_STRICT_LANE_SUCCESSORS": "0",
+      "UP_CITY": "ingolstadt"
+    },
+    "code_change": {
+      "files": [
+        "ultimate_pipeline/topology/sumo_repair.py",
+        "ultimate_pipeline/config/settings.py"
+      ],
+      "change": "add --offset.disable-normalization true to netconvert cmd, gated by UP_SUMO_REPAIR_PRESERVE_FRAME / SUMO_REPAIR_PRESERVE_FRAME (default True)",
+      "test": "tests/unit/test_sumo_repair_frame_preservation.py",
+      "status": "tracked with this corrected C0 evidence"
+    }
+  },
+  "regen_config_findings": [
+    {"id": "PREANCHOR_MODULE_ABSENT", "severity": "reproducibility", "detail": "settings.PREANCHOR_INPUT_XODR defaults True and imports tools.preanchor_xodr, absent from the repo (never tracked). A DEFAULT-settings run crashes before stage 01. Ran with UP_PREANCHOR_INPUT_XODR=0 -- also frame-correct (preanchor would re-frame off the tmerc(0,0) DEM contract). No prior working run preanchored."},
+    {"id": "STRICT_CRS_REQUIRES_MANUAL_MAP", "severity": "coupling", "detail": "THESIS_STRICT stage-02 _write_crs_comparability fails closed unless a manual reference XODR is present -- couples Phase-1 auto-map GENERATION to the Phase-2 manual map. Resolved by feeding installed Grid0828 (UTM32N) read-only; full THESIS_STRICT preserved (incl. stage-05 real-DEM enforcement)."},
+    {"id": "SUMO_RECENTER_BREAKS_DEM_CRS", "severity": "bug_fixed", "detail": "stage-02 SUMO netconvert normalized node positions to a local origin (offset ~832671.6, ~5458670.9), moving geometry off the F1-verified global tmerc(0,0) frame WITHOUT recording the offset. stage-05 DEM sampler F1 contract then failed closed (no_frame_matches_osm_source). Fixed via TDD: --offset.disable-normalization keeps the global frame -> DEM elevation imports (32297 real records, 361.85-408.67m). This is why only a RETROFIT candidate ever had valid elevation: the clean end-to-end path was broken here."},
+    {"id": "LANE_SUCCESSOR_AUTOFIX_DISABLED_BY_DEFAULT", "severity": "config", "detail": "stage-08 CARLA lane-successor invariant found 10565 driving lanes missing successors; the pipeline's autofix (UP_AUTOFIX_LANE_SUCCESSORS) is OFF by default so the pipeline crashed. Enabled it -> 10565/10565 lanes REPAIRED by inferring successors from road links; ZERO downgraded to type=none, so the drivable network is fully preserved (no artificial connectivity loss vs the manual map)."}
+  ],
+  "verification_note": "The C0 gate script's G-ELEV check initially false-negatived via diagnostics.elevation_summary.summarize_elevation (returned null min/max on this elevationProfile structure). Corrected to parse <elevation a=...> directly; the candidate demonstrably carries 32297 real DEM records. summarize_elevation itself may warrant a separate fix.",
+  "governance": {
+    "reproducible_from_defaults": false,
+    "reproducible_given_exact_config": true,
+    "osm_source": "tracked authoritative b9e07465 (NOT re-downloaded)",
+    "deterministic_mode": "seed=42",
+    "coordinate_frame": "GLOBAL Osm2Odr tmerc(0,0) (x~840k, y~5.46M) -- live-CARLA must verify float32 precision is acceptable at load",
+    "external_gates_remaining": [
+      "live-CARLA loadability (server-gated; deferred by design)",
+      "human visual review of objects/geometry (map-touching C0/C1 governance)"
+    ],
+    "committed_to_git": false
+  }
+}

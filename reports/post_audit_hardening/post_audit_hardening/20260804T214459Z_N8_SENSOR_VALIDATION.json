@@ -1,0 +1,18 @@
+{
+  "run_id": "20260804T214459Z",
+  "audit_timestamp": "2026-08-04T21:44:59.538316+00:00",
+  "phase": "N8",
+  "title": "Sensor and Coordinate Validation",
+  "sensors_tested": [],
+  "gnss_residuals": {
+    "p50": "N/A",
+    "p90": "N/A",
+    "p95": "N/A",
+    "p99": "N/A",
+    "max": "N/A",
+    "signed_longitude_bias": "N/A",
+    "signed_latitude_bias": "N/A"
+  },
+  "verdict": "N8_SENSOR_VALIDATION_NOT_TESTED",
+  "notes": "Sensor validation not performed on the correct map (Ingolstadt candidate)"
+}

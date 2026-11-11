@@ -133,7 +133,7 @@ def _tile_qa_evidence(qa_out_dir: str, supervisor_rc: int, expected_tiles: int) 
         summary = None
 
     tile_count = len(rows)
-    failed = sum(1 for r in rows if not r.get("ok", False))
+    failed = sum(1 for r in rows if not (r.get("ok", False) if isinstance(r.get("ok", False), bool) else False))
     passed = tile_count - failed
     counts_source = "tile_results.jsonl"
 
@@ -872,7 +872,9 @@ print(f"OK road_defects={{len(events)}} -> {{out_path}}")
                     "run": res,
                 },
             )
-            if not res.get("ok"):
+            res_ok_val = res.get("ok")
+            res_ok = res_ok_val if isinstance(res_ok_val, bool) else False
+            if not res_ok:
                 print(
                     f"⚠️ Road defect subprocess failed; continuing. See: {res.get('log_path')}"
                 )
@@ -942,7 +944,9 @@ print("OK local_perception")
                     "run": res,
                 },
             )
-            if not res.get("ok"):
+            res_ok_val = res.get("ok")
+            res_ok = res_ok_val if isinstance(res_ok_val, bool) else False
+            if not res_ok:
                 print(
                     f"⚠️ Local perception subprocess failed; continuing. See: {res.get('log_path')}"
                 )
@@ -1146,15 +1150,17 @@ print("OK local_perception")
                     timeout_s=timeout_s + 60,
                 )
                 payload = dict(res) if isinstance(res, dict) else {"run": res}
-                payload.setdefault("status", "PASS" if res.get("ok") else "FAIL")
-                if not res.get("ok"):
+                res_ok_val = res.get("ok")
+                res_ok = res_ok_val if isinstance(res_ok_val, bool) else False
+                payload.setdefault("status", "PASS" if res_ok else "FAIL")
+                if not res_ok:
                     payload["reason"] = "scenariorunner_failed"
                 payload.setdefault("out_dir", out_s)
                 payload.setdefault("xosc", xosc)
                 _write_step10_signal(
                     self.out_dir, "step10d3_scenariorunner_status.json", payload
                 )
-                if not res.get("ok", False):
+                if not res_ok:
                     print(f"[STEP10D3] ScenarioRunner failed (see {out_s}).")
             except Exception as _e:
                 print(f"[STEP10D3] ScenarioRunner integration error: {_e}")

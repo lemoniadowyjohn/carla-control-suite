@@ -742,7 +742,11 @@ def normalize_gate_result(report: object) -> Dict[str, object]:
     inspected = [k for k in ("ok", "status", "error") if k in report]
 
     if "ok" in report:
-        ok = bool(report["ok"])
+        ok_val = report["ok"]
+        if isinstance(ok_val, bool):
+            ok = ok_val
+        else:
+            ok = False
         status = _map_gate_status_string(report.get("status")) if "status" in report else None
         if status is None:
             status = QualityStatus.PASS if ok else QualityStatus.FAIL

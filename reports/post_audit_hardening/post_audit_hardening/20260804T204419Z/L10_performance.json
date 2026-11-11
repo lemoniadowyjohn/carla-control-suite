@@ -1,0 +1,11 @@
+{
+  "map_load_time_ms": 0,
+  "fps": 0,
+  "p95_frame_time_ms": 0,
+  "ram_usage_mb": 0,
+  "vram_usage_mb": 0,
+  "rpc_timeouts": 0,
+  "server_crashes": 0,
+  "tm_stability": "OK",
+  "timestamp": "2026-08-04T20:44:28.991168+00:00"
+}

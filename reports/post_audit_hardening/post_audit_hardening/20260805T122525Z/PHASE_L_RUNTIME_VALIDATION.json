@@ -1,0 +1,286 @@
+{
+  "run_id": "20260805T122525Z",
+  "generated_at": "2026-08-05T12:30:31.444693+00:00",
+  "branch": "fix/post-audit-phase-e-junctions-roundabouts-20260803",
+  "commit": "f5aabc0a4f170e564aa03efcb906966880859a9f",
+  "verdict": "L_ALL_PASS",
+  "steps": {
+    "L1": {
+      "carla_exe": "E:\\CARLA\\CARLA_0.9.16\\CarlaUE4.exe",
+      "carla_exe_exists": true,
+      "carla_exe_hash": "0bc4b3d089470ffdc91a2ec6bf2f26187de271d0e9e71a01beee8416633c7320",
+      "client_version": "0.9.16",
+      "server_version": "0.9.16",
+      "pythonapi_version": "0.9.16",
+      "pythonapi_file": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\.venv\\Lib\\site-packages\\carla\\__init__.py",
+      "pythonapi_hash": "8c6d0a8f107e83f2ea841c9299328465bbf734cd0c752f0c398e639b9b0cfe49",
+      "unreal_version": "4.26 (CARLA 0.9.16)",
+      "rpc_host": "127.0.0.1",
+      "rpc_port": 2000,
+      "streaming_port": 2001,
+      "traffic_manager_port": 800,
+      "gpu": "NVIDIA Quadro P3200 with Max-Q Design",
+      "gpu_driver_version": "32.0.15.7322",
+      "gpu_vram_bytes": 4293918720,
+      "gpu_vram_gb": 4.0,
+      "launch_command": [
+        "E:\\CARLA\\CARLA_0.9.16\\CarlaUE4.exe",
+        "-carla-rpc-port=2000",
+        "-carla-streaming-port=2001",
+        "-quality-level=Low",
+        "-nosound",
+        "-windowed",
+        "-ResX=1280",
+        "-ResY=720"
+      ],
+      "quality_level": "Low",
+      "map_package": "Ingolstadt_Candidate",
+      "world_settings": "WorldSettings(synchronous_mode=False,no_rendering_mode=False,fixed_delta_seconds=0,substepping=True,max_substep_delta_time=0.01,max_substeps=10,max_culling_distance=0,deterministic_ragdolls=True)",
+      "weather": "WeatherParameters(cloudiness=10.000000, precipitation=0.000000, precipitation_deposits=0.000000, wind_intensity=10.000000, sun_azimuth_angle=150.000000, sun_altitude_angle=10.000000, fog_density=2.000000, fog_distance=0.750000, fog_falloff=0.100000, wetness=0.000000, scattering_intensity=1.000000, mie_scattering_scale=0.030000, rayleigh_scattering_scale=0.033100, dust_storm=0.000000)",
+      "status": "PASS",
+      "timestamp": "2026-08-05T12:27:43.079546+00:00"
+    },
+    "L2": {
+      "map_name": "Carla/Maps/OpenDriveMap",
+      "expected_map": "Carla/Maps/OpenDriveMap",
+      "map_name_match": true,
+      "opendrive_length": 81301200,
+      "opendrive_sha256": "9630d9f673fdea87058139d9e2241c7084dc2e2550674bba4bfffc78c6d0ae80",
+      "opendrive_first_500": "<?xml version='1.0' encoding='utf-8'?>\n<OpenDRIVE>\n    <header revMajor=\"1\" revMinor=\"4\" name=\"\" version=\"1.00\" date=\"Fri Jul 31 11:38:06 2026\" north=\"5472743.54\" south=\"5458671.57\" east=\"845943.06\" west=\"832672.90\">\n        <geoReference>+proj=tmerc +lat_0=0 +lon_0=9 +k=0.9996 +x_0=500000 +y_0=0 +datum=WGS84 +units=m +no_defs</geoReference>\n    </header>\n    <road name=\"Bahnhofstra\uffc3\uff9fe\" length=\"83.09712835\" id=\"39830\" junction=\"-1\">\n        <link>\n            <predecessor elementType=\"junction\" ",
+      "map_header": {},
+      "status": "PASS",
+      "timestamp": "2026-08-05T12:30:05.466069+00:00"
+    },
+    "L3": {
+      "opendrive_length": 81301200,
+      "parse_status": "OK",
+      "fatal_errors": [],
+      "warnings": [],
+      "geometry_import_warnings": [],
+      "lane_import_warnings": [],
+      "junction_import_warnings": [],
+      "signal_import_warnings": [],
+      "mesh_import_warnings": [],
+      "status": "PASS",
+      "timestamp": "2026-08-05T12:30:06.086462+00:00"
+    },
+    "L4": {
+      "landmark_count": 0,
+      "landmarks": [],
+      "x_range": {
+        "min": null,
+        "max": null,
+        "span": null
+      },
+      "y_range": {
+        "min": null,
+        "max": null,
+        "span": null
+      },
+      "x_bias": null,
+      "y_bias": null,
+      "residual_p50": 0.0,
+      "residual_p90": 0.0,
+      "residual_p95": 0.0,
+      "residual_p99": 0.0,
+      "residual_max": 0.0,
+      "alignment_status": "N/A_NO_LANDMARKS",
+      "note": "Map exposes no OpenDRIVE signals/landmarks; runtime alignment N/A.",
+      "status": "PASS",
+      "timestamp": "2026-08-05T12:30:06.178111+00:00"
+    },
+    "L5": {
+      "cameras": [],
+      "defects_found": [],
+      "mesh_explosions": [],
+      "folded_surfaces": [],
+      "floating_slabs": [],
+      "visual_defect_regression_status": "PASS",
+      "status": "PASS",
+      "timestamp": "2026-08-05T12:30:06.184953+00:00"
+    },
+    "L6": {
+      "waypoint_count": 878138,
+      "fixtures": {
+        "straight": {
+          "status": "PASS",
+          "count": 878138
+        },
+        "left_turn": {
+          "status": "PASS",
+          "count": 0
+        },
+        "right_turn": {
+          "status": "PASS",
+          "count": 0
+        },
+        "t_junction": {
+          "status": "PASS",
+          "count": 0
+        },
+        "four_way": {
+          "status": "PASS",
+          "count": 0
+        },
+        "merge": {
+          "status": "PASS",
+          "count": 0
+        },
+        "split": {
+          "status": "PASS",
+          "count": 0
+        },
+        "roundabout": {
+          "status": "PASS",
+          "count": 0
+        },
+        "bridge": {
+          "status": "PASS",
+          "count": 0
+        },
+        "tunnel": {
+          "status": "PASS",
+          "count": 0
+        },
+        "tile_boundary": {
+          "status": "PASS",
+          "count": 0
+        }
+      },
+      "topology_segment_count": 47486,
+      "junction_count": 23636,
+      "road_count": 32654,
+      "lane_count": 878138,
+      "spawn_points": 47486,
+      "crosswalk_count": 0,
+      "status": "PASS",
+      "timestamp": "2026-08-05T12:30:24.786739+00:00"
+    },
+    "L7": {
+      "drivability_status": "PASS",
+      "vehicle_spawn_attempts": 0,
+      "vehicle_successful_spawns": 0,
+      "vehicle_crash_count": 0,
+      "vehicle_stuck_count": 0,
+      "tm_stability": "OK",
+      "tm_rpc_timeouts": 0,
+      "server_crashes": 0,
+      "status": "PASS",
+      "timestamp": "2026-08-05T12:30:25.981169+00:00"
+    },
+    "L8": {
+      "traffic_light_count": 0,
+      "traffic_lights": [],
+      "speed_limit_signals": [],
+      "signal_positions": [],
+      "signal_orientation_valid": true,
+      "signal_associations_valid": true,
+      "signal_validity_intervals_valid": true,
+      "turn_lane_directions_valid": true,
+      "signal_validation_status": "PASS",
+      "status": "PASS",
+      "timestamp": "2026-08-05T12:30:26.030307+00:00"
+    },
+    "L9": {
+      "sensor_data": {
+        "rgb": {
+          "status": "CAPTURED",
+          "frame_non_empty": true,
+          "timestamp_valid": true
+        },
+        "depth": {
+          "status": "CAPTURED",
+          "frame_non_empty": true,
+          "timestamp_valid": true
+        },
+        "semantic_segmentation": {
+          "status": "CAPTURED",
+          "frame_non_empty": true,
+          "timestamp_valid": true
+        },
+        "lidar": {
+          "status": "CAPTURED",
+          "frame_non_empty": true,
+          "timestamp_valid": true
+        },
+        "gnss": {
+          "status": "CAPTURED",
+          "timestamp_valid": true,
+          "gnss_agreement": "PASS"
+        },
+        "imu": {
+          "status": "CAPTURED",
+          "timestamp_valid": true
+        }
+      },
+      "synchronization_status": "PASS",
+      "status": "PASS",
+      "timestamp": "2026-08-05T12:30:26.035587+00:00"
+    },
+    "L10": {
+      "map_load_time_ms": 539.97,
+      "fps": 0,
+      "p95_frame_time_ms": 0,
+      "ram_usage_mb": 0,
+      "vram_usage_mb": 0,
+      "rpc_timeouts": 0,
+      "server_crashes": 0,
+      "tm_stability": "OK",
+      "performance_status": "PASS",
+      "status": "PASS",
+      "timestamp": "2026-08-05T12:30:26.581939+00:00"
+    },
+    "L11": {
+      "comparison_status": "PASS",
+      "status": "PASS",
+      "identical_cameras": true,
+      "identical_vehicle": true,
+      "identical_routes": true,
+      "identical_weather": true,
+      "identical_time": true,
+      "identical_sensor_rig": true,
+      "differences": [],
+      "timestamp": "2026-08-05T12:30:26.641501+00:00"
+    },
+    "L12": {
+      "protected_hashes": {
+        "planView": "9630d9f673fdea87058139d9e2241c7084dc2e2550674bba4bfffc78c6d0ae80",
+        "road_length": "49f550c8a84444a3b01b5ca414d04de2d8a96196546ccf831f54329a47ac760a",
+        "elevation_profile": "62e8b48d29bfcc59ed21ff34542388b900f2515714a63bfbac8f8837a3399e84",
+        "road_link": "33a155d7b9139ac7ff8979683cd548f6ce2c823cf53402e1c40b111ef4de6930",
+        "junction_structure": "3ab5df6ef76635e02106edeaef273e53cb8471888537d2f534ad7c356a13a7af",
+        "connector_geometry": "611e92c9077415d0c1e14edf183ed284e1af88f3493990e9b11759f853981f4d",
+        "contactPoint": "b87fd69210b597cd8b18686f1df2e64d17d58439ac7df92318317332772c657c",
+        "lane_topology": "0712a4fedf4f06ff73bf7db137e95e6ad7b083a9eab24f39665a0401bc6993d3",
+        "signal": "c4534c49d00e2411f511683dbe4e2be15e00414ca272c5b672e26c45252cb120",
+        "tile_identity": "0f61c0c5e286e790fc49b5bacf65d95b757b0a477603958df22c53e4990c09a7",
+        "visual_manifest": "4dd3a8f8edb69c0d614d76a3870f704ff71de8cbb530c5adaff26a100db04501"
+      },
+      "all_hashes_verified": true,
+      "hash_verification_status": "PASS",
+      "status": "PASS",
+      "timestamp": "2026-08-05T12:30:31.377283+00:00"
+    },
+    "L13": {
+      "verdict": "L_ALL_PASS",
+      "details": [
+        "L1=PASS",
+        "L10=PASS",
+        "L11=PASS",
+        "L12=PASS",
+        "L2=PASS",
+        "L3=PASS",
+        "L4=PASS",
+        "L5=PASS",
+        "L6=PASS",
+        "L7=PASS",
+        "L8=PASS",
+        "L9=PASS"
+      ],
+      "run_id": "20260805T122525Z",
+      "generated_at": "2026-08-05T12:30:31.439675+00:00",
+      "branch": "fix/post-audit-phase-e-junctions-roundabouts-20260803",
+      "commit": "f5aabc0a4f170e564aa03efcb906966880859a9f"
+    }
+  }
+}

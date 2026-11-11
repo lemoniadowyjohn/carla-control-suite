@@ -1,0 +1,50 @@
+{
+  "all_local_files_match_lfs_oid": true,
+  "branch": "fix/post-audit-phase-e-junctions-roundabouts-20260803",
+  "head_parity": true,
+  "lfs_object_count": 23,
+  "lfs_objects_pushed": true,
+  "local_head": "284175388521c70d7a2ffe1aeb85ad568361426a",
+  "local_tree": "42bb2575f8ea88c158c7dca1d0114b224b3589e8",
+  "per_file": {
+    "campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_fixed_final.xodr": {
+      "byte_size": 82935087,
+      "lfs_oid": "80ebb0054afd73ffdd51960b48679ff4689c72ed0abe75af5b2ae10a51395699",
+      "sha256": "80ebb0054afd73ffdd51960b48679ff4689c72ed0abe75af5b2ae10a51395699"
+    },
+    "campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_perception_final.xodr": {
+      "byte_size": 81007405,
+      "lfs_oid": "248ffbbe6a1aa2a9cbd4330a69ad1c1680d39698e2d186dd45f5a2eb91c5db6c",
+      "sha256": "248ffbbe6a1aa2a9cbd4330a69ad1c1680d39698e2d186dd45f5a2eb91c5db6c"
+    },
+    "campaigns/ingolstadt_cooked_perception_v1/source/ingolstadt_authoritative.osm": {
+      "byte_size": 11154738,
+      "lfs_oid": "b9e074656f744c31e6aabb0a16e6b2246824ca74e202ea2c316ff7f22364f24f",
+      "sha256": "b9e074656f744c31e6aabb0a16e6b2246824ca74e202ea2c316ff7f22364f24f"
+    },
+    "reports/post_audit_hardening/20260807T000000Z/candidate_g_semantic_enriched.xodr": {
+      "byte_size": 82556067,
+      "lfs_oid": "8b60d8f428c7cdaca9d907963dbf89665df3584168a74805f66af86e63ce8cf4",
+      "sha256": "8b60d8f428c7cdaca9d907963dbf89665df3584168a74805f66af86e63ce8cf4"
+    },
+    "reports/post_audit_hardening/20260807T000000Z/perception_governed/governed_payload.xodr": {
+      "byte_size": 82589778,
+      "lfs_oid": "a7b319db6627d5711dd989436c4abb1e1ae60455039ea500f8ead2eeaf50af30",
+      "sha256": "a7b319db6627d5711dd989436c4abb1e1ae60455039ea500f8ead2eeaf50af30"
+    },
+    "reports/post_audit_hardening/20260809T000000Z_C1_GENERATION/candidate_crosswalk_enriched.xodr": {
+      "byte_size": 81007419,
+      "lfs_oid": "16ea2ec134b10d07518c63e1bd42c4ffd8b96113d1a52c0fe448f201c004d11f",
+      "sha256": "16ea2ec134b10d07518c63e1bd42c4ffd8b96113d1a52c0fe448f201c004d11f"
+    },
+    "reports/post_audit_hardening/20260809T000000Z_C2_3DPACKAGE/perception_governed/governed_payload.xodr": {
+      "byte_size": 81007405,
+      "lfs_oid": "248ffbbe6a1aa2a9cbd4330a69ad1c1680d39698e2d186dd45f5a2eb91c5db6c",
+      "sha256": "248ffbbe6a1aa2a9cbd4330a69ad1c1680d39698e2d186dd45f5a2eb91c5db6c"
+    }
+  },
+  "remote_default_branch_head": "e0aa1aab232129cac131bd61bf882e7115ea97c4",
+  "remote_head": "284175388521c70d7a2ffe1aeb85ad568361426a",
+  "schema": "C2_CRIT2_REMOTE_PARITY_ATTESTATION/v1",
+  "verdict": "REMOTE_PARITY_CONFIRMED"
+}

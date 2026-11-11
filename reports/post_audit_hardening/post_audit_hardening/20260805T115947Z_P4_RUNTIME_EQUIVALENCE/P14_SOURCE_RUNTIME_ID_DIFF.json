@@ -1,0 +1,42 @@
+{
+  "counts": {
+    "missing_junction_count": 0,
+    "missing_junctions": [],
+    "missing_road_count": 0,
+    "missing_roads": [],
+    "repaired": {
+      "junction_unique": 3646,
+      "junction_xml": 3646,
+      "road_unique": 32710,
+      "road_xml": 32710
+    },
+    "runtime": {
+      "driving_lanes": 34674,
+      "junction_unique": 3646,
+      "junction_xml": 3646,
+      "lane_sections": 32710,
+      "road_unique": 32710,
+      "road_xml": 32710
+    },
+    "source": {
+      "driving_lanes": 34674,
+      "junction_unique": 3646,
+      "junction_xml": 3646,
+      "lane_sections": 32710,
+      "road_unique": 32710,
+      "road_xml": 32710
+    },
+    "unexpected_junction_count": 0,
+    "unexpected_junctions": [],
+    "unexpected_road_count": 0,
+    "unexpected_roads": []
+  },
+  "missing_junction_ids": [],
+  "missing_road_ids": [],
+  "repaired_sha256": "80ebb0054afd73ffdd51960b48679ff4689c72ed0abe75af5b2ae10a51395699",
+  "runtime_to_opendrive_sha256": "9630d9f673fdea87058139d9e2241c7084dc2e2550674bba4bfffc78c6d0ae80",
+  "source_sha256": "ff2a05e7b00b8fc1bde38f569413223c03a4f4ac9c31eceb5a8592df47d0d17d",
+  "unexpected_junction_ids": [],
+  "unexpected_road_ids": [],
+  "verdict": "P4_RUNTIME_EQUIVALENCE_PASS"
+}

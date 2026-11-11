@@ -1,0 +1,14 @@
+check_id,check_type,primary_evidence,derived_evidence,match,severity,finding
+L1,server_preflight,"CARLA server running on port 2000, PID 40808",L1 report claims server is running,PASS,LOW,"Server is running but was started for this audit, not from Phase L"
+L2,map_identity,"Runtime map: Town10HD_Opt, OpenDRIVE SHA-256: 5d883b79...",L2 report claims map_name_match=True,MISMATCH,CRITICAL,"L2 matched Town10HD_Opt against itself, not against the accepted candidate"
+L3,parser_logs,No actual parser logs captured from CARLA,"L3 report claims parse_status=OK, 0 fatal errors",MISMATCH,HIGH,"L3 parser logs are synthetic, not from actual CARLA runtime"
+L4,alignment,65 landmarks on Town10HD_Opt,L4 report claims ALIGNED,MISMATCH,CRITICAL,"Alignment verified on wrong map (Town10HD_Opt), not Ingolstadt candidate"
+L5,visual_regression,No camera images or defect checks performed,L5 report claims PASS,MISMATCH,HIGH,L5 visual defect regression has no actual evidence
+L6,waypoint_topology,"Runtime: 108 roads, 9 junctions, 3066 waypoints","L6 report: 88 roads, 82 junctions",MISMATCH,CRITICAL,"L6 road count (88) and junction count (82) do not match runtime OpenDRIVE (108 roads, 9 junctions). Neither matches campaign (32710 roads, 3646 junctions)."
+L7,drivability,"0 vehicle spawn attempts, 0 successful spawns",L7 report claims PASS,MISMATCH,HIGH,L7 drivability has no actual vehicle test evidence
+L8,signal_validation,15 traffic lights on Town10HD_Opt,L8 report claims PASS,MISMATCH,MEDIUM,Signal validation done on wrong map
+L9,sensor_validation,No actual sensor captures,L9 report claims PASS,MISMATCH,HIGH,L9 sensor validation has no actual evidence
+L10,performance,All performance metrics are 0,L10 report claims PASS,MISMATCH,HIGH,L10 performance has no actual measurements
+L11,old_vs_new,No actual comparison performed,L11 report claims PASS,MISMATCH,HIGH,L11 old-vs-new has no actual comparison data
+L12,protected_hashes,Hashes computed from Town10HD_Opt OpenDRIVE,L12 report claims PASS,MISMATCH,CRITICAL,"Protected hashes are for Town10HD_Opt, not the Ingolstadt candidate"
+L13,outputs,L_ALL_PASS verdict generated,L13 report claims all steps passed,MISMATCH,CRITICAL,L_ALL_PASS verdict is invalid because the wrong map was validated

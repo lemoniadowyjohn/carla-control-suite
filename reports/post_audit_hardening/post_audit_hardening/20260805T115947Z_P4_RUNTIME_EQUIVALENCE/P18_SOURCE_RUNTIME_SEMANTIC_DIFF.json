@@ -1,0 +1,8 @@
+{
+  "explanation": "Source and runtime to_opendrive() inventories identical; no content loss.",
+  "runtime_driving_lanes": 34674,
+  "runtime_lane_sections": 32710,
+  "source_driving_lanes": 34674,
+  "source_lane_sections": 32710,
+  "verdict": "P4_RUNTIME_EQUIVALENCE_PASS"
+}

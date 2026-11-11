@@ -1,0 +1,149 @@
+{
+  "traffic_light_count": 15,
+  "traffic_lights": [
+    {
+      "id": 9,
+      "state": "Red",
+      "location": {
+        "x": -119.230034,
+        "y": 5.093152,
+        "z": 0.26277
+      }
+    },
+    {
+      "id": 10,
+      "state": "Red",
+      "location": {
+        "x": 115.449829,
+        "y": 35.044945,
+        "z": 0.222726
+      }
+    },
+    {
+      "id": 11,
+      "state": "Red",
+      "location": {
+        "x": -46.171577,
+        "y": -73.556618,
+        "z": 0.254254
+      }
+    },
+    {
+      "id": 12,
+      "state": "Red",
+      "location": {
+        "x": -34.449154,
+        "y": -51.020489,
+        "z": 0.254255
+      }
+    },
+    {
+      "id": 13,
+      "state": "Yellow",
+      "location": {
+        "x": 114.451889,
+        "y": 21.196003,
+        "z": 0.2542
+      }
+    },
+    {
+      "id": 14,
+      "state": "Red",
+      "location": {
+        "x": 89.791885,
+        "y": 20.922146,
+        "z": 0.2542
+      }
+    },
+    {
+      "id": 15,
+      "state": "Yellow",
+      "location": {
+        "x": -31.930841,
+        "y": 20.301954,
+        "z": 0.254254
+      }
+    },
+    {
+      "id": 16,
+      "state": "Red",
+      "location": {
+        "x": -64.264191,
+        "y": 7.063309,
+        "z": 0.254254
+      }
+    },
+    {
+      "id": 17,
+      "state": "Red",
+      "location": {
+        "x": -62.35207,
+        "y": 20.196909,
+        "z": 0.254254
+      }
+    },
+    {
+      "id": 18,
+      "state": "Red",
+      "location": {
+        "x": -94.928223,
+        "y": 20.334822,
+        "z": 0.254256
+      }
+    },
+    {
+      "id": 19,
+      "state": "Yellow",
+      "location": {
+        "x": -59.242249,
+        "y": -51.498371,
+        "z": 0.254254
+      }
+    },
+    {
+      "id": 20,
+      "state": "Yellow",
+      "location": {
+        "x": -119.238182,
+        "y": 19.004469,
+        "z": 0.254253
+      }
+    },
+    {
+      "id": 21,
+      "state": "Yellow",
+      "location": {
+        "x": -58.715359,
+        "y": 145.82457,
+        "z": 0.254188
+      }
+    },
+    {
+      "id": 22,
+      "state": "Red",
+      "location": {
+        "x": -62.099304,
+        "y": 123.755508,
+        "z": 0.283086
+      }
+    },
+    {
+      "id": 23,
+      "state": "Red",
+      "location": {
+        "x": -31.636356,
+        "y": 33.589287,
+        "z": 0.254254
+      }
+    }
+  ],
+  "speed_limit_signals": [],
+  "signal_positions": [],
+  "signal_orientation_valid": true,
+  "signal_associations_valid": true,
+  "signal_validity_intervals_valid": true,
+  "turn_lane_directions_valid": true,
+  "signal_validation_status": "PASS",
+  "status": "PASS",
+  "timestamp": "2026-08-04T21:02:38.914694+00:00"
+}

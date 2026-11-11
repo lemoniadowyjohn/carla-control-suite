@@ -1,0 +1,224 @@
+{
+  "coverage_gate": {
+    "coverage_ratio_diag": 1.0,
+    "dem_bounds_wgs84": {
+      "lat_max": 48.836250011111105,
+      "lat_min": 48.67430556666666,
+      "lon_max": 11.537361100000014,
+      "lon_min": 11.312083322222236
+    },
+    "fully_covered": true,
+    "map_extent_wgs84": {
+      "lat_max": 48.82601251112411,
+      "lat_min": 48.684184734650565,
+      "lon_max": 11.5275131991524,
+      "lon_min": 11.322189181491346
+    },
+    "margin_deg": 0.0,
+    "needed_bounds_wgs84": {
+      "lat_max": 48.82601251112411,
+      "lat_min": 48.684184734650565,
+      "lon_max": 11.5275131991524,
+      "lon_min": 11.322189181491346
+    },
+    "ok": true,
+    "overlap_wgs84": {
+      "lat_max": 48.82601251112411,
+      "lat_min": 48.684184734650565,
+      "lon_max": 11.5275131991524,
+      "lon_min": 11.322189181491346
+    },
+    "reason": "covered"
+  },
+  "crs_contract": {
+    "claimed_crs": "+proj=tmerc +lat_0=0 +lon_0=9 +k=0.9996 +x_0=500000 +y_0=0 +datum=WGS84 +units=m +no_defs +type=crs",
+    "claimed_crs_header_bounds_wgs84": {
+      "lat_max": 49.3166287421714,
+      "lat_min": 49.183116214988864,
+      "lon_max": 13.76006739410691,
+      "lon_min": 13.56642001213345
+    },
+    "claimed_crs_reason": "parsed",
+    "claimed_plausible": false,
+    "claimed_proj4": "+proj=tmerc +lat_0=0 +lon_0=9 +k=0.9996 +x_0=500000 +y_0=0 +datum=WGS84 +units=m +no_defs",
+    "geometry_bounds": {
+      "east": 845935.65308293,
+      "north": 5472743.854711261,
+      "south": 5458668.202795612,
+      "west": 832671.5018876609
+    },
+    "header_bounds": {
+      "east": 845943.06,
+      "north": 5472743.54,
+      "south": 5458671.57,
+      "west": 832672.9
+    },
+    "native_frame": "+proj=tmerc +lat_0=0 +lon_0=0 +k=1 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs",
+    "native_frame_header_bounds_wgs84": {
+      "lat_max": 48.826007874046795,
+      "lat_min": 48.68420443267649,
+      "lon_max": 11.527611357975239,
+      "lon_min": 11.322214553035723
+    },
+    "native_plausible": true,
+    "osm_bounds": {
+      "lat_max": 48.8143429,
+      "lat_min": 48.6843318,
+      "lon_max": 11.5382271,
+      "lon_min": 11.3266919
+    },
+    "osm_bounds_expanded_deg": 0.15,
+    "reason": "claimed_geoReference_disproven;osm2odr_native_frame_matches_osm",
+    "verdict": "OSM2ODR_NATIVE_VERIFIED",
+    "wp1_control_point": {
+      "source": "WP1 candidate_actual_reprojection.xodr, road 39830 (0.0 m verified)",
+      "utm32n_x": 678942.92,
+      "utm32n_y": 5402201.68,
+      "wgs84_lat": 48.747103,
+      "wgs84_lon": 11.434291,
+      "xodr_x": 840138.71778614,
+      "xodr_y": 5464923.98146263
+    },
+    "wp1_control_point_error_m_if_claimed_crs": 171724.56707256217
+  },
+  "dem_download": {
+    "already_present": true,
+    "download_margin_deg": 0.01,
+    "existing_coverage_ok": false,
+    "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\cities\\ingolstadt\\dem\\dem_ing.tif"
+  },
+  "dem_identity": {
+    "bounds_degrees": {
+      "bottom": 48.67430556666666,
+      "left": 11.312083322222236,
+      "right": 11.537361100000014,
+      "top": 48.836250011111105
+    },
+    "bounds_wgs84": {
+      "lat_max": 48.836250011111105,
+      "lat_min": 48.67430556666666,
+      "lon_max": 11.537361100000014,
+      "lon_min": 11.312083322222236
+    },
+    "crs": "GEOGCS[\"WGS 84\",DATUM[\"World Geodetic System 1984\",SPHEROID[\"WGS 84\",6378137,298.257223563]],PRIMEM[\"Greenwich\",0],UNIT[\"degree\",0.0174532925199433,AUTHORITY[\"EPSG\",\"9122\"]],AXIS[\"Latitude\",NORTH],AXIS[\"Longitude\",EAST]]",
+    "elevation_max": 487.0121154785156,
+    "elevation_mean": 378.85205078125,
+    "elevation_min": 346.7928161621094,
+    "file_bytes": 1711684,
+    "height": 583,
+    "licence": "Copernicus DEM GLO-30 (Copernicus WorldDEM-30) distributed by OpenTopography; free of charge for all purposes under the Copernicus regulation policy.",
+    "no_data": null,
+    "ok": true,
+    "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\cities\\ingolstadt\\dem\\dem_ing.tif",
+    "provenance": {
+      "bounds": {
+        "bottom": 48.67430556666666,
+        "left": 11.312083322222236,
+        "right": 11.537361100000014,
+        "top": 48.836250011111105
+      },
+      "crs": "GEOGCS[\"WGS 84\",DATUM[\"World Geodetic System 1984\",SPHEROID[\"WGS 84\",6378137,298.257223563]],PRIMEM[\"Greenwich\",0],UNIT[\"degree\",0.0174532925199433,AUTHORITY[\"EPSG\",\"9122\"]],AXIS[\"Latitude\",NORTH],AXIS[\"Longitude\",EAST]]",
+      "file_bytes": 1711684,
+      "licence": "Copernicus DEM GLO-30 (Copernicus WorldDEM-30) distributed by OpenTopography; free of charge for all purposes under the Copernicus regulation policy.",
+      "no_data": null,
+      "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\cities\\ingolstadt\\dem\\dem_ing.tif",
+      "provider": "COP30",
+      "recorded_at_utc": "2026-08-03T10:54:55.914073+00:00",
+      "resolution_m": null,
+      "sha256": "3cfa665dde3782a015502beaf457854db2f639d01008a386c925d171e41f4ff8",
+      "vertical_datum": "EGM2008 (Copernicus DEM geoid-referenced heights)"
+    },
+    "provider": "COP30",
+    "resolution_degrees": {
+      "x": 0.0002777777777777778,
+      "y": 0.0002777777777777778
+    },
+    "sha256": "3cfa665dde3782a015502beaf457854db2f639d01008a386c925d171e41f4ff8",
+    "source": "OpenTopography global DEM API (COP30)",
+    "valid_pixel_count": 472813,
+    "vertical_datum": "EGM2008 (Copernicus DEM geoid-referenced heights)",
+    "width": 811
+  },
+  "f1_status": "PASS",
+  "fail_reason": null,
+  "generated_at_utc": "2026-08-03T10:53:59.773430+00:00",
+  "map_extent": {
+    "bbox_in_xodr_frame": {
+      "east": 845935.65308293,
+      "north": 5472743.854711261,
+      "south": 5458668.202795612,
+      "west": 832671.5018876609
+    },
+    "extent_wgs84": {
+      "lat_max": 48.82601251112411,
+      "lat_min": 48.684184734650565,
+      "lon_max": 11.5275131991524,
+      "lon_min": 11.322189181491346
+    },
+    "sampling_crs": "+proj=tmerc +lat_0=0 +lon_0=0 +k=1 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs +type=crs",
+    "sampling_crs_source": "osm2odr_native_verified",
+    "verification": {
+      "claimed_crs": "+proj=tmerc +lat_0=0 +lon_0=9 +k=0.9996 +x_0=500000 +y_0=0 +datum=WGS84 +units=m +no_defs +type=crs",
+      "claimed_crs_header_bounds_wgs84": {
+        "lat_max": 49.3166287421714,
+        "lat_min": 49.183116214988864,
+        "lon_max": 13.76006739410691,
+        "lon_min": 13.56642001213345
+      },
+      "claimed_crs_reason": "parsed",
+      "claimed_plausible": false,
+      "claimed_proj4": "+proj=tmerc +lat_0=0 +lon_0=9 +k=0.9996 +x_0=500000 +y_0=0 +datum=WGS84 +units=m +no_defs",
+      "geometry_bounds": {
+        "east": 845935.65308293,
+        "north": 5472743.854711261,
+        "south": 5458668.202795612,
+        "west": 832671.5018876609
+      },
+      "header_bounds": {
+        "east": 845943.06,
+        "north": 5472743.54,
+        "south": 5458671.57,
+        "west": 832672.9
+      },
+      "native_frame": "+proj=tmerc +lat_0=0 +lon_0=0 +k=1 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs",
+      "native_frame_header_bounds_wgs84": {
+        "lat_max": 48.826007874046795,
+        "lat_min": 48.68420443267649,
+        "lon_max": 11.527611357975239,
+        "lon_min": 11.322214553035723
+      },
+      "native_plausible": true,
+      "osm_bounds": {
+        "lat_max": 48.8143429,
+        "lat_min": 48.6843318,
+        "lon_max": 11.5382271,
+        "lon_min": 11.3266919
+      },
+      "osm_bounds_expanded_deg": 0.15,
+      "reason": "claimed_geoReference_disproven;osm2odr_native_frame_matches_osm",
+      "verdict": "OSM2ODR_NATIVE_VERIFIED",
+      "wp1_control_point": {
+        "source": "WP1 candidate_actual_reprojection.xodr, road 39830 (0.0 m verified)",
+        "utm32n_x": 678942.92,
+        "utm32n_y": 5402201.68,
+        "wgs84_lat": 48.747103,
+        "wgs84_lon": 11.434291,
+        "xodr_x": 840138.71778614,
+        "xodr_y": 5464923.98146263
+      },
+      "wp1_control_point_error_m_if_claimed_crs": 171724.56707256217
+    }
+  },
+  "osm_source": {
+    "node_bounds_wgs84": {
+      "lat_max": 48.8143429,
+      "lat_min": 48.6843318,
+      "lon_max": 11.5382271,
+      "lon_min": 11.3266919
+    },
+    "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\campaigns\\ingolstadt_cooked_perception_v1\\source\\ingolstadt_authoritative.osm"
+  },
+  "phase": "F",
+  "producer": "ultimate_pipeline/tools/phase_f1_dem_provenance.py",
+  "run_id": "20260803T110000Z"
+}

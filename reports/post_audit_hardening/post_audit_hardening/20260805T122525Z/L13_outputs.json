@@ -1,0 +1,21 @@
+{
+  "verdict": "L_ALL_PASS",
+  "details": [
+    "L1=PASS",
+    "L10=PASS",
+    "L11=PASS",
+    "L12=PASS",
+    "L2=PASS",
+    "L3=PASS",
+    "L4=PASS",
+    "L5=PASS",
+    "L6=PASS",
+    "L7=PASS",
+    "L8=PASS",
+    "L9=PASS"
+  ],
+  "run_id": "20260805T122525Z",
+  "generated_at": "2026-08-05T12:30:31.439675+00:00",
+  "branch": "fix/post-audit-phase-e-junctions-roundabouts-20260803",
+  "commit": "f5aabc0a4f170e564aa03efcb906966880859a9f"
+}

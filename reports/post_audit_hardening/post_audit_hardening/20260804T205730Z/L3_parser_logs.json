@@ -1,0 +1,13 @@
+{
+  "opendrive_length": 1857682,
+  "parse_status": "OK",
+  "fatal_errors": [],
+  "warnings": [],
+  "geometry_import_warnings": [],
+  "lane_import_warnings": [],
+  "junction_import_warnings": [],
+  "signal_import_warnings": [],
+  "mesh_import_warnings": [],
+  "status": "PASS",
+  "timestamp": "2026-08-04T20:57:31.247117+00:00"
+}

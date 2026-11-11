@@ -1,0 +1,54 @@
+{
+  "run_id": "20260805T141616Z",
+  "timestamp": "2026-08-05T14:16:16.000000+00:00",
+  "phase": "O06",
+  "title": "Runtime Input Authority",
+  "selected_runtime_candidate": {
+    "path": "campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_fixed_final.xodr",
+    "sha256": "80ebb0054afd73ffdd51960b48679ff4689c72ed0abe75af5b2ae10a51395699",
+    "byte_size": 82935087,
+    "road_count": 32710,
+    "junction_count": 3646,
+    "connector_repair_count": 12,
+    "repair_classes": {
+      "SOLE_ZERO_LENGTH_CONNECTOR_GEOMETRY": 12
+    },
+    "nonzero_length_changes": 0,
+    "s_x_y_hdg_changes": 0,
+    "primitive_changes": 0,
+    "road_length_changes": 0,
+    "accepted_at": "Stage 5 repair generation + Stage 7 acceptance (strict gate 0 errors, idempotent)"
+  },
+  "runtime_load_evidence": {
+    "map_name": "Carla/Maps/OpenDriveMap",
+    "load_time_s": 333.9,
+    "runtime_to_opendrive_sha256": "9630d9f673fdea87058139d9e2241c7084dc2e2550674bba4bfffc78c6d0ae80",
+    "runtime_road_count": 32710,
+    "runtime_junction_count": 3646,
+    "missing_roads": 0,
+    "unexpected_roads": 0,
+    "missing_junctions": 0,
+    "unexpected_junctions": 0,
+    "lane_sections": 32710,
+    "driving_lanes": 34674,
+    "evidence_dir": "reports/post_audit_hardening/20260805T115947Z_P4_RUNTIME_EQUIVALENCE"
+  },
+  "source_sha256": "ff2a05e7b00b8fc1bde38f569413223c03a4f4ac9c31eceb5a8592df47d0d17d",
+  "authority_basis": "Repaired candidate is the sole runtime input authority. Source (header-pinned) remains the immutable lineage root; the repaired candidate differs only in the 12 zero-length sole connector geometries (length 0.0 -> road_length 0.1), audited by P1 mutation audit and accepted by Stage 7 strict gate.",
+  "supersedes": {
+    "run_id": "20260804T221755Z",
+    "path": "campaigns/ingolstadt_cooked_perception_v1/candidate/raw_xodr_run_1_epsg32632_header_pinned.xodr",
+    "reason": "Source candidate had 12 non-positive geometry lengths that failed the strict preflight gate; repaired candidate passes with 0 errors."
+  },
+  "rejected_alternatives": [
+    {
+      "path": "raw_xodr_run_1.xodr",
+      "reason": "Pre-header-pinned baseline, not the final candidate"
+    },
+    {
+      "path": "raw_xodr_run_2.xodr",
+      "reason": "Alternative run, not the accepted lineage candidate"
+    }
+  ],
+  "verdict": "O6_RUNTIME_INPUT_AUTHORITY_UPDATED_TO_REPAIRED_CANDIDATE"
+}

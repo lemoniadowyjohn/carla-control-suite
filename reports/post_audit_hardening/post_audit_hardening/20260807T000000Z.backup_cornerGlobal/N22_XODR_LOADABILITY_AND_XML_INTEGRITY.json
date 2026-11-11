@@ -1,0 +1,10 @@
+{
+  "gate": "N22_XODR_LOADABILITY_AND_XML_INTEGRITY",
+  "candidate": "reports/post_audit_hardening/20260807T000000Z\\candidate_crosswalk_enriched.xodr",
+  "candidate_sha256": "b5b389270bd2ed4c17ca15029c4d4787b684dde201465d002b52de5c69fc1aa6",
+  "candidate_byte_size": 82589796,
+  "xodr_minimum_size_pass": true,
+  "xml_parse_pass": true,
+  "gates_failures": {},
+  "all_pass": true
+}

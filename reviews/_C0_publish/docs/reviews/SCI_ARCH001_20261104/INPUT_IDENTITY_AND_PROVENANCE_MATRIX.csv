@@ -1,0 +1,18 @@
+artifact,role,path,sha256_or_md5,provenance_class,used_by,note
+map_of_record_auto,RQ2 auto map; RQ3 crop source; INPUT_XODR of run 20261007,campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_perception_map_of_record_20260916_232831.xodr,sha256:370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8,GITHUB_VERIFIED (registry pin map_registry.py:741; LFS),RQ2;RQ3;GAP-070/079 run,processed pipeline output (32267 roads); not raw Osm2Odr
+map_of_record_stale_20260819,superseded RQ2 pin,ingolstadt_perception_map_of_record_20260819_160350.xodr,UNKNOWN,CLAIMED_UNVERIFIED,historical RQ2 only,replaced 2026-09-17 (THESIS_TO_CURRENT_PROGRESS.md:93-104)
+grid0828_manual,RQ2 manual map; RQ3 manual map,campaigns/ingolstadt_cooked_perception_v1/source/manual/Grid0828.xodr,sha256:5eaece230e02f6c1b2075db851894870790e86ac64710abb3465bcfc533e9b0c,GITHUB_VERIFIED (map_registry.py:912-913),RQ2;RQ3,
+grid0821_manual,RQ4 manual (excluded from training),cities/ingolstadt/manual_grid0821.xodr,sha256:69ee3498e0e7ca748dd5e342de10493dc4ece45a6b04cc34653f5917672c42e8,LOCAL_REPRODUCED (gitignored; hashed 2026-11-04),RQ4,"RQ4 pair differs from RQ2 pair"
+candidate_connectivity_repaired,RQ4 auto (excluded from training),reports/ingolstadt_map_quality_v2/work_package_02_connectivity/candidate_connectivity_repaired.xodr,sha256:c3dc29d3f570d929cbe664961446ea76fd3b8c74b0f4668ade99a67995a7ca43,LOCAL_REPRODUCED (hashed 2026-11-04),RQ4,path corrected 2026-11-04
+rq4_tiles_562,RQ4 training tiles,UNKNOWN (union_tiles),UNKNOWN,NOT_PUBLISHED,RQ4,location not in repo
+rq4_checkpoints,RQ4 seeds 42-46,G:/gap010-rq4-retrain-20260924/.../seed_*/checkpoints/map_encoder_epoch50.pt,md5:acdb7f57;25ee5406;d3d4073f;213af83e;3cb146e6,LOCAL (G:),RQ4,md5 only; not sha256
+rq4_aggregate,RQ4 result,reports/production_readiness/20260924T000000Z_GAP010_RQ4_LEAKFREE_RETRAIN/aggregate_stats.json,sha256:89f5d2ac (prefix),GITHUB_VERIFIED,RQ4,
+rq1_osm2odr_runs,RQ1 determinism,reports/post_audit_hardening/C15_RQ4_DR/determinism/run_00{0,1,2}.xodr,UNKNOWN (3 unique),NOT_PUBLISHED (gitignored),RQ1,summary only in C15 JSON
+rq2_registration,RQ2 result,reports/production_readiness/20260923_RQ2_REVERIFICATION/local_registration.json,(not hashed here),GITHUB_VERIFIED,RQ2,hull + bbox both present
+osm_input,pipeline input,campaigns/ingolstadt_cooked_perception_v1/source/ingolstadt_authoritative.osm,sha256:b9e074656f744c31e6aabb0a16e6b2246824ca74e202ea2c316ff7f22364f24f,LOCAL_REPRODUCED (run manifest),RQ1;X8;X9b,
+dem_input,pipeline input,DEM_TIF,sha256:3cfa665dde3782a015502beaf457854db2f639d01008a386c925d171e41f4ff8,LOCAL_REPRODUCED (run manifest),X8,
+sensor_calib,RQ3 capture,SENSOR_CALIB_JSON,sha256:054a2d8b706ab8f6e5f7ef63c2e630a7bb7c3d0f3839afa943d2d10476679ce0,LOCAL_REPRODUCED (run manifest),RQ3,
+rq3_protocol,RQ3 protocol freeze,configs/rq3_protocol_freeze_v1.json,sha256:5aa8ae248b26ed1bcc053ae1b70b5a508e3fd05b5cab4bb68debc495f44b98bd,GITHUB_VERIFIED,RQ3,
+rq5_protocol,RQ5 protocol freeze,configs/rq5_protocol_freeze_v1.json,sha256:db7155fef00787ee615767f309df0247248381e18911d571741bbfa1030fcb8d,GITHUB_VERIFIED,RQ5,
+rq3_crop,RQ3 auto crop,(local output) auto_crop_grid0828_footprint.xodr,sha256:b2bc2712d1a236deec167c04391aa0f711cfc0a176e6bbfa8b4b31c3ea147d12,LOCAL_REPRODUCED,RQ3,not committed (by design)
+run_20261007_stage05,GAP-070 measurement input,reports/rq1_trial_runs/run_01/20261007_214826_524342/05_planview_20261007_214826_524342.xodr,sha256:45c52059ec5b7d8d1e5f2f90a2f814bde465a923e7e77768c5f5e660790c721c,LOCAL_REPRODUCED,GAP-070;ARCH reviews,byte copy of stage 03 (READ_ONLY_DIAGNOSTIC)

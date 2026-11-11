@@ -1,0 +1,9 @@
+D11 GAP-id allocation search (2026-11-04)
+Repository: E:/wt/repair-map-realism-p0-837a8504 (shared object store)
+Refs searched: 808 (refs/heads + refs/remotes/origin, HEAD aliases excluded)
+Pattern: GAP-0(8[0-9]|9[0-9])|GAP-1[0-9][0-9]
+Command per ref: git grep -I -h -o -E <pattern> <ref> -- . ':!*.xodr' ':!*.osm' ':!*.geojson' ':!*.tif' ':!*.png' ':!*.pt'
+Exclusions: map/raster/model data only (cannot carry register ids); -I skips binary files.
+Result: hits: none
+Note: an earlier unrestricted run (all file types incl. maps) also reported no hits, but one ref's scan was interrupted, so it is not relied on.
+Conclusion: GAP-080 is the next free id.

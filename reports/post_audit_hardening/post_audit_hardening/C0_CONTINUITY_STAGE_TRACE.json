@@ -1,0 +1,828 @@
+{
+  "trace": [
+    {
+      "g19": {
+        "roads_checked": 32920,
+        "violations": 800
+      },
+      "geometric_continuity": {
+        "dhdg_max": 3.1415926530155076,
+        "dhdg_p50": 1.1636539401284725,
+        "dhdg_p95": 2.7593235450770797,
+        "dxy_max": 4666.076853418652,
+        "dxy_p50": 75.23450086344653,
+        "dxy_p95": 282.6365913053356,
+        "link_kind_counts": {
+          "predecessor": 22893,
+          "successor": 4659
+        },
+        "num_issues": 27552,
+        "num_links_checked": 45786,
+        "ok": false,
+        "samples": [
+          {
+            "dhdg": 2.67796155507708,
+            "dxy": 88.9234687099156,
+            "from_road": "50567",
+            "link_kind": "predecessor",
+            "to_road": "40579"
+          },
+          {
+            "dhdg": 0.4636476049229201,
+            "dxy": 3.5000000052891465,
+            "from_road": "50567",
+            "link_kind": "successor",
+            "to_road": "45075"
+          },
+          {
+            "dhdg": 0.06828207433941902,
+            "dxy": 64.01059514750608,
+            "from_road": "50568",
+            "link_kind": "predecessor",
+            "to_road": "45426"
+          },
+          {
+            "dhdg": 0.07743025758867805,
+            "dxy": 164.4908650963617,
+            "from_road": "50569",
+            "link_kind": "predecessor",
+            "to_road": "45156"
+          },
+          {
+            "dhdg": 2.411321808892808e-09,
+            "dxy": 3.499999957579814,
+            "from_road": "50569",
+            "link_kind": "successor",
+            "to_road": "45424"
+          }
+        ]
+      },
+      "header_offset": null,
+      "junctions": 3717,
+      "path": "C:\\Users\\admin\\AppData\\Local\\Temp\\claude\\C--Users-admin-PycharmProjects-gpt4-pythonProject3-carla--main\\377842fc-e2d5-41d8-b622-b063eb346f6e\\scratchpad\\c0_regen_out\\seed\\ingolstadt_seed.xodr",
+      "roads": 32920,
+      "stage": "seed"
+    },
+    {
+      "g19": {
+        "roads_checked": 32920,
+        "violations": 800
+      },
+      "geometric_continuity": {
+        "dhdg_max": 3.1415926530155076,
+        "dhdg_p50": 1.1636539401284725,
+        "dhdg_p95": 2.7593235450770797,
+        "dxy_max": 4666.076853418652,
+        "dxy_p50": 75.23450086344653,
+        "dxy_p95": 282.6365913053356,
+        "link_kind_counts": {
+          "predecessor": 22893,
+          "successor": 4659
+        },
+        "num_issues": 27552,
+        "num_links_checked": 45786,
+        "ok": false,
+        "samples": [
+          {
+            "dhdg": 2.67796155507708,
+            "dxy": 88.9234687099156,
+            "from_road": "50567",
+            "link_kind": "predecessor",
+            "to_road": "40579"
+          },
+          {
+            "dhdg": 0.4636476049229201,
+            "dxy": 3.5000000052891465,
+            "from_road": "50567",
+            "link_kind": "successor",
+            "to_road": "45075"
+          },
+          {
+            "dhdg": 0.06828207433941902,
+            "dxy": 64.01059514750608,
+            "from_road": "50568",
+            "link_kind": "predecessor",
+            "to_road": "45426"
+          },
+          {
+            "dhdg": 0.07743025758867805,
+            "dxy": 164.4908650963617,
+            "from_road": "50569",
+            "link_kind": "predecessor",
+            "to_road": "45156"
+          },
+          {
+            "dhdg": 2.411321808892808e-09,
+            "dxy": 3.499999957579814,
+            "from_road": "50569",
+            "link_kind": "successor",
+            "to_road": "45424"
+          }
+        ]
+      },
+      "header_offset": {
+        "hdg": "0.0",
+        "x": "0.0",
+        "y": "0.0",
+        "z": "0.0"
+      },
+      "junctions": 3717,
+      "path": "C:\\Users\\admin\\AppData\\Local\\Temp\\claude\\C--Users-admin-PycharmProjects-gpt4-pythonProject3-carla--main\\377842fc-e2d5-41d8-b622-b063eb346f6e\\scratchpad\\c0_regen_out\\pipeline_out\\C0_CLEAN_REGEN\\01_sanitized_C0_CLEAN_REGEN.xodr",
+      "roads": 32920,
+      "stage": "01_sanitized"
+    },
+    {
+      "g19": {
+        "roads_checked": 32297,
+        "violations": 798
+      },
+      "geometric_continuity": {
+        "dhdg_max": 3.1415926530455858,
+        "dhdg_p50": 1.1857437748574444,
+        "dhdg_p95": 2.7735625055881816,
+        "dxy_max": 4666.076853706224,
+        "dxy_p50": 76.71326073244258,
+        "dxy_p95": 288.6771325286159,
+        "link_kind_counts": {
+          "predecessor": 22603,
+          "successor": 4590
+        },
+        "num_issues": 27193,
+        "num_links_checked": 45206,
+        "ok": false,
+        "samples": [
+          {
+            "dhdg": 0.551986090137683,
+            "dxy": 178.2685855947342,
+            "from_road": "52024",
+            "link_kind": "predecessor",
+            "to_road": "47783"
+          },
+          {
+            "dhdg": 3.798623171569204e-07,
+            "dxy": 3.4999995579893173,
+            "from_road": "52024",
+            "link_kind": "successor",
+            "to_road": "43110"
+          },
+          {
+            "dhdg": 2.5161348077458374,
+            "dxy": 165.53433960569555,
+            "from_road": "52025",
+            "link_kind": "predecessor",
+            "to_road": "47783"
+          },
+          {
+            "dhdg": 3.1354791439007172,
+            "dxy": 160.8258190713849,
+            "from_road": "52026",
+            "link_kind": "predecessor",
+            "to_road": "47783"
+          },
+          {
+            "dhdg": 0.46364761390071774,
+            "dxy": 3.500000001664718,
+            "from_road": "52026",
+            "link_kind": "successor",
+            "to_road": "42330"
+          }
+        ]
+      },
+      "header_offset": null,
+      "junctions": 3568,
+      "path": "C:\\Users\\admin\\AppData\\Local\\Temp\\claude\\C--Users-admin-PycharmProjects-gpt4-pythonProject3-carla--main\\377842fc-e2d5-41d8-b622-b063eb346f6e\\scratchpad\\c0_regen_out\\pipeline_out\\C0_CLEAN_REGEN\\02_sumo_fixed_C0_CLEAN_REGEN.xodr",
+      "roads": 32297,
+      "stage": "02_sumo_fixed"
+    },
+    {
+      "g19": {
+        "roads_checked": 32297,
+        "violations": 798
+      },
+      "geometric_continuity": {
+        "dhdg_max": 3.1415926530455858,
+        "dhdg_p50": 1.1857437748574444,
+        "dhdg_p95": 2.7735625055881816,
+        "dxy_max": 4666.076853706224,
+        "dxy_p50": 76.71326073244258,
+        "dxy_p95": 288.6771325286159,
+        "link_kind_counts": {
+          "predecessor": 22603,
+          "successor": 4590
+        },
+        "num_issues": 27193,
+        "num_links_checked": 45206,
+        "ok": false,
+        "samples": [
+          {
+            "dhdg": 0.551986090137683,
+            "dxy": 178.2685855947342,
+            "from_road": "52024",
+            "link_kind": "predecessor",
+            "to_road": "47783"
+          },
+          {
+            "dhdg": 3.798623171569204e-07,
+            "dxy": 3.4999995579893173,
+            "from_road": "52024",
+            "link_kind": "successor",
+            "to_road": "43110"
+          },
+          {
+            "dhdg": 2.5161348077458374,
+            "dxy": 165.53433960569555,
+            "from_road": "52025",
+            "link_kind": "predecessor",
+            "to_road": "47783"
+          },
+          {
+            "dhdg": 3.1354791439007172,
+            "dxy": 160.8258190713849,
+            "from_road": "52026",
+            "link_kind": "predecessor",
+            "to_road": "47783"
+          },
+          {
+            "dhdg": 0.46364761390071774,
+            "dxy": 3.500000001664718,
+            "from_road": "52026",
+            "link_kind": "successor",
+            "to_road": "42330"
+          }
+        ]
+      },
+      "header_offset": null,
+      "junctions": 3568,
+      "path": "C:\\Users\\admin\\AppData\\Local\\Temp\\claude\\C--Users-admin-PycharmProjects-gpt4-pythonProject3-carla--main\\377842fc-e2d5-41d8-b622-b063eb346f6e\\scratchpad\\c0_regen_out\\pipeline_out\\C0_CLEAN_REGEN\\03_topology_C0_CLEAN_REGEN.xodr",
+      "roads": 32297,
+      "stage": "03_topology"
+    },
+    {
+      "g19": {
+        "roads_checked": 32297,
+        "violations": 798
+      },
+      "geometric_continuity": {
+        "dhdg_max": 3.1415926530455858,
+        "dhdg_p50": 1.1857437748574444,
+        "dhdg_p95": 2.773562505588181,
+        "dxy_max": 4666.076853706224,
+        "dxy_p50": 76.71326073244258,
+        "dxy_p95": 288.6771325286159,
+        "link_kind_counts": {
+          "predecessor": 22603,
+          "successor": 4590
+        },
+        "num_issues": 27193,
+        "num_links_checked": 45206,
+        "ok": false,
+        "samples": [
+          {
+            "dhdg": 0.551986090137683,
+            "dxy": 178.2685855947342,
+            "from_road": "52024",
+            "link_kind": "predecessor",
+            "to_road": "47783"
+          },
+          {
+            "dhdg": 3.798623171569204e-07,
+            "dxy": 3.4999995579893173,
+            "from_road": "52024",
+            "link_kind": "successor",
+            "to_road": "43110"
+          },
+          {
+            "dhdg": 2.5161348077458374,
+            "dxy": 165.53433960569555,
+            "from_road": "52025",
+            "link_kind": "predecessor",
+            "to_road": "47783"
+          },
+          {
+            "dhdg": 3.1354791439007172,
+            "dxy": 160.8258190713849,
+            "from_road": "52026",
+            "link_kind": "predecessor",
+            "to_road": "47783"
+          },
+          {
+            "dhdg": 0.4636476139007186,
+            "dxy": 3.500000001664718,
+            "from_road": "52026",
+            "link_kind": "successor",
+            "to_road": "42330"
+          }
+        ]
+      },
+      "header_offset": null,
+      "junctions": 3568,
+      "path": "C:\\Users\\admin\\AppData\\Local\\Temp\\claude\\C--Users-admin-PycharmProjects-gpt4-pythonProject3-carla--main\\377842fc-e2d5-41d8-b622-b063eb346f6e\\scratchpad\\c0_regen_out\\pipeline_out\\C0_CLEAN_REGEN\\04_elevation_C0_CLEAN_REGEN.xodr",
+      "roads": 32297,
+      "stage": "04_elevation"
+    },
+    {
+      "g19": {
+        "roads_checked": 32297,
+        "violations": 798
+      },
+      "geometric_continuity": {
+        "dhdg_max": 3.1415926530455858,
+        "dhdg_p50": 1.1857437748574444,
+        "dhdg_p95": 2.7735625055881816,
+        "dxy_max": 4666.076853706224,
+        "dxy_p50": 76.71326073244258,
+        "dxy_p95": 288.6771325286159,
+        "link_kind_counts": {
+          "predecessor": 22603,
+          "successor": 4590
+        },
+        "num_issues": 27193,
+        "num_links_checked": 45206,
+        "ok": false,
+        "samples": [
+          {
+            "dhdg": 0.551986090137683,
+            "dxy": 178.2685855947342,
+            "from_road": "52024",
+            "link_kind": "predecessor",
+            "to_road": "47783"
+          },
+          {
+            "dhdg": 3.798623171569204e-07,
+            "dxy": 3.4999995579893173,
+            "from_road": "52024",
+            "link_kind": "successor",
+            "to_road": "43110"
+          },
+          {
+            "dhdg": 2.5161348077458374,
+            "dxy": 165.53433960569555,
+            "from_road": "52025",
+            "link_kind": "predecessor",
+            "to_road": "47783"
+          },
+          {
+            "dhdg": 3.1354791439007172,
+            "dxy": 160.8258190713849,
+            "from_road": "52026",
+            "link_kind": "predecessor",
+            "to_road": "47783"
+          },
+          {
+            "dhdg": 0.46364761390071774,
+            "dxy": 3.500000001664718,
+            "from_road": "52026",
+            "link_kind": "successor",
+            "to_road": "42330"
+          }
+        ]
+      },
+      "header_offset": null,
+      "junctions": 3568,
+      "path": "C:\\Users\\admin\\AppData\\Local\\Temp\\claude\\C--Users-admin-PycharmProjects-gpt4-pythonProject3-carla--main\\377842fc-e2d5-41d8-b622-b063eb346f6e\\scratchpad\\c0_regen_out\\pipeline_out\\C0_CLEAN_REGEN\\05_planview_C0_CLEAN_REGEN.xodr",
+      "roads": 32297,
+      "stage": "05_planview"
+    },
+    {
+      "g19": {
+        "roads_checked": 32297,
+        "violations": 798
+      },
+      "geometric_continuity": {
+        "dhdg_max": 3.1415926530455858,
+        "dhdg_p50": 1.1857437748574444,
+        "dhdg_p95": 2.7735625055881816,
+        "dxy_max": 4666.076853706224,
+        "dxy_p50": 76.71326073244258,
+        "dxy_p95": 288.6771325286159,
+        "link_kind_counts": {
+          "predecessor": 22603,
+          "successor": 4590
+        },
+        "num_issues": 27193,
+        "num_links_checked": 45206,
+        "ok": false,
+        "samples": [
+          {
+            "dhdg": 0.551986090137683,
+            "dxy": 178.2685855947342,
+            "from_road": "52024",
+            "link_kind": "predecessor",
+            "to_road": "47783"
+          },
+          {
+            "dhdg": 3.798623171569204e-07,
+            "dxy": 3.4999995579893173,
+            "from_road": "52024",
+            "link_kind": "successor",
+            "to_road": "43110"
+          },
+          {
+            "dhdg": 2.5161348077458374,
+            "dxy": 165.53433960569555,
+            "from_road": "52025",
+            "link_kind": "predecessor",
+            "to_road": "47783"
+          },
+          {
+            "dhdg": 3.1354791439007172,
+            "dxy": 160.8258190713849,
+            "from_road": "52026",
+            "link_kind": "predecessor",
+            "to_road": "47783"
+          },
+          {
+            "dhdg": 0.46364761390071774,
+            "dxy": 3.500000001664718,
+            "from_road": "52026",
+            "link_kind": "successor",
+            "to_road": "42330"
+          }
+        ]
+      },
+      "header_offset": null,
+      "junctions": 3568,
+      "path": "C:\\Users\\admin\\AppData\\Local\\Temp\\claude\\C--Users-admin-PycharmProjects-gpt4-pythonProject3-carla--main\\377842fc-e2d5-41d8-b622-b063eb346f6e\\scratchpad\\c0_regen_out\\pipeline_out\\C0_CLEAN_REGEN\\06_continuity_C0_CLEAN_REGEN.xodr",
+      "roads": 32297,
+      "stage": "06_continuity"
+    },
+    {
+      "g19": {
+        "roads_checked": 32297,
+        "violations": 798
+      },
+      "geometric_continuity": {
+        "dhdg_max": 3.1415926530455858,
+        "dhdg_p50": 1.1857437748574444,
+        "dhdg_p95": 2.7735625055881816,
+        "dxy_max": 4666.076853706224,
+        "dxy_p50": 76.71326073244258,
+        "dxy_p95": 288.6771325286159,
+        "link_kind_counts": {
+          "predecessor": 22603,
+          "successor": 4590
+        },
+        "num_issues": 27193,
+        "num_links_checked": 45206,
+        "ok": false,
+        "samples": [
+          {
+            "dhdg": 0.551986090137683,
+            "dxy": 178.2685855947342,
+            "from_road": "52024",
+            "link_kind": "predecessor",
+            "to_road": "47783"
+          },
+          {
+            "dhdg": 3.798623171569204e-07,
+            "dxy": 3.4999995579893173,
+            "from_road": "52024",
+            "link_kind": "successor",
+            "to_road": "43110"
+          },
+          {
+            "dhdg": 2.5161348077458374,
+            "dxy": 165.53433960569555,
+            "from_road": "52025",
+            "link_kind": "predecessor",
+            "to_road": "47783"
+          },
+          {
+            "dhdg": 3.1354791439007172,
+            "dxy": 160.8258190713849,
+            "from_road": "52026",
+            "link_kind": "predecessor",
+            "to_road": "47783"
+          },
+          {
+            "dhdg": 0.46364761390071774,
+            "dxy": 3.500000001664718,
+            "from_road": "52026",
+            "link_kind": "successor",
+            "to_road": "42330"
+          }
+        ]
+      },
+      "header_offset": null,
+      "junctions": 3568,
+      "path": "C:\\Users\\admin\\AppData\\Local\\Temp\\claude\\C--Users-admin-PycharmProjects-gpt4-pythonProject3-carla--main\\377842fc-e2d5-41d8-b622-b063eb346f6e\\scratchpad\\c0_regen_out\\pipeline_out\\C0_CLEAN_REGEN\\06_geometry_frozen_C0_CLEAN_REGEN.xodr",
+      "roads": 32297,
+      "stage": "06_geometry_frozen"
+    },
+    {
+      "g19": {
+        "roads_checked": 32297,
+        "violations": 798
+      },
+      "geometric_continuity": {
+        "dhdg_max": 3.1415926530455858,
+        "dhdg_p50": 1.1857437748574444,
+        "dhdg_p95": 2.773562505588181,
+        "dxy_max": 4666.076853706224,
+        "dxy_p50": 76.71326073244258,
+        "dxy_p95": 288.6771325286159,
+        "link_kind_counts": {
+          "predecessor": 22603,
+          "successor": 4590
+        },
+        "num_issues": 27193,
+        "num_links_checked": 45206,
+        "ok": false,
+        "samples": [
+          {
+            "dhdg": 0.551986090137683,
+            "dxy": 178.2685855947342,
+            "from_road": "52024",
+            "link_kind": "predecessor",
+            "to_road": "47783"
+          },
+          {
+            "dhdg": 3.798623171569204e-07,
+            "dxy": 3.4999995579893173,
+            "from_road": "52024",
+            "link_kind": "successor",
+            "to_road": "43110"
+          },
+          {
+            "dhdg": 2.5161348077458374,
+            "dxy": 165.53433960569555,
+            "from_road": "52025",
+            "link_kind": "predecessor",
+            "to_road": "47783"
+          },
+          {
+            "dhdg": 3.1354791439007172,
+            "dxy": 160.8258190713849,
+            "from_road": "52026",
+            "link_kind": "predecessor",
+            "to_road": "47783"
+          },
+          {
+            "dhdg": 0.4636476139007186,
+            "dxy": 3.500000001664718,
+            "from_road": "52026",
+            "link_kind": "successor",
+            "to_road": "42330"
+          }
+        ]
+      },
+      "header_offset": null,
+      "junctions": 3568,
+      "path": "C:\\Users\\admin\\AppData\\Local\\Temp\\claude\\C--Users-admin-PycharmProjects-gpt4-pythonProject3-carla--main\\377842fc-e2d5-41d8-b622-b063eb346f6e\\scratchpad\\c0_regen_out\\pipeline_out\\C0_CLEAN_REGEN\\07_lanes_C0_CLEAN_REGEN.xodr",
+      "roads": 32297,
+      "stage": "07_lanes"
+    },
+    {
+      "g19": {
+        "roads_checked": 32297,
+        "violations": 798
+      },
+      "geometric_continuity": {
+        "dhdg_max": 3.1415926530455858,
+        "dhdg_p50": 1.1857437748574444,
+        "dhdg_p95": 2.773562505588181,
+        "dxy_max": 4666.076853706224,
+        "dxy_p50": 76.71326073244258,
+        "dxy_p95": 288.6771325286159,
+        "link_kind_counts": {
+          "predecessor": 22603,
+          "successor": 4590
+        },
+        "num_issues": 27193,
+        "num_links_checked": 45206,
+        "ok": false,
+        "samples": [
+          {
+            "dhdg": 0.551986090137683,
+            "dxy": 178.2685855947342,
+            "from_road": "52024",
+            "link_kind": "predecessor",
+            "to_road": "47783"
+          },
+          {
+            "dhdg": 3.798623171569204e-07,
+            "dxy": 3.4999995579893173,
+            "from_road": "52024",
+            "link_kind": "successor",
+            "to_road": "43110"
+          },
+          {
+            "dhdg": 2.5161348077458374,
+            "dxy": 165.53433960569555,
+            "from_road": "52025",
+            "link_kind": "predecessor",
+            "to_road": "47783"
+          },
+          {
+            "dhdg": 3.1354791439007172,
+            "dxy": 160.8258190713849,
+            "from_road": "52026",
+            "link_kind": "predecessor",
+            "to_road": "47783"
+          },
+          {
+            "dhdg": 0.4636476139007186,
+            "dxy": 3.500000001664718,
+            "from_road": "52026",
+            "link_kind": "successor",
+            "to_road": "42330"
+          }
+        ]
+      },
+      "header_offset": null,
+      "junctions": 3568,
+      "path": "C:\\Users\\admin\\AppData\\Local\\Temp\\claude\\C--Users-admin-PycharmProjects-gpt4-pythonProject3-carla--main\\377842fc-e2d5-41d8-b622-b063eb346f6e\\scratchpad\\c0_regen_out\\pipeline_out\\C0_CLEAN_REGEN\\08_final_C0_CLEAN_REGEN.xodr",
+      "roads": 32297,
+      "stage": "08_final"
+    },
+    {
+      "g19": {
+        "roads_checked": 32297,
+        "violations": 798
+      },
+      "geometric_continuity": {
+        "dhdg_max": 3.1415926530455858,
+        "dhdg_p50": 1.1857437748574444,
+        "dhdg_p95": 2.773562505588181,
+        "dxy_max": 4666.076853706224,
+        "dxy_p50": 76.71326073244258,
+        "dxy_p95": 288.6771325286159,
+        "link_kind_counts": {
+          "predecessor": 22603,
+          "successor": 4590
+        },
+        "num_issues": 27193,
+        "num_links_checked": 45206,
+        "ok": false,
+        "samples": [
+          {
+            "dhdg": 0.551986090137683,
+            "dxy": 178.2685855947342,
+            "from_road": "52024",
+            "link_kind": "predecessor",
+            "to_road": "47783"
+          },
+          {
+            "dhdg": 3.798623171569204e-07,
+            "dxy": 3.4999995579893173,
+            "from_road": "52024",
+            "link_kind": "successor",
+            "to_road": "43110"
+          },
+          {
+            "dhdg": 2.5161348077458374,
+            "dxy": 165.53433960569555,
+            "from_road": "52025",
+            "link_kind": "predecessor",
+            "to_road": "47783"
+          },
+          {
+            "dhdg": 3.1354791439007172,
+            "dxy": 160.8258190713849,
+            "from_road": "52026",
+            "link_kind": "predecessor",
+            "to_road": "47783"
+          },
+          {
+            "dhdg": 0.4636476139007186,
+            "dxy": 3.500000001664718,
+            "from_road": "52026",
+            "link_kind": "successor",
+            "to_road": "42330"
+          }
+        ]
+      },
+      "header_offset": null,
+      "junctions": 3568,
+      "path": "C:\\Users\\admin\\AppData\\Local\\Temp\\claude\\C--Users-admin-PycharmProjects-gpt4-pythonProject3-carla--main\\377842fc-e2d5-41d8-b622-b063eb346f6e\\scratchpad\\c0_regen_out\\pipeline_out\\C0_CLEAN_REGEN\\08_final_C0_CLEAN_REGEN_laneSectionFixed.xodr",
+      "roads": 32297,
+      "stage": "08_laneSectionFixed"
+    },
+    {
+      "g19": {
+        "roads_checked": 32297,
+        "violations": 798
+      },
+      "geometric_continuity": {
+        "dhdg_max": 3.1415926530455858,
+        "dhdg_p50": 1.1857437748574444,
+        "dhdg_p95": 2.773562505588181,
+        "dxy_max": 4666.076853706224,
+        "dxy_p50": 76.71326073244258,
+        "dxy_p95": 288.6771325286159,
+        "link_kind_counts": {
+          "predecessor": 22603,
+          "successor": 4590
+        },
+        "num_issues": 27193,
+        "num_links_checked": 45206,
+        "ok": false,
+        "samples": [
+          {
+            "dhdg": 0.551986090137683,
+            "dxy": 178.2685855947342,
+            "from_road": "52024",
+            "link_kind": "predecessor",
+            "to_road": "47783"
+          },
+          {
+            "dhdg": 3.798623171569204e-07,
+            "dxy": 3.4999995579893173,
+            "from_road": "52024",
+            "link_kind": "successor",
+            "to_road": "43110"
+          },
+          {
+            "dhdg": 2.5161348077458374,
+            "dxy": 165.53433960569555,
+            "from_road": "52025",
+            "link_kind": "predecessor",
+            "to_road": "47783"
+          },
+          {
+            "dhdg": 3.1354791439007172,
+            "dxy": 160.8258190713849,
+            "from_road": "52026",
+            "link_kind": "predecessor",
+            "to_road": "47783"
+          },
+          {
+            "dhdg": 0.4636476139007186,
+            "dxy": 3.500000001664718,
+            "from_road": "52026",
+            "link_kind": "successor",
+            "to_road": "42330"
+          }
+        ]
+      },
+      "header_offset": null,
+      "junctions": 3568,
+      "path": "C:\\Users\\admin\\AppData\\Local\\Temp\\claude\\C--Users-admin-PycharmProjects-gpt4-pythonProject3-carla--main\\377842fc-e2d5-41d8-b622-b063eb346f6e\\scratchpad\\c0_regen_out\\pipeline_out\\C0_CLEAN_REGEN\\08_final_C0_CLEAN_REGEN_laneSectionFixed_lane_successor_fixed.xodr",
+      "roads": 32297,
+      "stage": "08_successor_fixed"
+    },
+    {
+      "g19": {
+        "roads_checked": 32297,
+        "violations": 798
+      },
+      "geometric_continuity": {
+        "dhdg_max": 3.1415926530455858,
+        "dhdg_p50": 1.1857437748574444,
+        "dhdg_p95": 2.773562505588181,
+        "dxy_max": 4666.076853706224,
+        "dxy_p50": 76.71326073244258,
+        "dxy_p95": 288.6771325286159,
+        "link_kind_counts": {
+          "predecessor": 22603,
+          "successor": 4590
+        },
+        "num_issues": 27193,
+        "num_links_checked": 45206,
+        "ok": false,
+        "samples": [
+          {
+            "dhdg": 0.551986090137683,
+            "dxy": 178.2685855947342,
+            "from_road": "52024",
+            "link_kind": "predecessor",
+            "to_road": "47783"
+          },
+          {
+            "dhdg": 3.798623171569204e-07,
+            "dxy": 3.4999995579893173,
+            "from_road": "52024",
+            "link_kind": "successor",
+            "to_road": "43110"
+          },
+          {
+            "dhdg": 2.5161348077458374,
+            "dxy": 165.53433960569555,
+            "from_road": "52025",
+            "link_kind": "predecessor",
+            "to_road": "47783"
+          },
+          {
+            "dhdg": 3.1354791439007172,
+            "dxy": 160.8258190713849,
+            "from_road": "52026",
+            "link_kind": "predecessor",
+            "to_road": "47783"
+          },
+          {
+            "dhdg": 0.4636476139007186,
+            "dxy": 3.500000001664718,
+            "from_road": "52026",
+            "link_kind": "successor",
+            "to_road": "42330"
+          }
+        ]
+      },
+      "header_offset": null,
+      "junctions": 3568,
+      "path": "C:\\Users\\admin\\AppData\\Local\\Temp\\claude\\C--Users-admin-PycharmProjects-gpt4-pythonProject3-carla--main\\377842fc-e2d5-41d8-b622-b063eb346f6e\\scratchpad\\c0_regen_out\\pipeline_out\\C0_CLEAN_REGEN\\08_final_C0_CLEAN_REGEN_laneSectionFixed_lane_successor_fixed_linkpatched.xodr",
+      "roads": 32297,
+      "stage": "08_linkpatched"
+    }
+  ]
+}

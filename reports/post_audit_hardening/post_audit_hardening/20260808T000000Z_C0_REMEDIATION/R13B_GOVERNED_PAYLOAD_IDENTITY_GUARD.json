@@ -1,0 +1,32 @@
+{
+  "governing_rule": "any governed artifact whose declared bytes do not match disk bytes is quarantine: never a release payload",
+  "guard": "governed_payload_identity_guard/v1",
+  "quarantine_pre_c0": {
+    "declared_bytes": 80996355,
+    "declared_sha256": "719eec3eced169498228b28a4cc46f2b0361d4ff879eea7dd5a0d5aab392ac21",
+    "disk_bytes": 82589778,
+    "disk_sha256": "a7b319db6627d5711dd989436c4abb1e1ae60455039ea500f8ead2eeaf50af30",
+    "file_with_declared_identity": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260807T000000Z\\perception_governed\\governed_payload.xodr",
+    "guard_conclusion": "GUARD_DETECTED_MISMATCH",
+    "identity_match": false,
+    "note": "declared bytes do NOT match on-disk bytes (INTEGRITY_BREAK)",
+    "replay_exception": "INTEGRITY_MISMATCH_DECLARED_VS_DISK declared_sha256=719eec3eced169498228b28a4cc46f2b0361d4ff879eea7dd5a0d5aab392ac21 declared_size=80996355 disk_sha256=a7b319db6627d5711dd989436c4abb1e1ae60455039ea500"
+  },
+  "schema": "R13B_GOVERNED_PAYLOAD_IDENTITY_GUARD/v1",
+  "tamper_detection": {
+    "actual": "IdentityVerificationError",
+    "detail": "INTEGRITY_MISMATCH_DECLARED_VS_DISK declared_sha256=d30b2bddf56db3042ca208120ebbb3510709b81cc9df9d5f6441e7e21aa112cc declared_size=106 disk_sha256=8810513bd56ff9bc594712ac7e23e561b4cc1485d3e16cc942db6f93f18ac5ac disk_size=106",
+    "expected": "IdentityVerificationError",
+    "pass": true
+  },
+  "transaction": "temp write -> flush+fsync -> reopen compute -> declared vs disk compare -> atomic rename -> reopen -> verify",
+  "verdict": "GOVERNED_PAYLOAD_IDENTITY_GUARD_OK",
+  "write_transaction_pass": true,
+  "writer_record": {
+    "declared_bytes": 106,
+    "declared_sha256": "d30b2bddf56db3042ca208120ebbb3510709b81cc9df9d5f6441e7e21aa112cc",
+    "disk_bytes": 106,
+    "disk_sha256": "d30b2bddf56db3042ca208120ebbb3510709b81cc9df9d5f6441e7e21aa112cc",
+    "post_rename_sha256": "d30b2bddf56db3042ca208120ebbb3510709b81cc9df9d5f6441e7e21aa112cc"
+  }
+}

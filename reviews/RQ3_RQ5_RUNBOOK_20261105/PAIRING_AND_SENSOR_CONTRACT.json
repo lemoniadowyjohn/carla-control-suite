@@ -1,0 +1,63 @@
+{
+  "schema": "rq3_pairing_and_sensor_contract/v2-DRAFT",
+  "status": "TEMPLATE_NOT_FROZEN",
+  "note": "A new versioned contract. It does not edit configs/rq3_protocol_freeze_v1.json (which freezes training/evaluation only). Every null or [OPERATOR] value must be filled and the file hashed before the pilot (gate G3). Values marked 'repo_default' were read from code at 1a36b560; they still need confirming at freeze time.",
+  "code_sha": null,
+  "frozen_utc": null,
+  "maps": {
+    "manual": {"path": "campaigns/ingolstadt_cooked_perception_v1/source/manual/Grid0828.xodr", "sha256": "5eaece230e02f6c1b2075db851894870790e86ac64710abb3465bcfc533e9b0c"},
+    "auto": {"path": "[OPERATOR: auto_crop_grid0828_footprint.xodr or a later corrected map]", "sha256": "[OPERATOR: b2bc2712d1a236deec167c04391aa0f711cfc0a176e6bbfa8b4b31c3ea147d12 if the current crop]", "generator_code_sha": null, "source_map_sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8"},
+    "carla_build": "0.9.16",
+    "carla_client_version": null,
+    "opendrive_generation_parameters": {"vertex_distance": null, "max_road_length": null, "wall_height": null, "additional_width": null, "smooth_junctions": null, "enable_mesh_visibility": null},
+    "runtime_map_identity": {"waypoint_spacing_m": 2.0, "topology_hash_manual": null, "topology_hash_auto": null, "reproducible_across_two_loads": null},
+    "defect_policy": "[OPERATOR: A_exclude_defect_junctions | B_stratify | C_wait_for_corrected_map]",
+    "defect_source": "O13 validator per-laneLink output (sha256 of its report)"
+  },
+  "registration": {
+    "method": "[OPERATOR: SE2 least squares | existing deterministic alignment]",
+    "fit_anchors": "[OPERATOR: >= 3 surveyed points, ids and coordinates in both frames]",
+    "holdout_anchors": "[OPERATOR: >= 2 surveyed points, never used for fitting]",
+    "tolerance_rms_m": "[OPERATOR]",
+    "tolerance_max_m": "[OPERATOR]",
+    "holdout_residuals": null
+  },
+  "simulation": {
+    "synchronous_mode": true,
+    "fixed_delta_seconds": 0.05,
+    "fixed_delta_source": "repo_default carla_tools/carla_sim_consolidated.py:258-259",
+    "warmup_ticks_discarded": "[OPERATOR]",
+    "traffic_manager": {"synchronous": true, "seed": "[OPERATOR]"},
+    "other_actors": "none (pilot); [OPERATOR] for the full run",
+    "physics_profile_sha256": null
+  },
+  "sensors": {
+    "calibration_file": "ultimate_pipeline/sensors/calib_data.json",
+    "calibration_sha256": "[OPERATOR: compute; the 2026-10-07 run manifest recorded SENSOR_CALIB_JSON sha256 054a2d8b706ab8f6e5f7ef63c2e630a7bb7c3d0f3839afa943d2d10476679ce0]",
+    "pilot_rig": [
+      {"name": "front_rgb", "blueprint": "sensor.camera.rgb", "transform_from_calibration": "front", "image_size": "[OPERATOR: e.g. 640x360]", "fov_deg": "from calibration", "sensor_tick": 0.05},
+      {"name": "front_semseg", "blueprint": "sensor.camera.semantic_segmentation", "transform_from_calibration": "front (identical)", "image_size": "same as front_rgb", "fov_deg": "same", "sensor_tick": 0.05}
+    ],
+    "full_rig": "[OPERATOR: the 6-camera 'thesis' rig + LiDAR (npz) per capture_config.py, only after the pilot passes]",
+    "sensor_rig_sha256": null,
+    "runtime_sensor_rig_sha256": null
+  },
+  "environment": {"weather_preset": "[OPERATOR]", "sun_altitude_deg": "[OPERATOR]", "sun_azimuth_deg": "[OPERATOR]", "weather_sha256": null, "sensitivity_weather_presets": "[OPERATOR, optional]"},
+  "routes": {
+    "definition_frame": "manual",
+    "selection_rule": "[OPERATOR: pre-registered rule + seed]",
+    "pilot_route": {"id": "pilot_01", "waypoints": "[OPERATOR]", "length_m": "[OPERATOR]"},
+    "spatial_holdout": "[OPERATOR: districts or blocks reserved for RQ5 test only]",
+    "ego": {"controller": "[OPERATOR]", "target_speed_mps": "[OPERATOR]", "seed": "[OPERATOR]"},
+    "route_manifest_sha256": null
+  },
+  "pairing_acceptance": {
+    "max_pose_diff_m": "[OPERATOR]",
+    "max_heading_diff_deg": "[OPERATOR]",
+    "max_route_length_diff_pct": "[OPERATOR]",
+    "max_missing_frames_pct": "[OPERATOR]",
+    "missing_frame_policy": "count and report; never interpolate"
+  },
+  "labels": {"ontology": "CARLA 29-class (carla_classes.py)", "ignore_index": 255, "class_set_check": "both arms report present classes on overlapping views"},
+  "outputs": {"checksum_manifest": "per-file sha256", "timestamps": "UTC + simulation time per frame", "volume": "[OPERATOR: one volume]"}
+}

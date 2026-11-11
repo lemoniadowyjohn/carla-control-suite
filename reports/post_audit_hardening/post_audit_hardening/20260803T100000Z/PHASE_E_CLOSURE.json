@@ -1,0 +1,38 @@
+{
+  "connector_rebuild_policy": {
+    "atomic_commit": "deep-copy of the complete connector road; revert on any failed mandatory check (ConnectorValidator + endpoint gap check)",
+    "default_gate": "UP_ENABLE_JUNCTION_CONNECTOR_REBUILD defaults to 0",
+    "straight_chord_fallback": "release profiles disable straight-chord fallback"
+  },
+  "downstream_invalidation": "connector rebuild runs in stage_05 BEFORE the geometry freeze and the elevation/lanes/signals passes; elevation is sampled on the frozen post-rebuild XY and downstream stages rerun afterwards. Reverted candidates restore the original road so no downstream content is produced from rejected geometry.",
+  "frozen_horizontal_candidate": {
+    "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\campaigns\\ingolstadt_cooked_perception_v1\\candidate\\raw_xodr_run_1_epsg32632_header_pinned.xodr",
+    "sha256": "ff2a05e7b00b8fc1bde38f569413223c03a4f4ac9c31eceb5a8592df47d0d17d"
+  },
+  "generated_at_utc": "2026-08-03T10:17:50.809368+00:00",
+  "phase": "E",
+  "phase_e_status": "closed",
+  "producer": "ultimate_pipeline/tools/phase_e_closure_evidence.py",
+  "protected_geometry_freeze": {
+    "connector_geometry_hash": "b78b8610e6db0e32524d5510e3e3f8e2df8a7abe3740f83f969f0c8fffc07222",
+    "connector_road_count": 22816,
+    "frozen_in_header_policy": "stage_05 writes header geometryFrozen=true + geometryFreezeHash before elevation; verified by test_geometry_freeze.py and main_pipeline._verify_geometry_freeze_hash",
+    "junction_connection_count": 22816,
+    "junction_connection_hash": "9cfa94bf5018e4fb27fd6426086a8e9994cce58006477bf994623b028697295f",
+    "protected_geometry_hash": "b0ecc5c642e17e3a8f06d9cb6f3fc535470ff9d823edd60bd5ac8c5dbb9361d6",
+    "road_count": 32710
+  },
+  "roundabout_subsystem": {
+    "enabled_via": "UP_ENABLE_ROUNDABOUT_RECONSTRUCTION=1 (explicit opt-in only)",
+    "fixture_suite_required_before_enable": "four-arm, multi-lane, split OSM ways, CW/CCW orientation, island-chord negative control, missing exit, duplicate connector - not yet committed; reconstruction remains OFF",
+    "profiles_checked": "DEVELOPMENT, EXPERIMENTAL_UNSAFE, STRUCTURAL_RELEASE, CARLA_RELEASE, VISUAL_RELEASE, PERCEPTION_RELEASE",
+    "reconstruction_default": "disabled"
+  },
+  "run_id": "20260803T100000Z",
+  "test_results": {
+    "atomic_connector_reconstruction": "exit=0 :: ============================== 4 passed in 0.32s ==============================",
+    "connector_candidate_gate_and_path_safety": "exit=0 :: ============================= 20 passed in 0.96s ==============================",
+    "geometry_freeze": "exit=0 :: ============================= 24 passed in 0.55s ==============================",
+    "phase_e_policy": "exit=0 :: ======================== 4 passed, 3 warnings in 0.86s ========================"
+  }
+}

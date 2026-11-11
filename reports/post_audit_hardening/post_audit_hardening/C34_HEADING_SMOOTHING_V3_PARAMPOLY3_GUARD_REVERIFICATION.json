@@ -1,0 +1,110 @@
+{
+  "schema_version": 1,
+  "status": "FAIL",
+  "gap": "GAP-024",
+  "date_utc": "2026-09-09",
+  "base_sha": "f195ba0b5d6df3f085573c5e996ff9d0f11a975f",
+  "branch": "feature/gap-024-heading-smoothing-20260909",
+  "method": {
+    "harness": "scripts/regen_experimental_heading_smoothing_v2_with_recompute.py",
+    "profile": "EXPERIMENTAL_UNSAFE",
+    "flags": [
+      "UP_ENABLE_UNSAFE_PLANVIEW_MUTATIONS=1",
+      "UP_ENABLE_UNSAFE_HEADING_ONLY_SMOOTHING=1",
+      "UP_ENABLE_UNSAFE_GEOMETRY_START_RECOMPUTE=1"
+    ],
+    "carla": "NOT_RUN",
+    "map_of_record_write": false,
+    "release_default_changed": false
+  },
+  "inputs": {
+    "seed_sha256": "c32d136a939f9522065f582e79f622a146239cd39a1af987781e2c7df2124e44",
+    "map_of_record_path": "campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_perception_map_of_record_20260905_202847.xodr",
+    "map_of_record_sha256": "2ca342d8ae4bee39b46e4f96329ee8f3752289468c7e62ac6e5b290c5fde4798"
+  },
+  "runs": {
+    "partial_sparse_attempt": {
+      "status": "INFRASTRUCTURE_INCOMPLETE",
+      "reason": "Sparse checkout omitted root tools package; final integrity could not import tools.verify_candidate_digest.",
+      "used_for_conclusion": false
+    },
+    "corrected_full_offline_attempt": {
+      "status": "COMPLETED",
+      "pipeline_exit_code": 0,
+      "run_directory": "campaigns/ingolstadt_cooked_perception_v1/regen/20260909T102116Z_EXPERIMENTAL_heading_smoothing_v2_recompute",
+      "candidate_path": "campaigns/ingolstadt_cooked_perception_v1/candidate/EXPERIMENTAL_heading_smoothing_v2_recompute_20260909_111658.xodr",
+      "candidate_sha256": "fb920f84a8c6572dbca5d8272970a40b45d3c761ff8f62482de16f2bd282365c"
+    }
+  },
+  "guard": {
+    "commit": "21cc64308",
+    "date": "2026-09-04",
+    "condition": "previous geometry is paramPoly3 with pRange=arcLength",
+    "stage_six_updated_geometry_starts": 0
+  },
+  "planview_internal_seams": {
+    "checker": "ultimate_pipeline.quality.check_geometric_continuity.check_planview_internal_seams",
+    "thresholds": {
+      "eps_xy_m": 0.2,
+      "eps_hdg_only_deg": 5.0
+    },
+    "stage_six": {
+      "ok": false,
+      "num_seams": 2461,
+      "max_seam_m": 100.98808144404592,
+      "num_heading_only_discontinuities": 0,
+      "roads_checked": 7228,
+      "guard_applied": false
+    },
+    "map_of_record": {
+      "ok": true,
+      "num_seams": 0,
+      "max_seam_m": 0.0,
+      "num_heading_only_discontinuities": 82,
+      "roads_checked": 6807,
+      "repeat_equal": true
+    },
+    "experimental_final": {
+      "ok": false,
+      "num_seams": 2434,
+      "max_seam_m": 100.98808112420605,
+      "num_heading_only_discontinuities": 0,
+      "roads_checked": 7208,
+      "repeat_equal": true
+    }
+  },
+  "historical_context": {
+    "c31_smoothing_only": {
+      "num_seams": 6024,
+      "num_heading_only_discontinuities": 1334
+    },
+    "c33_smoothing_plus_recompute": {
+      "num_seams": 410,
+      "num_heading_only_discontinuities": 0,
+      "comparison": "NOT_DIRECTLY_COMPARABLE: predates the 2026-09-04 paramPoly3 guard and current code state."
+    }
+  },
+  "static_verification": {
+    "clean_verify_only": {
+      "exit_code": 0,
+      "valid_for_experiments": true,
+      "isolated_lane_components": 110,
+      "carla": "NOT_RUN"
+    },
+    "in_pipeline_pre_rebase_acceptance": {
+      "valid_for_experiments": false,
+      "hard_failure": "origin_sanity",
+      "isolated_lane_components": 132
+    },
+    "validator_discrepancy": "Generic continuity acceptance passed while the direct internal-planview checker found 2434 real position seams. This does not waive the direct regression failure."
+  },
+  "tests": {
+    "focused": {
+      "passed": 104,
+      "failed": 0
+    },
+    "full_offline_suite": "NOT_RUN"
+  },
+  "claim_boundary": "Experimental offline negative result only. It neither certifies a map nor authorizes a release-profile change.",
+  "remaining_blocker": "The guarded smoothing/recompute path must produce zero internal position seams under the direct checker before it can be considered for a governed profile."
+}

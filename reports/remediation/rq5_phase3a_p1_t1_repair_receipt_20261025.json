@@ -1,0 +1,120 @@
+{
+  "schema": "rq5_phase3a_repair_receipt/v1",
+  "generated": "2026-10-25",
+  "task": "Phase 3A - Repair confirmed RQ5 baseline regressions (P1 + T1)",
+  "authoritative_integration": "integration/production-large-map-20260918 (origin tip d72f57c6; local 502dda26)",
+  "candidate": {
+    "worktree": "E:/wt/claude-hard-tasks-20261023",
+    "branch": "fix/claude-hard-tasks-20261023",
+    "start_sha": "8dbdfc15abc97bde6de40cb3c9752890d0a5cdaf",
+    "final_sha": "d1c986ab10719c08ac7cc6a9f224b42a5cba94f5",
+    "unpushed_ahead_commits": ["9d35e786", "ae1832ff", "7bf21a23", "8dbdfc15", "4c808f8d", "d1c986ab (ahead 6 vs origin 98e0d7e5)"],
+    "no_push_performed": true
+  },
+  "environment": {
+    "path": "E:/envs/rq5_7bf21a23",
+    "torch": "2.9.1+cpu",
+    "torchvision": "0.24.1+cpu",
+    "numpy": "2.5.4",
+    "pytest": "9.1.1",
+    "preflight": "imports PASS; worktree clean at 8dbdfc15; E: >= 2 GiB free at start"
+  },
+  "p1_fix": {
+    "commit": "4c808f8d2a9c09be6f08b071b2217d2776b6fc08",
+    "message": "fix(rq5): use disk guard's supported threshold keyword",
+    "changed_paths": [
+      "ultimate_pipeline/perception/train_launcher.py (1 line: line 630 require_free_disk kwarg min_free_disk_bytes= -> min_free_bytes=)",
+      "tests/unit/test_rq5_execution_correctness.py (+34 lines: regression test test_checkpoint_disk_guard_receives_supported_keyword using create_autospec(require_free_disk) signature-validated mock, no-op atomic_torch_save, real main() path, assert called_once_with(..., min_free_bytes=512*1024*1024))"
+    ],
+    "pre_fix_evidence": [
+      "baseline: reports/remediation/rq5_exec_correctness_failure_analysis_20261025.json (class P: TypeError require_free_disk() got an unexpected keyword argument 'min_free_disk_bytes' at train_launcher.py:585/630; 3 tests failing)",
+      "raw log: C:/Users/admin/AppData/Local/Temp/opencode/p1_before.txt (1 failed, TypeError, EXIT=1)",
+      "guard signature: training_failure_guard.py:131 require_free_disk(target, *, min_free_bytes=DEFAULT_MIN_FREE_DISK_BYTES(512MiB)); kwarg-only; single production caller"
+    ],
+    "post_fix": "C:/Users/admin/AppData/local/Temp/opencode/p1_after.txt (1 passed, EXIT=0)",
+    "commands": [
+      "E:/envs/rq5_7bf21a23/Scripts/python.exe -m pytest -q -p no:cacheprovider \"tests/unit/test_rq5_execution_correctness.py::test_checkpoint_disk_guard_receives_supported_keyword\" --tb=short -ra",
+      "git diff --check (empty, exit 0)",
+      "git diff --check 8dbdfc15 4c808f8d (empty)"
+    ],
+    "invariants_preserved": "DEFAULT_MIN_FREE_DISK_BYTES 512 MiB unchanged; --min-free-disk-mb argparse (type=int, default=512) unchanged; CLI->bytes conversion unchanged; guard file untouched; single-token production diff",
+    "reviewer_verdict": "APPROVE (independent reviewer ses_e8c012663ffeOYFp69UH68rTuR; 3 conditions recorded below)",
+    "reviewer_conditions": [
+      "Do not claim the 3 class-P tests pass on C: host (they fail fail-closed TRAINING_ABORTED_DISK_FULL with C: ~150 MiB free); validation must use >= 512 MiB free checkpoint filesystem (E:) - satisfied by Phase 3 runs.",
+      "Do not lower DEFAULT_MIN_FREE_DISK_BYTES / CLI default / thresholds (GAP-026 anti-pattern).",
+      "p1_before/p1_after logs are corroborating; dispositive evidence is the one-line diff + keyword-only guard signature + autospec probe."
+    ]
+  },
+  "t1_fix": {
+    "commit": "d1c986ab10719c08ac7cc6a9f224b42a5cba94f5",
+    "message": "test(rq5): align execution checks with model contract return",
+    "changed_paths": [
+      "tests/unit/test_rq5_execution_correctness.py (31+/16-, single file; production train_launcher.py byte-identical before/after: blob 40b0182d at both 4c808f8d and d1c986ab)"
+    ],
+    "stale_sites_fixed": 14,
+    "sites": [168, 230, 338, 606, 645, 681, 791, 822, 846, 856, 863, 882, 889, 902],
+    "contract_preserved": true,
+    "added_assertions": [
+      "line 169 (runner fake): assert contract[\"schema\"] == \"rq5_pretraining_contract_v1\" (matches rq5_provenance.py:474)",
+      "line 863-876 (strict-load migration path): explicit migration_contract=f\"NEW-245 test partial load: {victim}\" (deliberate fail-closed requirement: rq5_provenance.py:736-743; independent witness tests/unit/test_batch1_cd1_cd4_contracts.py:122-137) + round-trip assert outcome[\"migration_contract\"] == migration_contract",
+      "assert counts 127(8dbdfc15) -> 128(4c808f8d) -> 130(d1c986ab); none deleted; no xfail/skip/weakening found"
+    ],
+    "pre_fix_evidence": "C:/Users/admin/AppData/Local/Temp/opencode/rq5_env_phaseC2.txt (14 failed/22 passed; 11 AttributeError 'tuple' has no 'state_dict') + implementer t1_after_run1_failure.txt (36/1 before migration-contract fix)",
+    "reviewer_verdict": "APPROVE (independent reviewer ses_e8bead057ffenqalkH84xWpno0; confirmed 14/14 sites, no weakened assertions, production unchanged, honest migration-contract deviation)",
+    "note_line_endings": "test file pure LF (0 CRLF across 8dbdfc15/4c808f8d/d1c986ab); git ls-files --eol i/lf w/lf"
+  },
+  "phase3_verification": {
+    "test_rq5_execution_correctness_module": [
+      {"run": "implementer single invocation", "command": "pytest -q -p no:cacheprovider --basetemp=E:/envs/rq5_tmp_t1 tests/unit/test_rq5_execution_correctness.py --tb=short -ra", "result": "37 passed in 51.61s", "exit": 0},
+      {"run": "coordinator batch verification (independent, basetemp wiped between)", "batches": "13 / 12 / 12 tests", "results": ["13 passed in 16.40s (exit 0, 17.6s wall)", "12 passed in 24.17s (exit 0, 25.5s wall)", "12 passed in 18.26s (exit 0, 19.5s wall)"], "union": "37/37 passed at d1c986ab; no failure in any batch"},
+      {"note": "full single-invocation re-run is constrained by E: capacity: the module's pytest tmp artifacts measured 2.78 GB across runs (real fcn_resnet50 checkpoints); with E: 2.60 GB free a fresh wipe-leftovers run is margin-bound; an Errno 28 rerun incident occurred with leftover basetemp dirs and was resolved by deleting THIS TASK'S OWN scratch dirs E:/envs/rq5_tmp_t1|rq5_tmp_verify|rq5_tmp_v3 only (no repository or evidence files touched)"}
+    ],
+    "focused_rq5_set_discovery": {
+      "equivalent_command": "rg -l unavailable on host; python os.walk fnmatch over tests/ and ultimate_pipeline/tests with --glob test_*.py and patterns train_launcher|rq5_provenance|dataset_acceptance|distributed|_build_model",
+      "files": [
+        "tests/unit/test_batch1_cd1_cd4_contracts.py",
+        "tests/unit/test_rq5_execution_correctness.py",
+        "tests/unit/test_rq5_train_launcher_initialization.py",
+        "tests/unit/test_train_launcher_any_255.py",
+        "tests/unit/test_train_launcher_dataset_acceptance.py",
+        "tests/unit/test_train_launcher_synthetic_dry_run.py"
+      ]
+    },
+    "focused_set_results": {
+      "tests/unit/test_rq5_train_launcher_initialization.py": "4 passed, exit 0",
+      "tests/unit/test_train_launcher_any_255.py": "3 passed, exit 0",
+      "tests/unit/test_train_launcher_dataset_acceptance.py": "12 passed, exit 0",
+      "tests/unit/test_rq5_execution_correctness.py": "37/37 (above)",
+      "tests/unit/test_batch1_cd1_cd4_contracts.py": "1 passed / 4 failed (exit 1) - ALL PRE-EXISTING relative to 8dbdfc15 (file byte-identical 8dbdfc15 vs d1c986ab; failures in modules untouched by this task): 2x FileNotFoundError frame_status/00000001.json (split-manifest Windows tempdir portability, tempfile on C:), 1x assert TRAINING_ABORTED_WORKER_CRASH == TRAINING_ABORTED_CUDA_OOM (known pre-existing PRODUCT-class CUDA-OOM mismatch, documented in remediation_reconciliation_matrix_20261025.json), 1x PermissionError WinError 32 tmpfile .pt lock (Windows environment-class)",
+      "tests/unit/test_train_launcher_synthetic_dry_run.py": "1 failed (exit 1) - PRE-EXISTING class-T extension: stale bare-model site in that file (fresh = train_launcher._build_model(...); AttributeError 'tuple' has no 'load_state_dict'); file byte-identical 8dbdfc15 vs d1c986ab; out of this task's authorized file scope (scope = tests/unit/test_rq5_execution_correctness.py only) - flagged as FOLLOW-UP BLOCKER needing operator approval or explicit re-scoping"
+    },
+    "full_suite": "BLOCKED_CAPACITY - not run: C: 1.59 GB / E: 2.60 GB free vs pytest.ini-default collection of 8280 tests with known multi-GB artifact outputs (single 37-test module alone produces ~2.7 GB); running would risk exhausting E:/C: and corrupting measurements",
+    "windows_gloo_smoke": "NOT_RUN / ENVIRONMENT_LIMITATION (unchanged)",
+    "github_ci": "NOT_RUN"
+  },
+  "scope_compliance": {
+    "b2_consolidation": "NOT STARTED (requires operator decision)",
+    "b3_policy": "NOT STARTED (requires operator decision)",
+    "l1l2_cherry_picks": "NOT STARTED (R1/R2 binding)",
+    "pushes_merges": "NONE",
+    "worktree_removal_hibernation_map_actions": "NONE",
+    "frozen_evidence": "untouched"
+  },
+  "blockers": [
+    "6 commits on fix/claude-hard-tasks-20261023 remain unpushed (PR-0 pending operator authorization)",
+    "tests/unit/test_train_launcher_synthetic_dry_run.py stale bare-model site (pre-existing, class-T) - follow-up fix required after re-scoping",
+    "test_batch1_cd1_cd4_contracts.py: 2 split-manifest Windows FileNotFoundError (product portability), 1 CUDA-OOM vs WORKER_CRASH status mismatch (known product-class), 1 WinError-32 file lock (environment-class)",
+    "full-suite verification BLOCKED_CAPACITY pending capacity recovery approvals (RM-1..RM-4)",
+    "B2 consolidation and B3 policy await operator decision",
+    "L1/L2 R1/R2 residual conditions remain binding"
+  ],
+  "release_statement": {
+    "RELEASE_BLOCKED": [
+      "GitHub CI not run",
+      "Windows CPU/Gloo distributed smoke not accepted",
+      "B2 consolidation and B3 policy remain pending",
+      "L1/L2 residual R1/R2 still prohibit strict enablement, connectivity claims, map regeneration, and map promotion",
+      "no map promotion, no topology acceptance claim"
+    ]
+  }
+}

@@ -1,0 +1,4 @@
+metric,old_value,new_value,absolute_change,relative_change,confidence_interval,practical_significance,verdict
+road_count,N/A (wrong map),N/A (wrong map),N/A,N/A,N/A,N/A,NOT_COMPARABLE
+junction_count,N/A (wrong map),N/A (wrong map),N/A,N/A,N/A,N/A,NOT_COMPARABLE
+map_identity,Town10HD_Opt,Ingolstadt (not loaded),N/A,N/A,N/A,N/A,WRONG_MAP

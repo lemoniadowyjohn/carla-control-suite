@@ -1,0 +1,10 @@
+{
+  "candidate_xodr": "reports\\post_audit_hardening\\20260807T000000Z\\candidate_crosswalk_enriched.xodr",
+  "check": "determinism",
+  "identical": true,
+  "method": "delete candidate, regenerate via committed producer, compare LF sha256 to run A",
+  "run_a_sha256_lf_text": "8a73b4c6401a7905996a1f5dc72b10677ea068df29dc6d83d1d7a911ca572a49",
+  "run_b_sha256_lf_text": "8a73b4c6401a7905996a1f5dc72b10677ea068df29dc6d83d1d7a911ca572a49",
+  "run_id": "20260807T000000Z",
+  "stage": "I.1"
+}

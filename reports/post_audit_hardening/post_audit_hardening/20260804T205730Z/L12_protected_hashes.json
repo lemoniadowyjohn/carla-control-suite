@@ -1,0 +1,18 @@
+{
+  "protected_hashes": {
+    "planView": "5d883b799f634030af92be1e9d79d107845540ba04338e8c60e095be1aef7be7",
+    "road_length": "a6e1fc3350e71f1b03a81dbb82b63157ad0f25f3dabc237163dabde0ec44a997",
+    "elevation_profile": "2ec0cc89557097f29bbabb624d14b04b33559cae493748aff014028d55c6e1bf",
+    "road_link": "f201aaccb5f88aedd267b73cec4d064d1597f2698164505fd4f94795c4c3dfb6",
+    "junction_structure": "4a9d437b20e78a6c21882e47d89e601b0e14cdc17bde9231d909d38fae4d8334",
+    "connector_geometry": "a03917a941d0800cbbeb4be1d2072681d41c02169586527956b5db01448e31de",
+    "contactPoint": "a7589c39bec7cc3ebd6fa1e36117c97f037942f55d5305a14ff38b9fd6291078",
+    "lane_topology": "36f4623a3afa9a569716060fe65d3c1f4e1ce548e60cf94816bcd300b1fd9cdc",
+    "signal": "7e1ef6168e2e5a59afc6d2c459616937e10b923fa8fc4f302e1a3624ba096e15",
+    "tile_identity": "a2daa67bac90ed5050d19cf1072e0ef3247df811ce8687fe1ffbd0cd47621565",
+    "visual_manifest": "428eb83946475450e96a02ca9a3c02b4bfe919222567610ff5b0105693b24745"
+  },
+  "all_hashes_verified": true,
+  "hash_verification_status": "PASS",
+  "timestamp": "2026-08-04T20:57:31.372043+00:00"
+}

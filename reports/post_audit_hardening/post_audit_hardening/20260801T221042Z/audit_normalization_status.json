@@ -1,0 +1,17 @@
+{
+  "audit_id": "LOW_COST_MODEL_AUDIT_20260801",
+  "audited_commit": "dac6930a7de1698c4b2a1fe4cfb6deb7f2679fe2",
+  "a1_registry_rebuilt": true,
+  "a2_status_logic_applied": true,
+  "a3_release_effects_recalculated": true,
+  "a4_manifest_hashes_verified": 31,
+  "a4_manifest_hash_findings": [
+    {
+      "artifact": "output:07_BLOCKING_ISSUES.md",
+      "claim": "70ddeea561695d44849989e104890dd454cf63b8d396f455974bee0cbd28a868",
+      "actual": "3f6470ea7fad2b3f9cc5af75b20624d690d559e7e3dc2a50883a0b8efea4fb7e",
+      "finding": "EVIDENCE_MANIFEST.json hash claim predates the final regeneration of this audit output; authoritative audit evidence not modified; final hash recorded for re-verification."
+    }
+  ],
+  "acceptance": "ACCEPTED_WITH_FINDINGS"
+}

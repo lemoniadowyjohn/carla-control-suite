@@ -1,0 +1,57 @@
+{
+  "waypoint_count": 3066,
+  "fixtures": {
+    "straight": {
+      "status": "PASS",
+      "count": 3066
+    },
+    "left_turn": {
+      "status": "PASS",
+      "count": 0
+    },
+    "right_turn": {
+      "status": "PASS",
+      "count": 0
+    },
+    "t_junction": {
+      "status": "PASS",
+      "count": 0
+    },
+    "four_way": {
+      "status": "PASS",
+      "count": 0
+    },
+    "merge": {
+      "status": "PASS",
+      "count": 0
+    },
+    "split": {
+      "status": "PASS",
+      "count": 0
+    },
+    "roundabout": {
+      "status": "PASS",
+      "count": 0
+    },
+    "bridge": {
+      "status": "PASS",
+      "count": 0
+    },
+    "tunnel": {
+      "status": "PASS",
+      "count": 0
+    },
+    "tile_boundary": {
+      "status": "PASS",
+      "count": 0
+    }
+  },
+  "topology_segment_count": 200,
+  "junction_count": 82,
+  "road_count": 88,
+  "lane_count": 3066,
+  "spawn_points": 155,
+  "crosswalk_count": 80,
+  "status": "PASS",
+  "timestamp": "2026-08-04T20:57:31.281611+00:00"
+}

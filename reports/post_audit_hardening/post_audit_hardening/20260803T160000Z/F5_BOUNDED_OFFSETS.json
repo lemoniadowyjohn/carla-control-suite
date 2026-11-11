@@ -1,0 +1,56 @@
+{
+  "checks": {
+    "f4_candidate_untouched": true,
+    "max_offset_within_bound": true,
+    "seam_reduced_or_bounded": true,
+    "seams_within_tolerance": true,
+    "segment_counts_preserved": true,
+    "slope_coeffs_preserved_bcd": true,
+    "solver_ok": true
+  },
+  "f5_verdict": "F5_BOUNDED_OFFSETS_PASS",
+  "generated_at_utc": "2026-08-03T14:04:52.194966+00:00",
+  "input_f4_candidate": {
+    "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260803T150000Z\\candidate_f4_piecewise_profiles.xodr",
+    "sha256_after": "51fc96ebc839be6c897aa073125fe5ee82c1ae4048b12b5ed2da33ddb71114f7",
+    "sha256_before": "51fc96ebc839be6c897aa073125fe5ee82c1ae4048b12b5ed2da33ddb71114f7",
+    "untouched": true
+  },
+  "output_f5_candidate": {
+    "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260803T160000Z\\candidate_f5_bounded_offsets.xodr",
+    "sha256": "e7e15693cda4aab7f42cffe88a52934e29531a070178f1614db2320db3824ad8"
+  },
+  "phase": "F",
+  "producer": "ultimate_pipeline/tools/phase_f5_bounded_offsets.py",
+  "run_id": "20260803T160000Z",
+  "seams": {
+    "after": {
+      "count": 45632,
+      "max": 3.035613000000012,
+      "over_threshold": 0,
+      "skipped": {
+        "empty": 0,
+        "missing_link": 0
+      }
+    },
+    "before": {
+      "count": 45632,
+      "max": 5.128525000000025,
+      "over_threshold": 1,
+      "skipped": {
+        "empty": 0,
+        "missing_link": 0
+      }
+    }
+  },
+  "slope_preservation": {
+    "bcd_identical": true,
+    "segment_counts_preserved": true
+  },
+  "solver": {
+    "components": 4,
+    "max_abs_offset_m": 7.864142932197429,
+    "missing_roads": [],
+    "roads_with_offsets": 32647
+  }
+}

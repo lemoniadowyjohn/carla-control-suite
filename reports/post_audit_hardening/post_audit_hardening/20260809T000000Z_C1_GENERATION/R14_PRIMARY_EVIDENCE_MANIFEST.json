@@ -1,0 +1,54 @@
+{
+  "branch": "fix/post-audit-phase-e-junctions-roundabouts-20260803",
+  "entries": [
+    {
+      "bytes": 1000,
+      "path": "reports/post_audit_hardening/20260809T000000Z_C1_GENERATION/C1A_CANDIDATE_LINEAGE.json",
+      "sha256": "26fd2bc873b229e353fb0f48294e8fedcea71ca4269cec92fd4435e2c2e3e5a3"
+    },
+    {
+      "bytes": 31211,
+      "path": "reports/post_audit_hardening/20260809T000000Z_C1_GENERATION/C1B_CROSSING_DISPOSITION_LEDGER.json",
+      "sha256": "5be97e5dc28ff1ea350699af4099ee30f29b0cc3c5680aa9249ad6529868a10f"
+    },
+    {
+      "bytes": 1235545,
+      "path": "reports/post_audit_hardening/20260809T000000Z_C1_GENERATION/C1C_PEDESTRIAN_LEDGER.json",
+      "sha256": "a53a5c87e5892210eec7395f8ee9514368f1fff07b9bb7f4a20adb82a3898c3e"
+    },
+    {
+      "bytes": 500,
+      "path": "reports/post_audit_hardening/20260809T000000Z_C1_GENERATION/C1D_DETERMINISM.json",
+      "sha256": "5e7228a3bcd3624ef9903f924733661e01f71c3a3b073fef164dec52ba9b3382"
+    },
+    {
+      "bytes": 178,
+      "path": "reports/post_audit_hardening/20260809T000000Z_C1_GENERATION/C1E_IDEMPOTENCY.json",
+      "sha256": "d1f40f9a907e7d1f09f76fc0200fdeeeba17d99c8e354fc80be484f6a54fe4ba"
+    },
+    {
+      "bytes": 3742,
+      "path": "reports/post_audit_hardening/20260809T000000Z_C1_GENERATION/C1F_PROTECTED_INTEGRITY.json",
+      "sha256": "13a585897be5ccf6d04a405db9306f374afc932fbe2ada61c6ead858e3998c9b"
+    },
+    {
+      "bytes": 81007419,
+      "path": "reports/post_audit_hardening/20260809T000000Z_C1_GENERATION/candidate_crosswalk_enriched.xodr",
+      "sha256": "16ea2ec134b10d07518c63e1bd42c4ffd8b96113d1a52c0fe448f201c004d11f"
+    },
+    {
+      "bytes": 4355,
+      "path": "reports/post_audit_hardening/20260809T000000Z_C1_GENERATION/R14_CLAUDE_C1_PACKET.md",
+      "sha256": "2f21a40df0ee6fae5391b963cc76aaaca1d8a07c765a11c1dd80b00510c1940e"
+    },
+    {
+      "bytes": 1178,
+      "path": "reports/post_audit_hardening/20260809T000000Z_C1_GENERATION/R14B_C1_REVIEW_FREEZE.json",
+      "sha256": "2bef1d9a61df27275d4b5654001b55a681fc39218607d8eeefd70a83c1421230"
+    }
+  ],
+  "entry_count": 9,
+  "note": "self-entry sha256 omitted (non-circular)",
+  "run_id": "20260809T000000Z_C1",
+  "schema": "C1_PRIMARY_EVIDENCE_V1"
+}

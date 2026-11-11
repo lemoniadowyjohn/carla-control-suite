@@ -1,0 +1,66 @@
+{
+  "blender_version": "4.3.0",
+  "import_operator": "import_scene.fbx",
+  "import_options": {
+    "axis_forward": "-Z",
+    "axis_up": "Y",
+    "filepath": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260804T125500Z\\artifacts\\ingolstadt_cooked_perception_v1_b9e07465_window_osm.fbx",
+    "global_scale": 1.0
+  },
+  "materials_total": 1,
+  "objects": [
+    {
+      "bounds": [
+        [
+          124.092003,
+          0.0,
+          256.535004
+        ],
+        [
+          124.092003,
+          0.0,
+          310.165985
+        ],
+        [
+          124.092003,
+          0.0,
+          310.165985
+        ],
+        [
+          124.092003,
+          0.0,
+          256.535004
+        ],
+        [
+          156.761993,
+          0.0,
+          256.535004
+        ],
+        [
+          156.761993,
+          0.0,
+          310.165985
+        ],
+        [
+          156.761993,
+          0.0,
+          310.165985
+        ],
+        [
+          156.761993,
+          0.0,
+          256.535004
+        ]
+      ],
+      "faces": 17,
+      "materials": [
+        "MAT_0_0"
+      ],
+      "name": "SurfaceArea2",
+      "type": "MESH",
+      "uv_layers": 0,
+      "vertices": 19
+    }
+  ],
+  "objects_total": 1
+}

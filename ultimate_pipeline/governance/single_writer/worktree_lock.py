@@ -149,11 +149,36 @@ def _write_lease(lease: WorktreeLease) -> None:
 
 
 def _remove_lease(worktree_root: Path) -> None:
-    """Remove the lease file for a worktree."""
+    """Remove the lease file for a worktree.
+
+    Only safe to call on leases that have been confirmed stale (valid JSON,
+    expired or non-active status). Never call on an unparsable file -- it may
+    be an active publication in progress (another process created it with
+    O_EXCL but hasn't finished writing its JSON).
+    """
     path = _worktree_lease_path(worktree_root)
     try:
         path.unlink(missing_ok=True)
     except OSError:
+        pass
+
+
+def force_recover_corrupt_lease(worktree_root: Path) -> None:
+    """Manually remove a corrupt/unparsable lease file.
+
+    This is NOT called automatically during acquisition because an unparsable
+    lease file may be an active publication in progress (another process
+    created it with O_EXCL but hasn't finished writing its JSON). Only call
+    this when you have out-of-band confirmation that no publisher is actively
+    writing the file (e.g., all writer processes are known dead).
+
+    GAP-052B: fail-closed by default; manual recovery opt-in.
+    """
+    worktree_root = Path(worktree_root).resolve()
+    path = _worktree_lease_path(worktree_root)
+    try:
+        path.unlink()
+    except FileNotFoundError:
         pass
 
 
@@ -173,10 +198,33 @@ def acquire_worktree_lease(
         The acquired WorktreeLease.
     
     Raises:
-        RuntimeError: If another active lease exists for this worktree.
+        RuntimeError: If another active lease exists for this worktree,
+            or if READ_ONLY_SESSION is set (read-only session).
+    
+    GAP-052B notes:
+        Corrupt lease metadata (unparsable JSON at the lease path) is treated
+        as invalid state evidence and recovered by removal and retry; an active
+        lease can never be unparsable, so this never deletes a valid writer
+        lease.
+
+        FAIL-CLOSED NOTE (P0-GAP052B-CONCURRENCY): automatic recovery must NOT
+        delete an unparsable lease file. An unparsable file may be an active
+        publication in progress (writer created the path with O_CREAT|O_EXCL
+        but has not yet written the full JSON payload). Corrupt-file automatic
+        recovery therefore fails closed; manual recovery via
+        `force_recover_corrupt_lease` is available for out-of-band cases.
     """
     worktree_root = Path(worktree_root).resolve()
     
+    # GAP-052: Refuse mutation-lease acquisition in read-only sessions BEFORE
+    # any filesystem mutation — directory creation, lease publication,
+    # fencing-ledger updates, or stale-lease reclamation.
+    if read_only_session():
+        raise RuntimeError(
+            f"READ_ONLY_SESSION is set: worktree mutation leases are refused "
+            f"in read-only sessions. Refused lease for {worktree_root}."
+        )
+
     # Check for existing active lease
     existing = _read_lease(worktree_root)
     if existing and existing.status == "active" and not existing.is_expired():
@@ -217,9 +265,18 @@ def acquire_worktree_lease(
                 raise
             return lease
         except FileExistsError:
-            # Another process created it; check if it's stale
+            # Another process created it; check if it's stale or corrupt
             time.sleep(0.01)
             existing = _read_lease(worktree_root)
+            if existing is None:
+                # FAIL-CLOSED (P0-GAP052B-CONCURRENCY): unparsable lease file may
+                # be an active publication in progress (writer created the path
+                # with O_CREAT|O_EXCL but has not yet written JSON). Never
+                # delete a file we cannot parse -- it might be a live reservation.
+                raise RuntimeError(
+                    f"Worktree {worktree_root} lease file exists but is unparsable "
+                    f"(possible concurrent publication). Manual recovery required."
+                )
             if existing and (existing.is_expired() or existing.status != "active"):
                 # Stale lease; remove and retry
                 _remove_lease(worktree_root)

@@ -1,0 +1,60 @@
+{
+  "title": "C1 enriched map-of-record candidate — 2026-08-19 canonical regen",
+  "status": "PENDING_HUMAN_REVIEW",
+  "candidate_path": "campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_perception_map_of_record_20260819_160350.xodr",
+  "candidate_sha256": "69b1f52016ebdc3e643616f86161d85789624c94d48e5caf56c53004d534de6e",
+  "bytes": 144230070,
+  "generated_via": "python scripts/regen_map_of_record.py --allow-dirty (canonical C11 entrypoint)",
+  "regen_run_dir": "campaigns/ingolstadt_cooked_perception_v1/regen/20260819T142310Z",
+  "provenance": "campaigns/ingolstadt_cooked_perception_v1/regen/20260819T142310Z/regen_provenance.json",
+  "git_sha": "559888b4a9b3b9c72dba57ab1d220b057a0b8d9c",
+  "osm_input_sha256": "b9e074656f744c31e6aabb0a16e6b2246824ca74e202ea2c316ff7f22364f24f",
+  "seed_xodr_sha256": "c32d136a939f9522065f582e79f622a146239cd39a1af987781e2c7df2124e44",
+  "frame": {
+    "policy": "SUMO --offset.disable-normalization preserved global tmerc(0,0); regen entrypoint re-based to local CARLA-friendly frame (float32-safe).",
+    "shift_dx": 832671.676,
+    "shift_dy": 5458671.104,
+    "header_offset": {"x": "832671.676000", "y": "5458671.104000", "z": "0.0", "hdg": "0.0"},
+    "local_bbox": {"min_x": 0.0, "max_x": 13267.06, "min_y": 0.0, "max_y": 14070.88}
+  },
+  "acceptance": {
+    "valid_for_experiments": true,
+    "hard_fail_reasons": [],
+    "soft_warnings": ["component_reachability: 33 isolated lane components (largest=0.995863)"],
+    "metrics": {
+      "roads": 32297,
+      "junctions": 3568,
+      "objects": 51797,
+      "functional_signals": 21171,
+      "traffic_light_objects": 21171,
+      "buildings": 5686,
+      "elevation_z_min_m": 361.859343,
+      "elevation_z_max_m": 406.289714,
+      "elevation_segments": 32297,
+      "dem_coverage_ratio": 1.0,
+      "geometric_continuity_ok": true,
+      "lane_count_total": 34321,
+      "lane_successor_missing": 0,
+      "length_invariant_violations": 0,
+      "unmatched_cross_links": 0,
+      "seam_bad_fraction": 0.0,
+      "origin_centroid_distance_m": 9669.6
+    }
+  },
+  "supersedes": {
+    "note": "Replaces the interim crash-safe candidate 83418373f1996c6707293c5571b2798f9cf7c06a5b243e8d049848efdc73080e (buildings=1/signals=0 caveats) with a SUMO-repaired, buildings+signals-enriched map of record.",
+    "interim_candidate_sha256": "83418373f1996c6707293c5571b2798f9cf7c06a5b243e8d049848efdc73080e"
+  },
+  "regen_blockers_fixed_20260819": [
+    "SUMO guard accepted Settings.SUMO_NETCONVERT (installed but not on PATH) — scripts/regen_map_of_record.py _sumo_status",
+    "UP_OSM_FILE wired from INPUTS_MANIFEST so the F1 DEM CRS contract could establish the frame (osm_source_unavailable crash)",
+    "UP_AUTOFIX_LANE_SUCCESSORS=1 / UP_STRICT_LANE_SUCCESSORS=0 (SUMO repair drops lane successors; C0 evidence: 10565/10565 repaired, 0 downgraded)",
+    "rebase_to_local post-finalization for float32-safe local frame + origin_sanity pass"
+  ],
+  "remaining_operator_items": [
+    "Review + approve this pin (governed), then commit the batch",
+    "Live CARLA drivability smoke on this candidate (server must be restarted)",
+    "UE4.26 cook + fair capture for Phase 5",
+    "Manual Grid0821/0828 restore for C2/B3/B4"
+  ]
+}

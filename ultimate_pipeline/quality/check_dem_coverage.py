@@ -556,5 +556,6 @@ if __name__ == "__main__":
         max_roads=args.max_roads,
         samples_per_road=args.samples_per_road,
     )
-    print(json.dumps(rep, indent=2))
-    sys.exit(0 if rep.get("ok", False) else 2)
+    rep_ok_val = rep.get("ok", False)
+    rep_ok = rep_ok_val if isinstance(rep_ok_val, bool) else False
+    sys.exit(0 if rep_ok else 2)

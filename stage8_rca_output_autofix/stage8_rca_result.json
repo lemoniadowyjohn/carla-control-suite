@@ -1,0 +1,32 @@
+{
+  "stage7_path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\gap048\\07_lanes_GAP048_AFTER.xodr",
+  "stage7_sha256": "0e3eb2f2c93c3ee60b76dfdf3fe2a644501ecaf1ae69eb32a80e0abb29e6b960",
+  "stage7_bytes": 125265882,
+  "stage8_path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\stage8_rca_output_autofix\\08_final.xodr",
+  "stage8_sha256": "bc01f1ba82cfc4feb6e9f8f3351d96788f49a42d09c0f581aa79d5e3b1a0de80",
+  "stage8_bytes": 131605243,
+  "exit_code": 0,
+  "failure_class": "UNKNOWN",
+  "root_cause": "",
+  "traceback": "",
+  "stdout": "[RCA] Starting Stage 8 on C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\gap048\\07_lanes_GAP048_AFTER.xodr\n[RCA] Output will be written to C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\stage8_rca_output_autofix\\08_final.xodr\n[RCA] Stage 7 SHA256: 0e3eb2f2c93c3ee60b76dfdf3fe2a644501ecaf1ae69eb32a80e0abb29e6b960\n[RCA] Stage 7 size: 125265882 bytes\n\n============== \ud83d\udd17 STEP 8: LaneLinks & Markings ==============\n\u26a0\ufe0f Added missing <link> nodes to 4 driving lanes\n\u23ed\ufe0f LaneLinkBuilder.regenerate disabled (ENABLE_LANELINK_REGEN=0). Existing lane links preserved.\n[STEP 8] junction_lanelink_sanity.json -> C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\stage8_rca_output_autofix\\junction_lanelink_sanity.json\n\u2705 Final map XML written \u2192 C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\stage8_rca_output_autofix\\08_final.xodr\n\ud83e\udde0 Semantic final saved \u2192 C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\stage8_rca_output_autofix\\08_final_semantic.xodr\n\u2705 LaneSection successor repair: repairs=14 failures=0\n\u2705 Ordinary road lane-link targets: 46812 checked\nSemantic final refreshed -> C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\stage8_rca_output_autofix\\08_final_semantic.xodr\n\u2705 Driving lanes without explicit lane-level successor: 707 (allowed)\nEnforcing CARLA successor invariant (laneSection-level)...\n[lane_connectivity] UP_AUTOFIX_LANE_SUCCESSORS enabled \u2192 attempting repair...\n[lane_connectivity] Autofix report \u2192 C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\stage8_rca_output_autofix\\lane_successor_autofix_report.json\n[lane_connectivity] Fixed 376/376 broken lanes\n\u2705 CARLA successor invariant satisfied after autofix (dead-ends allowed).\n[MOCK] _run_geometric_continuity_gate(C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\stage8_rca_output_autofix\\08_final_laneSectionFixed_lane_successor_fixed.xodr, after_lane_successor_repair)\n[length_invariant] Repaired 855 road length invariant violation(s).\n\u26a0\ufe0f Shapely disabled \u2014 skipping Shapely-based collision mesh gate.\n\n============== \ud83d\udcdd XODR Final Integrity Check ==============\n[STEP 8] Final lane width invariants: found=0 fixed=0 -> C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\stage8_rca_output_autofix\\qa_stage_reports\\08_final_selected__lane_width_invariants.json\n\u2705 XODR id uniqueness check passed.\n\u274c XODR schema violation: NOT_CONFIGURED: No XSD configured (XODR_XSD_PATH unset): schema conformance NOT CHECKED. This is not a pass.\n\n============== \ud83d\udcca STEP 8B: Map Statistics ==============\n\u2705 Map statistics saved \u2192 C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\stage8_rca_output_autofix\\map_statistics.json\n[STEP 8] final_selected_xodr_status.json -> C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\stage8_rca_output_autofix\\final_selected_xodr_status.json\n[DEBUG] Lanes after STEP 8: 85899\n[RCA] Stage 8 completed, output: C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\stage8_rca_output_autofix\\08_final_laneSectionFixed_lane_successor_fixed.xodr\n",
+  "stderr": "",
+  "last_successful_operation": "Stage 8 completed successfully",
+  "last_created_artifact": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\stage8_rca_output_autofix\\final_selected_xodr_status.json",
+  "disk_free_before_gb": 30.657207489013672,
+  "disk_free_after_gb": 30.16552734375,
+  "new_artifacts": [
+    "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\stage8_rca_output_autofix\\ordinary_road_lane_link_targets.json",
+    "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\stage8_rca_output_autofix\\08_final.xodr",
+    "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\stage8_rca_output_autofix\\08_final_semantic.xodr",
+    "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\stage8_rca_output_autofix\\08_final_laneSectionFixed_lane_connectivity_report.json",
+    "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\stage8_rca_output_autofix\\junction_lanelink_sanity.json",
+    "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\stage8_rca_output_autofix\\lane_successor_autofix_report.json",
+    "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\stage8_rca_output_autofix\\map_statistics.json",
+    "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\stage8_rca_output_autofix\\final_selected_xodr_status.json",
+    "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\stage8_rca_output_autofix\\qa_stage_reports",
+    "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\stage8_rca_output_autofix\\08_final_laneSectionFixed_lane_successor_fixed.xodr",
+    "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\stage8_rca_output_autofix\\final_length_invariant_repair.json",
+    "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\stage8_rca_output_autofix\\08_final_laneSectionFixed.xodr"
+  ]
+}

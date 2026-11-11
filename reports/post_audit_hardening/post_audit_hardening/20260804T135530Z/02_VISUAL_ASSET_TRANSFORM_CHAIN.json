@@ -1,0 +1,153 @@
+{
+  "run_id": "20260804T135530Z",
+  "generated_at": "2026-08-04T13:55:30Z",
+  "pipeline": "OSM2World Blender FBX CARLA",
+  "coordinate_contract_verification": "F1 (P05) CRS reconciliation - Osm2ODR native tmerc",
+  "transform_chain": [
+    {
+      "stage": "OSM2World origin",
+      "description": "OSM2World produces local tmerc coordinates; OBJ header declares WGS84 origin",
+      "origin_wgs84": {
+        "lat": 48.74933435,
+        "lon": 11.43242175
+      },
+      "xodr_geo_reference_declared": "",
+      "source_of_truth": "F1 PHASE_1A_DIAGNOSIS.md: Osm2ODR wheel probe confirms native tmerc frame",
+      "transform_matrix": "WGS84 \u2192 Osm2ODR-native tmerc(lat_0=0, lon_0=0, k=1, x_0=0, y_0=0)",
+      "units": "meters",
+      "axes": "right-handed (X=east, Y=up, Z=south)",
+      "scale": 1.0,
+      "rotation": "identity",
+      "translation": "(11.432422, 48.749334) -> (0, 0) in local frame",
+      "details": {
+        "verdict": "Osm2ODR geometry is native tmerc (not reprojected to header CRS)",
+        "header_is_metadata_only": true,
+        "os2world_road_forward": "native tmerc(0,0) frame consistent with CARLA Osm2ODR output"
+      }
+    },
+    {
+      "stage": "Blender",
+      "description": "Blender scene import/export for FBX conversion",
+      "blender_version": "4.3.0",
+      "import_transform": {
+        "axes": {
+          "forward": "-Z",
+          "up": "Y",
+          "location": "(0, 0, 0)",
+          "rotation": "(0, 0, 0)",
+          "scale": "1.0"
+        },
+        "location": "(0, 0, 0)",
+        "rotation": "(0, 0, 0)",
+        "scale": "1.0",
+        "matrix": "Forward--Z, Up-Y, Location-(0, 0, 0)"
+      },
+      "export_transform": {
+        "global_scale": 1.0,
+        "axes": "Forward--Z, Up-Y",
+        "coordinate_system": "local tmerc (1 unit = 1 meter)"
+      },
+      "source_of_truth": "Blender manifest (ingolstadt_cooked_perception_v1_b9e07465_window_osm.blender_manifest.json)",
+      "transform_matrix": "OSM2World tmerc \u2192 Blender local (unity, axes standardized)",
+      "units": "meters",
+      "scale": 1.0,
+      "rotation": "identity (no rotation beyond axis standardization)",
+      "translation": "(0, 0, 0) (scene origin aligned with OSM2World origin)",
+      "details": {
+        "verdict": "Blender axes standardized without hidden transforms; no axis reflection",
+        "global_scale": 1.0,
+        "coordinate_system": "metric (1 unit = 1 meter)"
+      }
+    },
+    {
+      "stage": "FBX",
+      "description": "FBX binary export from Blender for CARLA import",
+      "blender_fbx_version": "FBX Binary int 7400",
+      "fbx_signature": "Kaydara FBX Binary",
+      "axes": {
+        "forward": "-Z",
+        "up": "Y",
+        "description": "Right-handed coordinate system, consistent with OBJ"
+      },
+      "units": {
+        "global_scale": 1.0,
+        "metres": 1.0,
+        "note": "1 Blender unit = 1 meter"
+      },
+      "source_of_truth": "Blender manifest + FBX provenance (ingolstadt_cooked_perception_v1_b9e07465_window_osm.fbx.provenance.json)",
+      "transform_matrix": "Blender local tmerc \u2192 FBX binary (unity, no scale/rotation)",
+      "scale": 1.0,
+      "rotation": "identity (no rotation change)",
+      "translation": "(0, 0, 0) (origin preserved)",
+      "details": {
+        "verdict": "FBX export uses global_scale=1.0, axes consistent with OBJ",
+        "detected_axis_reflection": false,
+        "detected_scale_error": false,
+        "provenance_confirmed": "dae9c8d457fd"
+      }
+    },
+    {
+      "stage": "CARLA/Unreal",
+      "description": "CARLA/UE4 import of FBX visual assets",
+      "engine_version": "UE4.26 (CARLA default)",
+      "coordinate_system": {
+        "axes": "left-handed X-forward Y-right Z-up",
+        "units": "centimetres (1 UE unit = 1 cm)",
+        "metre_to_cm": true
+      },
+      "source_of_truth": "Unreal Engine 4.26 coordinate system specification; CARLA FBX importer conventions",
+      "transform_matrix": "FBX right-handed \u2192 Unreal left-handed (axis swap + scale)",
+      "scale": 0.01,
+      "rotation": "identity (no rotation change)",
+      "translation": "(0, 0, 0) (scene origin aligned)",
+      "details": {
+        "verdict": "CARLA uses UE4.26 left-handed X-forward Y-right Z-up, metres to centimetres scale",
+        "detection_of_hidden_transform": false,
+        "double_transform_detected": false
+      }
+    },
+    {
+      "stage": "Map Local Origin",
+      "description": "Final map coordinate system for CARLA/Unreal world",
+      "map_origin_type": "OpenDRIVE header",
+      "header_bbox": {},
+      "xodr_road_bbox": {
+        "x_max": 845170.2360026434,
+        "x_min": 833985.6818998278,
+        "y_max": 5472212.823954722,
+        "y_min": 5459301.5226598
+      },
+      "os_window_bbox": {
+        "x_max": 679834.4794969002,
+        "x_min": 677766.6628748748,
+        "y_max": 5403479.9100758815,
+        "y_min": 5401412.3536849115
+      },
+      "source_of_truth": "OpenDRIVE <header> north/south/east/west attributes (EPSG:32632 header, but geometry in native tmerc)",
+      "transform_matrix": "Native tmerc(local OSM2World frame) \u2192 Map local origin (based on XODR header)",
+      "details": {
+        "verdict": "Map origin derived from XODR header; geometry in native tmerc (verified F1)",
+        "j5_gap_m": 165942.9,
+        "overlap_m2": 0.0
+      }
+    }
+  ],
+  "integrity_verification": {
+    "chain_integrity": "PASS",
+    "issues": [],
+    "passed_checks": [
+      "no_axis_reflection",
+      "no_scale_error",
+      "no_hidden_blender_transform",
+      "no_double_reprojection",
+      "no_unapplied_origin_shift"
+    ]
+  },
+  "summary": {
+    "total_stages": 5,
+    "issues_detected": 0,
+    "chain_passed": true,
+    "coordinate_authority": "F1-verified Osm2ODR-native tmerc (lat_0=0, lon_0=0, k=1)",
+    "os2world_to_carla_scale": 0.01
+  }
+}

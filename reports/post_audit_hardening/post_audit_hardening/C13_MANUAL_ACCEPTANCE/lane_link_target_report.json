@@ -1,0 +1,14 @@
+{
+  "issues": [],
+  "num_issues": 0,
+  "ok": true,
+  "totals": {
+    "allow_dead_ends": true,
+    "lane_types": [
+      "driving"
+    ],
+    "max_issues": 2000,
+    "roads_scanned": 993
+  },
+  "xodr_path": "E:\\CARLA\\CARLA_0.9.16\\CarlaUE4\\Content\\Grid0828\\Maps\\Grid0828\\OpenDrive\\Grid0828.xodr"
+}

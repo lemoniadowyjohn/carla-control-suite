@@ -1,0 +1,7 @@
+{
+  "Q00_WORKTREE_PROVENANCE.json": "reports\\post_audit_hardening\\20260813T075853Z_N_CERTIFICATION\\Q00_WORKTREE_PROVENANCE.json",
+  "Q01_SCRIPT_HASH_REGISTRY.json": "reports\\post_audit_hardening\\20260813T075853Z_N_CERTIFICATION\\Q01_SCRIPT_HASH_REGISTRY.json",
+  "Q02_EVIDENCE_COMMIT_CHAIN.md": "reports\\post_audit_hardening\\20260813T075853Z_N_CERTIFICATION\\Q02_EVIDENCE_COMMIT_CHAIN.md",
+  "worktree.patch": "reports\\post_audit_hardening\\20260813T075853Z_N_CERTIFICATION\\worktree.patch",
+  "staged.patch": "reports\\post_audit_hardening\\20260813T075853Z_N_CERTIFICATION\\staged.patch"
+}

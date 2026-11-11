@@ -1,0 +1,1308 @@
+{
+  "checks": {
+    "no_directionally_wrong_lane_links": true,
+    "no_duplicate_lane_links": true,
+    "no_missing_lane_link_targets": true,
+    "no_unlinked_required_driving_lanes": true
+  },
+  "g0_reference": {
+    "g0_evidence": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260803T190000Z\\PHASE_G_INPUT.json",
+    "input_byte_sha256": "ac2513e815b22e3a691a9d5f7640c4164b56ee0f53813b9067f0581396e369ba"
+  },
+  "g4_verdict": "PHASE_G_LANE_CONTINUITY_PASS",
+  "generated_at_utc": "2026-08-03T18:38:35.264775+00:00",
+  "input": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260803T160000Z\\candidate_f5_bounded_offsets.xodr",
+  "issues": {
+    "directionally_wrong_lane_links": [],
+    "duplicate_lane_links": [],
+    "legitimate_terminal_lanes": [
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39830",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39831",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39832",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-2",
+        "road": "39832",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39833",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39834",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39835",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39836",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39837",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39838",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39839",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39840",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39841",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39842",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39843",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39844",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39845",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39846",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39847",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39848",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39849",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39850",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39851",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39852",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39853",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39854",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-2",
+        "road": "39854",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39855",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39856",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39857",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39858",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-2",
+        "road": "39858",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39859",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39860",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-2",
+        "road": "39860",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39861",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39862",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39863",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-2",
+        "road": "39863",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39864",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39865",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39866",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39867",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39868",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39869",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39870",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39871",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39872",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39873",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39874",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39875",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39876",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39878",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39879",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39880",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39881",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39882",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39883",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39884",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39885",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39886",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39887",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39888",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39889",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39890",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39891",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39892",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39893",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-2",
+        "road": "39893",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39894",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39895",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-2",
+        "road": "39895",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39896",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39897",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-2",
+        "road": "39897",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39898",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39899",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-2",
+        "road": "39899",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39900",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39901",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39902",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39903",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39904",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-2",
+        "road": "39904",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39905",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-2",
+        "road": "39905",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39906",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39907",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-2",
+        "road": "39907",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39908",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39909",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39910",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39911",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39912",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39913",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39915",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39917",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39918",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39919",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39920",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39921",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-2",
+        "road": "39921",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39922",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39923",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39924",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39926",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39927",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39928",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39929",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39930",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-2",
+        "road": "39930",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39931",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39932",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39933",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39934",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-2",
+        "road": "39934",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39935",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39936",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39938",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39939",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39940",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39941",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39942",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39943",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39945",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39946",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39947",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39948",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39949",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39950",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39951",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39952",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39953",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39954",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39955",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-2",
+        "road": "39955",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39956",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39957",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39958",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-2",
+        "road": "39958",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-3",
+        "road": "39958",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39959",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39960",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39961",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39962",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39963",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39964",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39965",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39966",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39967",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39968",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39969",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39970",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39971",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39972",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39973",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39974",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39975",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39976",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39977",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39978",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39979",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39980",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39981",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39982",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39983",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39984",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39985",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39986",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39987",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39988",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39989",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39990",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39991",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39992",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39993",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39994",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39995",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-2",
+        "road": "39995",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39996",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39997",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39998",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "39999",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "40000",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "40001",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "40002",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-2",
+        "road": "40002",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "40003",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "40004",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "40005",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "40006",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "40007",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "40008",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "40009",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "40010",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "40011",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "40012",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "40013",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "40014",
+        "section_s": 0.0
+      },
+      {
+        "end": "predecessor",
+        "lane": "-1",
+        "road": "40015",
+        "section_s": 0.0
+      }
+    ],
+    "missing_lane_link_targets": [],
+    "type_incompatible_lane_links": [
+      {
+        "connected_road": "44238",
+        "direction": "predecessor",
+        "lane": "-1",
+        "road": "51281",
+        "section_s": 0.0,
+        "source_type": "driving",
+        "target": "-1",
+        "target_type": "restricted"
+      },
+      {
+        "connected_road": "44238",
+        "direction": "predecessor",
+        "lane": "-1",
+        "road": "51282",
+        "section_s": 0.0,
+        "source_type": "driving",
+        "target": "-1",
+        "target_type": "restricted"
+      },
+      {
+        "connected_road": "44238",
+        "direction": "predecessor",
+        "lane": "-1",
+        "road": "51283",
+        "section_s": 0.0,
+        "source_type": "driving",
+        "target": "-1",
+        "target_type": "restricted"
+      },
+      {
+        "connected_road": "40526",
+        "direction": "predecessor",
+        "lane": "-1",
+        "road": "71769",
+        "section_s": 0.0,
+        "source_type": "restricted",
+        "target": "-2",
+        "target_type": "driving"
+      },
+      {
+        "connected_road": "42176",
+        "direction": "predecessor",
+        "lane": "-1",
+        "road": "71774",
+        "section_s": 0.0,
+        "source_type": "restricted",
+        "target": "-1",
+        "target_type": "driving"
+      },
+      {
+        "connected_road": "45032",
+        "direction": "predecessor",
+        "lane": "-1",
+        "road": "71779",
+        "section_s": 0.0,
+        "source_type": "restricted",
+        "target": "-1",
+        "target_type": "driving"
+      },
+      {
+        "connected_road": "49706",
+        "direction": "predecessor",
+        "lane": "-1",
+        "road": "71784",
+        "section_s": 0.0,
+        "source_type": "restricted",
+        "target": "-1",
+        "target_type": "driving"
+      }
+    ],
+    "unlinked_required_driving_lanes": []
+  },
+  "lane_links_audited": 64080,
+  "lane_sections_audited": 32710,
+  "metrics": {
+    "directionally_wrong_lane_links": 0,
+    "duplicate_lane_links": 0,
+    "legitimate_terminal_lanes": 11038,
+    "missing_lane_link_targets": 0,
+    "type_incompatible_lane_links": 7,
+    "unlinked_required_driving_lanes": 0
+  },
+  "phase": "G",
+  "producer": "ultimate_pipeline/tools/phase_g4_lane_continuity.py",
+  "run_id": "20260803T230000Z"
+}

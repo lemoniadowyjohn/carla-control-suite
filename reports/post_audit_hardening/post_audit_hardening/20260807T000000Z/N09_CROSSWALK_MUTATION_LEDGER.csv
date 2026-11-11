@@ -1,0 +1,67 @@
+object_id,osm_id,type,name,road_id,road_ids_all,s,t,hdg_deg,depth_m,disposition,reason
+crosswalk_1310466537,1310466537,crosswalk,crosswalk,40083,"[""40083""]",468.786,-4.400,-11.8029,4.0,INSERTED,matched road=40083 s=468.786 t=-4.4 dist=6.112
+crosswalk_1304137983,1304137983,crosswalk,crosswalk,40448,"[""40448""]",2.658,-4.400,-160.0844,4.0,INSERTED,matched road=40448 s=2.658 t=-4.4 dist=4.661
+crosswalk_1304137990,1304137990,crosswalk,crosswalk,42000,"[""42000""]",41.961,-4.400,113.7321,4.0,INSERTED,matched road=42000 s=41.961 t=-4.4 dist=4.011
+crosswalk_1304138002,1304138002,crosswalk,crosswalk,42010,"[""42010""]",163.775,-4.400,-24.2934,4.0,INSERTED,matched road=42010 s=163.775 t=-4.4 dist=7.006
+crosswalk_710645369,710645369,crosswalk,crosswalk_signals,42870,"[""42870""]",62.037,-7.400,50.7641,4.0,INSERTED,matched road=42870 s=62.037 t=-7.4 dist=6.993
+crosswalk_1251945025,1251945025,crosswalk,crosswalk,43768,"[""43768"", ""45735""]",76.877,-4.400,-100.4395,4.0,DUPLICATE_MERGED,"matched to 2 roads: ['43768', '45735']"
+crosswalk_397807429,397807429,crosswalk,crosswalk_signals,43848,"[""43848""]",46.320,-4.400,168.7361,4.0,INSERTED,matched road=43848 s=46.32 t=-4.4 dist=5.648
+crosswalk_815412609,815412609,crosswalk,crosswalk_signals,43964,"[""43964""]",78.509,-13.400,34.2056,4.0,INSERTED,matched road=43964 s=78.509 t=-13.4 dist=11.584
+crosswalk_1251945016,1251945016,crosswalk,crosswalk_signals,44260,"[""44260""]",112.842,-4.400,-60.3325,4.0,INSERTED,matched road=44260 s=112.842 t=-4.4 dist=5.308
+crosswalk_885891572,885891572,crosswalk,crosswalk_marked,44521,"[""44521""]",5.213,-7.400,-55.9207,4.0,INSERTED,matched road=44521 s=5.213 t=-7.4 dist=13.55
+crosswalk_1210272943,1210272943,crosswalk,crosswalk_signals,44575,"[""44575""]",10.081,-4.400,136.4785,4.0,INSERTED,matched road=44575 s=10.081 t=-4.4 dist=3.48
+crosswalk_815412599,815412599,crosswalk,crosswalk_signals,44605,"[""44605"", ""68649""]",25.205,-7.400,100.8979,4.0,DUPLICATE_MERGED,"matched to 2 roads: ['44605', '68649']"
+crosswalk_1272842061,1272842061,crosswalk,crosswalk_signals,44662,"[""44662""]",87.226,-13.400,77.0055,4.0,INSERTED,matched road=44662 s=87.226 t=-13.4 dist=9.823
+crosswalk_1189565564,1189565564,crosswalk,crosswalk_signals,44670,"[""44670""]",7.435,-7.400,76.8336,4.0,INSERTED,matched road=44670 s=7.435 t=-7.4 dist=0.167
+crosswalk_888409635,888409635,crosswalk,crosswalk_signals,44675,"[""44675""]",59.750,-10.400,64.6869,4.0,INSERTED,matched road=44675 s=59.75 t=-10.4 dist=9.816
+crosswalk_1050386657,1050386657,crosswalk,crosswalk_marked,45439,"[""45439""]",6.121,-7.400,-174.5802,4.0,INSERTED,matched road=45439 s=6.121 t=-7.4 dist=11.587
+crosswalk_1304138004,1304138004,crosswalk,crosswalk,46875,"[""46875""]",61.895,-4.400,-17.4179,4.0,INSERTED,matched road=46875 s=61.895 t=-4.4 dist=5.894
+crosswalk_1311357354,1311357354,crosswalk,crosswalk_signals,46967,"[""46967""]",76.508,-4.400,-75.4012,4.0,INSERTED,matched road=46967 s=76.508 t=-4.4 dist=8.518
+crosswalk_1302300635,1302300635,crosswalk,crosswalk,48122,"[""48122""]",13.682,-10.400,139.4006,4.0,INSERTED,matched road=48122 s=13.682 t=-10.4 dist=0.853
+crosswalk_1310466524,1310466524,crosswalk,crosswalk,48282,"[""48282""]",578.013,-4.400,110.8673,4.0,INSERTED,matched road=48282 s=578.013 t=-4.4 dist=6.445
+crosswalk_1310466528,1310466528,crosswalk,crosswalk,48282,"[""48282""]",498.941,-4.400,-165.1264,4.0,INSERTED,matched road=48282 s=498.941 t=-4.4 dist=4.013
+crosswalk_1043366193,1043366193,crosswalk,crosswalk_marked,48986,"[""48986""]",128.152,-10.400,-51.2224,4.0,INSERTED,matched road=48986 s=128.152 t=-10.4 dist=0.267
+crosswalk_822603353,822603353,crosswalk,crosswalk_marked,49126,"[""49126""]",30.939,-4.400,-24.1788,4.0,INSERTED,matched road=49126 s=30.939 t=-4.4 dist=9.552
+crosswalk_1189564736,1189564736,crosswalk,crosswalk,49206,"[""49206""]",12.099,-4.400,125.0767,4.0,INSERTED,matched road=49206 s=12.099 t=-4.4 dist=11.009
+crosswalk_865774606,865774606,crosswalk,crosswalk,49212,"[""49212""]",0.760,-4.400,93.1056,4.0,INSERTED,matched road=49212 s=0.76 t=-4.4 dist=7.798
+crosswalk_1189564732,1189564732,crosswalk,crosswalk,49216,"[""49216""]",0.999,-4.400,-71.7343,4.0,INSERTED,matched road=49216 s=0.999 t=-4.4 dist=11.105
+crosswalk_816754722,816754722,crosswalk,crosswalk_signals,49331,"[""49331""]",103.242,-7.400,163.5795,4.0,INSERTED,matched road=49331 s=103.242 t=-7.4 dist=8.167
+crosswalk_891546830,891546830,crosswalk,crosswalk,49378,"[""49378""]",21.129,-4.400,-26.2988,4.0,INSERTED,matched road=49378 s=21.129 t=-4.4 dist=5.247
+crosswalk_1065435249,1065435249,crosswalk,crosswalk,49379,"[""49379""]",19.036,-4.400,-26.2988,4.0,INSERTED,matched road=49379 s=19.036 t=-4.4 dist=0.848
+crosswalk_833624970,833624970,crosswalk,crosswalk,49395,"[""49395"", ""49397""]",51.933,-7.400,-79.6984,4.0,DUPLICATE_MERGED,"matched to 2 roads: ['49395', '49397']"
+crosswalk_1302300634,1302300634,crosswalk,crosswalk,49409,"[""49409""]",99.604,-7.400,130.1187,4.0,INSERTED,matched road=49409 s=99.604 t=-7.4 dist=12.996
+crosswalk_833624971,833624971,crosswalk,crosswalk,49574,"[""49574"", ""72485""]",93.581,-7.400,-82.0476,4.0,DUPLICATE_MERGED,"matched to 2 roads: ['49574', '72485']"
+crosswalk_1288620300,1288620300,crosswalk,crosswalk_signals,49907,"[""49907""]",3.745,-4.400,-70.8749,4.0,INSERTED,matched road=49907 s=3.745 t=-4.4 dist=6.722
+crosswalk_1193072819,1193072819,crosswalk,crosswalk_signals,50691,"[""50691""]",13.882,-4.400,-165.0691,4.0,INSERTED,matched road=50691 s=13.882 t=-4.4 dist=3.882
+crosswalk_1193072820,1193072820,crosswalk,crosswalk_signals,50693,"[""50693""]",28.664,-4.400,-163.5222,4.0,INSERTED,matched road=50693 s=28.664 t=-4.4 dist=3.583
+crosswalk_1418867010,1418867010,crosswalk,crosswalk_signals,55286,"[""55286""]",0.000,-3.000,-93.4494,4.0,INSERTED,matched road=55286 s=0.0 t=-3.0 dist=2.818
+crosswalk_1304137981,1304137981,crosswalk,crosswalk,60931,"[""60931""]",3.548,-3.000,-178.3045,4.0,INSERTED,matched road=60931 s=3.548 t=-3.0 dist=2.537
+crosswalk_1304137980,1304137980,crosswalk,crosswalk,60943,"[""60943""]",0.000,-3.000,15.1261,4.0,INSERTED,matched road=60943 s=0.0 t=-3.0 dist=1.968
+crosswalk_1304137985,1304137985,crosswalk,crosswalk,60946,"[""60946""]",2.250,-3.000,-71.4478,4.0,INSERTED,matched road=60946 s=2.25 t=-3.0 dist=1.608
+crosswalk_1304137994,1304137994,crosswalk,crosswalk,60981,"[""60981""]",3.273,-3.000,-66.2912,4.0,INSERTED,matched road=60981 s=3.273 t=-3.0 dist=1.47
+crosswalk_1304137995,1304137995,crosswalk,crosswalk,60985,"[""60985""]",13.019,-3.000,8.0214,4.0,INSERTED,matched road=60985 s=13.019 t=-3.0 dist=0.427
+crosswalk_1304137993,1304137993,crosswalk,crosswalk,60989,"[""60989""]",13.320,-3.000,-75.745,4.0,INSERTED,matched road=60989 s=13.32 t=-3.0 dist=1.964
+crosswalk_1304137992,1304137992,crosswalk,crosswalk,60993,"[""60993""]",4.330,-3.000,13.9229,4.0,INSERTED,matched road=60993 s=4.33 t=-3.0 dist=0.202
+crosswalk_1304137986,1304137986,crosswalk,crosswalk,61007,"[""61007""]",5.219,-3.000,105.0232,4.0,INSERTED,matched road=61007 s=5.219 t=-3.0 dist=1.36
+crosswalk_1311357356,1311357356,crosswalk,crosswalk,61403,"[""61403""]",16.478,-3.000,125.5351,4.0,INSERTED,matched road=61403 s=16.478 t=-3.0 dist=1.315
+crosswalk_1311357358,1311357358,crosswalk,crosswalk,61411,"[""61411""]",3.903,-3.000,124.9621,4.0,INSERTED,matched road=61411 s=3.903 t=-3.0 dist=1.118
+crosswalk_1182767736,1182767736,crosswalk,crosswalk,61451,"[""61451""]",0.917,-4.400,-80.0422,4.0,INSERTED,matched road=61451 s=0.917 t=-4.4 dist=2.622
+crosswalk_1304137978,1304137978,crosswalk,crosswalk,65277,"[""65277""]",13.610,-3.000,108.5755,4.0,INSERTED,matched road=65277 s=13.61 t=-3.0 dist=1.252
+crosswalk_1231643354,1231643354,crosswalk,crosswalk_signals,65291,"[""65291""]",13.431,-3.000,32.3148,4.0,INSERTED,matched road=65291 s=13.431 t=-3.0 dist=4.881
+crosswalk_1042219118,1042219118,crosswalk,crosswalk_marked,65295,"[""65295""]",0.000,-3.000,123.7589,4.0,INSERTED,matched road=65295 s=0.0 t=-3.0 dist=0.34
+crosswalk_1231643352,1231643352,crosswalk,crosswalk_signals,65299,"[""65299""]",1.978,-3.000,32.9451,4.0,INSERTED,matched road=65299 s=1.978 t=-3.0 dist=0.308
+crosswalk_815412596,815412596,crosswalk,crosswalk_signals,67417,"[""67417""]",1.823,-7.400,102.5594,4.0,INSERTED,matched road=67417 s=1.823 t=-7.4 dist=8.146
+crosswalk_1189564740,1189564740,crosswalk,crosswalk,68709,"[""68709""]",8.426,-4.400,-96.4861,4.0,INSERTED,matched road=68709 s=8.426 t=-4.4 dist=3.392
+crosswalk_865774610,865774610,crosswalk,crosswalk,68726,"[""68726""]",5.361,-4.400,7.563,4.0,INSERTED,matched road=68726 s=5.361 t=-4.4 dist=8.545
+crosswalk_816754721,816754721,crosswalk,crosswalk_signals,68861,"[""68861""]",0.000,-4.400,69.4425,4.0,INSERTED,matched road=68861 s=0.0 t=-4.4 dist=21.088
+crosswalk_1183958178,1183958178,crosswalk,crosswalk,69222,"[""69222""]",14.158,-3.000,-78.4379,4.0,INSERTED,matched road=69222 s=14.158 t=-3.0 dist=1.057
+crosswalk_857631237,857631237,crosswalk,crosswalk_signals,69387,"[""69387""]",21.813,-4.400,-44.4615,4.0,INSERTED,matched road=69387 s=21.813 t=-4.4 dist=5.269
+crosswalk_1272842063,1272842063,crosswalk,crosswalk_signals,69819,"[""69819""]",7.800,-6.000,-15.8709,4.0,INSERTED,matched road=69819 s=7.8 t=-6.0 dist=1.543
+crosswalk_333438883,333438883,crosswalk,crosswalk_signals,69845,"[""69845""]",0.000,-4.400,-20.34,4.0,INSERTED,matched road=69845 s=0.0 t=-4.4 dist=6.198
+crosswalk_822603362,822603362,crosswalk,crosswalk,69980,"[""69980""]",14.983,-3.000,155.5007,4.0,INSERTED,matched road=69980 s=14.983 t=-3.0 dist=1.569
+crosswalk_822603365,822603365,crosswalk,crosswalk,69986,"[""69986""]",17.703,-3.000,-26.4134,4.0,INSERTED,matched road=69986 s=17.703 t=-3.0 dist=4.053
+crosswalk_317613600,317613600,crosswalk,crosswalk_signals,70382,"[""70382"", ""70396""]",25.536,-4.400,-154.3548,4.0,DUPLICATE_MERGED,"matched to 2 roads: ['70382', '70396']"
+crosswalk_814692001,814692001,crosswalk,crosswalk_signals,70390,"[""70390""]",0.000,-4.400,-59.1865,4.0,INSERTED,matched road=70390 s=0.0 t=-4.4 dist=3.0
+crosswalk_317613599,317613599,crosswalk,crosswalk_signals,70396,"[""70396""]",18.903,-3.000,-64.4005,4.0,INSERTED,matched road=70396 s=18.903 t=-3.0 dist=7.41
+crosswalk_1311357360,1311357360,crosswalk,crosswalk,71740,"[""71740""]",17.703,-3.000,-160.4282,4.0,INSERTED,matched road=71740 s=17.703 t=-3.0 dist=1.223
+crosswalk_833624972,833624972,crosswalk,crosswalk,72479,"[""72479""]",0.000,-4.400,-176.8721,4.0,INSERTED,matched road=72479 s=0.0 t=-4.4 dist=3.333

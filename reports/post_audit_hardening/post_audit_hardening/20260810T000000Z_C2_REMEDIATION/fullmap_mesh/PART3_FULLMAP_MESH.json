@@ -1,0 +1,124 @@
+{
+  "bbox": {
+    "combined_area_km2": 230.067,
+    "combined_bbox_native": {
+      "max_x": 847731.161,
+      "max_y": 5472743.855,
+      "min_x": 832203.523,
+      "min_y": 5457927.259
+    },
+    "combined_covers_road_bbox_fraction": 1.0,
+    "coverage_verdict": "FULL_MAP_BBOX_COVERED",
+    "origin_native": {
+      "x": 839966.712,
+      "y": 5465151.575
+    },
+    "origin_wgs84": {
+      "lat": 48.74933925,
+      "lon": 11.43245975
+    },
+    "osm_bounds": {
+      "max_lat": 48.8143429,
+      "max_lon": 11.5382271,
+      "min_lat": 48.6843318,
+      "min_lon": 11.3266919
+    },
+    "osm_bounds_native": {
+      "max_x": 848828.7145753703,
+      "max_y": 5473544.526295357,
+      "min_x": 831123.9619264652,
+      "min_y": 5456768.291105353
+    },
+    "road_area_km2": 186.785,
+    "visual_area_km2": 224.606,
+    "visual_bbox_local": {
+      "max_x": 7764.449,
+      "max_y": 200.0,
+      "max_z": 7224.316,
+      "min_x": -7763.189,
+      "min_y": -0.5,
+      "min_z": -7240.603
+    },
+    "visual_bbox_native": {
+      "max_x": 847731.161,
+      "max_y": 5472392.178,
+      "min_x": 832203.523,
+      "min_y": 5457927.259
+    },
+    "visual_covers_road_bbox_fraction": 0.975018,
+    "xodr_roads_bbox_native": {
+      "max_x": 845935.653,
+      "max_y": 5472743.855,
+      "min_x": 832667.065,
+      "min_y": 5458666.599
+    }
+  },
+  "crs_verdict": "OSM2ODR_NATIVE_VERIFIED",
+  "geometry_counts": {
+    "combined_faces": 5386639,
+    "combined_objects": 98848,
+    "combined_vertices": 3616900,
+    "road_faces": 391762,
+    "road_objects": 32708,
+    "road_vertices": 457178,
+    "roads_skipped": 2,
+    "roads_total": 32710,
+    "visual_faces": 4994877,
+    "visual_objects": 66140,
+    "visual_vertices": 3159722
+  },
+  "line_endings": "lf",
+  "mesh_path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260810T000000Z_C2_REMEDIATION\\fullmap_mesh\\scene.obj",
+  "per_class_object_counts": {
+    "AreaFountain": 1,
+    "BeachVolleyballPitch": 26,
+    "Bench": 3,
+    "Board": 1,
+    "Building": 51898,
+    "Chain": 5,
+    "ChainLinkFence": 233,
+    "ChainRow": 2,
+    "CityWall": 93,
+    "Cross": 1,
+    "DenseShrubbery": 3,
+    "Elevator": 1,
+    "FireHydrant": 8,
+    "Flagpole": 10,
+    "Forest": 832,
+    "Guardrail": 279,
+    "Hedge": 300,
+    "InvisibleEleNode": 8,
+    "InvisibleEleWaySegment": 4,
+    "JerseyBarrier": 20,
+    "MobilePhoneMast": 13,
+    "NodeModelInstance": 335,
+    "PoleFence": 3661,
+    "Pool": 101,
+    "PowerTower": 1,
+    "Powerpole": 6,
+    "Railing": 70,
+    "RetainingWall": 159,
+    "SoccerPitch": 129,
+    "StreetLamp": 10,
+    "SurfaceArea": 2804,
+    "Table": 16,
+    "Tee": 16,
+    "TennisPitch": 77,
+    "TrafficSignGroup": 5,
+    "Tree": 2831,
+    "TreeRow": 658,
+    "Wall": 1118,
+    "WasteBasket": 27,
+    "Water": 375
+  },
+  "producer": "stage_c2_remediation_part3_fullmap_mesh.py",
+  "roads_mesh_path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260810T000000Z_C2_REMEDIATION\\fullmap_mesh\\scene_roads.obj",
+  "roads_mesh_sha256": "27b6052bed266b428c371c8189933e6178c08d35f5a94f0e3a4f03267d4d9903",
+  "schema": "C2_PART3_FULLMAP_MESH/v1",
+  "sha256": "a147f4fe9e34d8b8a6f32aaddd9de144f2b79e70b5c798fd2d5c7ab3476b9c2e",
+  "sha256_byte_exact": true,
+  "sha256_disk": "a147f4fe9e34d8b8a6f32aaddd9de144f2b79e70b5c798fd2d5c7ab3476b9c2e",
+  "verdict": "PART3_FULLMAP_MESH_PASS",
+  "visual_layer_sha256": "15cdccbcd3374b79e63b590e6e591b9f4e4aa9b7abda6b260fb6f553e2d1907e",
+  "xodr_sha256": "248ffbbe6a1aa2a9cbd4330a69ad1c1680d39698e2d186dd45f5a2eb91c5db6c"
+}

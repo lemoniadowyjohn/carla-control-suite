@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<OpenDRIVE xmlns="http://sumo.dlr.de/generated" version="1.4" 
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+           xsi:schemaLocation="http://sumo.dlr.de/generated OpenDRIVE.xsd">
+  <road id="road1" length="100.0" angle="0.0" type="road"/>
+  <laneSection id="laneSection1" s="0.0" length="100.0">
+    <lane id="1" type="driving" width="3.5" />
+    <lane id="2" type="driving" width="3.5" />
+  </laneSection>
+  <connection>
+    <incomingRoad>road1</incomingRoad>
+    <connectingRoad>road2</connectingRoad>
+    <contactPoint>start</contactPoint>
+    <laneLink>
+      <from>1</from>
+      <to>1</to>
+    </laneLink>
+  </connection>
+</OpenDRIVE>

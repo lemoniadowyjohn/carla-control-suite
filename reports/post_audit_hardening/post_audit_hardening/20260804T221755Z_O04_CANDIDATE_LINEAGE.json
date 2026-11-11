@@ -1,0 +1,82 @@
+{
+  "run_id": "20260804T221755Z",
+  "timestamp": "2026-08-04T22:17:55.924030+00:00",
+  "phase": "O04",
+  "title": "Candidate Lineage Resolution",
+  "authoritative_candidate": {
+    "path": "campaigns/ingolstadt_cooked_perception_v1/candidate/raw_xodr_run_1_epsg32632_header_pinned.xodr",
+    "sha256": "ff2a05e7b00b8fc1bde38f569413223c03a4f4ac9c31eceb5a8592df47d0d17d",
+    "semantic_sha256": "019fc30e989e596b6dedccf82aefa4bad011b0c54ed3e5f185d8b262824ec84e",
+    "byte_size": 82318919,
+    "road_count": 32710,
+    "junction_count": 3646,
+    "connector_count": 22816,
+    "signal_count": 0,
+    "elevation_profile_count": 32710,
+    "source_osm_sha256": "b9e074656f744c31e6aabb0a16e6b2246824ca74e202ea2c316ff7f22364f24f"
+  },
+  "lineage_stages": [
+    {
+      "phase": "Raw Osm2Odr",
+      "input": "campaigns/ingolstadt_cooked_perception_v1/source/ingolstadt_authoritative.osm",
+      "input_sha256": "b9e074656f744c31e6aabb0a16e6b2246824ca74e202ea2c316ff7f22364f24f",
+      "output": "raw_xodr_run_1.xodr",
+      "output_sha256": "6044a87d8d6e116b444fe4413a46ab9",
+      "producer": "OSM2Odr conversion",
+      "verdict": "accepted_as_baseline"
+    },
+    {
+      "phase": "Header Pinned",
+      "input": "raw_xodr_run_1.xodr",
+      "input_sha256": "6044a87d8d6e116b444fe4413a46ab9",
+      "output": "raw_xodr_run_1_epsg32632_header_pinned.xodr",
+      "output_sha256": "ff2a05e7b00b8fc1bde38f569413223c03a4f4ac9c31eceb5a8592df47d0d17d",
+      "producer": "Coordinate correction + header pinning",
+      "verdict": "accepted_as_candidate"
+    },
+    {
+      "phase": "Phase E Junctions/Roundabouts",
+      "input": "raw_xodr_run_1_epsg32632_header_pinned.xodr",
+      "input_sha256": "ff2a05e7b00b8fc1bde38f569413223c03a4f4ac9c31eceb5a8592df47d0d17d",
+      "output": "Phase E junction/roundabout hardening",
+      "producer": "Phase E hardening",
+      "verdict": "enrichment_passed"
+    },
+    {
+      "phase": "Phase F Elevation",
+      "input": "Phase E output",
+      "output": "F7-approved F5 candidate",
+      "producer": "Phase F elevation verification",
+      "verdict": "PHASE_F_ELEVATION_VERIFIED"
+    },
+    {
+      "phase": "Phase G Lane Inventory",
+      "input": "F7-approved F5 candidate",
+      "output": "32710 sections, 84781 lane records, 34674 driving lanes",
+      "producer": "Phase G lane inventory",
+      "verdict": "PHASE_G_LANE_INVENTORY_PASS"
+    },
+    {
+      "phase": "Phase H Signal Enrichment",
+      "input": "Phase G output",
+      "output": "Signal-enriched candidate",
+      "producer": "Phase H signal enrichment",
+      "verdict": "enrichment_passed"
+    },
+    {
+      "phase": "Phase J OSM2World/Blender",
+      "input": "Phase H output",
+      "output": "Visual package (GLB/FBX/OBJ)",
+      "producer": "Phase J visual enrichment",
+      "verdict": "J1_PASS; J4_OK; J5_ALIGNED; J7_PASS; J8_PASS; J6_PASS"
+    },
+    {
+      "phase": "J5R Corrected Evidence",
+      "input": "Phase J output",
+      "output": "J5R approved evidence set",
+      "producer": "J5R review",
+      "verdict": "J5_ALIGNED"
+    }
+  ],
+  "selection_rationale": "The raw_xodr_run_1_epsg32632_header_pinned.xodr is the last fully accepted full-map XODR in the governed lineage. All later phases (E through J) are enrichment passes that operate on this candidate and produce visual/structural improvements, but do not produce a newer runtime XODR. The header-pinned file is the authoritative runtime input."
+}

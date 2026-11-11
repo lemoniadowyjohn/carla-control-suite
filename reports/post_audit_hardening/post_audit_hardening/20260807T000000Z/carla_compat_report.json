@@ -1,0 +1,11 @@
+{
+  "issues": [
+    {
+      "code": "missing_offset",
+      "severity": "warn",
+      "message": "Missing <offset> in <header> (recommended).",
+      "context": {}
+    }
+  ],
+  "xodr_path": "reports/post_audit_hardening/20260807T000000Z\\candidate_crosswalk_enriched.xodr"
+}

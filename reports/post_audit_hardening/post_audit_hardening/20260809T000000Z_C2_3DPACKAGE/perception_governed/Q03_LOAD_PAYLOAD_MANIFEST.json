@@ -1,0 +1,66 @@
+{
+  "candidate": {
+    "name": "ingolstadt_perception_candidate_crosswalk",
+    "role": "parent candidate",
+    "sha256": "16ea2ec134b10d07518c63e1bd42c4ffd8b96113d1a52c0fe448f201c004d11f"
+  },
+  "coordinate_contract": {
+    "coordinate_contract_pass": true,
+    "georeference_only_change": false,
+    "header_bounds_equal": true,
+    "junction_ids_equal": true,
+    "object_ids_equal": true,
+    "offset_equal": true,
+    "road_ids_equal": true,
+    "signal_ids_equal": true
+  },
+  "identity_guard": {
+    "campaign_file": {
+      "declared_sha256": "248ffbbe6a1aa2a9cbd4330a69ad1c1680d39698e2d186dd45f5a2eb91c5db6c",
+      "declared_size": 81007405,
+      "disk_sha256": "248ffbbe6a1aa2a9cbd4330a69ad1c1680d39698e2d186dd45f5a2eb91c5db6c",
+      "disk_size": 81007405,
+      "guard": "governed_payload_identity_guard/v1",
+      "identity_pass": true,
+      "payload_file": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_final.xodr",
+      "post_rename_sha256": "248ffbbe6a1aa2a9cbd4330a69ad1c1680d39698e2d186dd45f5a2eb91c5db6c",
+      "post_rename_size": 81007405
+    },
+    "declared_vs_disk_equal": true,
+    "independent_reverify": {
+      "declared_sha256": "248ffbbe6a1aa2a9cbd4330a69ad1c1680d39698e2d186dd45f5a2eb91c5db6c",
+      "declared_size": 81007405,
+      "disk_sha256": "248ffbbe6a1aa2a9cbd4330a69ad1c1680d39698e2d186dd45f5a2eb91c5db6c",
+      "disk_size": 81007405,
+      "guard": "governed_payload_identity_guard/v1",
+      "identity_pass": true,
+      "payload_file": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_final.xodr"
+    },
+    "run_dir_copy": {
+      "declared_sha256": "248ffbbe6a1aa2a9cbd4330a69ad1c1680d39698e2d186dd45f5a2eb91c5db6c",
+      "declared_size": 81007405,
+      "disk_sha256": "248ffbbe6a1aa2a9cbd4330a69ad1c1680d39698e2d186dd45f5a2eb91c5db6c",
+      "disk_size": 81007405,
+      "guard": "governed_payload_identity_guard/v1",
+      "identity_pass": true,
+      "payload_file": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260809T000000Z_C2_3DPACKAGE\\perception_governed\\governed_payload.xodr",
+      "post_rename_sha256": "248ffbbe6a1aa2a9cbd4330a69ad1c1680d39698e2d186dd45f5a2eb91c5db6c",
+      "post_rename_size": 81007405
+    }
+  },
+  "manifest_schema": "Q03_LOAD_PAYLOAD_MANIFEST/v1",
+  "payload": {
+    "length_bytes": 80995780,
+    "sha256": "248ffbbe6a1aa2a9cbd4330a69ad1c1680d39698e2d186dd45f5a2eb91c5db6c"
+  },
+  "perception_candidate_sha256": "248ffbbe6a1aa2a9cbd4330a69ad1c1680d39698e2d186dd45f5a2eb91c5db6c",
+  "producer_commit": "8b400351d13634104090b31e535ced6e6d748648",
+  "semantic_diff": {
+    "geo_reference_after": "+proj=tmerc +lat_0=0 +lon_0=9 +k=0.9996 +x_0=500000 +y_0=0 +datum=WGS84 +units=m +no_defs",
+    "geo_reference_before": "+proj=tmerc +lat_0=0 +lon_0=9 +k=0.9996 +x_0=500000 +y_0=0 +datum=WGS84 +units=m +no_defs",
+    "region": "header/geoReference only"
+  },
+  "strategy": "B",
+  "transformation_name": "ultimate_pipeline.core.carla_opendrive_loader._normalize_georef_in_xodr_text",
+  "transformation_version": "georef_normalize_elementtree_v1"
+}

@@ -1,0 +1,6 @@
+2026-08-11T22:41:13.235[E]                   GfnDllWrapper.cpp:38   Could not prepare temp directory for download
+2026-08-11T22:41:13.235[I] GfnRunti  APP GfnRuntimeBootstrap.c:168  Create Bootstrap
+2026-08-11T22:41:13.235[E] GfnRunti  APP  TelemetryService.cpp:52   Could not get gfn.dll version: 0
+2026-08-11T22:41:13.235[I]               GfnRuntimeBootstrap.c:536  Joining MessageBus as GfnSdk:GfnSdkClientPeer_43992
+2026-08-11T22:41:13.235[E]               GfnRuntimeBootstrap.c:554  Could not get MessageBus interface
+INFO:  Listening at  0.0.0.0:2002 

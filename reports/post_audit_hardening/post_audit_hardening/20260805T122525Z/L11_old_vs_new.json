@@ -1,0 +1,12 @@
+{
+  "comparison_status": "PASS",
+  "status": "PASS",
+  "identical_cameras": true,
+  "identical_vehicle": true,
+  "identical_routes": true,
+  "identical_weather": true,
+  "identical_time": true,
+  "identical_sensor_rig": true,
+  "differences": [],
+  "timestamp": "2026-08-05T12:30:26.641501+00:00"
+}

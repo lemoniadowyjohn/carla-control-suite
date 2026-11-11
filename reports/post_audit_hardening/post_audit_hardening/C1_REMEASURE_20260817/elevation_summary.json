@@ -1,0 +1,30 @@
+{
+  "coefficient_stats": {
+    "a": {
+      "max": 408.671165,
+      "min": 361.85043
+    },
+    "b": {
+      "max": 1.004105,
+      "min": -1.431325
+    },
+    "c": {
+      "max": 0.0,
+      "min": 0.0
+    },
+    "d": {
+      "max": 0.0,
+      "min": 0.0
+    }
+  },
+  "elevation_segment_count": 32297,
+  "invalid_coefficient_count": 0,
+  "max": 408.671165,
+  "max_abs_grade_estimate": 1.431325,
+  "min": 361.85043,
+  "mode": "elevation_profile",
+  "road_count": 32297,
+  "roads_with_elevation_profile": 32297,
+  "span": 46.82073499999996,
+  "xodr_path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_clean_regen_crashsafe_20260815.xodr"
+}

@@ -1,0 +1,35 @@
+{
+  "sensor_data": {
+    "rgb": {
+      "status": "CAPTURED",
+      "frame_non_empty": true,
+      "timestamp_valid": true
+    },
+    "depth": {
+      "status": "CAPTURED",
+      "frame_non_empty": true,
+      "timestamp_valid": true
+    },
+    "semantic_segmentation": {
+      "status": "CAPTURED",
+      "frame_non_empty": true,
+      "timestamp_valid": true
+    },
+    "lidar": {
+      "status": "CAPTURED",
+      "frame_non_empty": true,
+      "timestamp_valid": true
+    },
+    "gnss": {
+      "status": "CAPTURED",
+      "timestamp_valid": true,
+      "gnss_agreement": "PASS"
+    },
+    "imu": {
+      "status": "CAPTURED",
+      "timestamp_valid": true
+    }
+  },
+  "synchronization_status": "PASS",
+  "timestamp": "2026-08-04T20:44:28.986433+00:00"
+}

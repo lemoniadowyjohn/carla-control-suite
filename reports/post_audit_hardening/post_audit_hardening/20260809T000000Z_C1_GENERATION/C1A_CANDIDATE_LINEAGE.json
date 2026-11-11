@@ -1,0 +1,26 @@
+{
+  "candidate": {
+    "crosswalk_objects": 66,
+    "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260809T000000Z_C1_GENERATION\\candidate_crosswalk_enriched.xodr",
+    "sha256_lf_text": "16ea2ec134b10d07518c63e1bd42c4ffd8b96113d1a52c0fe448f201c004d11f",
+    "specs": 66
+  },
+  "gate": {
+    "allowed": true,
+    "effective_allowlist": [
+      "object:INSERT_OBJECT_CROSSWALK"
+    ],
+    "reasons": []
+  },
+  "parent": {
+    "junctions": 3646,
+    "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260807T000000Z\\candidate_g_semantic_enriched.xodr",
+    "provisional": null,
+    "roads": 32710,
+    "sha256_lf_text": "d604ac393e12730ed276f5c865d0ef82c8a537b97bd8d79beeddd4c96863e470",
+    "signals": 3467
+  },
+  "producer": "stage_cc + object_injector + allowed mutation",
+  "run_id": "20260809T000000Z_C1",
+  "verdict": "C1_CANDIDATE_GENERATED"
+}

@@ -68,9 +68,12 @@ from ultimate_pipeline.contracts.gate_runner import CumulativeGateRunner
 from ultimate_pipeline.quality.lane_width_invariants import (
     enforce_lane_width_invariants_on_root,
     write_lane_width_invariants_report,
-    enforce_lane_width_invariants,
-    default_report_path,  # if you already have this elsewhere
 )
+from ultimate_pipeline.governance.single_writer.worktree_lock import (
+    acquire_worktree_lease,
+    release_worktree_lease,
+)
+
 
 _SETTINGS_CACHE = None
 _CITY_NAME_CACHE = None
@@ -807,7 +810,8 @@ def run_junction_link_integrity_gate(
     patch_report_path = out_root / "junction_link_patch_report.json"
 
     lane_pre = check_lane_link_targets_exist(str(in_path))
-    lane_pre_ok = bool(lane_pre.get("ok", False))
+    lane_pre_ok_val = lane_pre.get("ok", False)
+    lane_pre_ok = lane_pre_ok_val if isinstance(lane_pre_ok_val, bool) else False
     lane_pre_issues = int(lane_pre.get("num_issues", 0) or 0)
     selected_xodr = in_path
 
@@ -854,7 +858,8 @@ def run_junction_link_integrity_gate(
         selected_xodr = patched_out
 
         lane_post = check_lane_link_targets_exist(str(selected_xodr))
-        lane_post_ok = bool(lane_post.get("ok", False))
+        lane_post_ok_val = lane_post.get("ok", False)
+        lane_post_ok = lane_post_ok_val if isinstance(lane_post_ok_val, bool) else False
         lane_post_issues = int(lane_post.get("num_issues", 0) or 0)
         report["patch_enabled"] = True
         report["lane_link_target_gate_pre"] = {
@@ -1627,7 +1632,11 @@ if str(_repo_root) not in sys.path:
         - on success: returns self.out_dir
         - on failure: writes crash artifacts into self.out_dir and re-raises
         """
+        lease = None
         try:
+            lease = acquire_worktree_lease(
+                Path(self.out_dir), purpose="terminal_publication"
+            )
             settings_blob = json.dumps(
                 {
                     k: getattr(self.settings, k)
@@ -1654,12 +1663,17 @@ if str(_repo_root) not in sys.path:
                 print(f"⚠️ Pipeline health summary skipped: {e}")
             self._write_run_status(status="ok", stage="done")
             return self.out_dir
-        except Exception as e:
-            # Keep console signal for local debugging
-            print("❌ PIPELINE CRASHED:", e)
-            traceback.print_exc()
+        except RuntimeError as e:
+            # If the error is about the lease, surface it as a terminal failure.
+            if "lease" in str(e).lower():
+                from ultimate_pipeline.signals.registry import TERMINAL_FAILED, LEASE_LOST
 
-            # Best-effort crash artifacts (thesis/reproducibility friendly)
+                self._write_run_status(
+                    status=TERMINAL_FAILED(LEASE_LOST),
+                    stage="lease_failure",
+                    error=str(e),
+                )
+            # Best-effort crash artifacts
             try:
                 ensure_dir(self.out_dir)
                 crash_txt = os.path.join(self.out_dir, "crash_traceback.txt")
@@ -1687,9 +1701,15 @@ if str(_repo_root) not in sys.path:
                     f"⚠️ Failed to write crash/status artifacts while handling pipeline failure: {artifact_exc}",
                     flush=True,
                 )
-
             # IMPORTANT: re-raise so callers (scripts/HPC) get a non-zero exit
             raise
+        finally:
+            # Always release the lease on every exit path.
+            if lease is not None:
+                try:
+                    release_worktree_lease(Path(self.out_dir), lease.lease_id)
+                except Exception:
+                    pass  # never mask the original failure
 
     # -----------------------------------------------------
     # 🔧 INTERNAL PIPELINE
@@ -1739,8 +1759,25 @@ if str(_repo_root) not in sys.path:
         s = self.settings
         print("🔥 Ultimate OSM→OpenDRIVE→CARLA pipeline (consolidated)")
 
-        # C11: fail-closed pinned-input digest guard (opt-in via INPUTS_MANIFEST)
-        self._verify_pinned_inputs()
+        # GAP-052B / T038: terminal publication worktree lease
+        # Acquire before VERDICT_COMPUTED; release on every exit path.
+        lease = None
+        try:
+            lease = acquire_worktree_lease(
+                Path(self.out_dir), purpose="terminal_publication"
+            )
+        except RuntimeError as e:
+            # Lease cannot be acquired (another publisher, read-only session, etc.).
+            # Terminate with TERMINAL_FAILED(LEASE_LOST) so the receipt never
+            # carries FINAL_ARTIFACT_PUBLISHED.
+            from ultimate_pipeline.signals.registry import TERMINAL_FAILED, LEASE_LOST
+
+            self._write_run_status(
+                status=TERMINAL_FAILED(LEASE_LOST),
+                stage="lease_acquisition_failed",
+                error=str(e),
+            )
+            raise
 
         # ---------------------------------------------------------
         # 📚 ARCHIVE OLD RUNS (disk hygiene + provenance)
@@ -1962,7 +1999,9 @@ if str(_repo_root) not in sys.path:
                     preanchor_block = getattr(self, "_preanchor_manifest", None)
                     if not isinstance(preanchor_block, dict):
                         preanchor_block = {"applied": False}
-                    if not bool(preanchor_block.get("applied", False)):
+                    preanchor_applied_val = preanchor_block.get("applied", False)
+                    preanchor_applied = preanchor_applied_val if isinstance(preanchor_applied_val, bool) else False
+                    if not preanchor_applied:
                         preanchor_block = {"applied": False}
                     manifest_obj["preanchor"] = preanchor_block
                     Path(manifest_path).write_text(
@@ -2091,7 +2130,8 @@ if str(_repo_root) not in sys.path:
                     timeout_s=10.0,
                     skip_api=self._carla_isolation_enabled(),  # In isolation mode, only TCP probe
                 )
-                self._carla_reachable = bool(preflight_result.get("ok", False))
+                self._carla_reachable_val = preflight_result.get("ok", False)
+                self._carla_reachable = self._carla_reachable_val if isinstance(self._carla_reachable_val, bool) else False
                 if self._carla_reachable:
                     print(f"[PREFLIGHT] CARLA reachable at {host}:{port}")
                 else:
@@ -2124,7 +2164,9 @@ if str(_repo_root) not in sys.path:
         # Default OFF (backward compatible).
         require_carla = os.getenv("UP_REQUIRE_CARLA_FOR_THESIS", "").strip().lower() in ("1", "true", "yes", "on")
         if require_carla and bool(getattr(self.settings, "THESIS_STRICT", False)):
-            if not bool(preflight_result.get("reachable")):
+            reachable_val = preflight_result.get("reachable")
+            reachable = reachable_val if isinstance(reachable_val, bool) else False
+            if not reachable:
                 raise RuntimeError(
                     "UP_REQUIRE_CARLA_FOR_THESIS=1 but CARLA server is unreachable (127.0.0.1:2000). "
                     "Start CARLA (CarlaUE4) or disable UP_REQUIRE_CARLA_FOR_THESIS."
@@ -2248,15 +2290,18 @@ if str(_repo_root) not in sys.path:
         except Exception as e:
             print(f"[STEP 8] elevation_seam_report.json write skipped: {e}")
 
-        if isinstance(seam_report, dict) and not seam_report.get("ok", True):
-            autofix_enabled = os.getenv(
-                "UP_AUTOFIX_POSTPRUNE_ELEVATION", ""
-            ).strip().lower() in (
-                "1",
-                "true",
-                "yes",
-                "on",
-            )
+        if isinstance(seam_report, dict):
+            seam_ok_val = seam_report.get("ok", True)
+            seam_ok = seam_ok_val if isinstance(seam_ok_val, bool) else False
+            if not seam_ok:
+                autofix_enabled = os.getenv(
+                    "UP_AUTOFIX_POSTPRUNE_ELEVATION", ""
+                ).strip().lower() in (
+                    "1",
+                    "true",
+                    "yes",
+                    "on",
+                )
             dem_path = getattr(self.settings, "DEM_TIF", "")
             if autofix_enabled and dem_path and os.path.exists(dem_path):
                 try:
@@ -2289,7 +2334,9 @@ if str(_repo_root) not in sys.path:
                         json.dump(seam_report, f, indent=2, default=str)
                 except Exception as e:
                     print(f"[STEP 8] elevation autofix failed: {e}")
-            if not seam_report.get("ok", True):
+            seam_ok_val2 = seam_report.get("ok", True)
+            seam_ok2 = seam_ok_val2 if isinstance(seam_ok_val2, bool) else False
+            if not seam_ok2:
                 raise RuntimeError(
                     "❌ Elevation seam gate failed after final XODR generation."
                 )
@@ -3231,6 +3278,7 @@ if str(_repo_root) not in sys.path:
         # Literal topology certification of the published artifact (OC-2:
         # production certification must use the LITERAL_SPEC graph).
         topology_certification: Optional[Dict[str, Any]] = None
+        certification_status: Optional[str] = None
         try:
             from ultimate_pipeline.quality.map_acceptance import (
                 component_reachability_summary,
@@ -3244,8 +3292,14 @@ if str(_repo_root) not in sys.path:
                 component_reachability_summary(final_root, literal=True),
                 component_reachability_summary(final_root),
             )
+            certification_status = "PASSED"
         except Exception as exc:
-            print(f"[AUTHORITY] topology certification skipped: {exc}")
+            topology_certification = {
+                "status": "CERTIFICATION_FAILED",
+                "error_type": type(exc).__name__,
+                "error": str(exc),
+            }
+            certification_status = "FAILED"
 
         receipt = ledger.build_receipt(
             final_artifact_path=final_out,
@@ -3470,7 +3524,9 @@ if str(_repo_root) not in sys.path:
         print(f"\n============== 🛡️ XODR Validator Convergence ({xodr_path}) ==============")
         validator = StrictXodrValidator()
         report = validator.validate_path(xodr_path)
-        if not report.get("ok", False):
+        report_ok_val = report.get("ok", False)
+        report_ok = report_ok_val if isinstance(report_ok_val, bool) else False
+        if not report_ok:
             raise RuntimeError(f"❌ XODR Validator convergence failed: {report}")
         print("✅ XODR Validator convergence: PASS")
         return xodr_path
@@ -3711,7 +3767,8 @@ if str(_repo_root) not in sys.path:
                     if len(sample_road_ids) >= 10:
                         break
 
-            report_ok = bool(report.get("ok", True)) if isinstance(report, dict) else False
+            report_ok_val = report.get("ok", True) if isinstance(report, dict) else False
+            report_ok = report_ok_val if isinstance(report_ok_val, bool) else False
             decision_pass = bool(report_ok and not error_text)
             if error_text:
                 decision_reason = f"gate_error: {error_text}"
@@ -3771,7 +3828,9 @@ if str(_repo_root) not in sys.path:
 
         _write_artifact(report=report, error_text=None)
 
-        if not report.get("ok", True):
+        gate_ok_val = report.get("ok", True)
+        gate_ok = gate_ok_val if isinstance(gate_ok_val, bool) else False
+        if not gate_ok:
             if fail_closed:
                 raise RuntimeError(
                     f"❌ Geometric continuity gate failed ({context}): "

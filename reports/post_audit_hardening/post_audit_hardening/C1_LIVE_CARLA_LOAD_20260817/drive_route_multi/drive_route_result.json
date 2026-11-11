@@ -1,0 +1,459 @@
+{
+  "failure_reason": "3/5 spawn runs did not drive",
+  "float32_precision_note": "max |coordinate| = 10390.8 m (OK (<50 km))",
+  "frames_requested": 240,
+  "max_speed_overall_m_s": 9.01,
+  "mean_on_road_fraction": 0.8,
+  "run_fraction": 0.4,
+  "runs": [
+    {
+      "distance_travelled_m": 0.0,
+      "elapsed_s": 7.64,
+      "failure_reason": "vehicle_did_not_drive_consistently",
+      "frames_actual": 240,
+      "max_speed_m_s": 0.0,
+      "on_road_fraction": 1.0,
+      "samples": [
+        {
+          "frame": 0,
+          "lane_id": -1,
+          "on_road": true,
+          "road_id": 68423,
+          "speed_m_s": 0.0,
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        {
+          "frame": 30,
+          "lane_id": -1,
+          "on_road": true,
+          "road_id": 68423,
+          "speed_m_s": 0.0,
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        {
+          "frame": 60,
+          "lane_id": -1,
+          "on_road": true,
+          "road_id": 68423,
+          "speed_m_s": 0.0,
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        {
+          "frame": 90,
+          "lane_id": -1,
+          "on_road": true,
+          "road_id": 68423,
+          "speed_m_s": 0.0,
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        {
+          "frame": 120,
+          "lane_id": -1,
+          "on_road": true,
+          "road_id": 68423,
+          "speed_m_s": 0.0,
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        {
+          "frame": 150,
+          "lane_id": -1,
+          "on_road": true,
+          "road_id": 68423,
+          "speed_m_s": 0.0,
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        {
+          "frame": 180,
+          "lane_id": -1,
+          "on_road": true,
+          "road_id": 68423,
+          "speed_m_s": 0.0,
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        {
+          "frame": 210,
+          "lane_id": -1,
+          "on_road": true,
+          "road_id": 68423,
+          "speed_m_s": 0.0,
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        {
+          "frame": 239,
+          "lane_id": -1,
+          "on_road": true,
+          "road_id": 68423,
+          "speed_m_s": 0.0,
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        }
+      ],
+      "spawn_index": 0,
+      "spawn_transform": {
+        "x": 12529.0634765625,
+        "y": -3600.279296875,
+        "yaw": 174.9930877685547,
+        "z": 368.35406494140625
+      },
+      "status": "PARTIAL"
+    },
+    {
+      "distance_travelled_m": 0.03,
+      "elapsed_s": 8.35,
+      "failure_reason": "vehicle_did_not_drive_consistently",
+      "frames_actual": 240,
+      "max_speed_m_s": 0.02,
+      "on_road_fraction": 1.0,
+      "samples": [
+        {
+          "frame": 0,
+          "lane_id": -1,
+          "on_road": true,
+          "road_id": 68267,
+          "speed_m_s": 0.0,
+          "x": 6569.559,
+          "y": -10390.734,
+          "z": 372.76
+        },
+        {
+          "frame": 30,
+          "lane_id": -1,
+          "on_road": true,
+          "road_id": 47082,
+          "speed_m_s": 0.003,
+          "x": 6569.534,
+          "y": -10390.752,
+          "z": 372.485
+        },
+        {
+          "frame": 60,
+          "lane_id": -1,
+          "on_road": true,
+          "road_id": 47082,
+          "speed_m_s": 0.003,
+          "x": 6569.534,
+          "y": -10390.753,
+          "z": 372.486
+        },
+        {
+          "frame": 90,
+          "lane_id": -1,
+          "on_road": true,
+          "road_id": 47082,
+          "speed_m_s": 0.002,
+          "x": 6569.534,
+          "y": -10390.752,
+          "z": 372.486
+        },
+        {
+          "frame": 120,
+          "lane_id": -1,
+          "on_road": true,
+          "road_id": 47082,
+          "speed_m_s": 0.002,
+          "x": 6569.534,
+          "y": -10390.752,
+          "z": 372.486
+        },
+        {
+          "frame": 150,
+          "lane_id": -1,
+          "on_road": true,
+          "road_id": 47082,
+          "speed_m_s": 0.002,
+          "x": 6569.534,
+          "y": -10390.752,
+          "z": 372.486
+        },
+        {
+          "frame": 180,
+          "lane_id": -1,
+          "on_road": true,
+          "road_id": 47082,
+          "speed_m_s": 0.002,
+          "x": 6569.534,
+          "y": -10390.752,
+          "z": 372.486
+        },
+        {
+          "frame": 210,
+          "lane_id": -1,
+          "on_road": true,
+          "road_id": 47082,
+          "speed_m_s": 0.022,
+          "x": 6569.534,
+          "y": -10390.752,
+          "z": 372.486
+        },
+        {
+          "frame": 239,
+          "lane_id": -1,
+          "on_road": true,
+          "road_id": 47082,
+          "speed_m_s": 0.001,
+          "x": 6569.534,
+          "y": -10390.752,
+          "z": 372.486
+        }
+      ],
+      "spawn_index": 1,
+      "spawn_transform": {
+        "x": 6569.55908203125,
+        "y": -10390.734375,
+        "yaw": -73.80587005615234,
+        "z": 372.8130798339844
+      },
+      "status": "PARTIAL"
+    },
+    {
+      "failure_reason": "spawn_failed: Spawn failed because of collision at spawn position",
+      "spawn_index": 2,
+      "spawn_transform": {
+        "x": 4837.26806640625,
+        "y": -9119.150390625,
+        "yaw": 121.80413818359375,
+        "z": 380.3386535644531
+      },
+      "status": "FAIL"
+    },
+    {
+      "distance_travelled_m": 53.96,
+      "elapsed_s": 7.84,
+      "failure_reason": "",
+      "frames_actual": 240,
+      "max_speed_m_s": 9.01,
+      "on_road_fraction": 1.0,
+      "samples": [
+        {
+          "frame": 0,
+          "lane_id": -1,
+          "on_road": true,
+          "road_id": 53427,
+          "speed_m_s": 0.0,
+          "x": 6945.302,
+          "y": -2426.686,
+          "z": 371.288
+        },
+        {
+          "frame": 30,
+          "lane_id": -1,
+          "on_road": true,
+          "road_id": 53427,
+          "speed_m_s": 3.902,
+          "x": 6944.338,
+          "y": -2426.547,
+          "z": 370.773
+        },
+        {
+          "frame": 60,
+          "lane_id": -1,
+          "on_road": true,
+          "road_id": 53427,
+          "speed_m_s": 8.766,
+          "x": 6938.015,
+          "y": -2425.645,
+          "z": 370.749
+        },
+        {
+          "frame": 90,
+          "lane_id": -1,
+          "on_road": true,
+          "road_id": 53427,
+          "speed_m_s": 8.393,
+          "x": 6930.137,
+          "y": -2424.483,
+          "z": 370.754
+        },
+        {
+          "frame": 120,
+          "lane_id": -1,
+          "on_road": true,
+          "road_id": 47851,
+          "speed_m_s": 7.789,
+          "x": 6921.134,
+          "y": -2423.202,
+          "z": 370.806
+        },
+        {
+          "frame": 150,
+          "lane_id": -1,
+          "on_road": true,
+          "road_id": 47851,
+          "speed_m_s": 7.078,
+          "x": 6913.456,
+          "y": -2422.095,
+          "z": 370.825
+        },
+        {
+          "frame": 180,
+          "lane_id": -1,
+          "on_road": true,
+          "road_id": 47851,
+          "speed_m_s": 7.869,
+          "x": 6906.155,
+          "y": -2421.039,
+          "z": 370.843
+        },
+        {
+          "frame": 210,
+          "lane_id": -1,
+          "on_road": true,
+          "road_id": 47851,
+          "speed_m_s": 8.543,
+          "x": 6899.007,
+          "y": -2420.004,
+          "z": 370.861
+        },
+        {
+          "frame": 239,
+          "lane_id": -1,
+          "on_road": true,
+          "road_id": 47851,
+          "speed_m_s": 9.008,
+          "x": 6891.893,
+          "y": -2418.974,
+          "z": 370.878
+        }
+      ],
+      "spawn_index": 3,
+      "spawn_transform": {
+        "x": 6945.3017578125,
+        "y": -2426.685546875,
+        "yaw": 171.91903686523438,
+        "z": 371.2959289550781
+      },
+      "status": "PASS"
+    },
+    {
+      "distance_travelled_m": 37.72,
+      "elapsed_s": 7.52,
+      "failure_reason": "",
+      "frames_actual": 240,
+      "max_speed_m_s": 8.73,
+      "on_road_fraction": 1.0,
+      "samples": [
+        {
+          "frame": 0,
+          "lane_id": -1,
+          "on_road": true,
+          "road_id": 64307,
+          "speed_m_s": 0.0,
+          "x": 4991.902,
+          "y": -7943.26,
+          "z": 379.279
+        },
+        {
+          "frame": 30,
+          "lane_id": -1,
+          "on_road": true,
+          "road_id": 64307,
+          "speed_m_s": 3.068,
+          "x": 4992.354,
+          "y": -7943.442,
+          "z": 378.741
+        },
+        {
+          "frame": 60,
+          "lane_id": -1,
+          "on_road": true,
+          "road_id": 64307,
+          "speed_m_s": 7.973,
+          "x": 4996.937,
+          "y": -7946.145,
+          "z": 378.757
+        },
+        {
+          "frame": 90,
+          "lane_id": -1,
+          "on_road": true,
+          "road_id": 64307,
+          "speed_m_s": 7.823,
+          "x": 4998.6,
+          "y": -7952.537,
+          "z": 378.846
+        },
+        {
+          "frame": 120,
+          "lane_id": -1,
+          "on_road": true,
+          "road_id": 44907,
+          "speed_m_s": 8.006,
+          "x": 4995.385,
+          "y": -7959.156,
+          "z": 379.171
+        },
+        {
+          "frame": 150,
+          "lane_id": -1,
+          "on_road": true,
+          "road_id": 44907,
+          "speed_m_s": 5.611,
+          "x": 4991.24,
+          "y": -7965.305,
+          "z": 379.052
+        },
+        {
+          "frame": 180,
+          "lane_id": -1,
+          "on_road": true,
+          "road_id": 44907,
+          "speed_m_s": 8.734,
+          "x": 4986.347,
+          "y": -7969.536,
+          "z": 379.199
+        },
+        {
+          "frame": 210,
+          "lane_id": -1,
+          "on_road": true,
+          "road_id": 44907,
+          "speed_m_s": 7.887,
+          "x": 4979.323,
+          "y": -7973.562,
+          "z": 379.184
+        },
+        {
+          "frame": 239,
+          "lane_id": -1,
+          "on_road": true,
+          "road_id": 44907,
+          "speed_m_s": 7.688,
+          "x": 4973.193,
+          "y": -7976.014,
+          "z": 379.069
+        }
+      ],
+      "spawn_index": 4,
+      "spawn_transform": {
+        "x": 4991.90185546875,
+        "y": -7943.259765625,
+        "yaw": -16.395158767700195,
+        "z": 379.28704833984375
+      },
+      "status": "PASS"
+    }
+  ],
+  "runs_attempted": 5,
+  "runs_passed": 2,
+  "spawn_point_count": 47059,
+  "status": "PARTIAL",
+  "total_distance_m": 91.71,
+  "world_map_name": "Carla/Maps/OpenDriveMap"
+}

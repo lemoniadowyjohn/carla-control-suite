@@ -1,0 +1,29 @@
+{
+  "schema": "C0_OFFLINE_BUILDINGS/v1",
+  "date": "2026-08-15",
+  "verdict": "C0_OFFLINE_BUILDINGS_GREEN",
+  "failure": {
+    "stage": "stage_04_enrichment",
+    "reason": "missing buildings.geojson triggered live Overpass download attempts during offline C0 regeneration"
+  },
+  "fix": {
+    "files": [
+      "ultimate_pipeline/pipeline_stages/stage_04_enrichment.py",
+      "ultimate_pipeline/config/settings.py"
+    ],
+    "behavior": [
+      "Use existing local buildings.geojson when present.",
+      "Skip building GeoJSON download in settings.OFFLINE_ONLY or UP_OFFLINE_ONLY.",
+      "Fall back to raw OSM XML building extraction when offline and GeoJSON is missing.",
+      "Read UP_OFFLINE_ONLY into settings.OFFLINE_ONLY."
+    ]
+  },
+  "tests": {
+    "targeted_red": "ImportError: cannot import name 'resolve_buildings_geojson_for_stage4'",
+    "targeted_green": "4 passed in 0.10s",
+    "full_suite": "744 passed, 49 warnings in 164.02s (0:02:44)"
+  },
+  "escalate_to_claude": [
+    "Set UP_OFFLINE_ONLY=1 on the next C0 rerun so no network attempt can enter the provenance path."
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "drivability_status": "PASS",
+  "vehicle_spawn_attempts": 0,
+  "vehicle_successful_spawns": 0,
+  "vehicle_crash_count": 0,
+  "vehicle_stuck_count": 0,
+  "tm_stability": "OK",
+  "tm_rpc_timeouts": 0,
+  "server_crashes": 0,
+  "status": "PASS",
+  "timestamp": "2026-08-05T12:30:25.981169+00:00"
+}

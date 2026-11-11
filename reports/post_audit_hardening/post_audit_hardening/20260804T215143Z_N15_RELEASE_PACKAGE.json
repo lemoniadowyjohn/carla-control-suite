@@ -1,0 +1,15 @@
+{
+  "run_id": "20260804T215143Z",
+  "timestamp": "2026-08-04T21:51:43.397943+00:00",
+  "phase": "N15",
+  "title": "Release Package Certification",
+  "package_sha256": "N/A - Ingolstadt candidate not loaded",
+  "cook_logs": "N/A - No cooking performed",
+  "installation_path": "N/A",
+  "map_registry_entry": "N/A - Town10HD_Opt (wrong map)",
+  "cold_start_load_time_ms": 0,
+  "runtime_opendrive_hash": "5d883b799f634030af92be1e9d79d107845540ba04338e8c60e095be1aef7be7",
+  "visual_manifest_hash": "N/A",
+  "verdict": "N13_RELEASE_PACKAGE_BLOCKED",
+  "notes": "Packaging/cooking not tested because the wrong map was loaded in Phase L"
+}

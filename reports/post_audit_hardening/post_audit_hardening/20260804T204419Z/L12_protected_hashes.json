@@ -1,0 +1,18 @@
+{
+  "protected_hashes": {
+    "planView": "5d883b799f634030af92be1e9d79d107845540ba04338e8c60e095be1aef7be7",
+    "road_length": "a6e1fc3350e71f1b03a81dbb82b63157ad0f25f3dabc237163dabde0ec44a997",
+    "elevation_profile": "PENDING",
+    "road_link": "PENDING",
+    "junction_structure": "PENDING",
+    "connector_geometry": "PENDING",
+    "contactPoint": "PENDING",
+    "lane_topology": "PENDING",
+    "signal": "PENDING",
+    "tile_identity": "PENDING",
+    "visual_manifest": "PENDING"
+  },
+  "all_hashes_verified": false,
+  "hash_verification_status": "PARTIAL",
+  "timestamp": "2026-08-04T20:44:29.036344+00:00"
+}

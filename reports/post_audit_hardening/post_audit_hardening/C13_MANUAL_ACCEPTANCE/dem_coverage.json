@@ -1,0 +1,18 @@
+{
+  "xodr_path": "E:\\CARLA\\CARLA_0.9.16\\CarlaUE4\\Content\\Grid0828\\Maps\\Grid0828\\OpenDrive\\Grid0828.xodr",
+  "dem_tif_path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\cities\\ingolstadt\\dem\\dem_ing.tif",
+  "step_m": 2.0,
+  "max_samples": 250000,
+  "total_samples": 46,
+  "covered_samples": 46,
+  "coverage_ratio": 1.0,
+  "threshold": 0.6,
+  "ok": true,
+  "uncovered_examples": [],
+  "sampling_mode": "direct_transform",
+  "projected_bbox_wgs84": null,
+  "dem_bounds_wgs84": null,
+  "bbox_intersects_dem_bounds_wgs84": null,
+  "map_crs_source": null,
+  "header_offset_policy": null
+}

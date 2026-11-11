@@ -1,0 +1,17 @@
+{
+  "report": "CANDIDATE_DIGEST_INVENTORY",
+  "generated": "2026-08-13",
+  "dir": "campaigns/ingolstadt_cooked_perception_v1/candidate/",
+  "signed_target_sha256": "6bac3570ce8f4230836ace27ec26155bbed58171567a6e0afd47e710c86dcb02",
+  "candidates": [
+    {"file": "ingolstadt_perception_final_repaired.xodr", "sha256": "6bac3570ce8f4230836ace27ec26155bbed58171567a6e0afd47e710c86dcb02", "bytes": 82593544, "tracked": false, "role": "SIGNED_TARGET"},
+    {"file": "ingolstadt_fixed_final.xodr", "sha256": "80ebb0054afd73ffdd51960b48679ff4689c72ed0abe75af5b2ae10a51395699", "bytes": 82935087, "tracked": true, "role": "SUPERSEDED_BROKEN"},
+    {"file": "ingolstadt_perception_final_repaired_v2.xodr", "sha256": "1f2b5ff0570d0a577507a9a273608df07689f8f6b68f3708855a2e855f76131a", "bytes": 81007367, "tracked": false, "role": "SUPERSEDED_EXPERIMENT"},
+    {"file": "ingolstadt_perception_final.xodr", "sha256": "248ffbbe6a1aa2a9cbd4330a69ad1c1680d39698e2d186dd45f5a2eb91c5db6c", "bytes": 81007405, "tracked": true, "role": "PRE_REPAIR"},
+    {"file": "provisional_pre_c0_ingolstadt_perception.xodr", "sha256": "b5b389270bd2ed4c17ca15029c4d4787b684dde201465d002b52de5c69fc1aa6", "bytes": 82589796, "tracked": true, "role": "PROVISIONAL"},
+    {"file": "raw_xodr_run_1.xodr", "sha256": "6044a87d8d6e116b444fe4413a46ab97085033def004b62d011233f4ddc0e93d", "bytes": 82318841, "tracked": true, "role": "RAW_OSM_XODR"},
+    {"file": "raw_xodr_run_1_epsg32632_header_pinned.xodr", "sha256": "ff2a05e7b00b8fc1bde38f569413223c03a4f4ac9c31eceb5a8592df47d0d17d", "bytes": 82318919, "tracked": true, "role": "RAW_EPSG32632_PINNED"},
+    {"file": "raw_xodr_run_2.xodr", "sha256": "c8c57c7282f483592802307aa9ccc839eedf1468279690afa612b0bcd59734c2", "bytes": 82318841, "tracked": true, "role": "RAW_OSM_XODR"}
+  ],
+  "provenance_note": "SIGNED_TARGET 6bac3570 is untracked (~80MB, gitignored, sha256-anchored); SUPERSEDED_BROKEN 80ebb005 is tracked. Digest-verify before any live run."
+}

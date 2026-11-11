@@ -1,0 +1,24 @@
+{
+  "allowlist_schema": "phase_q/mutation_allowlist/r13",
+  "effective_allowlist": [
+    "object:INSERT_OBJECT_CROSSWALK"
+  ],
+  "negative_control": {
+    "allowed": false,
+    "expected_hard_fail": true,
+    "hard_fail": true,
+    "input": "ingolstadt_fixed_final.xodr",
+    "reasons": [
+      "SIGNAL_COUNT_MISMATCH expected=3467 got=0",
+      "PARENT_SHA256_MISMATCH vs frozen semantic-parent authority",
+      "COMBINED_TC_DIGEST_MISMATCH_vs_frozen_authority"
+    ]
+  },
+  "positive_control": {
+    "allowed": true,
+    "input": "candidate_g_semantic_enriched.xodr",
+    "reasons": []
+  },
+  "schema": "R13N_MUTATION_ALLOWLIST_AND_PARENT_GATE/v1",
+  "verdict": "MUTATION_ALLOWLIST_AND_PARENT_GATE_OK"
+}

@@ -1,0 +1,994 @@
+{
+  "run_id": "20260804T204419Z",
+  "generated_at": "2026-08-04T20:44:29.050558+00:00",
+  "branch": "fix/post-audit-phase-e-junctions-roundabouts-20260803",
+  "commit": "f5aabc0a4f170e564aa03efcb906966880859a9f",
+  "verdict": "L_SOME_FAIL",
+  "steps": {
+    "L1": {
+      "carla_exe": "E:\\CARLA\\CARLA_0.9.16\\CarlaUE4.exe",
+      "carla_exe_exists": true,
+      "carla_exe_hash": "0bc4b3d089470ffdc91a2ec6bf2f26187de271d0e9e71a01beee8416633c7320",
+      "client_version": "0.9.16",
+      "server_version": "0.9.16",
+      "pythonapi_version": "0.9.16",
+      "pythonapi_file": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\.venv\\Lib\\site-packages\\carla\\__init__.py",
+      "pythonapi_hash": "8c6d0a8f107e83f2ea841c9299328465bbf734cd0c752f0c398e639b9b0cfe49",
+      "unreal_version": "4.26 (CARLA 0.9.16)",
+      "rpc_host": "127.0.0.1",
+      "rpc_port": 2000,
+      "streaming_port": 2001,
+      "traffic_manager_port": 800,
+      "gpu": "NVIDIA Quadro P3200 with Max-Q Design",
+      "gpu_driver_version": "32.0.15.7322",
+      "gpu_vram_bytes": 4293918720,
+      "gpu_vram_gb": 4.0,
+      "launch_command": [
+        "E:\\CARLA\\CARLA_0.9.16\\CarlaUE4.exe",
+        "-carla-rpc-port=2000",
+        "-carla-streaming-port=2001",
+        "-quality-level=Low",
+        "-nosound",
+        "-windowed",
+        "-ResX=1280",
+        "-ResY=720"
+      ],
+      "quality_level": "Low",
+      "map_package": "Carla/Maps/Town10HD_Opt",
+      "world_settings": "WorldSettings(synchronous_mode=False,no_rendering_mode=False,fixed_delta_seconds=0,substepping=True,max_substep_delta_time=0.01,max_substeps=10,max_culling_distance=0,deterministic_ragdolls=True)",
+      "weather": "WeatherParameters(cloudiness=20.000000, precipitation=0.000000, precipitation_deposits=0.000000, wind_intensity=10.000000, sun_azimuth_angle=300.000000, sun_altitude_angle=45.000000, fog_density=2.000000, fog_distance=0.750000, fog_falloff=0.100000, wetness=0.000000, scattering_intensity=1.000000, mie_scattering_scale=0.030000, rayleigh_scattering_scale=0.033100, dust_storm=0.000000)",
+      "timestamp": "2026-08-04T20:44:27.175837+00:00"
+    },
+    "L2": {
+      "map_name": "Carla/Maps/Town10HD_Opt",
+      "expected_map": "Carla/Maps/Town10HD_Opt",
+      "map_name_match": true,
+      "opendrive_length": 1857682,
+      "opendrive_sha256": "5d883b799f634030af92be1e9d79d107845540ba04338e8c60e095be1aef7be7",
+      "opendrive_first_500": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<OpenDRIVE>\n    <header revMajor=\"1\" revMinor=\"4\" name=\"\" version=\"1\" date=\"2020-07-28T22:34:58\" north=\"9.9112975471922624e+1\" south=\"-1.7159821787367417e+2\" east=\"1.4036590163241959e+2\" west=\"-1.4497769211633769e+2\" vendor=\"VectorZero\">\n        <geoReference><![CDATA[+proj=tmerc +lat_0=0 +lon_0=0 +k=1 +x_0=0 +y_0=0 +datum=WGS84 +units=m +geoidgrids=egm96_15.gtx +vunits=m +no_defs ]]></geoReference>\n        <userData>\n            <vectorScene program=\"RoadR",
+      "map_header": {},
+      "timestamp": "2026-08-04T20:44:28.361946+00:00"
+    },
+    "L3": {
+      "opendrive_length": 1857682,
+      "parse_status": "OK",
+      "fatal_errors": [],
+      "warnings": [],
+      "geometry_import_warnings": [],
+      "lane_import_warnings": [],
+      "junction_import_warnings": [],
+      "signal_import_warnings": [],
+      "mesh_import_warnings": [],
+      "timestamp": "2026-08-04T20:44:28.429619+00:00"
+    },
+    "L4": {
+      "landmark_count": 65,
+      "landmarks": [
+        {
+          "id": "951",
+          "type": "1000001",
+          "orientation": "Positive",
+          "x": -62.352001,
+          "y": 20.124086,
+          "z": -0.449043,
+          "yaw": 89.999992
+        },
+        {
+          "id": "949",
+          "type": "1000001",
+          "orientation": "Negative",
+          "x": -31.706413,
+          "y": 33.588478,
+          "z": -0.449043,
+          "yaw": -359.999969
+        },
+        {
+          "id": "952",
+          "type": "1000001",
+          "orientation": "Positive",
+          "x": -64.192375,
+          "y": 7.063073,
+          "z": -0.449043,
+          "yaw": -540.0
+        },
+        {
+          "id": "953",
+          "type": "1000001",
+          "orientation": "Positive",
+          "x": -58.715,
+          "y": 145.75209,
+          "z": -0.449043,
+          "yaw": -629.999939
+        },
+        {
+          "id": "950",
+          "type": "1000001",
+          "orientation": "Negative",
+          "x": -31.9298,
+          "y": 20.372915,
+          "z": -0.449043,
+          "yaw": -90.161224
+        },
+        {
+          "id": "950",
+          "type": "1000001",
+          "orientation": "Negative",
+          "x": -31.9298,
+          "y": 20.372915,
+          "z": -0.449043,
+          "yaw": -90.161224
+        },
+        {
+          "id": "950",
+          "type": "1000001",
+          "orientation": "Negative",
+          "x": -31.9298,
+          "y": 20.372915,
+          "z": -0.449043,
+          "yaw": -90.161224
+        },
+        {
+          "id": "946",
+          "type": "206",
+          "orientation": "Positive",
+          "x": 26.070728,
+          "y": 75.149963,
+          "z": 2.4024,
+          "yaw": 0.073251
+        },
+        {
+          "id": "948",
+          "type": "206",
+          "orientation": "Positive",
+          "x": 35.350014,
+          "y": 53.570427,
+          "z": 2.4024,
+          "yaw": 90.0
+        },
+        {
+          "id": "943",
+          "type": "1000001",
+          "orientation": "Positive",
+          "x": -46.099083,
+          "y": -73.556,
+          "z": -0.445043,
+          "yaw": -180.0
+        },
+        {
+          "id": "962",
+          "type": "1000001",
+          "orientation": "Positive",
+          "x": -119.237999,
+          "y": 18.932087,
+          "z": -0.445043,
+          "yaw": 89.999992
+        },
+        {
+          "id": "962",
+          "type": "1000001",
+          "orientation": "Positive",
+          "x": -119.237999,
+          "y": 18.932087,
+          "z": -0.445043,
+          "yaw": 89.999992
+        },
+        {
+          "id": "944",
+          "type": "1000001",
+          "orientation": "Positive",
+          "x": -34.448475,
+          "y": -50.948597,
+          "z": -0.445043,
+          "yaw": -89.999992
+        },
+        {
+          "id": "944",
+          "type": "1000001",
+          "orientation": "Positive",
+          "x": -34.448475,
+          "y": -50.948597,
+          "z": -0.445043,
+          "yaw": -89.999992
+        },
+        {
+          "id": "944",
+          "type": "1000001",
+          "orientation": "Positive",
+          "x": -34.448475,
+          "y": -50.948597,
+          "z": -0.445043,
+          "yaw": -89.999992
+        },
+        {
+          "id": "951",
+          "type": "1000001",
+          "orientation": "Positive",
+          "x": -62.352001,
+          "y": 20.124086,
+          "z": -0.449043,
+          "yaw": 89.999992
+        },
+        {
+          "id": "951",
+          "type": "1000001",
+          "orientation": "Positive",
+          "x": -62.352001,
+          "y": 20.124086,
+          "z": -0.449043,
+          "yaw": 89.999992
+        },
+        {
+          "id": "952",
+          "type": "1000001",
+          "orientation": "Positive",
+          "x": -64.192375,
+          "y": 7.063073,
+          "z": -0.449043,
+          "yaw": -540.0
+        },
+        {
+          "id": "945",
+          "type": "1000001",
+          "orientation": "Negative",
+          "x": -59.314137,
+          "y": -51.488194,
+          "z": -0.449043,
+          "yaw": 6e-06
+        },
+        {
+          "id": "945",
+          "type": "1000001",
+          "orientation": "Negative",
+          "x": -59.314137,
+          "y": -51.488194,
+          "z": -0.449043,
+          "yaw": 6e-06
+        },
+        {
+          "id": "943",
+          "type": "1000001",
+          "orientation": "Positive",
+          "x": -46.099083,
+          "y": -73.556,
+          "z": -0.445043,
+          "yaw": -180.0
+        },
+        {
+          "id": "943",
+          "type": "1000001",
+          "orientation": "Positive",
+          "x": -46.099083,
+          "y": -73.556,
+          "z": -0.445043,
+          "yaw": -180.0
+        },
+        {
+          "id": "944",
+          "type": "1000001",
+          "orientation": "Positive",
+          "x": -34.448475,
+          "y": -50.948597,
+          "z": -0.445043,
+          "yaw": -89.999992
+        },
+        {
+          "id": "945",
+          "type": "1000001",
+          "orientation": "Negative",
+          "x": -59.314137,
+          "y": -51.488194,
+          "z": -0.449043,
+          "yaw": 6e-06
+        },
+        {
+          "id": "947",
+          "type": "206",
+          "orientation": "Negative",
+          "x": 57.479275,
+          "y": 61.150002,
+          "z": 2.4,
+          "yaw": -180.0
+        },
+        {
+          "id": "947",
+          "type": "206",
+          "orientation": "Negative",
+          "x": 57.479275,
+          "y": 61.150002,
+          "z": 2.4,
+          "yaw": -180.0
+        },
+        {
+          "id": "953",
+          "type": "1000001",
+          "orientation": "Positive",
+          "x": -58.715,
+          "y": 145.75209,
+          "z": -0.449043,
+          "yaw": -629.999939
+        },
+        {
+          "id": "950",
+          "type": "1000001",
+          "orientation": "Negative",
+          "x": -31.9298,
+          "y": 20.372915,
+          "z": -0.449043,
+          "yaw": -90.161224
+        },
+        {
+          "id": "946",
+          "type": "206",
+          "orientation": "Positive",
+          "x": 26.070728,
+          "y": 75.149963,
+          "z": 2.4024,
+          "yaw": 0.073251
+        },
+        {
+          "id": "948",
+          "type": "206",
+          "orientation": "Positive",
+          "x": 35.350014,
+          "y": 53.570427,
+          "z": 2.4024,
+          "yaw": 90.0
+        },
+        {
+          "id": "952",
+          "type": "1000001",
+          "orientation": "Positive",
+          "x": -64.192375,
+          "y": 7.063073,
+          "z": -0.449043,
+          "yaw": -540.0
+        },
+        {
+          "id": "952",
+          "type": "1000001",
+          "orientation": "Positive",
+          "x": -64.192375,
+          "y": 7.063073,
+          "z": -0.449043,
+          "yaw": -540.0
+        },
+        {
+          "id": "949",
+          "type": "1000001",
+          "orientation": "Negative",
+          "x": -31.706413,
+          "y": 33.588478,
+          "z": -0.449043,
+          "yaw": -359.999969
+        },
+        {
+          "id": "949",
+          "type": "1000001",
+          "orientation": "Negative",
+          "x": -31.706413,
+          "y": 33.588478,
+          "z": -0.449043,
+          "yaw": -359.999969
+        },
+        {
+          "id": "954",
+          "type": "1000001",
+          "orientation": "Negative",
+          "x": -62.02877,
+          "y": 123.750816,
+          "z": -0.419043,
+          "yaw": 180.0
+        },
+        {
+          "id": "951",
+          "type": "1000001",
+          "orientation": "Positive",
+          "x": -62.352001,
+          "y": 20.124086,
+          "z": -0.449043,
+          "yaw": 89.999992
+        },
+        {
+          "id": "949",
+          "type": "1000001",
+          "orientation": "Negative",
+          "x": -31.706413,
+          "y": 33.588478,
+          "z": -0.449043,
+          "yaw": -359.999969
+        },
+        {
+          "id": "949",
+          "type": "1000001",
+          "orientation": "Negative",
+          "x": -31.706413,
+          "y": 33.588478,
+          "z": -0.449043,
+          "yaw": -359.999969
+        },
+        {
+          "id": "951",
+          "type": "1000001",
+          "orientation": "Positive",
+          "x": -62.352001,
+          "y": 20.124086,
+          "z": -0.449043,
+          "yaw": 89.999992
+        },
+        {
+          "id": "954",
+          "type": "1000001",
+          "orientation": "Negative",
+          "x": -62.02877,
+          "y": 123.750816,
+          "z": -0.419043,
+          "yaw": 180.0
+        },
+        {
+          "id": "954",
+          "type": "1000001",
+          "orientation": "Negative",
+          "x": -62.02877,
+          "y": 123.750816,
+          "z": -0.419043,
+          "yaw": 180.0
+        },
+        {
+          "id": "954",
+          "type": "1000001",
+          "orientation": "Negative",
+          "x": -62.02877,
+          "y": 123.750816,
+          "z": -0.419043,
+          "yaw": 180.0
+        },
+        {
+          "id": "956",
+          "type": "1000001",
+          "orientation": "Both",
+          "x": -57.47892,
+          "y": 135.107849,
+          "z": 0.0,
+          "yaw": -539.647888
+        },
+        {
+          "id": "955",
+          "type": "1000001",
+          "orientation": "Both",
+          "x": -57.508919,
+          "y": 135.107666,
+          "z": 0.0,
+          "yaw": -539.647888
+        },
+        {
+          "id": "957",
+          "type": "1000001",
+          "orientation": "Positive",
+          "x": 89.791,
+          "y": 20.850086,
+          "z": -0.449043,
+          "yaw": -270.0
+        },
+        {
+          "id": "957",
+          "type": "1000001",
+          "orientation": "Positive",
+          "x": 89.791,
+          "y": 20.850086,
+          "z": -0.449043,
+          "yaw": -270.0
+        },
+        {
+          "id": "958",
+          "type": "1000001",
+          "orientation": "Negative",
+          "x": 114.451004,
+          "y": 21.267916,
+          "z": -0.449043,
+          "yaw": -90.0
+        },
+        {
+          "id": "958",
+          "type": "1000001",
+          "orientation": "Negative",
+          "x": 114.451004,
+          "y": 21.267916,
+          "z": -0.449043,
+          "yaw": -90.0
+        },
+        {
+          "id": "959",
+          "type": "1000001",
+          "orientation": "Negative",
+          "x": 115.377083,
+          "y": 35.049,
+          "z": -0.546643,
+          "yaw": 2e-06
+        },
+        {
+          "id": "958",
+          "type": "1000001",
+          "orientation": "Negative",
+          "x": 114.451004,
+          "y": 21.267916,
+          "z": -0.449043,
+          "yaw": -90.0
+        },
+        {
+          "id": "958",
+          "type": "1000001",
+          "orientation": "Negative",
+          "x": 114.451004,
+          "y": 21.267916,
+          "z": -0.449043,
+          "yaw": -90.0
+        },
+        {
+          "id": "959",
+          "type": "1000001",
+          "orientation": "Negative",
+          "x": 115.377083,
+          "y": 35.049,
+          "z": -0.546643,
+          "yaw": 2e-06
+        },
+        {
+          "id": "959",
+          "type": "1000001",
+          "orientation": "Negative",
+          "x": 115.377083,
+          "y": 35.049,
+          "z": -0.546643,
+          "yaw": 2e-06
+        },
+        {
+          "id": "959",
+          "type": "1000001",
+          "orientation": "Negative",
+          "x": 115.377083,
+          "y": 35.049,
+          "z": -0.546643,
+          "yaw": 2e-06
+        },
+        {
+          "id": "957",
+          "type": "1000001",
+          "orientation": "Positive",
+          "x": 89.791,
+          "y": 20.850086,
+          "z": -0.449043,
+          "yaw": -270.0
+        },
+        {
+          "id": "961",
+          "type": "1000001",
+          "orientation": "Negative",
+          "x": -94.931862,
+          "y": 20.406229,
+          "z": -0.449043,
+          "yaw": -90.0
+        },
+        {
+          "id": "961",
+          "type": "1000001",
+          "orientation": "Negative",
+          "x": -94.931862,
+          "y": 20.406229,
+          "z": -0.449043,
+          "yaw": -90.0
+        },
+        {
+          "id": "960",
+          "type": "1000001",
+          "orientation": "Positive",
+          "x": -119.158089,
+          "y": 5.093,
+          "z": -0.437043,
+          "yaw": -180.0
+        },
+        {
+          "id": "960",
+          "type": "1000001",
+          "orientation": "Positive",
+          "x": -119.158089,
+          "y": 5.093,
+          "z": -0.437043,
+          "yaw": -180.0
+        },
+        {
+          "id": "961",
+          "type": "1000001",
+          "orientation": "Negative",
+          "x": -94.931862,
+          "y": 20.406229,
+          "z": -0.449043,
+          "yaw": -90.0
+        },
+        {
+          "id": "962",
+          "type": "1000001",
+          "orientation": "Positive",
+          "x": -119.237999,
+          "y": 18.932087,
+          "z": -0.445043,
+          "yaw": 89.999992
+        },
+        {
+          "id": "962",
+          "type": "1000001",
+          "orientation": "Positive",
+          "x": -119.237999,
+          "y": 18.932087,
+          "z": -0.445043,
+          "yaw": 89.999992
+        },
+        {
+          "id": "960",
+          "type": "1000001",
+          "orientation": "Positive",
+          "x": -119.158089,
+          "y": 5.093,
+          "z": -0.437043,
+          "yaw": -180.0
+        },
+        {
+          "id": "960",
+          "type": "1000001",
+          "orientation": "Positive",
+          "x": -119.158089,
+          "y": 5.093,
+          "z": -0.437043,
+          "yaw": -180.0
+        },
+        {
+          "id": "963",
+          "type": "205",
+          "orientation": "Negative",
+          "x": 49.599747,
+          "y": 38.529957,
+          "z": 2.4,
+          "yaw": 270.0
+        }
+      ],
+      "x_range": {
+        "min": -119.237999,
+        "max": 115.377083,
+        "span": 234.615082
+      },
+      "y_range": {
+        "min": -73.556,
+        "max": 145.75209,
+        "span": 219.30809
+      },
+      "x_bias": -23.871416,
+      "y_bias": 26.454007,
+      "residual_p50": 0.0,
+      "residual_p90": 0.0,
+      "residual_p95": 0.0,
+      "residual_p99": 0.0,
+      "residual_max": 0.0,
+      "alignment_status": "ALIGNED",
+      "timestamp": "2026-08-04T20:44:28.466511+00:00"
+    },
+    "L5": {
+      "cameras": [],
+      "defects_found": [],
+      "mesh_explosions": [],
+      "folded_surfaces": [],
+      "floating_slabs": [],
+      "visual_defect_regression_status": "PASS",
+      "timestamp": "2026-08-04T20:44:28.477720+00:00"
+    },
+    "L6": {
+      "waypoint_count": 3066,
+      "fixtures": {
+        "straight": {
+          "status": "PASS",
+          "count": 3066
+        },
+        "left_turn": {
+          "status": "PASS",
+          "count": 0
+        },
+        "right_turn": {
+          "status": "PASS",
+          "count": 0
+        },
+        "t_junction": {
+          "status": "PASS",
+          "count": 0
+        },
+        "four_way": {
+          "status": "PASS",
+          "count": 0
+        },
+        "merge": {
+          "status": "PASS",
+          "count": 0
+        },
+        "split": {
+          "status": "PASS",
+          "count": 0
+        },
+        "roundabout": {
+          "status": "PASS",
+          "count": 0
+        },
+        "bridge": {
+          "status": "PASS",
+          "count": 0
+        },
+        "tunnel": {
+          "status": "PASS",
+          "count": 0
+        },
+        "tile_boundary": {
+          "status": "PASS",
+          "count": 0
+        }
+      },
+      "topology_segment_count": 200,
+      "junction_count": 82,
+      "road_count": 88,
+      "lane_count": 3066,
+      "spawn_points": 155,
+      "crosswalk_count": 80,
+      "timestamp": "2026-08-04T20:44:28.576223+00:00"
+    },
+    "L7": {
+      "drivability_status": "PASS",
+      "vehicle_spawn_attempts": 0,
+      "vehicle_successful_spawns": 0,
+      "vehicle_crash_count": 0,
+      "vehicle_stuck_count": 0,
+      "tm_stability": "OK",
+      "tm_rpc_timeouts": 0,
+      "server_crashes": 0,
+      "timestamp": "2026-08-04T20:44:28.584801+00:00"
+    },
+    "L8": {
+      "traffic_light_count": 15,
+      "traffic_lights": [
+        {
+          "id": 9,
+          "state": "Red",
+          "location": {
+            "x": -119.230034,
+            "y": 5.093152,
+            "z": 0.26277
+          }
+        },
+        {
+          "id": 10,
+          "state": "Red",
+          "location": {
+            "x": 115.449829,
+            "y": 35.044945,
+            "z": 0.222726
+          }
+        },
+        {
+          "id": 11,
+          "state": "Red",
+          "location": {
+            "x": -46.171577,
+            "y": -73.556618,
+            "z": 0.254254
+          }
+        },
+        {
+          "id": 12,
+          "state": "Red",
+          "location": {
+            "x": -34.449154,
+            "y": -51.020489,
+            "z": 0.254255
+          }
+        },
+        {
+          "id": 13,
+          "state": "Green",
+          "location": {
+            "x": 114.451889,
+            "y": 21.196003,
+            "z": 0.2542
+          }
+        },
+        {
+          "id": 14,
+          "state": "Red",
+          "location": {
+            "x": 89.791885,
+            "y": 20.922146,
+            "z": 0.2542
+          }
+        },
+        {
+          "id": 15,
+          "state": "Red",
+          "location": {
+            "x": -31.930841,
+            "y": 20.301954,
+            "z": 0.254254
+          }
+        },
+        {
+          "id": 16,
+          "state": "Red",
+          "location": {
+            "x": -64.264191,
+            "y": 7.063309,
+            "z": 0.254254
+          }
+        },
+        {
+          "id": 17,
+          "state": "Green",
+          "location": {
+            "x": -62.35207,
+            "y": 20.196909,
+            "z": 0.254254
+          }
+        },
+        {
+          "id": 18,
+          "state": "Red",
+          "location": {
+            "x": -94.928223,
+            "y": 20.334822,
+            "z": 0.254256
+          }
+        },
+        {
+          "id": 19,
+          "state": "Green",
+          "location": {
+            "x": -59.242249,
+            "y": -51.498371,
+            "z": 0.254254
+          }
+        },
+        {
+          "id": 20,
+          "state": "Green",
+          "location": {
+            "x": -119.238182,
+            "y": 19.004469,
+            "z": 0.254253
+          }
+        },
+        {
+          "id": 21,
+          "state": "Red",
+          "location": {
+            "x": -58.715359,
+            "y": 145.82457,
+            "z": 0.254188
+          }
+        },
+        {
+          "id": 22,
+          "state": "Green",
+          "location": {
+            "x": -62.099304,
+            "y": 123.755508,
+            "z": 0.283086
+          }
+        },
+        {
+          "id": 23,
+          "state": "Red",
+          "location": {
+            "x": -31.636356,
+            "y": 33.589287,
+            "z": 0.254254
+          }
+        }
+      ],
+      "speed_limit_signals": [],
+      "signal_positions": [],
+      "signal_orientation_valid": true,
+      "signal_associations_valid": true,
+      "signal_validity_intervals_valid": true,
+      "turn_lane_directions_valid": true,
+      "signal_validation_status": "PASS",
+      "timestamp": "2026-08-04T20:44:28.980912+00:00"
+    },
+    "L9": {
+      "sensor_data": {
+        "rgb": {
+          "status": "CAPTURED",
+          "frame_non_empty": true,
+          "timestamp_valid": true
+        },
+        "depth": {
+          "status": "CAPTURED",
+          "frame_non_empty": true,
+          "timestamp_valid": true
+        },
+        "semantic_segmentation": {
+          "status": "CAPTURED",
+          "frame_non_empty": true,
+          "timestamp_valid": true
+        },
+        "lidar": {
+          "status": "CAPTURED",
+          "frame_non_empty": true,
+          "timestamp_valid": true
+        },
+        "gnss": {
+          "status": "CAPTURED",
+          "timestamp_valid": true,
+          "gnss_agreement": "PASS"
+        },
+        "imu": {
+          "status": "CAPTURED",
+          "timestamp_valid": true
+        }
+      },
+      "synchronization_status": "PASS",
+      "timestamp": "2026-08-04T20:44:28.986433+00:00"
+    },
+    "L10": {
+      "map_load_time_ms": 0,
+      "fps": 0,
+      "p95_frame_time_ms": 0,
+      "ram_usage_mb": 0,
+      "vram_usage_mb": 0,
+      "rpc_timeouts": 0,
+      "server_crashes": 0,
+      "tm_stability": "OK",
+      "timestamp": "2026-08-04T20:44:28.991168+00:00"
+    },
+    "L11": {
+      "comparison_status": "PASS",
+      "identical_cameras": true,
+      "identical_vehicle": true,
+      "identical_routes": true,
+      "identical_weather": true,
+      "identical_time": true,
+      "identical_sensor_rig": true,
+      "differences": [],
+      "timestamp": "2026-08-04T20:44:28.995169+00:00"
+    },
+    "L12": {
+      "protected_hashes": {
+        "planView": "5d883b799f634030af92be1e9d79d107845540ba04338e8c60e095be1aef7be7",
+        "road_length": "a6e1fc3350e71f1b03a81dbb82b63157ad0f25f3dabc237163dabde0ec44a997",
+        "elevation_profile": "PENDING",
+        "road_link": "PENDING",
+        "junction_structure": "PENDING",
+        "connector_geometry": "PENDING",
+        "contactPoint": "PENDING",
+        "lane_topology": "PENDING",
+        "signal": "PENDING",
+        "tile_identity": "PENDING",
+        "visual_manifest": "PENDING"
+      },
+      "all_hashes_verified": false,
+      "hash_verification_status": "PARTIAL",
+      "timestamp": "2026-08-04T20:44:29.036344+00:00"
+    },
+    "L13": {
+      "verdict": "L_SOME_FAIL",
+      "details": [
+        "L1=FAIL",
+        "L2=FAIL",
+        "L3=FAIL",
+        "L4=FAIL",
+        "L5=FAIL",
+        "L6=FAIL",
+        "L7=FAIL",
+        "L8=FAIL",
+        "L9=FAIL",
+        "L10=FAIL",
+        "L11=FAIL",
+        "L12=FAIL"
+      ],
+      "run_id": "20260804T204419Z",
+      "generated_at": "2026-08-04T20:44:29.044982+00:00",
+      "branch": "fix/post-audit-phase-e-junctions-roundabouts-20260803",
+      "commit": "f5aabc0a4f170e564aa03efcb906966880859a9f"
+    }
+  }
+}

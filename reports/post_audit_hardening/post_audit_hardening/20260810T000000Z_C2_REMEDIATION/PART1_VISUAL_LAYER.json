@@ -1,0 +1,75 @@
+{
+  "schema": "C2_REMEDIATION_PART1_VISUAL_LAYER/v1",
+  "verdict": "SOURCE_ADDED_VISUAL_LAYER",
+  "reclassification": {
+    "from": "LIVE_DEFERRED_C4",
+    "to": "SOURCE_ADDED_VISUAL_LAYER",
+    "note": "Building/vegetation visual clutter now packaged from a full-bbox OSM extract; prior R15 state had zero building/vegetation ways in the roads-only authoritative extract."
+  },
+  "input_osm": {
+    "file": "visual_osm_merged/ingolstadt_visual_merged_clean.osm",
+    "nodes": 340383,
+    "ways": 60396,
+    "size_bytes": 40542221,
+    "sha256": "61892da81b8e0b48f41acc90f9e12df83b1cb64b13ff7c5db913c17f17186725",
+    "bbox_wgs84": {"lat_min": 48.6843318, "lon_min": 11.3266919, "lat_max": 48.8143429, "lon_max": 11.5382271},
+    "tag_way_counts": {"building": 52993, "landuse": 3749, "natural": 2042, "barrier": 1477, "leisure": 953, "man_made": 622, "building:part": 311},
+    "independent_of_roads_osm": true,
+    "roads_osm_source": "campaigns/ingolstadt_cooked_perception_v1/source/ingolstadt_authoritative.osm (unchanged)",
+    "fed_to_osm2odr_xodr": false
+  },
+  "osm2world": {
+    "producer": "ultimate_pipeline/enrichment/osm2world_runner.py + carla_governed/OSM2World-latest-bin/OSM2World.jar",
+    "duration_sec": 176.4,
+    "config_sha256": "e13b5836bb552b57a7569dcf4c41d8dcc8e57a14f45d12ee0781558e73966777",
+    "outputs": {
+      "scene.obj": {
+        "size_bytes": 390751147,
+        "sha256": "15cdccbcd3374b79e63b590e6e591b9f4e4aa9b7abda6b260fb6f553e2d1907e"
+      }
+    }
+  },
+  "blender_fbx": {
+    "producer": "ultimate_pipeline/enrichment/blender_runner.py (Blender 4.3.0)",
+    "duration_sec": 176.0,
+    "outputs": {
+      "scene.fbx": {"size_bytes": 226279516},
+      "scene.blender_manifest.json": {"input_obj_hash": "15cdccbcd3374b79e63b590e6e591b9f4e4aa9b7abda6b260fb6f553e2d1907e", "materials_total": 46, "fbx_format": "binary", "axis_forward": "-Z", "axis_up": "Y", "global_scale": 1.0}
+    }
+  },
+  "alignment_guard": {
+    "producer": "stage_c2_visual_layer_alignment_guard.py",
+    "verdict": "VISUAL_LAYER_ALIGNMENT_PASS",
+    "evidence_file": "visual_layer/C2_VISUAL_LAYER_ALIGNMENT_GUARD.json",
+    "origin_wgs84": {"lat": 48.74933925, "lon": 11.43245975},
+    "origin_xodr_native": [839966.7124, 5465151.5746],
+    "road_bbox_covered_by_mesh": 1.0,
+    "mesh_margin_m": {"west": -726.27, "east": -1926.85, "south": -744.31, "north": -179.35},
+    "rule_outs_10_of_10": true,
+    "governed_xodr_unchanged_sha": "248ffbbe6a1aa2a9cbd4330a69ad1c1680d39698e2d186dd45f5a2eb91c5db6c"
+  },
+  "collision_lod": {
+    "producer": "ultimate_pipeline/enrichment/collision_lod_policy.py",
+    "collision_verdict": "PASS",
+    "objects_total": 66140,
+    "road_corridors_checked": 2000,
+    "intrusion_count": 0,
+    "lod_verdict": "POLICY_DECLARED",
+    "lod_distances_m": [100, 500, 2000]
+  },
+  "semantic_partition": {
+    "producer": "ultimate_pipeline/enrichment/semantic_partition.py",
+    "per_class": {
+      "building": {"objects": 51898, "faces": 1084046, "vertices": 730003},
+      "tree": {"objects": 4631, "faces": 3094166, "vertices": 1779414},
+      "other": {"objects": 6081, "faces": 613380, "vertices": 469109},
+      "rail": {"objects": 349, "faces": 166208, "vertices": 141224},
+      "ground": {"objects": 2805, "faces": 29908, "vertices": 32767},
+      "water": {"objects": 375, "faces": 7169, "vertices": 7205},
+      "elevator": {"objects": 1, "faces": 0, "vertices": 0}
+    },
+    "objects_total": 66140,
+    "faces_total": 4994877,
+    "vertices_total": 3159722
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "cameras": [],
+  "defects_found": [],
+  "mesh_explosions": [],
+  "folded_surfaces": [],
+  "floating_slabs": [],
+  "visual_defect_regression_status": "PASS",
+  "status": "PASS",
+  "timestamp": "2026-08-05T12:30:06.184953+00:00"
+}

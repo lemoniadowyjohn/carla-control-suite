@@ -1,0 +1,246 @@
+{
+  "schema": "carla_worktree_capacity_recovery_inventory/v1",
+  "generated_utc": "2026-10-25",
+  "generated_by": "OpenCode coordinator session (read-only Phase A)",
+  "authoritative_integration": {
+    "branch": "integration/production-large-map-20260918",
+    "local_tip": "502dda260abb871b2333191bb33e1e7eecd1ece7",
+    "origin_tip": "d72f57c63515389acca2eec37eb4ea5937da7303",
+    "note": "origin is ahead of local; local integration branch is stale at 502dda26 (previously marked redundant)"
+  },
+  "disk_free_bytes": {
+    "C": 2072690688,
+    "E": 3676533391,
+    "F": 2357516288,
+    "G": null,
+    "H": null,
+    "G_H": "drives absent on this machine; their git worktree registrations point to non-existent locations",
+    "hibernation_file": {
+      "path": "C:/hiberfil.sys",
+      "size_bytes": 20508291072,
+      "note": "disabling requires OPERATOR APPROVAL; largest single capacity lever"
+    }
+  },
+  "worktrees": [
+    {
+      "path": "C:/Users/admin/PycharmProjects/gpt4/pythonProject3/carla_-main",
+      "head": "3fd6f0f0a1ccd643abba0bfd93f9f3d0c923a567",
+      "branch": "integration/carla-final-convergence-20261014",
+      "upstream": null,
+      "dirty_modified": 2,
+      "dirty_modified_files": ["AGENTS.md", "opencode.json"],
+      "untracked_entries": 80,
+      "untracked_files_total": 133,
+      "untracked_bytes": 7616953440,
+      "untracked_largest": [
+        "reports/rq1_trial_runs_x2_verify/run_01/20261008_024449_086823/stage6_containment_runtime.json (732.0 MB)",
+        "reports/rq1_trial_runs/run_01/20261007_214826_524342/stage6_containment_runtime.json (732.0 MB)",
+        "reports/rq1b_runs/run_00/run_00/rq1b_full/rq1b_run00/stage6_containment_runtime.json (732.0 MB)",
+        "stage8_rca_output/ (540.1 MB)",
+        "stage8_rca_output_autofix/ (503.0 MB)",
+        "ultimate_pipeline_out/ (218.4 MB)",
+        ">=6 XODR stage files at 142.9 MB + 132.5 MB each across rq1 report trees"
+      ],
+      "unique_commits_vs_integration": 315,
+      "classification": "RETAIN_ACTIVE",
+      "note": "main session worktree; AGENTS.md/opencode.json modifications are active coordinator wiring; untracked reports/ and rca trees are candidate evidence - archive only with operator approval"
+    },
+    {
+      "path": "C:/Users/admin/AppData/Local/Temp/opencode/wt_audit_837a8504",
+      "head": "837a8504b624dc90653aef3a48300abb3275e291",
+      "branch": "detached",
+      "prunable": "gitdir file points to non-existent location",
+      "classification": "METADATA_ONLY_PRUNABLE",
+      "note": "git worktree prune removes metadata only; no disk recovery"
+    },
+    {
+      "path": "C:/Users/admin/PycharmProjects/gpt4/pythonProject3/carla-worktree",
+      "head": "d2c125662354b5b373ffd5d8d31b5f577ad46e17",
+      "branch": "detached",
+      "dirty": 0,
+      "untracked": 0,
+      "unique_commits_vs_integration": 333,
+      "classification": "CANDIDATE_FOR_OPERATOR_APPROVED_ARCHIVE",
+      "note": "clean detached checkout 333 commits ahead of integration - history recoverable from refs; re-checkout possible after removal"
+    },
+    {
+      "path": "E:/wt/claude-hard-tasks-20261023",
+      "head": "8dbdfc15abc97bde6de40cb3c9752890d0a5cdaf",
+      "branch": "fix/claude-hard-tasks-20261023",
+      "upstream": "origin/fix/claude-hard-tasks-20261023",
+      "origin_tip": "98e0d7e56cccdffe2319007b8a846f7daf3b3b33",
+      "local_commits_ahead_of_upstream": 4,
+      "ahead_commits": [
+        "9d35e786 fix(rq5): establish rank before stale-success cleanup",
+        "ae1832ff fix(rq5): revoke stale success before early failures",
+        "7bf21a23 fix(rq5): fail closed on inconsistent DDP ownership",
+        "8dbdfc15 docs(remediation): record RQ5 initialization verification"
+      ],
+      "size_bytes": 532858549,
+      "dirty": 0,
+      "untracked": 0,
+      "classification": "RETAIN_ACTIVE",
+      "note": "active remediation; contains B1 family + G02c + atomic writes; 4 commits NOT pushed"
+    },
+    {
+      "path": "E:/wt/post-pr16-remediation-20261023",
+      "head": "cc571fae75cadc688af0fc8a4dd6037727311413",
+      "branch": "fix/post-pr16-remediation-20261023",
+      "upstream": null,
+      "merge_base_with_production": "d72f57c63515389acca2eec37eb4ea5937da7303",
+      "local_commits": [
+        "8ad50949 fix(rq5): initialize rank before stale-success revocation (B1)",
+        "935f7ff5 fix(rq5): prohibit pretrained FCN backbones (B2)",
+        "ade82068 fix(rq5): fail explicit missing contract audits (B3)",
+        "cc571fae fix(rq5): retain model-only contract compatibility (B2)"
+      ],
+      "size_bytes": 66388670,
+      "dirty": 0,
+      "untracked": 0,
+      "classification": "RETAIN_ACTIVE",
+      "note": "4 local-only commits directly on production; NO origin ref -> commits exist ONLY in this worktree; rebase/push required before removal"
+    },
+    {
+      "path": "E:/wt/prod_68868f76",
+      "head": "68868f763d22a630fc9ba8d818ed1919a7b8414d",
+      "branch": "detached",
+      "dirty": 0,
+      "untracked": 0,
+      "size_bytes": 4220474884,
+      "classification": "CANDIDATE_FOR_OPERATOR_APPROVED_REMOVAL",
+      "duplicate_proof": {
+        "other": "F:/wt-gap055-base",
+        "same_head": true,
+        "both_status_clean": true,
+        "spot_hash_matches": {
+          "configs/rq5_protocol_freeze_v1.json": "db7155fef007 (IDENTICAL)",
+          "ultimate_pipeline/config/settings.py": "49df535e46c5 (IDENTICAL)",
+          "README.md": "26437d4bca9c (IDENTICAL)"
+        },
+        "conclusion": "both worktrees byte-identical tracked content; single copy suffices"
+      },
+      "unique_commit_risk": "NONE - 68868f76 remains reachable (branch fix/rq5-test-isolation-leak-20261009 points at it); re-checkout: git worktree add E:/wt/prod_68868f76 68868f76",
+      "recovery_estimate_bytes": 4220474884
+    },
+    {
+      "path": "E:/wt/repair-map-realism-p0-837a8504",
+      "head": "d3947e90 (full: d3947e90 - actual SHA in session log; short form verified earlier)",
+      "branch": "experimental/verified-fixes-20261022",
+      "origin_tip": "5a0041132cb8f17f99103beabdd3a409c013a518",
+      "local_commits_ahead_of_origin": 20,
+      "dirty": 0,
+      "untracked": 4,
+      "untracked_items": [
+        {"name": "D1_full_suite_output.txt", "bytes": 27915, "sha256_12": "d0e90c5d45ea"},
+        {"name": "EXPERIMENTAL_BRANCH_PR_READINESS.md", "bytes": 4416, "sha256_12": "7a6f14232960"},
+        {"name": "run_identity.json", "bytes": 317, "sha256_12": "5adf41af113c"},
+        {"name": "ultimate_pipeline_out/", "bytes": 574548743, "files": 267, "note": "run dir 20261021_165726_800368 (161 files incl stage6_containment_runtime.json 111.55 MB, 08_final*.xodr ~21-26 MB each, tile_*.xodr) + partial run 20261021_171332_417792; per-file SHA256 recorded in session log"}
+      ],
+      "size_bytes": 4928339323,
+      "classification": "RETAIN_DIRTY_PROTECTED",
+      "note": "20 unpushed commits (reviewed through d3947e90; B-gates recorded); untracked run output is historical artifact - archive or removal ONLY with operator approval"
+    },
+    {
+      "path": "F:/wt-gap055-base",
+      "head": "68868f763d22a630fc9ba8d818ed1919a7b8414d",
+      "branch": "detached",
+      "dirty": 0,
+      "untracked": 0,
+      "size_bytes": 4244107769,
+      "classification": "CANDIDATE_FOR_OPERATOR_APPROVED_REMOVAL",
+      "note": "byte-identical duplicate of E:/wt/prod_68868f76; operator chooses which drive keeps the single base copy (recommend retaining F: copy if E: space is needed for RQ5 env, OR removing F: copy to free F:)"
+    },
+    {
+      "path": "F:/wt-gap055-cand",
+      "head": "c736a9ce5792250f5d0c6a1fd4c78dc185f7243b",
+      "branch": "detached",
+      "dirty": 0,
+      "untracked": 0,
+      "size_bytes": 4244611648,
+      "classification": "CANDIDATE_FOR_OPERATOR_APPROVED_ARCHIVE",
+      "note": "286 commits vs integration; detached; verify c736a9ce reachable from branches before removal"
+    },
+    {
+      "path": "F:/carla-control-suite-worktrees/session-batch1-full-verify-20260913",
+      "head": "502dda260abb871b2333191bb33e1e7eecd1ece7",
+      "branch": "integration/production-large-map-20260918",
+      "upstream": "origin/integration/production-large-map-20260918",
+      "dirty": 0,
+      "untracked": 1,
+      "classification": "RETAIN_ACTIVE",
+      "note": "checkout of the (stale local) integration branch tip; 502dda26 redundant vs d72f57c6 per earlier decision - archive-tag + local reset still pending operator approval (C3)"
+    },
+    {
+      "path": "E:/CARLA/worktrees/new316-333-perception-hardening",
+      "head": "278968f9cfcbe2a26fd1249cadabeb1ef40d50be",
+      "branch": "fix/new316-333-perception-environment-20261001",
+      "size_bytes": 4230699205,
+      "status_check": "NOT_RECORDED",
+      "classification": "BLOCKED",
+      "note": "large legacy worktrees; status + unique-commit analysis pending next inventory pass; do not remove without proof of push/branch reachability"
+    },
+    {"path": "E:/CARLA/worktrees/rq1-matrix-fix", "head": "d12a03145793ae89d03a40f9ebf500ec59f3c761", "branch": "fix/rq1-matrix-integrity-20261001", "size_bytes": 4229930364, "status_check": "NOT_RECORDED", "classification": "BLOCKED"},
+    {"path": "E:/CARLA/worktrees/wt-p1", "head": "542b82e93b6bb866dc05e085480eecb3ceffbcc1", "branch": "opencode/p1-runtime-capture-20261001", "size_bytes": 4231063858, "status_check": "NOT_RECORDED", "classification": "BLOCKED"},
+    {"path": "E:/CARLA/worktrees/wt-p1-base", "head": "233e452ff16db3d35ca717d0bf02e4779e86b258", "branch": "detached", "size_bytes": 4230530017, "status_check": "NOT_RECORDED", "classification": "BLOCKED"},
+    {"path": "E:/CARLA/worktrees/wt-runtime-rig", "head": "692b42391c29457fef30e19857352e3ef74be9b2", "branch": "integration/opencode-runtime-rig-environment-closure-20261001", "size_bytes": 4230347054, "status_check": "NOT_RECORDED", "classification": "BLOCKED"},
+    {"path": "f:/carla-worktrees/*", "note": "b15_A_rq1b, lane_A1_rq1a-execution, rq2-validate-20261008, rq5-isolation-20261009 (holds 68868f76 on branch), rq5-sightb-20261009, smoke-harden-20261009 - sized later; retain pending status check", "classification": "BLOCKED"},
+    {"path": "F:/p0-coord-frame-tile-placement-20261001", "head": "41613305a0e6be8566e185f2ec1ed9dd7e8f9178", "classification": "BLOCKED", "note": "size/status not yet recorded"},
+    {"path": "F:/wt/authority-convergence-20261020", "head": "837a8504b624dc90653aef3a48300abb3275e291", "branch": "integration/authority-convergence-20261020", "classification": "BLOCKED", "note": "size/status not yet recorded"},
+    {"path": "F:/wt/carla-gui-integration-20261015", "head": "3d7665fc361e17156c6552c83b98982fdfbeee4e", "classification": "BLOCKED", "note": "size/status not yet recorded"},
+    {"path": "F:/wt/picks-20261015", "head": "d0dcba97429945c2a4ae99b4244133048d193886", "classification": "BLOCKED", "note": "size/status not yet recorded"},
+    {"path": "F:/wt/repair-c69b60d2-ci", "head": "691e6426967511f0b77ac6e172819cb73fb47c28", "classification": "BLOCKED", "note": "size/status not yet recorded"},
+    {"path": "F:/wt/terminal-authority-4eb90436", "head": "ba3c3975c9e892522b99db8b0cd36224497a370f", "classification": "BLOCKED", "note": "size/status not yet recorded"},
+    {"path": "F:/wt/v_29560b52", "head": "29560b52623aabc744b123fbe5f250f36090c9aa", "branch": "detached", "classification": "BLOCKED", "note": "size/status not yet recorded"},
+    {"path": "F:/wt/verify-c69b60d2", "head": "c69b60d2fe4ac018136ea0fa26e435a09c15dd73", "branch": "detached", "classification": "BLOCKED", "note": "size/status not yet recorded"},
+    {"path": "G:/wt/acceptance-contract-hardening-20261021", "head": "d3daf015eeb5088bb2296e31dd36dd7e4f0d61ac", "prunable": "gitdir file points to non-existent location (G: drive absent)", "classification": "METADATA_ONLY_PRUNABLE"},
+    {"path": "G:/wt/production-convergence-20261020", "head": "a9c9b6c167497893ccf97e86ec1858deaf69b306", "prunable": "gitdir file points to non-existent location (G: drive absent)", "classification": "METADATA_ONLY_PRUNABLE"},
+    {"path": "G:/wt/release-gate", "head": "85b297411e2ba3cdf0a1516ecf75faf942d20bb4", "prunable": "gitdir file points to non-existent location (G: drive absent)", "classification": "METADATA_ONLY_PRUNABLE"},
+    {"path": "H:/opencode/rq12-closure", "head": "361958ca2a37188269c1d693fe8b14ab993d1789", "state": "locked initializing", "classification": "BLOCKED", "explicit_rule": "DO NOT TOUCH per operator instruction"},
+    {"path": "H:/wt/phase6-rq5-offline-20261021", "head": "d74c0f171d1524ce27d1f64d93fcf930d199a062", "prunable": "gitdir file points to non-existent location (H: drive absent)", "classification": "METADATA_ONLY_PRUNABLE"}
+  ],
+  "removal_approval_requests": [
+    {
+      "id": "RM-1",
+      "action": "remove worktree E:/wt/prod_68868f76 (byte-identical duplicate of F:/wt-gap055-base)",
+      "commands": [
+        "git -C C:/Users/admin/PycharmProjects/gpt4/pythonProject3/carla_-main worktree remove E:/wt/prod_68868f76"
+      ],
+      "recovery_estimate_bytes": 4220474884,
+      "rollback": "full: 68868f76 is a named branch tip (fix/rq5-test-isolation-leak-20261009) held by F:/carla-worktrees/rq5-isolation-20261009; recreate via 'git worktree add E:/wt/prod_68868f76 68868f76'",
+      "risk": "LOW (both trees verified clean + spot-hash identical; cfg rq3 freeze file absent in BOTH at this revision - consistent)"
+    },
+    {
+      "id": "RM-2",
+      "action": "hibernation file disable (largest lever)",
+      "command": "powercfg /h off   [REQUIRES OPERATOR CONSENT; requires elevated shell]",
+      "recovery_estimate_bytes": 20508291072,
+      "rollback": "powercfg /h on re-enables hibernation",
+      "risk": "MEDIUM - disables hibernation OS feature; only with explicit operator consent"
+    },
+    {
+      "id": "RM-3",
+      "action": "archive+remove E:/CARLA/worktrees five legacy worktrees (~21.1 GB) AFTER unique-commit/push verification pass (Phase A completion)",
+      "recovery_estimate_bytes": 21151769543,
+      "risk": "HIGH until push/reachability proof exists"
+    },
+    {
+      "id": "RM-4",
+      "action": "metadata prune of stale registrations (no disk gain)",
+      "commands": ["git -C C:/Users/admin/PycharmProjects/gpt4/pythonProject3/carla_-main worktree prune --verbose"],
+      "recovery_estimate_bytes": 0,
+      "risk": "LOW - excludes H:/opencode/rq12-closure (locked) and H:/wt/phase6-rq5-offline-20261021 (prunable-but-do-not-until-confirmed)"
+    }
+  ],
+  "phase_b_needed": [
+    "status + unique-commit analysis for E:/CARLA/worktrees/* and remaining F:/ worktrees to classify fully",
+    "operator decision on duplicate 68868f76 copy (E: vs F: keep)",
+    "operator approval for hibernation disable (RM-2)",
+    "operator decision for archive of untracked evidence trees (7.6 GB in root repo; 574 MB in repair worktree)"
+  ],
+  "gates": {
+    "no_action_taken_in_phase_a": true,
+    "no_merge_performed": true,
+    "no_history_erased": true,
+    "historical_reports_untouched": true
+  }
+}

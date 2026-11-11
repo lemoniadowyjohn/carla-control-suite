@@ -1,0 +1,50 @@
+{
+  "task_id": "AUDIT-NORM-001",
+  "model": "Ling-3.0-flash Free",
+  "mode": "Build",
+  "base_commit": "e9ff598653bb95775eb4c12c82ba0ca084e83233",
+  "acceptance_checks": {
+    "232_of_232_tracked_ids": true,
+    "zero_contradictory_PASS": true,
+    "zero_PASS_below_evidence_requirement": true,
+    "zero_missing_mandatory_negative_controls_on_PASS": true,
+    "manifest_round_trip_PASS": true,
+    "archive_round_trip_PASS": true,
+    "pipeline_source_unchanged": true,
+    "record_count_check": true
+  },
+  "summary": {
+    "formal_ids": 218,
+    "issue_ids": 14,
+    "total_tracked": 232,
+    "corrected_statuses": {
+      "FAIL": 50,
+      "CONFLICTING_EVIDENCE": 32,
+      "INSUFFICIENT_EVIDENCE": 107,
+      "BLOCKED": 22,
+      "PASS": 6,
+      "NOT_APPLICABLE": 1
+    },
+    "profiles_all": {
+      "verdict": "BLOCKED",
+      "blockers": 6
+    },
+    "manifest_verification": {
+      "entries": 32,
+      "mismatches": 1,
+      "finding": "stale claim 07_BLOCKING_ISSUES.md recorded, authoritative file untouched"
+    },
+    "archive_round_trip": {
+      "status": "PASS",
+      "members": 33,
+      "mismatches": 0
+    }
+  },
+  "files_changed": [
+    "ultimate_pipeline/audit/__init__.py",
+    "ultimate_pipeline/tests/unit/test_audit_normalization.py"
+  ],
+  "tests_added": 17,
+  "verdict": "PASS",
+  "handoff": "handoff to SYS-001"
+}

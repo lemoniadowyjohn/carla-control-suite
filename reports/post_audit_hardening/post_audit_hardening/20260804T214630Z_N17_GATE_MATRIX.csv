@@ -1,0 +1,25 @@
+gate_id,gate_name,result,evidence_path,notes
+G0,Repository identity,PASS,git rev-parse,Branch and commit verified
+G1,Phase L evidence credibility,FAIL,N0 audit,Phase L validated wrong map
+G2,Runtime map identity,FAIL,N1 identity gate,Town10HD_Opt loaded instead of Ingolstadt
+G3,Source/runtime equivalence,FAIL,N2 equivalence,Massive content loss (108 vs 32710 roads)
+G4,Clean-server validation,PASS,N3 process audit,"Server running, no stale processes"
+G5,Spatial coverage,FAIL,N4 coverage,Only Town10HD_Opt tested
+G6,Mandatory routes,FAIL,N5 route stress,Not tested on correct map
+G7,Random route stress,FAIL,N5 route stress,Not tested on correct map
+G8,Vehicle physics,FAIL,N6 vehicle physics,Not tested on correct map
+G9,Elevation seams,FAIL,N6 elevation seams,Not tested on correct map
+G10,Traffic Manager,FAIL,N7 traffic stress,Not tested on correct map
+G11,Pedestrians,FAIL,N7 pedestrian stress,Not tested on correct map
+G12,Sensors,FAIL,N8 sensor validation,Not tested on correct map
+G13,GNSS coordinates,FAIL,N8 GNSS,Not tested on correct map
+G14,Visual alignment,FAIL,N9 visual alignment,Not tested on correct map
+G15,Collision alignment,FAIL,N9 collision alignment,Not tested on correct map
+G16,Performance,FAIL,N10 performance,Not tested on correct map
+G17,Endurance,FAIL,N10 endurance,Not tested on correct map
+G18,Negative controls,FAIL,N11 negative controls,Only wrong-map controls tested
+G19,Determinism,FAIL,N12 determinism,Only 1 run completed
+G20,Packaging/cooking,FAIL,N13 packaging,Not tested
+G21,Old-vs-new improvement,FAIL,N14 old-vs-new,Not tested on correct map
+G22,Protected hashes,FAIL,N12 hashes,Hashes for wrong map
+G23,Evidence integrity,FAIL,N0 audit,Phase L evidence rejected

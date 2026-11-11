@@ -1,0 +1,111 @@
+{
+  "schema": "carla_remediation_reconciliation_matrix/v1",
+  "generated": "2026-10-25",
+  "repo": "lemoniadowyjohn/carla-control-suite",
+  "deliverable": "RECONCILIATION PLAN ONLY - no merge performed in this task",
+  "anchor_refs": {
+    "authoritative_integration_branch": "integration/production-large-map-20260918",
+    "local_integration_tip": "502dda26",
+    "production_integration_tip": "d72f57c6 (origin/integration/production-large-map-20260918)",
+    "active_worktrees": {
+      "A_claude": {"path": "E:/wt/claude-hard-tasks-20261023", "branch": "fix/claude-hard-tasks-20261023", "head": "8dbdfc15", "origin_tip": "98e0d7e5", "local_ahead": ["9d35e786", "ae1832ff", "7bf21a23", "8dbdfc15"]},
+      "B_postpr16": {"path": "E:/wt/post-pr16-remediation-20261023", "branch": "fix/post-pr16-remediation-20261023", "head": "cc571fae", "merge_base_with_production": "d72f57c6", "origin_ref": "NONE (local-only commits; no origin/fix/post-pr16-remediation-20261023 resolves)", "local_commits": ["8ad50949(B1)", "935f7ff5(B2)", "ade82068(B3)", "cc571fae(B2-compat)"]},
+      "C_experimental": {"path": "E:/wt/repair-map-realism-p0-837a8504", "branch": "experimental/verified-fixes-20261022", "head": "d3947e90", "origin_tip": "5a004113", "local_ahead_count": 20}
+    },
+    "lineage_facts": [
+      "merge-base(A, production) = 5a004113; merge-base(B, production) = d72f57c6 exactly (B is a direct descendant of production)",
+      "A already contains ALL of C's commits d3c6353b..8271076a (verified merge-base --is-ancestor IN_A for all 11)",
+      "C-only commits: 409c348d(B1 reorder), a3b50e5c(B2 kwargs), 6f4ced30(B3 raise), f59212b3(L1/L2), d3947e90(L1L2 reviewer fix)",
+      "A-only delta (98e0d7e5..8dbdfc15): train_launcher.py, test_rq5_train_launcher_initialization.py, docs receipt",
+      "C-only delta (8271076a..d3947e90): 14 files; ONLY common file with A delta = ultimate_pipeline/perception/train_launcher.py"
+    ]
+  },
+  "defect_matrix": [
+    {"id": "RQ5-B1", "defect": "is_main/rank lifecycle vs stale SUCCESS revocation ordering",
+     "implementations": [
+       {"source": "C experimental", "commit": "409c348d", "behaviour": "simple reorder: _init_ddp+is_main above _revoke_stale_success; test asserts init_ddp < revoke", "review": "reviewed within batch (earlier session APPROVE)", "limitation": "DDP rendezvous failure leaves stale SUCCESS.txt (reviewer residual)"},
+       {"source": "B post-pr16", "commit": "8ad50949", "behaviour": "same simple reorder", "review": "branch-local, no origin ref; no recorded independent review found", "limitation": "same as C"},
+       {"source": "A claude", "commits": ["9d35e786", "ae1832ff", "7bf21a23", "8dbdfc15"], "behaviour": "_preinit_artifact_rank() proves rank BEFORE DDP init; revoke before early failures AND pre-DDP when proven rank 0; post-init revoke only when preinit_rank is None; fail-closed on inconsistent DDP ownership", "review": "has dedicated test file test_rq5_train_launcher_initialization.py (4 tests PASS in isolated rq5 venv)", "limitation": "none observed in dynamic validation"}
+     ],
+     "conflict": "HIGH if all three applied (double-revoke / skipped-revoke); A and C modify the same region of train_launcher.py main()",
+     "verdict": "A SUPERSEDES B and C for B1; when merging C into A's lineage, DROP C's test_train_launcher_is_main.py ordering assertion in favour of A's proven-rank contract (or adapt it)",
+     "dynamic_validation": "PASS (25 passed incl. 4 initialization tests + 12 dataset-acceptance tests in isolated env at candidate SHA)"},
+
+    {"id": "RQ5-B2", "defect": "pretrained-FCN-backbone prohibition + provenance of constructor args",
+     "implementations": [
+       {"source": "C experimental", "commit": "a3b50e5c", "behaviour": "verify_random_initialisation(model, weights=None, weights_backbone=None); raises PretrainingContractError on non-None; receipt records actual args; 4 builders pass weights_backbone=None", "review": "reviewed in batch; residual: fail-open when callers omit args"},
+       {"source": "B post-pr16", "commit": "935f7ff5 + cc571fae", "behaviour": "verify_random_initialisation(model, *, factory_kwargs: Optional[Mapping]=None); requires BOTH keys present when dict given, raises on any non-None; factory_kwargs_recorded flag for model-only compat", "review": "branch-local; no origin ref"},
+       {"source": "A claude", "commit": "none found in lineage", "review": "n/a"}
+     ],
+     "conflict": "MEDIUM (different signatures/semantics, disjoint call sites); B2 files are disjoint from A delta",
+     "verdict": "CONSOLIDATION BASE = B(post-pr16) factory_kwargs pattern (optional + recorded flag) PLUS C's explicit raise-on-non-None semantics PLUS C's four-builder weights_backbone=None edits (already disjoint from A); final choice needs one implementer + independent review",
+     "runtime_note": "candidate A source test batch1 contract guard differs: B2 behaviour untested at A HEAD until consolidation lands"},
+
+    {"id": "RQ5-B3", "defect": "silent --contract fallback in tools/rq5_contract_audit.py",
+     "implementations": [
+       {"source": "C experimental", "commit": "6f4ced30", "behaviour": "explicit missing --contract raises FileNotFoundError (fail-early); no-contract callers keep repo-local -> DEFAULT -> legacy chain", "review": "reviewed in batch"},
+       {"source": "B post-pr16", "commit": "ade82068", "behaviour": "returns FAIL report dict with missing_contract_path (no exception)", "behaviour_note": "report-compatible with rq5_experiment_contract_static_check/v1 consumers", "review": "branch-local"}
+     ],
+     "conflict": "LOW (same single file, but A delta does not touch it)",
+     "verdict": "DECISION REQUIRED from operator/review: raise vs FAIL-report; both agree on 'no silent fallback'. Suggested consolidation: explicit missing path -> FAIL report with missing_contract_path + non-zero CLI exit at the argparse layer (preserves machine-readable audit output); awaiting independent review",
+     "tests": {"C": "test_rq5_contract_audit.py 3 passed (isolated + project venv)", "B": "2 passed in A-head's test_o18_rq5_contract_audit.py (legacy coverage)"}
+    },
+
+    {"id": "L1", "defect": "orphan road repair safety (double radians, wrong link type, destructive overwrite, junction targets, sanity checks, 25 m snap)",
+     "implementations": [{"source": "C experimental ONLY", "commits": ["f59212b3", "d3947e90 (reviewer-fix)"], "review": "REJECT -> blocker fixes -> independent re-review verdict APPROVE for the 9 blockers; residuals: (R1) measured no-op on map of record because 32,320/32,324 junction-member roads already carry both junction links; (R2) paramPoly3 endpoint error median 12.09 m breaks the 5 m snap guarantee - G-rank & R1/R2 are recorded follow-ups WITH conditions (no ORPHAN_STRICT enable, no connectivity claims)"}],
+     "conflict": "NONE for cherry-pick into A lineage (disjoint files)",
+     "verdict": "C is the single source; cherry-pick f59212b3 + d3947e90 in order"},
+
+    {"id": "L2", "defect": "missing contactPoint + Stage 8 road-link reciprocity check",
+     "implementations": [{"source": "C", "evidence": "d3947e90 ASAM contactPoint semantics + reciprocity convention aligned with test_topology_validation.py; stage-03 boundary restored"}],
+     "conflict": "NONE",
+     "verdict": "C-only; follow reviewer conditions (do not claim connectivity gains; no map regeneration/promotion until L1+L2 landed AND validated)"},
+
+    {"id": "stage7-lane-links", "defect": "Stage 7 preservation of netconvert junction lane links",
+     "implementations": [{"source": "A", "commit": "98e0d7e5 (stage_07_lanes.py, stage_06_links.py, file_utils.py atomic ops)"}],
+     "verdict": "A single source; needs runtime validation on a real pipeline run before evidence claims"},
+
+    {"id": "atomic-writes", "defect": "atomic XODR and Stage 6 report writes",
+     "implementations": [{"source": "A", "commit": "98e0d7e5 (file_utils.py +48, tests test_core_file_utils_and_misc.py +41, test_stage6_containment.py +15)"}],
+     "verdict": "A single source"},
+
+    {"id": "access-metadata", "defect": "access-metadata fail-closed handling",
+     "implementations": [{"source": "A", "commit": "98e0d7e5 (enrichment/access_restriction_metadata.py + tests/unit/test_access_restriction_metadata.py)"}],
+     "verdict": "A single source"},
+
+    {"id": "G02c-review-independence", "defect": "normalised reviewer independence, receipt size cap, integrity test isolation (C1 review)",
+     "implementations": [{"source": "A", "commit": "941eaa7c (rq3_evidence_gate.py +43, test_rq3_review_receipt_binding.py +81)"}],
+     "verdict": "A single source; supersedes part of C's G02b scope"},
+
+    {"id": "portable-paths", "defect": "portable test roots; CI-path portability",
+     "implementations": [{"source": "C", "commits": ["d3c6353b", "d05c28ce"], "status": "already inside A lineage"}],
+     "verdict": "no further action"},
+
+    {"id": "ci-failures", "defect": "offline CI failures (59-class) + T1 triage",
+     "status": "test_triage sessions produced counts: tests/ batch 174 passed / 7 failed (6 ENVIRONMENT, 1 PRODUCT-class CUDA-OOM mismatch); full offline suite at d3947e90: 2178 passed / 4 skipped / 1 failed (PRE-EXISTING test_perception_gap_core, reproduced at base file state); classification reproduced identical in two venvs",
+     "verdict": "product-class defects: test_perception_gap_core (pre-existing), CUDA-OOM guard mismatch; environment items (carla enum TypeError, torch deps in py312) documented"},
+
+    {"id": "dem-provenance", "defect": "DEM/source-input restoration",
+     "implementations": [{"source": "C", "commit": "b09af15c", "status": "already inside A lineage; dem_ing.tif sha matches INPUTS_MANIFEST.json"}],
+     "verdict": "no further action"},
+
+    {"id": "carla-test-doubles", "defect": "carla stub leakage across files (AttributeError reboots in test_audit_osm_road_link_topology_cli.py pairing)",
+     "status": "documented ordering-sensitive residual", "verdict": "follow-up: scope stub to file-local monkeypatch"}
+  ],
+  "merge_readiness": [
+    {"branch": "fix/claude-hard-tasks-20261023 @ 8dbdfc15", "readiness": "HIGHEST: superset of C through 8bd lineage; 4 unpushed local commits must be pushed/preserved first; 14 exec-correctness failures are source-state FAILs needing decision (fix tests or fix tuple-return API)",
+     "requirement": "push 4 local commits (operator-authorized) before any worktree action"},
+    {"branch": "fix/post-pr16-remediation-20261023 @ cc571fae", "readiness": "NO origin ref exists - 4 commits exist ONLY locally; push branch first (operator-authorized) then reconcile B2/B3 selections by review"},
+    {"branch": "experimental/verified-fixes-20261022 @ d3947e90", "readiness": "11 of 20 ahead-commits already in A; remaining 5 are the C-delta; merge-tree with production reported clean earlier (at 1953107d; re-check at d3947e90 before any PR)"},
+    {"full-suite-evidence": "D1 at d3947e90: 2178 passed / 4 skipped / 1 failed (PRE-EXISTING) - recorded; does NOT clear GitHub CI (still NOT_RUN)"}
+  ],
+  "proposed_future_pr_sequence": [
+    "PR-0 (operator): push fix/claude-hard-tasks-20261023 (4 commits) and fix/post-pr16-remediation-20261023 (4 commits) so no lineage exists only in a worktree; archive-tag C3 502dda26 decision",
+    "PR-1 (one writer, from A lineage): consolidate B1 = keep A's proven-rank + DDP-ownership fail-closed implementation; adapt/drop C's test_train_launcher_is_main ordering assertion; independent reviewer REQUIRED",
+    "PR-2 (one writer): consolidate B2 = factory_kwargs optional + recorded flag (B) with explicit raise on non-None args (C semantics) + four-builder weights_backbone=None; tests from both lineages merged; independent reviewer REQUIRED",
+    "PR-3 (one writer): consolidate B3 per operator/review decision (raise vs FAIL report; recommendation above); independent reviewer REQUIRED",
+    "PR-4 (one writer): cherry-pick C-only L1/L2 pair (f59212b3, d3947e90) onto the consolidated lineage; respect reviewer conditions (no ORPHAN_STRICT enable, no connectivity claims, no map regeneration)",
+    "PR-5: target PR against production integration/production-large-map-20260918 (d72f57c6) after merge-tree check; CI green required before further merge; RELEASE stays BLOCKED pending external sign-off"
+  ],
+  "gates": {"no_merge_performed": true, "no_map_regeneration": true, "no_tolerance_change": true, "frozen_configs_untouched": true, "phase_c_blocked_until_matrix_reviewed": true}
+}

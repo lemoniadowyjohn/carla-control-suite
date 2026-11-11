@@ -1,0 +1,57 @@
+{
+  "candidate_path": "C:\\Users\\admin\\AppData\\Local\\Temp\\claude\\C--Users-admin-PycharmProjects-gpt4-pythonProject3-carla--main\\377842fc-e2d5-41d8-b622-b063eb346f6e\\scratchpad\\c0_regen_out\\pipeline_out\\C0_CLEAN_REGEN\\08_final_C0_CLEAN_REGEN_laneSectionFixed_lane_successor_fixed_linkpatched.xodr",
+  "candidate_sha256": "471bea48b273307f70d4c049c5ac5ecb79de6c9584bdee30e80c9874882a0ead",
+  "chain": {
+    "osm_path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\campaigns\\ingolstadt_cooked_perception_v1\\source\\ingolstadt_authoritative.osm",
+    "osm_sha256": "b9e074656f744c31e6aabb0a16e6b2246824ca74e202ea2c316ff7f22364f24f",
+    "seed_xodr_path": "C:\\Users\\admin\\AppData\\Local\\Temp\\claude\\C--Users-admin-PycharmProjects-gpt4-pythonProject3-carla--main\\377842fc-e2d5-41d8-b622-b063eb346f6e\\scratchpad\\c0_regen_out\\seed\\ingolstadt_seed.xodr",
+    "seed_xodr_sha256": "f02fe381a2c9be9db81b3c7dc0fdf094d8f8225e2b3413c0fe97f2ce6b382075",
+    "final_candidate_path": "C:\\Users\\admin\\AppData\\Local\\Temp\\claude\\C--Users-admin-PycharmProjects-gpt4-pythonProject3-carla--main\\377842fc-e2d5-41d8-b622-b063eb346f6e\\scratchpad\\c0_regen_out\\pipeline_out\\C0_CLEAN_REGEN\\08_final_C0_CLEAN_REGEN_laneSectionFixed_lane_successor_fixed_linkpatched.xodr",
+    "final_candidate_sha256": "471bea48b273307f70d4c049c5ac5ecb79de6c9584bdee30e80c9874882a0ead",
+    "final_candidate_bytes": 134982690
+  },
+  "gates": {
+    "G-WIDTH": {
+      "pass": true,
+      "n": 53716,
+      "min": 0.2,
+      "max": 3.5,
+      "median": 3.5,
+      "stdev": 0.721,
+      "frac_near_6.0m": 0.0
+    },
+    "G-ELEV": {
+      "pass": true,
+      "n_records": 32297,
+      "min": 361.85,
+      "max": 408.67,
+      "span": 46.82,
+      "median": 371.02
+    },
+    "G19": {
+      "pass": false,
+      "issue_count": 798,
+      "roads_checked": 32297,
+      "max_excess_m": 1.000012161966879e-08,
+      "note": "Corrected by rechecking with run_n_certify._length_invariant_evidence at the certification tolerance of 1e-9. The earlier C0 gate used a looser tolerance and overreported PASS.",
+      "sample_issues": [
+        {
+          "road_id": "42331",
+          "excess_m": 1.0000007932831068e-08
+        },
+        {
+          "road_id": "42340",
+          "excess_m": 1.0000007932831068e-08
+        }
+      ]
+    },
+    "G-SCHEMA": {
+      "pass": true,
+      "root": "OpenDRIVE",
+      "roads": 32297,
+      "junctions": 3568
+    }
+  },
+  "VERDICT": "C0_GATES_FAIL_G19",
+  "loadability": "DEFERRED_TO_LIVE_CARLA"
+}

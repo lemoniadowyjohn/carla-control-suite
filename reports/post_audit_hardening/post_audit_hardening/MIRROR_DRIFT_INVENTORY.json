@@ -1,0 +1,4340 @@
+{
+  "generated_at": "2026-08-14 (post-audit hardening batch 2)",
+  "canonical_tree": "ultimate_pipeline/",
+  "mirror_tree": "submission/infrastructure/ultimate_pipeline/",
+  "scope": ".py in both trees, excluding __pycache__ and test_*",
+  "method": "byte-compare",
+  "summary": {
+    "total_pairs": 531,
+    "identical": 498,
+    "drifted": 33,
+    "guarded": 6,
+    "guarded_drifted": 0,
+    "unguarded_drifted": 33
+  },
+  "files": [
+    {
+      "path": "__init__.py",
+      "status": "DRIFT",
+      "canonical_size_bytes": 228,
+      "mirror_size_bytes": 1428,
+      "size_equal": false,
+      "guarded": false
+    },
+    {
+      "path": "analysis/correlator.py",
+      "status": "identical",
+      "canonical_size_bytes": 940,
+      "mirror_size_bytes": 940,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "analysis/cross_city.py",
+      "status": "identical",
+      "canonical_size_bytes": 2608,
+      "mirror_size_bytes": 2608,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "analysis/domain_gap_statistics.py",
+      "status": "identical",
+      "canonical_size_bytes": 1964,
+      "mirror_size_bytes": 1964,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "analysis/lane_debugger.py",
+      "status": "identical",
+      "canonical_size_bytes": 331,
+      "mirror_size_bytes": 331,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "analysis/pipeline_output_summary.py",
+      "status": "identical",
+      "canonical_size_bytes": 12733,
+      "mirror_size_bytes": 12733,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "augmentation/realism_augmentor.py",
+      "status": "identical",
+      "canonical_size_bytes": 10070,
+      "mirror_size_bytes": 10070,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "bootstrap_repo_root.py",
+      "status": "DRIFT",
+      "canonical_size_bytes": 335,
+      "mirror_size_bytes": 752,
+      "size_equal": false,
+      "guarded": false
+    },
+    {
+      "path": "carla_tools/__init__.py",
+      "status": "DRIFT",
+      "canonical_size_bytes": 362,
+      "mirror_size_bytes": 835,
+      "size_equal": false,
+      "guarded": false
+    },
+    {
+      "path": "carla_tools/actor_stream_manager.py",
+      "status": "identical",
+      "canonical_size_bytes": 8640,
+      "mirror_size_bytes": 8640,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "carla_tools/carla_final_check.py",
+      "status": "identical",
+      "canonical_size_bytes": 15704,
+      "mirror_size_bytes": 15704,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "carla_tools/carla_final_test.py",
+      "status": "identical",
+      "canonical_size_bytes": 13869,
+      "mirror_size_bytes": 13869,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "carla_tools/carla_probe_port.py",
+      "status": "identical",
+      "canonical_size_bytes": 211,
+      "mirror_size_bytes": 211,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "carla_tools/carla_readiness.py",
+      "status": "identical",
+      "canonical_size_bytes": 9707,
+      "mirror_size_bytes": 9707,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "carla_tools/carla_recovery.py",
+      "status": "identical",
+      "canonical_size_bytes": 12030,
+      "mirror_size_bytes": 12030,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "carla_tools/carla_server.py",
+      "status": "identical",
+      "canonical_size_bytes": 8134,
+      "mirror_size_bytes": 8134,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "carla_tools/carla_sim_consolidated.py",
+      "status": "identical",
+      "canonical_size_bytes": 18270,
+      "mirror_size_bytes": 18270,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "carla_tools/check_opendrive_determinism.py",
+      "status": "identical",
+      "canonical_size_bytes": 3843,
+      "mirror_size_bytes": 3843,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "carla_tools/evaluate_generated_map.py",
+      "status": "identical",
+      "canonical_size_bytes": 9658,
+      "mirror_size_bytes": 9658,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "carla_tools/fixed_traffic_manager.py",
+      "status": "identical",
+      "canonical_size_bytes": 9162,
+      "mirror_size_bytes": 9162,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "carla_tools/local_perception_runner.py",
+      "status": "identical",
+      "canonical_size_bytes": 25693,
+      "mirror_size_bytes": 25693,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "carla_tools/map_identity_guard.py",
+      "status": "identical",
+      "canonical_size_bytes": 2564,
+      "mirror_size_bytes": 2564,
+      "size_equal": true,
+      "guarded": true
+    },
+    {
+      "path": "carla_tools/map_loader.py",
+      "status": "identical",
+      "canonical_size_bytes": 949,
+      "mirror_size_bytes": 949,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "carla_tools/map_registry.py",
+      "status": "identical",
+      "canonical_size_bytes": 14443,
+      "mirror_size_bytes": 14443,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "carla_tools/mesh_streamer.py",
+      "status": "identical",
+      "canonical_size_bytes": 4032,
+      "mirror_size_bytes": 4032,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "carla_tools/perception_runner_hpc.py",
+      "status": "identical",
+      "canonical_size_bytes": 3885,
+      "mirror_size_bytes": 3885,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "carla_tools/perception_runner_local.py",
+      "status": "identical",
+      "canonical_size_bytes": 561,
+      "mirror_size_bytes": 561,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "carla_tools/qa_tile_spawn_probe.py",
+      "status": "identical",
+      "canonical_size_bytes": 9646,
+      "mirror_size_bytes": 9646,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "carla_tools/reload_ready_for_sensors.py",
+      "status": "identical",
+      "canonical_size_bytes": 4830,
+      "mirror_size_bytes": 4830,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "carla_tools/road_defect_detector.py",
+      "status": "identical",
+      "canonical_size_bytes": 8697,
+      "mirror_size_bytes": 8697,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "carla_tools/runtime_enrichments.py",
+      "status": "identical",
+      "canonical_size_bytes": 14809,
+      "mirror_size_bytes": 14809,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "carla_tools/safe_spawn_ego.py",
+      "status": "identical",
+      "canonical_size_bytes": 4131,
+      "mirror_size_bytes": 4131,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "carla_tools/screenshot_generator.py",
+      "status": "identical",
+      "canonical_size_bytes": 7616,
+      "mirror_size_bytes": 7616,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "carla_tools/sensor_rig.py",
+      "status": "identical",
+      "canonical_size_bytes": 7139,
+      "mirror_size_bytes": 7139,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "carla_tools/spawn_enrichments.py",
+      "status": "identical",
+      "canonical_size_bytes": 14118,
+      "mirror_size_bytes": 14118,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "carla_tools/spawn_hardening.py",
+      "status": "identical",
+      "canonical_size_bytes": 825,
+      "mirror_size_bytes": 825,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "carla_tools/spawn_recovery.py",
+      "status": "identical",
+      "canonical_size_bytes": 4149,
+      "mirror_size_bytes": 4149,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "carla_tools/spawn_validator.py",
+      "status": "identical",
+      "canonical_size_bytes": 1969,
+      "mirror_size_bytes": 1969,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "carla_tools/thesis_sensor_rig.py",
+      "status": "identical",
+      "canonical_size_bytes": 72965,
+      "mirror_size_bytes": 72965,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "carla_tools/tile_qa_suite.py",
+      "status": "identical",
+      "canonical_size_bytes": 7541,
+      "mirror_size_bytes": 7541,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "carla_tools/tile_streamer.py",
+      "status": "identical",
+      "canonical_size_bytes": 13719,
+      "mirror_size_bytes": 13719,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "carla_tools/tile_world_runner.py",
+      "status": "identical",
+      "canonical_size_bytes": 5445,
+      "mirror_size_bytes": 5445,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "carla_tools/vehicle_manager/__init__.py",
+      "status": "identical",
+      "canonical_size_bytes": 266,
+      "mirror_size_bytes": 266,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "carla_tools/vehicle_manager/cache.py",
+      "status": "identical",
+      "canonical_size_bytes": 2721,
+      "mirror_size_bytes": 2721,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "carla_tools/vehicle_manager/core.py",
+      "status": "identical",
+      "canonical_size_bytes": 7377,
+      "mirror_size_bytes": 7377,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "carla_tools/vehicle_manager/spawner.py",
+      "status": "identical",
+      "canonical_size_bytes": 4669,
+      "mirror_size_bytes": 4669,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "carla_tools/vehicle_manager/validator.py",
+      "status": "identical",
+      "canonical_size_bytes": 1500,
+      "mirror_size_bytes": 1500,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "carla_tools/vehicle_manager/vehicle_manager.py",
+      "status": "identical",
+      "canonical_size_bytes": 7390,
+      "mirror_size_bytes": 7390,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "carla_tools/weather_controller.py",
+      "status": "identical",
+      "canonical_size_bytes": 3701,
+      "mirror_size_bytes": 3701,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "cli.py",
+      "status": "DRIFT",
+      "canonical_size_bytes": 21526,
+      "mirror_size_bytes": 15734,
+      "size_equal": false,
+      "guarded": false
+    },
+    {
+      "path": "config/paths.py",
+      "status": "identical",
+      "canonical_size_bytes": 253,
+      "mirror_size_bytes": 253,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "config/runtime.py",
+      "status": "identical",
+      "canonical_size_bytes": 812,
+      "mirror_size_bytes": 812,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "config/settings.py",
+      "status": "DRIFT",
+      "canonical_size_bytes": 88816,
+      "mirror_size_bytes": 79131,
+      "size_equal": false,
+      "guarded": false
+    },
+    {
+      "path": "config/thesis_contract.py",
+      "status": "identical",
+      "canonical_size_bytes": 14376,
+      "mirror_size_bytes": 14376,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "contracts/__init__.py",
+      "status": "DRIFT",
+      "canonical_size_bytes": 1300,
+      "mirror_size_bytes": 1087,
+      "size_equal": false,
+      "guarded": false
+    },
+    {
+      "path": "contracts/agent_sync.py",
+      "status": "DRIFT",
+      "canonical_size_bytes": 11143,
+      "mirror_size_bytes": 14114,
+      "size_equal": false,
+      "guarded": false
+    },
+    {
+      "path": "contracts/artifacts.py",
+      "status": "identical",
+      "canonical_size_bytes": 11031,
+      "mirror_size_bytes": 11031,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "contracts/experiment_config.py",
+      "status": "identical",
+      "canonical_size_bytes": 6640,
+      "mirror_size_bytes": 6640,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "core/carla_opendrive_loader.py",
+      "status": "identical",
+      "canonical_size_bytes": 18329,
+      "mirror_size_bytes": 18329,
+      "size_equal": true,
+      "guarded": true
+    },
+    {
+      "path": "core/carla_preflight.py",
+      "status": "identical",
+      "canonical_size_bytes": 11500,
+      "mirror_size_bytes": 11500,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "core/carla_utils.py",
+      "status": "identical",
+      "canonical_size_bytes": 21179,
+      "mirror_size_bytes": 21179,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "core/crash_classifier.py",
+      "status": "identical",
+      "canonical_size_bytes": 4108,
+      "mirror_size_bytes": 4108,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "core/determinism.py",
+      "status": "identical",
+      "canonical_size_bytes": 646,
+      "mirror_size_bytes": 646,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "core/file_utils.py",
+      "status": "identical",
+      "canonical_size_bytes": 1004,
+      "mirror_size_bytes": 1004,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "core/georef_utils.py",
+      "status": "identical",
+      "canonical_size_bytes": 1917,
+      "mirror_size_bytes": 1917,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "core/odr_io.py",
+      "status": "identical",
+      "canonical_size_bytes": 10384,
+      "mirror_size_bytes": 10384,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "core/opendrive_gen_diagnostic.py",
+      "status": "identical",
+      "canonical_size_bytes": 7993,
+      "mirror_size_bytes": 7993,
+      "size_equal": true,
+      "guarded": true
+    },
+    {
+      "path": "core/repair_diff.py",
+      "status": "identical",
+      "canonical_size_bytes": 1389,
+      "mirror_size_bytes": 1389,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "core/return_codes.py",
+      "status": "identical",
+      "canonical_size_bytes": 299,
+      "mirror_size_bytes": 299,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "core/run_manifest.py",
+      "status": "identical",
+      "canonical_size_bytes": 4422,
+      "mirror_size_bytes": 4422,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "core/s_invariants.py",
+      "status": "identical",
+      "canonical_size_bytes": 9656,
+      "mirror_size_bytes": 9656,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "core/tile_failure_monitor.py",
+      "status": "identical",
+      "canonical_size_bytes": 2726,
+      "mirror_size_bytes": 2726,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "core/validation_report.py",
+      "status": "identical",
+      "canonical_size_bytes": 4658,
+      "mirror_size_bytes": 4658,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "core/xodr_hash_gate.py",
+      "status": "identical",
+      "canonical_size_bytes": 3384,
+      "mirror_size_bytes": 3384,
+      "size_equal": true,
+      "guarded": true
+    },
+    {
+      "path": "core/xodr_lightener.py",
+      "status": "identical",
+      "canonical_size_bytes": 2320,
+      "mirror_size_bytes": 2320,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "core/xodr_sanitizer.py",
+      "status": "DRIFT",
+      "canonical_size_bytes": 17380,
+      "mirror_size_bytes": 15953,
+      "size_equal": false,
+      "guarded": false
+    },
+    {
+      "path": "core/xodr_statistics.py",
+      "status": "identical",
+      "canonical_size_bytes": 9029,
+      "mirror_size_bytes": 9029,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "database/db_manager.py",
+      "status": "identical",
+      "canonical_size_bytes": 9632,
+      "mirror_size_bytes": 9632,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "database/run_archiver.py",
+      "status": "identical",
+      "canonical_size_bytes": 2898,
+      "mirror_size_bytes": 2898,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "db/sensor_logger.py",
+      "status": "identical",
+      "canonical_size_bytes": 3307,
+      "mirror_size_bytes": 3307,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "debug/carla_crash_fixtures.py",
+      "status": "identical",
+      "canonical_size_bytes": 3055,
+      "mirror_size_bytes": 3055,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "debug/check_lanes_and_stats.py",
+      "status": "identical",
+      "canonical_size_bytes": 1064,
+      "mirror_size_bytes": 1064,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "debug/check_s_invariants.py",
+      "status": "identical",
+      "canonical_size_bytes": 3556,
+      "mirror_size_bytes": 3556,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "debug/compare_xodr.py",
+      "status": "identical",
+      "canonical_size_bytes": 432,
+      "mirror_size_bytes": 432,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "debug/failure_bundle.py",
+      "status": "identical",
+      "canonical_size_bytes": 3434,
+      "mirror_size_bytes": 3434,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "debug/single_road_extractor.py",
+      "status": "identical",
+      "canonical_size_bytes": 2618,
+      "mirror_size_bytes": 2618,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "dem/dem_auto_downloader.py",
+      "status": "identical",
+      "canonical_size_bytes": 8654,
+      "mirror_size_bytes": 8654,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "dem/dem_diagnostics.py",
+      "status": "identical",
+      "canonical_size_bytes": 2945,
+      "mirror_size_bytes": 2945,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "determinism/__init__.py",
+      "status": "identical",
+      "canonical_size_bytes": 68,
+      "mirror_size_bytes": 68,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "determinism/stage_digest.py",
+      "status": "identical",
+      "canonical_size_bytes": 2313,
+      "mirror_size_bytes": 2313,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "diagnostics/autopilot_check.py",
+      "status": "identical",
+      "canonical_size_bytes": 3633,
+      "mirror_size_bytes": 3633,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "diagnostics/autopilot_test.py",
+      "status": "identical",
+      "canonical_size_bytes": 3715,
+      "mirror_size_bytes": 3715,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "diagnostics/carla_quick_load.py",
+      "status": "identical",
+      "canonical_size_bytes": 6704,
+      "mirror_size_bytes": 6704,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "diagnostics/check_carla_session.py",
+      "status": "identical",
+      "canonical_size_bytes": 1316,
+      "mirror_size_bytes": 1316,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "diagnostics/continuity_diff_anim.py",
+      "status": "identical",
+      "canonical_size_bytes": 1331,
+      "mirror_size_bytes": 1331,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "diagnostics/continuity_heatmap.py",
+      "status": "identical",
+      "canonical_size_bytes": 2717,
+      "mirror_size_bytes": 2717,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "diagnostics/continuity_metrics.py",
+      "status": "identical",
+      "canonical_size_bytes": 1701,
+      "mirror_size_bytes": 1701,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "diagnostics/continuity_summary.py",
+      "status": "identical",
+      "canonical_size_bytes": 5440,
+      "mirror_size_bytes": 5440,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "diagnostics/dataset_quick_audit.py",
+      "status": "identical",
+      "canonical_size_bytes": 2601,
+      "mirror_size_bytes": 2601,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "diagnostics/elevation_summary.py",
+      "status": "identical",
+      "canonical_size_bytes": 4203,
+      "mirror_size_bytes": 4203,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "diagnostics/lane_debugger.py",
+      "status": "identical",
+      "canonical_size_bytes": 1160,
+      "mirror_size_bytes": 1160,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "diagnostics/mesh_checker.py",
+      "status": "identical",
+      "canonical_size_bytes": 1893,
+      "mirror_size_bytes": 1893,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "diagnostics/pipeline_diagnostics.py",
+      "status": "identical",
+      "canonical_size_bytes": 1274,
+      "mirror_size_bytes": 1274,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "diagnostics/system_integrity_checker.py",
+      "status": "identical",
+      "canonical_size_bytes": 6201,
+      "mirror_size_bytes": 6201,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "diagnostics/tile_forensics.py",
+      "status": "identical",
+      "canonical_size_bytes": 7203,
+      "mirror_size_bytes": 7203,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "diagnostics/validate_manual_maps.py",
+      "status": "identical",
+      "canonical_size_bytes": 6451,
+      "mirror_size_bytes": 6451,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "diagnostics/xodr_cropper.py",
+      "status": "identical",
+      "canonical_size_bytes": 1412,
+      "mirror_size_bytes": 1412,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "diagnostics/xodr_cropper_gps.py",
+      "status": "identical",
+      "canonical_size_bytes": 19080,
+      "mirror_size_bytes": 19080,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "domain_gap/adaptation/__init__.py",
+      "status": "identical",
+      "canonical_size_bytes": 60,
+      "mirror_size_bytes": 60,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "domain_gap/adaptation/adaptation_runner.py",
+      "status": "identical",
+      "canonical_size_bytes": 1751,
+      "mirror_size_bytes": 1751,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "domain_gap/adaptation/coral.py",
+      "status": "identical",
+      "canonical_size_bytes": 1143,
+      "mirror_size_bytes": 1143,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "domain_gap/adaptation/mmd.py",
+      "status": "identical",
+      "canonical_size_bytes": 684,
+      "mirror_size_bytes": 684,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "domain_gap/connectivity_gap.py",
+      "status": "identical",
+      "canonical_size_bytes": 19296,
+      "mirror_size_bytes": 19296,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "domain_gap/curvature_gap.py",
+      "status": "identical",
+      "canonical_size_bytes": 6540,
+      "mirror_size_bytes": 6540,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "domain_gap/deterministic_alignment.py",
+      "status": "identical",
+      "canonical_size_bytes": 6990,
+      "mirror_size_bytes": 6990,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "domain_gap/domain_gap_aggregator.py",
+      "status": "identical",
+      "canonical_size_bytes": 8716,
+      "mirror_size_bytes": 8716,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "domain_gap/domain_gap_prep.py",
+      "status": "identical",
+      "canonical_size_bytes": 4774,
+      "mirror_size_bytes": 4774,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "domain_gap/domain_gap_stats.py",
+      "status": "identical",
+      "canonical_size_bytes": 14808,
+      "mirror_size_bytes": 14808,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "domain_gap/elevation_gap.py",
+      "status": "identical",
+      "canonical_size_bytes": 14201,
+      "mirror_size_bytes": 14201,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "domain_gap/experiment_logger.py",
+      "status": "identical",
+      "canonical_size_bytes": 4954,
+      "mirror_size_bytes": 4954,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "domain_gap/fast_eval.py",
+      "status": "identical",
+      "canonical_size_bytes": 6323,
+      "mirror_size_bytes": 6323,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "domain_gap/feature_gap.py",
+      "status": "identical",
+      "canonical_size_bytes": 4943,
+      "mirror_size_bytes": 4943,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "domain_gap/gap_analyzer.py",
+      "status": "identical",
+      "canonical_size_bytes": 6922,
+      "mirror_size_bytes": 6922,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "domain_gap/geo_alignment.py",
+      "status": "DRIFT",
+      "canonical_size_bytes": 33899,
+      "mirror_size_bytes": 33159,
+      "size_equal": false,
+      "guarded": false
+    },
+    {
+      "path": "domain_gap/geometry_gap.py",
+      "status": "identical",
+      "canonical_size_bytes": 9823,
+      "mirror_size_bytes": 9823,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "domain_gap/intersection_classifier.py",
+      "status": "identical",
+      "canonical_size_bytes": 3833,
+      "mirror_size_bytes": 3833,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "domain_gap/intersection_gap.py",
+      "status": "identical",
+      "canonical_size_bytes": 3916,
+      "mirror_size_bytes": 3916,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "domain_gap/junction_complexity_gap.py",
+      "status": "identical",
+      "canonical_size_bytes": 3931,
+      "mirror_size_bytes": 3931,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "domain_gap/manual_vs_auto_comparator.py",
+      "status": "identical",
+      "canonical_size_bytes": 2278,
+      "mirror_size_bytes": 2278,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "domain_gap/map_stats_osm.py",
+      "status": "identical",
+      "canonical_size_bytes": 6016,
+      "mirror_size_bytes": 6016,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "domain_gap/map_stats_xodr.py",
+      "status": "identical",
+      "canonical_size_bytes": 6840,
+      "mirror_size_bytes": 6840,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "domain_gap/object_density_gap.py",
+      "status": "identical",
+      "canonical_size_bytes": 4549,
+      "mirror_size_bytes": 4549,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "domain_gap/osm_loader.py",
+      "status": "identical",
+      "canonical_size_bytes": 3793,
+      "mirror_size_bytes": 3793,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "domain_gap/per_tile_gap.py",
+      "status": "identical",
+      "canonical_size_bytes": 4195,
+      "mirror_size_bytes": 4195,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "domain_gap/perception_gap.py",
+      "status": "identical",
+      "canonical_size_bytes": 8423,
+      "mirror_size_bytes": 8423,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "domain_gap/perception_gap_feature_proxy.py",
+      "status": "identical",
+      "canonical_size_bytes": 2955,
+      "mirror_size_bytes": 2955,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "domain_gap/perception_plots.py",
+      "status": "identical",
+      "canonical_size_bytes": 5650,
+      "mirror_size_bytes": 5650,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "domain_gap/qms.py",
+      "status": "identical",
+      "canonical_size_bytes": 2955,
+      "mirror_size_bytes": 2955,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "domain_gap/report_aggregator.py",
+      "status": "identical",
+      "canonical_size_bytes": 5324,
+      "mirror_size_bytes": 5324,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "domain_gap/report_writer.py",
+      "status": "identical",
+      "canonical_size_bytes": 1028,
+      "mirror_size_bytes": 1028,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "domain_gap/road_classification_gap.py",
+      "status": "identical",
+      "canonical_size_bytes": 4537,
+      "mirror_size_bytes": 4537,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "domain_gap/run_alignment_and_matching.py",
+      "status": "identical",
+      "canonical_size_bytes": 7684,
+      "mirror_size_bytes": 7684,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "domain_gap/run_domain_gap_sweep.py",
+      "status": "identical",
+      "canonical_size_bytes": 5353,
+      "mirror_size_bytes": 5353,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "domain_gap/run_gap_ablation_experiment.py",
+      "status": "identical",
+      "canonical_size_bytes": 3837,
+      "mirror_size_bytes": 3837,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "domain_gap/semantic_gap.py",
+      "status": "identical",
+      "canonical_size_bytes": 4220,
+      "mirror_size_bytes": 4220,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "domain_gap/structural_gap.py",
+      "status": "identical",
+      "canonical_size_bytes": 3665,
+      "mirror_size_bytes": 3665,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "domain_gap/tests/__init__.py",
+      "status": "identical",
+      "canonical_size_bytes": 28,
+      "mirror_size_bytes": 28,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "domain_gap/tile_gap_evaluator.py",
+      "status": "identical",
+      "canonical_size_bytes": 8401,
+      "mirror_size_bytes": 8401,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "domain_gap/tile_gap_heatmap.py",
+      "status": "identical",
+      "canonical_size_bytes": 4388,
+      "mirror_size_bytes": 4388,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "domain_gap/tile_grid_meta.py",
+      "status": "identical",
+      "canonical_size_bytes": 6591,
+      "mirror_size_bytes": 6591,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "domain_gap/tile_matcher.py",
+      "status": "identical",
+      "canonical_size_bytes": 18516,
+      "mirror_size_bytes": 18516,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "domain_gap/tile_perception_gap.py",
+      "status": "identical",
+      "canonical_size_bytes": 3846,
+      "mirror_size_bytes": 3846,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "domain_gap/tile_reporter.py",
+      "status": "identical",
+      "canonical_size_bytes": 988,
+      "mirror_size_bytes": 988,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "domain_gap/topology_gap.py",
+      "status": "identical",
+      "canonical_size_bytes": 2200,
+      "mirror_size_bytes": 2200,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "domain_gap/validator.py",
+      "status": "identical",
+      "canonical_size_bytes": 717,
+      "mirror_size_bytes": 717,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "domain_gap_cli.py",
+      "status": "identical",
+      "canonical_size_bytes": 1382,
+      "mirror_size_bytes": 1382,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "domain_gap_gnn/__init__.py",
+      "status": "identical",
+      "canonical_size_bytes": 130,
+      "mirror_size_bytes": 130,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "domain_gap_gnn/collapse_check.py",
+      "status": "identical",
+      "canonical_size_bytes": 4136,
+      "mirror_size_bytes": 4136,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "domain_gap_gnn/graph_builder.py",
+      "status": "identical",
+      "canonical_size_bytes": 7185,
+      "mirror_size_bytes": 7185,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "domain_gap_gnn/infer_tile_gaps.py",
+      "status": "identical",
+      "canonical_size_bytes": 2759,
+      "mirror_size_bytes": 2759,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "domain_gap_gnn/latent_gap_metrics.py",
+      "status": "identical",
+      "canonical_size_bytes": 5526,
+      "mirror_size_bytes": 5526,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "domain_gap_gnn/latent_gap_runner.py",
+      "status": "identical",
+      "canonical_size_bytes": 5477,
+      "mirror_size_bytes": 5477,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "domain_gap_gnn/latent_gap_utils.py",
+      "status": "identical",
+      "canonical_size_bytes": 2120,
+      "mirror_size_bytes": 2120,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "domain_gap_gnn/map_encoder.py",
+      "status": "identical",
+      "canonical_size_bytes": 2994,
+      "mirror_size_bytes": 2994,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "domain_gap_gnn/map_tile_dataset.py",
+      "status": "identical",
+      "canonical_size_bytes": 3252,
+      "mirror_size_bytes": 3252,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "domain_gap_gnn/run_ksweep.py",
+      "status": "identical",
+      "canonical_size_bytes": 9751,
+      "mirror_size_bytes": 9751,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "domain_gap_gnn/train_map_encoder.py",
+      "status": "identical",
+      "canonical_size_bytes": 6195,
+      "mirror_size_bytes": 6195,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "elevation/elevation_seam_fixer.py",
+      "status": "DRIFT",
+      "canonical_size_bytes": 8770,
+      "mirror_size_bytes": 289,
+      "size_equal": false,
+      "guarded": false
+    },
+    {
+      "path": "enrichment/blender_runner.py",
+      "status": "DRIFT",
+      "canonical_size_bytes": 17309,
+      "mirror_size_bytes": 18042,
+      "size_equal": false,
+      "guarded": false
+    },
+    {
+      "path": "enrichment/building_extruder.py",
+      "status": "identical",
+      "canonical_size_bytes": 4603,
+      "mirror_size_bytes": 4603,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "enrichment/elevation_importer.py",
+      "status": "DRIFT",
+      "canonical_size_bytes": 68182,
+      "mirror_size_bytes": 66224,
+      "size_equal": false,
+      "guarded": false
+    },
+    {
+      "path": "enrichment/elevation_link_offset_solver.py",
+      "status": "identical",
+      "canonical_size_bytes": 9360,
+      "mirror_size_bytes": 9360,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "enrichment/lane_generator.py",
+      "status": "identical",
+      "canonical_size_bytes": 6955,
+      "mirror_size_bytes": 6955,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "enrichment/object_injector.py",
+      "status": "DRIFT",
+      "canonical_size_bytes": 10990,
+      "mirror_size_bytes": 5020,
+      "size_equal": false,
+      "guarded": false
+    },
+    {
+      "path": "enrichment/osm2world_runner.py",
+      "status": "DRIFT",
+      "canonical_size_bytes": 33841,
+      "mirror_size_bytes": 33614,
+      "size_equal": false,
+      "guarded": false
+    },
+    {
+      "path": "enrichment/osm_meta_index.py",
+      "status": "identical",
+      "canonical_size_bytes": 3319,
+      "mirror_size_bytes": 3319,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "enrichment/osm_polygon_loader.py",
+      "status": "identical",
+      "canonical_size_bytes": 9218,
+      "mirror_size_bytes": 9218,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "enrichment/realism.py",
+      "status": "identical",
+      "canonical_size_bytes": 5700,
+      "mirror_size_bytes": 5700,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "enrichment/regulatory_sign_writer.py",
+      "status": "identical",
+      "canonical_size_bytes": 3918,
+      "mirror_size_bytes": 3918,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "enrichment/sidewalk_builder.py",
+      "status": "identical",
+      "canonical_size_bytes": 7122,
+      "mirror_size_bytes": 7122,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "enrichment/speed_limit_writer.py",
+      "status": "identical",
+      "canonical_size_bytes": 3638,
+      "mirror_size_bytes": 3638,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "enrichment/street_furniture_rules.py",
+      "status": "identical",
+      "canonical_size_bytes": 907,
+      "mirror_size_bytes": 907,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "enrichment/traffic_light_infer.py",
+      "status": "identical",
+      "canonical_size_bytes": 7886,
+      "mirror_size_bytes": 7886,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "enrichment/turn_lanes_writer.py",
+      "status": "identical",
+      "canonical_size_bytes": 2277,
+      "mirror_size_bytes": 2277,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "entrypoints.py",
+      "status": "DRIFT",
+      "canonical_size_bytes": 1523,
+      "mirror_size_bytes": 1053,
+      "size_equal": false,
+      "guarded": false
+    },
+    {
+      "path": "experiments/__init__.py",
+      "status": "identical",
+      "canonical_size_bytes": 927,
+      "mirror_size_bytes": 927,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "experiments/evaluator.py",
+      "status": "identical",
+      "canonical_size_bytes": 5788,
+      "mirror_size_bytes": 5788,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "experiments/experiment_schema.py",
+      "status": "identical",
+      "canonical_size_bytes": 781,
+      "mirror_size_bytes": 781,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "experiments/registry.py",
+      "status": "identical",
+      "canonical_size_bytes": 13913,
+      "mirror_size_bytes": 13913,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "experiments/rl_fuzzer.py",
+      "status": "identical",
+      "canonical_size_bytes": 2679,
+      "mirror_size_bytes": 2679,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "experiments/runner.py",
+      "status": "identical",
+      "canonical_size_bytes": 1975,
+      "mirror_size_bytes": 1975,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "experiments/thesis/__init__.py",
+      "status": "identical",
+      "canonical_size_bytes": 77,
+      "mirror_size_bytes": 77,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "experiments/thesis/core_algorithms.py",
+      "status": "identical",
+      "canonical_size_bytes": 3533,
+      "mirror_size_bytes": 3533,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "experiments/thesis/domain_adaptation.py",
+      "status": "identical",
+      "canonical_size_bytes": 314,
+      "mirror_size_bytes": 314,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "experiments/thesis/exp_carla_import_repeatability.py",
+      "status": "identical",
+      "canonical_size_bytes": 7569,
+      "mirror_size_bytes": 7569,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "experiments/thesis/exp_domain_gap_manual_vs_auto.py",
+      "status": "identical",
+      "canonical_size_bytes": 5975,
+      "mirror_size_bytes": 5975,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "experiments/thesis/exp_manual_vs_manual_structural.py",
+      "status": "identical",
+      "canonical_size_bytes": 6172,
+      "mirror_size_bytes": 6172,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "experiments/thesis/exp_natural_domain_randomization.py",
+      "status": "identical",
+      "canonical_size_bytes": 3883,
+      "mirror_size_bytes": 3883,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "experiments/thesis/exp_osm_to_xodr_determinism.py",
+      "status": "identical",
+      "canonical_size_bytes": 3587,
+      "mirror_size_bytes": 3587,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "experiments/thesis/experiment_auto_vs_auto.py",
+      "status": "identical",
+      "canonical_size_bytes": 7127,
+      "mirror_size_bytes": 7127,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "experiments/thesis/manual_refs.py",
+      "status": "identical",
+      "canonical_size_bytes": 2752,
+      "mirror_size_bytes": 2752,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "experiments/thesis/perception_preflight.py",
+      "status": "identical",
+      "canonical_size_bytes": 7602,
+      "mirror_size_bytes": 7602,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "experiments/thesis/protocol.py",
+      "status": "identical",
+      "canonical_size_bytes": 14253,
+      "mirror_size_bytes": 14253,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "experiments/thesis/run_all_experiments.py",
+      "status": "identical",
+      "canonical_size_bytes": 17667,
+      "mirror_size_bytes": 17667,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "experiments/thesis/run_perception_capture_pair.py",
+      "status": "identical",
+      "canonical_size_bytes": 14476,
+      "mirror_size_bytes": 14476,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "experiments/thesis/run_structural_domain_gap_batch.py",
+      "status": "identical",
+      "canonical_size_bytes": 7750,
+      "mirror_size_bytes": 7750,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "experiments/thesis/run_thesis_experiments.py",
+      "status": "identical",
+      "canonical_size_bytes": 12558,
+      "mirror_size_bytes": 12558,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "experiments/thesis/run_thesis_oneweek.py",
+      "status": "identical",
+      "canonical_size_bytes": 8685,
+      "mirror_size_bytes": 8685,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "experiments/thesis/run_vision_domain_gap.py",
+      "status": "identical",
+      "canonical_size_bytes": 8390,
+      "mirror_size_bytes": 8390,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "experiments/trainer.py",
+      "status": "identical",
+      "canonical_size_bytes": 1891,
+      "mirror_size_bytes": 1891,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "experiments/unified_runner.py",
+      "status": "identical",
+      "canonical_size_bytes": 9035,
+      "mirror_size_bytes": 9035,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "fixes/__init__.py",
+      "status": "identical",
+      "canonical_size_bytes": 123,
+      "mirror_size_bytes": 123,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "fixes/fix_missing_lane_successors.py",
+      "status": "identical",
+      "canonical_size_bytes": 8987,
+      "mirror_size_bytes": 8987,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "geometry/crosssection_repair.py",
+      "status": "identical",
+      "canonical_size_bytes": 2176,
+      "mirror_size_bytes": 2176,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "geometry/elevation_smoother.py",
+      "status": "identical",
+      "canonical_size_bytes": 1369,
+      "mirror_size_bytes": 1369,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "geometry/geometry_math.py",
+      "status": "DRIFT",
+      "canonical_size_bytes": 6226,
+      "mirror_size_bytes": 3897,
+      "size_equal": false,
+      "guarded": false
+    },
+    {
+      "path": "geometry/geometry_validator.py",
+      "status": "identical",
+      "canonical_size_bytes": 9546,
+      "mirror_size_bytes": 9546,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "geometry/lane_seam_checker.py",
+      "status": "identical",
+      "canonical_size_bytes": 4710,
+      "mirror_size_bytes": 4710,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "geometry/lane_width_clamp.py",
+      "status": "identical",
+      "canonical_size_bytes": 613,
+      "mirror_size_bytes": 613,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "geometry/laneoffset_normalizer.py",
+      "status": "identical",
+      "canonical_size_bytes": 6428,
+      "mirror_size_bytes": 6428,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "geometry/laneoffset_smoother.py",
+      "status": "identical",
+      "canonical_size_bytes": 1758,
+      "mirror_size_bytes": 1758,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "geometry/lanesection_boundary_fixer.py",
+      "status": "identical",
+      "canonical_size_bytes": 2036,
+      "mirror_size_bytes": 2036,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "geometry/mesh_continuity_repairer.py",
+      "status": "identical",
+      "canonical_size_bytes": 17243,
+      "mirror_size_bytes": 17243,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "geometry/planview_smoother.py",
+      "status": "DRIFT",
+      "canonical_size_bytes": 18831,
+      "mirror_size_bytes": 13514,
+      "size_equal": false,
+      "guarded": false
+    },
+    {
+      "path": "geometry/quarantine_bad_roads.py",
+      "status": "identical",
+      "canonical_size_bytes": 8612,
+      "mirror_size_bytes": 8612,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "hpc/build_yolo_dataset.py",
+      "status": "identical",
+      "canonical_size_bytes": 6953,
+      "mirror_size_bytes": 6953,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "hpc/carla_server_launcher.py",
+      "status": "identical",
+      "canonical_size_bytes": 2100,
+      "mirror_size_bytes": 2100,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "hpc/dataset_builder.py",
+      "status": "identical",
+      "canonical_size_bytes": 1362,
+      "mirror_size_bytes": 1362,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "hpc/experiment_orchestrator.py",
+      "status": "identical",
+      "canonical_size_bytes": 4352,
+      "mirror_size_bytes": 4352,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "hpc/hpc_experiments_dashboard.py",
+      "status": "identical",
+      "canonical_size_bytes": 3356,
+      "mirror_size_bytes": 3356,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "hpc/hpc_experiments_plan.py",
+      "status": "identical",
+      "canonical_size_bytes": 2590,
+      "mirror_size_bytes": 2590,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "hpc/hpc_load_opendrive_batch.py",
+      "status": "identical",
+      "canonical_size_bytes": 5611,
+      "mirror_size_bytes": 5611,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "hpc/hpc_preflight.py",
+      "status": "identical",
+      "canonical_size_bytes": 1676,
+      "mirror_size_bytes": 1676,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "hpc/hpc_training_launcher.py",
+      "status": "identical",
+      "canonical_size_bytes": 5183,
+      "mirror_size_bytes": 5183,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "hpc/perception_runner_hpc.py",
+      "status": "identical",
+      "canonical_size_bytes": 449,
+      "mirror_size_bytes": 449,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "hpc/run_core_experiments.py",
+      "status": "identical",
+      "canonical_size_bytes": 1956,
+      "mirror_size_bytes": 1956,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "hpc/run_thesis_hpc_analysis.py",
+      "status": "identical",
+      "canonical_size_bytes": 3677,
+      "mirror_size_bytes": 3677,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "hpc/run_train.py",
+      "status": "identical",
+      "canonical_size_bytes": 419,
+      "mirror_size_bytes": 419,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "hpc/spawn_manager.py",
+      "status": "identical",
+      "canonical_size_bytes": 2931,
+      "mirror_size_bytes": 2931,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "hpc/train_yolo.py",
+      "status": "identical",
+      "canonical_size_bytes": 4355,
+      "mirror_size_bytes": 4355,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "hpc/yolo_backend.py",
+      "status": "identical",
+      "canonical_size_bytes": 1997,
+      "mirror_size_bytes": 1997,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "inventory_processor.py",
+      "status": "identical",
+      "canonical_size_bytes": 13878,
+      "mirror_size_bytes": 13878,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "lanes/lane_repair.py",
+      "status": "identical",
+      "canonical_size_bytes": 4827,
+      "mirror_size_bytes": 4827,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "lanes/lanelink_builder.py",
+      "status": "identical",
+      "canonical_size_bytes": 7404,
+      "mirror_size_bytes": 7404,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "lanes/markings_builder.py",
+      "status": "identical",
+      "canonical_size_bytes": 11388,
+      "mirror_size_bytes": 11388,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "llm/llm_check.py",
+      "status": "identical",
+      "canonical_size_bytes": 2750,
+      "mirror_size_bytes": 2750,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "llm/llm_client.py",
+      "status": "identical",
+      "canonical_size_bytes": 2427,
+      "mirror_size_bytes": 2427,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "llm/llm_domain_gap_reviewer.py",
+      "status": "identical",
+      "canonical_size_bytes": 2497,
+      "mirror_size_bytes": 2497,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "llm/llm_quality_gate.py",
+      "status": "identical",
+      "canonical_size_bytes": 2756,
+      "mirror_size_bytes": 2756,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "llm/llm_safety_assistant.py",
+      "status": "identical",
+      "canonical_size_bytes": 2561,
+      "mirror_size_bytes": 2561,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "llm/llm_xodr_checker.py",
+      "status": "identical",
+      "canonical_size_bytes": 3174,
+      "mirror_size_bytes": 3174,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "llm/ollama_bootstrap.py",
+      "status": "identical",
+      "canonical_size_bytes": 2221,
+      "mirror_size_bytes": 2221,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "llm/xodr_llm_checker.py",
+      "status": "identical",
+      "canonical_size_bytes": 9624,
+      "mirror_size_bytes": 9624,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "main_pipeline.py",
+      "status": "DRIFT",
+      "canonical_size_bytes": 143725,
+      "mirror_size_bytes": 138955,
+      "size_equal": false,
+      "guarded": false
+    },
+    {
+      "path": "map_fixes/__init__.py",
+      "status": "identical",
+      "canonical_size_bytes": 24,
+      "mirror_size_bytes": 24,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "map_fixes/xodr_junction_links.py",
+      "status": "identical",
+      "canonical_size_bytes": 11117,
+      "mirror_size_bytes": 11117,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "ml/lane_gnn_refiner.py",
+      "status": "identical",
+      "canonical_size_bytes": 759,
+      "mirror_size_bytes": 759,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "optional/carla_api.py",
+      "status": "identical",
+      "canonical_size_bytes": 1089,
+      "mirror_size_bytes": 1089,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "osm/osm_downloader.py",
+      "status": "identical",
+      "canonical_size_bytes": 12116,
+      "mirror_size_bytes": 12116,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "osm/osm_to_xodr.py",
+      "status": "identical",
+      "canonical_size_bytes": 5208,
+      "mirror_size_bytes": 5208,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "osm/osm_to_xodr_wrapper.py",
+      "status": "identical",
+      "canonical_size_bytes": 11597,
+      "mirror_size_bytes": 11597,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "perception/__init__.py",
+      "status": "identical",
+      "canonical_size_bytes": 0,
+      "mirror_size_bytes": 0,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "perception/dataset_generator.py",
+      "status": "identical",
+      "canonical_size_bytes": 20440,
+      "mirror_size_bytes": 20440,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "perception/eval_real_unlabeled.py",
+      "status": "identical",
+      "canonical_size_bytes": 7220,
+      "mirror_size_bytes": 7220,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "perception/eval_sim_labeled.py",
+      "status": "identical",
+      "canonical_size_bytes": 7614,
+      "mirror_size_bytes": 7614,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "perception/min_train_segmentation.py",
+      "status": "identical",
+      "canonical_size_bytes": 3910,
+      "mirror_size_bytes": 3910,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "perception/perception_api.py",
+      "status": "identical",
+      "canonical_size_bytes": 7610,
+      "mirror_size_bytes": 7610,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "perception/perception_metrics.py",
+      "status": "identical",
+      "canonical_size_bytes": 5171,
+      "mirror_size_bytes": 5171,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "perception/perception_metrics_exporter.py",
+      "status": "identical",
+      "canonical_size_bytes": 9102,
+      "mirror_size_bytes": 9102,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "perception/perception_metrics_simple.py",
+      "status": "identical",
+      "canonical_size_bytes": 3080,
+      "mirror_size_bytes": 3080,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "perception/perception_runner_local_aug.py",
+      "status": "identical",
+      "canonical_size_bytes": 20669,
+      "mirror_size_bytes": 20669,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "perception/record_route.py",
+      "status": "identical",
+      "canonical_size_bytes": 74161,
+      "mirror_size_bytes": 74161,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "perception/record_route_fixed.py",
+      "status": "identical",
+      "canonical_size_bytes": 125071,
+      "mirror_size_bytes": 125071,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "perception/rig_verifier.py",
+      "status": "identical",
+      "canonical_size_bytes": 981,
+      "mirror_size_bytes": 981,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "perception/run_capture_end2end.py",
+      "status": "identical",
+      "canonical_size_bytes": 13074,
+      "mirror_size_bytes": 13074,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "perception/run_training.py",
+      "status": "identical",
+      "canonical_size_bytes": 3881,
+      "mirror_size_bytes": 3881,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "perception/segmentation_dataset_generator_queues.py",
+      "status": "identical",
+      "canonical_size_bytes": 10867,
+      "mirror_size_bytes": 10867,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "perception/train_launcher.py",
+      "status": "identical",
+      "canonical_size_bytes": 7063,
+      "mirror_size_bytes": 7063,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "perception_smoke.py",
+      "status": "identical",
+      "canonical_size_bytes": 5645,
+      "mirror_size_bytes": 5645,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "pipeline_stages/__init__.py",
+      "status": "identical",
+      "canonical_size_bytes": 58,
+      "mirror_size_bytes": 58,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "pipeline_stages/stage_00_preflight_carla.py",
+      "status": "identical",
+      "canonical_size_bytes": 5520,
+      "mirror_size_bytes": 5520,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "pipeline_stages/stage_01_sanitize.py",
+      "status": "identical",
+      "canonical_size_bytes": 1569,
+      "mirror_size_bytes": 1569,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "pipeline_stages/stage_02_topology_semantics.py",
+      "status": "identical",
+      "canonical_size_bytes": 8069,
+      "mirror_size_bytes": 8069,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "pipeline_stages/stage_03_topology_repair.py",
+      "status": "identical",
+      "canonical_size_bytes": 4135,
+      "mirror_size_bytes": 4135,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "pipeline_stages/stage_04_enrichment.py",
+      "status": "DRIFT",
+      "canonical_size_bytes": 11652,
+      "mirror_size_bytes": 11650,
+      "size_equal": false,
+      "guarded": false
+    },
+    {
+      "path": "pipeline_stages/stage_05_geometry.py",
+      "status": "DRIFT",
+      "canonical_size_bytes": 44292,
+      "mirror_size_bytes": 42514,
+      "size_equal": false,
+      "guarded": false
+    },
+    {
+      "path": "pipeline_stages/stage_06_links.py",
+      "status": "DRIFT",
+      "canonical_size_bytes": 29284,
+      "mirror_size_bytes": 13947,
+      "size_equal": false,
+      "guarded": false
+    },
+    {
+      "path": "pipeline_stages/stage_07_lanes.py",
+      "status": "identical",
+      "canonical_size_bytes": 8933,
+      "mirror_size_bytes": 8933,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "pipeline_stages/stage_08_final_integrity.py",
+      "status": "DRIFT",
+      "canonical_size_bytes": 29932,
+      "mirror_size_bytes": 29527,
+      "size_equal": false,
+      "guarded": false
+    },
+    {
+      "path": "pipeline_stages/stage_08_integrity.py",
+      "status": "DRIFT",
+      "canonical_size_bytes": 36200,
+      "mirror_size_bytes": 35795,
+      "size_equal": false,
+      "guarded": false
+    },
+    {
+      "path": "pipeline_stages/stage_09_tiling.py",
+      "status": "DRIFT",
+      "canonical_size_bytes": 22186,
+      "mirror_size_bytes": 20708,
+      "size_equal": false,
+      "guarded": false
+    },
+    {
+      "path": "pipeline_stages/stage_10_tile_qa.py",
+      "status": "identical",
+      "canonical_size_bytes": 36235,
+      "mirror_size_bytes": 36235,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "pipeline_stages/stage_11_12_sim_domain.py",
+      "status": "identical",
+      "canonical_size_bytes": 9692,
+      "mirror_size_bytes": 9692,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "pipeline_stages/stage_11_simulation.py",
+      "status": "identical",
+      "canonical_size_bytes": 3620,
+      "mirror_size_bytes": 3620,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "pipeline_stages/stage_12_domain_gap.py",
+      "status": "identical",
+      "canonical_size_bytes": 7003,
+      "mirror_size_bytes": 7003,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "pipeline_stages/stage_14_finalization.py",
+      "status": "identical",
+      "canonical_size_bytes": 19830,
+      "mirror_size_bytes": 19830,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "quality/__init__.py",
+      "status": "identical",
+      "canonical_size_bytes": 277,
+      "mirror_size_bytes": 277,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "quality/autofix_postprune_elevation.py",
+      "status": "identical",
+      "canonical_size_bytes": 6640,
+      "mirror_size_bytes": 6640,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "quality/carla_pruner.py",
+      "status": "identical",
+      "canonical_size_bytes": 18783,
+      "mirror_size_bytes": 18783,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "quality/check_carla_import_s.py",
+      "status": "identical",
+      "canonical_size_bytes": 6002,
+      "mirror_size_bytes": 6002,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "quality/check_carla_opendrive_compat.py",
+      "status": "identical",
+      "canonical_size_bytes": 14989,
+      "mirror_size_bytes": 14989,
+      "size_equal": true,
+      "guarded": true
+    },
+    {
+      "path": "quality/check_dem_coverage.py",
+      "status": "identical",
+      "canonical_size_bytes": 15348,
+      "mirror_size_bytes": 15348,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "quality/check_dem_full_coverage.py",
+      "status": "identical",
+      "canonical_size_bytes": 7905,
+      "mirror_size_bytes": 7905,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "quality/check_determinism.py",
+      "status": "identical",
+      "canonical_size_bytes": 9537,
+      "mirror_size_bytes": 9537,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "quality/check_drivability_smoke.py",
+      "status": "identical",
+      "canonical_size_bytes": 10674,
+      "mirror_size_bytes": 10674,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "quality/check_elevation_continuity.py",
+      "status": "identical",
+      "canonical_size_bytes": 7153,
+      "mirror_size_bytes": 7153,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "quality/check_elevation_missing_and_cliffs.py",
+      "status": "identical",
+      "canonical_size_bytes": 8085,
+      "mirror_size_bytes": 8085,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "quality/check_elevation_profile.py",
+      "status": "identical",
+      "canonical_size_bytes": 6089,
+      "mirror_size_bytes": 6089,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "quality/check_elevation_seams.py",
+      "status": "identical",
+      "canonical_size_bytes": 6055,
+      "mirror_size_bytes": 6055,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "quality/check_elevation_smoothness.py",
+      "status": "identical",
+      "canonical_size_bytes": 1887,
+      "mirror_size_bytes": 1887,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "quality/check_external_libopendrive.py",
+      "status": "identical",
+      "canonical_size_bytes": 4735,
+      "mirror_size_bytes": 4735,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "quality/check_geometric_continuity.py",
+      "status": "DRIFT",
+      "canonical_size_bytes": 27694,
+      "mirror_size_bytes": 26756,
+      "size_equal": false,
+      "guarded": false
+    },
+    {
+      "path": "quality/check_junction_integrity.py",
+      "status": "identical",
+      "canonical_size_bytes": 5289,
+      "mirror_size_bytes": 5289,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "quality/check_lane_connectivity.py",
+      "status": "identical",
+      "canonical_size_bytes": 15122,
+      "mirror_size_bytes": 15122,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "quality/check_lane_geometry_continuity.py",
+      "status": "identical",
+      "canonical_size_bytes": 7170,
+      "mirror_size_bytes": 7170,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "quality/check_lane_link_targets_exist.py",
+      "status": "identical",
+      "canonical_size_bytes": 11253,
+      "mirror_size_bytes": 11253,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "quality/check_lane_section_successors.py",
+      "status": "identical",
+      "canonical_size_bytes": 5627,
+      "mirror_size_bytes": 5627,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "quality/check_lane_width_continuity.py",
+      "status": "identical",
+      "canonical_size_bytes": 5170,
+      "mirror_size_bytes": 5170,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "quality/check_origin_sanity.py",
+      "status": "identical",
+      "canonical_size_bytes": 2427,
+      "mirror_size_bytes": 2427,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "quality/check_physics_feasibility.py",
+      "status": "identical",
+      "canonical_size_bytes": 2394,
+      "mirror_size_bytes": 2394,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "quality/check_post_tiling_integrity.py",
+      "status": "identical",
+      "canonical_size_bytes": 4963,
+      "mirror_size_bytes": 4963,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "quality/check_randomness_entropy.py",
+      "status": "identical",
+      "canonical_size_bytes": 1428,
+      "mirror_size_bytes": 1428,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "quality/check_semantic_overlap.py",
+      "status": "identical",
+      "canonical_size_bytes": 1533,
+      "mirror_size_bytes": 1533,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "quality/check_xml_integrity.py",
+      "status": "identical",
+      "canonical_size_bytes": 1397,
+      "mirror_size_bytes": 1397,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "quality/check_xodr_schema.py",
+      "status": "identical",
+      "canonical_size_bytes": 2261,
+      "mirror_size_bytes": 2261,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "quality/collision_mesh.py",
+      "status": "identical",
+      "canonical_size_bytes": 2891,
+      "mirror_size_bytes": 2891,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "quality/entropy.py",
+      "status": "identical",
+      "canonical_size_bytes": 427,
+      "mirror_size_bytes": 427,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "quality/lane_width_invariants.py",
+      "status": "identical",
+      "canonical_size_bytes": 6948,
+      "mirror_size_bytes": 6948,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "quality/map_acceptance.py",
+      "status": "identical",
+      "canonical_size_bytes": 7153,
+      "mirror_size_bytes": 7153,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "quality/pipeline_health_summary.py",
+      "status": "identical",
+      "canonical_size_bytes": 12403,
+      "mirror_size_bytes": 12403,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "quality/quality_gate_manager.py",
+      "status": "identical",
+      "canonical_size_bytes": 14981,
+      "mirror_size_bytes": 14981,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "quality/quality_gates.py",
+      "status": "identical",
+      "canonical_size_bytes": 8048,
+      "mirror_size_bytes": 8048,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "quality/quarantine_bad_roads.py",
+      "status": "identical",
+      "canonical_size_bytes": 4816,
+      "mirror_size_bytes": 4816,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "quality/road_classification_gap.py",
+      "status": "identical",
+      "canonical_size_bytes": 2105,
+      "mirror_size_bytes": 2105,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "quality/road_link_endpoint_errors.py",
+      "status": "identical",
+      "canonical_size_bytes": 23447,
+      "mirror_size_bytes": 23447,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "quality/semantic_overlap.py",
+      "status": "identical",
+      "canonical_size_bytes": 316,
+      "mirror_size_bytes": 316,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "quality/xodr_junction_ref_cleanup.py",
+      "status": "identical",
+      "canonical_size_bytes": 3028,
+      "mirror_size_bytes": 3028,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "quality/xodr_strict_validator.py",
+      "status": "identical",
+      "canonical_size_bytes": 24710,
+      "mirror_size_bytes": 24710,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "reports/_generated/__init__.py",
+      "status": "identical",
+      "canonical_size_bytes": 88,
+      "mirror_size_bytes": 88,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "reports/report_generator.py",
+      "status": "identical",
+      "canonical_size_bytes": 1471,
+      "mirror_size_bytes": 1471,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "run_determinism_audit.py",
+      "status": "identical",
+      "canonical_size_bytes": 64493,
+      "mirror_size_bytes": 64493,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "run_full_domain_gap.py",
+      "status": "identical",
+      "canonical_size_bytes": 322270,
+      "mirror_size_bytes": 322270,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "run_full_test.py",
+      "status": "DRIFT",
+      "canonical_size_bytes": 10179,
+      "mirror_size_bytes": 9972,
+      "size_equal": false,
+      "guarded": false
+    },
+    {
+      "path": "run_generalization_experiments.py",
+      "status": "identical",
+      "canonical_size_bytes": 20241,
+      "mirror_size_bytes": 20241,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "run_pipeline.py",
+      "status": "identical",
+      "canonical_size_bytes": 2339,
+      "mirror_size_bytes": 2339,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "run_quality_gates.py",
+      "status": "identical",
+      "canonical_size_bytes": 2367,
+      "mirror_size_bytes": 2367,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "scenarios/auto_scenario_generator.py",
+      "status": "identical",
+      "canonical_size_bytes": 1955,
+      "mirror_size_bytes": 1955,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "scenarios/sweeps.py",
+      "status": "identical",
+      "canonical_size_bytes": 764,
+      "mirror_size_bytes": 764,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "semantics/__init__.py",
+      "status": "identical",
+      "canonical_size_bytes": 105,
+      "mirror_size_bytes": 105,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "semantics/semantic_mapper.py",
+      "status": "identical",
+      "canonical_size_bytes": 10403,
+      "mirror_size_bytes": 10403,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "sensors/attach_sensors_safe.py",
+      "status": "identical",
+      "canonical_size_bytes": 10073,
+      "mirror_size_bytes": 10073,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "sensors/calibration_sanity_check.py",
+      "status": "identical",
+      "canonical_size_bytes": 7581,
+      "mirror_size_bytes": 7581,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "sensors/dominik_sensor_setup.py",
+      "status": "identical",
+      "canonical_size_bytes": 23118,
+      "mirror_size_bytes": 23118,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "sensors/recorder.py",
+      "status": "identical",
+      "canonical_size_bytes": 35434,
+      "mirror_size_bytes": 35434,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "sensors/rig_transforms.py",
+      "status": "identical",
+      "canonical_size_bytes": 1728,
+      "mirror_size_bytes": 1728,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "sensors/sensor_visualizer.py",
+      "status": "identical",
+      "canonical_size_bytes": 13972,
+      "mirror_size_bytes": 13972,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "sensors/sweep_calib_setups.py",
+      "status": "identical",
+      "canonical_size_bytes": 20712,
+      "mirror_size_bytes": 20712,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "sensors/transform_conventions.py",
+      "status": "identical",
+      "canonical_size_bytes": 6163,
+      "mirror_size_bytes": 6163,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "settings.py",
+      "status": "identical",
+      "canonical_size_bytes": 176,
+      "mirror_size_bytes": 176,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "sitecustomize.py",
+      "status": "identical",
+      "canonical_size_bytes": 934,
+      "mirror_size_bytes": 934,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "system_integrity_checker.py",
+      "status": "identical",
+      "canonical_size_bytes": 5683,
+      "mirror_size_bytes": 5683,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "tests/conftest.py",
+      "status": "identical",
+      "canonical_size_bytes": 795,
+      "mirror_size_bytes": 795,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "thesis/generate_curvature_distribution_figure.py",
+      "status": "identical",
+      "canonical_size_bytes": 6020,
+      "mirror_size_bytes": 6020,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "thesis/generate_figures.py",
+      "status": "identical",
+      "canonical_size_bytes": 1212,
+      "mirror_size_bytes": 1212,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "thesis/make_figure_pack.py",
+      "status": "identical",
+      "canonical_size_bytes": 3671,
+      "mirror_size_bytes": 3671,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "tile_validation/carla_load_and_spawn_worker.py",
+      "status": "identical",
+      "canonical_size_bytes": 3803,
+      "mirror_size_bytes": 3803,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "tile_validation/carla_tile_tester.py",
+      "status": "identical",
+      "canonical_size_bytes": 7919,
+      "mirror_size_bytes": 7919,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "tile_validation/geometry_seam_checker.py",
+      "status": "identical",
+      "canonical_size_bytes": 4561,
+      "mirror_size_bytes": 4561,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "tile_validation/lane_seam_checker.py",
+      "status": "identical",
+      "canonical_size_bytes": 11203,
+      "mirror_size_bytes": 11203,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "tile_validation/qa_tile_spawn_probe.py",
+      "status": "identical",
+      "canonical_size_bytes": 9074,
+      "mirror_size_bytes": 9074,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "tile_validation/qa_tile_stress_tester.py",
+      "status": "identical",
+      "canonical_size_bytes": 7834,
+      "mirror_size_bytes": 7834,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "tile_validation/seam_repair.py",
+      "status": "identical",
+      "canonical_size_bytes": 3352,
+      "mirror_size_bytes": 3352,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "tile_validation/step10_tile_qa_supervisor.py",
+      "status": "identical",
+      "canonical_size_bytes": 10870,
+      "mirror_size_bytes": 10870,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "tile_validation/step10_tile_qa_worker.py",
+      "status": "identical",
+      "canonical_size_bytes": 6315,
+      "mirror_size_bytes": 6315,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "tile_validation/tile_stress_tester.py",
+      "status": "identical",
+      "canonical_size_bytes": 11521,
+      "mirror_size_bytes": 11521,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "tile_validation/tile_visibility.py",
+      "status": "identical",
+      "canonical_size_bytes": 8544,
+      "mirror_size_bytes": 8544,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "tiling/seam_artifacts.py",
+      "status": "identical",
+      "canonical_size_bytes": 5956,
+      "mirror_size_bytes": 5956,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "tiling/stream_tiles.py",
+      "status": "identical",
+      "canonical_size_bytes": 2819,
+      "mirror_size_bytes": 2819,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "tiling/tile_adjacency.py",
+      "status": "identical",
+      "canonical_size_bytes": 4248,
+      "mirror_size_bytes": 4248,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "tiling/tile_auto_forensics.py",
+      "status": "identical",
+      "canonical_size_bytes": 1511,
+      "mirror_size_bytes": 1511,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "tiling/tile_extractor.py",
+      "status": "DRIFT",
+      "canonical_size_bytes": 18887,
+      "mirror_size_bytes": 16029,
+      "size_equal": false,
+      "guarded": false
+    },
+    {
+      "path": "tiling/tile_matcher.py",
+      "status": "identical",
+      "canonical_size_bytes": 1611,
+      "mirror_size_bytes": 1611,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "tiling/tile_metadata.py",
+      "status": "identical",
+      "canonical_size_bytes": 13384,
+      "mirror_size_bytes": 13384,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "tiling/tile_validator.py",
+      "status": "identical",
+      "canonical_size_bytes": 4519,
+      "mirror_size_bytes": 4519,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "tools/artifact_integrity_check.py",
+      "status": "identical",
+      "canonical_size_bytes": 5911,
+      "mirror_size_bytes": 5911,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "tools/artifact_locator.py",
+      "status": "identical",
+      "canonical_size_bytes": 2394,
+      "mirror_size_bytes": 2394,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "tools/assert_carla_invariants.py",
+      "status": "identical",
+      "canonical_size_bytes": 9678,
+      "mirror_size_bytes": 9678,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "tools/audit_thesis_topic_contract.py",
+      "status": "identical",
+      "canonical_size_bytes": 9711,
+      "mirror_size_bytes": 9711,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "tools/build_ledger_salvage_index.py",
+      "status": "identical",
+      "canonical_size_bytes": 5199,
+      "mirror_size_bytes": 5199,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "tools/calib_sanity_check.py",
+      "status": "identical",
+      "canonical_size_bytes": 4484,
+      "mirror_size_bytes": 4484,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "tools/calibrate_sensors_in_carla.py",
+      "status": "identical",
+      "canonical_size_bytes": 23014,
+      "mirror_size_bytes": 23014,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "tools/capture_perception_pair_safe.py",
+      "status": "identical",
+      "canonical_size_bytes": 8372,
+      "mirror_size_bytes": 8372,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "tools/capture_rgb_200frames.py",
+      "status": "identical",
+      "canonical_size_bytes": 12944,
+      "mirror_size_bytes": 12944,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "tools/carla_preflight.py",
+      "status": "identical",
+      "canonical_size_bytes": 9158,
+      "mirror_size_bytes": 9158,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "tools/carla_probe.py",
+      "status": "identical",
+      "canonical_size_bytes": 9957,
+      "mirror_size_bytes": 9957,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "tools/carla_probe_map.py",
+      "status": "identical",
+      "canonical_size_bytes": 8954,
+      "mirror_size_bytes": 8954,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "tools/carla_probe_port.py",
+      "status": "identical",
+      "canonical_size_bytes": 3190,
+      "mirror_size_bytes": 3190,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "tools/carla_screenshot_once.py",
+      "status": "identical",
+      "canonical_size_bytes": 5242,
+      "mirror_size_bytes": 5242,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "tools/carla_smoke_suite.py",
+      "status": "identical",
+      "canonical_size_bytes": 11595,
+      "mirror_size_bytes": 11595,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "tools/carla_visual_smoke_gate.py",
+      "status": "identical",
+      "canonical_size_bytes": 14180,
+      "mirror_size_bytes": 14180,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "tools/check_osm2world_stack.py",
+      "status": "identical",
+      "canonical_size_bytes": 11334,
+      "mirror_size_bytes": 11334,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "tools/check_osm_to_carla_determinism.py",
+      "status": "identical",
+      "canonical_size_bytes": 17609,
+      "mirror_size_bytes": 17609,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "tools/check_seams.py",
+      "status": "identical",
+      "canonical_size_bytes": 3751,
+      "mirror_size_bytes": 3751,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "tools/check_sensor_rig.py",
+      "status": "identical",
+      "canonical_size_bytes": 1633,
+      "mirror_size_bytes": 1633,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "tools/check_tile_alignment.py",
+      "status": "identical",
+      "canonical_size_bytes": 4733,
+      "mirror_size_bytes": 4733,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "tools/compare_runs_determinism.py",
+      "status": "identical",
+      "canonical_size_bytes": 6453,
+      "mirror_size_bytes": 6453,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "tools/compute_missing_run11_metrics.py",
+      "status": "identical",
+      "canonical_size_bytes": 10171,
+      "mirror_size_bytes": 10171,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "tools/compute_perception_gap.py",
+      "status": "identical",
+      "canonical_size_bytes": 3435,
+      "mirror_size_bytes": 3435,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "tools/coordinate_system_artifact.py",
+      "status": "identical",
+      "canonical_size_bytes": 10270,
+      "mirror_size_bytes": 10270,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "tools/determinism_classify.py",
+      "status": "identical",
+      "canonical_size_bytes": 3559,
+      "mirror_size_bytes": 3559,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "tools/diagnose_pipeline.py",
+      "status": "identical",
+      "canonical_size_bytes": 3428,
+      "mirror_size_bytes": 3428,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "tools/diagnostic_carla_probe.py",
+      "status": "identical",
+      "canonical_size_bytes": 4436,
+      "mirror_size_bytes": 4436,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "tools/drivability_probe.py",
+      "status": "identical",
+      "canonical_size_bytes": 725,
+      "mirror_size_bytes": 725,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "tools/env_check_carla.py",
+      "status": "identical",
+      "canonical_size_bytes": 1453,
+      "mirror_size_bytes": 1453,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "tools/evaluate_tiling.py",
+      "status": "identical",
+      "canonical_size_bytes": 27722,
+      "mirror_size_bytes": 27722,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "tools/export_thesis_tables.py",
+      "status": "identical",
+      "canonical_size_bytes": 6664,
+      "mirror_size_bytes": 6664,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "tools/extract_elevation_stats.py",
+      "status": "identical",
+      "canonical_size_bytes": 19892,
+      "mirror_size_bytes": 19892,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "tools/final_map_readiness_gate.py",
+      "status": "identical",
+      "canonical_size_bytes": 16535,
+      "mirror_size_bytes": 16535,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "tools/find_duplicate_files.py",
+      "status": "identical",
+      "canonical_size_bytes": 2480,
+      "mirror_size_bytes": 2480,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "tools/generate_enrichments_json.py",
+      "status": "identical",
+      "canonical_size_bytes": 16107,
+      "mirror_size_bytes": 16107,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "tools/generate_n_runs.py",
+      "status": "identical",
+      "canonical_size_bytes": 18029,
+      "mirror_size_bytes": 18029,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "tools/hash_tree.py",
+      "status": "identical",
+      "canonical_size_bytes": 7745,
+      "mirror_size_bytes": 7745,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "tools/junction_connector_rebuild.py",
+      "status": "DRIFT",
+      "canonical_size_bytes": 19150,
+      "mirror_size_bytes": 196,
+      "size_equal": false,
+      "guarded": false
+    },
+    {
+      "path": "tools/list_entrypoints.py",
+      "status": "identical",
+      "canonical_size_bytes": 213,
+      "mirror_size_bytes": 213,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "tools/load_final_into_carla.py",
+      "status": "identical",
+      "canonical_size_bytes": 1013,
+      "mirror_size_bytes": 1013,
+      "size_equal": true,
+      "guarded": true
+    },
+    {
+      "path": "tools/map_only_probe.py",
+      "status": "identical",
+      "canonical_size_bytes": 16925,
+      "mirror_size_bytes": 16925,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "tools/osm_stats.py",
+      "status": "identical",
+      "canonical_size_bytes": 11329,
+      "mirror_size_bytes": 11329,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "tools/ost_run_protocol_adapter.py",
+      "status": "identical",
+      "canonical_size_bytes": 11353,
+      "mirror_size_bytes": 11353,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "tools/pack_thesis_run.py",
+      "status": "identical",
+      "canonical_size_bytes": 12231,
+      "mirror_size_bytes": 12231,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "tools/path_utils.py",
+      "status": "identical",
+      "canonical_size_bytes": 2267,
+      "mirror_size_bytes": 2267,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "tools/perception_artifacts.py",
+      "status": "identical",
+      "canonical_size_bytes": 7568,
+      "mirror_size_bytes": 7568,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "tools/post_run_carla_sanity.py",
+      "status": "identical",
+      "canonical_size_bytes": 9242,
+      "mirror_size_bytes": 9242,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "tools/preflight_xodr_loadability.py",
+      "status": "identical",
+      "canonical_size_bytes": 13221,
+      "mirror_size_bytes": 13221,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "tools/preload_map.py",
+      "status": "identical",
+      "canonical_size_bytes": 6805,
+      "mirror_size_bytes": 6805,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "tools/print_run_paths.py",
+      "status": "identical",
+      "canonical_size_bytes": 1550,
+      "mirror_size_bytes": 1550,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "tools/probe_carla.py",
+      "status": "identical",
+      "canonical_size_bytes": 6620,
+      "mirror_size_bytes": 6620,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "tools/project_tools.py",
+      "status": "identical",
+      "canonical_size_bytes": 2940,
+      "mirror_size_bytes": 2940,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "tools/reconcile_run11_authority.py",
+      "status": "identical",
+      "canonical_size_bytes": 13005,
+      "mirror_size_bytes": 13005,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "tools/repair_drop_invalid_lane_link_targets.py",
+      "status": "identical",
+      "canonical_size_bytes": 3373,
+      "mirror_size_bytes": 3373,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "tools/repair_lane_widths.py",
+      "status": "identical",
+      "canonical_size_bytes": 520,
+      "mirror_size_bytes": 520,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "tools/run_arm.py",
+      "status": "identical",
+      "canonical_size_bytes": 352,
+      "mirror_size_bytes": 352,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "tools/run_auto_xodr_record.py",
+      "status": "identical",
+      "canonical_size_bytes": 4799,
+      "mirror_size_bytes": 4799,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "tools/run_experiments.py",
+      "status": "identical",
+      "canonical_size_bytes": 20881,
+      "mirror_size_bytes": 20881,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "tools/run_full_perception_collect.py",
+      "status": "identical",
+      "canonical_size_bytes": 15638,
+      "mirror_size_bytes": 15638,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "tools/run_gnn_pipeline.py",
+      "status": "identical",
+      "canonical_size_bytes": 6913,
+      "mirror_size_bytes": 6913,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "tools/run_offline_gaps_from_pair.py",
+      "status": "identical",
+      "canonical_size_bytes": 17211,
+      "mirror_size_bytes": 17211,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "tools/run_perception_pair.py",
+      "status": "identical",
+      "canonical_size_bytes": 91591,
+      "mirror_size_bytes": 91591,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "tools/run_perception_retry.py",
+      "status": "identical",
+      "canonical_size_bytes": 8714,
+      "mirror_size_bytes": 8714,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "tools/run_perception_safe.py",
+      "status": "identical",
+      "canonical_size_bytes": 277141,
+      "mirror_size_bytes": 277141,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "tools/run_scenariorunner_once.py",
+      "status": "identical",
+      "canonical_size_bytes": 3942,
+      "mirror_size_bytes": 3942,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "tools/run_scenarios_batch.py",
+      "status": "identical",
+      "canonical_size_bytes": 4931,
+      "mirror_size_bytes": 4931,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "tools/run_thesis_experiments.py",
+      "status": "identical",
+      "canonical_size_bytes": 11611,
+      "mirror_size_bytes": 11611,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "tools/run_thesis_final_experiments.py",
+      "status": "DRIFT",
+      "canonical_size_bytes": 54159,
+      "mirror_size_bytes": 54201,
+      "size_equal": false,
+      "guarded": false
+    },
+    {
+      "path": "tools/run_tile_perception_sweep.py",
+      "status": "identical",
+      "canonical_size_bytes": 8101,
+      "mirror_size_bytes": 8101,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "tools/run_tile_qa_controller.py",
+      "status": "identical",
+      "canonical_size_bytes": 350,
+      "mirror_size_bytes": 350,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "tools/select_and_view_tile.py",
+      "status": "identical",
+      "canonical_size_bytes": 2279,
+      "mirror_size_bytes": 2279,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "tools/smoke_check_all.py",
+      "status": "identical",
+      "canonical_size_bytes": 31350,
+      "mirror_size_bytes": 31350,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "tools/smoke_check_spawn.py",
+      "status": "identical",
+      "canonical_size_bytes": 5884,
+      "mirror_size_bytes": 5884,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "tools/smoke_load_xodr.py",
+      "status": "identical",
+      "canonical_size_bytes": 19225,
+      "mirror_size_bytes": 19225,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "tools/smoke_osm2world.py",
+      "status": "identical",
+      "canonical_size_bytes": 4514,
+      "mirror_size_bytes": 4514,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "tools/spawn_sanity_objects.py",
+      "status": "identical",
+      "canonical_size_bytes": 10750,
+      "mirror_size_bytes": 10750,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "tools/spawn_thesis_rig.py",
+      "status": "identical",
+      "canonical_size_bytes": 9064,
+      "mirror_size_bytes": 9064,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "tools/stage_gate_regression.py",
+      "status": "identical",
+      "canonical_size_bytes": 1512,
+      "mirror_size_bytes": 1512,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "tools/start_carla_load_xodr.py",
+      "status": "identical",
+      "canonical_size_bytes": 2784,
+      "mirror_size_bytes": 2784,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "tools/stream_subprocess.py",
+      "status": "identical",
+      "canonical_size_bytes": 2945,
+      "mirror_size_bytes": 2945,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "tools/sweep_calib_setups.py",
+      "status": "identical",
+      "canonical_size_bytes": 20291,
+      "mirror_size_bytes": 20291,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "tools/system_metrics_monitor.py",
+      "status": "identical",
+      "canonical_size_bytes": 2354,
+      "mirror_size_bytes": 2354,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "tools/thesis_orchestrator.py",
+      "status": "identical",
+      "canonical_size_bytes": 6178,
+      "mirror_size_bytes": 6178,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "tools/thesis_protocol_postprocess.py",
+      "status": "identical",
+      "canonical_size_bytes": 6424,
+      "mirror_size_bytes": 6424,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "tools/thesis_qa_bundle.py",
+      "status": "identical",
+      "canonical_size_bytes": 5699,
+      "mirror_size_bytes": 5699,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "tools/tile_manual_xodr_windows.py",
+      "status": "identical",
+      "canonical_size_bytes": 13265,
+      "mirror_size_bytes": 13265,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "tools/tile_qa_batch.py",
+      "status": "identical",
+      "canonical_size_bytes": 9134,
+      "mirror_size_bytes": 9134,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "tools/tile_validate_one.py",
+      "status": "identical",
+      "canonical_size_bytes": 2736,
+      "mirror_size_bytes": 2736,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "tools/tile_worker.py",
+      "status": "identical",
+      "canonical_size_bytes": 18703,
+      "mirror_size_bytes": 18703,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "tools/validate_artifacts.py",
+      "status": "identical",
+      "canonical_size_bytes": 5263,
+      "mirror_size_bytes": 5263,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "tools/validate_governance.py",
+      "status": "identical",
+      "canonical_size_bytes": 26001,
+      "mirror_size_bytes": 26001,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "tools/validate_thesis_claim_provenance.py",
+      "status": "identical",
+      "canonical_size_bytes": 4177,
+      "mirror_size_bytes": 4177,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "tools/validate_thesis_run.py",
+      "status": "identical",
+      "canonical_size_bytes": 53115,
+      "mirror_size_bytes": 53115,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "tools/verify_final_xodr.py",
+      "status": "identical",
+      "canonical_size_bytes": 6896,
+      "mirror_size_bytes": 6896,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "tools/visual_check_calib_setup.py",
+      "status": "identical",
+      "canonical_size_bytes": 16390,
+      "mirror_size_bytes": 16390,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "tools/write_manifest.py",
+      "status": "identical",
+      "canonical_size_bytes": 3063,
+      "mirror_size_bytes": 3063,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "tools/xodr_carla_hardener.py",
+      "status": "identical",
+      "canonical_size_bytes": 19551,
+      "mirror_size_bytes": 19551,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "tools/xodr_compare_gate.py",
+      "status": "identical",
+      "canonical_size_bytes": 9290,
+      "mirror_size_bytes": 9290,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "tools/xodr_coordinate_report.py",
+      "status": "identical",
+      "canonical_size_bytes": 3023,
+      "mirror_size_bytes": 3023,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "tools/xodr_structural_summary.py",
+      "status": "identical",
+      "canonical_size_bytes": 4457,
+      "mirror_size_bytes": 4457,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "topology/junction_connector_rebuild.py",
+      "status": "DRIFT",
+      "canonical_size_bytes": 34689,
+      "mirror_size_bytes": 31346,
+      "size_equal": false,
+      "guarded": false
+    },
+    {
+      "path": "topology/missing_junction_link_repair.py",
+      "status": "identical",
+      "canonical_size_bytes": 4947,
+      "mirror_size_bytes": 4947,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "topology/road_removal.py",
+      "status": "identical",
+      "canonical_size_bytes": 305,
+      "mirror_size_bytes": 305,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "topology/roundabout_rebuilder.py",
+      "status": "identical",
+      "canonical_size_bytes": 5978,
+      "mirror_size_bytes": 5978,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "topology/roundabout_reconstructor.py",
+      "status": "identical",
+      "canonical_size_bytes": 27676,
+      "mirror_size_bytes": 27676,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "topology/semantic_verifier.py",
+      "status": "identical",
+      "canonical_size_bytes": 4875,
+      "mirror_size_bytes": 4875,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "topology/structure_prune_legacy.py",
+      "status": "identical",
+      "canonical_size_bytes": 6552,
+      "mirror_size_bytes": 6552,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "topology/structure_scanner.py",
+      "status": "identical",
+      "canonical_size_bytes": 25506,
+      "mirror_size_bytes": 25506,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "topology/sumo_repair.py",
+      "status": "identical",
+      "canonical_size_bytes": 6760,
+      "mirror_size_bytes": 6760,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "topology/topology_linter.py",
+      "status": "identical",
+      "canonical_size_bytes": 15662,
+      "mirror_size_bytes": 15662,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "topology/topology_repair.py",
+      "status": "DRIFT",
+      "canonical_size_bytes": 40398,
+      "mirror_size_bytes": 3563,
+      "size_equal": false,
+      "guarded": false
+    },
+    {
+      "path": "usercustomize.py",
+      "status": "identical",
+      "canonical_size_bytes": 727,
+      "mirror_size_bytes": 727,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "utils/__init__.py",
+      "status": "identical",
+      "canonical_size_bytes": 0,
+      "mirror_size_bytes": 0,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "utils/bootstrap.py",
+      "status": "identical",
+      "canonical_size_bytes": 1029,
+      "mirror_size_bytes": 1029,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "utils/carla_server.py",
+      "status": "identical",
+      "canonical_size_bytes": 3770,
+      "mirror_size_bytes": 3770,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "utils/console_encoding.py",
+      "status": "identical",
+      "canonical_size_bytes": 4108,
+      "mirror_size_bytes": 4108,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "utils/environment_snapshot.py",
+      "status": "identical",
+      "canonical_size_bytes": 653,
+      "mirror_size_bytes": 653,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "utils/file_hashing.py",
+      "status": "identical",
+      "canonical_size_bytes": 4335,
+      "mirror_size_bytes": 4335,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "utils/finalize_run_pack.py",
+      "status": "identical",
+      "canonical_size_bytes": 2198,
+      "mirror_size_bytes": 2198,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "utils/hashing.py",
+      "status": "identical",
+      "canonical_size_bytes": 458,
+      "mirror_size_bytes": 458,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "utils/logging.py",
+      "status": "identical",
+      "canonical_size_bytes": 109,
+      "mirror_size_bytes": 109,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "utils/map_fingerprint.py",
+      "status": "identical",
+      "canonical_size_bytes": 1307,
+      "mirror_size_bytes": 1307,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "utils/optional_imports.py",
+      "status": "identical",
+      "canonical_size_bytes": 533,
+      "mirror_size_bytes": 533,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "utils/output_discovery.py",
+      "status": "identical",
+      "canonical_size_bytes": 904,
+      "mirror_size_bytes": 904,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "utils/paths.py",
+      "status": "identical",
+      "canonical_size_bytes": 1901,
+      "mirror_size_bytes": 1901,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "utils/run_provenance.py",
+      "status": "identical",
+      "canonical_size_bytes": 6381,
+      "mirror_size_bytes": 6381,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "utils/timestamped_print.py",
+      "status": "identical",
+      "canonical_size_bytes": 2727,
+      "mirror_size_bytes": 2727,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "utils/utf8_console.py",
+      "status": "identical",
+      "canonical_size_bytes": 299,
+      "mirror_size_bytes": 299,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "utils/xodr_subset.py",
+      "status": "identical",
+      "canonical_size_bytes": 490,
+      "mirror_size_bytes": 490,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "visualization/animated_diff.py",
+      "status": "identical",
+      "canonical_size_bytes": 2940,
+      "mirror_size_bytes": 2940,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "visualization/augmentation_preview.py",
+      "status": "identical",
+      "canonical_size_bytes": 2394,
+      "mirror_size_bytes": 2394,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "visualization/city_drift_field.py",
+      "status": "identical",
+      "canonical_size_bytes": 2103,
+      "mirror_size_bytes": 2103,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "visualization/city_map_diff.py",
+      "status": "identical",
+      "canonical_size_bytes": 2382,
+      "mirror_size_bytes": 2382,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "visualization/cross_section_visualizer.py",
+      "status": "identical",
+      "canonical_size_bytes": 5677,
+      "mirror_size_bytes": 5677,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "visualization/curvature_drift_plot.py",
+      "status": "identical",
+      "canonical_size_bytes": 1533,
+      "mirror_size_bytes": 1533,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "visualization/elevation_heatmap.py",
+      "status": "identical",
+      "canonical_size_bytes": 1645,
+      "mirror_size_bytes": 1645,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "visualization/heatmap_generator.py",
+      "status": "identical",
+      "canonical_size_bytes": 7746,
+      "mirror_size_bytes": 7746,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "visualization/heatmap_plotter.py",
+      "status": "identical",
+      "canonical_size_bytes": 2515,
+      "mirror_size_bytes": 2515,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "visualization/iou_histogram.py",
+      "status": "identical",
+      "canonical_size_bytes": 329,
+      "mirror_size_bytes": 329,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "visualization/lane_overlay.py",
+      "status": "identical",
+      "canonical_size_bytes": 5753,
+      "mirror_size_bytes": 5753,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "visualization/map_diff.py",
+      "status": "DRIFT",
+      "canonical_size_bytes": 7980,
+      "mirror_size_bytes": 7948,
+      "size_equal": false,
+      "guarded": false
+    },
+    {
+      "path": "visualization/map_plotter.py",
+      "status": "DRIFT",
+      "canonical_size_bytes": 9706,
+      "mirror_size_bytes": 9247,
+      "size_equal": false,
+      "guarded": false
+    },
+    {
+      "path": "visualization/osm_overlay.py",
+      "status": "identical",
+      "canonical_size_bytes": 3823,
+      "mirror_size_bytes": 3823,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "visualization/spawn_heatmap.py",
+      "status": "identical",
+      "canonical_size_bytes": 1905,
+      "mirror_size_bytes": 1905,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "visualization/thesis_figures.py",
+      "status": "identical",
+      "canonical_size_bytes": 8229,
+      "mirror_size_bytes": 8229,
+      "size_equal": true,
+      "guarded": false
+    },
+    {
+      "path": "visualization/tile_gap_heatmap.py",
+      "status": "identical",
+      "canonical_size_bytes": 3512,
+      "mirror_size_bytes": 3512,
+      "size_equal": true,
+      "guarded": false
+    }
+  ],
+  "decision_needed_drifted_by_top_dir": {
+    "__init__.py": [
+      "__init__.py"
+    ],
+    "bootstrap_repo_root.py": [
+      "bootstrap_repo_root.py"
+    ],
+    "carla_tools": [
+      "carla_tools/__init__.py"
+    ],
+    "cli.py": [
+      "cli.py"
+    ],
+    "config": [
+      "config/settings.py"
+    ],
+    "contracts": [
+      "contracts/__init__.py",
+      "contracts/agent_sync.py"
+    ],
+    "core": [
+      "core/xodr_sanitizer.py"
+    ],
+    "domain_gap": [
+      "domain_gap/geo_alignment.py"
+    ],
+    "elevation": [
+      "elevation/elevation_seam_fixer.py"
+    ],
+    "enrichment": [
+      "enrichment/blender_runner.py",
+      "enrichment/elevation_importer.py",
+      "enrichment/object_injector.py",
+      "enrichment/osm2world_runner.py"
+    ],
+    "entrypoints.py": [
+      "entrypoints.py"
+    ],
+    "geometry": [
+      "geometry/geometry_math.py",
+      "geometry/planview_smoother.py"
+    ],
+    "main_pipeline.py": [
+      "main_pipeline.py"
+    ],
+    "pipeline_stages": [
+      "pipeline_stages/stage_04_enrichment.py",
+      "pipeline_stages/stage_05_geometry.py",
+      "pipeline_stages/stage_06_links.py",
+      "pipeline_stages/stage_08_final_integrity.py",
+      "pipeline_stages/stage_08_integrity.py",
+      "pipeline_stages/stage_09_tiling.py"
+    ],
+    "quality": [
+      "quality/check_geometric_continuity.py"
+    ],
+    "run_full_test.py": [
+      "run_full_test.py"
+    ],
+    "tiling": [
+      "tiling/tile_extractor.py"
+    ],
+    "tools": [
+      "tools/junction_connector_rebuild.py",
+      "tools/run_thesis_final_experiments.py"
+    ],
+    "topology": [
+      "topology/junction_connector_rebuild.py",
+      "topology/topology_repair.py"
+    ],
+    "visualization": [
+      "visualization/map_diff.py",
+      "visualization/map_plotter.py"
+    ]
+  }
+}

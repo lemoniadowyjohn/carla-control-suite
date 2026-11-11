@@ -720,6 +720,12 @@ class ArtifactAuthorityLedger:
         stale or if ``STRUCTURE_FROZEN`` is not currently held -- i.e. a run
         that mutated structure after producing acceptance evidence cannot
         emit a valid final acceptance packet at all.
+
+        Map acceptance is fail-closed: if ``valid_for_experiments`` is
+        False or absent, the receipt records ``status: "ACCEPTANCE_FAILED"``
+        in ``map_acceptance_status`` and ``FINAL_ARTIFACT_PUBLISHED`` is NOT
+        provided.  Only when ``valid_for_experiments`` is explicitly True
+        does the receipt carry the publication capability.
         """
         self.require(STRUCTURE_FROZEN, stage)
         self.assert_structure_unchanged(final_artifact_path, where=stage)
@@ -751,9 +757,34 @@ class ArtifactAuthorityLedger:
                 "A final-artifact receipt requires source_manifest_identity.inputs_manifest_sha256"
             )
 
-        # Publish the capability before serialising its state.  The receipt
-        # itself is the durable evidence for this capability.
-        self.provide(FINAL_ARTIFACT_PUBLISHED, stage, evidence=final_sha)
+        # Determine acceptance status fail-closed.
+        valid_for_experiments = acceptance.get("valid_for_experiments")
+        failed_gates = acceptance.get("failed_gates", [])
+        hard_fail_reasons = acceptance.get("hard_fail_reasons", [])
+
+        # Certification must also pass for publication.
+        certification_passed = (
+            topology_certification.get("status", "") == "PASSED"
+            if isinstance(topology_certification, dict)
+            else False
+        )
+
+        map_acceptance_status = {
+            "valid_for_experiments": bool(valid_for_experiments) if valid_for_experiments is not None else False,
+            "failed_gates": failed_gates if failed_gates else [],
+            "hard_fail_reasons": hard_fail_reasons if hard_fail_reasons else [],
+            "soft_warnings": acceptance.get("soft_warnings", []),
+            "acceptance_artifact": acceptance.get("acceptance_artifact"),
+        }
+
+        if not valid_for_experiments or not certification_passed:
+            # Acceptance failed or certification failed -> record failure,
+            # do NOT publish. FINAL_ARTIFACT_PUBLISHED is intentionally omitted.
+            pass  # capability not provided; status recorded below
+
+        # Publish the capability only when acceptance is valid.
+        if valid_for_experiments:
+            self.provide(FINAL_ARTIFACT_PUBLISHED, stage, evidence=final_sha)
 
         receipt: Dict[str, Any] = {
             # Resolver-facing, content-addressed contract.  Timestamps are

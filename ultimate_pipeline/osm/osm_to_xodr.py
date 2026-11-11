@@ -180,8 +180,11 @@ def main():
 
     try:
         convert(args)
-    except:
+    except Exception:
         print('\nAn error has occurred in conversion.')
+    except KeyboardInterrupt:
+        print('\nCancelled by user. Bye!')
+        raise
 
 
 if __name__ == '__main__':

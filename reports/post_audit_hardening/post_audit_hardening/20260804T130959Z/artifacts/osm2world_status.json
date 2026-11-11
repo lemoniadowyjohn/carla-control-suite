@@ -1,0 +1,138 @@
+{
+  "status": "ok",
+  "reason": "Generated 3 outputs: scene.obj, preview.png, scene.glb",
+  "command_lines": [
+    [
+      "java",
+      "-jar",
+      "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\carla_governed\\OSM2World-latest-bin\\OSM2World.jar",
+      "convert",
+      "-i",
+      "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260804T130959Z\\artifacts\\window_osm.osm",
+      "-o",
+      "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260804T130959Z\\artifacts\\ingolstadt_cooked_perception_v1_b9e07465_window_osm.obj",
+      "--config",
+      "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260804T130959Z\\artifacts\\osm2world.properties"
+    ],
+    [
+      "java",
+      "-jar",
+      "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\carla_governed\\OSM2World-latest-bin\\OSM2World.jar",
+      "convert",
+      "-i",
+      "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260804T130959Z\\artifacts\\window_osm.osm",
+      "-o",
+      "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260804T130959Z\\artifacts\\ingolstadt_cooked_perception_v1_b9e07465_window_osm.png",
+      "--config",
+      "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260804T130959Z\\artifacts\\osm2world.properties"
+    ],
+    [
+      "java",
+      "-jar",
+      "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\carla_governed\\OSM2World-latest-bin\\OSM2World.jar",
+      "convert",
+      "-i",
+      "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260804T130959Z\\artifacts\\window_osm.osm",
+      "-o",
+      "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260804T130959Z\\artifacts\\ingolstadt_cooked_perception_v1_b9e07465_window_osm.glb",
+      "--config",
+      "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260804T130959Z\\artifacts\\osm2world.properties"
+    ]
+  ],
+  "java_version": "openjdk version \"17.0.17\" 2025-10-21",
+  "osm2world_version": "OSM2World.jar",
+  "osm2world_jar": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\carla_governed\\OSM2World-latest-bin\\OSM2World.jar",
+  "outputs": {
+    "scene.obj": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260804T130959Z\\artifacts\\ingolstadt_cooked_perception_v1_b9e07465_window_osm.obj",
+    "preview.png": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260804T130959Z\\artifacts\\ingolstadt_cooked_perception_v1_b9e07465_window_osm.png",
+    "scene.glb": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260804T130959Z\\artifacts\\ingolstadt_cooked_perception_v1_b9e07465_window_osm.glb"
+  },
+  "hashes": {
+    "input_osm": "e580e45fcd2bd49aa33e4c679d6ff680ec7fc988a729975331f2e057480ca9b9",
+    "config": "6b092dd52e96037925554804d5264a6380144934adf5ba1905f164bc6c20a942",
+    "scene.obj": "88d153348f0045378a2de7510f168e9e5956df1ba173dce3c1d366f752e4a79b",
+    "preview.png": "84afe2ce3fc334e808e5492de4ac016b97abdb84d046874e89154932717f1e49",
+    "scene.glb": "a984e735dd603cdba5f5f757d583ca7cab99a16f34f5dc10cf140c45d6781bf6"
+  },
+  "config_path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260804T130959Z\\artifacts\\osm2world.properties",
+  "config_hash": "6b092dd52e96037925554804d5264a6380144934adf5ba1905f164bc6c20a942",
+  "input_osm_hash": "e580e45fcd2bd49aa33e4c679d6ff680ec7fc988a729975331f2e057480ca9b9",
+  "cache_key": "c695cc3e0bf6513b",
+  "start_time": "2026-08-04T15:10:02.422429",
+  "end_time": "2026-08-04T15:10:26.102435",
+  "duration_sec": 23.68,
+  "exit_codes": {
+    "scene.obj": 0,
+    "preview.png": 0,
+    "scene.glb": 0
+  },
+  "exception": "",
+  "stdout_log": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260804T130959Z\\artifacts\\osm2world_scene_obj_stdout.log",
+  "stderr_log": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260804T130959Z\\artifacts\\osm2world_scene_obj_stderr.log",
+  "attempts": [
+    {
+      "output": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260804T130959Z\\artifacts\\ingolstadt_cooked_perception_v1_b9e07465_window_osm.obj",
+      "variant": 1,
+      "command_line": [
+        "java",
+        "-jar",
+        "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\carla_governed\\OSM2World-latest-bin\\OSM2World.jar",
+        "convert",
+        "-i",
+        "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260804T130959Z\\artifacts\\window_osm.osm",
+        "-o",
+        "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260804T130959Z\\artifacts\\ingolstadt_cooked_perception_v1_b9e07465_window_osm.obj",
+        "--config",
+        "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260804T130959Z\\artifacts\\osm2world.properties"
+      ],
+      "exit_code": 0,
+      "stderr_head": "ERROR[w359550745]: polygon must not not have duplicate points\nPolygon vertices: [(0.0,0.0), (0.0,0.0), (0.0,2.2), (0.0,2.2), (0.0,0.0)]\nCaused by: org.osm2world.util.exception.InvalidGeometryException: polygon must not not have duplicate points\nPolygon vertices: [(0.0,0.0), (0.0,0.0), (0.0,2.2), (0.0,2.2), (0.0,0.0)]\n\tat org.osm2world.math.shapes.SimplePolygonXZ.assertNoDuplicates(SimplePolygonXZ.java:694)\n\tat org.osm2world.math.shapes.SimplePolygonXZ.<init>(SimplePolygonXZ.java:48)\n\tat org.osm2world.world.modules.building.WallSurface.<init>(WallSurface.java:117)\n\tat org.osm2world.world.modules.building.indoor.IndoorModule$Elevator.buildMeshesAndModels(IndoorModule.java:198)\n\tat org.osm2world.world.data.ProceduralWorldObject.getAttachmentSurfaces(ProceduralWorldObject.java:96)\n\tat org.osm2world.O2WConverterImpl.lambda$attachConnectors$1(O2WConverterImpl.java:259)\n\tat org.osm2world.util.FaultTolerantIterationUtil.forEach(FaultTolerantIterationUtil.java:25)\n\tat org.osm2world.util.FaultTolerantIterationUtil.forEach(FaultTolerantIterationUtil.java:37)\n\tat org.osm2world.O2WConverterImpl.attachConnectors(O2WConverterImpl.java:257)\n\tat org.osm2world.O2WConverterImpl.runConversion(O2WConverterImpl.java:193)\n\tat org.osm2world.O2WConverterImpl.convert(O2WConverterImpl.java:121)\n\tat org.osm2world.O2WConverter.convert(O2WConverter.java:69)\n\tat org.osm2world.console.commands.ConvertCommand.call(ConvertCommand.java:127)\n\tat org.osm2world.console.commands.ConvertCommand.call(ConvertCommand.java:47)\n\tat picocli.CommandLine.executeUserObject(CommandLine.java:2031)\n\tat picocli.CommandLine.access$1500(CommandLine.java:148)\n\tat picocli.CommandLine$RunLast.executeUserObjectOfLastSubcommandWithSameParent(CommandLine.java:2469)\n\tat picocli.CommandLine$RunLast.handle(CommandLine.java:2461)\n\tat picocli.CommandLine$RunLast.handle(CommandLine.java:2423)\n\tat picocli.CommandLine$AbstractParseResultHandler.execute(CommandLine.java:2277)\n\tat picocli.CommandLine$RunLast.execute(CommandLine.java:24",
+      "stdout_head": ""
+    },
+    {
+      "output": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260804T130959Z\\artifacts\\ingolstadt_cooked_perception_v1_b9e07465_window_osm.png",
+      "variant": 1,
+      "command_line": [
+        "java",
+        "-jar",
+        "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\carla_governed\\OSM2World-latest-bin\\OSM2World.jar",
+        "convert",
+        "-i",
+        "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260804T130959Z\\artifacts\\window_osm.osm",
+        "-o",
+        "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260804T130959Z\\artifacts\\ingolstadt_cooked_perception_v1_b9e07465_window_osm.png",
+        "--config",
+        "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260804T130959Z\\artifacts\\osm2world.properties"
+      ],
+      "exit_code": 0,
+      "stderr_head": "ERROR[w359550745]: polygon must not not have duplicate points\nPolygon vertices: [(0.0,0.0), (0.0,0.0), (0.0,2.2), (0.0,2.2), (0.0,0.0)]\nCaused by: org.osm2world.util.exception.InvalidGeometryException: polygon must not not have duplicate points\nPolygon vertices: [(0.0,0.0), (0.0,0.0), (0.0,2.2), (0.0,2.2), (0.0,0.0)]\n\tat org.osm2world.math.shapes.SimplePolygonXZ.assertNoDuplicates(SimplePolygonXZ.java:694)\n\tat org.osm2world.math.shapes.SimplePolygonXZ.<init>(SimplePolygonXZ.java:48)\n\tat org.osm2world.world.modules.building.WallSurface.<init>(WallSurface.java:117)\n\tat org.osm2world.world.modules.building.indoor.IndoorModule$Elevator.buildMeshesAndModels(IndoorModule.java:198)\n\tat org.osm2world.world.data.ProceduralWorldObject.getAttachmentSurfaces(ProceduralWorldObject.java:96)\n\tat org.osm2world.O2WConverterImpl.lambda$attachConnectors$1(O2WConverterImpl.java:259)\n\tat org.osm2world.util.FaultTolerantIterationUtil.forEach(FaultTolerantIterationUtil.java:25)\n\tat org.osm2world.util.FaultTolerantIterationUtil.forEach(FaultTolerantIterationUtil.java:37)\n\tat org.osm2world.O2WConverterImpl.attachConnectors(O2WConverterImpl.java:257)\n\tat org.osm2world.O2WConverterImpl.runConversion(O2WConverterImpl.java:193)\n\tat org.osm2world.O2WConverterImpl.convert(O2WConverterImpl.java:121)\n\tat org.osm2world.O2WConverter.convert(O2WConverter.java:69)\n\tat org.osm2world.console.commands.ConvertCommand.call(ConvertCommand.java:127)\n\tat org.osm2world.console.commands.ConvertCommand.call(ConvertCommand.java:47)\n\tat picocli.CommandLine.executeUserObject(CommandLine.java:2031)\n\tat picocli.CommandLine.access$1500(CommandLine.java:148)\n\tat picocli.CommandLine$RunLast.executeUserObjectOfLastSubcommandWithSameParent(CommandLine.java:2469)\n\tat picocli.CommandLine$RunLast.handle(CommandLine.java:2461)\n\tat picocli.CommandLine$RunLast.handle(CommandLine.java:2423)\n\tat picocli.CommandLine$AbstractParseResultHandler.execute(CommandLine.java:2277)\n\tat picocli.CommandLine$RunLast.execute(CommandLine.java:24",
+      "stdout_head": ""
+    },
+    {
+      "output": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260804T130959Z\\artifacts\\ingolstadt_cooked_perception_v1_b9e07465_window_osm.glb",
+      "variant": 1,
+      "command_line": [
+        "java",
+        "-jar",
+        "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\carla_governed\\OSM2World-latest-bin\\OSM2World.jar",
+        "convert",
+        "-i",
+        "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260804T130959Z\\artifacts\\window_osm.osm",
+        "-o",
+        "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260804T130959Z\\artifacts\\ingolstadt_cooked_perception_v1_b9e07465_window_osm.glb",
+        "--config",
+        "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260804T130959Z\\artifacts\\osm2world.properties"
+      ],
+      "exit_code": 0,
+      "stderr_head": "ERROR[w359550745]: polygon must not not have duplicate points\nPolygon vertices: [(0.0,0.0), (0.0,0.0), (0.0,2.2), (0.0,2.2), (0.0,0.0)]\nCaused by: org.osm2world.util.exception.InvalidGeometryException: polygon must not not have duplicate points\nPolygon vertices: [(0.0,0.0), (0.0,0.0), (0.0,2.2), (0.0,2.2), (0.0,0.0)]\n\tat org.osm2world.math.shapes.SimplePolygonXZ.assertNoDuplicates(SimplePolygonXZ.java:694)\n\tat org.osm2world.math.shapes.SimplePolygonXZ.<init>(SimplePolygonXZ.java:48)\n\tat org.osm2world.world.modules.building.WallSurface.<init>(WallSurface.java:117)\n\tat org.osm2world.world.modules.building.indoor.IndoorModule$Elevator.buildMeshesAndModels(IndoorModule.java:198)\n\tat org.osm2world.world.data.ProceduralWorldObject.getAttachmentSurfaces(ProceduralWorldObject.java:96)\n\tat org.osm2world.O2WConverterImpl.lambda$attachConnectors$1(O2WConverterImpl.java:259)\n\tat org.osm2world.util.FaultTolerantIterationUtil.forEach(FaultTolerantIterationUtil.java:25)\n\tat org.osm2world.util.FaultTolerantIterationUtil.forEach(FaultTolerantIterationUtil.java:37)\n\tat org.osm2world.O2WConverterImpl.attachConnectors(O2WConverterImpl.java:257)\n\tat org.osm2world.O2WConverterImpl.runConversion(O2WConverterImpl.java:193)\n\tat org.osm2world.O2WConverterImpl.convert(O2WConverterImpl.java:121)\n\tat org.osm2world.O2WConverter.convert(O2WConverter.java:69)\n\tat org.osm2world.console.commands.ConvertCommand.call(ConvertCommand.java:127)\n\tat org.osm2world.console.commands.ConvertCommand.call(ConvertCommand.java:47)\n\tat picocli.CommandLine.executeUserObject(CommandLine.java:2031)\n\tat picocli.CommandLine.access$1500(CommandLine.java:148)\n\tat picocli.CommandLine$RunLast.executeUserObjectOfLastSubcommandWithSameParent(CommandLine.java:2469)\n\tat picocli.CommandLine$RunLast.handle(CommandLine.java:2461)\n\tat picocli.CommandLine$RunLast.handle(CommandLine.java:2423)\n\tat picocli.CommandLine$AbstractParseResultHandler.execute(CommandLine.java:2277)\n\tat picocli.CommandLine$RunLast.execute(CommandLine.java:24",
+      "stdout_head": ""
+    }
+  ],
+  "glb_valid": true,
+  "glb_validation_reason": "GLB header valid",
+  "config_header_hex": "23204f534d32576f",
+  "abs_osm_path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260804T130959Z\\artifacts\\window_osm.osm",
+  "abs_config_path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260804T130959Z\\artifacts\\osm2world.properties",
+  "working_dir": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\carla_governed\\OSM2World-latest-bin",
+  "successful_variant": 1
+}

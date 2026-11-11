@@ -1,0 +1,3120 @@
+{
+  "g8_verdict": "PHASE_G_ACCEPTED",
+  "generated_at_utc": "2026-08-03T19:28:34.186720+00:00",
+  "identity": {
+    "lane_topology_hash_baseline": "3547b06a2acd3106952b296fc16e266b9afc65b70a58bc3a6ed3bef02aff12b0",
+    "lane_topology_hash_final": "3e60c78820ffc4fc1b929ae995b65e4f0540ba6d0962b62759560eb344837827",
+    "protected_hash_matches_g0": {
+      "connector_geometry_hash": true,
+      "contactpoint_hash": true,
+      "elevation_profile_hash": true,
+      "junction_structure_hash": true,
+      "planview_hash": true,
+      "road_length_hash": true,
+      "road_link_hash": true
+    },
+    "protected_ok": true,
+    "road_count": 32710
+  },
+  "input": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260804T030000Z\\candidate_g7_roadmarks.xodr",
+  "loadability": {
+    "baseline_error_signature": {
+      "carla_compat_gate|geometry_length_invalid": 12,
+      "strict_validator|geom_len_nonpositive": 12
+    },
+    "candidate": {
+      "error_count": 24,
+      "errors": [
+        {
+          "code": "geom_len_nonpositive",
+          "context": {
+            "idx": 0,
+            "length": "0.00000000",
+            "road": "50003"
+          },
+          "message": "Geometry length must be positive.",
+          "module": "strict_validator",
+          "severity": "error"
+        },
+        {
+          "code": "geom_len_nonpositive",
+          "context": {
+            "idx": 0,
+            "length": "0.00000000",
+            "road": "51425"
+          },
+          "message": "Geometry length must be positive.",
+          "module": "strict_validator",
+          "severity": "error"
+        },
+        {
+          "code": "geom_len_nonpositive",
+          "context": {
+            "idx": 0,
+            "length": "0.00000000",
+            "road": "51646"
+          },
+          "message": "Geometry length must be positive.",
+          "module": "strict_validator",
+          "severity": "error"
+        },
+        {
+          "code": "geom_len_nonpositive",
+          "context": {
+            "idx": 0,
+            "length": "0.00000000",
+            "road": "52738"
+          },
+          "message": "Geometry length must be positive.",
+          "module": "strict_validator",
+          "severity": "error"
+        },
+        {
+          "code": "geom_len_nonpositive",
+          "context": {
+            "idx": 0,
+            "length": "0.00000000",
+            "road": "54261"
+          },
+          "message": "Geometry length must be positive.",
+          "module": "strict_validator",
+          "severity": "error"
+        },
+        {
+          "code": "geom_len_nonpositive",
+          "context": {
+            "idx": 0,
+            "length": "0.00000000",
+            "road": "56874"
+          },
+          "message": "Geometry length must be positive.",
+          "module": "strict_validator",
+          "severity": "error"
+        },
+        {
+          "code": "geom_len_nonpositive",
+          "context": {
+            "idx": 0,
+            "length": "0.00000000",
+            "road": "57300"
+          },
+          "message": "Geometry length must be positive.",
+          "module": "strict_validator",
+          "severity": "error"
+        },
+        {
+          "code": "geom_len_nonpositive",
+          "context": {
+            "idx": 0,
+            "length": "0.00000000",
+            "road": "58404"
+          },
+          "message": "Geometry length must be positive.",
+          "module": "strict_validator",
+          "severity": "error"
+        },
+        {
+          "code": "geom_len_nonpositive",
+          "context": {
+            "idx": 0,
+            "length": "0.00000000",
+            "road": "62170"
+          },
+          "message": "Geometry length must be positive.",
+          "module": "strict_validator",
+          "severity": "error"
+        },
+        {
+          "code": "geom_len_nonpositive",
+          "context": {
+            "idx": 0,
+            "length": "0.00000000",
+            "road": "66369"
+          },
+          "message": "Geometry length must be positive.",
+          "module": "strict_validator",
+          "severity": "error"
+        },
+        {
+          "code": "geom_len_nonpositive",
+          "context": {
+            "idx": 0,
+            "length": "0.00000000",
+            "road": "68135"
+          },
+          "message": "Geometry length must be positive.",
+          "module": "strict_validator",
+          "severity": "error"
+        },
+        {
+          "code": "geom_len_nonpositive",
+          "context": {
+            "idx": 0,
+            "length": "0.00000000",
+            "road": "69106"
+          },
+          "message": "Geometry length must be positive.",
+          "module": "strict_validator",
+          "severity": "error"
+        },
+        {
+          "code": "geometry_length_invalid",
+          "context": {
+            "index": 0,
+            "length": "0.00000000",
+            "road": "50003"
+          },
+          "message": "Geometry length must be finite and > 0.",
+          "module": "carla_compat_gate",
+          "severity": "error"
+        },
+        {
+          "code": "geometry_length_invalid",
+          "context": {
+            "index": 0,
+            "length": "0.00000000",
+            "road": "51425"
+          },
+          "message": "Geometry length must be finite and > 0.",
+          "module": "carla_compat_gate",
+          "severity": "error"
+        },
+        {
+          "code": "geometry_length_invalid",
+          "context": {
+            "index": 0,
+            "length": "0.00000000",
+            "road": "51646"
+          },
+          "message": "Geometry length must be finite and > 0.",
+          "module": "carla_compat_gate",
+          "severity": "error"
+        },
+        {
+          "code": "geometry_length_invalid",
+          "context": {
+            "index": 0,
+            "length": "0.00000000",
+            "road": "52738"
+          },
+          "message": "Geometry length must be finite and > 0.",
+          "module": "carla_compat_gate",
+          "severity": "error"
+        },
+        {
+          "code": "geometry_length_invalid",
+          "context": {
+            "index": 0,
+            "length": "0.00000000",
+            "road": "54261"
+          },
+          "message": "Geometry length must be finite and > 0.",
+          "module": "carla_compat_gate",
+          "severity": "error"
+        },
+        {
+          "code": "geometry_length_invalid",
+          "context": {
+            "index": 0,
+            "length": "0.00000000",
+            "road": "56874"
+          },
+          "message": "Geometry length must be finite and > 0.",
+          "module": "carla_compat_gate",
+          "severity": "error"
+        },
+        {
+          "code": "geometry_length_invalid",
+          "context": {
+            "index": 0,
+            "length": "0.00000000",
+            "road": "57300"
+          },
+          "message": "Geometry length must be finite and > 0.",
+          "module": "carla_compat_gate",
+          "severity": "error"
+        },
+        {
+          "code": "geometry_length_invalid",
+          "context": {
+            "index": 0,
+            "length": "0.00000000",
+            "road": "58404"
+          },
+          "message": "Geometry length must be finite and > 0.",
+          "module": "carla_compat_gate",
+          "severity": "error"
+        },
+        {
+          "code": "geometry_length_invalid",
+          "context": {
+            "index": 0,
+            "length": "0.00000000",
+            "road": "62170"
+          },
+          "message": "Geometry length must be finite and > 0.",
+          "module": "carla_compat_gate",
+          "severity": "error"
+        },
+        {
+          "code": "geometry_length_invalid",
+          "context": {
+            "index": 0,
+            "length": "0.00000000",
+            "road": "66369"
+          },
+          "message": "Geometry length must be finite and > 0.",
+          "module": "carla_compat_gate",
+          "severity": "error"
+        },
+        {
+          "code": "geometry_length_invalid",
+          "context": {
+            "index": 0,
+            "length": "0.00000000",
+            "road": "68135"
+          },
+          "message": "Geometry length must be finite and > 0.",
+          "module": "carla_compat_gate",
+          "severity": "error"
+        },
+        {
+          "code": "geometry_length_invalid",
+          "context": {
+            "index": 0,
+            "length": "0.00000000",
+            "road": "69106"
+          },
+          "message": "Geometry length must be finite and > 0.",
+          "module": "carla_compat_gate",
+          "severity": "error"
+        }
+      ],
+      "modules": {
+        "carla_compat_gate": {
+          "available": true,
+          "stats": {
+            "errors": 12,
+            "warnings": 54042
+          }
+        },
+        "lane_section_successor_scan": {
+          "available": true
+        },
+        "strict_validator": {
+          "available": true
+        }
+      },
+      "status": "fail",
+      "warning_count": 135113,
+      "warnings": [
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 0,
+            "road": "39830",
+            "x": 840138.71778614,
+            "y": 5464923.98146263
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 1,
+            "road": "39830",
+            "x": 840146.89235915,
+            "y": 5464921.10777763
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 2,
+            "road": "39830",
+            "x": 840153.08018602,
+            "y": 5464918.65631043
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 3,
+            "road": "39830",
+            "x": 840161.2356918,
+            "y": 5464913.28182013
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 4,
+            "road": "39830",
+            "x": 840170.88098311,
+            "y": 5464905.80796802
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 5,
+            "road": "39830",
+            "x": 840183.55293107,
+            "y": 5464891.307469
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 6,
+            "road": "39830",
+            "x": 840192.69264662,
+            "y": 5464880.84960908
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 0,
+            "road": "39831",
+            "x": 841328.89721974,
+            "y": 5461114.66734279
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 1,
+            "road": "39831",
+            "x": 841343.33391268,
+            "y": 5461109.65214511
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 2,
+            "road": "39831",
+            "x": 841354.41680916,
+            "y": 5461108.46725282
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 3,
+            "road": "39831",
+            "x": 841366.80013263,
+            "y": 5461109.84019438
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 4,
+            "road": "39831",
+            "x": 841377.25967024,
+            "y": 5461114.92576844
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 5,
+            "road": "39831",
+            "x": 841390.68150662,
+            "y": 5461123.63890169
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 0,
+            "road": "39832",
+            "x": 839734.79230827,
+            "y": 5460088.99713148
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 0,
+            "road": "39833",
+            "x": 839823.80242253,
+            "y": 5460200.72887934
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 1,
+            "road": "39833",
+            "x": 839823.67479492,
+            "y": 5460200.57489495
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 2,
+            "road": "39833",
+            "x": 839811.7667833,
+            "y": 5460186.00759709
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 3,
+            "road": "39833",
+            "x": 839806.43778304,
+            "y": 5460179.45640538
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 4,
+            "road": "39833",
+            "x": 839789.04111236,
+            "y": 5460157.80156473
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 0,
+            "road": "39834",
+            "x": 839946.78179574,
+            "y": 5460306.02513409
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 1,
+            "road": "39834",
+            "x": 839930.39524705,
+            "y": 5460294.04662514
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 2,
+            "road": "39834",
+            "x": 839914.27541539,
+            "y": 5460282.2185134
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 0,
+            "road": "39835",
+            "x": 838772.1071329,
+            "y": 5466575.1323582
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 0,
+            "road": "39836",
+            "x": 842964.42351086,
+            "y": 5466246.56218226
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 1,
+            "road": "39836",
+            "x": 843008.48329929,
+            "y": 5466251.06503925
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 2,
+            "road": "39836",
+            "x": 843022.30661918,
+            "y": 5466252.41140613
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 3,
+            "road": "39836",
+            "x": 843044.00501095,
+            "y": 5466254.42072308
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 4,
+            "road": "39836",
+            "x": 843057.82918747,
+            "y": 5466255.75865699
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 5,
+            "road": "39836",
+            "x": 843123.47553558,
+            "y": 5466262.38667962
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 6,
+            "road": "39836",
+            "x": 843136.61117615,
+            "y": 5466263.7211877
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 0,
+            "road": "39837",
+            "x": 843187.43830737,
+            "y": 5465723.18458684
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 1,
+            "road": "39837",
+            "x": 843184.19000965,
+            "y": 5465731.54343811
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 2,
+            "road": "39837",
+            "x": 843179.56544132,
+            "y": 5465744.63270799
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 3,
+            "road": "39837",
+            "x": 843176.7570732,
+            "y": 5465753.44245554
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 4,
+            "road": "39837",
+            "x": 843172.85059339,
+            "y": 5465766.76668272
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 5,
+            "road": "39837",
+            "x": 843171.75402651,
+            "y": 5465770.85924093
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 6,
+            "road": "39837",
+            "x": 843168.21168614,
+            "y": 5465784.28869128
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 7,
+            "road": "39837",
+            "x": 843164.45309891,
+            "y": 5465798.76623621
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 8,
+            "road": "39837",
+            "x": 843160.89778787,
+            "y": 5465812.19219773
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 9,
+            "road": "39837",
+            "x": 843147.32385519,
+            "y": 5465862.46308633
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 10,
+            "road": "39837",
+            "x": 843144.21704381,
+            "y": 5465875.9897674
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 11,
+            "road": "39837",
+            "x": 843142.23374604,
+            "y": 5465886.42585085
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 12,
+            "road": "39837",
+            "x": 843142.07119167,
+            "y": 5465887.30130163
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 0,
+            "road": "39838",
+            "x": 841004.88498135,
+            "y": 5465052.98857677
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 1,
+            "road": "39838",
+            "x": 841000.52764036,
+            "y": 5465042.94869204
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 2,
+            "road": "39838",
+            "x": 840995.906882,
+            "y": 5465036.19591069
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 3,
+            "road": "39838",
+            "x": 840988.47370743,
+            "y": 5465028.84138236
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 4,
+            "road": "39838",
+            "x": 840981.14496087,
+            "y": 5465025.81957949
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 0,
+            "road": "39839",
+            "x": 836285.58321127,
+            "y": 5467080.20693508
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 1,
+            "road": "39839",
+            "x": 836284.39466534,
+            "y": 5467068.71025599
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 2,
+            "road": "39839",
+            "x": 836282.96434521,
+            "y": 5467054.89409588
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 0,
+            "road": "39840",
+            "x": 835596.88458549,
+            "y": 5469123.13545428
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 1,
+            "road": "39840",
+            "x": 835618.26180616,
+            "y": 5469117.2981698
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 2,
+            "road": "39840",
+            "x": 835635.7325138,
+            "y": 5469110.82373962
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 3,
+            "road": "39840",
+            "x": 835653.53073907,
+            "y": 5469103.82041636
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 4,
+            "road": "39840",
+            "x": 835671.48264931,
+            "y": 5469095.45644872
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 5,
+            "road": "39840",
+            "x": 835683.60319191,
+            "y": 5469089.71453751
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 6,
+            "road": "39840",
+            "x": 835700.13793032,
+            "y": 5469080.94368137
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 7,
+            "road": "39840",
+            "x": 835719.47145335,
+            "y": 5469070.00400847
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 8,
+            "road": "39840",
+            "x": 835727.44843074,
+            "y": 5469065.19918687
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 9,
+            "road": "39840",
+            "x": 835746.35844932,
+            "y": 5469053.52952372
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 0,
+            "road": "39841",
+            "x": 835305.18861151,
+            "y": 5469174.50309568
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 1,
+            "road": "39841",
+            "x": 835318.41678299,
+            "y": 5469168.82513976
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 2,
+            "road": "39841",
+            "x": 835330.61619538,
+            "y": 5469164.24029492
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 3,
+            "road": "39841",
+            "x": 835343.85656591,
+            "y": 5469159.71098961
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 4,
+            "road": "39841",
+            "x": 835356.89653751,
+            "y": 5469156.45590638
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 5,
+            "road": "39841",
+            "x": 835369.62176252,
+            "y": 5469153.44813055
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 6,
+            "road": "39841",
+            "x": 835383.56227382,
+            "y": 5469151.22561966
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 0,
+            "road": "39842",
+            "x": 835220.93908683,
+            "y": 5469249.33940743
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 1,
+            "road": "39842",
+            "x": 835223.81829459,
+            "y": 5469307.14688795
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 2,
+            "road": "39842",
+            "x": 835224.30742144,
+            "y": 5469321.02569281
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 3,
+            "road": "39842",
+            "x": 835224.98530746,
+            "y": 5469353.78406002
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 4,
+            "road": "39842",
+            "x": 835225.25230493,
+            "y": 5469367.6703674
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 5,
+            "road": "39842",
+            "x": 835225.76010492,
+            "y": 5469396.26054791
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 6,
+            "road": "39842",
+            "x": 835225.59116029,
+            "y": 5469399.60405136
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 7,
+            "road": "39842",
+            "x": 835225.14307844,
+            "y": 5469408.70200349
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 8,
+            "road": "39842",
+            "x": 835224.7771,
+            "y": 5469416.02006263
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 0,
+            "road": "39843",
+            "x": 839460.34346342,
+            "y": 5466501.28649021
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 1,
+            "road": "39843",
+            "x": 839459.38626131,
+            "y": 5466499.77808563
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 2,
+            "road": "39843",
+            "x": 839452.06855708,
+            "y": 5466487.97422379
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 3,
+            "road": "39843",
+            "x": 839448.97977815,
+            "y": 5466482.87296372
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 4,
+            "road": "39843",
+            "x": 839442.78502114,
+            "y": 5466470.49239477
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 5,
+            "road": "39843",
+            "x": 839433.72908442,
+            "y": 5466448.04273865
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 6,
+            "road": "39843",
+            "x": 839428.84075135,
+            "y": 5466435.0466809
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 7,
+            "road": "39843",
+            "x": 839428.83772406,
+            "y": 5466435.03801592
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 8,
+            "road": "39843",
+            "x": 839425.24570264,
+            "y": 5466421.66078453
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 9,
+            "road": "39843",
+            "x": 839419.49474443,
+            "y": 5466391.52121516
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 10,
+            "road": "39843",
+            "x": 839416.64693495,
+            "y": 5466377.92971974
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 11,
+            "road": "39843",
+            "x": 839413.69405854,
+            "y": 5466365.00053124
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 12,
+            "road": "39843",
+            "x": 839411.17306771,
+            "y": 5466356.36899521
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 13,
+            "road": "39843",
+            "x": 839408.55590036,
+            "y": 5466349.02060292
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 14,
+            "road": "39843",
+            "x": 839404.0589018,
+            "y": 5466335.88102141
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 15,
+            "road": "39843",
+            "x": 839403.85477101,
+            "y": 5466335.25954091
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 16,
+            "road": "39843",
+            "x": 839399.24917695,
+            "y": 5466322.15965804
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 17,
+            "road": "39843",
+            "x": 839392.98109899,
+            "y": 5466305.44615887
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 18,
+            "road": "39843",
+            "x": 839387.81855143,
+            "y": 5466292.5560555
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 19,
+            "road": "39843",
+            "x": 839375.85250392,
+            "y": 5466264.49536834
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 20,
+            "road": "39843",
+            "x": 839370.08516017,
+            "y": 5466251.86541357
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 21,
+            "road": "39843",
+            "x": 839360.94926523,
+            "y": 5466233.12708399
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 22,
+            "road": "39843",
+            "x": 839354.89614799,
+            "y": 5466220.6266993
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        }
+      ]
+    },
+    "candidate_error_signature": {
+      "carla_compat_gate|geometry_length_invalid": 12,
+      "strict_validator|geom_len_nonpositive": 12
+    },
+    "g0_baseline": {
+      "error_count": 24,
+      "errors": [
+        {
+          "code": "geom_len_nonpositive",
+          "context": {
+            "idx": 0,
+            "length": "0.00000000",
+            "road": "50003"
+          },
+          "message": "Geometry length must be positive.",
+          "module": "strict_validator",
+          "severity": "error"
+        },
+        {
+          "code": "geom_len_nonpositive",
+          "context": {
+            "idx": 0,
+            "length": "0.00000000",
+            "road": "51425"
+          },
+          "message": "Geometry length must be positive.",
+          "module": "strict_validator",
+          "severity": "error"
+        },
+        {
+          "code": "geom_len_nonpositive",
+          "context": {
+            "idx": 0,
+            "length": "0.00000000",
+            "road": "51646"
+          },
+          "message": "Geometry length must be positive.",
+          "module": "strict_validator",
+          "severity": "error"
+        },
+        {
+          "code": "geom_len_nonpositive",
+          "context": {
+            "idx": 0,
+            "length": "0.00000000",
+            "road": "52738"
+          },
+          "message": "Geometry length must be positive.",
+          "module": "strict_validator",
+          "severity": "error"
+        },
+        {
+          "code": "geom_len_nonpositive",
+          "context": {
+            "idx": 0,
+            "length": "0.00000000",
+            "road": "54261"
+          },
+          "message": "Geometry length must be positive.",
+          "module": "strict_validator",
+          "severity": "error"
+        },
+        {
+          "code": "geom_len_nonpositive",
+          "context": {
+            "idx": 0,
+            "length": "0.00000000",
+            "road": "56874"
+          },
+          "message": "Geometry length must be positive.",
+          "module": "strict_validator",
+          "severity": "error"
+        },
+        {
+          "code": "geom_len_nonpositive",
+          "context": {
+            "idx": 0,
+            "length": "0.00000000",
+            "road": "57300"
+          },
+          "message": "Geometry length must be positive.",
+          "module": "strict_validator",
+          "severity": "error"
+        },
+        {
+          "code": "geom_len_nonpositive",
+          "context": {
+            "idx": 0,
+            "length": "0.00000000",
+            "road": "58404"
+          },
+          "message": "Geometry length must be positive.",
+          "module": "strict_validator",
+          "severity": "error"
+        },
+        {
+          "code": "geom_len_nonpositive",
+          "context": {
+            "idx": 0,
+            "length": "0.00000000",
+            "road": "62170"
+          },
+          "message": "Geometry length must be positive.",
+          "module": "strict_validator",
+          "severity": "error"
+        },
+        {
+          "code": "geom_len_nonpositive",
+          "context": {
+            "idx": 0,
+            "length": "0.00000000",
+            "road": "66369"
+          },
+          "message": "Geometry length must be positive.",
+          "module": "strict_validator",
+          "severity": "error"
+        },
+        {
+          "code": "geom_len_nonpositive",
+          "context": {
+            "idx": 0,
+            "length": "0.00000000",
+            "road": "68135"
+          },
+          "message": "Geometry length must be positive.",
+          "module": "strict_validator",
+          "severity": "error"
+        },
+        {
+          "code": "geom_len_nonpositive",
+          "context": {
+            "idx": 0,
+            "length": "0.00000000",
+            "road": "69106"
+          },
+          "message": "Geometry length must be positive.",
+          "module": "strict_validator",
+          "severity": "error"
+        },
+        {
+          "code": "geometry_length_invalid",
+          "context": {
+            "index": 0,
+            "length": "0.00000000",
+            "road": "50003"
+          },
+          "message": "Geometry length must be finite and > 0.",
+          "module": "carla_compat_gate",
+          "severity": "error"
+        },
+        {
+          "code": "geometry_length_invalid",
+          "context": {
+            "index": 0,
+            "length": "0.00000000",
+            "road": "51425"
+          },
+          "message": "Geometry length must be finite and > 0.",
+          "module": "carla_compat_gate",
+          "severity": "error"
+        },
+        {
+          "code": "geometry_length_invalid",
+          "context": {
+            "index": 0,
+            "length": "0.00000000",
+            "road": "51646"
+          },
+          "message": "Geometry length must be finite and > 0.",
+          "module": "carla_compat_gate",
+          "severity": "error"
+        },
+        {
+          "code": "geometry_length_invalid",
+          "context": {
+            "index": 0,
+            "length": "0.00000000",
+            "road": "52738"
+          },
+          "message": "Geometry length must be finite and > 0.",
+          "module": "carla_compat_gate",
+          "severity": "error"
+        },
+        {
+          "code": "geometry_length_invalid",
+          "context": {
+            "index": 0,
+            "length": "0.00000000",
+            "road": "54261"
+          },
+          "message": "Geometry length must be finite and > 0.",
+          "module": "carla_compat_gate",
+          "severity": "error"
+        },
+        {
+          "code": "geometry_length_invalid",
+          "context": {
+            "index": 0,
+            "length": "0.00000000",
+            "road": "56874"
+          },
+          "message": "Geometry length must be finite and > 0.",
+          "module": "carla_compat_gate",
+          "severity": "error"
+        },
+        {
+          "code": "geometry_length_invalid",
+          "context": {
+            "index": 0,
+            "length": "0.00000000",
+            "road": "57300"
+          },
+          "message": "Geometry length must be finite and > 0.",
+          "module": "carla_compat_gate",
+          "severity": "error"
+        },
+        {
+          "code": "geometry_length_invalid",
+          "context": {
+            "index": 0,
+            "length": "0.00000000",
+            "road": "58404"
+          },
+          "message": "Geometry length must be finite and > 0.",
+          "module": "carla_compat_gate",
+          "severity": "error"
+        },
+        {
+          "code": "geometry_length_invalid",
+          "context": {
+            "index": 0,
+            "length": "0.00000000",
+            "road": "62170"
+          },
+          "message": "Geometry length must be finite and > 0.",
+          "module": "carla_compat_gate",
+          "severity": "error"
+        },
+        {
+          "code": "geometry_length_invalid",
+          "context": {
+            "index": 0,
+            "length": "0.00000000",
+            "road": "66369"
+          },
+          "message": "Geometry length must be finite and > 0.",
+          "module": "carla_compat_gate",
+          "severity": "error"
+        },
+        {
+          "code": "geometry_length_invalid",
+          "context": {
+            "index": 0,
+            "length": "0.00000000",
+            "road": "68135"
+          },
+          "message": "Geometry length must be finite and > 0.",
+          "module": "carla_compat_gate",
+          "severity": "error"
+        },
+        {
+          "code": "geometry_length_invalid",
+          "context": {
+            "index": 0,
+            "length": "0.00000000",
+            "road": "69106"
+          },
+          "message": "Geometry length must be finite and > 0.",
+          "module": "carla_compat_gate",
+          "severity": "error"
+        }
+      ],
+      "modules": {
+        "carla_compat_gate": {
+          "available": true,
+          "stats": {
+            "errors": 12,
+            "warnings": 54042
+          }
+        },
+        "lane_section_successor_scan": {
+          "available": true
+        },
+        "strict_validator": {
+          "available": true
+        }
+      },
+      "status": "fail",
+      "warning_count": 135113,
+      "warnings": [
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 0,
+            "road": "39830",
+            "x": 840138.71778614,
+            "y": 5464923.98146263
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 1,
+            "road": "39830",
+            "x": 840146.89235915,
+            "y": 5464921.10777763
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 2,
+            "road": "39830",
+            "x": 840153.08018602,
+            "y": 5464918.65631043
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 3,
+            "road": "39830",
+            "x": 840161.2356918,
+            "y": 5464913.28182013
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 4,
+            "road": "39830",
+            "x": 840170.88098311,
+            "y": 5464905.80796802
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 5,
+            "road": "39830",
+            "x": 840183.55293107,
+            "y": 5464891.307469
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 6,
+            "road": "39830",
+            "x": 840192.69264662,
+            "y": 5464880.84960908
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 0,
+            "road": "39831",
+            "x": 841328.89721974,
+            "y": 5461114.66734279
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 1,
+            "road": "39831",
+            "x": 841343.33391268,
+            "y": 5461109.65214511
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 2,
+            "road": "39831",
+            "x": 841354.41680916,
+            "y": 5461108.46725282
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 3,
+            "road": "39831",
+            "x": 841366.80013263,
+            "y": 5461109.84019438
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 4,
+            "road": "39831",
+            "x": 841377.25967024,
+            "y": 5461114.92576844
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 5,
+            "road": "39831",
+            "x": 841390.68150662,
+            "y": 5461123.63890169
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 0,
+            "road": "39832",
+            "x": 839734.79230827,
+            "y": 5460088.99713148
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 0,
+            "road": "39833",
+            "x": 839823.80242253,
+            "y": 5460200.72887934
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 1,
+            "road": "39833",
+            "x": 839823.67479492,
+            "y": 5460200.57489495
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 2,
+            "road": "39833",
+            "x": 839811.7667833,
+            "y": 5460186.00759709
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 3,
+            "road": "39833",
+            "x": 839806.43778304,
+            "y": 5460179.45640538
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 4,
+            "road": "39833",
+            "x": 839789.04111236,
+            "y": 5460157.80156473
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 0,
+            "road": "39834",
+            "x": 839946.78179574,
+            "y": 5460306.02513409
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 1,
+            "road": "39834",
+            "x": 839930.39524705,
+            "y": 5460294.04662514
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 2,
+            "road": "39834",
+            "x": 839914.27541539,
+            "y": 5460282.2185134
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 0,
+            "road": "39835",
+            "x": 838772.1071329,
+            "y": 5466575.1323582
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 0,
+            "road": "39836",
+            "x": 842964.42351086,
+            "y": 5466246.56218226
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 1,
+            "road": "39836",
+            "x": 843008.48329929,
+            "y": 5466251.06503925
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 2,
+            "road": "39836",
+            "x": 843022.30661918,
+            "y": 5466252.41140613
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 3,
+            "road": "39836",
+            "x": 843044.00501095,
+            "y": 5466254.42072308
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 4,
+            "road": "39836",
+            "x": 843057.82918747,
+            "y": 5466255.75865699
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 5,
+            "road": "39836",
+            "x": 843123.47553558,
+            "y": 5466262.38667962
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 6,
+            "road": "39836",
+            "x": 843136.61117615,
+            "y": 5466263.7211877
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 0,
+            "road": "39837",
+            "x": 843187.43830737,
+            "y": 5465723.18458684
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 1,
+            "road": "39837",
+            "x": 843184.19000965,
+            "y": 5465731.54343811
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 2,
+            "road": "39837",
+            "x": 843179.56544132,
+            "y": 5465744.63270799
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 3,
+            "road": "39837",
+            "x": 843176.7570732,
+            "y": 5465753.44245554
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 4,
+            "road": "39837",
+            "x": 843172.85059339,
+            "y": 5465766.76668272
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 5,
+            "road": "39837",
+            "x": 843171.75402651,
+            "y": 5465770.85924093
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 6,
+            "road": "39837",
+            "x": 843168.21168614,
+            "y": 5465784.28869128
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 7,
+            "road": "39837",
+            "x": 843164.45309891,
+            "y": 5465798.76623621
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 8,
+            "road": "39837",
+            "x": 843160.89778787,
+            "y": 5465812.19219773
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 9,
+            "road": "39837",
+            "x": 843147.32385519,
+            "y": 5465862.46308633
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 10,
+            "road": "39837",
+            "x": 843144.21704381,
+            "y": 5465875.9897674
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 11,
+            "road": "39837",
+            "x": 843142.23374604,
+            "y": 5465886.42585085
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 12,
+            "road": "39837",
+            "x": 843142.07119167,
+            "y": 5465887.30130163
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 0,
+            "road": "39838",
+            "x": 841004.88498135,
+            "y": 5465052.98857677
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 1,
+            "road": "39838",
+            "x": 841000.52764036,
+            "y": 5465042.94869204
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 2,
+            "road": "39838",
+            "x": 840995.906882,
+            "y": 5465036.19591069
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 3,
+            "road": "39838",
+            "x": 840988.47370743,
+            "y": 5465028.84138236
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 4,
+            "road": "39838",
+            "x": 840981.14496087,
+            "y": 5465025.81957949
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 0,
+            "road": "39839",
+            "x": 836285.58321127,
+            "y": 5467080.20693508
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 1,
+            "road": "39839",
+            "x": 836284.39466534,
+            "y": 5467068.71025599
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 2,
+            "road": "39839",
+            "x": 836282.96434521,
+            "y": 5467054.89409588
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 0,
+            "road": "39840",
+            "x": 835596.88458549,
+            "y": 5469123.13545428
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 1,
+            "road": "39840",
+            "x": 835618.26180616,
+            "y": 5469117.2981698
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 2,
+            "road": "39840",
+            "x": 835635.7325138,
+            "y": 5469110.82373962
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 3,
+            "road": "39840",
+            "x": 835653.53073907,
+            "y": 5469103.82041636
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 4,
+            "road": "39840",
+            "x": 835671.48264931,
+            "y": 5469095.45644872
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 5,
+            "road": "39840",
+            "x": 835683.60319191,
+            "y": 5469089.71453751
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 6,
+            "road": "39840",
+            "x": 835700.13793032,
+            "y": 5469080.94368137
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 7,
+            "road": "39840",
+            "x": 835719.47145335,
+            "y": 5469070.00400847
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 8,
+            "road": "39840",
+            "x": 835727.44843074,
+            "y": 5469065.19918687
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 9,
+            "road": "39840",
+            "x": 835746.35844932,
+            "y": 5469053.52952372
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 0,
+            "road": "39841",
+            "x": 835305.18861151,
+            "y": 5469174.50309568
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 1,
+            "road": "39841",
+            "x": 835318.41678299,
+            "y": 5469168.82513976
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 2,
+            "road": "39841",
+            "x": 835330.61619538,
+            "y": 5469164.24029492
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 3,
+            "road": "39841",
+            "x": 835343.85656591,
+            "y": 5469159.71098961
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 4,
+            "road": "39841",
+            "x": 835356.89653751,
+            "y": 5469156.45590638
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 5,
+            "road": "39841",
+            "x": 835369.62176252,
+            "y": 5469153.44813055
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 6,
+            "road": "39841",
+            "x": 835383.56227382,
+            "y": 5469151.22561966
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 0,
+            "road": "39842",
+            "x": 835220.93908683,
+            "y": 5469249.33940743
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 1,
+            "road": "39842",
+            "x": 835223.81829459,
+            "y": 5469307.14688795
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 2,
+            "road": "39842",
+            "x": 835224.30742144,
+            "y": 5469321.02569281
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 3,
+            "road": "39842",
+            "x": 835224.98530746,
+            "y": 5469353.78406002
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 4,
+            "road": "39842",
+            "x": 835225.25230493,
+            "y": 5469367.6703674
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 5,
+            "road": "39842",
+            "x": 835225.76010492,
+            "y": 5469396.26054791
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 6,
+            "road": "39842",
+            "x": 835225.59116029,
+            "y": 5469399.60405136
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 7,
+            "road": "39842",
+            "x": 835225.14307844,
+            "y": 5469408.70200349
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 8,
+            "road": "39842",
+            "x": 835224.7771,
+            "y": 5469416.02006263
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 0,
+            "road": "39843",
+            "x": 839460.34346342,
+            "y": 5466501.28649021
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 1,
+            "road": "39843",
+            "x": 839459.38626131,
+            "y": 5466499.77808563
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 2,
+            "road": "39843",
+            "x": 839452.06855708,
+            "y": 5466487.97422379
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 3,
+            "road": "39843",
+            "x": 839448.97977815,
+            "y": 5466482.87296372
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 4,
+            "road": "39843",
+            "x": 839442.78502114,
+            "y": 5466470.49239477
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 5,
+            "road": "39843",
+            "x": 839433.72908442,
+            "y": 5466448.04273865
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 6,
+            "road": "39843",
+            "x": 839428.84075135,
+            "y": 5466435.0466809
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 7,
+            "road": "39843",
+            "x": 839428.83772406,
+            "y": 5466435.03801592
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 8,
+            "road": "39843",
+            "x": 839425.24570264,
+            "y": 5466421.66078453
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 9,
+            "road": "39843",
+            "x": 839419.49474443,
+            "y": 5466391.52121516
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 10,
+            "road": "39843",
+            "x": 839416.64693495,
+            "y": 5466377.92971974
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 11,
+            "road": "39843",
+            "x": 839413.69405854,
+            "y": 5466365.00053124
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 12,
+            "road": "39843",
+            "x": 839411.17306771,
+            "y": 5466356.36899521
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 13,
+            "road": "39843",
+            "x": 839408.55590036,
+            "y": 5466349.02060292
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 14,
+            "road": "39843",
+            "x": 839404.0589018,
+            "y": 5466335.88102141
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 15,
+            "road": "39843",
+            "x": 839403.85477101,
+            "y": 5466335.25954091
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 16,
+            "road": "39843",
+            "x": 839399.24917695,
+            "y": 5466322.15965804
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 17,
+            "road": "39843",
+            "x": 839392.98109899,
+            "y": 5466305.44615887
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 18,
+            "road": "39843",
+            "x": 839387.81855143,
+            "y": 5466292.5560555
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 19,
+            "road": "39843",
+            "x": 839375.85250392,
+            "y": 5466264.49536834
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 20,
+            "road": "39843",
+            "x": 839370.08516017,
+            "y": 5466251.86541357
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 21,
+            "road": "39843",
+            "x": 839360.94926523,
+            "y": 5466233.12708399
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        },
+        {
+          "code": "geom_xy_large",
+          "context": {
+            "idx": 22,
+            "road": "39843",
+            "x": 839354.89614799,
+            "y": 5466220.6266993
+          },
+          "message": "Geometry x/y very large; check geoReference/offset.",
+          "module": "strict_validator",
+          "severity": "warn"
+        }
+      ]
+    },
+    "new_or_exceeded_error_classes": {},
+    "phase_g_introduced_new_errors": false
+  },
+  "phase": "G",
+  "producer": "ultimate_pipeline/tools/phase_g8_acceptance.py",
+  "run_id": "20260804T040000Z",
+  "subphase_regression_free": true,
+  "subphase_reruns": {
+    "g1_lane_inventory": {
+      "checks": {
+        "center_lane_present": true,
+        "duplicate_lane_ids_within_section": true,
+        "duplicate_lane_section_s": true,
+        "lane_sections_ordered": true,
+        "lane_types_valid": true,
+        "no_invalid_center_lane_id_zero_usage": true
+      },
+      "metrics": {
+        "driving_lane_length_m": 1723434.582,
+        "driving_lane_record_count": 34679,
+        "lane_record_count": 84781,
+        "lane_section_count": 32710,
+        "unique_lane_key_count": 84781
+      },
+      "verdict": "PHASE_G_LANE_INVENTORY_PASS"
+    },
+    "g2_polynomial_validation": {
+      "checks": {
+        "extreme_width_derivative_zero": true,
+        "implausible_width_zero": true,
+        "negative_width_zero": true,
+        "no_cross_section_inversion": true,
+        "no_double_laneoffset": true,
+        "no_left_right_ordering_inversion": true,
+        "no_overlapping_width_intervals": true,
+        "no_width_gaps": true,
+        "non_finite_border_zero": true,
+        "non_finite_coefficients": true,
+        "non_finite_laneoffset_zero": true,
+        "width_records_within_section": true
+      },
+      "verdict": "PHASE_G_POLYNOMIAL_VALIDATION_PASS"
+    },
+    "g3_cross_section": {
+      "checks": {
+        "all_vertices_finite": true,
+        "monotonic_lateral_offsets": true,
+        "no_lane_overlap_or_crossover": true,
+        "no_self_intersecting_cross_section": true,
+        "positive_drivable_width": true,
+        "section_boundary_continuity": true,
+        "sections_available": true
+      },
+      "verdict": "PHASE_G_CROSS_SECTION_PASS"
+    },
+    "g4_lane_continuity": {
+      "checks": {
+        "no_directionally_wrong_lane_links": true,
+        "no_duplicate_lane_links": true,
+        "no_missing_lane_link_targets": true,
+        "no_unlinked_required_driving_lanes": true
+      },
+      "metrics": {
+        "directionally_wrong_lane_links": 0,
+        "duplicate_lane_links": 0,
+        "legitimate_terminal_lanes": 11039,
+        "missing_lane_link_targets": 0,
+        "type_incompatible_lane_links": 0,
+        "unlinked_required_driving_lanes": 0
+      },
+      "verdict": "PHASE_G_LANE_CONTINUITY_PASS"
+    },
+    "g5_classification": {
+      "defects": {
+        "invalid_lane_types": 0,
+        "multiple_walk_side_lanes": 0,
+        "restricted_lanes": 0,
+        "walk_lane_not_outermost": 0,
+        "width_band_violations": 0
+      }
+    },
+    "g6_junction_lanelinks": {
+      "checks": {
+        "complete_driving_from_coverage": true,
+        "complete_driving_to_coverage": true,
+        "no_duplicate_from_lanes": true,
+        "no_missing_from_lanes": true,
+        "no_missing_to_lanes": true,
+        "no_type_incompatible_lanelinks": true
+      },
+      "metrics": {
+        "connections_audited": 22816,
+        "duplicate_from_lanes": 0,
+        "lanelinks_audited": 32156,
+        "missing_driving_from_coverage": 0,
+        "missing_driving_to_coverage": 0,
+        "missing_from_lanes": 0,
+        "missing_to_lanes": 0,
+        "type_incompatible_lanelinks": 0
+      }
+    },
+    "g7_roadmark_semantics": {
+      "defects": {
+        "invalid_color": 0,
+        "invalid_lanechange": 0,
+        "invalid_type": 0,
+        "invalid_weight": 0,
+        "missing_roadmark": 0,
+        "solid_crossing_allowed": 0,
+        "solid_lanechange_missing": 0,
+        "visible_neg_width": 0,
+        "visible_zero_width": 0
+      }
+    }
+  }
+}

@@ -1,0 +1,109 @@
+{
+  "branch": "fix/post-audit-phase-e-junctions-roundabouts-20260803",
+  "entries": [
+    {
+      "bytes": 9169,
+      "path": ".gitignore",
+      "sha256": "f01c842d85917d50d152cc653b5abfb7d90abdae5397c442d1dde72399b54a66"
+    },
+    {
+      "bytes": 81007405,
+      "path": "campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_perception_final.xodr",
+      "sha256": "248ffbbe6a1aa2a9cbd4330a69ad1c1680d39698e2d186dd45f5a2eb91c5db6c"
+    },
+    {
+      "bytes": 16016,
+      "path": "campaigns/ingolstadt_cooked_perception_v1/candidate/manifest.json",
+      "sha256": "f3e64d021b785db8b7e093b6b5d681325d7838792f80b6813ca5654f9edfa422"
+    },
+    {
+      "bytes": 20665,
+      "path": "campaigns/ingolstadt_cooked_perception_v1/manifest.json",
+      "sha256": "d194279ff80a1a91861453c91a62ea61b38d238bc6cd33394ed8012ca52960fa"
+    },
+    {
+      "bytes": 81007419,
+      "path": "reports/post_audit_hardening/20260809T000000Z_C1_GENERATION/candidate_crosswalk_enriched.xodr",
+      "sha256": "16ea2ec134b10d07518c63e1bd42c4ffd8b96113d1a52c0fe448f201c004d11f"
+    },
+    {
+      "bytes": 6512550,
+      "path": "reports/post_audit_hardening/20260810T000000Z_C2_REMEDIATION/F3_STRUCTURE_PER_ROAD_CACHE.json",
+      "sha256": "47a9033fc3ac0d7cd0d6e0dc49d40d19d48cfe4340c74440b02dbd54e3ed624d"
+    },
+    {
+      "bytes": 3516,
+      "path": "reports/post_audit_hardening/20260810T000000Z_C2_REMEDIATION/PART1_VISUAL_LAYER.json",
+      "sha256": "43bfd8b2690a12c34f2891cc656a04f515da1f3f87c2144e10b5ae7415e82194"
+    },
+    {
+      "bytes": 12330,
+      "path": "reports/post_audit_hardening/20260810T000000Z_C2_REMEDIATION/PART2_FEATURE_RESIDUAL_DECOMPOSITION.json",
+      "sha256": "2c9a1407bfc2c59971cc3d44d017c4cec6783789a3740d5857a490ef7948dc85"
+    },
+    {
+      "bytes": 1686,
+      "path": "reports/post_audit_hardening/20260810T000000Z_C2_REMEDIATION/R15B_C2_REVIEW_FREEZE.json",
+      "sha256": "4656319ce61726c39f469124d0450ea69346728505edaa28a7060294a39a31d3"
+    },
+    {
+      "bytes": 7281,
+      "path": "reports/post_audit_hardening/20260810T000000Z_C2_REMEDIATION/R15_CLAUDE_C2_3D_PACKAGE_PACKET.md",
+      "sha256": "e4619a12536e1f870a3cf8aa0b8c74974c4f7b59fa0372a06b63b0bbbd4bdda6"
+    },
+    {
+      "bytes": 3752,
+      "path": "reports/post_audit_hardening/20260810T000000Z_C2_REMEDIATION/fullmap_mesh/PART3_FULLMAP_MESH.json",
+      "sha256": "96ef5fc8748945a088a44a4be818dfd9aa5daab51993e3864e32bbc23c24960c"
+    },
+    {
+      "bytes": 621,
+      "path": "reports/post_audit_hardening/20260810T000000Z_C2_REMEDIATION/fullmap_mesh/fullmap_mesh_status.json",
+      "sha256": "cc5aa971f751fa6ea133917eefe75ac2b39a0d69eec1d1029e4e274bf29283eb"
+    },
+    {
+      "bytes": 6343,
+      "path": "reports/post_audit_hardening/20260810T000000Z_C2_REMEDIATION/raw_artifacts_status.json",
+      "sha256": "8ddd097f76513dee7518fc48e1026bf6799e56d62cd4072538734a936e1bd081"
+    },
+    {
+      "bytes": 2276,
+      "path": "reports/post_audit_hardening/20260810T000000Z_C2_REMEDIATION/visual_layer/C2_VISUAL_LAYER_ALIGNMENT_GUARD.json",
+      "sha256": "414d14e9a423e95b313aa598a7d06943f39dbeae483f508d577a11d84e0eac8d"
+    },
+    {
+      "bytes": 430,
+      "path": "reports/post_audit_hardening/20260810T000000Z_C2_REMEDIATION/visual_layer/artifacts_visual/osm2world.properties",
+      "sha256": "e13b5836bb552b57a7569dcf4c41d8dcc8e57a14f45d12ee0781558e73966777"
+    },
+    {
+      "bytes": 6598,
+      "path": "reports/post_audit_hardening/20260810T000000Z_C2_REMEDIATION/visual_layer/artifacts_visual/osm2world_status.json",
+      "sha256": "eddd2f3f139031eab865a6bf953a435171700d84a35d77273377811082cd81ed"
+    },
+    {
+      "bytes": 19690,
+      "path": "stage_c2_remediation_part2_feature_residuals.py",
+      "sha256": "7df07d01d6c6bbbf8e7d7e4cb4fb760a716065764ecaa1b024c0272fcd6aabd8"
+    },
+    {
+      "bytes": 17620,
+      "path": "stage_c2_remediation_part3_fullmap_mesh.py",
+      "sha256": "dd98c8729a81d79ffdc79d710807292edd7ef92652d42076884b74b9479505b6"
+    },
+    {
+      "bytes": 8491,
+      "path": "stage_c2_visual_layer_alignment_guard.py",
+      "sha256": "bd8453e9e32d7ad31a2d08945f60c83cf128a88877d15e947ccda1078e9f7f5a"
+    },
+    {
+      "bytes": 6775,
+      "path": "verify_post_audit_hardening.py",
+      "sha256": "2c19e59344fc19cb68af660e11a44a9861768b3f29bac7efb71761fcc469b07c"
+    }
+  ],
+  "entry_count": 20,
+  "note": "self-entry sha256 omitted (non-circular). Raw 3D artifacts (scene.obj/.mtl/log/fbx/visual OSM) deliberately excluded from git; byte-exact disk hashes recorded in fullmap_mesh/fullmap_mesh_status.json + raw_artifacts_status.json + visual_layer/artifacts_visual/osm2world_status.json (all tracked).",
+  "run_id": "20260810T000000Z_C2_REMEDIATION",
+  "schema": "C2_PRIMARY_EVIDENCE_V1"
+}

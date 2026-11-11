@@ -1,0 +1,19 @@
+{
+  "review_id": "SCI-ARCH-001",
+  "date_utc": "2026-11-04",
+  "verdict": "NEEDS_METHOD_CHANGE",
+  "baseline": "1a36b560a69286841d4c42973cf00258a38f56c1",
+  "sci001_patch": "NOT_RUN (does not exist)",
+  "per_rq": {
+    "RQ1": {"status": "BOUNDED", "boundary": "Osm2Odr stage only, 3 runs, 3-aggregate signature; XODRs unpublished; full pipeline NOT_RUN", "method_change": "canonical structural hash; N>=3 full-pipeline runs"},
+    "RQ2": {"status": "BOUNDED", "boundary": "footprint-sensitive (hull 2.683 vs bbox 4.488); local vs whole-map values were mixed in RQ_ANSWERS_20261104.md; 'completeness' is unproven vs authoring conventions", "method_change": "within-map nulls, tile-block bootstrap, segmentation-invariant metrics, correspondence matching"},
+    "RQ3": {"status": "NOT_RUN", "boundary": "no capture; anchors, runtime, admission all missing"},
+    "RQ4": {"status": "BOUNDED", "boundary": "seed variability for ONE map pair (Grid0821 vs candidate_connectivity_repaired, not the RQ2 pair); no null; junction edges omitted; legacy width likely", "method_change": "within-domain null + permutation test; multi-region data for population claims"},
+    "RQ5": {"status": "NOT_RUN", "boundary": "depends on RQ3 captures; no real data"}
+  },
+  "corrections_required_in_published_docs": [
+    "docs/research/RQ_ANSWERS_20261104.md RQ2 row: hull-local 0.0597/0.2206 vs whole-map 0.0415/0.0931",
+    "docs/research/RQ_ANSWERS_20261104.md RQ4 row: remove 'CI excludes zero for every seed' as separation evidence; name the map pair",
+    "GAP register addendum 2 GAP-079: origin attribution (Osm2Odr) invalid; the 2026-10-07 run's stage 01 is the map-of-record (new addendum, not an edit)"
+  ]
+}

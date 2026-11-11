@@ -1,0 +1,13 @@
+{
+  "traffic_light_count": 0,
+  "traffic_lights": [],
+  "speed_limit_signals": [],
+  "signal_positions": [],
+  "signal_orientation_valid": true,
+  "signal_associations_valid": true,
+  "signal_validity_intervals_valid": true,
+  "turn_lane_directions_valid": true,
+  "signal_validation_status": "PASS",
+  "status": "PASS",
+  "timestamp": "2026-08-05T12:30:26.030307+00:00"
+}

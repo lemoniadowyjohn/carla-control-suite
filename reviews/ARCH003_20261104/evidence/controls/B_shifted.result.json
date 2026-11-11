@@ -1,0 +1,59 @@
+{
+ "arm": "off",
+ "worktree": "repair-map-realism-p0-837a8504",
+ "snap_report": null,
+ "counts": {
+  "lanelinks": 1,
+  "entry_unresolved": 0,
+  "exit_unresolved": 0,
+  "connector_left_lane_to": 0,
+  "by_class": {
+   "non_uturn": {
+    "lanelinks": 1,
+    "entry_gap_gt_0_5": 1,
+    "entry_gap_gt_1": 1,
+    "entry_kink_gt_10": 0,
+    "exit_gap_gt_0_5": 1,
+    "exit_gap_gt_1": 1,
+    "exit_kink_gt_10": 0,
+    "exit_kink_gt_30": 0
+   }
+  }
+ },
+ "entry_gap": {
+  "n": 1,
+  "p50": 3.25,
+  "p99": 3.25,
+  "max": 3.25,
+  "gt_0_10m": 1,
+  "gt_0_50m": 1,
+  "gt_1m": 1
+ },
+ "exit_gap": {
+  "n": 1,
+  "p50": 3.25,
+  "p99": 3.25,
+  "max": 3.25,
+  "gt_0_10m": 1,
+  "gt_0_50m": 1,
+  "gt_1m": 1
+ },
+ "entry_kink": {
+  "n": 1,
+  "p50": 0.0,
+  "p99": 0.0,
+  "max": 0.0,
+  "gt_10deg": 0,
+  "gt_30deg": 0,
+  "gt_150deg": 0
+ },
+ "exit_kink": {
+  "n": 1,
+  "p50": 0.0,
+  "p99": 0.0,
+  "max": 0.0,
+  "gt_10deg": 0,
+  "gt_30deg": 0,
+  "gt_150deg": 0
+ }
+}

@@ -48,6 +48,32 @@ def _evidence_field(summary: Optional[Dict[str, Any]], name: str) -> Any:
     return summary.get(name) if isinstance(summary, dict) else None
 
 
+def _is_valid_fraction(value: Any) -> bool:
+    """Return True only for finite numeric fractions within [0, 1].
+
+    NaN, +/-inf, negative values, and values above 1 are all invalid and
+    must never authorize a PASS status.
+    """
+    try:
+        fraction = float(value)
+    except (TypeError, ValueError):
+        return False
+    import math
+
+    return math.isfinite(fraction) and 0.0 <= fraction <= 1.0
+
+
+def _is_valid_threshold(value: Any) -> bool:
+    """Return True only for finite numeric thresholds within [0, 1]."""
+    try:
+        threshold = float(value)
+    except (TypeError, ValueError):
+        return False
+    import math
+
+    return math.isfinite(threshold) and 0.0 <= threshold <= 1.0
+
+
 def _status_for_fraction(
     summary: Optional[Dict[str, Any]],
     *,
@@ -57,9 +83,13 @@ def _status_for_fraction(
     """Return a fail-closed status for one explicitly identified graph."""
     if not isinstance(summary, dict) or summary.get("graph_source") != expected_graph_source:
         return QualityStatus.INCOMPLETE
+    if not _is_valid_threshold(fraction_threshold):
+        return QualityStatus.INCOMPLETE
     try:
         fraction = float(summary["largest_component_fraction"])
     except (KeyError, TypeError, ValueError):
+        return QualityStatus.INCOMPLETE
+    if not _is_valid_fraction(fraction):
         return QualityStatus.INCOMPLETE
     return from_legacy_bool(fraction >= fraction_threshold)
 
@@ -72,11 +102,23 @@ def _sha256_dict(obj: Any) -> str:
 
 
 def _get_git_sha() -> str:
-    """Get current git commit SHA if available."""
+    """Get git commit SHA for the module's own repository.
+
+    Runs ``git rev-parse HEAD`` in the directory containing this module,
+    not the current working directory. On multi-worktree machines this
+    ensures the certification provenance always binds to the actual source
+    repository that produced it, never to an unrelated checkout.
+    """
     try:
         import subprocess
+        import os
+        module_dir = os.path.dirname(os.path.abspath(__file__))
+        repo_root = os.path.abspath(os.path.join(module_dir, "..", ".."))
         return subprocess.check_output(
-            ["git", "rev-parse", "HEAD"], stderr=subprocess.DEVNULL, text=True
+            ["git", "rev-parse", "HEAD"],
+            cwd=repo_root,
+            stderr=subprocess.DEVNULL,
+            text=True,
         ).strip()
     except Exception:
         return ""

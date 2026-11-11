@@ -1,0 +1,62 @@
+# Project Pipeline Audit — pipeline / domain-gap / GNN / CARLA / perception
+
+Date: 2026-08-15 · Auditor: Claude Opus 4.8 · Branch: fix/post-audit-phase-e-junctions-roundabouts-20260803
+Method: initial read-only survey (subsystem LOC, test coverage, red-flag markers, targeted source reads), then
+post-A1 status refresh after the semantic-label path was characterized.
+
+## Headline: test-coverage inversion
+Heavy rigor sits on the **certification/quality gates**; the **substantive pipeline** (data generation +
+analysis) is thinly tested. A perfectly-certified map feeding weak or unverified perception/domain-gap evidence
+into an only partially characterized analysis stack produces research conclusions no gate checks.
+
+| Subsystem | LOC | test files | note |
+|---|--:|--:|---|
+| domain_gap_gnn | 1506 | 12 | A2 characterized cosine helpers, latent gaps, and encoder forward |
+| domain_gap | 8684 | core+aggregator characterized | A3 pinned composite aggregation + topology/geometry helpers |
+| perception | 8310 | 1 | YOLO placeholders; semantic labels characterized by A1 |
+| carla_tools | 10362 | A4 honesty tests | strict no-CARLA fail-closed + explicit mock marker |
+| enrichment | 8117 | 1 | thin |
+| tiling | 1885 | 0 | zero |
+| lane | — | 0 | zero |
+| geometry | 2254 | 4 | ok-ish |
+| quality (gates) | 10223 | many | well-tested ✅ |
+
+Red-flag markers (mock/stub/TODO/FIXME/placeholder), non-test: perception=12, carla_tools=10, domain_gap=5,
+enrichment=3, geometry=2; domain_gap_gnn/tiling/topology=0.
+
+## Real defects (not coverage debt)
+
+### D1 — Perception label premise corrected by A1
+The original audit over-scoped the empty-label finding. Empty `.txt` placeholders remain in the YOLO/detection
+track, but the thesis segmentation path writes real `semseg_raw/<camera>/*.png` class-id masks and the FCN training
+path consumes those masks. A1 added offline label-quality checks and characterized the CARLA BGRA R-channel raw-id
+extraction. Remaining work is live-capture wiring for degenerate-frame accounting, plus a decision on whether to
+implement or delete the unused YOLO/detection path.
+
+### D2 — Analysis engine core characterized
+`domain_gap_gnn` is characterized by A2: cosine helpers, latent gap combination, encoder forward shape,
+determinism, and unit-norm output are pinned by 12 CPU-only tests. `domain_gap` is characterized by A3 at the
+core contract level: composite aggregation, disabled/missing component handling, topology normalization helpers,
+and geometry helper behavior are pinned by 9 CPU-only tests. The remaining overclaiming risk is XODR-entrypoint
+coverage and end-to-end GNN data wiring on real XODR/tile fixtures.
+Fix: small XODR fixture characterization plus B4 real auto-vs-manual run; real-data integration remains a run task.
+
+## Lesser findings
+- `carla_tools/fixed_traffic_manager.py`: A4 fixed the silent no-CARLA `MockTM` fallback. Strict mode now raises,
+  and dev mock mode requires `UP_ALLOW_MOCK_TRAFFIC_MANAGER=1` plus an explicit `MOCK - NOT REAL EVIDENCE` marker.
+  `sensor_rig.py` remains deprecated, but its rotation extraction is now a named/tested helper.
+- `main_pipeline.py`: the historical mock harness (`mock_data_generation`/`mock_domain_analysis`) shows no mock
+  markers now — appears cleaned; re-audit if reused.
+- Map-quality chain (separate program): E1 produced an elevated+crash-safe candidate (`7709d5c9`); E1B repaired
+  the zero-length connector loadability errors (`90f1e4f7`); E2 produced the current offline-loadable elevated
+  candidate (`352c9003`) with G19=0 and preflight errors=0. Live CARLA proof remains separate.
+
+## Targeted prompts (this audit)
+| Prompt | Fixes | Model | Independent? |
+|---|---|---|---|
+| A1_perception_labels | D1 corrected; semantic label quality guard | Codex 5.x high | yes |
+| A2_domain_gap_gnn_tests | D2 GNN characterized | Codex 5.x high (torch) | yes |
+| A3_domain_gap_metric_tests | D2 core domain-gap characterized | Codex 5.x mid/high | yes |
+| A4_carla_tools_honesty | mock fallback honesty / rotation helper | Codex 5.x mid | yes |
+B-series work remains; none touch map artifacts or certifier gates except map/run tasks explicitly scoped elsewhere.
+A1 semantic-mask characterization is offline-green; capture-loop guard wiring still needs a live CARLA capture.

@@ -1,0 +1,14 @@
+# Research provenance correction matrix
+
+| # | Where (published) | Current text / attribution | Correction | Evidence | Class |
+|---|---|---|---|---|---|
+| P1 | `reports/rq1_trial_runs/run_01/20261007_214826_524342/` (local) and everything citing it | treated as an OSM → XODR pipeline run; folder named "rq1_trial_runs" | **Post-processing / regeneration experiment on an existing XODR.** `run_manifest.json` `inputs.INPUT_XODR.sha256 = 370abbbb…` (the map-of-record); `settings_snapshot.json` `INPUT_XODR = …map_of_record_20260916_232831.xodr`, `PREANCHOR_INPUT_XODR = false`; stage 01 is byte-identical to the pin. The OSM input is also recorded (`b9e07465…`), but Osm2Odr does not run. | run manifest + sha256 | LOCAL_REPRODUCED |
+| P2 | GAP register addendum 2, GAP-079 (`5f59fc60…`) | "CARLA Osm2Odr (stage 01) + netconvert repair (stage 02)" | `UNKNOWN_PENDING_RAW_OSM_REPRODUCTION` (addendum 3) | P1 | LOCAL_REPRODUCED |
+| P3 | `docs/reviews/ARCH_X8_X9_20261104/` summary item 3 (local) | "U-turns come from Osm2Odr, not netconvert" | U-turns are **present in the map-of-record**; their origin is unknown | P1 | LOCAL_REPRODUCED |
+| P4 | `docs/research/RQ_ANSWERS_20261104.md` (`a59f337f…`), RQ2 row | "inside the hull … 0.042 / 0.093" | hull 0.0597 / 0.2206; whole map 0.0415 / 0.0931; bbox ratio 4.488 | `local_registration.json` | GITHUB_VERIFIED |
+| P5 | same, RQ4 row | "CI excludes zero for every seed"; maps unnamed | seed variability over one named pair (Grid0821 vs candidate_connectivity_repaired); not separation | `aggregate_stats.json` | GITHUB_VERIFIED |
+| P6 | same, RQ2 row | "a real completeness gap" | not established; convention effects are not excluded | — | REPORTED_NOT_REPRODUCED |
+| P7 | any RQ1 citation of `C15_RQ4_DOMAIN_RANDOMIZATION.json` | "the generator is structurally deterministic" | "the Osm2Odr stage is aggregate-signature identical across 3 runs"; full pipeline NOT_RUN | C15 JSON | GITHUB_VERIFIED (summary) |
+| P8 | stage-3 vs stage-5 byte identity (risk R-13) | an "unexplained anomaly" | **Expected.** Under `READ_ONLY_DIAGNOSTIC` Stage-6 containment, `_run_stage6_read_only_diagnostic` copies its input (the stage-03 output) to `05_planview` with `shutil.copy2` (`stage_06_links.py:237-240, ~296` @ `22cf39ab`). The run receipt `stage6_containment_runtime.json` records the mode and the input/output paths. The shared mtime (22:22:20) is consistent with `copy2`. The file numbering is not execution order (`04_elevation` is written after `06`). | code @ `22cf39ab` + receipt + mtimes | LOCAL_REPRODUCED (receipt); GITHUB_VERIFIED (code) |
+| P9 | GAP-070 measurement "on 05_planview" | stage-05 output | it is the stage-03 output (byte copy), which is the snap's actual input | P8 | LOCAL_REPRODUCED |
+| P10 | GAP-079 / X9b plans | bisect netconvert on stage 01 → 02 of this run | must start from a fresh Osm2Odr conversion; this run measures a **second** netconvert pass | P1 | LOCAL_REPRODUCED |

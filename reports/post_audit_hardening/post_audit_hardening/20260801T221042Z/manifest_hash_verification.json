@@ -1,0 +1,208 @@
+{
+  "checks": 32,
+  "mismatches": [
+    "output:07_BLOCKING_ISSUES.md"
+  ],
+  "findings": [
+    {
+      "artifact": "output:07_BLOCKING_ISSUES.md",
+      "claim": "70ddeea561695d44849989e104890dd454cf63b8d396f455974bee0cbd28a868",
+      "actual": "3f6470ea7fad2b3f9cc5af75b20624d690d559e7e3dc2a50883a0b8efea4fb7e",
+      "finding": "EVIDENCE_MANIFEST.json hash claim predates the final regeneration of this audit output; authoritative audit evidence not modified; final hash recorded for re-verification."
+    }
+  ],
+  "items": {
+    "authoritative_osm": {
+      "path": "campaigns\\ingolstadt_cooked_perception_v1\\source\\ingolstadt_authoritative.osm",
+      "claimed": "b9e074656f744c31e6aabb0a16e6b2246824ca74e202ea2c316ff7f22364f24f",
+      "actual": "b9e074656f744c31e6aabb0a16e6b2246824ca74e202ea2c316ff7f22364f24f",
+      "match": true
+    },
+    "authoritative_xodr": {
+      "path": "campaigns\\ingolstadt_cooked_perception_v1\\candidate\\raw_xodr_run_1_epsg32632_header_pinned.xodr",
+      "claimed": "ff2a05e7b00b8fc1bde38f569413223c03a4f4ac9c31eceb5a8592df47d0d17d",
+      "actual": "ff2a05e7b00b8fc1bde38f569413223c03a4f4ac9c31eceb5a8592df47d0d17d",
+      "match": true
+    },
+    "campaign_manifest": {
+      "path": "campaigns\\ingolstadt_cooked_perception_v1\\manifest.json",
+      "claimed": null,
+      "actual": "f13be125a602394673c666eb7128ab096aaa6815113380b0fbde609334922750",
+      "match": true
+    },
+    "output:02_REQUIREMENT_INVENTORY.json": {
+      "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\audit_output\\02_REQUIREMENT_INVENTORY.json",
+      "claimed": "bd48b0f739304204476454243f73a6e2e5343dd9a4005a761e3e415d32ae5b92",
+      "actual": "bd48b0f739304204476454243f73a6e2e5343dd9a4005a761e3e415d32ae5b92",
+      "match": true
+    },
+    "output:03_AUDIT_PLAN.json": {
+      "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\audit_output\\03_AUDIT_PLAN.json",
+      "claimed": "b02b55a13db6bf34887e8241ae750854ddc945c9f02be8f95100cde5b94b85ad",
+      "actual": "b02b55a13db6bf34887e8241ae750854ddc945c9f02be8f95100cde5b94b85ad",
+      "match": true
+    },
+    "output:06_COVERAGE_REPORT.json": {
+      "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\audit_output\\06_COVERAGE_REPORT.json",
+      "claimed": "e8b49c66cf64a07dcab491c1716795ff3d2ef0df4594a016930cdb119b9741e9",
+      "actual": "e8b49c66cf64a07dcab491c1716795ff3d2ef0df4594a016930cdb119b9741e9",
+      "match": true
+    },
+    "output:audit_plan.json": {
+      "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\audit_output\\audit_plan.json",
+      "claimed": "b02b55a13db6bf34887e8241ae750854ddc945c9f02be8f95100cde5b94b85ad",
+      "actual": "b02b55a13db6bf34887e8241ae750854ddc945c9f02be8f95100cde5b94b85ad",
+      "match": true
+    },
+    "output:phase6_reviewer_B.json": {
+      "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\audit_output\\phase6_reviewer_B.json",
+      "claimed": "005aca58f556ed5fe6c7f42bf8f26c7da7e7fbbe5bcefc1a7c0a9fb27e3acf9f",
+      "actual": "005aca58f556ed5fe6c7f42bf8f26c7da7e7fbbe5bcefc1a7c0a9fb27e3acf9f",
+      "match": true
+    },
+    "output:requirement_inventory.json": {
+      "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\audit_output\\requirement_inventory.json",
+      "claimed": "bd48b0f739304204476454243f73a6e2e5343dd9a4005a761e3e415d32ae5b92",
+      "actual": "bd48b0f739304204476454243f73a6e2e5343dd9a4005a761e3e415d32ae5b92",
+      "match": true
+    },
+    "output:04_REQUIREMENT_RESULTS.jsonl": {
+      "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\audit_output\\04_REQUIREMENT_RESULTS.jsonl",
+      "claimed": "d0b3ddf7596ffa117b280f879c143a4162e442d0b2571d6c3d6b88b2a32f6966",
+      "actual": "d0b3ddf7596ffa117b280f879c143a4162e442d0b2571d6c3d6b88b2a32f6966",
+      "match": true
+    },
+    "output:05_REQUIREMENT_RESULTS.csv": {
+      "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\audit_output\\05_REQUIREMENT_RESULTS.csv",
+      "claimed": "9e46f9d6a6f260ea2289943c3968e4a86929491da08c53c57dafff1847d112d8",
+      "actual": "9e46f9d6a6f260ea2289943c3968e4a86929491da08c53c57dafff1847d112d8",
+      "match": true
+    },
+    "output:requirement_inventory.csv": {
+      "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\audit_output\\requirement_inventory.csv",
+      "claimed": "58ccaa11e599da575344be5b16b2ed1e94fa63f908651f4e1bebadb98878f057",
+      "actual": "58ccaa11e599da575344be5b16b2ed1e94fa63f908651f4e1bebadb98878f057",
+      "match": true
+    },
+    "output:00_EXECUTIVE_SUMMARY.md": {
+      "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\audit_output\\00_EXECUTIVE_SUMMARY.md",
+      "claimed": "50adf5848b602cb45a9eb253b21145be1a9c310b1be855a85ee6ad11968686f0",
+      "actual": "50adf5848b602cb45a9eb253b21145be1a9c310b1be855a85ee6ad11968686f0",
+      "match": true
+    },
+    "output:01_REPOSITORY_IDENTITY.md": {
+      "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\audit_output\\01_REPOSITORY_IDENTITY.md",
+      "claimed": "1eb73df8bce2b694005080ba103529f010b3ed10f0ad9d9de4a47791d82f0eaa",
+      "actual": "1eb73df8bce2b694005080ba103529f010b3ed10f0ad9d9de4a47791d82f0eaa",
+      "match": true
+    },
+    "output:07_BLOCKING_ISSUES.md": {
+      "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\audit_output\\07_BLOCKING_ISSUES.md",
+      "claimed": "70ddeea561695d44849989e104890dd454cf63b8d396f455974bee0cbd28a868",
+      "actual": "3f6470ea7fad2b3f9cc5af75b20624d690d559e7e3dc2a50883a0b8efea4fb7e",
+      "match": false
+    },
+    "output:08_CONTRADICTIONS.md": {
+      "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\audit_output\\08_CONTRADICTIONS.md",
+      "claimed": "dbcf5bc47125bddac6d8ad47cf80c046317d6bf9ae81a3ea10635016a92e91e5",
+      "actual": "dbcf5bc47125bddac6d8ad47cf80c046317d6bf9ae81a3ea10635016a92e91e5",
+      "match": true
+    },
+    "output:09_TEST_QUALITY.md": {
+      "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\audit_output\\09_TEST_QUALITY.md",
+      "claimed": "8a31267d47360d080f865ee52de4c2e67328cb7b778492fb6e71686a3bb5369a",
+      "actual": "8a31267d47360d080f865ee52de4c2e67328cb7b778492fb6e71686a3bb5369a",
+      "match": true
+    },
+    "output:10_PROFILE_RELEASE_MATRIX.md": {
+      "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\audit_output\\10_PROFILE_RELEASE_MATRIX.md",
+      "claimed": "6a90feacd389a1ca621a98c80d1f7a48b7e732afc838de0bb4ae248b8bdd5416",
+      "actual": "6a90feacd389a1ca621a98c80d1f7a48b7e732afc838de0bb4ae248b8bdd5416",
+      "match": true
+    },
+    "output:11_UNVERIFIED_CLAIMS.md": {
+      "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\audit_output\\11_UNVERIFIED_CLAIMS.md",
+      "claimed": "6a0f114c1494cc8961b397076b63ff8d71201f0bfc98cafbbd0b3735ef391a42",
+      "actual": "6a0f114c1494cc8961b397076b63ff8d71201f0bfc98cafbbd0b3735ef391a42",
+      "match": true
+    },
+    "output:12_NEXT_ACTIONS.md": {
+      "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\audit_output\\12_NEXT_ACTIONS.md",
+      "claimed": "e55d52c8ae715e2f10c630d580eeda6e28a3df83253436f1477dd78233382a62",
+      "actual": "e55d52c8ae715e2f10c630d580eeda6e28a3df83253436f1477dd78233382a62",
+      "match": true
+    },
+    "output:worker_shards/SHARD-01_worker_A.json": {
+      "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\audit_output\\worker_shards/SHARD-01_worker_A.json",
+      "claimed": "7c8f8317b3ad55aa9b0fac87ee4f9723a8a591c51e3637356d9ed76d5b608f01",
+      "actual": "7c8f8317b3ad55aa9b0fac87ee4f9723a8a591c51e3637356d9ed76d5b608f01",
+      "match": true
+    },
+    "output:worker_shards/SHARD-03_04_worker_A.json": {
+      "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\audit_output\\worker_shards/SHARD-03_04_worker_A.json",
+      "claimed": "92112c4cdf50cad6fe7447c38468829be7493cb4b64f66598bba2788dd371a12",
+      "actual": "92112c4cdf50cad6fe7447c38468829be7493cb4b64f66598bba2788dd371a12",
+      "match": true
+    },
+    "output:worker_shards/SHARD-05_worker_A.json": {
+      "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\audit_output\\worker_shards/SHARD-05_worker_A.json",
+      "claimed": "a9af36903d8f7888ff0be624453fb72b2d8613622277f6304115659ab012b90f",
+      "actual": "a9af36903d8f7888ff0be624453fb72b2d8613622277f6304115659ab012b90f",
+      "match": true
+    },
+    "output:worker_shards/SHARD-06_worker_A.json": {
+      "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\audit_output\\worker_shards/SHARD-06_worker_A.json",
+      "claimed": "85d2ca00954e79a085033afd073b894ad75a58fcf7c03a27d30690b704d9a7e0",
+      "actual": "85d2ca00954e79a085033afd073b894ad75a58fcf7c03a27d30690b704d9a7e0",
+      "match": true
+    },
+    "output:worker_shards/SHARD-07_worker_A.json": {
+      "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\audit_output\\worker_shards/SHARD-07_worker_A.json",
+      "claimed": "b98c93be2d31c42dc3e632c2675713e7495e0e043b6088d39649ad4b09edf54c",
+      "actual": "b98c93be2d31c42dc3e632c2675713e7495e0e043b6088d39649ad4b09edf54c",
+      "match": true
+    },
+    "output:worker_shards/SHARD-08_worker_A.json": {
+      "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\audit_output\\worker_shards/SHARD-08_worker_A.json",
+      "claimed": "830ab28103a12d8f43cd9440b4646cb664fccf51aed6641239eb252fd1bf8a4d",
+      "actual": "830ab28103a12d8f43cd9440b4646cb664fccf51aed6641239eb252fd1bf8a4d",
+      "match": true
+    },
+    "output:worker_shards/SHARD-09_worker_A.json": {
+      "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\audit_output\\worker_shards/SHARD-09_worker_A.json",
+      "claimed": "49f3a641a1e0bae73496eefb68182f7d2bc2a7aa8cba062e5a633124b97d518d",
+      "actual": "49f3a641a1e0bae73496eefb68182f7d2bc2a7aa8cba062e5a633124b97d518d",
+      "match": true
+    },
+    "output:worker_shards/SHARD-10_worker_A.json": {
+      "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\audit_output\\worker_shards/SHARD-10_worker_A.json",
+      "claimed": "c0c9e32a87231c419e3cdeceac8bb1ff6936c6e598849d6d4da122a7af8b30e7",
+      "actual": "c0c9e32a87231c419e3cdeceac8bb1ff6936c6e598849d6d4da122a7af8b30e7",
+      "match": true
+    },
+    "output:worker_shards/SHARD-11_worker_A.json": {
+      "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\audit_output\\worker_shards/SHARD-11_worker_A.json",
+      "claimed": "e5b8e8d6a970993967af992f9586d88a76c556b7c5b0c0b9c94fe350bf6202f8",
+      "actual": "e5b8e8d6a970993967af992f9586d88a76c556b7c5b0c0b9c94fe350bf6202f8",
+      "match": true
+    },
+    "output:worker_shards/SHARD-12_worker_A.json": {
+      "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\audit_output\\worker_shards/SHARD-12_worker_A.json",
+      "claimed": "2daeb78ab84cf54273f4dc64befe9bebd2d27dec0e541e105105b9074a08aa15",
+      "actual": "2daeb78ab84cf54273f4dc64befe9bebd2d27dec0e541e105105b9074a08aa15",
+      "match": true
+    },
+    "output:worker_shards/SHARD-13_worker_A.json": {
+      "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\audit_output\\worker_shards/SHARD-13_worker_A.json",
+      "claimed": "605eff1aba6506e80e14a26b42bac3bc417e5a06e343d9008239c5d7bafa2ae3",
+      "actual": "605eff1aba6506e80e14a26b42bac3bc417e5a06e343d9008239c5d7bafa2ae3",
+      "match": true
+    },
+    "output:worker_shards/SHARD-14_worker_A.json": {
+      "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\audit_output\\worker_shards/SHARD-14_worker_A.json",
+      "claimed": "7f98120d900c80eaaa072fabfdf29814fbefa8fc3fae1f362c1cfc6b8ee99cac",
+      "actual": "7f98120d900c80eaaa072fabfdf29814fbefa8fc3fae1f362c1cfc6b8ee99cac",
+      "match": true
+    }
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "manifest_schema": "Q03_LOAD_PAYLOAD_MANIFEST/v1",
+  "strategy": "B",
+  "transformation_name": "ultimate_pipeline.core.carla_opendrive_loader._normalize_georef_in_xodr_text",
+  "transformation_version": "georef_normalize_elementtree_v1",
+  "producer_commit": "2ec8927ac42abf03bca26b872ef32c1a9d53f3f4",
+  "candidate": {
+    "name": "ingolstadt_perception_candidate_crosswalk",
+    "role": "parent candidate",
+    "sha256": "8a73b4c6401a7905996a1f5dc72b10677ea068df29dc6d83d1d7a911ca572a49"
+  },
+  "payload": {
+    "sha256": "719eec3eced169498228b28a4cc46f2b0361d4ff879eea7dd5a0d5aab392ac21",
+    "length_bytes": 80996355
+  },
+  "semantic_diff": {
+    "region": "header/geoReference only",
+    "geo_reference_before": "+proj=tmerc +lat_0=0 +lon_0=9 +k=0.9996 +x_0=500000 +y_0=0 +datum=WGS84 +units=m +no_defs",
+    "geo_reference_after": "+proj=tmerc +lat_0=0 +lon_0=9 +k=0.9996 +x_0=500000 +y_0=0 +datum=WGS84 +units=m +no_defs"
+  },
+  "coordinate_contract": {
+    "road_ids_equal": true,
+    "junction_ids_equal": true,
+    "signal_ids_equal": true,
+    "object_ids_equal": true,
+    "header_bounds_equal": true,
+    "offset_equal": true,
+    "georeference_only_change": false,
+    "coordinate_contract_pass": true
+  },
+  "payload_file": "reports\\post_audit_hardening\\20260807T000000Z\\perception_governed\\governed_payload.xodr"
+}

@@ -1,0 +1,75 @@
+{
+  "a1_single_origin": true,
+  "a1_zero_header_offset": true,
+  "a2_origin_within_road_bbox": true,
+  "c2d_reference_origin_wgs84": {
+    "lat": 48.74933735,
+    "lon": 11.4324595
+  },
+  "counts": {
+    "f": 4994877,
+    "g": 4973,
+    "o": 66140,
+    "v": 3159722,
+    "vn": 520074
+  },
+  "detail": "origin=(48.749339,11.432460) -> XODR (839966.7,5465151.6); mesh bbox x[832204,847731] y[5457927,5472392]; road coverage 1.0000; vertices 3159722; faces 4994877",
+  "governed_xodr_sha256": "248ffbbe6a1aa2a9cbd4330a69ad1c1680d39698e2d186dd45f5a2eb91c5db6c",
+  "governed_xodr_unchanged": true,
+  "mesh_bbox_xodr": {
+    "x_max": 847731.161,
+    "x_min": 832203.523,
+    "y_max": 5472392.178,
+    "y_min": 5457927.259
+  },
+  "mesh_margin_m": {
+    "east": -1926.85,
+    "north": -179.35,
+    "south": -744.31,
+    "west": -726.27
+  },
+  "obj_bbox_obj_frame": {
+    "x_max": 7764.4487,
+    "x_min": -7763.189,
+    "y_max": 200.0,
+    "y_min": -0.5,
+    "z_max": 7224.316,
+    "z_min": -7240.603
+  },
+  "obj_origin_wgs84": {
+    "ele": 0.0,
+    "lat": 48.74933925,
+    "lon": 11.43245975
+  },
+  "obj_path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260810T000000Z_C2_REMEDIATION\\visual_layer\\artifacts_visual\\scene.obj",
+  "obj_sha256": "15cdccbcd3374b79e63b590e6e591b9f4e4aa9b7abda6b260fb6f553e2d1907e",
+  "obj_size_bytes": 390751147,
+  "origin_lines": [
+    "# Coordinate origin (0,0,0): lat 48.74933925, lon 11.43245975, ele 0"
+  ],
+  "origin_xodr_native": [
+    839966.7124,
+    5465151.5746
+  ],
+  "per_rule_out": {
+    "epsg32632_tmerc_lon0_9_pinned": true,
+    "no_100x_scale": true,
+    "no_165km_shift": true,
+    "no_90deg_rotation": true,
+    "no_axis_inversion": true,
+    "no_double_origin": true,
+    "no_header_offset_shift_single_origin": true,
+    "no_m_cm_mismatch": true,
+    "no_stale_xodr": true,
+    "no_utm_local_origin_mismatch": true
+  },
+  "road_bbox_covered_by_mesh": 1.0,
+  "road_bbox_xodr": {
+    "x_max": 845804.3078762,
+    "x_min": 832929.79063608,
+    "y_max": 5472212.82395472,
+    "y_min": 5458671.56721343
+  },
+  "schema": "C2_VISUAL_LAYER_ALIGNMENT_GUARD/v1",
+  "verdict": "VISUAL_LAYER_ALIGNMENT_PASS"
+}

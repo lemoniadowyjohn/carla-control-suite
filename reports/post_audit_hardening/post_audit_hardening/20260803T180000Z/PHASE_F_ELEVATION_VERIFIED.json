@@ -1,0 +1,104 @@
+{
+  "checks": {
+    "all_roads_have_profiles": true,
+    "continuity_max_bounded": true,
+    "f1_pass": true,
+    "f2_strict_and_audit_pass": true,
+    "f3_structure_identity_pass": true,
+    "f4_piecewise_profiles_pass": true,
+    "f5_bounded_offsets_pass": true,
+    "f5_offset_within_bound": true,
+    "final_geometry_matches_pinned": true,
+    "horizontal_integrity_preserved": true,
+    "no_flat_zero_profiles": true,
+    "phase_e_record_matches_pinned": true,
+    "road_count_preserved": true
+  },
+  "elevation_continuity": {
+    "eps_z": 1.0,
+    "issues_sample": [
+      {
+        "dz": 1.5028580000000034,
+        "from_road": "49873",
+        "link_kind": "predecessor",
+        "to_road": "43761",
+        "warnings": [],
+        "z_from_start": 366.984942,
+        "z_to_end": 368.4878
+      },
+      {
+        "dz": 1.0165519999999901,
+        "from_road": "49874",
+        "link_kind": "successor",
+        "to_road": "49095",
+        "warnings": [],
+        "z_from_end": 367.18108,
+        "z_to_start": 366.164528
+      },
+      {
+        "dz": 1.1602720000000204,
+        "from_road": "49877",
+        "link_kind": "predecessor",
+        "to_road": "45019",
+        "warnings": [],
+        "z_from_start": 368.962707,
+        "z_to_end": 367.802435
+      },
+      {
+        "dz": 1.0036660000000097,
+        "from_road": "49927",
+        "link_kind": "predecessor",
+        "to_road": "45614",
+        "warnings": [],
+        "z_from_start": 378.252932,
+        "z_to_end": 379.256598
+      },
+      {
+        "dz": 1.0665839999999776,
+        "from_road": "49976",
+        "link_kind": "predecessor",
+        "to_road": "43395",
+        "warnings": [],
+        "z_from_start": 373.096769,
+        "z_to_end": 374.163353
+      }
+    ],
+    "links_checked": 45632,
+    "max_dz_m": 3.0356,
+    "num_issues": 88
+  },
+  "f5_solver_summary": {
+    "components": 4,
+    "max_abs_offset_m": 7.864142932197429,
+    "roads_with_offsets": 32647
+  },
+  "final_candidate": {
+    "geometry_hash_ws_normalized": "33495bd9d9f0e8acd5f2eefa091ca3477daa122cd6e2db05838647223cd121e6",
+    "geometry_matches_pinned": true,
+    "path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260803T160000Z\\candidate_f5_bounded_offsets.xodr",
+    "phase_e_record_matches_pinned": true,
+    "pinned_geometry_hash_ws_normalized": "33495bd9d9f0e8acd5f2eefa091ca3477daa122cd6e2db05838647223cd121e6",
+    "pinned_phase_e_hash": "b0ecc5c642e17e3a8f06d9cb6f3fc535470ff9d823edd60bd5ac8c5dbb9361d6",
+    "protected_geometry_hash_recorded": "b0ecc5c642e17e3a8f06d9cb6f3fc535470ff9d823edd60bd5ac8c5dbb9361d6",
+    "road_count": 32710,
+    "sha256": "e7e15693cda4aab7f42cffe88a52934e29531a070178f1614db2320db3824ad8"
+  },
+  "generated_at_utc": "2026-08-03T17:02:38.680441+00:00",
+  "phase": "F",
+  "phase_f_verdict": "PHASE_F_ELEVATION_VERIFIED",
+  "producer": "ultimate_pipeline/tools/phase_f7_final_verification.py",
+  "profile_stats": {
+    "flat_zero_profiles": 0,
+    "roads_total": 32710,
+    "single_segment_profiles": 810,
+    "with_profile": 32710
+  },
+  "run_id": "20260803T180000Z",
+  "subphase_verdicts": {
+    "f1": "PASS",
+    "f2": "F2_STRICT_AND_AUDIT_PASS",
+    "f3": "F3_STRUCTURE_CLASSIFICATION_PASS",
+    "f4": "F4_PIECEWISE_PROFILES_PASS",
+    "f5": "F5_BOUNDED_OFFSETS_PASS"
+  }
+}

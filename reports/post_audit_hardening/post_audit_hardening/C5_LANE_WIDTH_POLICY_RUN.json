@@ -1,0 +1,276 @@
+{
+  "examples": [
+    {
+      "explicit_width_m": null,
+      "highway": "residential",
+      "lane_count": null,
+      "lane_id": "-1",
+      "new_width_m": 3.25,
+      "old_width_m": 6.0,
+      "road_id": "39830",
+      "source": "osm_highway"
+    },
+    {
+      "explicit_width_m": null,
+      "highway": null,
+      "lane_count": null,
+      "lane_id": "-1",
+      "new_width_m": 3.5,
+      "old_width_m": 6.0,
+      "road_id": "39831",
+      "source": "fallback"
+    },
+    {
+      "explicit_width_m": null,
+      "highway": null,
+      "lane_count": null,
+      "lane_id": "-1",
+      "new_width_m": 3.5,
+      "old_width_m": 6.0,
+      "road_id": "39832",
+      "source": "fallback"
+    },
+    {
+      "explicit_width_m": null,
+      "highway": null,
+      "lane_count": null,
+      "lane_id": "-2",
+      "new_width_m": 3.5,
+      "old_width_m": 6.0,
+      "road_id": "39832",
+      "source": "fallback"
+    },
+    {
+      "explicit_width_m": null,
+      "highway": "trunk_link",
+      "lane_count": null,
+      "lane_id": "-1",
+      "new_width_m": 3.5,
+      "old_width_m": 6.0,
+      "road_id": "39833",
+      "source": "osm_highway"
+    },
+    {
+      "explicit_width_m": null,
+      "highway": null,
+      "lane_count": null,
+      "lane_id": "-1",
+      "new_width_m": 3.5,
+      "old_width_m": 6.0,
+      "road_id": "39834",
+      "source": "fallback"
+    },
+    {
+      "explicit_width_m": null,
+      "highway": null,
+      "lane_count": null,
+      "lane_id": "-1",
+      "new_width_m": 3.5,
+      "old_width_m": 6.0,
+      "road_id": "39835",
+      "source": "fallback"
+    },
+    {
+      "explicit_width_m": null,
+      "highway": null,
+      "lane_count": null,
+      "lane_id": "-1",
+      "new_width_m": 3.5,
+      "old_width_m": 6.0,
+      "road_id": "39836",
+      "source": "fallback"
+    },
+    {
+      "explicit_width_m": null,
+      "highway": "unclassified",
+      "lane_count": null,
+      "lane_id": "-1",
+      "new_width_m": 3.0,
+      "old_width_m": 6.0,
+      "road_id": "39837",
+      "source": "osm_highway"
+    },
+    {
+      "explicit_width_m": null,
+      "highway": "residential",
+      "lane_count": null,
+      "lane_id": "-1",
+      "new_width_m": 3.25,
+      "old_width_m": 6.0,
+      "road_id": "39838",
+      "source": "osm_highway"
+    },
+    {
+      "explicit_width_m": null,
+      "highway": null,
+      "lane_count": null,
+      "lane_id": "-1",
+      "new_width_m": 3.5,
+      "old_width_m": 6.0,
+      "road_id": "39839",
+      "source": "fallback"
+    },
+    {
+      "explicit_width_m": null,
+      "highway": "secondary",
+      "lane_count": null,
+      "lane_id": "-1",
+      "new_width_m": 3.5,
+      "old_width_m": 6.0,
+      "road_id": "39840",
+      "source": "osm_highway"
+    },
+    {
+      "explicit_width_m": null,
+      "highway": "secondary",
+      "lane_count": null,
+      "lane_id": "-1",
+      "new_width_m": 3.5,
+      "old_width_m": 6.0,
+      "road_id": "39841",
+      "source": "osm_highway"
+    },
+    {
+      "explicit_width_m": null,
+      "highway": "tertiary",
+      "lane_count": null,
+      "lane_id": "-1",
+      "new_width_m": 3.25,
+      "old_width_m": 6.0,
+      "road_id": "39842",
+      "source": "osm_highway"
+    },
+    {
+      "explicit_width_m": null,
+      "highway": "tertiary",
+      "lane_count": null,
+      "lane_id": "-1",
+      "new_width_m": 3.25,
+      "old_width_m": 6.0,
+      "road_id": "39843",
+      "source": "osm_highway"
+    },
+    {
+      "explicit_width_m": null,
+      "highway": "residential",
+      "lane_count": null,
+      "lane_id": "-1",
+      "new_width_m": 3.25,
+      "old_width_m": 6.0,
+      "road_id": "39844",
+      "source": "osm_highway"
+    },
+    {
+      "explicit_width_m": null,
+      "highway": null,
+      "lane_count": null,
+      "lane_id": "-1",
+      "new_width_m": 3.5,
+      "old_width_m": 6.0,
+      "road_id": "39845",
+      "source": "fallback"
+    },
+    {
+      "explicit_width_m": null,
+      "highway": "residential",
+      "lane_count": null,
+      "lane_id": "-1",
+      "new_width_m": 3.25,
+      "old_width_m": 6.0,
+      "road_id": "39846",
+      "source": "osm_highway"
+    },
+    {
+      "explicit_width_m": null,
+      "highway": null,
+      "lane_count": null,
+      "lane_id": "-1",
+      "new_width_m": 3.5,
+      "old_width_m": 6.0,
+      "road_id": "39847",
+      "source": "fallback"
+    },
+    {
+      "explicit_width_m": null,
+      "highway": "unclassified",
+      "lane_count": null,
+      "lane_id": "-1",
+      "new_width_m": 3.0,
+      "old_width_m": 6.0,
+      "road_id": "39848",
+      "source": "osm_highway"
+    },
+    {
+      "explicit_width_m": null,
+      "highway": null,
+      "lane_count": null,
+      "lane_id": "-1",
+      "new_width_m": 3.5,
+      "old_width_m": 6.0,
+      "road_id": "39849",
+      "source": "fallback"
+    },
+    {
+      "explicit_width_m": null,
+      "highway": null,
+      "lane_count": null,
+      "lane_id": "-1",
+      "new_width_m": 3.5,
+      "old_width_m": 6.0,
+      "road_id": "39850",
+      "source": "fallback"
+    },
+    {
+      "explicit_width_m": null,
+      "highway": null,
+      "lane_count": null,
+      "lane_id": "-1",
+      "new_width_m": 3.5,
+      "old_width_m": 6.0,
+      "road_id": "39851",
+      "source": "fallback"
+    },
+    {
+      "explicit_width_m": null,
+      "highway": null,
+      "lane_count": null,
+      "lane_id": "-1",
+      "new_width_m": 3.5,
+      "old_width_m": 6.0,
+      "road_id": "39852",
+      "source": "fallback"
+    },
+    {
+      "explicit_width_m": null,
+      "highway": null,
+      "lane_count": null,
+      "lane_id": "-1",
+      "new_width_m": 3.5,
+      "old_width_m": 6.0,
+      "road_id": "39853",
+      "source": "fallback"
+    }
+  ],
+  "input_xodr": "campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_drivable.xodr",
+  "ok": true,
+  "osm_path": "campaigns\\ingolstadt_cooked_perception_v1\\source\\ingolstadt_authoritative.osm",
+  "output_xodr": "campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_drivable_width_faithful.xodr",
+  "policy": {
+    "fallback_width_m": 3.5,
+    "max_driving_width_m": 3.75,
+    "min_driving_width_m": 2.75,
+    "six_meter_placeholder_m": 6.0
+  },
+  "totals": {
+    "driving_lanes_checked": 34679,
+    "driving_widths_updated": 34679,
+    "legacy_missing_non_center_widths_added": 0,
+    "missing_widths_added": 0,
+    "roads_checked": 32710,
+    "six_meter_placeholders_found": 34675,
+    "source_counts": {
+      "fallback": 29375,
+      "osm_highway": 3335
+    }
+  }
+}

@@ -1,0 +1,101 @@
+{
+  "schema": "rq5_runtime_environment_validation_report/v1",
+  "generated": "2026-10-25",
+  "candidate": {
+    "code_sha": "7bf21a23586245b3f519d434abea2fd0ff827a60",
+    "receipt_descendant_sha": "8dbdfc15abc97bde6de40cb3c9752890d0a5cdaf",
+    "delta_7bf21a23_to_8dbdfc15": "docs-only (reports/remediation/p0-rq5-init-001-7bf21a23.json, 40 insertions) - verified via git diff --stat",
+    "worktree": "E:/wt/claude-hard-tasks-20261023",
+    "branch": "fix/claude-hard-tasks-20261023"
+  },
+  "environment": {
+    "path": "E:/envs/rq5_7bf21a23",
+    "isolated": true,
+    "global_site_packages_touched": false,
+    "pip_cache_dir": "E:/envs/pip-cache",
+    "pip_no_cache_mode": true,
+    "resolver_report": "C:/Users/admin/AppData/Local/Temp/opencode/pip_rq5_report.json (full wheel SHA-256s recorded)",
+    "resolved_wheels_sha256_prefixes": {
+      "torch-2.9.1+cpu": "a4e06b4f441675d2",
+      "torchvision-0.24.1+cpu": "af904a34b563c302",
+      "numpy-2.5.4": "a7b1b6353e36a7e5",
+      "pytest-9.1.1": "37a86b45efb9a47a",
+      "pillow-13.0.0": "ff3fe9eb621fbb9d",
+      "sympy-1.14.0": "a0b2b9fe80bbcd81",
+      "networkx-3.7": "e3fd2c13a7814cee",
+      "full_set": "17 packages; exact sha256 in retained pip report"
+    },
+    "install_source": "download.pytorch.org/whl/cpu (CPU-only index) + pypi.org",
+    "drive_free_after_install": {"E_GB": 2.6, "C_GB": 1.93, "F_GB": 2.20}
+  },
+  "phase_b_verification": [
+    {"check": "python_version", "command": "python -V", "exit_code": 0, "result": "3.12.2", "classification": "PASS"},
+    {"check": "torch/torchvision/numpy versions", "exit_code": 0, "result": "torch 2.9.1+cpu / torchvision 0.24.1+cpu / numpy 2.5.4", "classification": "PASS"},
+    {"check": "torch.distributed.is_gloo_available()", "exit_code": 0, "result": "True", "classification": "PASS"},
+    {"check": "torch.cuda.is_available()", "exit_code": 0, "result": "False (expected on CPU env)", "classification": "PASS"},
+    {"check": "import ultimate_pipeline.perception.train_launcher", "worktree": "E:/wt/claude-hard-tasks-20261023", "exit_code": 0, "result": "module imports OK (settings path warnings for missing out dirs are pre-existing)", "classification": "PASS"},
+    {"check": "editable install of candidate package", "command": "pip install -e . --no-deps", "exit_code": 0, "result": "ultimate-pipeline 0.1.0 editable installed into E:/envs/rq5_7bf21a23", "classification": "PASS"},
+    {"check": "pytest collection of RQ5 files", "exit_code": 0, "result": "61 tests collected, 0 errors", "classification": "PASS"}
+  ],
+  "phase_c_dynamic_validation": [
+    {
+      "item": "1. stale SUCCESS.txt removal on rank zero",
+      "evidence": "tests/unit/test_rq5_train_launcher_initialization.py::test_proven_rank_ownership_precedes_stale_success_revocation",
+      "result": "1 passed", "classification": "PASS"
+    },
+    {
+      "item": "2. no stale-marker mutation by rank one (+ preinit cleanup semantics)",
+      "evidence": "test_preinit_cleanup_uses_rank_not_local_rank_and_precedes_admission",
+      "result": "1 passed", "classification": "PASS"
+    },
+    {
+      "item": "3. DDP initialization fault injection + coherent cleanup",
+      "evidence": "test_ddp_initialization_failure_cleans_up_an_initialized_group + test_ddp_environment_is_coherent_and_main_always_cleans_up",
+      "result": "2 passed", "classification": "PASS"
+    },
+    {
+      "item": "4. dataset rejection with no model/checkpoint/manifest",
+      "evidence": "tests/unit/test_train_launcher_dataset_acceptance.py (12 tests)",
+      "result": "12 passed", "classification": "PASS"
+    },
+    {
+      "item": "5. CPU/Gloo two-process smoke with strict timeout",
+      "commands": ["gloo tcp:// smoke (torch 2.9.1) exited 1", "gloo file:// rendezvous smoke (torch 2.9.1) exited 1", "gloo file:// rendezvous smoke (torch 2.2.0+cpu, project venv) exited 1"],
+      "error": "RuntimeError: makeDeviceForHostname(): unsupported gloo device",
+      "classification": "NOT_RUN (previously classified attempt) -> ENVIRONMENT_LIMITATION",
+      "reason": "Windows Gloo device binding unavailable on this host; identical failure on the pre-existing torch 2.2.0+cpu proves platform limitation, not installation or version issue"
+    },
+    {
+      "item": "6. relevant RQ5 modules",
+      "results": {
+        "test_rq5b_claim_boundary.py": "10 passed",
+        "test_o18_rq5_contract_audit.py": "2 passed",
+        "test_rq5_protocol_freeze.py": "9 passed (1 warning)",
+        "test_rq5_train_launcher_initialization.py": "4 passed",
+        "test_train_launcher_dataset_acceptance.py": "12 passed",
+        "test_rq5_execution_correctness.py": "22 passed / 14 failed"
+      },
+      "classification": "PASS for 5 files; FAIL (reproducible) for test_rq5_execution_correctness"
+    },
+    {
+      "item": "6b. test_rq5_execution_correctness failures",
+      "count": {"files": 1, "failed": 14, "passed": 22},
+      "error_signature": "AttributeError: 'tuple' object has no attribute 'state_dict' (e.g. test_strict_load_rejects_incompatible_checkpoint)",
+      "reproduction_evidence": "identical 14 failed / 22 passed in (a) isolated rq5 venv (torch 2.9.1+cpu, numpy 2.5.4) and (b) project venv (torch 2.2.0+cpu) - environment excluded",
+      "classification": "FAIL (product/source: tests call a model-returning API while branch code returns (model, contract) tuples; candidate-source defect or stale test expectation on fix/claude-hard-tasks-20261023)"
+    },
+    {
+      "item": "7. canonical offline pytest command",
+      "result": "RQ5 subset executed; full offline suite NOT attempted on this environment (time-boxed)",
+      "classification": "PARTIAL"
+    }
+  ],
+  "probes_not_improvised": true,
+  "gates": {
+    "no_global_installation_touched": true,
+    "no_C_drive_cache_used": true,
+    "no_push_claimed": true,
+    "github_ci": "NOT_RUN - remains NOT_RUN until an authorized push creates CI on the exact candidate SHA",
+    "frozen_configs_untouched": true
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "candidate_path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_final.xodr",
+  "crs_native_verdict": "OSM2ODR_NATIVE_VERIFIED",
+  "geo_reference_declared": "+proj=tmerc +lat_0=0 +lon_0=9 +k=0.9996 +x_0=500000 +y_0=0 +datum=WGS84 +units=m +no_defs",
+  "geometry_bbox": {
+    "geometry_sampled": 40000,
+    "x_max": 845804.3078762,
+    "x_min": 832929.79063608,
+    "y_max": 5472212.82395472,
+    "y_min": 5458671.56721343
+  },
+  "geometry_center": {
+    "x": 839367.049,
+    "y": 5465442.196
+  },
+  "hashes": {
+    "c1candidate_sha256_lf_text": "16ea2ec134b10d07518c63e1bd42c4ffd8b96113d1a52c0fe448f201c004d11f",
+    "candidate_sha256_lf_text": "248ffbbe6a1aa2a9cbd4330a69ad1c1680d39698e2d186dd45f5a2eb91c5db6c",
+    "candidate_sha256_raw_disk": "248ffbbe6a1aa2a9cbd4330a69ad1c1680d39698e2d186dd45f5a2eb91c5db6c",
+    "governed_expected": "248ffbbe6a1aa2a9cbd4330a69ad1c1680d39698e2d186dd45f5a2eb91c5db6c",
+    "governed_identity_guard": true,
+    "governed_lf_text_after_georef_normalize": "248ffbbe6a1aa2a9cbd4330a69ad1c1680d39698e2d186dd45f5a2eb91c5db6c",
+    "governed_stable_lf_after_normalize": true
+  },
+  "header_offsets": [],
+  "per_rule_out": {
+    "epsg32632_tmerc_lon0_9_pinned": true,
+    "no_100x_scale": true,
+    "no_165km_shift": true,
+    "no_90deg_rotation": true,
+    "no_axis_inversion": true,
+    "no_double_origin": true,
+    "no_header_offset_shift_single_origin": true,
+    "no_m_cm_mismatch": true,
+    "no_stale_xodr": true,
+    "no_utm_local_origin_mismatch": true
+  },
+  "producer": "stage_c2d_projection_freeze.py",
+  "schema": "C2D_PROJECTION_FREEZE/v1",
+  "verdict": "PROJECTION_FREEZE_PASS"
+}

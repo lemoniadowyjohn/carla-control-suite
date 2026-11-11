@@ -310,6 +310,28 @@ def classify_requested_paths(
         artifact["sha256"] = digest
         artifacts.append(artifact)
 
+    # --- G3: mandatory artifacts declared but absent from key_paths ---
+    # A mandatory artifact that was never requested cannot be validated.
+    # Add it as a missing failure so it blocks PASS (fail-closed).
+    requested_keys = {a.get("key") for a in artifacts if a.get("key")}
+    for mandatory_key in sorted(mandatory_norm):
+        if mandatory_key not in requested_keys:
+            artifact: Dict[str, Any] = {
+                "requested": mandatory_key,
+                "mandatory": True,
+                "category": CATEGORY_MISSING,
+                "key": mandatory_key,
+                "sha256": None,
+                "detail": "declared mandatory but not present in requested key_paths",
+            }
+            artifacts.append(artifact)
+            failures.append(
+                _failure(
+                    artifact,
+                    f"declared mandatory artifact is missing from key_paths: {mandatory_key}",
+                )
+            )
+
     return {"root": root, "artifacts": artifacts, "failures": failures}
 
 

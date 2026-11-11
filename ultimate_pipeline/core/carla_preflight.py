@@ -282,8 +282,11 @@ def classify_carla_crash(
     """
     low = (stderr or "").lower()
 
-    if preflight and not preflight.get("ok") and preflight.get("error") == "connection_failed":
-        return CRASH_CONNECTION_TIMEOUT
+    if preflight:
+        preflight_ok_val = preflight.get("ok")
+        preflight_ok = preflight_ok_val if isinstance(preflight_ok_val, bool) else False
+        if preflight and not preflight_ok and preflight.get("error") == "connection_failed":
+            return CRASH_CONNECTION_TIMEOUT
 
     if status_after and not status_after.get("tcp_reachable", True):
         return CRASH_CONNECTION_TIMEOUT

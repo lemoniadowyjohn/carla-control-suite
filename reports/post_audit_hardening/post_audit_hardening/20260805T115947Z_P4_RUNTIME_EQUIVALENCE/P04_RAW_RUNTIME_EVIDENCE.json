@@ -1,0 +1,43 @@
+{
+  "status": "OK",
+  "map_name": "Carla/Maps/OpenDriveMap",
+  "load_time_s": 333.9,
+  "src_sha256": "ff2a05e7b00b8fc1bde38f569413223c03a4f4ac9c31eceb5a8592df47d0d17d",
+  "rep_sha256": "80ebb0054afd73ffdd51960b48679ff4689c72ed0abe75af5b2ae10a51395699",
+  "payload_sha256": "516e329cb6fcec6adb041a4c5f39c48b4de6147b956c7dc2b7ab0c6746490453",
+  "runtime_to_opendrive_sha256": "9630d9f673fdea87058139d9e2241c7084dc2e2550674bba4bfffc78c6d0ae80",
+  "inventory": {
+    "source": {
+      "road_xml": 32710,
+      "road_unique": 32710,
+      "junction_xml": 3646,
+      "junction_unique": 3646,
+      "lane_sections": 32710,
+      "driving_lanes": 34674
+    },
+    "repaired": {
+      "road_xml": 32710,
+      "road_unique": 32710,
+      "junction_xml": 3646,
+      "junction_unique": 3646
+    },
+    "runtime": {
+      "road_xml": 32710,
+      "road_unique": 32710,
+      "junction_xml": 3646,
+      "junction_unique": 3646,
+      "lane_sections": 32710,
+      "driving_lanes": 34674
+    },
+    "missing_roads": [],
+    "unexpected_roads": [],
+    "missing_junctions": [],
+    "unexpected_junctions": [],
+    "missing_road_count": 0,
+    "unexpected_road_count": 0,
+    "missing_junction_count": 0,
+    "unexpected_junction_count": 0
+  },
+  "server_pid": "33352",
+  "timestamp": "2026-08-05T11:58:25.177084+00:00"
+}

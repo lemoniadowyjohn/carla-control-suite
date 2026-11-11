@@ -1,0 +1,102 @@
+{
+  "candidate": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_final.xodr",
+  "corner_to_road_stats_m": {
+    "corners_total": 330,
+    "max_m": 13.264,
+    "mean_m": 4.957,
+    "median_m": 4.343,
+    "min_m": 0.222,
+    "object_mean_max_m": 12.053,
+    "object_mean_median_m": 4.539,
+    "object_mean_p95_m": 8.498,
+    "objects": 66,
+    "p95_m": 10.282,
+    "p99_m": 12.454
+  },
+  "frame": "EPSG:32632 native (XODR geometry frame)",
+  "producer": "stage_c2e_crosswalk_corner_alignment.py",
+  "schema": "C2E_CROSSWALK_CORNER_ALIGNMENT/v1",
+  "verdict": "CROSSWALK_ALIGNMENT_RESIDUALS_CAPTURED",
+  "worst_objects": [
+    {
+      "corners": 5,
+      "nearest_road_m_max": 12.541,
+      "nearest_road_m_mean": 12.053,
+      "nearest_road_m_min": 11.825,
+      "object": "crosswalk_815412609",
+      "road_id": "43964"
+    },
+    {
+      "corners": 5,
+      "nearest_road_m_max": 13.264,
+      "nearest_road_m_mean": 8.881,
+      "nearest_road_m_min": 2.039,
+      "object": "crosswalk_1302300634",
+      "road_id": "49409"
+    },
+    {
+      "corners": 5,
+      "nearest_road_m_max": 10.118,
+      "nearest_road_m_mean": 8.664,
+      "nearest_road_m_min": 8.207,
+      "object": "crosswalk_1050386657",
+      "road_id": "45439"
+    },
+    {
+      "corners": 5,
+      "nearest_road_m_max": 10.485,
+      "nearest_road_m_mean": 8.501,
+      "nearest_road_m_min": 5.769,
+      "object": "crosswalk_1189564732",
+      "road_id": "49216"
+    },
+    {
+      "corners": 5,
+      "nearest_road_m_max": 10.289,
+      "nearest_road_m_mean": 8.489,
+      "nearest_road_m_min": 7.286,
+      "object": "crosswalk_710645369",
+      "road_id": "42870"
+    },
+    {
+      "corners": 5,
+      "nearest_road_m_max": 9.799,
+      "nearest_road_m_mean": 8.382,
+      "nearest_road_m_min": 6.273,
+      "object": "crosswalk_822603353",
+      "road_id": "49126"
+    },
+    {
+      "corners": 5,
+      "nearest_road_m_max": 8.448,
+      "nearest_road_m_mean": 8.073,
+      "nearest_road_m_min": 7.141,
+      "object": "crosswalk_816754722",
+      "road_id": "49331"
+    },
+    {
+      "corners": 5,
+      "nearest_road_m_max": 11.885,
+      "nearest_road_m_mean": 8.058,
+      "nearest_road_m_min": 5.354,
+      "object": "crosswalk_333438883",
+      "road_id": "69845"
+    },
+    {
+      "corners": 5,
+      "nearest_road_m_max": 9.522,
+      "nearest_road_m_mean": 7.918,
+      "nearest_road_m_min": 4.036,
+      "object": "crosswalk_888409635",
+      "road_id": "44675"
+    },
+    {
+      "corners": 5,
+      "nearest_road_m_max": 10.241,
+      "nearest_road_m_mean": 7.576,
+      "nearest_road_m_min": 3.523,
+      "object": "crosswalk_1272842061",
+      "road_id": "44662"
+    }
+  ]
+}

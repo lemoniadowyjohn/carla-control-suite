@@ -1,0 +1,54 @@
+{
+  "schema": "C3R_TAG_ANCHORED_V2",
+  "freeze_tag": "c3_freeze_20260811T000000Z_C3",
+  "parent_commit": "54e08381d686477e750936926406be7fca92d9e0",
+  "review_anchor_commit": "8b400351d13634104090b31e535ced6e6d748648",
+  "branch": "fix/post-audit-phase-e-junctions-roundabouts-20260803",
+  "parent_xodr": {
+    "path": "reports/post_audit_hardening/20260809T000000Z_C1_GENERATION/candidate_crosswalk_enriched.xodr",
+    "sha256_lf_text": "16ea2ec134b10d07518c63e1bd42c4ffd8b96113d1a52c0fe448f201c004d11f"
+  },
+  "candidate": {
+    "path": "campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_perception_final.xodr",
+    "sha256": "248ffbbe6a1aa2a9cbd4330a69ad1c1680d39698e2d186dd45f5a2eb91c5db6c",
+    "crosswalk_objects": 66,
+    "identity_guard_pass": true
+  },
+  "mesh": {
+    "path": "reports/post_audit_hardening/20260810T000000Z_C2_REMEDIATION/fullmap_mesh/scene.obj",
+    "sha256": "a147f4fe9e34d8b8a6f32aaddd9de144f2b79e70b5c798fd2d5c7ab3476b9c2e"
+  },
+  "protected_digest_categories": [
+    "PLANVIEW_DIGEST",
+    "ROAD_LINK_DIGEST",
+    "JUNCTION_DIGEST",
+    "LANELINK_DIGEST",
+    "LANESECTION_DIGEST",
+    "ELEVATION_DIGEST",
+    "COMBINED_STRUCTURAL_DIGEST",
+    "SIGNAL_ELEMENT_DIGEST",
+    "SIGNAL_REFERENCE_DIGEST",
+    "CONTROLLER_DIGEST",
+    "COMBINED_TRAFFIC_CONTROL_DIGEST"
+  ],
+  "annotation_contract": {
+    "commit_message_annotation_carries": [
+      "freeze_commit",
+      "freeze_tree",
+      "branch",
+      "r16_sha256",
+      "r16b_sha256",
+      "manifest_sha256",
+      "governed_payload_sha256",
+      "mesh_sha256"
+    ],
+    "governed_payload_sha256": "248ffbbe6a1aa2a9cbd4330a69ad1c1680d39698e2d186dd45f5a2eb91c5db6c",
+    "mesh_sha256": "a147f4fe9e34d8b8a6f32aaddd9de144f2b79e70b5c798fd2d5c7ab3476b9c2e"
+  },
+  "flags": {
+    "head_commit_recorded": false,
+    "returns_commit_recorded": false,
+    "tag_object_sha_recorded": false,
+    "no_commits_after_tag": true
+  }
+}

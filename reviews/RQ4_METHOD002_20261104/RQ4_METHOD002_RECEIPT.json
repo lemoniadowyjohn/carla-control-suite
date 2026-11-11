@@ -1,0 +1,18 @@
+{
+  "task_id": "RQ4-METHOD-002",
+  "owner": "Claude Opus 5.5 (read-only)",
+  "worktree": "E:/wt/repair-map-realism-p0-837a8504 (read-only)",
+  "baseline_head": "1a36b560a69286841d4c42973cf00258a38f56c1",
+  "reviewed_spec": "docs/reviews/SCI_CORRECT003_20261104/RQ4_STATISTICAL_EVALUATION_SPEC.md @ e8218cf9419380835d4cbe45edde7f90ab54129f",
+  "verdict_published_spec": "NEEDS_METHOD_CHANGE",
+  "verdict_new_draft": "METHOD_READY_FOR_EXTERNAL_REVIEW",
+  "status": "IMPLEMENTED_LOCAL (documents only); not independently reviewed",
+  "identity_check_of_M2": "numeric identity on synthetic unit vectors (not an experiment): E_cos = ||muA-muM||^2 = 0.067479569777 (equal); a formula check only, not data",
+  "experiments_run": "none",
+  "p_values": "none",
+  "historical_values_changed": false,
+  "unverified_by_author": ["whole-map junction edge directions in graph_builder", "spatial overlap of the 562 training tiles with Grid0821/Grid0828", "the training width_mode"],
+  "files": ["RQ4_METHOD_CRITIQUE.md", "RQ4_PREREGISTRATION_DRAFT.md", "RQ4_NULL_AND_EXCHANGEABILITY_DIAGNOSTICS.md", "RQ4_INFERENCE_LIMITS.md", "RQ4_INDEPENDENT_REVIEW_CHECKLIST.md"],
+  "next_dependency": "external different-family review; operator fills the [OPERATOR] fields before freeze",
+  "storage_used": "< 50 KB"
+}

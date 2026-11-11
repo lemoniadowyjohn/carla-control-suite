@@ -1,0 +1,12 @@
+{
+  "matched_pair_count": 895,
+  "mean_m": 55.27961477346578,
+  "median_m": 35.258309336315136,
+  "p90_m": 128.01454419021908,
+  "spacing_m": 5.0,
+  "match_threshold_m": 50.0,
+  "footprint": "hull",
+  "auto_road_count_total": 32297,
+  "auto_road_count_cropped": 3539,
+  "manual_road_count": 993
+}

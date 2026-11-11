@@ -1,0 +1,46 @@
+{
+  "schema": "rq5_exec_correctness_failure_analysis/v1",
+  "generated": "2026-10-25",
+  "phase": "Post-Inventory Control Prompt - Phase 1 (read-only confirmation). NO code modified.",
+  "reproductions": [
+    {"worktree": "E:/wt/claude-hard-tasks-20261023", "branch": "fix/claude-hard-tasks-20261023", "head": "8dbdfc15", "env": "E:/envs/rq5_7bf21a23 (torch 2.9.1+cpu)", "result": "22 passed, 14 failed"},
+    {"worktree": "E:/wt/claude-hard-tasks-20261023", "head": "8dbdfc15", "env": "project venv C:/Users/admin/PycharmProjects/gpt4/pythonProject3/.venv (torch 2.2.0+cpu)", "result": "22 passed, 14 failed"},
+    {"worktree": "E:/wt/repair-map-realism-p0-837a8504", "branch": "experimental/verified-fixes-20261022", "head": "d3947e90", "env": "project venv", "result": "22 passed, 14 failed"}
+  ],
+  "environment_excluded": "identical counts in torch 2.9.1+cpu and torch 2.2.0+cpu environments; environment is NOT the cause",
+  "root_cause_chain": [
+    {"sha": "090a0d0d", "date": "2026-09-30", "what": "introduced tests/unit/test_rq5_execution_correctness.py (36 tests) against the then-current API _build_model(num_classes) -> nn.Module"},
+    {"sha": "26cf42cf", "what": "introduced training_failure_guard.py with require_free_disk(target, *, min_free_bytes=DEFAULT_MIN_FREE_DISK_BYTES)"},
+    {"sha": "4ca15683", "date": "2026-10-21", "what": "CD-1/CD-4 batch: changed _build_model return to Tuple[nn.Module, Dict[str, Any]] (model, contract) and added the checkpoint-save call require_free_disk(ckpt, min_free_disk_bytes=...) at train_launcher.py:585; updated its own production caller (line 537 unpacks the tuple) but did NOT update the test file and used a kwarg name that never matched the guard signature (guard param: min_free_bytes)"}
+  ],
+  "reachability": "4ca15683 and 090a0d0d are ancestors of production d72f57c6, A 8dbdfc15 and C d3947e90 (merge-base --is-ancestor verified). The test file is byte-identical between d3947e90 and 8dbdfc15 (git diff empty). The 14 failures exist on ALL current lineages including production.",
+  "classification": {
+    "class_P_product_defect": {
+      "count": 3,
+      "tests": [
+        "test_multi_root_training_consumes_every_root",
+        "test_training_is_deterministic_for_a_frozen_seed",
+        "test_model_manifest_binds_checkpoint_dataset_git_and_seed"
+      ],
+      "defect": "train_launcher.py:585 calls require_free_disk(ckpt, min_free_disk_bytes=int(args.min_free_disk_mb)*1024*1024) but training_failure_guard.py:131 declares require_free_disk(target, *, min_free_bytes=...). TypeError is not caught by the except TrainingFailure guard (line 587), so REAL training crashes at the first checkpoint save. API contract regression introduced by 4ca15683 (not B2, not L1/L2, not environment).",
+      "fix": "rename the single call-site kwarg min_free_disk_bytes= -> min_free_bytes= at train_launcher.py:585 (one token). --min-free-disk-mb CLI arg (train_launcher.py:406) already exists; bytes conversion stays. require_free_disk has exactly ONE caller repo-wide, so the call-site rename is the minimal fix; the guard's public signature and error-field names (required_bytes, required=int(min_free_bytes)) are preserved."
+    },
+    "class_T_stale_test_expectations": {
+      "count": 11,
+      "defect": "test call sites use the pre-4ca15683 bare-model API while the shipped factory returns (model, contract). The API change is deliberate (runtime pretraining-contract verification, receipt fingerprint) and is consumed correctly by production code and by branch A's B1 tests (test_rq5_train_launcher_initialization.py 4 passed).",
+      "fix": "update test call sites to unpack: model, _ = train_launcher._build_model(CARLA_SEMANTIC_NUM_CLASSES) (or keep contract when a test needs it). Affected lines in tests/unit/test_rq5_execution_correctness.py: 168/170 (runner fake subprocess), 229, 337, 605, 643, 678, 787, 818, 841, 851, 857, 868, 875, 888. No production file changes."
+    },
+    "not_a_B2_consolidation_mismatch": "4ca15683 predates B1/B2/B3 remediation commits; the tuple API and the 14 failures are present identically on production d72f57c6.",
+    "evidence_coverage_correction": {
+      "fact": "The D1 run recorded as 'full suite at d3947e90: 2178 passed / 4 skipped / 1 failed' collected only 2182 of 8280 pytest.ini-default tests and contains zero tests\\unit chunks; tests/unit/test_rq5_execution_correctness.py was NOT executed by that run (14 failures invisible).",
+      "commit_sha": "pytest addopts/configfile: pytest.ini (testpaths include tests/unit but the recorded command covered a subset)",
+      "consequence": "D1 evidence must be reclassified as PARTIAL COVERAGE; a true full-suite re-run is required later and must be recorded with its exact command. Do not cite the 20261025 D1 result as full-suite green."
+    }
+  },
+  "implementation_plan_dependency_ordered": [
+    {"order": 1, "id": "P1", "file": "ultimate_pipeline/perception/train_launcher.py", "line": 585, "change": "min_free_disk_bytes= -> min_free_bytes=", "type": "product one-token fix", "regression": "test_training_is_deterministic_for_a_frozen_seed (and test_multi_root_training_consumes_every_root / test_model_manifest_binds_checkpoint_dataset_git_and_seed) fail before, pass after"},
+    {"order": 2, "id": "T1", "file": "tests/unit/test_rq5_execution_correctness.py", "lines": "168, 229, 337, 605, 643, 678, 787, 818, 841, 851, 857, 868, 875, 888", "change": "unpack (model, contract) from _build_model", "type": "test alignment", "regression": "the 11 class-T tests fail before, pass after"},
+    {"order": 3, "id": "V1", "scope": "Phase 3 validation", "commands": "pytest tests/unit/test_rq5_execution_correctness.py (expect 36/36), then full RQ5 module set, then a recorded full-suite run with exact command line"}
+  ],
+  "gates": {"no_code_modified_in_phase_1": true, "no_push_no_merge_no_map_actions": true, "github_ci": "NOT_RUN", "windows_gloo_smoke": "NOT_RUN / ENVIRONMENT_LIMITATION"}
+}

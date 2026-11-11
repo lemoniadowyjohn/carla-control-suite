@@ -1,0 +1,70 @@
+{
+  "status": "ok",
+  "reason": "Generated 1 outputs: scene.obj",
+  "command_lines": [
+    [
+      "java",
+      "-jar",
+      "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\carla_governed\\OSM2World-latest-bin\\OSM2World.jar",
+      "convert",
+      "-i",
+      "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260810T000000Z_C2_REMEDIATION\\visual_osm_merged\\ingolstadt_visual_merged_clean.osm",
+      "-o",
+      "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260810T000000Z_C2_REMEDIATION\\visual_layer\\artifacts_visual\\scene.obj",
+      "--config",
+      "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260810T000000Z_C2_REMEDIATION\\visual_layer\\artifacts_visual\\osm2world.properties"
+    ]
+  ],
+  "java_version": "openjdk version \"17.0.17\" 2025-10-21",
+  "osm2world_version": "OSM2World.jar",
+  "osm2world_jar": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\carla_governed\\OSM2World-latest-bin\\OSM2World.jar",
+  "outputs": {
+    "scene.obj": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260810T000000Z_C2_REMEDIATION\\visual_layer\\artifacts_visual\\scene.obj"
+  },
+  "hashes": {
+    "input_osm": "61892da81b8e0b48f41acc90f9e12df83b1cb64b13ff7c5db913c17f17186725",
+    "config": "e13b5836bb552b57a7569dcf4c41d8dcc8e57a14f45d12ee0781558e73966777",
+    "scene.obj": "15cdccbcd3374b79e63b590e6e591b9f4e4aa9b7abda6b260fb6f553e2d1907e"
+  },
+  "config_path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260810T000000Z_C2_REMEDIATION\\visual_layer\\artifacts_visual\\osm2world.properties",
+  "config_hash": "e13b5836bb552b57a7569dcf4c41d8dcc8e57a14f45d12ee0781558e73966777",
+  "input_osm_hash": "61892da81b8e0b48f41acc90f9e12df83b1cb64b13ff7c5db913c17f17186725",
+  "cache_key": "b938b9ebfbb1653c",
+  "start_time": "2026-08-10T13:29:52.432034",
+  "end_time": "2026-08-10T13:32:48.793799",
+  "duration_sec": 176.362,
+  "exit_codes": {
+    "scene.obj": 0
+  },
+  "exception": "",
+  "stdout_log": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260810T000000Z_C2_REMEDIATION\\visual_layer\\artifacts_visual\\osm2world_scene_obj_stdout.log",
+  "stderr_log": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260810T000000Z_C2_REMEDIATION\\visual_layer\\artifacts_visual\\osm2world_scene_obj_stderr.log",
+  "attempts": [
+    {
+      "output": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260810T000000Z_C2_REMEDIATION\\visual_layer\\artifacts_visual\\scene.obj",
+      "variant": 1,
+      "command_line": [
+        "java",
+        "-jar",
+        "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\carla_governed\\OSM2World-latest-bin\\OSM2World.jar",
+        "convert",
+        "-i",
+        "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260810T000000Z_C2_REMEDIATION\\visual_osm_merged\\ingolstadt_visual_merged_clean.osm",
+        "-o",
+        "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260810T000000Z_C2_REMEDIATION\\visual_layer\\artifacts_visual\\scene.obj",
+        "--config",
+        "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260810T000000Z_C2_REMEDIATION\\visual_layer\\artifacts_visual\\osm2world.properties"
+      ],
+      "exit_code": 0,
+      "stderr_head": "WARNING[w120124697]: min_height exceeds building (part) height without roof\nERROR[w770768076]: Min level exceeds total building levels\nERROR[w770787447]: Min level exceeds total building levels\nWARNING[w1265563387]: Non-integer building:levels value: 2.5\nWARNING[w1265563386]: Non-integer building:levels value: 2.5\nWARNING[w1265563385]: Non-integer building:levels value: 2.5\nERROR[w790817991]: Min level exceeds total building levels\nERROR[w120416734]: Min level exceeds total building levels\nERROR[w175726344]: Min level exceeds total building levels\nERROR[w359550745]: polygon must not not have duplicate points\nPolygon vertices: [(0.0,0.0), (0.0,0.0), (0.0,2.2), (0.0,2.2), (0.0,0.0)]\nCaused by: org.osm2world.util.exception.InvalidGeometryException: polygon must not not have duplicate points\nPolygon vertices: [(0.0,0.0), (0.0,0.0), (0.0,2.2), (0.0,2.2), (0.0,0.0)]\n\tat org.osm2world.math.shapes.SimplePolygonXZ.assertNoDuplicates(SimplePolygonXZ.java:694)\n\tat org.osm2world.math.shapes.SimplePolygonXZ.<init>(SimplePolygonXZ.java:48)\n\tat org.osm2world.world.modules.building.WallSurface.<init>(WallSurface.java:117)\n\tat org.osm2world.world.modules.building.indoor.IndoorModule$Elevator.buildMeshesAndModels(IndoorModule.java:198)\n\tat org.osm2world.world.data.ProceduralWorldObject.getAttachmentSurfaces(ProceduralWorldObject.java:96)\n\tat org.osm2world.O2WConverterImpl.lambda$attachConnectors$1(O2WConverterImpl.java:259)\n\tat org.osm2world.util.FaultTolerantIterationUtil.forEach(FaultTolerantIterationUtil.java:25)\n\tat org.osm2world.util.FaultTolerantIterationUtil.forEach(FaultTolerantIterationUtil.java:37)\n\tat org.osm2world.O2WConverterImpl.attachConnectors(O2WConverterImpl.java:257)\n\tat org.osm2world.O2WConverterImpl.runConversion(O2WConverterImpl.java:193)\n\tat org.osm2world.O2WConverterImpl.convert(O2WConverterImpl.java:121)\n\tat org.osm2world.O2WConverter.convert(O2WConverter.java:69)\n\tat org.osm2world.console.commands.ConvertCommand.call(ConvertCommand.java:127)\n\tat org.osm2worl",
+      "stdout_head": ""
+    }
+  ],
+  "glb_valid": null,
+  "glb_validation_reason": "",
+  "config_header_hex": "23204f534d32576f",
+  "abs_osm_path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260810T000000Z_C2_REMEDIATION\\visual_osm_merged\\ingolstadt_visual_merged_clean.osm",
+  "abs_config_path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260810T000000Z_C2_REMEDIATION\\visual_layer\\artifacts_visual\\osm2world.properties",
+  "working_dir": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\carla_governed\\OSM2World-latest-bin",
+  "successful_variant": 1
+}

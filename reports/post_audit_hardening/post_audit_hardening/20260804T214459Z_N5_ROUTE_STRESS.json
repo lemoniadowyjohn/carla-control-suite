@@ -1,0 +1,18 @@
+{
+  "run_id": "20260804T214459Z",
+  "audit_timestamp": "2026-08-04T21:44:59.522590+00:00",
+  "phase": "N5",
+  "title": "Route and Topology Stress",
+  "routes_tested": {
+    "short_routes": 0,
+    "medium_routes": 0,
+    "long_routes": 0,
+    "mandatory_fixtures": 0
+  },
+  "route_results": [],
+  "mandatory_fixtures_status": "NOT_TESTED",
+  "completion_rate": 0,
+  "confidence_interval": "N/A",
+  "verdict": "N5_ROUTE_STRESS_NOT_TESTED",
+  "notes": "Routes not tested on the correct map (Ingolstadt candidate)"
+}

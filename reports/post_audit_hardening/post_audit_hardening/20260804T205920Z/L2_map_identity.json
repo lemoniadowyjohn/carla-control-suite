@@ -1,0 +1,11 @@
+{
+  "map_name": "Carla/Maps/Town10HD_Opt",
+  "expected_map": "Carla/Maps/Town10HD_Opt",
+  "map_name_match": true,
+  "opendrive_length": 1857682,
+  "opendrive_sha256": "5d883b799f634030af92be1e9d79d107845540ba04338e8c60e095be1aef7be7",
+  "opendrive_first_500": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<OpenDRIVE>\n    <header revMajor=\"1\" revMinor=\"4\" name=\"\" version=\"1\" date=\"2020-07-28T22:34:58\" north=\"9.9112975471922624e+1\" south=\"-1.7159821787367417e+2\" east=\"1.4036590163241959e+2\" west=\"-1.4497769211633769e+2\" vendor=\"VectorZero\">\n        <geoReference><![CDATA[+proj=tmerc +lat_0=0 +lon_0=0 +k=1 +x_0=0 +y_0=0 +datum=WGS84 +units=m +geoidgrids=egm96_15.gtx +vunits=m +no_defs ]]></geoReference>\n        <userData>\n            <vectorScene program=\"RoadR",
+  "map_header": {},
+  "status": "PASS",
+  "timestamp": "2026-08-04T20:59:32.174948+00:00"
+}

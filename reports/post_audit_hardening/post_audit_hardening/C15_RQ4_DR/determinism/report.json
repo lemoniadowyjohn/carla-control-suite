@@ -1,0 +1,38 @@
+{
+  "stable": false,
+  "runs": [
+    {
+      "i": 0,
+      "xodr": "reports\\post_audit_hardening\\C15_RQ4_DR\\determinism\\run_000.xodr",
+      "sha256": "7d64a2c0d251483a66bbfe891db0e89f833d9632ec02eafce9441f35ab1dab20",
+      "md5": "de1d31611d037823101519a00ae14d4a",
+      "signature": {
+        "num_roads": 32920,
+        "num_junctions": 3717,
+        "total_road_length": 1498527.5916156755
+      }
+    },
+    {
+      "i": 1,
+      "xodr": "reports\\post_audit_hardening\\C15_RQ4_DR\\determinism\\run_001.xodr",
+      "sha256": "d814f0ca0d29560f82e574801fe68ac4964952f91bc22002353246daef9ec72c",
+      "md5": "9ef79df85878812883dc7c828d11bb64",
+      "signature": {
+        "num_roads": 32920,
+        "num_junctions": 3717,
+        "total_road_length": 1498527.5916156755
+      }
+    },
+    {
+      "i": 2,
+      "xodr": "reports\\post_audit_hardening\\C15_RQ4_DR\\determinism\\run_002.xodr",
+      "sha256": "3775b65f8551627a554161fcb683c42eab7f7185d73253935936737e5493ed38",
+      "md5": "0246fbedb08c56ca442caed13218ba6b",
+      "signature": {
+        "num_roads": 32920,
+        "num_junctions": 3717,
+        "total_road_length": 1498527.5916156755
+      }
+    }
+  ]
+}

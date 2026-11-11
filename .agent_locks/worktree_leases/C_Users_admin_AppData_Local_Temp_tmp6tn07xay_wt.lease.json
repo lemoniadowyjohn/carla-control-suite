@@ -1,0 +1,19 @@
+{
+  "schema": "worktree-mutation-lease/v1",
+  "status": "released",
+  "lease_id": "6c48cc7f701b4a178cd58b00c1445a44",
+  "acquired_at": "2026-11-05T12:08:31Z",
+  "released_at": "2026-11-06T09:00:00Z",
+  "release_reason": "Stale lease: holder PID 0, no expiry, no active processes. Recovered by OpenCode V17 campaign.",
+  "worktree_name": "wt",
+  "worktree_root": "C:\\Users\\admin\\AppData\\Local\\Temp\\tmp6tn07xay\\wt",
+  "recovery": {
+    "recovered_by": "OpenCode V17",
+    "recovery_method": "stale_lease_release",
+    "evidence": {
+      "holder_pid": 0,
+      "no_expiry_recorded": true,
+      "original_sha256": "4F9B097999DC2C71AD2CC45C1FB5F08DB55F4C52188F8FD08DDBF8960296340F"
+    }
+  }
+}

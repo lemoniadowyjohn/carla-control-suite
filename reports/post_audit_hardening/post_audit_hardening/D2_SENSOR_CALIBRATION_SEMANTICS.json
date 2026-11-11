@@ -1,0 +1,455 @@
+{
+  "calib_path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\ultimate_pipeline\\sensors\\calib_data.json",
+  "calib_source_path": "submission\\infrastructure\\ultimate_pipeline\\sensors\\calib_data.json",
+  "calib_source_sha256": "054a2d8b706ab8f6e5f7ef63c2e630a7bb7c3d0f3839afa943d2d10476679ce0",
+  "calib_sha256": "054a2d8b706ab8f6e5f7ef63c2e630a7bb7c3d0f3839afa943d2d10476679ce0",
+  "calib_source_copy_byte_identical": true,
+  "calibration_semantics": {
+    "cTv": "vehicle_to_camera_used_directly_not_inverted",
+    "camera_model": "CARLA ideal pinhole",
+    "distortion_in_carla": "none",
+    "effective_intrinsics_source": "K_undistortion_ideal_pinhole",
+    "ignored_sources": [
+      "K",
+      "D"
+    ],
+    "use_K_undistortion": "legacy flag meaning: use the rectified K_undistortion matrix as the pinhole FOV source",
+    "vTl": "lidar_to_vehicle_inverted_to_vehicle_to_lidar"
+  },
+  "camera_count": 6,
+  "camera_intrinsics": {
+    "back_left_camera": {
+      "cx": 935.7573520812683,
+      "cy": 520.5785898265956,
+      "fx": 1650.2790864483354,
+      "fy": 1874.8368239809517,
+      "height_px": 1080,
+      "horizontal_fov_deg": 60.374821939606285,
+      "ignored_sources": [
+        "K",
+        "D"
+      ],
+      "source": "K_undistortion_ideal_pinhole",
+      "width_px": 1920
+    },
+    "back_right_camera": {
+      "cx": 984.3712187487318,
+      "cy": 557.4521127288415,
+      "fx": 1755.8580533401666,
+      "fy": 1972.5116737137512,
+      "height_px": 1080,
+      "horizontal_fov_deg": 57.33449283462711,
+      "ignored_sources": [
+        "K",
+        "D"
+      ],
+      "source": "K_undistortion_ideal_pinhole",
+      "width_px": 1920
+    },
+    "front_left_camera": {
+      "cx": 944.1163589656635,
+      "cy": 531.8850293359211,
+      "fx": 1621.7174520689396,
+      "fy": 1834.8994177707268,
+      "height_px": 1080,
+      "horizontal_fov_deg": 61.248097010833085,
+      "ignored_sources": [
+        "K",
+        "D"
+      ],
+      "source": "K_undistortion_ideal_pinhole",
+      "width_px": 1920
+    },
+    "front_right_camera": {
+      "cx": 963.0186896402139,
+      "cy": 499.7326545439162,
+      "fx": 1660.9117138912482,
+      "fy": 1873.6734442297836,
+      "height_px": 1080,
+      "horizontal_fov_deg": 60.05546404765961,
+      "ignored_sources": [
+        "K",
+        "D"
+      ],
+      "source": "K_undistortion_ideal_pinhole",
+      "width_px": 1920
+    },
+    "left_camera": {
+      "cx": 1010.0996370876367,
+      "cy": 485.49829429633445,
+      "fx": 896.2515612229313,
+      "fy": 897.4281631879534,
+      "height_px": 1080,
+      "horizontal_fov_deg": 93.93382194931397,
+      "ignored_sources": [
+        "K",
+        "D"
+      ],
+      "source": "K_undistortion_ideal_pinhole",
+      "width_px": 1920
+    },
+    "right_camera": {
+      "cx": 1016.0529456555364,
+      "cy": 453.17071071013123,
+      "fx": 903.1073794291846,
+      "fy": 904.3810451783896,
+      "height_px": 1080,
+      "horizontal_fov_deg": 93.49812839637816,
+      "ignored_sources": [
+        "K",
+        "D"
+      ],
+      "source": "K_undistortion_ideal_pinhole",
+      "width_px": 1920
+    }
+  },
+  "errors": [],
+  "legacy_hazards": [
+    {
+      "path": "ultimate_pipeline/sensors/attach_sensors_safe.py",
+      "issue": "generic helper appears to invert camera cTv despite the D2 cTv-direct contract; review before using this path as real capture evidence"
+    }
+  ],
+  "lidar_count": 2,
+  "round_trip": {
+    "calib_path": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\ultimate_pipeline\\sensors\\calib_data.json",
+    "calib_sha256": "054a2d8b706ab8f6e5f7ef63c2e630a7bb7c3d0f3839afa943d2d10476679ce0",
+    "calibration_semantics": {
+      "cTv": "vehicle_to_camera_used_directly_not_inverted",
+      "camera_model": "CARLA ideal pinhole",
+      "distortion_in_carla": "none",
+      "effective_intrinsics_source": "K_undistortion_ideal_pinhole",
+      "ignored_sources": [
+        "K",
+        "D"
+      ],
+      "use_K_undistortion": "legacy flag meaning: use the rectified K_undistortion matrix as the pinhole FOV source",
+      "vTl": "lidar_to_vehicle_inverted_to_vehicle_to_lidar"
+    },
+    "cameras": {
+      "back_left_camera": {
+        "ctv_direct_not_inverted": true,
+        "intrinsics": {
+          "cx": 935.7573520812683,
+          "cy": 520.5785898265956,
+          "fx": 1650.2790864483354,
+          "fy": 1874.8368239809517,
+          "height_px": 1080,
+          "horizontal_fov_deg": 60.374821939606285,
+          "ignored_sources": [
+            "K",
+            "D"
+          ],
+          "source": "K_undistortion_ideal_pinhole",
+          "width_px": 1920
+        },
+        "vehicle_to_camera_matrix": [
+          [
+            0.30525079556199997,
+            0.9522085966804614,
+            -0.010988185318436698,
+            -0.07434550691249373
+          ],
+          [
+            -0.003610991615645755,
+            -0.010381405411036283,
+            -0.9999395917560435,
+            1.0725920904415356
+          ],
+          [
+            -0.952265148237778,
+            0.3052720341425298,
+            0.00026948499818821347,
+            -0.5937718995609409
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      "back_right_camera": {
+        "ctv_direct_not_inverted": true,
+        "intrinsics": {
+          "cx": 984.3712187487318,
+          "cy": 557.4521127288415,
+          "fx": 1755.8580533401666,
+          "fy": 1972.5116737137512,
+          "height_px": 1080,
+          "horizontal_fov_deg": 57.33449283462711,
+          "ignored_sources": [
+            "K",
+            "D"
+          ],
+          "source": "K_undistortion_ideal_pinhole",
+          "width_px": 1920
+        },
+        "vehicle_to_camera_matrix": [
+          [
+            -0.34903889281830836,
+            0.9370324185813046,
+            0.011920479346069759,
+            -0.11590673108273303
+          ],
+          [
+            -0.014331691311885568,
+            0.007381401623643267,
+            -0.9998700503236467,
+            1.008965123109118
+          ],
+          [
+            -0.9369986413673773,
+            -0.34916437595742944,
+            0.01085286312217354,
+            0.3420166941122942
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      "front_left_camera": {
+        "ctv_direct_not_inverted": true,
+        "intrinsics": {
+          "cx": 944.1163589656635,
+          "cy": 531.8850293359211,
+          "fx": 1621.7174520689396,
+          "fy": 1834.8994177707268,
+          "height_px": 1080,
+          "horizontal_fov_deg": 61.248097010833085,
+          "ignored_sources": [
+            "K",
+            "D"
+          ],
+          "source": "K_undistortion_ideal_pinhole",
+          "width_px": 1920
+        },
+        "vehicle_to_camera_matrix": [
+          [
+            0.35657230033966547,
+            -0.9342626912328339,
+            -0.0030689413258957643,
+            0.11294938397964989
+          ],
+          [
+            0.023416089771993463,
+            0.012220759431016017,
+            -0.999651109026904,
+            1.0144724205352489
+          ],
+          [
+            0.9339742402070141,
+            0.35637603287722874,
+            0.02623436335074727,
+            0.18471698275741202
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      "front_right_camera": {
+        "ctv_direct_not_inverted": true,
+        "intrinsics": {
+          "cx": 963.0186896402139,
+          "cy": 499.7326545439162,
+          "fx": 1660.9117138912482,
+          "fy": 1873.6734442297836,
+          "height_px": 1080,
+          "horizontal_fov_deg": 60.05546404765961,
+          "ignored_sources": [
+            "K",
+            "D"
+          ],
+          "source": "K_undistortion_ideal_pinhole",
+          "width_px": 1920
+        },
+        "vehicle_to_camera_matrix": [
+          [
+            -0.32484061270684694,
+            -0.9457589095276383,
+            -0.004319882560068069,
+            -0.11287259436262526
+          ],
+          [
+            0.004747091667956336,
+            0.0029370773661042283,
+            -0.9999844192272406,
+            1.1039214027063922
+          ],
+          [
+            0.9457568617022752,
+            -0.32485605831758463,
+            0.003535522228141413,
+            0.4092228365991858
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      "left_camera": {
+        "ctv_direct_not_inverted": true,
+        "intrinsics": {
+          "cx": 1010.0996370876367,
+          "cy": 485.49829429633445,
+          "fx": 896.2515612229313,
+          "fy": 897.4281631879534,
+          "height_px": 1080,
+          "horizontal_fov_deg": 93.93382194931397,
+          "ignored_sources": [
+            "K",
+            "D"
+          ],
+          "source": "K_undistortion_ideal_pinhole",
+          "width_px": 1920
+        },
+        "vehicle_to_camera_matrix": [
+          [
+            0.9995546833686807,
+            0.029678279937917947,
+            -0.003103974172344095,
+            0.4818326247827518
+          ],
+          [
+            -0.003137313183133395,
+            0.0010768477366813291,
+            -0.9999944988173396,
+            0.8984808412445959
+          ],
+          [
+            -0.029674774164716467,
+            0.9995589227748797,
+            0.001169478257376444,
+            -0.7129163962122865
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      },
+      "right_camera": {
+        "ctv_direct_not_inverted": true,
+        "intrinsics": {
+          "cx": 1016.0529456555364,
+          "cy": 453.17071071013123,
+          "fx": 903.1073794291846,
+          "fy": 904.3810451783896,
+          "height_px": 1080,
+          "horizontal_fov_deg": 93.49812839637816,
+          "ignored_sources": [
+            "K",
+            "D"
+          ],
+          "source": "K_undistortion_ideal_pinhole",
+          "width_px": 1920
+        },
+        "vehicle_to_camera_matrix": [
+          [
+            -0.9999891832096816,
+            -0.0035151003765384386,
+            -0.0030459042954571877,
+            -0.6216201987315495
+          ],
+          [
+            0.003019929060454822,
+            0.007371412930606446,
+            -0.9999682706465621,
+            0.8745437451688642
+          ],
+          [
+            0.003537441462984872,
+            -0.9999666526143506,
+            -0.007360717841800745,
+            -0.6342837792154944
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      }
+    },
+    "errors": [],
+    "lidars": {
+      "middle_lidar": {
+        "vehicle_to_lidar_matrix": [
+          [
+            -0.011660918226691125,
+            -0.9999275551480492,
+            0.0029853951253690243,
+            -0.013738963491400047
+          ],
+          [
+            0.9999195712279411,
+            -0.011675611712999098,
+            -0.004952012436287024,
+            0.4981275405821886
+          ],
+          [
+            0.004986507478986306,
+            0.002927404924114877,
+            0.9999832847366628,
+            -1.2381986839555397
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "vtl_inverted": true
+      },
+      "middle_lidar_old": {
+        "vehicle_to_lidar_matrix": [
+          [
+            0.0014287237113114243,
+            -0.9999945230687804,
+            0.002985394613612181,
+            -0.007298186380668045
+          ],
+          [
+            0.9999867390950266,
+            0.0014139287941741208,
+            -0.004952013677302214,
+            0.4982168403972086
+          ],
+          [
+            0.004947765420057746,
+            0.002992430083937403,
+            0.9999832823500304,
+            -1.238217463831032
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "vtl_inverted": true
+      }
+    },
+    "schema": "D2_SENSOR_CALIBRATION_ROUND_TRIP/v1",
+    "verdict": "PASS"
+  },
+  "schema": "D2_SENSOR_CALIBRATION_CONTRACT/v1",
+  "verdict": "PASS"
+}

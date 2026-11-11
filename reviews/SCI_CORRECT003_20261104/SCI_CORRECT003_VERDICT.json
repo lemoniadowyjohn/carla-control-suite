@@ -1,0 +1,11 @@
+{
+  "review_id": "SCI-CORRECT-003",
+  "date_utc": "2026-11-04",
+  "verdict": "READY_FOR_DOC_REVIEW",
+  "meaning": "Drafts are complete and evidence-bound for independent document review. This is NOT scientific acceptance: lane-level claims are LOCAL_REPRODUCED with one implementation, and RQ4 separation needs the method in RQ4_STATISTICAL_EVALUATION_SPEC.md (method change).",
+  "baseline": "1a36b560a69286841d4c42973cf00258a38f56c1",
+  "deliverables": ["GAP_REGISTER_ADDENDUM_3_PROPOSED.json/.md", "RQ_ANSWERS_REVISED_DRAFT.md", "RESEARCH_PROVENANCE_CORRECTION_MATRIX.md", "RQ4_STATISTICAL_EVALUATION_SPEC.md", "CLAIM_EVIDENCE_LEDGER.csv", "SOURCE_AND_ARTIFACT_AVAILABILITY.md", "INDEPENDENT_ACCEPTANCE_CHECKLIST.md"],
+  "next_gap_id_allocated": "GAP-080",
+  "register_state_after_proposed": {"total": 25, "fixed": 19, "open": 5, "blocked_external": 1},
+  "not_done": ["no branch, commit, push, upload or merge", "no independent reproduction yet", "C1 uncommitted; O13 missing"]
+}

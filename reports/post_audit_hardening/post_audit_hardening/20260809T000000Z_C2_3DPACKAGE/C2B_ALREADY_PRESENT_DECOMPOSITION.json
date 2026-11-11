@@ -1,0 +1,16 @@
+{
+  "already_present_ledger_total": 5071,
+  "contain_tolerance_m": 4.0,
+  "crs_verdict": "OSM2ODR_NATIVE_VERIFIED",
+  "min_aligned_run_m": 20.0,
+  "osm_way_missing": 0,
+  "producer": "stage_c2b_pedestrian_decomposition.py",
+  "road_adjacent_sidewalk_matched": 1334,
+  "run_id": "20260809T000000Z_C2_3DPACKAGE",
+  "sidewalk_lanes_indexed": 16745,
+  "source": "C:\\Users\\admin\\PycharmProjects\\gpt4\\pythonProject3\\carla_-main\\reports\\post_audit_hardening\\20260809T000000Z_C1_GENERATION\\candidate_crosswalk_enriched.xodr",
+  "source_node_sha256": "see C1B/C1F digests",
+  "split_invariant_pass": true,
+  "standalone_package_mesh": 3737,
+  "verdict": "C2B_ALREADY_PRESENT_DECOMPOSED"
+}

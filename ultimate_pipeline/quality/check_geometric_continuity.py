@@ -564,7 +564,9 @@ def auto_repair_tiny_planview_seams_in_file(
     max_repair_seam_m: float = 0.05,
 ) -> Dict[str, Any]:
     before = check_planview_internal_seams(xodr_path, eps_xy=eps_xy)
-    if bool(before.get("ok", False)):
+    before_ok_val = before.get("ok", False)
+    before_ok = before_ok_val if isinstance(before_ok_val, bool) else False
+    if before_ok:
         return {
             "applied": False,
             "fixed": True,
@@ -593,7 +595,7 @@ def auto_repair_tiny_planview_seams_in_file(
     after = check_planview_internal_seams(xodr_path, eps_xy=eps_xy)
     return {
         "applied": True,
-        "fixed": bool(after.get("ok", False)),
+        "fixed": bool(after.get("ok", False)) if isinstance(after.get("ok", False), bool) else False,
         "reason": "attempted",
         "before": before,
         "after": after,

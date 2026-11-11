@@ -1,0 +1,53 @@
+{
+  "phase": "1-3_complete",
+  "timestamp": "2026-10-02 13:49:22 UTC",
+  "workbook_sha256": "1dea61b8a1bf3ccc3eeb8413526ceba420e7c6080208f694d68b1cab3522b975",
+  "master_rows": 199,
+  "applied_count": 61,
+  "unavail_count": 14,
+  "rejected_count": 0,
+  "active_count": 124,
+  "duplicates_blocked": 0,
+  "bertrandt_in_master": 4,
+  "bertrandt_details": [
+    {
+      "row": 122,
+      "title": "System Tester (m/w/d)",
+      "status": "Not applied",
+      "fit": 8.8,
+      "priority": "P0 \u2014 Apply now",
+      "url": "https://bertrandt.jobs.hr.cloud.sap/job/System-Tester-%28mwd%29/4499-de_DE"
+    },
+    {
+      "row": 125,
+      "title": "Projektingenieur Verpackung & Logistik (m/w/d)",
+      "status": "Not applied",
+      "fit": 8.6,
+      "priority": "P1 \u2014 Apply within 24h",
+      "url": "https://bertrandt.jobs.hr.cloud.sap/job/Projektingenieur-Verpackung-%26-Logistik-%28mwd%29/2775-de_DE"
+    },
+    {
+      "row": 126,
+      "title": "Sachbearbeiter Reklamationsmanagement (m/w/d) Schienenfahrzeuge",
+      "status": "Not applied",
+      "fit": 8.4,
+      "priority": "P1 \u2014 Apply within 24h",
+      "url": "https://bertrandt.jobs.hr.cloud.sap/job/Sachbearbeiter-Reklamationsmanagement-%28mwd%29-Schienenfahrzeuge/4238-de_DE"
+    },
+    {
+      "row": 130,
+      "title": "Software & DevOps Engineer - AI Automation (m/w/d)",
+      "status": "Not applied",
+      "fit": 7.4,
+      "priority": "P3 \u2014 Selective",
+      "url": "https://bertrandt.jobs.hr.cloud.sap/job/Software-%26-DevOps-Engineer-AI-Automation-%28mwd%29_/4299-de_DE"
+    }
+  ],
+  "search_saturation": "CONFIRMED (6 consecutive passes 5-10, 0 net-new)",
+  "next_steps": [
+    "Phase 4: Broad discovery round per new framework",
+    "Phase 5: Direct employer search",
+    "Phase 6: ATS/long-tail search",
+    "Phase 7: Live verification"
+  ]
+}

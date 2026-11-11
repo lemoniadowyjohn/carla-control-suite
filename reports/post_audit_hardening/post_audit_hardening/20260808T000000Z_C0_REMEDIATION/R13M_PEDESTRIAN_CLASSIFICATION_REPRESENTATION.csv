@@ -1,0 +1,8 @@
+classification,xodr_representation,disposition,stage
+CROSSING,crosswalk <object> (Stage I.1),INSERTED_XODR_OBJECT,I.1
+FOOTWAY,XODR sidewalk lanes (existing),ALREADY_PRESENT,C0 §5.2
+PATH,XODR sidewalk lanes (existing),ALREADY_PRESENT,C0 §5.2
+PEDESTRIAN_STREET,package 3D mesh (future),PACKAGE_MESH_REQUIRED,J
+PLATFORM,package 3D mesh (future),PACKAGE_MESH_REQUIRED,J
+SIDEWALK,XODR sidewalk lanes (existing),ALREADY_PRESENT,C0 §5.2
+UNSUPPORTED,rejected,UNSUPPORTED,J

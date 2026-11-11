@@ -1,0 +1,39 @@
+{
+  "title": "Deep quality sweep — post-fix re-measurement",
+  "generated_at_utc": "2026-08-17T17:05:00Z",
+  "candidate": "ingolstadt_perception_clean_regen_crashsafe_20260815.xodr",
+  "candidate_sha256": "83418373f1996c6707293c5571b2798f9cf7c06a5b243e8d049848efdc73080e",
+  "basis": "DEEP_QUALITY_SWEEP_20260817/sweep_summary.json (initial sweep)",
+  "changes_since_initial_sweep": [
+    {
+      "id": "FIX-1",
+      "component": "ultimate_pipeline/enrichment/elevation_importer.py",
+      "fix": "Generator-side max-grade clamp for elevation profiles. New env UP_ELEVATION_MAX_GRADE (default 0.2) clamps the endpoint-based linear-grade b coefficient at the computation site AND defensively inside _set_flat_elevation, so no generated single-segment profile can exceed the checker threshold. Clamped road ids recorded in QC report (grade_clamped_road_ids / grade_clamped_count / max_grade).",
+      "verification": "tests/unit/test_elevation_grade_clamp.py (3 tests): default clamp 3.0->0.2; UP_ELEVATION_MAX_GRADE=10 keeps 3.0; gentle 0.15 not clamped. All pass.",
+      "note": "Applies on next canonical regen (blocked on SUMO). Current candidate still carries 74 single-segment roads with |b|>0.2 (worst road 68944, b=1.004105)."
+    },
+    {
+      "id": "FIX-2",
+      "component": "ultimate_pipeline/quality/check_lane_width_continuity.py",
+      "fix": "Width-jump comparison now skips adjacent lane sections where the lane's type changes (e.g. sidewalk <-> driving). The single initial-sweep issue (road 46620, lane 1, 2.0 m sidewalk -> 3.5 m driving at s=0.05, delta 1.5 m) was a lane-identity change, not a width jump; comparing widths across it was a false positive.",
+      "verification": "Re-run on real candidate: 0 issues (was 1)."
+    },
+    {
+      "id": "FIX-3",
+      "component": "ultimate_pipeline/quality/check_lane_geometry_continuity.py",
+      "fix": "Same lane-type-transition guard applied to the lane_width sub-check, matching FIX-2.",
+      "verification": "Re-run on real candidate: 0 issues (was 1, identical false positive on road 46620)."
+    }
+  ],
+  "re_measurement_2026-08-17T17:00Z": {
+    "lane_width_continuity": {"ok": true, "num_issues": 0, "num_roads": 32297},
+    "lane_geometry_continuity": {"ok": true, "num_issues": 0},
+    "elevation_profile": {"gate_ok": false, "roads_with_max_b_gt_0_2": 74, "worst_road_id": "68944", "worst_max_b": 1.004105, "all_violators_single_segment": true, "disposition": "generator clamp FIX-1 deployed; resolves on next regen. No map mutation applied (no re-pin)."},
+    "elevation_missing_and_cliffs": {"ok": true, "num_issues": 0},
+    "junction_integrity": {"ok": true, "num_issues": 0},
+    "physics_feasibility": {"ok": true, "num_issues": 0}
+  },
+  "unchanged_environmental": {
+    "drivability_smoke": "not re-run; CARLA server not running at sweep time"
+  }
+}
