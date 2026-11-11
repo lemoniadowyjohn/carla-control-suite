@@ -117,7 +117,9 @@ def main() -> int:
             continue
         execution_status = "COMPLETED"
         seeds = ["deterministic-no-seed"]
-        git_sha = child.get("git_sha") or git_head_sha(REPO)
+        # Never substitute today's repo SHA for a child that did not record
+        # the source it actually executed.
+        git_sha = child.get("git_sha")
         dirty = bool(child.get("source_dirty", is_dirty_worktree(REPO)))
 
         inputs = [
@@ -206,7 +208,10 @@ def main() -> int:
         )
 
     claim = adjudicate_rq1(
-        run_receipts, determinism, current_contract_sha256=RESEARCH_CONTRACT_SHA256
+        run_receipts,
+        determinism,
+        current_contract_sha256=RESEARCH_CONTRACT_SHA256,
+        current_source_sha=git_head_sha(REPO),
     )
     claim["adjudication"]["adjudicator_version"] = ADJUDICATOR_VERSION
 
