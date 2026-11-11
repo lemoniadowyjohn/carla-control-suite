@@ -46,8 +46,12 @@ class CancellationToken:
             if self._event.is_set():
                 return
             self._reason = reason
+            # Publish cancellation while holding the same lock as on_cancel().
+            # Otherwise registration can slip between the callback snapshot
+            # and Event.set(), leaving a callback permanently unnotified.
+            self._event.set()
             callbacks = list(self._callbacks)
-        self._event.set()
+            self._callbacks.clear()
         for callback in callbacks:
             try:
                 callback(reason)
