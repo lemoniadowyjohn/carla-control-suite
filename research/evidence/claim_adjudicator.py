@@ -26,6 +26,9 @@ Key gates (fail-closed):
 """
 from __future__ import annotations
 
+from collections import Counter
+from datetime import datetime
+import re
 from typing import Any, Dict, List, Optional, Tuple
 
 ADJUDICATOR_VERSION = "research-claim-adjudicator/v1"
@@ -110,12 +113,93 @@ def semantic_scope_guard(rq_id: str, evidence: Dict[str, Any]) -> Optional[str]:
     return None
 
 
+def _rq1_receipt_coherence(
+    receipts: List[Dict[str, Any]], current_source_sha: Optional[str]
+) -> List[str]:
+    """Check the non-metric scientific comparison contract for five runs."""
+    problems: List[str] = []
+    if not current_source_sha or not re.fullmatch(r"[0-9a-fA-F]{40}", current_source_sha):
+        problems.append("current_source_sha must be an explicit full Git commit SHA")
+    fields = {
+        "git_sha": [r.get("git_sha") for r in receipts],
+        "input_sha256": [
+            (r.get("map_identities") or {}).get("auto_map_of_record_sha256")
+            for r in receipts
+        ],
+        "input_path": [
+            ((r.get("inputs") or [{}])[0]).get("path") for r in receipts
+        ],
+        "protocol_sha256": [
+            (r.get("protocol") or {}).get("sha256") for r in receipts
+        ],
+        "settings_digest": [r.get("settings_digest") for r in receipts],
+    }
+    for name, values in fields.items():
+        if any(not v for v in values) or len(set(values)) != 1:
+            problems.append(f"RQ1 runs have missing or mixed {name}")
+    for r in receipts:
+        sha = r.get("git_sha")
+        if not isinstance(sha, str) or not re.fullmatch(r"[0-9a-fA-F]{40}", sha):
+            problems.append("RQ1 receipt carries non-commit/dirty source git_sha")
+        elif current_source_sha and sha.lower() != current_source_sha.lower():
+            problems.append("RQ1 receipt source SHA differs from current candidate")
+        if r.get("source_dirty"):
+            problems.append("RQ1 source_dirty cannot witness authoritative replication")
+        identity = r.get("map_identities") or {}
+        inputs = r.get("inputs") or []
+        if not inputs or inputs[0].get("sha256") != identity.get("auto_map_of_record_sha256"):
+            problems.append("RQ1 XODR input checksum disagrees with map identity")
+    timestamps = []
+    for r in receipts:
+        raw = r.get("generated_at_utc")
+        try:
+            stamp = datetime.fromisoformat(str(raw).replace("Z", "+00:00"))
+            if stamp.utcoffset() is None:
+                raise ValueError("naive timestamp")
+            timestamps.append(stamp.isoformat())
+        except (ValueError, TypeError, OverflowError):
+            problems.append("RQ1 receipt has absent, naive or invalid UTC timestamp")
+    if len(timestamps) != len(set(timestamps)):
+        problems.append("RQ1 receipt timestamps are reused, not independent")
+    primary_paths = [
+        (r.get("outputs") or [{}])[0].get("path") for r in receipts
+    ]
+    if any(not p for p in primary_paths) or len(primary_paths) != len(set(primary_paths)):
+        problems.append("RQ1 experiment output paths are missing or reused")
+    return sorted(set(problems))
+
+
+def _rq1_evidence_key(receipt: Dict[str, Any]) -> tuple:
+    m = receipt.get("map_identities") or {}
+    return (
+        m.get("auto_map_of_record_sha256"),
+        m.get("final_xodr_sha256"),
+        m.get("normalized_xodr_sha256"),
+        m.get("structural_signature_sha256"),
+        receipt.get("settings_digest"),
+    )
+
+
+def _rq1_matrix_key(row: Dict[str, Any]) -> tuple:
+    identities = row.get("identities") or {}
+    source = identities.get("input_identity") or {}
+    return (
+        source.get("input_xodr_sha256"),
+        identities.get("raw_xodr_sha256"),
+        identities.get("normalized_xodr_sha256"),
+        identities.get("structural_signature"),
+        identities.get("settings_digest"),
+    )
+
+
+
 def adjudicate_rq1(
     run_receipts: List[Dict[str, Any]],
     determinism_matrix: Optional[Dict[str, Any]] = None,
     *,
     required_valid_runs: int = RQ1_REQUIRED_VALID_RUNS,
     current_contract_sha256: Optional[str] = None,
+    current_source_sha: Optional[str] = None,
 ) -> Dict[str, Any]:
     """Adjudicate the RQ1 determinism claim.
 
@@ -153,6 +237,13 @@ def adjudicate_rq1(
     detail["receipts_total"] = len(run_receipts)
     detail["receipts_valid"] = len(valid)
 
+    if required_valid_runs != RQ1_REQUIRED_VALID_RUNS:
+        problems.append("RQ1 required five-run threshold cannot be overridden")
+        return _claim("RQ1", "NOT_RUN", None, problems, statuses, contract, detail)
+    problems.extend(_rq1_receipt_coherence(valid, current_source_sha))
+    if problems:
+        return _claim("RQ1", "NOT_RUN", None, problems, statuses, contract, detail)
+
     if len(valid) < required_valid_runs:
         problems.append(
             f"missing required runs: {len(valid)}/{required_valid_runs} valid receipts"
@@ -180,10 +271,29 @@ def adjudicate_rq1(
         "divergence_classification"
     )
 
-    if valid_run_count < required_valid_runs:
+    if valid_run_count != required_valid_runs or valid_run_count != len(valid):
         problems.append(
-            f"matrix valid_run_count {valid_run_count} < required {required_valid_runs}"
+            f"matrix valid_run_count {valid_run_count} disagrees with "
+            f"{len(valid)} receipts / required {required_valid_runs}"
         )
+        return _claim("RQ1", "NOT_RUN", None, problems, statuses, contract, detail)
+
+    # A self-reported trio of booleans is not a five-run comparison. Match
+    # each matrix child to an admitted source-bound experiment identity.
+    rows = determinism_matrix.get("per_run")
+    if (
+        not isinstance(rows, list) or len(rows) != len(valid)
+        or not all(isinstance(row, dict) and row.get("valid") is True for row in rows)
+        or len({row.get("run_id") for row in rows}) != len(rows)
+        or any(not row.get("run_id") for row in rows)
+        or Counter(_rq1_matrix_key(row) for row in rows)
+        != Counter(_rq1_evidence_key(receipt) for receipt in valid)
+    ):
+        problems.append("matrix per-run identities do not match the five admissible receipts")
+        return _claim("RQ1", "NOT_RUN", None, problems, statuses, contract, detail)
+    gaps = determinism_matrix.get("identity_gaps")
+    if not isinstance(gaps, list) or gaps:
+        problems.append("missing, divergent or absent matrix identity_gaps evidence")
         return _claim("RQ1", "NOT_RUN", None, problems, statuses, contract, detail)
 
     if not all(all_equal.values()):
