@@ -556,18 +556,43 @@ def _read_lease_at_path(path: Path) -> Optional[WorktreeLease]:
         raise MalformedLeaseError(path, f"invalid lease record: {exc}") from exc
 
 
-def _write_lease(lease: WorktreeLease) -> None:
-    """Write only while holding the claim and only for the current identity.
+def _prepare_lease_publication(lease: WorktreeLease) -> Path:
+    """Validate scope before I/O and populate missing helper metadata."""
+    root = _canonical_lease_root(lease.worktree_root)
+    identity = lock_paths.worktree_identity(root)
+    if lease.worktree_identity and lease.worktree_identity != identity:
+        raise RuntimeError("LOCKED_UNKNOWN: lease identity contradicts canonical root")
+    lease.worktree_identity = identity
+    if not lease.worktree_name:
+        lease.worktree_name = root.name
+    return root
 
-    This private compatibility helper is used by focused tests and maintenance
-    code. It may create an absent record, or update the exact already-published
-    lease; it cannot replace another owner's lease or roll back its generation.
-    """
-    root = Path(lease.worktree_root).resolve()
+
+def _reserve_publication_generation(root: Path, lease: WorktreeLease) -> None:
+    """Durably reserve the supplied fresh fence (or allocate a default)."""
+    high = _generation_high_water(root)
+    if lease.generation < 0:
+        raise RuntimeError("LOCKED_UNKNOWN: negative lease generation")
+    if lease.generation == 0:
+        lease.generation = high + 1
+    if lease.generation <= high:
+        raise RuntimeError(
+            f"LOCKED_UNKNOWN: stale generation {lease.generation} "
+            f"is not above durable high-water {high}"
+        )
+    issued = _issue_generation(root, floor=lease.generation - 1)
+    if issued != lease.generation:
+        raise RuntimeError("LOCKED_UNKNOWN: generation allocation did not match publication")
+
+
+def _write_lease(lease: WorktreeLease) -> None:
+    """Compatibility helper: fenced first publication or exact current update."""
+    root = _prepare_lease_publication(lease)
     path = _worktree_lease_path(root)
     with _generation_claim(root):
         current = _read_lease(root)
         if current is None:
+            _reserve_publication_generation(root, lease)
             if not _publish_exclusive(path, lease.to_json()):
                 raise RuntimeError(
                     f"cannot write lease: another owner published at {path}; refusing"
@@ -578,6 +603,8 @@ def _write_lease(lease: WorktreeLease) -> None:
             and _token_eq(current.owner_token, lease.owner_token)
             and current.generation == lease.generation
             and current.worktree_root == lease.worktree_root
+            and current.worktree_identity == lease.worktree_identity
+            and _generation_high_water(root) == lease.generation
         )
         if not same_owner:
             raise RuntimeError(
@@ -595,14 +622,15 @@ def _remove_lease(worktree_root: Path) -> None:
 
 
 def publish_lease(lease: WorktreeLease) -> None:
-    """Publish a complete lease only if its namespace is still absent."""
-    root = Path(lease.worktree_root).resolve()
+    """First publication requires an absent path and an unused durable fence."""
+    root = _prepare_lease_publication(lease)
     path = _worktree_lease_path(root)
     with _generation_claim(root):
         if _read_lease(root) is not None:
             raise RuntimeError(
                 f"cannot publish lease: an existing lease is present at {path}; refusing"
             )
+        _reserve_publication_generation(root, lease)
         if not _publish_exclusive(path, lease.to_json()):
             raise RuntimeError(
                 f"cannot publish lease: another publisher won at {path}; refusing"
