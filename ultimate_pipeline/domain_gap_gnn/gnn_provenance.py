@@ -23,6 +23,7 @@ from __future__ import annotations
 
 import hashlib
 import hmac
+import io
 import json
 import os
 import re
@@ -475,9 +476,22 @@ def load_checkpoint(
     ckpt_path = Path(path)
     sidecar = ckpt_path.with_suffix(ckpt_path.suffix + ".manifest.json")
     manifest = verify_checkpoint_file(ckpt_path) if sidecar.is_file() else None
-    # Explicit weights_only is required for untrusted pickle data. Training
-    # payloads contain only tensors and primitive metadata.
-    ckpt = torch.load(str(ckpt_path), map_location="cpu", weights_only=True)
+    # Decode the *same bytes* that were verified. Reopening by pathname
+    # after hash verification permits a concurrent replace between calls.
+    # Bounds protect the evaluator from oversized checkpoint payloads.
+    max_checkpoint_bytes = 1024 * 1024 * 1024
+    if ckpt_path.stat().st_size > max_checkpoint_bytes:
+        raise ValueError("checkpoint exceeds 1 GiB size limit")
+    with ckpt_path.open("rb") as handle:
+        data = handle.read(max_checkpoint_bytes + 1)
+    if len(data) > max_checkpoint_bytes:
+        raise ValueError("checkpoint exceeds 1 GiB size limit")
+    if manifest is not None and not hmac.compare_digest(
+        sha256_bytes(data), manifest["checkpoint_file_sha256"].lower()
+    ):
+        raise ValueError("checkpoint changed while loading (SHA-256 mismatch)")
+    # Explicit restricted deserialization forbids arbitrary pickled classes.
+    ckpt = torch.load(io.BytesIO(data), map_location="cpu", weights_only=True)
     state, meta, label = _normalise_loaded_checkpoint(ckpt)
     if meta is None:
         if manifest is not None:
