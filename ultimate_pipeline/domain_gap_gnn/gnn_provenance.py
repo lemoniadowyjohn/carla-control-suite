@@ -22,7 +22,11 @@ bundle generator and must never be presented as verified provenance.
 from __future__ import annotations
 
 import hashlib
+import hmac
 import json
+import os
+import re
+import tempfile
 import math
 import platform
 import random
@@ -62,6 +66,55 @@ def sha256_file(path: str | Path) -> str:
         for chunk in iter(lambda: f.read(1024 * 1024), b""):
             h.update(chunk)
     return h.hexdigest()
+
+
+def verify_checkpoint_file(
+    path: str | Path, *, manifest: Optional[Mapping[str, Any]] = None
+) -> Dict[str, Any]:
+    """Verify checkpoint bytes against a mandatory SHA-256 sidecar.
+
+    This establishes content integrity, not publisher authenticity. An actor
+    able to rewrite both files can recompute the hash; signed provenance is
+    a separate, explicitly unimplemented trust boundary.
+    """
+    ckpt_path = Path(path)
+    sidecar = ckpt_path.with_suffix(ckpt_path.suffix + ".manifest.json")
+    if manifest is None:
+        if not sidecar.is_file():
+            raise ValueError(f"checkpoint manifest sidecar missing: {sidecar}")
+        try:
+            manifest = json.loads(sidecar.read_text(encoding="utf-8"))
+        except (OSError, ValueError) as exc:
+            raise ValueError(f"checkpoint manifest unreadable: {sidecar}") from exc
+    if not isinstance(manifest, dict):
+        raise ValueError("checkpoint manifest must be an object")
+    digest = manifest.get("checkpoint_file_sha256")
+    if not isinstance(digest, str) or re.fullmatch(r"[0-9a-fA-F]{64}", digest) is None:
+        raise ValueError("checkpoint manifest missing valid checkpoint_file_sha256")
+    if not ckpt_path.is_file():
+        raise ValueError(f"checkpoint file missing: {ckpt_path}")
+    actual = sha256_file(ckpt_path)
+    if not hmac.compare_digest(actual, digest.lower()):
+        raise ValueError("checkpoint file SHA-256 mismatch")
+    return dict(manifest)
+
+
+def verify_checkpoint_metadata(
+    metadata: Mapping[str, Any], manifest: Mapping[str, Any]
+) -> None:
+    """Bind the serialized metadata exactly to the verified sidecar."""
+    expected = dict(manifest)
+    expected.pop("checkpoint_file_sha256", None)
+    observed = dict(metadata)
+    observed.pop("checkpoint_file_sha256", None)
+    if expected != observed:
+        raise ValueError("checkpoint metadata differs from manifest sidecar")
+    payload_digest = observed.pop("checkpoint_sha256", None)
+    if not isinstance(payload_digest, str) or not hmac.compare_digest(
+        payload_digest, canonical_hash(observed)
+    ):
+        raise ValueError("checkpoint metadata SHA-256 mismatch")
+
 
 
 def canonical_json_bytes(obj: Any) -> bytes:
@@ -328,6 +381,7 @@ def save_checkpoint(
 
     meta = dict(metadata)
     meta.pop("checkpoint_sha256", None)
+    meta.pop("checkpoint_file_sha256", None)
     payload_hash = canonical_hash(meta)
     meta["checkpoint_sha256"] = payload_hash
 
@@ -352,13 +406,39 @@ def save_checkpoint(
     }
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
-    torch.save(payload, str(path))
-    file_hash = sha256_file(path)
-    meta["checkpoint_file_sha256"] = file_hash
-    sidecar = path.with_suffix(path.suffix + ".manifest.json")
-    sidecar.write_text(
-        json.dumps(meta, indent=2, sort_keys=True) + "\n", encoding="utf-8"
-    )
+    # Write each component atomically; a crash between publications leaves
+    # a mismatched pair which the reader refuses rather than reusing.
+    tmp_ckpt = None
+    tmp_manifest = None
+    try:
+        with tempfile.NamedTemporaryFile(
+            mode="wb", dir=path.parent, prefix=".gnn-ckpt-", suffix=".tmp",
+            delete=False,
+        ) as handle:
+            tmp_ckpt = Path(handle.name)
+            torch.save(payload, handle)
+            handle.flush()
+            os.fsync(handle.fileno())
+        os.replace(tmp_ckpt, path)
+        tmp_ckpt = None
+        file_hash = sha256_file(path)
+        meta["checkpoint_file_sha256"] = file_hash
+        sidecar = path.with_suffix(path.suffix + ".manifest.json")
+        with tempfile.NamedTemporaryFile(
+            mode="w", encoding="utf-8", dir=path.parent,
+            prefix=".gnn-manifest-", suffix=".tmp", delete=False,
+        ) as handle:
+            tmp_manifest = Path(handle.name)
+            json.dump(meta, handle, indent=2, sort_keys=True)
+            handle.write("\n")
+            handle.flush()
+            os.fsync(handle.fileno())
+        os.replace(tmp_manifest, sidecar)
+        tmp_manifest = None
+    finally:
+        for temporary in (tmp_ckpt, tmp_manifest):
+            if temporary is not None:
+                temporary.unlink(missing_ok=True)
     return meta
 
 
@@ -392,10 +472,24 @@ def load_checkpoint(
     """
     import torch
 
-    ckpt = torch.load(str(path), map_location="cpu")
+    ckpt_path = Path(path)
+    sidecar = ckpt_path.with_suffix(ckpt_path.suffix + ".manifest.json")
+    manifest = verify_checkpoint_file(ckpt_path) if sidecar.is_file() else None
+    # Explicit weights_only is required for untrusted pickle data. Training
+    # payloads contain only tensors and primitive metadata.
+    ckpt = torch.load(str(ckpt_path), map_location="cpu", weights_only=True)
     state, meta, label = _normalise_loaded_checkpoint(ckpt)
     if meta is None:
+        if manifest is not None:
+            raise ValueError("manifest claims metadata for a legacy checkpoint")
+        if any(v is not None for v in (
+            expected_schema_hash, expected_node_dim, expected_model_config
+        )):
+            raise ValueError("legacy checkpoint cannot satisfy expected identity")
         return state, None, label
+    if manifest is None:
+        raise ValueError(f"metadata checkpoint missing manifest sidecar: {sidecar}")
+    verify_checkpoint_metadata(meta, manifest)
     if expected_node_dim is not None:
         got = int(meta.get("model_config", {}).get("node_dim", -1))
         if got != int(expected_node_dim):
@@ -436,10 +530,13 @@ def checkpoints_compatible(
         "graph_schema_sha256",
         "training_dataset_manifest_sha256",
         "tile_selection_sha256",
+        "source_tile_hashes",
         "selection_seed",
         "training_seed",
         "model_config",
         "training_config",
+        "torch_version",
+        "torch_geometric_version",
     ):
         exp_val = expected.get(field)
         got_val = found.get(field)
