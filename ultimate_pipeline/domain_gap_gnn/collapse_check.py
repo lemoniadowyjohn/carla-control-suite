@@ -58,9 +58,15 @@ def _load_model(checkpoint_path: Path) -> MapEncoder:
         out_dim=int(model_cfg.get("out_dim", 128)),
         normalize_embedding=bool(model_cfg.get("normalize_embedding", True)),
     )
+    if model_cfg.get("architecture") != "MapEncoder/GCNConv+global_mean_pool+proj":
+        raise ValueError("collapse check checkpoint architecture mismatch")
     model = MapEncoder(cfg)
     model.load_state_dict(state)
     model.eval()
+    model._v94_graph_width_mode = width_mode
+    model._v94_graph_strict = bool(
+        meta.get("training_config", {}).get("strict_dataset", False)
+    )
     return model
 
 
@@ -84,7 +90,11 @@ def run_collapse_check(
     node_dim = int(model.cfg.node_dim)
 
     noise_graphs = [_random_noise_graph(node_dim) for _ in range(5)]
-    dataset = MapTileDataset(str(tiles_dir))
+    dataset = MapTileDataset(
+        str(tiles_dir),
+        width_mode=model._v94_graph_width_mode,
+        strict=model._v94_graph_strict,
+    )
     if len(dataset) < 5:
         raise RuntimeError(f"Need at least 5 real tiles in {tiles_dir}, found {len(dataset)}")
     tile_graphs = [dataset[i] for i in range(5)]
