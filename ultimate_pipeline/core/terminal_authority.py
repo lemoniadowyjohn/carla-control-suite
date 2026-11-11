@@ -106,20 +106,28 @@ def write_run_identity(
     settings_digest: str,
     started_at_utc: str,
 ) -> None:
-    """Write run_identity.json at admission time."""
+    """Write run_identity.json at admission time.
+
+    Fail-closed: if the run identity cannot be written, the run must not proceed.
+    This is terminal authority #11 — the terminal authority controls run_identity
+    placement and must not allow silent failures.
+    """
+    identity = {
+        "run_id": run_id,
+        "source_sha": source_sha,
+        "profile": profile,
+        "settings_digest": settings_digest,
+        "started_at_utc": started_at_utc,
+        "out_dir": str(out_dir),
+    }
+    path = Path(out_dir) / "run_identity.json"
     try:
-        identity = {
-            "run_id": run_id,
-            "source_sha": source_sha,
-            "profile": profile,
-            "settings_digest": settings_digest,
-            "started_at_utc": started_at_utc,
-            "out_dir": str(out_dir),
-        }
-        path = Path(out_dir) / "run_identity.json"
         path.write_text(json.dumps(identity, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     except Exception as e:
-        print(f"⚠️ Failed to write run_identity.json: {e}")
+        raise RuntimeError(
+            f"❌ Terminal authority #11: failed to write run_identity.json to {path}: {e}. "
+            "A new run must never proceed without authoritative run_identity placement."
+        ) from e
 
 
 def read_run_identity(out_dir: str | os.PathLike[str]) -> dict | None:
