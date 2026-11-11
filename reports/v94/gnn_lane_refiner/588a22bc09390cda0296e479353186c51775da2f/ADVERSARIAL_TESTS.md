@@ -1,0 +1,7 @@
+# Adversarial coverage and missing tests
+
+Executed in `tests/unit/test_lane_gnn_refiner_fail_closed_v94.py`: unconfigured immutable false receipt; explicit non-authority and empty digests; no stdout; preservation of right/left signed lane IDs and junction XML; configured missing/whitespace/PathLike checkpoints; untrusted present checkpoint never deserialized; invalid NaN/Inf/out-of-range/coerced/bool confidence; malformed device selectors; CUDA selector remains disabled; 40 parallel no-op calls across 8 threads; missing checkpoint remains absent. Baseline behavioral control FAIL and replacement PASS prove the request is no longer silently accepted.
+
+**Not implemented / not executed:** learned correction positive test (requires an actual trained model); map/road spatial split and leakage controls; model miscalibration, OOD and confidence behavior; safe GPU bounded VRAM/batching and cancellation during inference; disk-full and interrupted atomic map write; geometry continuity under predicted deltas; live quality-gate before/after comparison; inverse lane direction, complex intersections and city-scale map validation; Windows behavior; CARLA loadability and end-to-end regression.
+
+A disabled-only test cannot establish safety of a future enabled implementation. Do not relabel unrun adversarial cases as PASS; future GNN authors must add mutation-resistant learned-positive tests showing nonzero improvement, not just no-op behavior.
