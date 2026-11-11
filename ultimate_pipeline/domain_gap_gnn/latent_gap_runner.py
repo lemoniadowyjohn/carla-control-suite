@@ -15,7 +15,7 @@ from ultimate_pipeline.domain_gap.tile_matcher import TileMatcher
 from .map_encoder import MapEncoder, MapEncoderConfig
 from .latent_gap_utils import combine_latent_gaps
 from .graph_builder import MapGraphBuilder
-from .collapse_guard_wire import collapse_verdict, collapsed_payload
+from .collapse_guard_wire import collapse_verdict, blocked_payload
 
 
 # ============================================================
@@ -51,14 +51,12 @@ def _load_encoder(checkpoint_path: str, device: torch.device) -> MapEncoder:
     from . import gnn_provenance as prov
     from .graph_builder import graph_schema_hash
 
-    ckpt = torch.load(checkpoint_path, map_location="cpu")
-    state, meta, _label = prov._normalise_loaded_checkpoint(ckpt)
-    if meta is None:
-        cfg = MapEncoderConfig(**ckpt["cfg"])
-        model = MapEncoder(cfg)
-        model.load_state_dict(ckpt["model_state"])
-        model.eval()
-        return model.to(device)
+    state, meta, label = prov.load_checkpoint(checkpoint_path)
+    if meta is None or label != prov.VERIFIED_CRYPTOGRAPHIC_PROVENANCE:
+        raise ValueError(
+            "RQ4 latent-gap metrics require a verified metadata checkpoint; "
+            "legacy or untrusted provenance is inadmissible"
+        )
     # Cross-check the stored schema hash against the CURRENT code's schema
     # for the width mode recorded at train time: a code change that alters
     # features must fail closed here instead of silently reusing weights.
@@ -91,16 +89,21 @@ def _load_encoder(checkpoint_path: str, device: torch.device) -> MapEncoder:
     model = MapEncoder(cfg)
     model.load_state_dict(state)
     model.eval()
+    # Rebuild evaluation graphs with the SAME feature construction contract
+    # that the model was trained on; legacy defaults are not authoritative
+    # for polynomial-width checkpoints.
+    model._v94_graph_width_mode = width_mode
+    model._v94_graph_strict = bool(
+        meta.get("training_config", {}).get("strict_dataset", False)
+    )
     return model.to(device)
 
 
 def checkpoint_provenance_label(checkpoint_path: str) -> str:
-    """Return VERIFIED_CRYPTOGRAPHIC_PROVENANCE for metadata-bearing
-    checkpoints, else LEGACY_UNBOUND_CHECKPOINT."""
+    """Return the verified label only after checking the actual checkpoint."""
     from . import gnn_provenance as prov
 
-    ckpt = torch.load(str(checkpoint_path), map_location="cpu")
-    _, _, label = prov._normalise_loaded_checkpoint(ckpt)
+    _, _, label = prov.load_checkpoint(checkpoint_path)
     return label
 
 
@@ -120,14 +123,18 @@ def compute_whole_map_latent_gap(
     # RQ4: encoder-collapse guard — if the encoder is COLLAPSED,
     # emit NOT_RUN instead of fabricated gap metrics.
     cv = collapse_verdict(checkpoint, tiles_dir=tiles_dir)
-    if cv.get("verdict") == "COLLAPSED":
-        return collapsed_payload(checkpoint, tiles_dir=tiles_dir)
+    if cv.get("status") != "ok":
+        return blocked_payload(cv)
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model = _load_encoder(checkpoint, device)
 
-    g_m = MapGraphBuilder.build_from_xodr(manual_xodr)
-    g_a = MapGraphBuilder.build_from_xodr(auto_xodr)
+    graph_kwargs = {
+        "width_mode": model._v94_graph_width_mode,
+        "strict": model._v94_graph_strict,
+    }
+    g_m = MapGraphBuilder.build_from_xodr(manual_xodr, **graph_kwargs)
+    g_a = MapGraphBuilder.build_from_xodr(auto_xodr, **graph_kwargs)
 
     if g_m is None or g_a is None:
         return {
@@ -179,8 +186,8 @@ def compute_per_tile_latent_gap(
 
     # RQ4: encoder-collapse guard (tiles_dir = auto_tiles)
     cv = collapse_verdict(checkpoint, tiles_dir=auto_tiles)
-    if cv.get("verdict") == "COLLAPSED":
-        return collapsed_payload(checkpoint, tiles_dir=auto_tiles)
+    if cv.get("status") != "ok":
+        return blocked_payload(cv)
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model = _load_encoder(checkpoint, device)
@@ -197,6 +204,10 @@ def compute_per_tile_latent_gap(
         pairs = TileMatcher.match(manual_tiles, auto_tiles)
         pairing_method = "spatial_iou"
 
+    graph_kwargs = {
+        "width_mode": model._v94_graph_width_mode,
+        "strict": model._v94_graph_strict,
+    }
     per_tile: Dict[str, Dict[str, float]] = {}
     skipped = []
 
@@ -204,8 +215,8 @@ def compute_per_tile_latent_gap(
         m_path = os.path.join(manual_tiles, m_name)
         a_path = os.path.join(auto_tiles, a_name)
 
-        g_m = MapGraphBuilder.build_from_xodr(m_path)
-        g_a = MapGraphBuilder.build_from_xodr(a_path)
+        g_m = MapGraphBuilder.build_from_xodr(m_path, **graph_kwargs)
+        g_a = MapGraphBuilder.build_from_xodr(a_path, **graph_kwargs)
 
         if g_m is None or g_a is None:
             skipped.append(m_name)

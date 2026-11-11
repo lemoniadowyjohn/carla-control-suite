@@ -30,6 +30,7 @@ invalid/duplicate-agreement run makes the matrix carry explicit
 """
 from __future__ import annotations
 
+import json
 from typing import Any, Dict, List, Optional
 
 IDENTITY_FIELDS = [
@@ -157,15 +158,22 @@ def build_determinism_matrix(receipts: List[Dict[str, Any]], *, valid_run_count:
         else:
             divergence = "NO_DIFFERENCE"
 
-        # Explicit gaps for any measured identity whose values disagree.
+        # Compare the SAME identities used above in _identities(), not
+        # c.get(name): the child schema calls raw_xodr_sha256 "xodr_sha256"
+        # and stores input identity across multiple fields. The previous
+        # lookup manufactured null gaps for valid receipts.
         for name in _IDENTITY_KEYS:
-            values = {c.get(name) for c in valid_children}
-            if len(values) > 1 or None in values:
+            values = [_identities(c).get(name) for c in valid_children]
+            fingerprints = sorted({
+                json.dumps(v, sort_keys=True, separators=(",", ":"), default=str)
+                for v in values
+            })
+            if len(fingerprints) > 1 or any(v is None for v in values):
                 identity_gaps.append(
                     {
                         "identity": name,
-                        "distinct_values": sorted(str(v) for v in values),
-                        "distinct_count": len(values),
+                        "distinct_values": fingerprints,
+                        "distinct_count": len(fingerprints),
                     }
                 )
 

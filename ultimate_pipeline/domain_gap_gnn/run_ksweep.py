@@ -302,7 +302,7 @@ def _expected_manifest_for_subset(
     --exclude_source_xodr, or the two sides' manifests can never match.
     """
     versions = prov.get_torch_versions()
-    _, dataset_manifest_sha, _ = prov.build_training_dataset_manifest(
+    _, dataset_manifest_sha, tile_hashes = prov.build_training_dataset_manifest(
         subset_dir, width_mode=width_mode, strict=strict_dataset,
         exclude_source_hashes=exclude_source_hashes,
     )
@@ -312,6 +312,10 @@ def _expected_manifest_for_subset(
         "graph_schema_sha256": graph_schema_hash(width_mode=width_mode),
         "training_dataset_manifest_sha256": dataset_manifest_sha,
         "tile_selection_sha256": selection_sha,
+        "source_tile_hashes": [
+            {"tile": name, "tile_sha256": digest}
+            for name, digest in sorted(tile_hashes.items())
+        ],
         "selection_seed": int(selection_seed),
         "training_seed": int(training_seed),
         "model_config": prov.build_model_config(
@@ -363,8 +367,15 @@ def _try_reuse_checkpoint(
         if on_mismatch == "fail":
             raise RuntimeError(msg)
         return None
-    # node_dim is data-dependent (auto-detected); compare only when the
-    # stored manifest carries it AND we can compute the same value.
+    try:
+        prov.verify_checkpoint_file(final_ckpt, manifest=found)
+    except (ValueError, OSError) as exc:
+        msg = f"[ksweep] checkpoint bytes/manifest invalid for {final_ckpt}: {exc}"
+        print(msg)
+        if on_mismatch == "fail":
+            raise RuntimeError(msg) from exc
+        return None
+    # Complete source identity and dependency versions are mandatory.
     ok, reasons = prov.checkpoints_compatible(expected, found)
     if reasons:
         detail = ", ".join(reasons)

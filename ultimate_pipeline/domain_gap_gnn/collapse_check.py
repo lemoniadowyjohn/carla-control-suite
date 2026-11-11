@@ -40,11 +40,33 @@ def _cross_mean_cosine(a: torch.Tensor, b: torch.Tensor) -> float:
 
 
 def _load_model(checkpoint_path: Path) -> MapEncoder:
-    ckpt = torch.load(str(checkpoint_path), map_location="cpu")
-    cfg = MapEncoderConfig(**ckpt["cfg"])
+    from . import gnn_provenance as prov
+    from .graph_builder import graph_schema_hash
+
+    state, meta, label = prov.load_checkpoint(checkpoint_path)
+    if meta is None or label != prov.VERIFIED_CRYPTOGRAPHIC_PROVENANCE:
+        raise ValueError("collapse check requires a metadata-verified checkpoint")
+    width_mode = str(meta.get("training_config", {}).get("width_mode", "legacy"))
+    if meta.get("graph_schema_sha256") != graph_schema_hash(width_mode=width_mode):
+        raise ValueError("collapse check checkpoint graph schema mismatch")
+    model_cfg = meta["model_config"]
+    cfg = MapEncoderConfig(
+        node_dim=int(model_cfg["node_dim"]),
+        hidden_dim=int(model_cfg.get("hidden_dim", 128)),
+        num_layers=int(model_cfg.get("num_layers", 3)),
+        dropout=float(model_cfg.get("dropout", 0.1)),
+        out_dim=int(model_cfg.get("out_dim", 128)),
+        normalize_embedding=bool(model_cfg.get("normalize_embedding", True)),
+    )
+    if model_cfg.get("architecture") != "MapEncoder/GCNConv+global_mean_pool+proj":
+        raise ValueError("collapse check checkpoint architecture mismatch")
     model = MapEncoder(cfg)
-    model.load_state_dict(ckpt["model_state"])
+    model.load_state_dict(state)
     model.eval()
+    model._v94_graph_width_mode = width_mode
+    model._v94_graph_strict = bool(
+        meta.get("training_config", {}).get("strict_dataset", False)
+    )
     return model
 
 
@@ -68,7 +90,11 @@ def run_collapse_check(
     node_dim = int(model.cfg.node_dim)
 
     noise_graphs = [_random_noise_graph(node_dim) for _ in range(5)]
-    dataset = MapTileDataset(str(tiles_dir))
+    dataset = MapTileDataset(
+        str(tiles_dir),
+        width_mode=model._v94_graph_width_mode,
+        strict=model._v94_graph_strict,
+    )
     if len(dataset) < 5:
         raise RuntimeError(f"Need at least 5 real tiles in {tiles_dir}, found {len(dataset)}")
     tile_graphs = [dataset[i] for i in range(5)]

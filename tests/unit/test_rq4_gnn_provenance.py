@@ -290,7 +290,10 @@ def test_matching_checkpoint_reused(tmp_path):
     )
     train_dir = tmp_path / "k_3" / "seed_42"
     train_dir.mkdir(parents=True)
-    (train_dir / "map_encoder_epoch5.pt").write_bytes(b"ckpt-bytes")
+    checkpoint = train_dir / "map_encoder_epoch5.pt"
+    checkpoint.write_bytes(b"ckpt-bytes")
+    # Content identity is mandatory even for a reuse-policy unit fixture.
+    expected["checkpoint_file_sha256"] = prov.sha256_file(checkpoint)
     (train_dir / "map_encoder_epoch5.pt.manifest.json").write_text(
         json.dumps(expected), encoding="utf-8"
     )
@@ -543,7 +546,8 @@ def test_metadata_checkpoint_roundtrip_and_schema_mismatch_fails(tmp_path):
     raw["metadata"]["graph_schema_sha256"] = "tampered"
     tampered = tmp_path / "tampered.pt"
     torch.save(raw, str(tampered))
-    with pytest.raises(ValueError, match="schema"):
+    # Missing sidecar is rejected before any stale metadata is considered.
+    with pytest.raises(ValueError, match="manifest|schema"):
         _load_encoder(str(tampered), torch.device("cpu"))
 
 
@@ -588,13 +592,15 @@ def test_leakage_audit_catches_overlap(tmp_path):
     assert clean["same_spatial_tile_in_train_and_test_by_filename"] == []
 
 
-def test_checkpoint_metadata_without_provenance_is_legacy_unbound(tmp_path):
+def test_checkpoint_metadata_without_provenance_is_not_authoritative(tmp_path):
     ckpt = tmp_path / "unbound.pt"
     metadata = _base_metadata()
     metadata.pop("provenance", None)
     torch.save({"state_dict": _tiny_state(), "metadata": metadata}, ckpt)
-    _, _, label = prov.load_checkpoint(ckpt)
-    assert label == prov.LEGACY_UNBOUND_CHECKPOINT
+    # Metadata-bearing files require a verified sidecar, not a descriptive
+    # label or silent promotion to a cryptographically verified checkpoint.
+    with pytest.raises(ValueError, match="manifest"):
+        prov.load_checkpoint(ckpt)
 
 
 def test_leakage_audit_fails_closed_for_missing_or_unreadable_declared_inputs(tmp_path):
