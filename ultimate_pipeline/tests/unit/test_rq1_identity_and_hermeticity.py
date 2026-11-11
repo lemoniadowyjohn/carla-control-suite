@@ -164,7 +164,7 @@ class TestCanonicalNormalization:
 
 class TestStructuralSignature:
     def test_version_pin(self):
-        assert STRUCTURAL_SIGNATURE_VERSION == "rq1-structural-signature/v1"
+        assert STRUCTURAL_SIGNATURE_VERSION == "rq1-structural-signature/v2"
 
     def test_semantic_equivalent_serializations_same_signature(self, tmp_path):
         a = write_xodr(tmp_path, "a.xodr", ROAD_BODY, date="D1")
