@@ -175,3 +175,28 @@ def test_invalid_ready_budget_fails_before_connect(monkeypatch):
     monkeypatch.setenv("UP_CARLA_READY_TIMEOUT_S", "-1")
     with pytest.raises(ValueError, match="positive"):
         cs._handshake_carla_ready(host="127.0.0.1", port=2000)
+
+
+def test_managed_capture_refuses_external_listener_without_opt_in(monkeypatch, tmp_path):
+    monkeypatch.setattr(cs, "wait_for_port", lambda *a, **k: True)
+    monkeypatch.setattr(cs, "_handshake_carla_ready",
+                        lambda **kwargs: (_ for _ in ()).throw(
+                            AssertionError("must refuse before handshake")))
+    monkeypatch.setattr(cs, "start_carla",
+                        lambda *a, **k: (_ for _ in ()).throw(
+                            AssertionError("must not launch")))
+    with pytest.raises(RuntimeError, match="refusing unowned attachment"):
+        cs.ensure_carla_server(host="127.0.0.1", port=2000,
+                               carla_exe=tmp_path / "CarlaUE4.exe",
+                               attach_existing=False)
+
+
+def test_deprecated_kill_stale_refused_even_when_server_reachable(monkeypatch, tmp_path):
+    monkeypatch.setattr(cs, "wait_for_port", lambda *a, **k: True)
+    monkeypatch.setattr(cs, "_handshake_carla_ready",
+                        lambda **kwargs: (_ for _ in ()).throw(
+                            AssertionError("must refuse before handshake")))
+    with pytest.raises(RuntimeError, match="image-wide kill"):
+        cs.ensure_carla_server(host="127.0.0.1", port=2000,
+                               carla_exe=tmp_path / "CarlaUE4.exe",
+                               kill_stale=True)
