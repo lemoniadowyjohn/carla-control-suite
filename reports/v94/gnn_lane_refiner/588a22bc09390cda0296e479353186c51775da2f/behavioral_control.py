@@ -1,4 +1,3 @@
-"""Run against either exact old module or fixed module (path as argument)."""
 import importlib.util
 import pathlib
 import sys
