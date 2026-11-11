@@ -160,6 +160,17 @@ class WorktreeLease:
 # paths
 # ---------------------------------------------------------------------------
 
+def _canonical_lease_root(raw: str) -> Path:
+    """Reject missing, relative, or noncanonical roots before path operations."""
+    if not isinstance(raw, str) or not raw or not Path(raw).is_absolute():
+        raise ValueError("LOCKED_UNKNOWN: worktree_root must be nonempty and absolute")
+    root = Path(raw)
+    resolved = root.resolve()
+    if os.path.normcase(raw) != os.path.normcase(str(resolved)):
+        raise ValueError("LOCKED_UNKNOWN: worktree_root must already be canonical")
+    return resolved
+
+
 def _repo_root_for(worktree_root: Path) -> Path | None:
     """Git namespace for the scope, including output roots outside the repo.
 
@@ -1026,15 +1037,22 @@ def renew_worktree_lease(
 
 
 def _lease_path_matches_identity(path: Path, lease: WorktreeLease) -> bool:
-    """Reject payloads whose declared worktree does not match the filename."""
+    """Require explicit canonical identity and bind live roots to Git namespace."""
     try:
-        identity = lock_paths.worktree_identity(Path(lease.worktree_root))
+        root = _canonical_lease_root(lease.worktree_root)
+        identity = lock_paths.worktree_identity(root)
+        if path.name != f"{identity}.lease.json":
+            return False
+        if lease.worktree_identity != identity:
+            return False
+        owning_repo = _repo_root_for(root)
+        if owning_repo is not None:
+            namespace = lock_paths.worktree_leases_dir(owning_repo)
+            if path.parent.resolve() != namespace.resolve():
+                return False
+        return True
     except (OSError, RuntimeError, TypeError, ValueError):
         return False
-    return (
-        path.name == f"{identity}.lease.json"
-        and (not lease.worktree_identity or lease.worktree_identity == identity)
-    )
 
 
 def _iter_worktree_leases(repo_root: Path):
@@ -1114,30 +1132,65 @@ def cleanup_expired_leases(repo_root: Path) -> int:
 def recover_malformed_lease(
     repo_root: Path, worktree_root: Path, operator: str, reason: str
 ) -> dict:
-    """Operator-only removal of a malformed lease, with an audit record."""
-    worktree_root = Path(worktree_root).resolve()
-    path = _worktree_lease_path(worktree_root)
-    with _generation_claim(worktree_root):
+    """Operator recovery within the repo's common Git namespace.
+
+    Persist a BEFORE receipt under the claim, then move only the exact audited
+    malformed bytes. A crash leaves an INTENT receipt and/or tombstone for
+    subsequent operator inspection; nothing outside the lease namespace is
+    modified.
+    """
+    if not isinstance(operator, str) or not operator.strip():
+        raise ValueError("operator identity is required for malformed recovery")
+    if not isinstance(reason, str) or not reason.strip():
+        raise ValueError("reason is required for malformed recovery")
+    root = _canonical_lease_root(str(worktree_root))
+    path = lock_paths.worktree_lease_path(Path(repo_root), root)
+    with _generation_claim_at_path(path):
         try:
             raw = path.read_bytes()
         except FileNotFoundError:
-            return {"recovered": False, "detail": "no lease present"}
+            return {"recovered": False, "detail": "no lease present", "path": str(path)}
+        try:
+            current = _read_lease_at_path(path)
+        except MalformedLeaseError:
+            current = None
+        if current is not None and _lease_path_matches_identity(path, current):
+            raise RuntimeError(
+                "LOCKED_UNKNOWN: valid lease evidence cannot be removed "
+                "through malformed-lease recovery"
+            )
+        audit_dir = path.parent / "recovery_audit"
+        audit_dir.mkdir(parents=True, exist_ok=True)
+        audit = audit_dir / f"{path.name}.{uuid.uuid4().hex}.json"
         record = {
-            "recovered": True,
+            "recovered": False,
             "path": str(path),
             "removed_sha256": hashlib.sha256(raw).hexdigest(),
             "removed_bytes": len(raw),
             "recovered_at": _utc_now(),
             "operator": operator,
             "reason": reason,
+            "audit_path": str(audit),
         }
-        claimed, tomb = _claim_by_rename(worktree_root, "recover", lambda candidate: candidate == raw)
+        _write_payload(audit, {**record, "phase": "INTENT"})
+        claimed, tomb = _claim_lease_path(
+            path, "recover", lambda candidate: candidate == raw
+        )
         if claimed and tomb is not None:
             try:
                 tomb.unlink()
-            except OSError:
-                pass
+            except OSError as exc:
+                _write_payload(audit, {
+                    **record, "phase": "BLOCKED_TOMBSTONE", "tombstone": str(tomb),
+                })
+                raise RuntimeError(
+                    f"LOCKED_UNKNOWN: recovered bytes retained at {tomb}; "
+                    f"operator inspection required"
+                ) from exc
+            record["recovered"] = True
+            record["phase"] = "COMPLETE"
         else:
-            record["recovered"] = False
-            record["detail"] = "lease changed or vanished during recovery; nothing removed"
+            record["detail"] = "lease changed or vanished; nothing removed"
+            record["phase"] = "NO_CHANGE"
+        _write_payload(audit, record)
         return record
