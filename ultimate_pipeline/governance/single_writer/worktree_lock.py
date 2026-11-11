@@ -1139,16 +1139,12 @@ def list_worktree_leases(repo_root: Path) -> list[WorktreeLease]:
 
 
 def cleanup_expired_leases(repo_root: Path) -> int:
-    """Remove leases whose owner is *proven* gone. Live owners are kept.
-
-    Expiry alone is never sufficient: an expired lease whose holder is still
-    alive (or whose state is UNKNOWN) is left in place, because expiry is
-    evidence that renewal may be unhealthy, not proof that the owner died.
-    """
+    """Sweep independent expired/dead leases and retain corrupt evidence."""
     removed = 0
     for lease_path, lease in _iter_worktree_leases(repo_root):
-        # Keep using the physical namespace entry discovered above. The
-        # payload is untrusted until its identity is rechecked under the claim.
+        # Do not consult blocked/malformed claims for unexpired records.
+        if not lease.is_expired():
+            continue
         try:
             with _generation_claim_at_path(lease_path):
                 current = _read_lease_at_path(lease_path)
@@ -1160,14 +1156,14 @@ def cleanup_expired_leases(repo_root: Path) -> int:
                     or not _token_eq(current.owner_token, lease.owner_token)
                 ):
                     continue
+                # Recheck expiry, liveness and identity under the claim.
                 if not current.is_expired():
                     continue
                 may, _why = reclaim_decision(current)
                 if not may:
                     continue
                 claimed, tomb = _claim_lease_path(
-                    lease_path,
-                    "cleanup",
+                    lease_path, "cleanup",
                     _lease_matches(
                         current.lease_id, current.owner_token, current.generation
                     ),
@@ -1178,10 +1174,11 @@ def cleanup_expired_leases(repo_root: Path) -> int:
                     except OSError:
                         pass
                     removed += 1
+        except MalformedLeaseError:
+            # Changed between listing and under-claim reread: operator-only.
+            continue
         except RuntimeError as exc:
             if "timed out waiting for generation claim" in str(exc):
-                # A single active mutation must not prevent cleanup of other
-                # expired, provably-dead leases.
                 continue
             raise
     return removed
