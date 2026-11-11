@@ -343,6 +343,9 @@ class _StubPipeline:
     _publish_final_artifact_authority = (
         main_pipeline_mod.MainPipeline._publish_final_artifact_authority
     )
+    _collect_final_acceptance_reports = (
+        main_pipeline_mod.MainPipeline._collect_final_acceptance_reports
+    )
     _assert_structure_frozen_unchanged = (
         main_pipeline_mod.MainPipeline._assert_structure_frozen_unchanged
     )

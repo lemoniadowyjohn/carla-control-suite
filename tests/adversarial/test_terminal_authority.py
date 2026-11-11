@@ -102,6 +102,8 @@ def run_internal():
     if not (root / "loser-locked.flag").exists():
         raise TimeoutError("losing pipeline did not fail at the lease gate")
     (root / "final.xodr").write_text("<OpenDRIVE/>", encoding="utf-8")
+    # A real _run_internal publishes a valid final map acceptance (V85).
+    (root / "map_acceptance.json").write_text('{"valid_for_experiments": true}', encoding="utf-8")
 pipeline._run_internal = run_internal
 pipeline._find_final_xodr = lambda: str(root / "final.xodr")
 def write_health(out_dir, expected_gates=None, **kwargs):
@@ -814,6 +816,10 @@ class TestMainPipelineRunTerminalChain:
             terminal_calls.append("_run_internal")
             # Create minimal artifacts that the terminal chain expects
             (tmp_path / "final.xodr").write_text("<OpenDRIVE/>", encoding="utf-8")
+            # A real _run_internal publishes a valid final map acceptance (V85).
+            (tmp_path / "map_acceptance.json").write_text(
+                '{"valid_for_experiments": true}', encoding="utf-8"
+            )
         pipeline._run_internal = mock_run_internal
         pipeline._find_final_xodr = lambda: str(tmp_path / "final.xodr")
 

@@ -101,6 +101,29 @@ def _assert_terminal_publication_lease(lease, scope_root: Path, stage: str) -> N
             "missing, or superseded"
         )
 
+
+def _require_valid_map_acceptance(out_dir) -> None:
+    """Fail closed unless the durable final map acceptance is valid (V85 Phase 2).
+
+    SUCCESS is a release-quality claim. It requires ``map_acceptance.json`` in
+    the run root to exist, parse, and record ``valid_for_experiments`` as
+    exactly ``True``.
+    """
+    path = Path(out_dir) / "map_acceptance.json"
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, ValueError) as exc:
+        raise RuntimeError(
+            f"TERMINAL_FAILED(MAP_ACCEPTANCE): {path} missing or unreadable: {exc}"
+        ) from exc
+    if not isinstance(payload, dict) or payload.get("valid_for_experiments") is not True:
+        failed = payload.get("failed_gates") if isinstance(payload, dict) else None
+        raise RuntimeError(
+            "TERMINAL_FAILED(MAP_ACCEPTANCE): final map acceptance is not valid "
+            f"(valid_for_experiments={payload.get('valid_for_experiments') if isinstance(payload, dict) else None!r}, "
+            f"failed_gates={failed!r}); SUCCESS will not be published"
+        )
+
 from ultimate_pipeline.quality.lane_width_invariants import (
     enforce_lane_width_invariants_on_root,
     write_lane_width_invariants_report,
@@ -1928,6 +1951,13 @@ if str(_repo_root) not in sys.path:
                     f"Terminal pack verification failed: {verify_result.get('problems', [])}"
                 )
 
+            # V85 Phase 2: SUCCESS requires the durable final map acceptance to
+            # be valid. Before this, a run whose mandatory gates failed could
+            # still publish run_status=ok and SUCCESS.txt, because only the
+            # receipt capability (artifact_authority) checked
+            # valid_for_experiments.
+            _require_valid_map_acceptance(self.out_dir)
+
             # Persist terminal status before publishing SUCCESS. Re-read it
             # afterwards because _write_run_status is intentionally best-effort.
             self._write_run_status(status="ok", stage="done")
@@ -3389,6 +3419,92 @@ if str(_repo_root) not in sys.path:
 
         return identity
 
+    def _collect_final_acceptance_reports(
+        self, final_out: str, *, seam_report: Optional[Dict[str, Any]] = None
+    ) -> Dict[str, Any]:
+        """Assemble every acceptance report for the FINAL artifact (V85 Phase 2).
+
+        Every RELEASE_MANDATORY_GATES gate gets a report dict. A failed recompute
+        yields an explicit NOT_RUN report: never silently absent, never stale
+        pre-hygiene evidence.
+        """
+        acceptance_reports: Dict[str, Any] = {}
+        if isinstance(seam_report, dict):
+            # The post-hygiene seam report (08H_hygiene/elevation_seams), not
+            # the pre-hygiene one that used to feed acceptance.
+            acceptance_reports["elevation_seams"] = seam_report
+
+        # origin_sanity was measured on the PRE-hygiene candidate; island
+        # quarantine can delete roads and move the centroid, so re-measure it
+        # here against the final artifact. The original 08_final/origin_sanity
+        # gate still runs where it always did and still counts towards the
+        # cumulative tally -- this is an additional, stricter measurement for
+        # the receipt, never a replacement for it.
+        # V85: a failed recompute is NOT_RUN. It is no longer replaced by the
+        # stale pre-hygiene report, which island quarantine can invalidate.
+        try:
+            final_origin_report = self.qgate.gate_origin_sanity(final_out)
+        except Exception as exc:
+            print(f"[AUTHORITY] post-hygiene origin_sanity recompute FAILED (NOT_RUN): {exc}")
+            final_origin_report = {
+                "ok": None, "status": "NOT_RUN", "reason": f"{type(exc).__name__}: {exc}",
+            }
+        if not isinstance(final_origin_report, dict):
+            final_origin_report = {
+                "ok": None, "status": "NOT_RUN",
+                "reason": f"gate_origin_sanity returned {type(final_origin_report).__name__}",
+            }
+        acceptance_reports["origin_sanity"] = final_origin_report
+
+        # Recompute geometric_continuity directly on the final artifact
+        try:
+            from ultimate_pipeline.quality.check_geometric_continuity import check_geometric_continuity
+            acceptance_reports["geometric_continuity"] = check_geometric_continuity(final_out)
+        except Exception as exc:
+            print(f"[AUTHORITY] geometric_continuity recompute FAILED (NOT_RUN): {exc}")
+            acceptance_reports["geometric_continuity"] = {
+                "ok": None, "status": "NOT_RUN", "reason": f"{type(exc).__name__}: {exc}",
+            }
+
+        # Recompute lane_section_successors directly on the final artifact (post-hygiene).
+        # The G6 hygiene step can add lane links, so pre-hygiene evidence is stale.
+        try:
+            from ultimate_pipeline.quality.check_lane_connectivity import write_lane_connectivity_report
+            lane_conn_report = write_lane_connectivity_report(
+                xodr_path=final_out,
+                out_json=os.path.join(self.out_dir, "lane_successor_autofix_report.json"),
+                allow_dead_ends=True,
+            )
+            acceptance_reports["lane_section_successors"] = lane_conn_report
+        except Exception as exc:
+            print(f"[AUTHORITY] lane_section_successors recompute FAILED (NOT_RUN): {exc}")
+            acceptance_reports["lane_section_successors"] = {
+                "ok": None, "status": "NOT_RUN", "reason": f"{type(exc).__name__}: {exc}",
+            }
+
+        # Recompute ALL mandatory structural gates on the final artifact (P0-L/P0-C).
+        # These gates must run on the EXACT frozen artifact, not on pre-hygiene evidence.
+        # V85 Phase 2: the previous getattr(self.qgate, ...) loop named three
+        # methods that do not exist and three that take a parsed root and
+        # return None. Every failure was swallowed as "skipped", and
+        # elevation_continuity was never supplied, so 6/9 mandatory gates
+        # (plus continuity) never reached acceptance. The shared module below
+        # always yields one report per gate (NOT_RUN/BLOCKED_INPUT on error),
+        # using the same definitions as the promotion path.
+        from ultimate_pipeline.quality.final_artifact_gates import (
+            RELEASE_MANDATORY_GATES,
+            compute_final_artifact_reports,
+        )
+
+        for gate_key, gate_report in compute_final_artifact_reports(final_out).items():
+            acceptance_reports[gate_key] = gate_report
+            print(
+                f"[AUTHORITY] {gate_key} recomputed on final artifact: "
+                f"ok={gate_report.get('ok')} status={gate_report.get('status', '')}"
+            )
+
+        return acceptance_reports
+
     def _publish_final_artifact_authority(
         self,
         final_out: str,
@@ -3455,75 +3571,11 @@ if str(_repo_root) not in sys.path:
         )
 
         # ---- acceptance evidence, recomputed against the FINAL artifact ----
-        acceptance_reports: Dict[str, Any] = {}
-        if isinstance(seam_report, dict):
-            # The post-hygiene seam report (08H_hygiene/elevation_seams), not
-            # the pre-hygiene one that used to feed acceptance.
-            acceptance_reports["elevation_seams"] = seam_report
+        from ultimate_pipeline.quality.final_artifact_gates import RELEASE_MANDATORY_GATES
 
-        # origin_sanity was measured on the PRE-hygiene candidate; island
-        # quarantine can delete roads and move the centroid, so re-measure it
-        # here against the final artifact. The original 08_final/origin_sanity
-        # gate still runs where it always did and still counts towards the
-        # cumulative tally -- this is an additional, stricter measurement for
-        # the receipt, never a replacement for it.
-        final_origin_report = None
-        try:
-            final_origin_report = self.qgate.gate_origin_sanity(final_out)
-        except Exception as exc:
-            print(f"[AUTHORITY] post-hygiene origin_sanity recompute skipped: {exc}")
-        acceptance_reports["origin_sanity"] = (
-            final_origin_report
-            if isinstance(final_origin_report, dict)
-            else origin_report
+        acceptance_reports = self._collect_final_acceptance_reports(
+            final_out, seam_report=seam_report
         )
-
-        # Recompute geometric_continuity directly on the final artifact
-        try:
-            from ultimate_pipeline.quality.check_geometric_continuity import check_geometric_continuity
-            acceptance_reports["geometric_continuity"] = check_geometric_continuity(final_out)
-        except Exception as exc:
-            print(f"[AUTHORITY] geometric_continuity recompute FAILED (NOT_RUN): {exc}")
-            acceptance_reports["geometric_continuity"] = {
-                "ok": None, "status": "NOT_RUN", "reason": f"{type(exc).__name__}: {exc}",
-            }
-
-        # Recompute lane_section_successors directly on the final artifact (post-hygiene).
-        # The G6 hygiene step can add lane links, so pre-hygiene evidence is stale.
-        try:
-            from ultimate_pipeline.quality.check_lane_connectivity import write_lane_connectivity_report
-            lane_conn_report = write_lane_connectivity_report(
-                xodr_path=final_out,
-                out_json=os.path.join(self.out_dir, "lane_successor_autofix_report.json"),
-                allow_dead_ends=True,
-            )
-            acceptance_reports["lane_section_successors"] = lane_conn_report
-        except Exception as exc:
-            print(f"[AUTHORITY] lane_section_successors recompute FAILED (NOT_RUN): {exc}")
-            acceptance_reports["lane_section_successors"] = {
-                "ok": None, "status": "NOT_RUN", "reason": f"{type(exc).__name__}: {exc}",
-            }
-
-        # Recompute ALL mandatory structural gates on the final artifact (P0-L/P0-C).
-        # These gates must run on the EXACT frozen artifact, not on pre-hygiene evidence.
-        # V85 Phase 2: the previous getattr(self.qgate, ...) loop named three
-        # methods that do not exist and three that take a parsed root and
-        # return None. Every failure was swallowed as "skipped", and
-        # elevation_continuity was never supplied, so 6/9 mandatory gates
-        # (plus continuity) never reached acceptance. The shared module below
-        # always yields one report per gate (NOT_RUN/BLOCKED_INPUT on error),
-        # using the same definitions as the promotion path.
-        from ultimate_pipeline.quality.final_artifact_gates import (
-            RELEASE_MANDATORY_GATES,
-            compute_final_artifact_reports,
-        )
-
-        for gate_key, gate_report in compute_final_artifact_reports(final_out).items():
-            acceptance_reports[gate_key] = gate_report
-            print(
-                f"[AUTHORITY] {gate_key} recomputed on final artifact: "
-                f"ok={gate_report.get('ok')} status={gate_report.get('status', '')}"
-            )
 
         # CODEX C7 (policy unchanged, code relocated): only require enrichment
         # completeness (buildings + functional signals) when this run was

@@ -30,6 +30,7 @@ STATUS_BLOCKED_INPUT = "BLOCKED_INPUT"
 #: are computed separately by ``main_pipeline``, which already did so before
 #: this module existed.
 FINAL_ARTIFACT_MANDATORY_GATES: Tuple[str, ...] = (
+    "lane_connectivity",
     "elevation_continuity",
     "junction_integrity",
     "lane_width_continuity",
@@ -73,12 +74,16 @@ def _gate_table() -> Dict[str, Callable[[str, Any], Dict[str, Any]]]:
     from ultimate_pipeline.quality.check_lane_geometry_continuity import (
         check_lane_geometry_continuity,
     )
+    from ultimate_pipeline.quality.check_lane_link_targets_exist import (
+        check_lane_link_targets_exist,
+    )
     from ultimate_pipeline.quality.check_lane_width_continuity import check_lane_width_continuity
     from ultimate_pipeline.quality.check_physics_feasibility import PhysicsFeasibilityChecker
     from ultimate_pipeline.quality.check_post_tiling_integrity import check_post_tiling_integrity
 
     # Definitions identical to scripts/measure_candidate_acceptance.run_gates.
     return {
+        "lane_connectivity": lambda p, r: check_lane_link_targets_exist(p, allow_dead_ends=True),
         "elevation_continuity": lambda p, r: check_elevation_continuity(p, eps_z=0.5),
         "junction_integrity": lambda p, r: JunctionIntegrityGate.validate(p),
         "lane_width_continuity": lambda p, r: check_lane_width_continuity(p),

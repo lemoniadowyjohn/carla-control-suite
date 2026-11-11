@@ -127,7 +127,7 @@ def _mandatory_gate_status(gate: str, report: Any) -> tuple[str, str]:
     if declared in _NON_PASS_DECLARED_STATUSES:
         status = "BLOCKED_INPUT" if declared == "BLOCKED_INPUT" else "NOT_RUN"
         return status, str(report.get("reason") or report.get("error") or declared)
-    if gate == "lane_section_successors":
+    if gate in ("lane_section_successors", "lane_connectivity"):
         ok = _determine_lane_ok(report)
     elif gate == "geometric_continuity":
         ok = _determine_report_ok(report)
