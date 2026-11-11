@@ -89,6 +89,13 @@ def _load_encoder(checkpoint_path: str, device: torch.device) -> MapEncoder:
     model = MapEncoder(cfg)
     model.load_state_dict(state)
     model.eval()
+    # Rebuild evaluation graphs with the SAME feature construction contract
+    # that the model was trained on; legacy defaults are not authoritative
+    # for polynomial-width checkpoints.
+    model._v94_graph_width_mode = width_mode
+    model._v94_graph_strict = bool(
+        meta.get("training_config", {}).get("strict_dataset", False)
+    )
     return model.to(device)
 
 
@@ -122,8 +129,12 @@ def compute_whole_map_latent_gap(
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model = _load_encoder(checkpoint, device)
 
-    g_m = MapGraphBuilder.build_from_xodr(manual_xodr)
-    g_a = MapGraphBuilder.build_from_xodr(auto_xodr)
+    graph_kwargs = {
+        "width_mode": model._v94_graph_width_mode,
+        "strict": model._v94_graph_strict,
+    }
+    g_m = MapGraphBuilder.build_from_xodr(manual_xodr, **graph_kwargs)
+    g_a = MapGraphBuilder.build_from_xodr(auto_xodr, **graph_kwargs)
 
     if g_m is None or g_a is None:
         return {
@@ -193,6 +204,10 @@ def compute_per_tile_latent_gap(
         pairs = TileMatcher.match(manual_tiles, auto_tiles)
         pairing_method = "spatial_iou"
 
+    graph_kwargs = {
+        "width_mode": model._v94_graph_width_mode,
+        "strict": model._v94_graph_strict,
+    }
     per_tile: Dict[str, Dict[str, float]] = {}
     skipped = []
 
@@ -200,8 +215,8 @@ def compute_per_tile_latent_gap(
         m_path = os.path.join(manual_tiles, m_name)
         a_path = os.path.join(auto_tiles, a_name)
 
-        g_m = MapGraphBuilder.build_from_xodr(m_path)
-        g_a = MapGraphBuilder.build_from_xodr(a_path)
+        g_m = MapGraphBuilder.build_from_xodr(m_path, **graph_kwargs)
+        g_a = MapGraphBuilder.build_from_xodr(a_path, **graph_kwargs)
 
         if g_m is None or g_a is None:
             skipped.append(m_name)
