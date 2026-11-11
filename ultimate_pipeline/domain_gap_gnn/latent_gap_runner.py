@@ -15,7 +15,7 @@ from ultimate_pipeline.domain_gap.tile_matcher import TileMatcher
 from .map_encoder import MapEncoder, MapEncoderConfig
 from .latent_gap_utils import combine_latent_gaps
 from .graph_builder import MapGraphBuilder
-from .collapse_guard_wire import collapse_verdict, collapsed_payload
+from .collapse_guard_wire import collapse_verdict, blocked_payload
 
 
 # ============================================================
@@ -51,14 +51,12 @@ def _load_encoder(checkpoint_path: str, device: torch.device) -> MapEncoder:
     from . import gnn_provenance as prov
     from .graph_builder import graph_schema_hash
 
-    ckpt = torch.load(checkpoint_path, map_location="cpu")
-    state, meta, _label = prov._normalise_loaded_checkpoint(ckpt)
+    state, meta, _label = prov.load_checkpoint(checkpoint_path)
     if meta is None:
-        cfg = MapEncoderConfig(**ckpt["cfg"])
-        model = MapEncoder(cfg)
-        model.load_state_dict(ckpt["model_state"])
-        model.eval()
-        return model.to(device)
+        raise ValueError(
+            "legacy checkpoint has no verified manifest; "
+            "RQ4 latent-gap metrics require cryptographic provenance"
+        )
     # Cross-check the stored schema hash against the CURRENT code's schema
     # for the width mode recorded at train time: a code change that alters
     # features must fail closed here instead of silently reusing weights.
@@ -95,12 +93,10 @@ def _load_encoder(checkpoint_path: str, device: torch.device) -> MapEncoder:
 
 
 def checkpoint_provenance_label(checkpoint_path: str) -> str:
-    """Return VERIFIED_CRYPTOGRAPHIC_PROVENANCE for metadata-bearing
-    checkpoints, else LEGACY_UNBOUND_CHECKPOINT."""
+    """Return the verified label only after checking the actual checkpoint."""
     from . import gnn_provenance as prov
 
-    ckpt = torch.load(str(checkpoint_path), map_location="cpu")
-    _, _, label = prov._normalise_loaded_checkpoint(ckpt)
+    _, _, label = prov.load_checkpoint(checkpoint_path)
     return label
 
 
@@ -120,8 +116,8 @@ def compute_whole_map_latent_gap(
     # RQ4: encoder-collapse guard — if the encoder is COLLAPSED,
     # emit NOT_RUN instead of fabricated gap metrics.
     cv = collapse_verdict(checkpoint, tiles_dir=tiles_dir)
-    if cv.get("verdict") == "COLLAPSED":
-        return collapsed_payload(checkpoint, tiles_dir=tiles_dir)
+    if cv.get("status") != "ok":
+        return blocked_payload(cv)
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model = _load_encoder(checkpoint, device)
@@ -179,8 +175,8 @@ def compute_per_tile_latent_gap(
 
     # RQ4: encoder-collapse guard (tiles_dir = auto_tiles)
     cv = collapse_verdict(checkpoint, tiles_dir=auto_tiles)
-    if cv.get("verdict") == "COLLAPSED":
-        return collapsed_payload(checkpoint, tiles_dir=auto_tiles)
+    if cv.get("status") != "ok":
+        return blocked_payload(cv)
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model = _load_encoder(checkpoint, device)
