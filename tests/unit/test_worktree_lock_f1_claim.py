@@ -165,6 +165,7 @@ def test_t3_successor_bytes_survive_renewal_at_publication_boundary(
     path = _lease_path(repo)
     original_write = wl._write_payload
     original_claim = wl._generation_claim
+    first_published = path.read_bytes()
     nested: dict[str, object] = {}
     entered = False
 
@@ -189,8 +190,15 @@ def test_t3_successor_bytes_survive_renewal_at_publication_boundary(
         return original_write(target, payload)
 
     monkeypatch.setattr(wl, "_write_payload", replace_during_renewal)
-    renewed = wl.renew_worktree_lease(repo, old.owner_token, old.lease_id)
+    renewed = wl.renew_worktree_lease(
+        repo, old.owner_token, old.lease_id, lease_minutes=480
+    )
     assert renewed.lease_id == old.lease_id
+    if "successor" not in nested:
+        first_renewed = path.read_bytes()
+        assert first_renewed != first_published, "no-op renewal must fail T3"
+        assert json.loads(first_renewed)["expires_at"] == renewed.expires_at
+        assert json.loads(first_renewed)["generation"] == old.generation
     if "successor" in nested:
         assert path.read_bytes() == nested["bytes"], "renewal overwrote a claimed successor"
         successor = nested["successor"]
@@ -224,8 +232,19 @@ def test_t4_cleanup_rechecks_a_renewed_record_under_claim(repo: Path, monkeypatc
     else:
         monkeypatch.setattr(wl, "list_worktree_leases", lambda _root: [stale])
     monkeypatch.setattr(wl, "reclaim_decision", lambda _lease: (True, "injected dead owner"))
+    observed_claimed_reads: list[Path] = []
+    original_read = wl._read_lease_at_path
 
+    def read_under_actual_claim(candidate: Path):
+        assert wl._generation_claim_path_for_lease(candidate).exists(), (
+            "T4 must acquire the real claim before current-record reread"
+        )
+        observed_claimed_reads.append(candidate)
+        return original_read(candidate)
+
+    monkeypatch.setattr(wl, "_read_lease_at_path", read_under_actual_claim)
     assert wl.cleanup_expired_leases(repo) == 0
+    assert observed_claimed_reads == [path], "no-op cleanup must fail T4"
     assert path.read_bytes() == successor_bytes
 
 
@@ -297,14 +316,15 @@ def test_t6_malformed_recovery_only_removes_the_bytes_it_audited(
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_bytes(b"{ malformed original")
     changed = b"{ replacement malformed bytes"
-    original_claim = wl._claim_by_rename
+    original_claim = wl._claim_lease_path
 
-    def replace_before_claim(root: Path, tag: str, expect):
+    def replace_before_claim(physical: Path, tag: str, expect):
         if tag == "recover":
+            assert physical == path
             path.write_bytes(changed)
-        return original_claim(root, tag, expect)
+        return original_claim(physical, tag, expect)
 
-    monkeypatch.setattr(wl, "_claim_by_rename", replace_before_claim)
+    monkeypatch.setattr(wl, "_claim_lease_path", replace_before_claim)
     record = wl.recover_malformed_lease(repo, repo, "operator", "T6 injection")
     assert record["recovered"] is False
     assert path.read_bytes() == changed
@@ -435,3 +455,159 @@ def test_r3_busy_lease_does_not_block_other_cleanup(repo: Path, monkeypatch):
 
     assert busy_path.exists(), "busy lease must be skipped"
     assert not free_path.exists(), "cleanup must continue to other expired leases"
+
+
+def test_v94_no_generation_rollback_after_release_and_reacquire(repo: Path):
+    first = wl.acquire_worktree_lease(repo, purpose="v94-gen-first")
+    path = _lease_path(repo)
+    high = first.generation
+    assert wl.release_worktree_lease(repo, first.owner_token, first.lease_id)
+    assert not path.exists()
+    stale = wl.WorktreeLease(
+        worktree_root=str(repo.resolve()), generation=high, purpose="stale",
+    )
+    with pytest.raises(RuntimeError, match="stale generation"):
+        wl._write_lease(stale)
+    assert not path.exists()
+    with pytest.raises(RuntimeError, match="stale generation"):
+        wl.publish_lease(stale)
+    assert not path.exists()
+    second = wl.acquire_worktree_lease(repo, purpose="v94-gen-second")
+    assert second.generation > high
+    with pytest.raises(RuntimeError):
+        wl.renew_worktree_lease(repo, first.owner_token, first.lease_id)
+    assert wl.release_worktree_lease(repo, second.owner_token, second.lease_id)
+
+
+def test_v94_initialized_missing_or_partial_ledger_fails_closed(repo: Path):
+    lease = wl.acquire_worktree_lease(repo, purpose="v94-ledger")
+    assert wl.release_worktree_lease(repo, lease.owner_token, lease.lease_id)
+    ledger = wl._ledger_path(repo)
+    marker = wl._generation_marker_path(repo)
+    assert marker.read_bytes() == b"worktree-generation-ledger/v1\n"
+    ledger.unlink()
+    with pytest.raises(RuntimeError, match="initialized generation ledger is missing"):
+        wl.acquire_worktree_lease(repo)
+    assert not _lease_path(repo).exists()
+    ledger.write_bytes(b"1")
+    with pytest.raises(RuntimeError, match="partial"):
+        wl.acquire_worktree_lease(repo)
+    assert not _lease_path(repo).exists()
+
+
+def test_v94_nonexpired_malformed_claim_does_not_block_other_cleanup(
+    repo: Path,
+):
+    roots = [repo / "first", repo / "second"]
+    for root in roots:
+        root.mkdir()
+    first, later = sorted(roots, key=lambda root: str(_lease_path(root)))
+    wl._write_lease(wl.WorktreeLease(
+        worktree_root=str(first.resolve()), generation=1,
+        expires_at="2999-01-01T00:00:00Z",
+    ))
+    wl._write_lease(wl.WorktreeLease(
+        worktree_root=str(later.resolve()), generation=1,
+        holder_pid=99999999, expires_at="2020-01-01T00:00:00Z",
+    ))
+    claim = wl._generation_claim_path(first)
+    claim.write_bytes(b"")
+    assert wl.cleanup_expired_leases(repo) == 1
+    assert _lease_path(first).exists()
+    assert not _lease_path(later).exists()
+    assert claim.read_bytes() == b""
+
+
+def test_v94_malformed_after_listing_skips_entry_and_cleans_next(
+    repo: Path, monkeypatch
+):
+    roots = [repo / "first", repo / "second"]
+    for root in roots:
+        root.mkdir()
+    first, later = sorted(roots, key=lambda root: str(_lease_path(root)))
+    for root in (first, later):
+        wl._write_lease(wl.WorktreeLease(
+            worktree_root=str(root.resolve()), generation=1,
+            holder_pid=99999999, expires_at="2020-01-01T00:00:00Z",
+        ))
+    first_path = _lease_path(first)
+    original_read = wl._read_lease_at_path
+    corrupted = False
+
+    def inject_after_claim(path: Path):
+        nonlocal corrupted
+        if path == first_path and not corrupted:
+            assert wl._generation_claim_path_for_lease(path).exists()
+            corrupted = True
+            path.write_bytes(b"{ malformed after enumeration")
+        return original_read(path)
+
+    monkeypatch.setattr(wl, "_read_lease_at_path", inject_after_claim)
+    assert wl.cleanup_expired_leases(repo) == 1
+    assert corrupted
+    assert first_path.read_bytes() == b"{ malformed after enumeration"
+    assert not _lease_path(later).exists()
+
+
+@pytest.mark.parametrize("bad_root", ["", ".", "worktree"])
+def test_v94_missing_relative_root_is_never_deleted(repo: Path, bad_root: str):
+    lease = wl.WorktreeLease(
+        worktree_root=str(repo.resolve()),
+        holder_pid=99999999,
+        generation=1, expires_at="2020-01-01T00:00:00Z",
+    )
+    wl._write_lease(lease)
+    path = _lease_path(repo)
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    payload["worktree_root"] = bad_root
+    payload["worktree_identity"] = ""
+    path.write_text(json.dumps(payload), encoding="utf-8")
+    assert wl.cleanup_expired_leases(repo) == 0
+    assert path.exists()
+
+
+def test_v94_recover_retired_worktree_via_common_git_and_audit(repo: Path):
+    retired = repo.parent / "deleted-linked-worktree"
+    retired.mkdir()
+    dotgit = retired / ".git"
+    dotgit.write_text(
+        f"gitdir: {repo / '.git' / 'worktrees' / retired.name}\n",
+        encoding="utf-8",
+    )
+    lease = wl.WorktreeLease(
+        worktree_root=str(retired.resolve()), generation=1,
+    )
+    wl._write_lease(lease)
+    physical = lock_paths.worktree_lease_path(repo, retired)
+    physical.write_bytes(b"{ recover this malformed evidence")
+    dotgit.unlink()
+    retired.rmdir()
+    record = wl.recover_malformed_lease(
+        repo, retired, "test-operator", "operator-confirmed malformed"
+    )
+    assert record["recovered"] is True
+    assert not physical.exists()
+    assert not retired.exists()
+    receipt = json.loads(Path(record["audit_path"]).read_text(encoding="utf-8"))
+    assert receipt["phase"] == "COMPLETE"
+    assert receipt["removed_sha256"] == record["removed_sha256"]
+    assert receipt["operator"] == "test-operator"
+
+
+def test_v94_unverified_identity_does_not_override_common_repo(repo: Path):
+    other = repo.parent / "other-repo"
+    other.mkdir()
+    _git("init", cwd=other)
+    _git("commit", "--allow-empty", "-m", "init", cwd=other)
+    foreign = other / "scope"
+    foreign.mkdir()
+    lease = wl.WorktreeLease(
+        worktree_root=str(foreign.resolve()),
+        worktree_identity=lock_paths.worktree_identity(foreign),
+        generation=1, holder_pid=99999999,
+        expires_at="2020-01-01T00:00:00Z",
+    )
+    malicious_path = lock_paths.worktree_lease_path(repo, foreign)
+    malicious_path.write_text(json.dumps(lease.to_json()), encoding="utf-8")
+    assert wl.cleanup_expired_leases(repo) == 0
+    assert malicious_path.exists()
