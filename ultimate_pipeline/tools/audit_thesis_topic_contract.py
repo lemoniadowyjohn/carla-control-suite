@@ -261,6 +261,9 @@ def _current_rq_tables_audit(repo_root: Path) -> Dict[str, Any]:
     valid_statuses = {
         "AUTHORITATIVE",
         "BOUNDED",
+        # Emitted by tools/export_thesis_tables.py for RQ4 when the spatial-null /
+        # CI conditions for AUTHORITATIVE are not met (fix(rq4) 9228d258).
+        "BOUNDED_DESCRIPTIVE",
         "PROTOTYPE",
         "DEFERRED_RUNTIME",
         "DEFERRED_EXTERNAL_DATA",
