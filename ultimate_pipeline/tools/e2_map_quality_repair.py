@@ -360,6 +360,10 @@ def _acceptance(
         "strict_elev_jumps_materially_reduced": after_qa["strict_elev_jump_count"]
         <= max(5, int(0.01 * before_qa["strict_elev_jump_count"])),
         "elevation_seam_gate_ok": bool(after_qa["seams"].get("ok")),
+        # V85 Phase 2: continuity was computed but never checked, so the
+        # historical E2 run reported continuity.ok=false (574 issues) together
+        # with DRIVABLE_CANDIDATE_PRODUCED. It is now a required check.
+        "elevation_continuity_ok": after_qa["continuity"].get("ok") is True,
         "elevation_missing_and_cliffs_ok": bool(after_qa["missing_and_cliffs"].get("ok")),
         "elevation_structure_ok": bool(after_qa["structure"].get("ok")),
         "g19_clean_before": before_g19["violations"] == 0,

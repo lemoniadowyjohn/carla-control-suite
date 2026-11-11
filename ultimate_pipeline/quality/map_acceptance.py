@@ -16,7 +16,7 @@ import json
 import os
 import sys
 import xml.etree.ElementTree as ET
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Sequence
 
 from ultimate_pipeline.utils.file_hashing import safe_sha256_file
 from ultimate_pipeline.tools.crash_safe_length_repair import (
@@ -114,6 +114,30 @@ def _determine_lane_ok(report: Dict[str, Any]) -> Optional[bool]:
     if "failures" in report:
         return len(report.get("failures") or []) == 0
     return None
+
+
+_NON_PASS_DECLARED_STATUSES = {"NOT_RUN", "BLOCKED_INPUT", "ERROR", "INCOMPLETE"}
+
+
+def _mandatory_gate_status(gate: str, report: Any) -> tuple[str, str]:
+    """Fail-closed status of one mandatory gate: (PASS|FAIL|NOT_RUN|BLOCKED_INPUT, reason)."""
+    if not isinstance(report, dict):
+        return "NOT_RUN", "mandatory gate report missing from acceptance inputs"
+    declared = str(report.get("status") or "").strip().upper()
+    if declared in _NON_PASS_DECLARED_STATUSES:
+        status = "BLOCKED_INPUT" if declared == "BLOCKED_INPUT" else "NOT_RUN"
+        return status, str(report.get("reason") or report.get("error") or declared)
+    if gate in ("lane_section_successors", "lane_connectivity"):
+        ok = _determine_lane_ok(report)
+    elif gate == "geometric_continuity":
+        ok = _determine_report_ok(report)
+    else:
+        ok = report.get("ok")
+    if ok is True:
+        return "PASS", ""
+    if ok is None:
+        return "NOT_RUN", "mandatory gate report has no decidable pass/fail result"
+    return "FAIL", _reason_from_report(report)
 
 
 def _lane_missing_count(report: Dict[str, Any]) -> Optional[int]:
@@ -584,6 +608,7 @@ def build_map_acceptance(
     require_enrichment: bool = False,
     require_component_reachability: bool = False,
     component_reachability_waiver: str | None = None,
+    mandatory_gates: Sequence[str] | None = None,
 ) -> Dict[str, Any]:
     hard_fail_reasons: List[Dict[str, str]] = []
     soft_warnings: List[Dict[str, str]] = []
@@ -1086,6 +1111,20 @@ def build_map_acceptance(
                         }
                     )
 
+    # V85 Phase 2: mandatory gates are fail-closed. A mandatory gate passes only
+    # when its report is present AND resolves to exactly True. Missing,
+    # NOT_RUN/BLOCKED_INPUT, malformed or None reports are hard failures, never
+    # an implicit pass.
+    mandatory_status: Dict[str, str] = {}
+    if mandatory_gates:
+        already_failed = {item["gate"] for item in hard_fail_reasons}
+        for gate in mandatory_gates:
+            status, reason = _mandatory_gate_status(gate, reports.get(gate))
+            mandatory_status[gate] = status
+            if status != "PASS" and gate not in already_failed:
+                hard_fail_reasons.append({"gate": gate, "reason": f"{status}: {reason}"})
+        metrics["mandatory_gate_status"] = mandatory_status
+
     valid_for_experiments = len(hard_fail_reasons) == 0
 
     # Compute SHA256 for all linked artifacts
@@ -1105,6 +1144,8 @@ def build_map_acceptance(
         "metrics": metrics,
         "linked_artifacts": linked_artifacts,
         "linked_artifact_sha256": artifact_hashes,
+        "mandatory_gates": list(mandatory_gates or ()),
+        "mandatory_gate_status": mandatory_status,
         "provenance": {
             "tool": "map_acceptance",
             "git_sha": _get_git_sha(),
