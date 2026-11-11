@@ -1,0 +1,5 @@
+🧠 LaneGNNRefiner stub active — ML-based lane refinement not implemented yet.
+Traceback (most recent call last):
+  File "/mnt/data/v94_gnn_worktree/behavioral_control.py", line 18, in <module>
+    raise AssertionError(f"Configured GNN request silently returned {result!r} without inference")
+AssertionError: Configured GNN request silently returned None without inference

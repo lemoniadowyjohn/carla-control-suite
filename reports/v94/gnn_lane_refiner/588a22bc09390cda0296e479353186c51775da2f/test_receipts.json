@@ -1,0 +1,90 @@
+{
+  "schema_version": "v94-test-receipt-1",
+  "repository": "lemoniadowyjohn/carla-control-suite",
+  "base_git_sha": "225ed15d0da6444cc257835ca777aba281553f3c",
+  "source_git_sha": "588a22bc09390cda0296e479353186c51775da2f",
+  "source_blob_sha": "43745b5c9f9b2601f72c986a3d47cdc737b315e3",
+  "test_blob_sha": "9d9e6b8d95cb50ba00a7ca2ed619e3c248d7e102",
+  "source_file_sha256": "017a4eda1517f7196709ce06f865e338470c781b19def4974c3f55379b44528d",
+  "test_file_sha256": "71747e0dc228aedfa37780f590b539bd5516ddea8d5b7af4b845225003036e2c",
+  "environment": {
+    "os": "Linux 6.18.57 x86_64",
+    "python": "3.13.5",
+    "pytest": "9.0.2",
+    "scope": "isolated overlay; NOT full repository checkout"
+  },
+  "runs": [
+    {
+      "id": "BASE_CONTROL",
+      "command": "python behavioral_control.py ../v94_gnn_baseline/ultimate_pipeline/ml/lane_gnn_refiner.py",
+      "exit_code": 1,
+      "expected_exit_code": 1,
+      "outcome": "EXPECTED_FAILURE",
+      "log_sha256": "e41dc3eb809117d2ad5ba45773c2b3475a1c8dbbd83269408324239255fe69c5"
+    },
+    {
+      "id": "FIXED_CONTROL",
+      "command": "python behavioral_control.py ultimate_pipeline/ml/lane_gnn_refiner.py",
+      "exit_code": 0,
+      "outcome": "PASS",
+      "log_sha256": "1ae258c5a7d7789533b19ad8e0672636cb052f96312f105094cca237e5655e61"
+    },
+    {
+      "id": "TARGETED_PYTEST",
+      "command": "PYTHONPATH=. python -m pytest -q tests/unit/test_lane_gnn_refiner_fail_closed_v94.py",
+      "exit_code": 0,
+      "passed": 26,
+      "failed": 0,
+      "skipped": 0,
+      "collection_errors": 0,
+      "duration_seconds_reported": 0.09,
+      "outcome": "PASS_ISOLATED",
+      "log_sha256": "7b2495bd93e2ebabc31e0f4b2c9a4df34834ce9f75c31a3e0bf7d8e527a0faf0"
+    },
+    {
+      "id": "PY_COMPILE",
+      "command": "python -m compileall -q ultimate_pipeline/ml tests/unit/test_lane_gnn_refiner_fail_closed_v94.py",
+      "exit_code": 0,
+      "outcome": "PASS"
+    }
+  ],
+  "not_run": [
+    {
+      "id": "RUFF",
+      "status": "BLOCKED_ENV",
+      "reason": "not installed"
+    },
+    {
+      "id": "FULL_REPO",
+      "status": "BLOCKED_EXTERNAL",
+      "reason": "full checkout not available; direct GitHub clone DNS failed"
+    },
+    {
+      "id": "WIN_CARLA",
+      "status": "BLOCKED_EXTERNAL",
+      "reason": "production Windows worktree/CARLA unavailable"
+    },
+    {
+      "id": "REAL_GNN_TRAIN_TEST",
+      "status": "BLOCKED_DATA",
+      "reason": "no verified licensed labels, trained checkpoint, split or calibration"
+    },
+    {
+      "id": "HELD_OUT",
+      "status": "BLOCKED_DATA",
+      "reason": "no genuine independent map benchmark"
+    },
+    {
+      "id": "EXACT_SHA_CI",
+      "status": "NOT_VERIFIED",
+      "reason": "not established at report creation"
+    },
+    {
+      "id": "INDEPENDENT_REVIEW",
+      "status": "PENDING",
+      "reason": "not signed off"
+    }
+  ],
+  "module_status": "REQUIRES_CHANGES",
+  "real_gnn_feature_status": "BLOCKED_DATA"
+}
