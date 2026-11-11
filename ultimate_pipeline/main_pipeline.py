@@ -3420,13 +3420,18 @@ if str(_repo_root) not in sys.path:
         return identity
 
     def _collect_final_acceptance_reports(
-        self, final_out: str, *, seam_report: Optional[Dict[str, Any]] = None
+        self,
+        final_out: str,
+        *,
+        seam_report: Optional[Dict[str, Any]] = None,
+        expected_sha256: Optional[str] = None,
     ) -> Dict[str, Any]:
         """Assemble every acceptance report for the FINAL artifact (V85 Phase 2).
 
         Every RELEASE_MANDATORY_GATES gate gets a report dict. A failed recompute
         yields an explicit NOT_RUN report: never silently absent, never stale
-        pre-hygiene evidence.
+        pre-hygiene evidence. V86: ``final_out`` is the immutable
+        content-addressed snapshot, and ``expected_sha256`` is its digest.
         """
         acceptance_reports: Dict[str, Any] = {}
         if isinstance(seam_report, dict):
@@ -3475,7 +3480,14 @@ if str(_repo_root) not in sys.path:
                 out_json=os.path.join(self.out_dir, "lane_successor_autofix_report.json"),
                 allow_dead_ends=True,
             )
-            acceptance_reports["lane_section_successors"] = lane_conn_report
+            # V86 A4: state 'ok' explicitly from broken_count. Acceptance no
+            # longer infers success.
+            from ultimate_pipeline.quality.final_artifact_gates import (
+                normalize_lane_section_report,
+            )
+            acceptance_reports["lane_section_successors"] = normalize_lane_section_report(
+                lane_conn_report
+            )
         except Exception as exc:
             print(f"[AUTHORITY] lane_section_successors recompute FAILED (NOT_RUN): {exc}")
             acceptance_reports["lane_section_successors"] = {
@@ -3496,7 +3508,9 @@ if str(_repo_root) not in sys.path:
             compute_final_artifact_reports,
         )
 
-        for gate_key, gate_report in compute_final_artifact_reports(final_out).items():
+        for gate_key, gate_report in compute_final_artifact_reports(
+            final_out, expected_sha256=expected_sha256
+        ).items():
             acceptance_reports[gate_key] = gate_report
             print(
                 f"[AUTHORITY] {gate_key} recomputed on final artifact: "
@@ -3571,10 +3585,26 @@ if str(_repo_root) not in sys.path:
         )
 
         # ---- acceptance evidence, recomputed against the FINAL artifact ----
-        from ultimate_pipeline.quality.final_artifact_gates import RELEASE_MANDATORY_GATES
+        from ultimate_pipeline.quality.final_artifact_gates import (
+            ACCEPTANCE_POLICY_VERSION,
+            RELEASE_MANDATORY_GATES,
+            snapshot_final_artifact,
+            verify_artifact_unchanged,
+        )
 
+        # V86 A6: every release validator evaluates ONE immutable,
+        # content-addressed copy of the final artifact. Replacing final_out
+        # during validation can no longer mix two maps into one passing
+        # receipt.
+        snapshot = snapshot_final_artifact(
+            final_out, os.path.join(self.out_dir, ".acceptance_snapshot")
+        )
+        print(
+            f"[AUTHORITY] acceptance snapshot {snapshot['sha256'][:16]}... "
+            f"({snapshot['bytes']} bytes) -> {snapshot['path']}"
+        )
         acceptance_reports = self._collect_final_acceptance_reports(
-            final_out, seam_report=seam_report
+            snapshot["path"], seam_report=seam_report, expected_sha256=snapshot["sha256"]
         )
 
         # CODEX C7 (policy unchanged, code relocated): only require enrichment
@@ -3596,12 +3626,24 @@ if str(_repo_root) not in sys.path:
                 out_dir=self.out_dir,
                 require_enrichment=require_enrichment,
                 mandatory_gates=RELEASE_MANDATORY_GATES,
+                purpose="release",
+                policy_version=ACCEPTANCE_POLICY_VERSION,
+                evaluated_xodr_sha256=snapshot["sha256"],
             )
             self.map_acceptance = map_acceptance
             acc_path = os.path.join(self.out_dir, "map_acceptance.json")
             with open(acc_path, "w", encoding="utf-8") as f:
                 json.dump(map_acceptance, f, indent=2, default=str)
             print(f"[AUTHORITY] map_acceptance.json -> {acc_path}")
+            # V86 A6: the published artifact must still be byte-identical to the
+            # snapshot the gates evaluated. Tampering after evaluation and
+            # before the receipt fails the run.
+            unchanged, actual_sha = verify_artifact_unchanged(final_out, snapshot["sha256"])
+            if not unchanged:
+                raise RuntimeError(
+                    "TERMINAL_FAILED(ARTIFACT_IDENTITY): final artifact changed after "
+                    f"acceptance (evaluated {snapshot['sha256']}, now {actual_sha})"
+                )
         except Exception as exc:
             raise RuntimeError(
                 "❌ Final map acceptance could not be produced against the "

@@ -65,6 +65,21 @@ def _write_json(path: Path, data: Dict[str, Any]) -> None:
 def run_gates(xodr: Path, out_dir: Path, dem: Optional[Path]) -> Dict[str, Any]:
     reports: Dict[str, Any] = {}
 
+    # V86 A2/A8: structural scope, evaluated through the hardened XML
+    # boundary (no DOCTYPE/ENTITY; size-capped). The definition is shared
+    # with the production pipeline.
+    from ultimate_pipeline.quality.final_artifact_gates import (
+        check_artifact_structure,
+        parse_xodr_bytes,
+    )
+    try:
+        rep = check_artifact_structure(parse_xodr_bytes(xodr.read_bytes()))
+    except Exception as exc:  # noqa: BLE001 - recorded, fail-closed
+        rep = {"ok": None, "status": "BLOCKED_INPUT", "reason": f"{type(exc).__name__}: {exc}"}
+    reports["artifact_structure"] = rep
+    _write_json(out_dir / "artifact_structure.json", rep)
+    print(f"[gate] artifact_structure: ok={rep.get('ok')} roads={rep.get('road_count')}")
+
     rep = check_geometric_continuity(str(xodr), eps_xy=0.05, eps_hdg=0.01)
     reports["geometric_continuity"] = rep
     _write_json(out_dir / "geometric_continuity.json", rep)
@@ -75,7 +90,12 @@ def run_gates(xodr: Path, out_dir: Path, dem: Optional[Path]) -> Dict[str, Any]:
     _write_json(out_dir / "lane_link_target_report.json", rep)
     print(f"[gate] lane_connectivity: ok={rep.get('ok')} broken={rep.get('still_broken_count', rep.get('num_issues', '?'))}")
 
-    rep = repair_and_assert_lane_section_successors(str(xodr), out_path=None, strict=True)
+    from ultimate_pipeline.quality.final_artifact_gates import normalize_lane_section_report
+
+    # V86 A4: explicit 'ok' from the failures list (no inferred success).
+    rep = normalize_lane_section_report(
+        repair_and_assert_lane_section_successors(str(xodr), out_path=None, strict=True)
+    )
     reports["lane_section_successors"] = rep
     _write_json(out_dir / "lane_section_successors.json", rep)
     print(f"[gate] lane_section_successors: ok={rep.get('ok')} broken={rep.get('still_broken_count', rep.get('num_issues', '?'))}")
@@ -230,6 +250,16 @@ def main() -> int:
         action="store_true",
         help="Hard-fail acceptance if >5% of lanes are off the main drivable component",
     )
+    ap.add_argument(
+        "--purpose",
+        choices=("release", "diagnostic"),
+        default="release",
+        help=(
+            "release (default): enforce the authoritative mandatory gate set; the only "
+            "result that can be release-eligible. diagnostic: informational only, never "
+            "release-eligible."
+        ),
+    )
     args = ap.parse_args()
 
     xodr = args.xodr.expanduser().resolve()
@@ -242,6 +272,13 @@ def main() -> int:
     out_dir.mkdir(parents=True, exist_ok=True)
 
     print(f"candidate: {xodr} ({xodr.stat().st_size / 1e6:.1f} MB)")
+    from ultimate_pipeline.quality.final_artifact_gates import (
+        ACCEPTANCE_POLICY_VERSION,
+        RELEASE_MANDATORY_GATES,
+        sha256_bytes,
+    )
+
+    evaluated_sha = sha256_bytes(xodr.read_bytes())
     reports = run_gates(xodr, out_dir, args.dem)
 
     acceptance = build_map_acceptance(
@@ -251,6 +288,10 @@ def main() -> int:
         out_dir=str(out_dir),
         require_enrichment=args.require_enrichment,
         require_component_reachability=args.require_component_reachability,
+        mandatory_gates=RELEASE_MANDATORY_GATES if args.purpose == "release" else None,
+        purpose=args.purpose,
+        policy_version=ACCEPTANCE_POLICY_VERSION,
+        evaluated_xodr_sha256=evaluated_sha,
     )
     _write_json(out_dir / "map_acceptance.json", acceptance)
 
@@ -264,6 +305,9 @@ def main() -> int:
         print(f"  metric {key}: {value}")
     print(f"sha256: {acceptance.get('final_xodr_sha256')}")
     print(f"reports written to: {out_dir}")
+    print(f"purpose: {args.purpose} release_eligible: {acceptance['release_eligible']}")
+    if args.purpose == "release":
+        return 0 if acceptance["release_eligible"] else 1
     return 0 if acceptance["valid_for_experiments"] else 1
 
 

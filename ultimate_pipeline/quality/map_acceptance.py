@@ -117,27 +117,56 @@ def _determine_lane_ok(report: Dict[str, Any]) -> Optional[bool]:
 
 
 _NON_PASS_DECLARED_STATUSES = {"NOT_RUN", "BLOCKED_INPUT", "ERROR", "INCOMPLETE"}
+_PASSING_DECLARED_STATUSES = {"", "PASS"}
+_ISSUE_COUNT_KEYS = (
+    "issue_count", "num_issues", "n_issues", "broken_count", "still_broken_count", "fail_count",
+)
 
 
 def _mandatory_gate_status(gate: str, report: Any) -> tuple[str, str]:
-    """Fail-closed status of one mandatory gate: (PASS|FAIL|NOT_RUN|BLOCKED_INPUT, reason)."""
+    """Strict, fail-closed status of one mandatory gate (V86 A4/A5).
+
+    The result is ``(PASS|FAIL|NOT_RUN|BLOCKED_INPUT, reason)``. PASS requires
+    ALL of the following:
+
+    * the report is a dict;
+    * ``ok`` is present and exactly ``True``. Legacy *inferred* success from
+      other fields never authorizes release; producers must state ``ok``
+      (see ``final_artifact_gates.normalize_lane_section_report``);
+    * the declared ``status``, if any, is ``PASS``;
+    * no issue count is nonzero and no ``issues`` list is non-empty
+      (otherwise the report contradicts itself).
+
+    Truth table: a missing report or a missing/None ``ok`` gives NOT_RUN; a
+    declared NOT_RUN/ERROR/INCOMPLETE gives NOT_RUN; a declared BLOCKED_INPUT
+    gives BLOCKED_INPUT; a non-boolean ``ok``, ``ok`` False, a declared FAIL
+    or an unknown status, or ``ok`` True with issues, gives FAIL.
+    """
     if not isinstance(report, dict):
         return "NOT_RUN", "mandatory gate report missing from acceptance inputs"
     declared = str(report.get("status") or "").strip().upper()
     if declared in _NON_PASS_DECLARED_STATUSES:
         status = "BLOCKED_INPUT" if declared == "BLOCKED_INPUT" else "NOT_RUN"
         return status, str(report.get("reason") or report.get("error") or declared)
-    if gate in ("lane_section_successors", "lane_connectivity"):
-        ok = _determine_lane_ok(report)
-    elif gate == "geometric_continuity":
-        ok = _determine_report_ok(report)
-    else:
-        ok = report.get("ok")
-    if ok is True:
-        return "PASS", ""
-    if ok is None:
-        return "NOT_RUN", "mandatory gate report has no decidable pass/fail result"
-    return "FAIL", _reason_from_report(report)
+    if "ok" not in report or report.get("ok") is None:
+        return "NOT_RUN", "mandatory gate report has no explicit boolean 'ok'"
+    ok = report.get("ok")
+    if not isinstance(ok, bool):
+        return "FAIL", f"malformed report: 'ok' is {type(ok).__name__}, not bool"
+    if declared not in _PASSING_DECLARED_STATUSES:
+        return "FAIL", f"declared status {declared!r} (ok={ok})"
+    if not ok:
+        return "FAIL", _reason_from_report(report)
+    nonzero = {
+        key: report[key] for key in _ISSUE_COUNT_KEYS
+        if isinstance(report.get(key), (int, float)) and not isinstance(report.get(key), bool)
+        and report[key] != 0
+    }
+    if isinstance(report.get("issues"), list) and report["issues"]:
+        nonzero["len(issues)"] = len(report["issues"])
+    if nonzero:
+        return "FAIL", f"contradictory report: ok=True with {nonzero}"
+    return "PASS", ""
 
 
 def _lane_missing_count(report: Dict[str, Any]) -> Optional[int]:
@@ -609,7 +638,14 @@ def build_map_acceptance(
     require_component_reachability: bool = False,
     component_reachability_waiver: str | None = None,
     mandatory_gates: Sequence[str] | None = None,
+    purpose: str | None = None,
+    policy_version: str | None = None,
+    evaluated_xodr_sha256: str | None = None,
 ) -> Dict[str, Any]:
+    if purpose not in (None, "release", "diagnostic"):
+        raise ValueError(f"unknown acceptance purpose {purpose!r}")
+    if purpose == "release" and not mandatory_gates:
+        raise ValueError("release-purpose acceptance requires the authoritative mandatory_gates set")
     hard_fail_reasons: List[Dict[str, str]] = []
     soft_warnings: List[Dict[str, str]] = []
     metrics: Dict[str, Any] = {}
@@ -1125,7 +1161,26 @@ def build_map_acceptance(
                 hard_fail_reasons.append({"gate": gate, "reason": f"{status}: {reason}"})
         metrics["mandatory_gate_status"] = mandatory_status
 
+    # V86 A6: bind the verdict to the exact bytes the gates evaluated. If the
+    # published artifact no longer hashes to the evaluated digest, the
+    # receipt would describe a different file than the one that was checked.
+    if evaluated_xodr_sha256 is not None:
+        if final_xodr_sha256 != evaluated_xodr_sha256:
+            hard_fail_reasons.append({
+                "gate": "artifact_identity",
+                "reason": (
+                    f"FAIL: published artifact sha256={final_xodr_sha256} != evaluated "
+                    f"snapshot sha256={evaluated_xodr_sha256}"
+                ),
+            })
+
     valid_for_experiments = len(hard_fail_reasons) == 0
+    # V86 A9: only an explicit release-purpose evaluation with the
+    # authoritative mandatory gate set can be release-eligible. Legacy and
+    # diagnostic calls stay informational and are labelled as such.
+    release_eligible = bool(
+        purpose == "release" and valid_for_experiments and mandatory_gates
+    )
 
     # Compute SHA256 for all linked artifacts
     artifact_hashes: Dict[str, str] = {}
@@ -1146,6 +1201,13 @@ def build_map_acceptance(
         "linked_artifact_sha256": artifact_hashes,
         "mandatory_gates": list(mandatory_gates or ()),
         "mandatory_gate_status": mandatory_status,
+        "acceptance_policy": {
+            "purpose": purpose or "legacy_unspecified",
+            "policy_version": policy_version,
+            "mandatory_gate_count": len(tuple(mandatory_gates or ())),
+        },
+        "evaluated_xodr_sha256": evaluated_xodr_sha256,
+        "release_eligible": release_eligible,
         "provenance": {
             "tool": "map_acceptance",
             "git_sha": _get_git_sha(),
