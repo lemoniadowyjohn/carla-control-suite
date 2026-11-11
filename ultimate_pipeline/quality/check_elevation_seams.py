@@ -42,19 +42,43 @@ def _percentile(values: List[float], pct: float) -> Optional[float]:
     return float(d0 + d1)
 
 
+def _finite_coefficient(value: Optional[str], label: str) -> float:
+    """Reject malformed coefficients rather than interpreting them as flat terrain."""
+    if value is None:
+        raise ValueError(f"missing elevation coefficient {label}")
+    try:
+        number = float(value)
+    except (TypeError, ValueError) as exc:
+        raise ValueError(f"invalid elevation coefficient {label}: {value!r}") from exc
+    if not math.isfinite(number):
+        raise ValueError(f"non-finite elevation coefficient {label}: {value!r}")
+    return number
+
+
+def _poly_z(segment: Tuple[float, float, float, float, float], s: float) -> float:
+    s0, a, b, c, d = segment
+    ds = max(0.0, s - s0)
+    z = a + b * ds + c * ds * ds + d * ds * ds * ds
+    if not math.isfinite(z):
+        raise ValueError(f"non-finite elevation at s={s}")
+    return z
+
+
 def _parse_elevation_profile(road: ET.Element) -> List[Tuple[float, float, float, float, float]]:
     profile = road.find("elevationProfile")
     if profile is None:
         return []
     segments: List[Tuple[float, float, float, float, float]] = []
     for el in profile.findall("elevation"):
-        s = _safe_float(el.get("s"))
-        a = _safe_float(el.get("a"))
-        b = _safe_float(el.get("b"))
-        c = _safe_float(el.get("c"))
-        d = _safe_float(el.get("d"))
-        segments.append((s, a, b, c, d))
+        segments.append(tuple(
+            _finite_coefficient(el.get(field), field) for field in ("s", "a", "b", "c", "d")
+        ))
     segments.sort(key=lambda v: v[0])
+    for previous, current in zip(segments, segments[1:]):
+        if current[0] <= previous[0]:
+            raise ValueError(f"duplicate/overlapping elevation segment s={current[0]}")
+    if segments and segments[0][0] != 0.0:
+        raise ValueError("elevation profile does not begin at s=0")
     return segments
 
 
@@ -67,9 +91,7 @@ def _elevation_at_s(segments: List[Tuple[float, float, float, float, float]], s:
             seg = candidate
         else:
             break
-    s0, a, b, c, d = seg
-    ds = max(0.0, s - s0)
-    return a + b * ds + c * ds * ds + d * ds * ds * ds
+    return _poly_z(seg, s)
 
 
 def check_elevation_seams(
@@ -97,7 +119,23 @@ def check_elevation_seams(
         "per_road": {},
         "top_offenders": [],
         "warnings": [],
+        "invalid_roads": [],
     }
+
+    # The caller may supply configuration, not just the default 5 m interval.
+    # Zero/negative/non-finite intervals would hang or suppress all checks.
+    for name, value in (
+        ("sample_step_m", sample_step_m),
+        ("step_threshold_m", step_threshold_m),
+        ("max_jump_m", max_jump_m),
+        ("p95_threshold_m", p95_threshold_m),
+    ):
+        if not isinstance(value, (int, float)) or not math.isfinite(value) or (
+            value <= 0 if name == "sample_step_m" else value < 0
+        ):
+            report["ok"] = False
+            report["warnings"].append(f"invalid {name}: {value!r}")
+            return report
 
     try:
         tree = ET.parse(xodr_path)
@@ -107,52 +145,90 @@ def check_elevation_seams(
         report["warnings"].append(f"failed to parse xodr: {exc}")
         return report
 
-    roads = root.findall("road")
+    roads = root.findall("road") if root.tag == "OpenDRIVE" else []
     report["num_roads"] = len(roads)
+    if not roads:
+        report["ok"] = False
+        report["warnings"].append("no OpenDRIVE roads to evaluate")
+        return report
 
     all_jumps: List[float] = []
     z_min = None
     z_max = None
     per_road: Dict[str, Any] = {}
 
+    all_boundary_jumps: List[float] = []
+    # This is a resource-admission ceiling, not a relaxation of seam thresholds.
+    max_samples_per_road = 1_000_000
+
     for road in roads:
         rid = (road.get("id") or "").strip()
-        length = _safe_float(road.get("length"))
-        if length <= 0:
-            continue
-        segments = _parse_elevation_profile(road)
-        s = 0.0
-        prev_z = _elevation_at_s(segments, s)
-        road_jumps: List[float] = []
-        steps = 0
+        try:
+            length = _finite_coefficient(road.get("length"), "road length")
+            if length <= 0:
+                raise ValueError("road length must be positive")
+            if math.ceil(length / sample_step_m) > max_samples_per_road:
+                raise ValueError("sampling requires more than 1000000 intervals")
+            segments = _parse_elevation_profile(road)
+            if segments and segments[-1][0] > length:
+                raise ValueError("elevation segment starts beyond road length")
 
-        z_min = prev_z if z_min is None else min(z_min, prev_z)
-        z_max = prev_z if z_max is None else max(z_max, prev_z)
+            s = 0.0
+            prev_z = _elevation_at_s(segments, s)
+            road_jumps: List[float] = []
+            boundary_jumps: List[float] = []
+            steps = 0
 
-        while s + sample_step_m <= length:
-            s += sample_step_m
-            z = _elevation_at_s(segments, s)
-            dz = abs(z - prev_z)
-            road_jumps.append(dz)
-            all_jumps.append(dz)
-            if dz > step_threshold_m:
-                steps += 1
-            prev_z = z
-            z_min = z if z_min is None else min(z_min, z)
-            z_max = z if z_max is None else max(z_max, z)
+            z_min = prev_z if z_min is None else min(z_min, prev_z)
+            z_max = prev_z if z_max is None else max(z_max, prev_z)
 
-        if road_jumps:
+            # Explicitly evaluate both sides of every polynomial boundary.
+            # Sampling only at 0,5,10... can miss a spike at 2 m that
+            # returns to zero at 4 m, even on an otherwise flat road.
+            for previous, current in zip(segments, segments[1:]):
+                boundary_s = current[0]
+                left_z = _poly_z(previous, boundary_s)
+                right_z = current[1]
+                boundary_jumps.append(abs(right_z - left_z))
+                z_min = min(z_min, left_z, right_z)
+                z_max = max(z_max, left_z, right_z)
+
+            # Include the final partial interval; a 3 m road must be measured
+            # even with the historical default 5 m sample interval.
+            while s < length:
+                next_s = min(length, s + sample_step_m)
+                if next_s <= s:
+                    raise ValueError("sampling interval cannot advance at road precision")
+                s = next_s
+                z = _elevation_at_s(segments, s)
+                dz = abs(z - prev_z)
+                road_jumps.append(dz)
+                all_jumps.append(dz)
+                if dz > step_threshold_m:
+                    steps += 1
+                prev_z = z
+                z_min = min(z_min, z)
+                z_max = max(z_max, z)
+
+            all_boundary_jumps.extend(boundary_jumps)
             per_road[rid] = {
                 "road_id": rid,
                 "samples": len(road_jumps) + 1,
                 "step_count": steps,
-                "max_jump": max(road_jumps),
+                "max_jump": max(road_jumps + boundary_jumps, default=0.0),
                 "p95_jump": _percentile(road_jumps, 95.0),
+                "boundary_checks": len(boundary_jumps),
+                "boundary_discontinuities": sum(
+                    jump > step_threshold_m for jump in boundary_jumps
+                ),
+                "max_boundary_jump": max(boundary_jumps, default=0.0),
             }
             report["total_samples"] += len(road_jumps) + 1
             report["total_steps"] += steps
+        except (TypeError, ValueError, OverflowError) as exc:
+            report["invalid_roads"].append({"road_id": rid, "reason": str(exc)})
 
-    max_jump = max(all_jumps) if all_jumps else 0.0
+    max_jump = max(all_jumps + all_boundary_jumps, default=0.0)
     p95_jump = _percentile(all_jumps, 95.0) if all_jumps else 0.0
     total_jump_samples = len(all_jumps)
     bad_fraction = (report["total_steps"] / float(total_jump_samples)) if total_jump_samples else 0.0
@@ -162,7 +238,11 @@ def check_elevation_seams(
     try:
         max_bad_fraction = float(os.getenv("UP_ELEV_SEAM_MAX_BAD_FRACTION", "0.002") or "0.002")
     except Exception:
-        max_bad_fraction = 0.002
+        max_bad_fraction = float("nan")
+    if not math.isfinite(max_bad_fraction) or not 0.0 <= max_bad_fraction <= 1.0:
+        report["ok"] = False
+        report["warnings"].append("invalid UP_ELEV_SEAM_MAX_BAD_FRACTION")
+        return report
 
     report["seam_stats"] = {
         "count": report["total_steps"],
@@ -171,6 +251,11 @@ def check_elevation_seams(
         "max_bad_fraction": float(max_bad_fraction),
         "max_jump": float(max_jump),
         "p95_jump": float(p95_jump) if p95_jump is not None else None,
+        "boundary_checks": len(all_boundary_jumps),
+        "boundary_discontinuities": sum(
+            jump > step_threshold_m for jump in all_boundary_jumps
+        ),
+        "max_boundary_jump": max(all_boundary_jumps, default=0.0),
     }
     report["elevation_stats"] = {
         "z_min": float(z_min) if z_min is not None else 0.0,
@@ -188,5 +273,8 @@ def check_elevation_seams(
 
     fail_max = max_jump > max_jump_m
     fail_freq = ((p95_jump or 0.0) > p95_threshold_m) and (bad_fraction > max_bad_fraction)
-    report["ok"] = not (fail_max or fail_freq)
+    fail_boundary = any(jump > step_threshold_m for jump in all_boundary_jumps)
+    report["ok"] = not (
+        fail_max or fail_freq or fail_boundary or report["invalid_roads"]
+    )
     return report
