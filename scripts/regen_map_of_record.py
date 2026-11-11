@@ -337,7 +337,16 @@ def _measure_acceptance(final_xodr: Path, out_dir: Path) -> Dict[str, Any]:
     from scripts.measure_candidate_acceptance import run_gates
     from ultimate_pipeline.quality.map_acceptance import build_map_acceptance
 
+    from ultimate_pipeline.quality.final_artifact_gates import (
+        ACCEPTANCE_POLICY_VERSION,
+        RELEASE_MANDATORY_GATES,
+        sha256_bytes,
+    )
+
     dem = REPO_ROOT / "cities" / "ingolstadt" / "dem" / "dem_ing.tif"
+    # V86 A9: map-of-record promotion is a release-purpose evaluation, with the
+    # authoritative mandatory gate set bound to the evaluated digest.
+    evaluated_sha = sha256_bytes(final_xodr.read_bytes())
     reports = run_gates(final_xodr, out_dir, dem)
     acceptance = build_map_acceptance(
         reports,
@@ -346,6 +355,10 @@ def _measure_acceptance(final_xodr: Path, out_dir: Path) -> Dict[str, Any]:
         out_dir=str(out_dir),
         require_enrichment=True,
         require_component_reachability=True,
+        mandatory_gates=RELEASE_MANDATORY_GATES,
+        purpose="release",
+        policy_version=ACCEPTANCE_POLICY_VERSION,
+        evaluated_xodr_sha256=evaluated_sha,
     )
     _write_json(out_dir / "map_acceptance.json", acceptance)
     print(f"[acceptance] valid_for_experiments={acceptance['valid_for_experiments']}")
@@ -462,7 +475,7 @@ def cmd_verify_only(args: argparse.Namespace) -> int:
     out_dir.mkdir(parents=True, exist_ok=True)
     acceptance = _measure_acceptance(xodr, out_dir)
     print(f"sha256: {acceptance.get('final_xodr_sha256')}")
-    return 0 if acceptance["valid_for_experiments"] else 1
+    return 0 if acceptance.get("release_eligible") is True else 1
 
 
 def cmd_regen(args: argparse.Namespace) -> int:
@@ -524,7 +537,7 @@ def cmd_regen(args: argparse.Namespace) -> int:
         print(f"[frame] already local ({rebase_report.get('reason')}); no re-base needed")
 
     acceptance = _measure_acceptance(measured, out_dir / "acceptance")
-    if not acceptance["valid_for_experiments"]:
+    if acceptance.get("release_eligible") is not True:
         print("ERROR: acceptance FAILED; refusing to emit a candidate.", file=sys.stderr)
         return 1
 
