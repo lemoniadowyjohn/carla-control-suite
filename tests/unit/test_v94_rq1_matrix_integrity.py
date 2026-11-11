@@ -1,7 +1,6 @@
 """RQ1 matrix identity gap regression: compare measured child keys, not None."""
 from __future__ import annotations
 
-from copy import deepcopy
 
 from research.rq1_determinism_matrix import build_determinism_matrix
 
