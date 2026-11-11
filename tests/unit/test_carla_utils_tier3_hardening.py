@@ -134,7 +134,7 @@ def test_vram_preflight_no_action_when_clean(monkeypatch: pytest.MonkeyPatch) ->
     assert killed == []
 
 
-def test_vram_preflight_kills_stale_instance_when_dirty(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_vram_preflight_never_kills_when_dirty(monkeypatch: pytest.MonkeyPatch, capsys) -> None:
     killed = []
     monkeypatch.setattr(cu, "_kill_stuck_carla", lambda: killed.append(True))
     monkeypatch.setattr(cu.time, "sleep", lambda *_: None)
@@ -143,7 +143,8 @@ def test_vram_preflight_kills_stale_instance_when_dirty(monkeypatch: pytest.Monk
         lambda *a, **k: SimpleNamespace(stdout="5923\n"),
     )
     cu._vram_preflight()
-    assert killed == [True]
+    assert killed == []
+    assert "no process was killed" in capsys.readouterr().out
 
 
 def test_vram_preflight_gracefully_skips_when_nvidia_smi_missing(monkeypatch: pytest.MonkeyPatch) -> None:

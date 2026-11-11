@@ -28,12 +28,33 @@ def _lazy_carla():
     return importlib.import_module("carla")
 
 def kill_stale_carla(process_names: Iterable[str] = ("CarlaUE4.exe", "CarlaUE4-Win64-Shipping.exe")) -> None:
-    """Kill leftover CARLA processes to avoid port conflicts."""
-    for name in process_names:
+    """Refuse the retired image-wide shutdown API.
+
+    An executable name does not identify a launch owner, run or port. Callers
+    must use their own subprocess handle for cleanup. The parameter remains
+    accepted for API compatibility but never selects a process to terminate.
+    """
+    raise RuntimeError(
+        "Unsafe CARLA image-wide kill is disabled; close only a launch-owned "
+        "subprocess handle, or obtain explicit operator approval."
+    )
+
+
+def _stop_owned_server(proc: subprocess.Popen) -> None:
+    """Best-effort cleanup of the Popen handle from *this* launch attempt."""
+    try:
+        if proc.poll() is not None:
+            return
+        proc.terminate()
         try:
-            subprocess.run(["taskkill", "/F", "/IM", name], check=False, capture_output=True)
-        except Exception:
-            continue
+            proc.wait(timeout=10)
+        except subprocess.TimeoutExpired:
+            if proc.poll() is None:
+                proc.kill()
+                proc.wait(timeout=10)
+    except (OSError, subprocess.SubprocessError) as exc:
+        print(f"[carla] Unable to reap launch-owned process: {exc}")
+
 
 def wait_for_port(host: str, port: int, timeout_s: float = 60.0) -> bool:
     """Wait until TCP port is reachable."""
@@ -56,61 +77,44 @@ def _env_float(name: str, default: float) -> float:
         return float(default)
 
 def _handshake_carla_ready(*, host: str, port: int) -> None:
+    """Read-only RPC/map handshake: never steal the synchronous tick owner.
+
+    Each CARLA RPC timeout is capped to the remaining monotonic budget. CARLA's
+    transport must honor set_timeout; hard-kill supervision is a separate gate.
     """
-    Readiness handshake that correctly handles CARLA 0.9.16 sync tick semantics:
-      - sync: world.tick() returns int frame_id, NOT WorldSnapshot
-      - async: world.wait_for_tick() returns WorldSnapshot
-    """
-    carla = _lazy_carla()
     client_timeout_s = _env_float("UP_CARLA_CLIENT_TIMEOUT_S", 180.0)
     ready_timeout_s = _env_float("UP_CARLA_READY_TIMEOUT_S", 180.0)
-    tick_timeout_s = _env_float("UP_CARLA_READY_TICK_TIMEOUT_S", 5.0)
-
-    client = carla.Client(host, int(port))
-    client.set_timeout(float(client_timeout_s))
-    world = client.get_world()
-    _ = world.get_map()
-
-    t0 = time.time()
-    last_frame = None
-    last_elapsed = None
+    if not 0 < ready_timeout_s < float("inf"):
+        raise ValueError("UP_CARLA_READY_TIMEOUT_S must be positive and finite")
+    if not 0 < client_timeout_s < float("inf"):
+        raise ValueError("UP_CARLA_CLIENT_TIMEOUT_S must be positive and finite")
+    carla = _lazy_carla()
+    deadline = time.monotonic() + ready_timeout_s
     last_error = None
-    while time.time() - t0 < float(ready_timeout_s):
+    while time.monotonic() < deadline:
         try:
-            settings = world.get_settings()
-            sync = bool(getattr(settings, "synchronous_mode", False))
-        except Exception:
-            sync = True
-
-        try:
-            if sync:
-                frame_id = world.tick()  # int
-                snap = world.get_snapshot()
-                frame = int(getattr(snap, "frame", frame_id))
-                ts = getattr(snap, "timestamp", None)
-                elapsed = float(getattr(ts, "elapsed_seconds", -1.0)) if ts is not None else -1.0
-            else:
-                # CARLA 0.9.16: positional float only
-                snap = world.wait_for_tick(float(tick_timeout_s))
-                frame = int(getattr(snap, "frame", -1))
-                ts = getattr(snap, "timestamp", None)
-                elapsed = float(getattr(ts, "elapsed_seconds", -1.0)) if ts is not None else -1.0
+            client = carla.Client(host, int(port))
+            for rpc in ("get_world", "get_map", "get_settings"):
+                remaining = deadline - time.monotonic()
+                if remaining <= 0:
+                    raise TimeoutError("readiness budget exhausted")
+                client.set_timeout(min(client_timeout_s, remaining))
+                if rpc == "get_world":
+                    world = client.get_world()
+                elif rpc == "get_map":
+                    _ = world.get_map()
+                else:
+                    _ = world.get_settings()
+            return  # A synchronous world can be healthy without advancing.
         except Exception as exc:
             last_error = str(exc)
-            time.sleep(0.5)
-            continue
-
-        if last_frame is not None:
-            if frame != last_frame or (elapsed is not None and last_elapsed is not None and elapsed > last_elapsed):
-                return
-
-        last_frame = frame
-        last_elapsed = elapsed
-        time.sleep(0.2)
-
+            remaining = deadline - time.monotonic()
+            if remaining > 0:
+                time.sleep(min(0.3, remaining))
     raise RuntimeError(
-        f"CARLA readiness handshake timed out after {ready_timeout_s}s (last_error={last_error})"
+        f"CARLA readiness RPC timed out after {ready_timeout_s}s (last_error={last_error})"
     )
+
 
 def start_carla(
     carla_exe: Path | str,
@@ -157,20 +161,26 @@ def ensure_carla_server(
     extra_flags: Optional[Sequence[str]] = None,
     timeout_s: float = 120.0,
     kill_stale: bool = False,
+    attach_existing: bool = True,
     stdout_path: Optional[Path | str] = None,
     stderr_path: Optional[Path | str] = None,
-) -> subprocess.Popen:
+) -> Optional[subprocess.Popen]:
+    """Start a new launch-owned server, or explicitly attach to a listener.
+
+    `attach_existing=False` forbids accidental mutation of another operator's
+    CARLA world. The default preserves legacy callers' external-attach mode.
     """
-    Kill stale CARLA, start a new server with safe flags, and wait until it responds.
-    If CARLA is already reachable on the port, do nothing.
-    """
+    if kill_stale:
+        kill_stale_carla()  # Refuse regardless of current port occupancy.
     if wait_for_port(host, port, timeout_s=3.0):
+        if not attach_existing:
+            raise RuntimeError(
+                f"CARLA port {host}:{port} already occupied; refusing unowned attachment"
+            )
         _handshake_carla_ready(host=host, port=port)
-        return None  # type: ignore[return-value]
+        return None
 
     flags: List[str] = list(extra_flags or DEFAULT_FLAGS)
-    if kill_stale:
-        kill_stale_carla()
     if not any(str(f).startswith("-carla-rpc-port") for f in flags):
         flags.append(f"-carla-rpc-port={int(port)}")
     if not any(str(f).startswith("-carla-streaming-port") for f in flags):
@@ -181,11 +191,16 @@ def ensure_carla_server(
         stdout_path=stdout_path,
         stderr_path=stderr_path,
     )
-    ok = wait_for_port(host, port, timeout_s=timeout_s)
-    if not ok:
-        raise RuntimeError(f"CARLA did not come up on {host}:{port} within {timeout_s}s")
-    _handshake_carla_ready(host=host, port=port)
-    return proc
+    try:
+        ok = wait_for_port(host, port, timeout_s=timeout_s)
+        if not ok:
+            raise RuntimeError(f"CARLA did not come up on {host}:{port} within {timeout_s}s")
+        _handshake_carla_ready(host=host, port=port)
+        return proc
+    except BaseException:
+        # Only the exact child handle started above may be terminated.
+        _stop_owned_server(proc)
+        raise
 
 def get_carla_client(host: str, port: int, *, timeout_s: float = 300.0) -> "carla.Client":
     carla = _lazy_carla()

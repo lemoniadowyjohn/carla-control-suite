@@ -159,85 +159,42 @@ def _require_gpu_tdr_clean_for_carla() -> dict:
 # Crash cleanup (NEW)
 # ============================================================
 
-def _cleanup_carla_crash_artifacts():
+def _cleanup_carla_crash_artifacts() -> None:
+    """Never remove CARLA's shared crash reports, caches or Temp directory.
+
+    Those locations are shared by separately owned simulator sessions. A
+    run-scoped cleanup operation requires a separate, authorized owner ledger.
     """
-    Remove Unreal Engine crash leftovers before restarting CARLA.
-    """
-    import shutil
-
-    base = os.path.join(
-        os.environ.get("LOCALAPPDATA", ""),
-        "CarlaUE4",
-        "Saved"
-    )
-
-    if not os.path.isdir(base):
-        return
-
-    crashes = os.path.join(base, "Crashes")
-    if os.path.isdir(crashes):
-        try:
-            shutil.rmtree(crashes)
-            print("🧹 Removed CARLA crash reports.")
-        except Exception as e:
-            print(f"⚠ Could not remove crash reports: {e}")
-
-    cache = os.path.join(base, "DerivedDataCache")
-    if os.path.isdir(cache):
-        try:
-            shutil.rmtree(cache)
-            print("🧹 Removed CARLA derived data cache.")
-        except Exception as e:
-            print(f"⚠ Could not remove cache: {e}")
-
-    temp = os.path.join(base, "Temp")
-    if os.path.isdir(temp):
-        try:
-            shutil.rmtree(temp)
-        except Exception:
-            pass
+    print("[carla] Shared crash/cache deletion skipped: no owned artifact scope.")
 
 
 # ============================================================
 # Process + port utilities
 # ============================================================
-def _kill_stuck_carla():
-    exe_names = ("CarlaUE4.exe", "CarlaUE4-Win64-Shipping.exe")
+def _kill_stuck_carla(proc: subprocess.Popen | None = None) -> bool:
+    """Stop only an exact subprocess.Popen handle created by this launcher.
 
-    # Preferred: psutil (if installed)
-    if psutil is not None:
-        for p in psutil.process_iter(["name"]):
-            try:
-                if p.info.get("name") in exe_names:
-                    p.kill()
-            except Exception:
-                pass
-        return
-
-    # Fallback: no psutil installed (Windows taskkill / Linux pkill)
-    if os.name == "nt":
-        for exe in exe_names:
-            try:
-                subprocess.run(
-                    ["taskkill", "/F", "/T", "/IM", exe],
-                    stdout=subprocess.DEVNULL,
-                    stderr=subprocess.DEVNULL,
-                    check=False,
-                )
-            except Exception:
-                pass
-    else:
-        for exe in exe_names:
-            try:
-                subprocess.run(
-                    ["pkill", "-f", exe],
-                    stdout=subprocess.DEVNULL,
-                    stderr=subprocess.DEVNULL,
-                    check=False,
-                )
-            except Exception:
-                pass
-
+    Never enumerate by image name or kill by bare PID: unrelated processes and
+    recycled PIDs are not evidence of ownership. A process handle remains
+    associated with its original child, even if that child has exited.
+    """
+    if proc is None:
+        print("[carla] Refusing process-wide kill without a launch-owned handle.")
+        return False
+    try:
+        if proc.poll() is not None:
+            return True
+        proc.terminate()
+        try:
+            proc.wait(timeout=10)
+        except subprocess.TimeoutExpired:
+            if proc.poll() is None:
+                proc.kill()
+                proc.wait(timeout=10)
+        return proc.poll() is not None
+    except (OSError, subprocess.SubprocessError, AttributeError) as exc:
+        print(f"[carla] Could not stop launch-owned child: {exc}")
+        return False
 
 
 def _port_open(host: str, port: int, timeout: float = 1.0) -> bool:
@@ -312,9 +269,8 @@ def restart_carla(host: str | None = None, port: int | None = None) -> bool:
         print(f"❌ {exc}")
         return False
 
+    # Shared CARLA crash reports/caches are never deleted automatically.
     _cleanup_carla_crash_artifacts()
-    _kill_stuck_carla()
-    time.sleep(2)
 
     exe = SETTINGS.CARLA_EXE
     if not os.path.exists(exe):
@@ -330,6 +286,11 @@ def restart_carla(host: str | None = None, port: int | None = None) -> bool:
         or _env_flag("UP_SKIP_STREAMING_PROBE", False)
     )
     ports = [port] if streaming_disabled else [port, streaming_port]
+    # A different operator's simulator may own either port. Refuse to launch
+    # into its namespace; an occupied port never authorizes termination.
+    if any(_port_open(host, p, timeout=0.2) for p in ports):
+        print(f"[carla] Cannot restart: CARLA port namespace {ports} is already in use.")
+        return False
 
     # C20 Tier 3: minimal-render / nullrhi diagnostic flags, opt-in via env so
     # normal callers are unaffected. -nullrhi disables the render hardware
@@ -366,6 +327,9 @@ def restart_carla(host: str | None = None, port: int | None = None) -> bool:
     for cmd in launch_variants:
         # C20 Tier 3: stop discarding the server log -- every past hang was
         # undiagnosable after the fact because stdout/stderr went to DEVNULL.
+        if any(_port_open(host, p, timeout=0.2) for p in ports):
+            print("[carla] Port namespace became occupied before launch; refusing overlap.")
+            return False
         log_path = _resolve_carla_log_path_for_launch()
         cmd = [*cmd, "-log"]
         try:
@@ -374,7 +338,7 @@ def restart_carla(host: str | None = None, port: int | None = None) -> bool:
             log_file = subprocess.DEVNULL  # type: ignore[assignment]
             log_path = "<unavailable>"
         try:
-            subprocess.Popen(
+            launched_proc = subprocess.Popen(
                 cmd,
                 stdout=log_file,
                 stderr=subprocess.STDOUT,
@@ -387,30 +351,36 @@ def restart_carla(host: str | None = None, port: int | None = None) -> bool:
                 log_file.close()  # type: ignore[union-attr]
         print(f"[carla] server log -> {log_path}")
 
-        if _wait_for_ports(host, ports, timeout_s=120.0):
-            # C20 Tier 3: the port opening is NOT the same as CARLA being ready
-            # -- the UE game thread can bind the TCP port while never servicing
-            # its first RPC tick (a livelock, confirmed via C20_TIER1_PROBE).
-            # Verify RPC actually responds before claiming success; the old
-            # port-only check produced a misleading "restarted and listening"
-            # message on exactly this failure mode.
-            client = _carla_module().Client(host, port)
-            client.set_timeout(2.0)
-            rpc_ready = ensure_carla_ready(client, timeout_s=_carla_ready_timeout_s())
-            if rpc_ready:
-                if streaming_disabled:
-                    print(f"✅ CARLA restarted and RPC-ready on {host}:{port} (streaming disabled)")
-                else:
-                    print(f"✅ CARLA restarted and RPC-ready on {host}:{port} (streaming {streaming_port})")
-                return True
-            print(
-                f"⚠ CARLA port {port} opened but RPC never responded within "
-                f"{_carla_ready_timeout_s():.0f}s (see {log_path}) -- treating as not ready."
-            )
+        try:
+            if _wait_for_ports(host, ports, timeout_s=120.0):
+                # C20 Tier 3: the port opening is NOT the same as CARLA being ready
+                # -- the UE game thread can bind the TCP port while never servicing
+                # its first RPC tick (a livelock, confirmed via C20_TIER1_PROBE).
+                # Verify RPC actually responds before claiming success; the old
+                # port-only check produced a misleading "restarted and listening"
+                # message on exactly this failure mode.
+                client = _carla_module().Client(host, port)
+                client.set_timeout(2.0)
+                rpc_ready = ensure_carla_ready(client, timeout_s=_carla_ready_timeout_s())
+                if rpc_ready:
+                    if streaming_disabled:
+                        print(f"✅ CARLA restarted and RPC-ready on {host}:{port} (streaming disabled)")
+                    else:
+                        print(f"✅ CARLA restarted and RPC-ready on {host}:{port} (streaming {streaming_port})")
+                    return True
+                print(
+                    f"⚠ CARLA port {port} opened but RPC never responded within "
+                    f"{_carla_ready_timeout_s():.0f}s (see {log_path}) -- treating as not ready."
+                )
+        except Exception as exc:
+            print(f"[carla] Launch-owned RPC readiness error: {exc}")
 
-        # If the port(s) never appeared, or RPC never responded, kill and
-        # retry the next launch variant.
-        _kill_stuck_carla()
+        # Reap only the exact child handle from this launch attempt.
+        # A wrapper that spawns detached children is NOT sufficient evidence to
+        # terminate those children: a subsequent bind conflict must fail closed.
+        if not _kill_stuck_carla(launched_proc):
+            print("[carla] Launch-owned cleanup incomplete; refusing another attempt.")
+            return False
         time.sleep(2)
 
     print("❌ CARLA did not come back after restart.")
@@ -418,9 +388,7 @@ def restart_carla(host: str | None = None, port: int | None = None) -> bool:
 
 
 def _vram_preflight(*, max_used_mib: float = 500.0) -> None:
-    """C20 Tier 3: warn and clean up before launch if a stale CARLA instance
-    is still holding significant VRAM -- a leaked prior instance at high VRAM
-    usage guarantees the next launch is GPU-starved from the start."""
+    """Diagnose VRAM pressure without terminating other CARLA sessions."""
     try:
         out = subprocess.run(
             ["nvidia-smi", "--query-gpu=memory.used", "--format=csv,noheader,nounits"],
@@ -430,10 +398,8 @@ def _vram_preflight(*, max_used_mib: float = 500.0) -> None:
     except Exception:
         return  # no nvidia-smi available (or not an NVIDIA GPU) -- skip silently
     if used_mib > max_used_mib:
-        print(f"⚠ [carla-preflight] {used_mib:.0f} MiB VRAM already in use before launch "
-              f"(>{max_used_mib:.0f} MiB threshold) -- killing stale CARLA instances.")
-        _kill_stuck_carla()
-        time.sleep(2)
+        print(f"⚠ [carla-preflight] {used_mib:.0f} MiB VRAM already in use "
+              f"(>{max_used_mib:.0f} MiB threshold); no process was killed.")
 
 
 # ============================================================
