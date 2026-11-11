@@ -51,11 +51,11 @@ def _load_encoder(checkpoint_path: str, device: torch.device) -> MapEncoder:
     from . import gnn_provenance as prov
     from .graph_builder import graph_schema_hash
 
-    state, meta, _label = prov.load_checkpoint(checkpoint_path)
-    if meta is None:
+    state, meta, label = prov.load_checkpoint(checkpoint_path)
+    if meta is None or label != prov.VERIFIED_CRYPTOGRAPHIC_PROVENANCE:
         raise ValueError(
-            "legacy checkpoint has no verified manifest; "
-            "RQ4 latent-gap metrics require cryptographic provenance"
+            "RQ4 latent-gap metrics require a verified metadata checkpoint; "
+            "legacy or untrusted provenance is inadmissible"
         )
     # Cross-check the stored schema hash against the CURRENT code's schema
     # for the width mode recorded at train time: a code change that alters
