@@ -138,7 +138,18 @@ def audit(expected_root: Path) -> dict:
         if top not in REPO_NAMESPACES:
             continue
         origin = getattr(module, "__file__", None)
-        search = list(getattr(module, "__path__", []) or [])
+        try:
+            # A namespace package's _NamespacePath recomputes lazily from its
+            # parent's __path__; if the parent is broken this raises here, not
+            # in getattr. Report it rather than crashing the audit.
+            search = list(getattr(module, "__path__", []) or [])
+        except Exception as exc:  # noqa: BLE001 - fail closed, never crash
+            search = []
+            violations.append({
+                "kind": "unresolvable_search_path",
+                "module": mod_name,
+                "error": f"{type(exc).__name__}: {exc}",
+            })
         entry = {
             "module": mod_name,
             "origin": origin,
