@@ -327,6 +327,9 @@ def restart_carla(host: str | None = None, port: int | None = None) -> bool:
     for cmd in launch_variants:
         # C20 Tier 3: stop discarding the server log -- every past hang was
         # undiagnosable after the fact because stdout/stderr went to DEVNULL.
+        if any(_port_open(host, p, timeout=0.2) for p in ports):
+            print("[carla] Port namespace became occupied before launch; refusing overlap.")
+            return False
         log_path = _resolve_carla_log_path_for_launch()
         cmd = [*cmd, "-log"]
         try:
@@ -348,26 +351,29 @@ def restart_carla(host: str | None = None, port: int | None = None) -> bool:
                 log_file.close()  # type: ignore[union-attr]
         print(f"[carla] server log -> {log_path}")
 
-        if _wait_for_ports(host, ports, timeout_s=120.0):
-            # C20 Tier 3: the port opening is NOT the same as CARLA being ready
-            # -- the UE game thread can bind the TCP port while never servicing
-            # its first RPC tick (a livelock, confirmed via C20_TIER1_PROBE).
-            # Verify RPC actually responds before claiming success; the old
-            # port-only check produced a misleading "restarted and listening"
-            # message on exactly this failure mode.
-            client = _carla_module().Client(host, port)
-            client.set_timeout(2.0)
-            rpc_ready = ensure_carla_ready(client, timeout_s=_carla_ready_timeout_s())
-            if rpc_ready:
-                if streaming_disabled:
-                    print(f"✅ CARLA restarted and RPC-ready on {host}:{port} (streaming disabled)")
-                else:
-                    print(f"✅ CARLA restarted and RPC-ready on {host}:{port} (streaming {streaming_port})")
-                return True
-            print(
-                f"⚠ CARLA port {port} opened but RPC never responded within "
-                f"{_carla_ready_timeout_s():.0f}s (see {log_path}) -- treating as not ready."
-            )
+        try:
+            if _wait_for_ports(host, ports, timeout_s=120.0):
+                # C20 Tier 3: the port opening is NOT the same as CARLA being ready
+                # -- the UE game thread can bind the TCP port while never servicing
+                # its first RPC tick (a livelock, confirmed via C20_TIER1_PROBE).
+                # Verify RPC actually responds before claiming success; the old
+                # port-only check produced a misleading "restarted and listening"
+                # message on exactly this failure mode.
+                client = _carla_module().Client(host, port)
+                client.set_timeout(2.0)
+                rpc_ready = ensure_carla_ready(client, timeout_s=_carla_ready_timeout_s())
+                if rpc_ready:
+                    if streaming_disabled:
+                        print(f"✅ CARLA restarted and RPC-ready on {host}:{port} (streaming disabled)")
+                    else:
+                        print(f"✅ CARLA restarted and RPC-ready on {host}:{port} (streaming {streaming_port})")
+                    return True
+                print(
+                    f"⚠ CARLA port {port} opened but RPC never responded within "
+                    f"{_carla_ready_timeout_s():.0f}s (see {log_path}) -- treating as not ready."
+                )
+        except Exception as exc:
+            print(f"[carla] Launch-owned RPC readiness error: {exc}")
 
         # Reap only the exact child handle from this launch attempt.
         # A wrapper that spawns detached children is NOT sufficient evidence to
