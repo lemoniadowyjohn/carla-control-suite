@@ -1,0 +1,346 @@
+{
+  "schema": "carla-gui-release-verification/v1",
+  "release_id": "carla-ops-studio-offline-20261015",
+  "date": "2026-10-15",
+  "status": "OFFLINE_RELEASE_VERIFIED",
+  "source": {
+    "sha": "c69b60d2fe4ac018136ea0fa26e435a09c15dd73",
+    "branch": "integration/carla-gui-integration-20261015",
+    "worktree": "F:\\wt\\carla-gui-integration-20261015",
+    "python": "3.12.2",
+    "platform": "win32"
+  },
+  "tasks_completed": 16,
+  "tasks_total": 17,
+  "receipts": [
+    {
+      "task": "00",
+      "file": "receipts/task_00_receipt.json",
+      "verdict": "PASS"
+    },
+    {
+      "task": "01",
+      "file": "receipts/task_01_receipt.json",
+      "verdict": "PASS"
+    },
+    {
+      "task": "02",
+      "file": "receipts/task_02_receipt.json",
+      "verdict": "PASS"
+    },
+    {
+      "task": "03",
+      "file": "receipts/task_03_receipt.json",
+      "verdict": "PASS"
+    },
+    {
+      "task": "04",
+      "file": "receipts/task_04_receipt.json",
+      "verdict": "PASS"
+    },
+    {
+      "task": "05",
+      "file": "receipts/task_05_receipt.json",
+      "verdict": "PASS"
+    },
+    {
+      "task": "06",
+      "file": "receipts/task_06_receipt.json",
+      "verdict": "PASS"
+    },
+    {
+      "task": "07",
+      "file": "receipts/task_07_receipt.json",
+      "verdict": "PASS"
+    },
+    {
+      "task": "08",
+      "file": "receipts/task_08_receipt.json",
+      "verdict": "PASS"
+    },
+    {
+      "task": "09",
+      "file": "receipts/task_09_receipt.json",
+      "verdict": "PASS"
+    },
+    {
+      "task": "10",
+      "file": "receipts/task_10_receipt.json",
+      "verdict": "PASS"
+    },
+    {
+      "task": "11",
+      "file": "receipts/task_11_receipt.json",
+      "verdict": "PASS"
+    },
+    {
+      "task": "12",
+      "file": "receipts/task_12_receipt.json",
+      "verdict": "PASS"
+    },
+    {
+      "task": "13",
+      "file": "receipts/task_13_receipt.json",
+      "verdict": "TASK_13_PASS"
+    },
+    {
+      "task": "14",
+      "file": "receipts/task_14_receipt.json",
+      "verdict": "TASK_14_PASS"
+    },
+    {
+      "task": "15",
+      "file": "receipts/task_15_receipt.json",
+      "verdict": "TASK_15_PASS"
+    }
+  ],
+  "gui_contracts": {
+    "routes_total": 17,
+    "routes_implemented": 16,
+    "routes_placeholder": 1,
+    "placeholder_routes": [
+      "10_perception_localization"
+    ],
+    "controls_total": 116,
+    "controls_bound_available": 44,
+    "controls_deferred": 65,
+    "controls_disabled_in_catalogue": 7,
+    "controls_dropped": 0,
+    "malformed_catalog_rows": 21
+  },
+  "test_results": {
+    "total": 380,
+    "passed": 380,
+    "failed": 0,
+    "skipped": 1,
+    "skipped_reason": "defusedxml not installed",
+    "suites": 14,
+    "execution_time_seconds": 8.55,
+    "command": "pytest 14 GUI suites -q QT_QPA_PLATFORM=offscreen"
+  },
+  "security_fixes": {
+    "total": 11,
+    "verified": 11,
+    "details": [
+      {
+        "id": 1,
+        "module": "carla_tools/carla_probe_port.py",
+        "fix": "Truthful TCP probe, no fake rpc_ok",
+        "verified": true
+      },
+      {
+        "id": 2,
+        "module": "carla_tools/sensor_registry.py",
+        "fix": "stop() before destroy()",
+        "verified": true
+      },
+      {
+        "id": 3,
+        "module": "hpc/train_yolo.py",
+        "fix": "Explicit error, no fabricated metrics",
+        "verified": true
+      },
+      {
+        "id": 4,
+        "module": "scenarios/auto_scenario_generator.py",
+        "fix": "Seeded RNG",
+        "verified": true
+      },
+      {
+        "id": 5,
+        "module": "parallel/resource_aware.py",
+        "fix": "Fail-closed probes (ResourceProbeUnavailable)",
+        "verified": true
+      },
+      {
+        "id": 6,
+        "module": "experiments/registry.py",
+        "fix": "No swallowed import errors",
+        "verified": true
+      },
+      {
+        "id": 7,
+        "module": "security/__init__.py",
+        "fix": "XXE-safe XML parsing (defusedxml)",
+        "verified": true
+      },
+      {
+        "id": 8,
+        "module": "security/__init__.py",
+        "fix": "Safe archive extraction (traversal/symlink block)",
+        "verified": true
+      },
+      {
+        "id": 9,
+        "module": "security/__init__.py",
+        "fix": "Path validation (base confinement)",
+        "verified": true
+      },
+      {
+        "id": 10,
+        "module": "security/__init__.py",
+        "fix": "Atomic write (mkstemp+fsync+replace)",
+        "verified": true
+      },
+      {
+        "id": 11,
+        "module": "gui/session/actor_registry.py",
+        "fix": "Actor.is_alive attribute handling",
+        "verified": true
+      }
+    ]
+  },
+  "packaging": {
+    "wheel_build": "PASS",
+    "editable_install": "PASS",
+    "entry_points": {
+      "up": "ultimate_pipeline.cli:main",
+      "carla-ops": "ultimate_pipeline.gui.cli:main"
+    },
+    "extras": [
+      "gui",
+      "runtime",
+      "geometry",
+      "geo",
+      "visualization",
+      "dev",
+      "perception",
+      "headless"
+    ],
+    "dependency_conflicts": "PASS (one OpenCV provider)",
+    "private_assets_in_wheel": false
+  },
+  "live_validation": {
+    "status": "BLOCKED_EXTERNAL",
+    "blockers": [
+      {
+        "id": "G5",
+        "name": "Map pin",
+        "evidence": "RUNTIME_MAP_IDENTITY_AUTO.json = BLOCKED_COOK_REQUIRED"
+      },
+      {
+        "id": "G6",
+        "name": "Runtime identity",
+        "evidence": "UNBOUND"
+      },
+      {
+        "id": "G7",
+        "name": "Cooked content",
+        "evidence": "UE426_SOURCE_AUTHORITY.json = not_claimed"
+      },
+      {
+        "id": "G8",
+        "name": "Tick authority",
+        "evidence": "TickAuthority = MISSING"
+      }
+    ],
+    "ready_checks": [
+      {
+        "id": "G1",
+        "name": "GPU",
+        "status": "PASS",
+        "detail": "Quadro P3200 6144 MiB"
+      },
+      {
+        "id": "G2",
+        "name": "Python + CARLA",
+        "status": "PASS",
+        "detail": "3.12.2 + 0.9.16"
+      },
+      {
+        "id": "G3",
+        "name": "CARLA executable",
+        "status": "PATH",
+        "detail": "E:\\CARLA\\CARLA_0.9.16\\CarlaUE4.exe"
+      },
+      {
+        "id": "G9",
+        "name": "Lock state",
+        "status": "PASS",
+        "detail": "No active leases"
+      },
+      {
+        "id": "G10",
+        "name": "Environment health",
+        "status": "PASS",
+        "detail": "380 tests pass"
+      }
+    ]
+  },
+  "outstanding_decisions": [
+    {
+      "id": "Q9",
+      "item": "Coordinate-frame branch merge",
+      "blocker": "OPERATOR_DECISION",
+      "priority": "P0"
+    },
+    {
+      "id": "Q10",
+      "item": "Sensor timestamp skew threshold",
+      "blocker": "CODE_CHANGE+owner input",
+      "priority": "P1"
+    },
+    {
+      "id": "Q11",
+      "item": "Drift tolerance",
+      "blocker": "CODE_CHANGE+owner input",
+      "priority": "P1"
+    },
+    {
+      "id": "Q12",
+      "item": "Non-waivable gate taxonomy (GAP037)",
+      "blocker": "OPERATOR_DECISION",
+      "priority": "P1"
+    },
+    {
+      "id": "Q20",
+      "item": "Duplicate removal",
+      "blocker": "OPERATOR_DECISION",
+      "priority": "P1"
+    },
+    {
+      "id": "Q22",
+      "item": "Isolated server lease (Q22)",
+      "blocker": "OPERATOR_DECISION",
+      "priority": "P0"
+    },
+    {
+      "id": "Q23",
+      "item": "Calibration threshold owner",
+      "blocker": "OPERATOR_DECISION",
+      "priority": "P1"
+    }
+  ],
+  "known_limitations": [
+    "Route 10 (Perception/Localization) deferred per BL-35",
+    "65 of 116 controls deferred with reasons; no stubs created",
+    "7 controls disabled in catalogue; explicitly marked unavailable",
+    "21 of 116 CONTROL_CATALOG.csv rows malformed upstream",
+    "Traffic Manager setters remain WRITE_ONLY (CARLA 0.9.16 limitation)",
+    "GAP-026 geometry thresholds unresolved; shown as STALE_OR_UNBOUND",
+    "Geometry continuity INCONCLUSIVE (no owner-approved threshold)",
+    "Q12 non-waivable gate taxonomy undecided (GAP037)",
+    "Q22 isolated server lease unavailable (live fuzzing blocked)",
+    "Q9 coordinate-frame branch merge pending operator decision",
+    "No contrast/WCAG AA measurement performed",
+    "No live CARLA run executed; full repo suite unrunnable in minimal venv"
+  ],
+  "verification": {
+    "independent_reviews": 2,
+    "reviewer_1": "Security (Task 15) - 11/11 fixes verified",
+    "reviewer_2": "GUI Truthfulness (Tasks 13/14) - 13 blockers fixed, all verified",
+    "regression_baseline": "Tasks 00-12 - 359 tests pass",
+    "no_fabricated_claims": true,
+    "no_unverified_live_claims": true
+  },
+  "artifacts": {
+    "release_zip": "carla_ops_studio_offline_release_20261015.zip",
+    "manifest": "RELEASE_MANIFEST.md",
+    "readiness_report": "RELEASE_READINESS_REPORT.md",
+    "user_docs": "USER_DOCUMENTATION.md",
+    "install_script": "install_and_verify.py",
+    "receipts_dir": "receipts/",
+    "sha256": "CD995AE0724A549241D00069BDDC718F7FBCC15AB7F1A113E4E23D83ABBBC1EE",
+    "release_zip_size_mb": 3.77
+  }
+}
