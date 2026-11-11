@@ -306,6 +306,8 @@ jobs:
   # CARLA) and no longer lets an INCOMPLETE packet report green.
   offline-release-gate:
     name: offline release gate
+    # Always emit an explicit failing check when a required predecessor is not PASS.
+    if: ${{ always() }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
     needs:
@@ -322,6 +324,15 @@ jobs:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
         with:
           lfs: true
+
+      # Validate every predecessor in this exact workflow run before promoting
+      # the offline result. A skipped/failed upstream job must not yield an
+      # innocuous skipped "offline release gate" check.
+      - name: Reject skipped, failed or missing required CI predecessors
+        env:
+          CI_NEEDS_JSON: ${{ toJSON(needs) }}
+          CI_EXPECTED_SHA: ${{ github.sha }}
+        run: python tools/ci_needs_gate.py
 
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
         with:
