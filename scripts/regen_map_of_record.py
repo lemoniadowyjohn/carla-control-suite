@@ -334,33 +334,20 @@ def _find_final_xodr_historical_recovery(run_dir: Path) -> Path:
 
 
 def _measure_acceptance(final_xodr: Path, out_dir: Path) -> Dict[str, Any]:
-    from scripts.measure_candidate_acceptance import run_gates
-    from ultimate_pipeline.quality.map_acceptance import build_map_acceptance
-
-    from ultimate_pipeline.quality.final_artifact_gates import (
-        ACCEPTANCE_POLICY_VERSION,
-        RELEASE_MANDATORY_GATES,
-        sha256_bytes,
-    )
+    from scripts.measure_candidate_acceptance import evaluate_candidate
 
     dem = REPO_ROOT / "cities" / "ingolstadt" / "dem" / "dem_ing.tif"
-    # V86 A9: map-of-record promotion is a release-purpose evaluation, with the
-    # authoritative mandatory gate set bound to the evaluated digest.
-    evaluated_sha = sha256_bytes(final_xodr.read_bytes())
-    reports = run_gates(final_xodr, out_dir, dem)
-    acceptance = build_map_acceptance(
-        reports,
-        run_id=final_xodr.stem,
-        final_xodr_path=str(final_xodr),
-        out_dir=str(out_dir),
+    # V86 A6/A8/A9: map-of-record promotion is a release-purpose evaluation.
+    # It uses the XML boundary, an immutable snapshot every checker reads, a
+    # digest-bound verdict and a post-write identity check. It shares the
+    # implementation with the measure_candidate_acceptance CLI.
+    out_dir.mkdir(parents=True, exist_ok=True)
+    acceptance = evaluate_candidate(
+        final_xodr, out_dir, dem,
+        purpose="release",
         require_enrichment=True,
         require_component_reachability=True,
-        mandatory_gates=RELEASE_MANDATORY_GATES,
-        purpose="release",
-        policy_version=ACCEPTANCE_POLICY_VERSION,
-        evaluated_xodr_sha256=evaluated_sha,
     )
-    _write_json(out_dir / "map_acceptance.json", acceptance)
     print(f"[acceptance] valid_for_experiments={acceptance['valid_for_experiments']}")
     for gate in acceptance.get("hard_fail_reasons", []):
         print(f"  FAIL {gate['gate']}: {gate['reason']}")
