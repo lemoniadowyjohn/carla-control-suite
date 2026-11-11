@@ -97,5 +97,6 @@ def test_train_launcher_main_runs_end_to_end_on_synthetic_dataset(tmp_path, monk
     # same architecture main() trains -- catches silent save/load corruption
     # or an architecture/num-classes mismatch, not just "a file exists".
     state = torch.load(ckpts[0], map_location="cpu")
-    fresh = train_launcher._build_model(CARLA_SEMANTIC_NUM_CLASSES)
+    fresh, contract = train_launcher._build_model(CARLA_SEMANTIC_NUM_CLASSES)
+    assert contract["schema"] == "rq5_pretraining_contract_v1"
     fresh.load_state_dict(state)  # raises on any key/shape mismatch

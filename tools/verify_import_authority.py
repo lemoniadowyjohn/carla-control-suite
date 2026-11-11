@@ -23,6 +23,7 @@ Exit codes: 0 = authority proven, 1 = violation detected, 2 = unusable.
 from __future__ import annotations
 
 import argparse
+import importlib
 import json
 import os
 import subprocess
@@ -32,6 +33,7 @@ from pathlib import Path
 
 # Top-level import namespaces owned by this repository.
 REPO_NAMESPACES = ("ultimate_pipeline", "tools")
+REPO_OWNED_NAMESPACES = frozenset(REPO_NAMESPACES)
 
 
 def expected_repo_root(start: Path | None = None) -> Path:
@@ -70,7 +72,7 @@ def _under(path: str, root: str) -> bool:
 
 def _stdlib_prefixes() -> set[str]:
     out = set()
-    for key in ("stdlib", "platstdlib", "purelib", "platlib"):
+    for key in ("stdlib", "platstdlib"):
         try:
             value = sysconfig.get_paths().get(key)
         except Exception:
@@ -94,7 +96,7 @@ def audit(expected_root: Path) -> dict:
 
     for name in REPO_NAMESPACES:
         try:
-            module = __import__(name)
+            module = importlib.import_module(name)
         except Exception as exc:  # pragma: no cover - environment dependent
             violations.append({
                 "kind": "import_failed",
@@ -113,6 +115,12 @@ def audit(expected_root: Path) -> dict:
             "search_locations": [str(p) for p in search],
         })
 
+        if origin is None and name != "tools":
+            violations.append({
+                "kind": "missing_module_origin",
+                "module": name,
+            })
+
         # Namespace-package aggregation: ANY external location that could
         # supply a submodule of this namespace is a violation, regardless of
         # whether it currently sorts first.
@@ -130,7 +138,18 @@ def audit(expected_root: Path) -> dict:
         if top not in REPO_NAMESPACES:
             continue
         origin = getattr(module, "__file__", None)
-        search = list(getattr(module, "__path__", []) or [])
+        try:
+            # A namespace package's _NamespacePath recomputes lazily from its
+            # parent's __path__; if the parent is broken this raises here, not
+            # in getattr. Report it rather than crashing the audit.
+            search = list(getattr(module, "__path__", []) or [])
+        except Exception as exc:  # noqa: BLE001 - fail closed, never crash
+            search = []
+            violations.append({
+                "kind": "unresolvable_search_path",
+                "module": mod_name,
+                "error": f"{type(exc).__name__}: {exc}",
+            })
         entry = {
             "module": mod_name,
             "origin": origin,
@@ -153,6 +172,49 @@ def audit(expected_root: Path) -> dict:
         "module_count": len(census),
         "violations": violations,
         "status": "PASS" if not violations else "FAIL",
+        "passed": not violations,
+    }
+
+
+def _expected_source_root() -> Path:
+    return Path(__file__).resolve().parent.parent
+
+
+def _is_within(path: Path, root: Path) -> bool:
+    try:
+        path.resolve().relative_to(root.resolve())
+        return True
+    except ValueError:
+        return False
+
+
+def verify_import_authority(expected_root: Path | None = None) -> dict:
+    """Compatibility API for callers that need a compact pass/fail result."""
+    report = audit(expected_root or _expected_source_root())
+    failures_by_namespace = {}
+    for item in report["violations"]:
+        namespace = item.get("namespace", item.get("module", "unknown"))
+        failures_by_namespace.setdefault(
+            namespace,
+            {
+                "namespace": namespace,
+                "status": (
+                    "NO_ORIGIN"
+                    if item.get("kind") == "missing_module_origin"
+                    else "WRONG_ORIGIN"
+                ),
+                "origin": item.get("origin", item.get("location")),
+                "expected_root": report["expected_root"],
+                "message": item.get("detail", item.get("kind", "import authority failed")),
+            },
+        )
+    failures = list(failures_by_namespace.values())
+    return {
+        "schema": "import_authority/v2",
+        "expected_root": report["expected_root"],
+        "passed": report["status"] == "PASS",
+        "failures": failures,
+        "report": report,
     }
 
 
@@ -160,7 +222,7 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--json", action="store_true", help="emit JSON only")
     parser.add_argument(
-        "--expect-root", default=None,
+        "--expect-root", "--expected-root", dest="expect_root", default=None,
         help="override the dynamically discovered repository root",
     )
     args = parser.parse_args(argv)

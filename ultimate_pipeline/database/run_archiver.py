@@ -26,11 +26,17 @@ class RunArchiver:
         self.archive_root.mkdir(parents=True, exist_ok=True)
 
     def _list_runs(self) -> List[Path]:
+        # Cold-start / clean-checkout safety (2026-10-21 fix): a never-yet-run
+        # worktree has no output root; "nothing to archive" is the correct
+        # semantic, not a crash (the directory is created lazily by the first
+        # run that actually writes artifacts).
+        if not self.output_root.exists():
+            return []
         runs = [
             p for p in self.output_root.iterdir()
             if p.is_dir() and p.name[:8].isdigit()
         ]
-        return sorted(runs, key=lambda p: p.stat().st_mtime, reverse=True)
+        return sorted(runs, key=lambda p: (p.stat().st_mtime, p.name), reverse=True)
 
     def archive_old_runs(self) -> None:
         runs = self._list_runs()

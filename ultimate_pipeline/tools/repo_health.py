@@ -97,11 +97,31 @@ def _git_state(repo_root: Path) -> Dict[str, Any]:
     branch = _run(["git", "branch", "--show-current"], repo_root)
     status = _run(["git", "status", "--short"], repo_root)
     remotes = _run(["git", "remote", "-v"], repo_root)
+
+    # Determine git inspection status. A failed git status command must not
+    # be serialized as a clean checkout.
+    if not status["ok"]:
+        git_status = "GIT_INSPECTION_FAILED"
+        dirty = None  # Unknown: cannot determine if dirty or clean
+    elif not head["ok"]:
+        git_status = "GIT_INSPECTION_FAILED"
+        dirty = None
+    elif not branch["ok"]:
+        git_status = "GIT_INSPECTION_FAILED"
+        dirty = None
+    elif bool(status["stdout"]):
+        git_status = "DIRTY_VERIFIED"
+        dirty = True
+    else:
+        git_status = "CLEAN_VERIFIED"
+        dirty = False
+
     return {
         "repo_root": repo_root.as_posix(),
         "branch": branch["stdout"] or "UNKNOWN",
         "head": head["stdout"] or "UNKNOWN",
-        "dirty": bool(status["stdout"]),
+        "dirty": dirty,
+        "git_status": git_status,
         "status_short": status["stdout"].splitlines() if status["stdout"] else [],
         "remotes": remotes["stdout"].splitlines() if remotes["stdout"] else [],
     }
@@ -521,6 +541,20 @@ def _manifest_sha256(path: Path) -> str:
     return h.hexdigest()
 
 
+_SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
+_GIT_SHA_RE = re.compile(r"^[0-9a-f]{40}$")
+
+
+def _is_valid_sha256(value: str) -> bool:
+    """Return True only for a 64-character lowercase hex SHA-256 digest."""
+    return bool(_SHA256_RE.match(value or ""))
+
+
+def _is_valid_git_sha(value: str) -> bool:
+    """Return True only for a 40-character lowercase hex git SHA."""
+    return bool(_GIT_SHA_RE.match(value or ""))
+
+
 def validate_candidate_manifest(
     manifest_path: Path,
     *,
@@ -578,6 +612,24 @@ def validate_candidate_manifest(
         value = payload.get(name)
         if value is None or (isinstance(value, str) and not value.strip()):
             problems.append({"field": name, "reason": "required identity field is missing or empty"})
+
+    # SHA-256 format validation for all digest fields.
+    for field in ("xodr_sha256", "import_package_sha256",
+                  "cooked_package_sha256", "cook_manifest_sha256"):
+        value = str(payload.get(field) or "").strip()
+        if value and not _is_valid_sha256(value):
+            problems.append(
+                {"field": field,
+                 "reason": f"{field} is not a valid SHA-256 hex digest: {value!r}"}
+            )
+
+    # repo_sha is a git SHA (40 hex chars), not SHA-256.
+    repo_sha_value = str(payload.get("repo_sha") or "").strip()
+    if repo_sha_value and not _is_valid_git_sha(repo_sha_value):
+        problems.append(
+            {"field": "repo_sha",
+             "reason": f"repo_sha is not a valid 40-hex git SHA: {repo_sha_value!r}"}
+        )
 
     # repository SHA binding
     if expected_repo_sha:

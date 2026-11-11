@@ -23,8 +23,11 @@ def test_quality_gate_records_clean_polygon_and_legacy_comparison_without_failur
     report=Report(); manager=QualityGateManager(report)
     root=ET.Element("OpenDRIVE")
     manager.gate_semantic_overlap(root)
-    comparison=[entry for entry in report.entries if entry[1]=="semantic_overlap_comparison"]
-    assert comparison and comparison[0][2]["polygon_issue_count"] == 0
+    # ValidationReport.add(level, stage, message): the key travels in the message.
+    comparison=[entry for entry in report.entries
+                if entry[1]=="quality_gates" and entry[2].get("key")=="semantic_overlap_comparison"]
+    assert comparison and comparison[0][0] == "warning"
+    assert comparison[0][2]["polygon_issue_count"] == 0
     assert manager.get_failures() == {}
 
 
@@ -107,6 +110,7 @@ def test_quality_gate_exposes_polygon_overlap_to_strict_orchestration():
         "semantic_overlap": [{"building":"b","road":"r"}]
     }
     assert any(
-        entry[1] == "semantic_overlap" and entry[2]["status"] == "fail"
+        entry[0] == "error" and entry[1] == "quality_gates"
+        and entry[2].get("key") == "semantic_overlap" and entry[2]["status"] == "fail"
         for entry in report.entries
     )

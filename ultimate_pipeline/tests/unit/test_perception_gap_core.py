@@ -63,12 +63,24 @@ def test_feature_proxy_mode_used_when_no_miou():
     assert gap["method_auto"] == "clip"
 
 
-def test_dummy_evaluator_is_deterministic_placeholder():
+def test_unimplemented_evaluator_returns_status_not_number():
+    # CD-2 (4ca15683): the evaluator used to return deterministic dummy zeros,
+    # which could be mistaken for measured performance. With no metric engine
+    # wired in, it must report NOT_IMPLEMENTED and fabricate no number.
     metrics = PerceptionEvaluator.from_predictions(
         predicted={}, ground_truth={"road": [], "car": []}
     )
-    assert metrics.miou == {"road": 0.0, "car": 0.0}
-    assert metrics.mAP == 0.0
+    assert metrics.status == "NOT_IMPLEMENTED"
+    # PerceptionMetrics normalises miou=None to an empty dict (gap code calls
+    # .miou.get), so "no number" means: no per-class IoU and no mean.
+    assert metrics.miou == {}
+    assert metrics.mAP is None
+    assert metrics.expected_classes == ["car", "road"]
+    d = metrics.to_dict()
+    assert d["status"] == "NOT_IMPLEMENTED"
+    assert d["mean_miou"] is None
+    assert d["mAP"] is None
+    assert "no numeric metrics were fabricated" in d["note"]
 
 
 def test_save_and_load_metrics_round_trip(tmp_path):

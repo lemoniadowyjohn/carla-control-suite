@@ -287,6 +287,11 @@ class Settings:
         "ENABLE_JUNCTION_LINK_PATCH",
         "ENABLE_PLANVIEW_SEAM_AUTO_REPAIR",
         "PLANVIEW_SEAM_AUTO_REPAIR_MAX_M",
+        # --- P0-B Orphan Road Repair ---
+        "ORPHAN_SNAP_M",
+        "ORPHAN_MAX_HEADING_DEG",
+        "ORPHAN_MAX_HEIGHT_M",
+        "ORPHAN_STRICT",
         # --- Domain Gap ---
         "ENABLE_DOMAIN_GAP",
         "MANUAL_MAP_XODR",
@@ -571,6 +576,11 @@ class Settings:
             "PLANVIEW_SEAM_AUTO_REPAIR_MAX_M": float(
                 getattr(self, "PLANVIEW_SEAM_AUTO_REPAIR_MAX_M", 0.05)
             ),
+            # --- P0-B Orphan Road Repair ---
+            "ORPHAN_SNAP_M": float(getattr(self, "ORPHAN_SNAP_M", 5.0)),
+            "ORPHAN_MAX_HEADING_DEG": float(getattr(self, "ORPHAN_MAX_HEADING_DEG", 30.0)),
+            "ORPHAN_MAX_HEIGHT_M": float(getattr(self, "ORPHAN_MAX_HEIGHT_M", 1.0)),
+            "ORPHAN_STRICT": bool(getattr(self, "ORPHAN_STRICT", False)),
             # --- Domain Gap ---
             "ENABLE_DOMAIN_GAP": self.ENABLE_DOMAIN_GAP,
             "MANUAL_MAP_XODR": self.MANUAL_MAP_XODR,
@@ -1247,6 +1257,16 @@ class Settings:
     ENABLE_PLANVIEW_SEAM_AUTO_REPAIR: bool = True
     PLANVIEW_SEAM_AUTO_REPAIR_MAX_M: float = 0.05
 
+    # --- P0-B Orphan Road Repair (L1/L2) ---
+    # L1: max snap distance (default 5.0 m, was 25.0 m)
+    ORPHAN_SNAP_M: float = 5.0
+    # L1: max heading difference between orphan and target endpoints (degrees)
+    ORPHAN_MAX_HEADING_DEG: float = 30.0
+    # L1: max height difference between orphan and target endpoints (meters)
+    ORPHAN_MAX_HEIGHT_M: float = 1.0
+    # L1/L2: fail-closed mode - raise on residual orphans instead of silent log
+    ORPHAN_STRICT: bool = False
+
     ENABLE_FULL_MAP_LOAD_GATE = False
     ENABLE_TILE_ONLY_VALIDATION = True
     # --- TILE SAFETY POLICY ---
@@ -1577,18 +1597,21 @@ class Settings:
     # -----------------------------------------------------------------
     # DIRECTORY UTILITIES
     # -----------------------------------------------------------------
-    def output_dir(self) -> str:
+    def output_dir(self, *, create: bool = True) -> str:
         if self.OUTPUT_DIR_OVERRIDE:
             d = self.OUTPUT_DIR_OVERRIDE
-            os.makedirs(d, exist_ok=True)
+            if create:
+                os.makedirs(d, exist_ok=True)
             return d
         d = os.path.join(self.BASE_OUTPUT_DIR, self.timestamp)
-        os.makedirs(d, exist_ok=True)
+        if create:
+            os.makedirs(d, exist_ok=True)
         return d
 
-    def logs_dir(self) -> str:
-        p = os.path.join(self.output_dir(), "logs")
-        os.makedirs(p, exist_ok=True)
+    def logs_dir(self, *, create: bool = True) -> str:
+        p = os.path.join(self.output_dir(create=create), "logs")
+        if create:
+            os.makedirs(p, exist_ok=True)
         return p
 
     def stage_dir(self) -> str:

@@ -10,13 +10,20 @@ import hashlib
 import tempfile
 from pathlib import Path
 
-# Pre-register carla stub before importing any project modules
-_carla = types.ModuleType("carla")
-_carla.CityObjectLabel = type("CityObjectLabel", (), {"Road": 0, "TrafficLight": 1})()
-_carla.ColorConverter = type("ColorConverter", (), {"CityScapesPalette": "palette"})
-_carla.Image = object
-_carla.Sensor = object
-sys.modules["carla"] = _carla
+# Pre-register a carla stub before importing project modules, but only when
+# the real client is not importable: this runs at collection time, so an
+# unconditional stub replaced the real module for every later test in the
+# session (15 CARLA-API tests failed in the full run, passed alone).
+try:
+    import carla as _real_carla  # noqa: F401
+except Exception:
+    _carla = types.ModuleType("carla")
+    _carla.CityObjectLabel = type("CityObjectLabel", (), {"Road": 0, "TrafficLight": 1})()
+    _carla.ColorConverter = type("ColorConverter", (), {"CityScapesPalette": "palette"})
+    _carla.Image = object
+    _carla.Sensor = object
+    _carla.__offline_stub__ = True
+    sys.modules["carla"] = _carla
 
 # Allow torch import
 torch = pytest = None
@@ -39,6 +46,7 @@ def _make_session(root: Path, frame: int = 1) -> Path:
     (root / "semseg_raw" / "cam").mkdir(parents=True, exist_ok=True)
     (root / "rgb" / "cam" / f"{frame:08d}.png").write_bytes(b"\x89PNG\r\n\x1a\n")
     (root / "semseg_raw" / "cam" / f"{frame:08d}.png").write_bytes(b"\x89PNG\r\n\x1a\n")
+    (root / "frame_status").mkdir(parents=True, exist_ok=True)
     (root / "frame_status" / f"{frame:08d}.json").write_text(
         json.dumps({"schema": "frame_set_status_v1", "frame": frame, "status": "complete", "members": []}),
         encoding="utf-8",
@@ -102,7 +110,7 @@ def test_training_failure_guard_module():
     assert is_cuda_oom(RuntimeError("CUDA out of memory"))
 
     # Classification
-    verdict = classify_exception(ValueError("oom"))
+    verdict = classify_exception(ValueError("CUDA out of memory"))
     assert verdict.status == STATUS_CUDA_OOM
 
     # Direct error
@@ -128,6 +136,7 @@ def test_load_contract_mandatory_migration():
 
     # Load with mismatched keys but NO migration contract should also fail
     fake_file = tempfile.NamedTemporaryFile(suffix=".pt", delete=False)
+    fake_file.close()
     torch.save({"state_dict": fake_state}, fake_file.name)
     try:
         try:

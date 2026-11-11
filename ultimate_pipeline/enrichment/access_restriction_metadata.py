@@ -31,6 +31,9 @@ MATCH_MAX_MEAN_DISTANCE_M = 2.0
 MATCH_MIN_COVERAGE = 0.90
 USERDATA_KEY = "osm_access_restriction_v1"
 MATCH_METHOD = "exact_name_and_projected_geometry_direction_independent"
+SOURCE_FAILURE = "SOURCE_FAILURE"
+EMPTY = "EMPTY"
+OK = "OK"
 
 
 @dataclass(frozen=True)
@@ -96,15 +99,41 @@ def _native_to_planview(
     )
 
 
-def extract_access_ways(osm_path: str | Path, root: ET.Element) -> list[AccessWay]:
+def extract_access_ways(
+    osm_path: str | Path,
+    root: ET.Element,
+    *,
+    source_report: dict[str, Any] | None = None,
+) -> list[AccessWay]:
     """Extract and project OSM ways with access-related tags deterministically."""
+    def source_failure(error: Exception) -> list[AccessWay]:
+        from ultimate_pipeline.config.settings import SETTINGS
+        from ultimate_pipeline.contracts.release_profile import (
+            parse_optional_bool_env,
+            resolve_strict_quality_gates,
+        )
+        profile = str(getattr(SETTINGS, "RELEASE_PROFILE", "DEVELOPMENT"))
+        strict = bool(getattr(SETTINGS, "STRICT_QUALITY_GATES", False))
+        strict = strict or resolve_strict_quality_gates(profile, default=False)
+        strict = strict or bool(parse_optional_bool_env("UP_STRICT_QUALITY_GATES"))
+        thesis_strict = bool(getattr(SETTINGS, "THESIS_STRICT", False))
+        thesis_strict = thesis_strict or bool(parse_optional_bool_env("THESIS_STRICT"))
+        thesis_strict = thesis_strict or bool(parse_optional_bool_env("UP_THESIS_STRICT"))
+        message = f"OSM access source failure: {error}"
+        if strict or thesis_strict or source_report is None:
+            raise RuntimeError(message) from error
+        source_report.update({"source_status": SOURCE_FAILURE, "source_failure_reason": message})
+        return []
+
     source = Path(osm_path)
     if not source.is_file():
-        return []
+        return source_failure(FileNotFoundError(f"file not found: {osm_path}"))
     try:
         osm_root = ET.parse(source).getroot()
-    except ET.ParseError:
-        return []
+    except ET.ParseError as exc:
+        return source_failure(ET.ParseError(f"XML parse error at {osm_path}: {str(exc)[:200]}"))
+    except OSError as exc:
+        return source_failure(exc)
 
     nodes: dict[str, tuple[float, float]] = {}
     for node in osm_root.findall("node"):
@@ -219,13 +248,17 @@ def attach_access_metadata(root: ET.Element, matches: Iterable[AccessMatch]) -> 
     for match in matches:
         by_road.setdefault(match.xodr_road_id, []).append(match)
     road_map = {str(road.get("id", "")): road for road in root.findall("road")}
+    unresolved_road_ids = sorted(set(by_road).difference(road_map))
+    if unresolved_road_ids:
+        raise ValueError(
+            "access_metadata_unresolved_xodr_road_ids:" + ",".join(unresolved_road_ids)
+        )
     attached_roads = 0
     tag_counts: Counter[str] = Counter()
     written_records = 0
     for road_id in sorted(by_road):
         road = road_map.get(road_id)
-        if road is None:
-            continue
+        assert road is not None  # validated above before any mutation
         user_data = road.find("userData")
         if user_data is None:
             user_data = ET.SubElement(road, "userData")
@@ -251,11 +284,15 @@ def attach_access_metadata(root: ET.Element, matches: Iterable[AccessMatch]) -> 
 
 def apply_access_metadata_from_osm(root: ET.Element, osm_path: str | Path) -> dict[str, Any]:
     """Extract, match, and attach metadata, returning evidence for the pipeline/report."""
-    ways = extract_access_ways(osm_path, root)
+    source_report: dict[str, Any] = {}
+    ways = extract_access_ways(osm_path, root, source_report=source_report)
     matches, outcomes = match_access_ways(root, ways)
     report = attach_access_metadata(root, matches)
     report.update(
         {
+            **source_report,
+            "source_status": source_report.get("source_status", OK if ways else EMPTY),
+            "source_failure_reason": source_report.get("source_failure_reason"),
             "osm_access_ways_considered": len(ways),
             "accepted_matches": len(matches),
             "matching_outcomes": outcomes,

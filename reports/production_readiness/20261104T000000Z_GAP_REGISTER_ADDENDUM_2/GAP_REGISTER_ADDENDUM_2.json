@@ -1,0 +1,131 @@
+{
+  "run_id": "20261104T000000Z_GAP_REGISTER_ADDENDUM_2",
+  "schema_version": 1,
+  "supersedes": null,
+  "amends": "20261103T000000Z_GAP_REGISTER_ADDENDUM",
+  "continues_from_highest_existing_id": "GAP-078",
+  "id_range_used": [
+    "GAP-079",
+    "GAP-079"
+  ],
+  "scope": "Status updates, an evidence update, and one new finding on top of reports/production_readiness/20261103T000000Z_GAP_REGISTER_ADDENDUM/GAP_REGISTER_ADDENDUM.json, covering the remediation window 2026-11-03 .. 2026-11-04 on branch integration/post-pr16-final-20261102 (worktree HEAD a6d1039695cf660428d69dcdde4979d0f0477b23). This file amends, it does not edit, the 20261103 addendum: that file is a historical artifact and was not modified.",
+  "last_updated_utc": "2026-11-04T00:00:00Z",
+  "schema_note": "Fields follow reports/production_readiness/20261103T000000Z_GAP_REGISTER_ADDENDUM/GAP_REGISTER_ADDENDUM.json (id/severity/subsystem/description/status/fixing_commit/regression_test/evidence_artifact/residual_risk, optional file_line), extended with update_kind (status_change | evidence_update | new | note) and, for every entry except update_kind=new, previous_status. status vocabulary matches the existing registers (fixed / open / blocked_external); no entry is marked fixed without a verified fixing commit (verified in this worktree with `git cat-file -e <sha>^{commit}` and `git show --stat <sha>` on 2026-11-04, diffs read before citing).",
+  "issues": [
+    {
+      "id": "GAP-075",
+      "update_kind": "status_change",
+      "previous_status": "open",
+      "severity": "P2",
+      "subsystem": "ultimate_pipeline/pipeline_stages/stage_04_enrichment.py; stage_08_integrity.py; stage_09_positional_semantics.py; stage_12_domain_gap.py",
+      "description": "ValidationReport.add(level, stage, message) files an entry under errors/skipped/success only when level is one of those words; anything else lands in warnings. Fixed in three passes: 56efb2cb04a02b9efa7f336d09af499c256f04ac corrected 26 reversed-order call sites in pipeline_stages/ (stages 4, 5, 7, 8, 9, 12); 7df27c8001a5d5c5f2f0b45e094bb9e5489086e0 corrected the 20 remaining package-wide sites (main_pipeline.py 11, quality/quality_gates.py 4, quality/quality_gate_manager.py 5) and widened the regression guard from pipeline_stages/ only to all of ultimate_pipeline/; a6d1039695cf660428d69dcdde4979d0f0477b23 updated two stale test fixtures in tests/unit/test_semantic_overlap_wiring.py that still asserted the old (stage, key, payload) argument order after 7df27c80.",
+      "status": "fixed",
+      "fixing_commit": "56efb2cb04a02b9efa7f336d09af499c256f04ac (26 sites, pipeline_stages/); 7df27c8001a5d5c5f2f0b45e094bb9e5489086e0 (20 remaining: main_pipeline.py 11, quality/quality_gates.py 4, quality/quality_gate_manager.py 5); a6d1039695cf660428d69dcdde4979d0f0477b23 (test layout follow-up in tests/unit/test_semantic_overlap_wiring.py)",
+      "file_line": "ultimate_pipeline/main_pipeline.py:2055,2057,2059,2966,2989,2992,3683,4590,4647,4664,4682; ultimate_pipeline/quality/quality_gates.py:105,154,200,210; ultimate_pipeline/quality/quality_gate_manager.py:28,34,128,176,272",
+      "regression_test": "tests/unit/test_validation_report_call_order.py (added e44e6aaefc27e5741990d1f0c9b7dab67719e16c, widened to all of ultimate_pipeline/ in 7df27c8001a5d5c5f2f0b45e094bb9e5489086e0; MIN_EXPECTED_CALLS=59, empty allowlist; re-run in this worktree 2026-11-04: 3 passed, 0 failed)",
+      "evidence_artifact": null,
+      "residual_risk": "The earlier \"may flip pass/fail gates\" concern was checked and is not the case: no code in ultimate_pipeline/, tools/ or scripts/ reads the ValidationReport errors/warnings/success/skipped buckets for a decision; gate decisions come from QualityGateManager.get_failures() (unchanged), verified via `git grep -n \"get_failures()\" -- ultimate_pipeline ':!ultimate_pipeline/tests'` -> 3 call sites (main_pipeline.py:4080, quality/quality_gates.py:242, run_quality_gates.py:56), none of which reads the vreport buckets. continuity_stability.json is written separately. Remaining residual: the guard matches only receivers named *vreport (all current ValidationReport instances are, confirmed by 7df27c80's own grep); ultimate_pipeline/main_pipeline.py's _validate_full_map_spawn is dead code with no callers anywhere in root ultimate_pipeline/ (fixed anyway, but not exercised on any live path)."
+    },
+    {
+      "id": "GAP-067",
+      "update_kind": "status_change",
+      "previous_status": "fixed",
+      "severity": "P1",
+      "subsystem": "tests/unit/conftest.py; tests/unit/test_batch1_cd1_cd4_contracts.py",
+      "description": "Residual closure of GAP-067: the original fix (0b96a4f55a31cefb6b6ff9abc32263b1a99f1beb; 72ce77902f4f552c049cbfa2bc81b02721e3d2bf) made the offline carla stub install only when the real client is not importable, but left a carla-less environment getting the stub via a plain pytest.importorskip(\"carla\") -- importorskip only skips when the import fails, and once the stub is installed into sys.modules the import succeeds, so tests meaningful only against the genuine live-client API (test_carla_classes.py::test_constant_matches_live_carla_enum_when_available, test_semantic_tagging.py::test_city_object_labels_match_real_carla_enum, and the GAP-021 Osm2Odr conversion module) ran against stub attributes and failed instead of skipping. 6885dfc2ad4950f3267d23b9578efc10dc83a500 closes this: both stub modules are marked __offline_stub__ = True, and a new tests/unit/_carla_real.py::require_real_carla() behaves like importorskip but additionally skips when the imported module is the offline stub; the three affected call sites now use it.",
+      "status": "fixed",
+      "fixing_commit": "6885dfc2ad4950f3267d23b9578efc10dc83a500 (residual: tests/unit/_carla_real.py require_real_carla() + __offline_stub__ markers; real-client tests skip instead of failing against the stub)",
+      "regression_test": "tests/unit/_carla_real.py::require_real_carla; tests/unit/test_carla_classes.py::test_constant_matches_live_carla_enum_when_available; tests/unit/test_semantic_tagging.py::test_city_object_labels_match_real_carla_enum; tests/unit/test_osm_to_xodr_proj_string_gap021.py (per 6885dfc2's commit message: verified on this machine with real carla installed, all 3 pass; verified via a subprocess with carla import blocked, all 3 cleanly SKIP, 34 other tests in the same files unaffected)",
+      "evidence_artifact": null,
+      "residual_risk": "none known"
+    },
+    {
+      "id": "GAP-070",
+      "update_kind": "evidence_update",
+      "previous_status": "open",
+      "severity": "P2",
+      "subsystem": "map geometry (junction connector exits) -- real 07_lanes map",
+      "description": "Root cause reproduced (46708baa6dc69b299dbb04c6c9ee775ea9bd04fe): the default-on junction connector snap (ultimate_pipeline/tools/junction_connector_snap.py _set_geometry_pose, called from ultimate_pipeline/pipeline_stages/stage_05_geometry.py; UP_ENABLE_JUNCTION_CONNECTOR_SNAP default \"1\", on since 2026-09-12) sets a connector's start pose (x, y and hdg) to the incoming road's end pose but keeps its paramPoly3/arc curve coefficients, rotating the connector so its far end no longer meets the exit road. Reproduced in memory on 05_planview (sha256 45c52059ec5b7d8d1e5f2f90a2f814bde465a923e7e77768c5f5e660790c721c, read-only, nothing written): heading kinks >30 deg 351 -> 3,720; ~53 deg bucket 4 -> 3,373; connectors_snapped = 4,025 (matches the run's own snap report and the 4,025 connectors whose planView changed between 05 and 06). Evidence: reports/production_readiness/20261103T000000Z_GAP070_STAGE_BISECTION/ROOT_CAUSE_JUNCTION_CONNECTOR_SNAP.md (46708baa6dc69b299dbb04c6c9ee775ea9bd04fe); confirmed these exact figures appear verbatim in that file on re-read 2026-11-04. A remediation candidate exists but is NOT merged, on branch fix/gap070-connector-snap-exit-20261103: a Hermite refit that re-fits the connector curve to both the incoming end pose and the declared exit anchor, failing closed (skipped_missing_exit_anchor) when no exit anchor is declared, measured in 03aaccd4baf7d3c11a5cb4b3896aa7644204f8ce's normalized receipt (same measurement.json content as the implementation commits ffbe677e941083950e07d828b5cdab82fd67f17a and f765dcb2669a1544e3310c4d229b95baba508f68 on that branch) on 05_planview: entry start mismatches 4,092 -> 67; entry end mismatches 4,043 -> 560; exit heading kinks 351 -> 349; ~53 deg bucket 4 -> 4; geometry gaps 0; 4,025 refits; 0 residuals -- confirmed by reading the diff of 03aaccd4, which shows exactly these before/after numbers in measurement.json. Tests for the candidate are in 2cee039f235f2cff7c87fa1fce935154cdcf3cd8 (tests/unit/test_junction_connector_classifier.py, no product code changed in that commit).",
+      "status": "open",
+      "fixing_commit": null,
+      "file_line": "ultimate_pipeline/tools/junction_connector_snap.py (_set_geometry_pose); ultimate_pipeline/pipeline_stages/stage_05_geometry.py (UP_ENABLE_JUNCTION_CONNECTOR_SNAP, ~line 103, call at ~line 253)",
+      "regression_test": "On unmerged branch fix/gap070-connector-snap-exit-20261103 only: ultimate_pipeline/tests/unit/test_junction_connector_snap.py (ffbe677e, f765dcb2); tests/unit/test_junction_connector_classifier.py (2cee039f)",
+      "evidence_artifact": "reports/production_readiness/20261103T000000Z_GAP070_STAGE_BISECTION/ROOT_CAUSE_JUNCTION_CONNECTOR_SNAP.md (46708baa6dc69b299dbb04c6c9ee775ea9bd04fe); reports/production_readiness/20261104T000000Z_GAP070_CONNECTOR_SNAP_EXIT/measurement.json (on branch fix/gap070-connector-snap-exit-20261103 @03aaccd4baf7d3c11a5cb4b3896aa7644204f8ce, not merged)",
+      "residual_risk": "Open until a governed regeneration (X8) is measured; X8 is blocked on needing >= 15 GB free disk. Do not merge the candidate fix before X8: the snap is default ON, so merging changes every future map regeneration, not just this measurement. The candidate also does not address GAP-079's separate ~180 deg reversed-stub population."
+    },
+    {
+      "id": "GAP-079",
+      "update_kind": "new",
+      "severity": "P2",
+      "subsystem": "map geometry (junction connectors): CARLA Osm2Odr (stage 01) + netconvert repair (stage 02, ultimate_pipeline/topology/sumo_repair.py)",
+      "description": "~0.1 m single-line junction connectors whose heading is reversed (~180 deg) relative to the exit road. 170-180 deg junction-exit bucket: 90 connectors at 01_sanitized, 111 from 02_sumo_fixed onward. Of the population meeting the stricter single-line/0.09-0.11m/170-180deg selection used in the X9 inventory: 58 at stage 01 (02_sumo_fixed onward introduces road-id renumbering, so stage-to-stage is a population count, not an identity diff), 81 at stage 02 (+23). Separate defect from GAP-070: the GAP-070 X7 candidate fix (ffbe677e/f765dcb2/03aaccd4, unmerged) leaves the 170-180 deg bucket unchanged at 111.",
+      "status": "open",
+      "fixing_commit": null,
+      "file_line": null,
+      "regression_test": null,
+      "evidence_artifact": "reports/production_readiness/20261104T000000Z_GAP070_REVERSED_STUBS/ (README.md, stub_inventory.json) on branch research/gap070-reversed-stubs-20261104 @06a31ed1e015614674a99c31811a651b751e8789 (not merged); read in this worktree 2026-11-04 (git show 06a31ed1:...README.md and ...stub_inventory.json), stub counts confirmed as 58/81 with stage02_population_increase 23",
+      "residual_risk": "Every enumerated stub carries declared routing (junction connection laneLink, existing exit road, stub lane links resolve to exit-road lanes; independently verified 58/58 and 81/81 per the README), so they must NOT be removed by length alone -- that would be a blind map-geometry deletion, not a source-stage fix. CARLA traversability of these stubs is unverified (no CARLA run was permitted for this inventory). Next step is X9b: netconvert option bisection plus heading-vector analysis to find the responsible stage-02 (netconvert OpenDRIVE round-trip) option."
+    },
+    {
+      "id": "GAP-076",
+      "update_kind": "note",
+      "previous_status": "open",
+      "severity": "P1",
+      "subsystem": "OSM -> XODR identity (CARLA Osm2Odr / netconvert)",
+      "description": "No change to the underlying finding (OSM way/node identity is lost in the OSM->XODR conversion path; netconvert's --output.original-names is available but unused). Still open as of 2026-11-04; owner: operator.",
+      "status": "open",
+      "fixing_commit": null,
+      "regression_test": null,
+      "evidence_artifact": null,
+      "residual_risk": "Unchanged from the 20261103 addendum: needs an operator decision to wire --output.original-names (or equivalent) through the conversion and re-verify lane-link topology against real OSM ids, or formally document successor/predecessor topology as XODR-internal-id-only. Not attempted in this window (source-stage-only fix required; no cosmetic XODR mutation permitted as a substitute). Still open as of 2026-11-04; owner: operator."
+    },
+    {
+      "id": "GAP-077",
+      "update_kind": "note",
+      "previous_status": "blocked_external",
+      "severity": "P0",
+      "subsystem": "CARLA runtime (RPC handshake)",
+      "description": "No change to the underlying finding (CARLA server RPC handshake hang). Additional detail as reported to this worktree's operator: 4 headless pilot attempts in total, all timing out in wait_for_carla_ready, 5.9/6.1 GB VRAM, 82-84 C, no TDR events observed. Not independently reproduced here because starting CARLA is forbidden for this writer task. Next step: one visible-window run, or a GPU driver check. Still open as of 2026-11-04; owner: operator.",
+      "status": "blocked_external",
+      "fixing_commit": null,
+      "regression_test": null,
+      "evidence_artifact": null,
+      "residual_risk": "Unchanged from the 20261103 addendum plus the detail above: remains blocked_external (operator must run an elevated disk-space pass if disk is still a factor, and retry CARLA outside any subagent, trying a visible-window run or a GPU driver check next). Still open as of 2026-11-04; owner: operator."
+    },
+    {
+      "id": "GAP-078",
+      "update_kind": "note",
+      "previous_status": "open",
+      "severity": "P2",
+      "subsystem": "shared venv / PYTHONPATH (test environment)",
+      "description": "Environment-only, no code defect. As reported: the 2 import-authority test failures are still reproduced in a chunked full-suite run in the environment where this was first observed, at commit 30a754cbf5518592f2f77ac0b8bc86704d2b9101 (verified in this worktree to resolve to a real commit; note: that commit's own diff is docs(gap-register) content unrelated to import-authority, i.e. it is cited here only as a repo-state checkpoint/time marker for when the chunked suite was run, not as the evidentiary source of the failure -- this writer did not independently reproduce the import-authority failure itself). Reported cause: a stale editable install pointing at F:\\wt\\authority-convergence-20261020 combined with a global PYTHONPATH entry. Reported fix: operator runs `pip install -e .` in the affected venv.",
+      "status": "open",
+      "fixing_commit": null,
+      "regression_test": null,
+      "evidence_artifact": null,
+      "residual_risk": "Unchanged from the 20261103 addendum: environment-specific, not independently reproduced in this worktree (echo $PYTHONPATH here resolves to this project's own root, not the F: path, and no stale authority-convergence finder was found from this worktree). Needs reproduction in the specific shell/venv where it was observed, then `pip install -e .` there. Still open as of 2026-11-04; owner: operator."
+    }
+  ],
+  "counts": {
+    "total": 7,
+    "fixed": 2,
+    "open": 4,
+    "blocked_external": 1
+  },
+  "register_state_after": {
+    "note": "Status of GAP-056..GAP-079 combining the 20261103 addendum and this addendum; later entry wins.",
+    "total": 24,
+    "fixed": 19,
+    "open": 4,
+    "open_ids": [
+      "GAP-070",
+      "GAP-076",
+      "GAP-078",
+      "GAP-079"
+    ],
+    "blocked_external": 1,
+    "blocked_external_ids": [
+      "GAP-077"
+    ]
+  }
+}

@@ -46,6 +46,7 @@ from typing import Any, Dict, Iterator, List, Mapping, Optional
 
 import numpy as np
 
+from ultimate_pipeline.perception.carla_classes import assert_label_ids_in_range
 from ultimate_pipeline.perception.semantic_classes import validate_num_classes
 
 
@@ -148,6 +149,13 @@ def write_png_raw_ids(image: Any, out_path: Path) -> None:
             from PIL import Image as PILImage
 
             PILImage.fromarray(class_id.astype(np.uint8), mode="L").save(tmp.as_posix())
+
+
+# Private alias: ``save_capture_frame`` below calls this name (module-global
+# lookup at call time), so tests can monkeypatch ``capture_writer._write_png_
+# raw_ids`` to simulate a mid-write crash without touching the public
+# ``write_png_raw_ids`` entry point that other modules import by name.
+_write_png_raw_ids = write_png_raw_ids
 
 
 def _write_viz_png(image: Any, out_path: Path) -> None:
@@ -255,8 +263,17 @@ def save_capture_frame(
 
         raw_dir = _ensure_dir(dataset_root / "semseg_raw" / camera)
         raw_path = raw_dir / f"{base}.png"
-        # NEW-274: _write_png_raw_ids has no temp-file support, so stage it
-        # through a temp sibling here and publish atomically.
+        # NEW-274: write_png_raw_ids already stages through its own temp
+        # sibling and publishes atomically (see its docstring/_atomic_path
+        # usage), so this outer _atomic_path call is redundant for the
+        # *real* implementation -- it is kept anyway because it is the only
+        # thing that still guarantees atomicity if `_write_png_raw_ids` is
+        # ever replaced by something that is not itself atomic (e.g. a test
+        # double, see test_capture_writer_atomic.py::
+        # test_failed_raw_write_leaves_no_partial_file, which monkeypatches
+        # this name and relies on exactly this outer wrap to avoid leaving
+        # partial bytes in the published path). Do not remove without also
+        # re-auditing that test.
         with _atomic_path(raw_path) as tmp:
             _write_png_raw_ids(seg_image, tmp)
         result.semseg_raw_path = raw_path

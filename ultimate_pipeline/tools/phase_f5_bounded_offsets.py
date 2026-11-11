@@ -225,7 +225,7 @@ def main() -> int:
 
     checks = {
         "f4_candidate_untouched": f4_untouched,
-        "solver_ok": bool(result.get("ok")),
+        "solver_ok": result.get("ok") is True,
         "max_offset_within_bound": max_offset_ok,
         "slope_coeffs_preserved_bcd": slope_ok,
         "segment_counts_preserved": seg_counts_preserved,

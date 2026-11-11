@@ -27,19 +27,56 @@ def _step3_topology_repair(
     tree, root = load_xodr(working_topology_input)
 
     # P0-B source-stage fix: connect orphan roads within snap distance
-    orphan_snap_m = float(os.getenv("UP_ORPHAN_SNAP_M", "25.0"))
+    # L1/L2: strict mode raises on residual orphans; settings control thresholds.
+    # L1-L2 review fix: read settings via a Mock-safe coercion (unit tests may
+    # pass a Mock settings object) and keep the exception boundary so a
+    # repair defect never aborts the pipeline when strict mode is off.
+    def _orphan_float(key: str, default: float) -> float:
+        try:
+            value = getattr(s, key, default)
+            if isinstance(value, bool):
+                return float(default)
+            return float(value)
+        except (TypeError, ValueError):
+            return float(default)
+
+    orphan_snap_m = _orphan_float("ORPHAN_SNAP_M", 5.0)
+    orphan_heading_deg = _orphan_float("ORPHAN_MAX_HEADING_DEG", 30.0)
+    orphan_height_m = _orphan_float("ORPHAN_MAX_HEIGHT_M", 1.0)
+    orphan_strict_raw = getattr(s, "ORPHAN_STRICT", False)
+    # L1 review fix (defect C): THESIS_STRICT (default True,
+    # ultimate_pipeline/config/settings.py ~2226) must also make a repair
+    # exception propagate -- ORPHAN_STRICT alone silently swallowed a real
+    # repair defect in the default (THESIS_STRICT=True) configuration.
+    thesis_strict_raw = getattr(s, "THESIS_STRICT", True)
+    orphan_strict = (orphan_strict_raw is True) or (thesis_strict_raw is True)
     try:
         from ultimate_pipeline.topology.orphan_road_repair import repair_orphan_roads
-        orphan_report = repair_orphan_roads(root, max_snap_m=orphan_snap_m)
-        self.vreport.add_dict("p0b_orphan_repair", orphan_report)
-        print(
-            "[STEP 3] P0-B orphan road connection repair: "
-            f"found={orphan_report['orphan_roads_found']} "
-            f"repaired={orphan_report['repaired_connections']} "
-            f"residual={orphan_report['residual_unconnected']}"
+        orphan_report = repair_orphan_roads(
+            root,
+            max_snap_m=orphan_snap_m,
+            max_heading_diff_deg=orphan_heading_deg,
+            max_height_diff_m=orphan_height_m,
+            strict=orphan_strict,
         )
-    except Exception as e:
-        print(f"⚠️ P0-B orphan repair failed (non-fatal): {e}")
+    except Exception as e:  # pragma: no cover - provenance for a repair defect
+        orphan_report = {
+            "ok": False,
+            "repair_type": "P0-B_orphan_road_connection_repair",
+            "orphan_roads_found": 0,
+            "repaired_connections": 0,
+            "residual_unconnected": 0,
+            "error": f"repair_orphan_roads raised: {e}",
+        }
+        if orphan_strict:
+            raise
+    self.vreport.add_dict("p0b_orphan_repair", orphan_report)
+    print(
+        "[STEP 3] P0-B orphan road connection repair: "
+        f"found={orphan_report['orphan_roads_found']} "
+        f"repaired={orphan_report['repaired_connections']} "
+        f"residual={orphan_report['residual_unconnected']}"
+    )
 
     TopologyRepair.run(root)
     save_xodr(tree, topo_fixed)

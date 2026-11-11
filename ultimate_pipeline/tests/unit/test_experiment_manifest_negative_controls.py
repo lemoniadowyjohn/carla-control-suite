@@ -16,6 +16,14 @@ Does NOT produce synthetic RQ3 captures; synthetic fixtures are clearly labeled.
 
 from typing import Any, Dict, List
 
+import os
+
+# O1: portable test root -- never hardcode a worktree absolute path.
+_TEST_ROOT = os.environ.get("RQ3_TEST_ROOT") or os.path.dirname(
+    os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+)
+_PERCEPTION = os.path.join(_TEST_ROOT, "ultimate_pipeline", "perception")
+
 
 def test_manifest_preserves_identity_hashes():
     """
@@ -40,7 +48,7 @@ def test_manifest_preserves_identity_hashes():
     import sys
 
     spec = importlib.util.spec_from_file_location(
-        "pair_authority", "ultimate_pipeline/perception/experiment_map_pair_authority.py"
+        "pair_authority", os.path.join(_PERCEPTION, "experiment_map_pair_authority.py")
     )
     if spec is None or spec.loader is None:
         raise ImportError("Cannot load experiment_map_pair_authority module")
@@ -49,7 +57,7 @@ def test_manifest_preserves_identity_hashes():
 
     # We don't fully execute create_experiment_manifest (build_pair_manifest
     # requires full environment); instead we inspect the fixed code by reading it.
-    source = open("E:\\wt\\repair-map-realism-p0-837a8504\\ultimate_pipeline\\perception\\experiment_map_pair_authority.py").read()
+    source = open(os.path.join(_PERCEPTION, "experiment_map_pair_authority.py")).read()
     # Verify no hardcoded empty-string identity hashes remain in the return call
     # (they were at lines 250-261 in the broken version)
     broken_patterns = [
@@ -98,7 +106,7 @@ def test_negative_control_empty_calibration_sha():
     import importlib.util
     import importlib.machinery
 
-    source = open("E:\\wt\\repair-map-realism-p0-837a8504\\ultimate_pipeline\\perception\\rq3_capture_contract.py").read()
+    source = open(os.path.join(_PERCEPTION, "rq3_capture_contract.py")).read()
     # The strict validator `validate_pair_manifest` checks that required identity
     # keys exist on both arms and pair level. Empty calibration_sha256 on either
     # arm or pair must trigger `PAIR_ARM_IDENTITY_MISSING`.
@@ -110,7 +118,7 @@ def test_negative_control_empty_calibration_sha():
 def test_negative_control_empty_route_sha():
     """Empty route manifest SHA must fail pair identity."""
     assert "route_manifest_sha256" in open(
-        "E:\\wt\\repair-map-realism-p0-837a8504\\ultimate_pipeline\\perception\\rq3_capture_contract.py"
+        os.path.join(_PERCEPTION, "rq3_capture_contract.py")
     ).read(), "Route manifest identity key missing"
     print("PASS: negative_control_empty_route_sha")
 
@@ -118,17 +126,17 @@ def test_negative_control_empty_route_sha():
 def test_negative_control_false_pair_valid():
     """A manifest that asserts pair_valid=True with empty identity fields must be rejected."""
     assert "pair_valid_is_false" in open(
-        "E:\\wt\\repair-map-realism-p0-837a8504\\ultimate_pipeline\\perception\\rq3_capture_contract.py"
+        os.path.join(_PERCEPTION, "rq3_capture_contract.py")
     ).read(), "pair_valid_is_false reason not present"
     assert "pair_valid and reasons" in open(
-        "E:\\wt\\repair-map-realism-p0-837a8504\\ultimate_pipeline\\perception\\rq3_capture_contract.py"
+        os.path.join(_PERCEPTION, "rq3_capture_contract.py")
     ).read(), "pair_valid and reasons check not present"
     print("PASS: negative_control_false_pair_valid (validator rejects false pair_valid)")
 
 
 def test_negative_control_mismatched_auto_sha():
     """Wrong automatic map SHA must fail pair validation."""
-    source_file = "E:\\wt\\repair-map-realism-p0-837a8504\\ultimate_pipeline\\perception\\rq3_capture_contract.py"
+    source_file = os.path.join(_PERCEPTION, "rq3_capture_contract.py")
     content = open(source_file).read()
     # Verify `is_ingolstadt_auto_arm` compares actual xodr_sha256 to pinned SHA
     assert "is_ingolstadt_auto_arm" in content
@@ -140,7 +148,7 @@ def test_negative_control_mismatched_auto_sha():
 
 def test_negative_control_missing_manual_arm():
     """A manifest with missing manual arm must fail."""
-    source_file = "E:\\wt\\repair-map-realism-p0-837a8504\\ultimate_pipeline\\perception\\rq3_capture_contract.py"
+    source_file = os.path.join(_PERCEPTION, "rq3_capture_contract.py")
     content = open(source_file).read()
     assert "manual_arm" in content
     assert "manual" in content
@@ -152,7 +160,7 @@ def test_negative_control_tampered_manifest():
     """A manifest that modifies identity hashes after creation must be detectable."""
     # The validator checks identity at read time; a tampered manifest has different hashes.
     # We rely on `sha256_text` for identity digests.
-    source_file = "E:\\wt\\repair-map-realism-p0-837a8504\\ultimate_pipeline\\perception\\rq3_capture_contract.py"
+    source_file = os.path.join(_PERCEPTION, "rq3_capture_contract.py")
     assert "sha256_text" in open(source_file).read(), "hash identity mechanism missing"
     print("PASS: negative_control_tampered_manifest (hash identity mechanism present)")
 

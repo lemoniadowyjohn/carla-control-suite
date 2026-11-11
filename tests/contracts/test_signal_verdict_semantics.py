@@ -66,7 +66,9 @@ _DEBUG_PASS_ARTIFACTS = {
     "logs/validation_report_full.json": {"schema": "validation_report_full/v1", "summary": {}},
     "determinism_fingerprint.json": {"schema": "determinism_fingerprint/v1", "final_xodr": "final.xodr"},
     "final_artifact_receipt.json": {
-        "schema": "final_artifact_receipt/v1",
+        "schema": "final_artifact_receipt/v2",
+        "schema_version": 2,
+        "publication_status": "PUBLISHED",
         "final_artifact_sha256": "0" * 64,
         "structure_fingerprint": {"sha256": "1" * 64},
     },
@@ -173,6 +175,71 @@ def test_map_acceptance_without_validity_flag_is_incomplete():
     assert normalize_signal_status("MAP_ACCEPTANCE", {"schema": "map_acceptance_v1"}) == STATUS_INCOMPLETE
 
 
+@pytest.mark.parametrize(
+    "payload,expected",
+    [
+        (
+            {
+                "schema_version": 2,
+                "publication_status": "PUBLISHED",
+                "final_artifact_sha256": "a" * 64,
+                "structure_fingerprint": {"sha256": "b" * 64},
+            },
+            STATUS_PASS,
+        ),
+        (
+            {
+                "schema_version": 2,
+                "publication_status": "ACCEPTANCE_FAILED",
+                "final_artifact_sha256": "a" * 64,
+                "structure_fingerprint": {"sha256": "b" * 64},
+            },
+            STATUS_FAIL,
+        ),
+        (
+            {
+                "schema_version": 2,
+                "final_artifact_sha256": "a" * 64,
+                "structure_fingerprint": {"sha256": "b" * 64},
+            },
+            STATUS_INCOMPLETE,
+        ),
+    ],
+)
+def test_final_artifact_receipt_v2_normalizer_requires_publication_status(payload, expected):
+    assert normalize_signal_status("FINAL_ARTIFACT_RECEIPT", payload) == expected
+
+
+def test_legacy_v1_receipt_is_readable_but_not_current_v2_run_publication():
+    payload = {
+        "schema_version": 1,
+        "final_artifact_sha256": "a" * 64,
+        "structure_fingerprint": {"sha256": "b" * 64},
+    }
+    assert normalize_signal_status("FINAL_ARTIFACT_RECEIPT", payload) == STATUS_PASS
+    assert (
+        normalize_signal_status(
+            "FINAL_ARTIFACT_RECEIPT", payload, legacy_receipt_in_v2_run=True
+        )
+        == STATUS_INCOMPLETE
+    )
+
+
+@pytest.mark.parametrize(
+    "schema_version", [None, True, False, "2", 2.0, 0, -1, 3]
+)
+def test_final_artifact_receipt_malformed_or_unsupported_schema_is_incomplete(
+    schema_version,
+):
+    payload = {
+        "schema_version": schema_version,
+        "publication_status": "PUBLISHED",
+        "final_artifact_sha256": "a" * 64,
+        "structure_fingerprint": {"sha256": "b" * 64},
+    }
+    assert normalize_signal_status("FINAL_ARTIFACT_RECEIPT", payload) == STATUS_INCOMPLETE
+
+
 # --- verdict against a healthy and a mutated run ----------------------------
 
 def test_debug_profile_with_complete_evidence_passes(tmp_path, clean_env):
@@ -196,6 +263,44 @@ def test_flipped_map_acceptance_blocks_the_verdict(tmp_path, clean_env):
     blocked = [f["signal_id"] for f in verdict["blocking_failures"]]
     assert "MAP_ACCEPTANCE" in blocked, blocked
     assert verdict["run_status_ok"] is False
+
+
+@pytest.mark.parametrize("acceptance_ok", [True, False])
+def test_non_published_v2_receipt_blocks_final_run_verdict(
+    tmp_path, clean_env, monkeypatch, acceptance_ok
+):
+    """Neither acceptance failure nor literal-topology failure may yield SUCCESS."""
+    _write_debug_fixture(tmp_path)
+    receipt_path = tmp_path / "final_artifact_receipt.json"
+    receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
+    receipt.update(
+        {
+            "publication_status": "ACCEPTANCE_FAILED",
+            "status": "ACCEPTANCE_FAILED",
+            "topology_certification": {
+                "SPEC_TOPOLOGY": "fail" if acceptance_ok else "pass"
+            },
+        }
+    )
+    receipt_path.write_text(json.dumps(receipt), encoding="utf-8")
+    (tmp_path / "map_acceptance.json").write_text(
+        json.dumps({"schema": "map_acceptance_v1", "valid_for_experiments": acceptance_ok}),
+        encoding="utf-8",
+    )
+    required = list(SIGNAL_REGISTRY["FINAL_ARTIFACT_RECEIPT"]["required_release_profiles"])
+    monkeypatch.setitem(
+        SIGNAL_REGISTRY["FINAL_ARTIFACT_RECEIPT"],
+        "required_release_profiles",
+        required + ["debug"],
+    )
+
+    verdict = _verdict(tmp_path, "debug", clean_env)
+    assert verdict["status"] != VERDICT_PASS
+    assert verdict["run_status_ok"] is False
+    assert any(
+        failure["signal_id"] == "FINAL_ARTIFACT_RECEIPT"
+        for failure in verdict["blocking_failures"]
+    )
 
 
 def test_missing_health_summary_blocks_the_verdict(tmp_path, clean_env):
@@ -254,7 +359,9 @@ def test_receipt_digest_mismatch_is_reported_as_identity_failure(tmp_path, clean
     (tmp_path / "final_artifact_receipt.json").write_text(
         json.dumps(
             {
-                "schema": "final_artifact_receipt/v1",
+                "schema": "final_artifact_receipt/v2",
+                "schema_version": 2,
+                "publication_status": "PUBLISHED",
                 "final_artifact_sha256": "f" * 64,
                 "structure_fingerprint": {"sha256": "1" * 64},
             }

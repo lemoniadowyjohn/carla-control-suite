@@ -19,6 +19,8 @@ import json
 import sys
 from pathlib import Path
 
+import pytest
+
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from tools.export_thesis_tables import (
@@ -37,6 +39,26 @@ def _mk(tmp_path: Path, rel: str, payload: dict) -> None:
     p = tmp_path / rel
     p.parent.mkdir(parents=True, exist_ok=True)
     p.write_text(json.dumps(payload), encoding="utf-8")
+
+
+def _bind_admissible_spatial_null(tmp_path: Path, aggregate_rel: str) -> None:
+    """Bind a minimal, hash-addressed RQ4 spatial-null result to an aggregate."""
+    null_rel = "reports/rq4_spatial_null/admissible.json"
+    _mk(tmp_path, null_rel, {
+        "schema_version": "rq4_spatial_null/v1",
+        "rq": "RQ4",
+        "metric": "gnn_latent_cosine_distance",
+        "verdict": "ADMISSIBLE",
+    })
+    null_path = tmp_path / null_rel
+    aggregate_path = tmp_path / aggregate_rel
+    aggregate = json.loads(aggregate_path.read_text(encoding="utf-8"))
+    import hashlib
+    aggregate["spatial_null_artifact"] = {
+        "path": null_rel,
+        "sha256": hashlib.sha256(null_path.read_bytes()).hexdigest(),
+    }
+    _mk(tmp_path, aggregate_rel, aggregate)
 
 
 def test_missing_evidence_reports_missing_not_omitted(tmp_path: Path) -> None:
@@ -315,7 +337,7 @@ def test_gnn_row_is_prototype_not_authoritative(tmp_path: Path) -> None:
     assert gnn_row["value"] == 1.14
 
 
-def test_gnn_row_is_authoritative_when_c21_ensemble_ci_excludes_zero(tmp_path: Path) -> None:
+def test_gnn_row_is_bounded_descriptive_without_spatial_null(tmp_path: Path) -> None:
     # C21: union-training (both maps' tiles) + 5-seed ensemble supersedes the C18
     # single-run PROTOTYPE result when its CI excludes zero (no-gap).
     _mk(tmp_path, "reports/post_audit_hardening/C18_GNN_LATENT_GAP/gnn_training_report.json", {
@@ -333,8 +355,12 @@ def test_gnn_row_is_authoritative_when_c21_ensemble_ci_excludes_zero(tmp_path: P
     gnn_rows = [r for r in payload["rows"] if r["metric"] == "gnn_latent_cosine_distance"]
     assert len(gnn_rows) == 1  # supersedes, does not duplicate, the C18 row
     gnn_row = gnn_rows[0]
-    assert gnn_row["status"] == AUTHORITATIVE
+    assert gnn_row["status"] == "BOUNDED_DESCRIPTIVE"
     assert gnn_row["value"] == 1.1537
+    assert gnn_row["claim_boundary"] == (
+        "five-seed variability of one whole-map cosine distance for the pair "
+        "Grid0821 / candidate_connectivity_repaired; not a spatial separation test"
+    )
     assert "5" in gnn_row["note"] and "union" in gnn_row["note"].lower()
     # provenance: sha256 must be the REAL hash of the cited artifact (independently
     # re-verifiable by validate_thesis_claim_provenance.py), not left UNPINNED.
@@ -356,7 +382,138 @@ def test_gnn_row_stays_bounded_when_c21_ensemble_ci_includes_zero(tmp_path: Path
     })
     payload = build_tables(tmp_path)
     gnn_row = next(r for r in payload["rows"] if r["metric"] == "gnn_latent_cosine_distance")
-    assert gnn_row["status"] == BOUNDED
+    assert gnn_row["status"] == "BOUNDED_DESCRIPTIVE"
+
+
+def test_gnn_row_prefers_leakfree_retrain_over_stale_c21_and_keeps_superseded_value(
+    tmp_path: Path,
+) -> None:
+    """GAP-010: tools/export_thesis_tables.py hardcoded the pre-GAP-010
+    leaky C21_GNN_AUTHORITATIVE evidence. The leak-free retrain
+    (reports/production_readiness/20260924T000000Z_GAP010_RQ4_LEAKFREE_RETRAIN/
+    aggregate_stats.json) must now win, the old (leaky) value must stay
+    visible as superseded_value (not silently dropped), and the leakage
+    audit status must be part of the row's provenance."""
+    # Stale/leaky evidence (still on disk, must not be the one that wins).
+    _mk(tmp_path, "reports/post_audit_hardening/C21_GNN_AUTHORITATIVE/aggregate_stats.json", {
+        "seeds": [42, 43, 44, 45, 46],
+        "cosine_distance": {"values": [0.62, 0.61, 0.70, 0.66, 0.63], "mean": 0.6433733820915222,
+                             "std": 0.0388, "ci95_bootstrap": [0.616, 0.676]},
+        "cosine_similarity": {"values": [0.38, 0.39, 0.30, 0.34, 0.37], "mean": 0.3566,
+                               "std": 0.0388, "ci95_bootstrap": [0.323, 0.384]},
+        "ci_excludes_zero_similarity": True,
+    })
+    # Leak-free retrain evidence (must win).
+    leakfree_dir = (
+        "reports/production_readiness/20260924T000000Z_GAP010_RQ4_LEAKFREE_RETRAIN"
+    )
+    _mk(tmp_path, f"{leakfree_dir}/aggregate_stats.json", {
+        "seeds": [42, 43, 44, 45, 46],
+        "cosine_distance": {
+            "values": [0.9054968357086182, 0.7745578289031982, 0.9666854739189148,
+                       0.9625548124313354, 0.9940629601478577],
+            "mean": 0.9206715822219849, "std": 0.08780273258329252,
+            "ci95_bootstrap": [0.8446466565132141, 0.9759842038154602],
+        },
+        "cosine_similarity": {
+            "values": [0.09450313448905945, 0.22544215619564056, 0.033314503729343414,
+                       0.037445180118083954, 0.00593702495098114],
+            "mean": 0.0793283998966217, "std": 0.08780273202708723,
+            "ci95_bootstrap": [0.02401578277349472, 0.15535332560539244],
+        },
+        "ci_excludes_zero_similarity": True,
+    })
+    _mk(tmp_path, f"{leakfree_dir}/POST_HOC_LEAKAGE_AUDIT.json", {
+        "overall_status": "PASS",
+        "eval_pair_sha256": {},
+        "per_seed_checkpoint_source_hash_check": {},
+    })
+
+    payload = build_tables(tmp_path)
+    gnn_rows = [r for r in payload["rows"] if r["metric"] == "gnn_latent_cosine_distance"]
+    assert len(gnn_rows) == 1, gnn_rows
+    gnn_row = gnn_rows[0]
+
+    assert gnn_row["status"] == "BOUNDED_DESCRIPTIVE", gnn_row
+    assert gnn_row["value"] == 0.9206715822219849, gnn_row
+    assert gnn_row["confidence_interval"] == [0.8446466565132141, 0.9759842038154602]
+
+    # Old (leaky, pre-GAP-010) value must stay visible, not silently dropped.
+    assert gnn_row["superseded_value"] is not None, gnn_row
+    assert gnn_row["superseded_value"]["value"] == 0.6433733820915222, gnn_row
+    assert "C21_GNN_AUTHORITATIVE" in gnn_row["superseded_value"]["artifact"]
+
+    # Leakage-audit status is part of this row's provenance.
+    assert gnn_row["leakage_audit_status"] == "PASS", gnn_row
+
+    # Provenance: sha256 must be the real hash of the NEW cited artifact.
+    import hashlib
+    expected = hashlib.sha256(
+        (tmp_path / f"{leakfree_dir}/aggregate_stats.json").read_bytes()
+    ).hexdigest()
+    assert gnn_row["sha256"] == expected
+
+
+def test_gnn_row_falls_back_to_c21_when_leakfree_retrain_absent(tmp_path: Path) -> None:
+    """When the leak-free retrain evidence doesn't exist (e.g. an older
+    checkout), the row must still fall back to the existing C21 logic --
+    this is a regression guard on the pre-existing fallback chain."""
+    _mk(tmp_path, "reports/post_audit_hardening/C21_GNN_AUTHORITATIVE/aggregate_stats.json", {
+        "seeds": [42, 43, 44, 45, 46],
+        "cosine_distance": {"values": [1.13, 1.33, 1.17, 1.11, 1.04], "mean": 1.1537, "std": 0.1083,
+                             "ci95_bootstrap": [1.0803, 1.2476]},
+        "cosine_similarity": {"values": [-0.13, -0.33, -0.17, -0.11, -0.04], "mean": -0.1537, "std": 0.1083,
+                               "ci95_bootstrap": [-0.2445, -0.0803]},
+        "ci_excludes_zero_similarity": True,
+    })
+    payload = build_tables(tmp_path)
+    gnn_row = next(r for r in payload["rows"] if r["metric"] == "gnn_latent_cosine_distance")
+    assert gnn_row["status"] == "BOUNDED_DESCRIPTIVE"
+    assert gnn_row["value"] == 1.1537
+    assert gnn_row.get("superseded_value") is None
+
+
+def test_gnn_row_requires_hash_bound_admissible_spatial_null_for_authority(
+    tmp_path: Path,
+) -> None:
+    aggregate_rel = "reports/post_audit_hardening/C21_GNN_AUTHORITATIVE/aggregate_stats.json"
+    _mk(tmp_path, aggregate_rel, {
+        "seeds": [42, 43, 44, 45, 46],
+        "cosine_distance": {"mean": 1.1537, "ci95_bootstrap": [1.0803, 1.2476]},
+        "cosine_similarity": {"mean": -0.1537, "ci95_bootstrap": [-0.2445, -0.0803]},
+        "ci_excludes_zero_similarity": True,
+    })
+    _bind_admissible_spatial_null(tmp_path, aggregate_rel)
+    row = next(r for r in build_tables(tmp_path)["rows"]
+               if r["metric"] == "gnn_latent_cosine_distance")
+    assert row["status"] == AUTHORITATIVE
+
+
+@pytest.mark.parametrize(("artifact", "bind_actual_hash"), [
+    ({"schema_version": "rq4_spatial_null/v1", "rq": "RQ4", "metric": "wrong", "verdict": "ADMISSIBLE"}, True),
+    ({"schema_version": "rq4_spatial_null/v1", "rq": "RQ4", "metric": "gnn_latent_cosine_distance", "verdict": "ADMISSIBLE"}, False),
+])
+def test_gnn_row_rejects_malformed_or_hash_mismatched_spatial_null(
+    tmp_path: Path, artifact: dict, bind_actual_hash: bool,
+) -> None:
+    aggregate_rel = "reports/post_audit_hardening/C21_GNN_AUTHORITATIVE/aggregate_stats.json"
+    artifact_rel = "reports/rq4_spatial_null/bad.json"
+    _mk(tmp_path, artifact_rel, artifact)
+    import hashlib
+    artifact_sha = hashlib.sha256((tmp_path / artifact_rel).read_bytes()).hexdigest()
+    _mk(tmp_path, aggregate_rel, {
+        "seeds": [42, 43, 44, 45, 46],
+        "cosine_distance": {"mean": 1.1537, "ci95_bootstrap": [1.0803, 1.2476]},
+        "cosine_similarity": {"mean": -0.1537, "ci95_bootstrap": [-0.2445, -0.0803]},
+        "ci_excludes_zero_similarity": True,
+        "spatial_null_artifact": {
+            "path": artifact_rel,
+            "sha256": artifact_sha if bind_actual_hash else "00" * 32,
+        },
+    })
+    row = next(r for r in build_tables(tmp_path)["rows"]
+               if r["metric"] == "gnn_latent_cosine_distance")
+    assert row["status"] == "BOUNDED_DESCRIPTIVE"
 
 
 def test_against_real_repo_root_does_not_crash_and_finds_real_evidence() -> None:

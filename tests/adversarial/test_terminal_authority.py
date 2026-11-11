@@ -20,8 +20,12 @@ from __future__ import annotations
 
 import json
 import os
+import subprocess
+import sys
 import tempfile
 import time
+import traceback
+import uuid
 from pathlib import Path
 
 import pytest
@@ -32,6 +36,268 @@ from ultimate_pipeline.utils.finalize_run_pack import (
     verify_run_pack,
 )
 from ultimate_pipeline.signals.registry import mandatory_pack_artifacts
+
+
+def test_two_terminal_publishers_on_one_output_root_have_one_pass(tmp_path):
+    """Two real processes contend; only the fenced owner may publish PASS."""
+    repo_root = str(Path(__file__).resolve().parents[2])
+    worker_script = tmp_path / "terminal_publisher_worker.py"
+    (tmp_path / "SUCCESS.txt").write_text(
+        "OK stale\nstatus=PASS\n", encoding="utf-8"
+    )
+    worker_script.write_text(
+        '''from __future__ import annotations
+import json, os, sys, time, traceback
+from pathlib import Path
+sys.path.insert(0, sys.argv[2])
+from ultimate_pipeline.main_pipeline import MainPipeline
+from ultimate_pipeline.quality import pipeline_health_summary as health_module
+from ultimate_pipeline.signals import registry as registry_module, verdict as verdict_module
+root = Path(sys.argv[1]).resolve()
+worker_id = str(os.getpid())
+ready = root / ("ready-" + worker_id + ".json")
+result = root / ("result-" + worker_id + ".json")
+def record(path, payload):
+    path.write_text(json.dumps(payload), encoding="utf-8")
+record(ready, {"pid": worker_id})
+deadline = time.monotonic() + 15
+while len(list(root.glob("ready-*.json"))) < 2 and time.monotonic() < deadline:
+    time.sleep(0.01)
+if len(list(root.glob("ready-*.json"))) < 2:
+    record(result, {"state": "ERROR", "detail": "publisher start barrier timed out"})
+    raise SystemExit(2)
+class FakeSettings:
+    RELEASE_PROFILE = "debug"
+    ENABLE_CARLA = False
+    DETERMINISTIC_MODE = False
+    KEEP_LAST_RUNS = 10
+    INPUT_XODR = str(root / "input.xodr")
+    OSM_FILE = str(root / "input.osm")
+    DEM_TIF = str(root / "dem.tif")
+    GPS_BOUNDS = {"lat_min": 0, "lat_max": 1, "lon_min": 0, "lon_max": 1}
+    BASE_OUTPUT_DIR = str(root)
+    LOG_DIR = str(root / "logs")
+    STAGE_DIRS = {}
+    def output_dir(self, create=True):
+        if create: root.mkdir(parents=True, exist_ok=True)
+        return str(root)
+    def logs_dir(self, create=True):
+        path = root / "logs"
+        if create: path.mkdir(parents=True, exist_ok=True)
+        return str(path)
+    def stage_path(self, name): return str(root / (name + ".xodr"))
+    def load_gps_bounds(self): return self.GPS_BOUNDS
+    def to_dict(self): return {}
+(root / "input.xodr").write_text("<?xml version='1.0'?><OpenDRIVE/>", encoding="utf-8")
+(root / "input.osm").write_text("<osm/>", encoding="utf-8")
+(root / "dem.tif").write_text("dummy", encoding="utf-8")
+pipeline = MainPipeline(settings=FakeSettings())
+if (root / "logs").exists():
+    raise RuntimeError("MainPipeline constructor created logs before lease acquisition")
+pipeline._validate_stage_capability_contract = lambda: None
+def run_internal():
+    deadline = time.monotonic() + 20
+    while not (root / "loser-locked.flag").exists() and time.monotonic() < deadline:
+        time.sleep(0.01)
+    if not (root / "loser-locked.flag").exists():
+        raise TimeoutError("losing pipeline did not fail at the lease gate")
+    (root / "final.xodr").write_text("<OpenDRIVE/>", encoding="utf-8")
+pipeline._run_internal = run_internal
+pipeline._find_final_xodr = lambda: str(root / "final.xodr")
+def write_health(out_dir, expected_gates=None, **kwargs):
+    Path(out_dir, "pipeline_health_summary.json").write_text("{}\\n", encoding="utf-8")
+health_module.write_pipeline_health_summary = write_health
+registry_module.expected_health_gates = lambda: []
+def write_verdict(out_dir, **kwargs):
+    Path(out_dir, "final_run_verdict.json").write_text("{}\\n", encoding="utf-8")
+verdict_module.write_final_run_verdict = write_verdict
+registry_module.mandatory_pack_artifacts = lambda profile, final_xodr, settings=None: [
+    final_xodr,
+    str(root / "pipeline_health_summary.json"),
+    str(root / "final_run_verdict.json"),
+    str(root / "run_identity.json"),
+]
+try:
+    pipeline.run()
+    record(result, {"state": "PASS", "pid": worker_id})
+except RuntimeError as exc:
+    state = "LOCKED" if "TERMINAL_FAILED(LOCKED" in str(exc) or "TERMINAL_FAILED(LOCKED_UNKNOWN" in str(exc) else "ERROR"
+    record(result, {"state": state, "detail": str(exc)})
+    if state == "LOCKED":
+        (root / "loser-locked.flag").touch()
+except BaseException:
+    record(result, {"state": "ERROR", "detail": traceback.format_exc()})
+''',
+        encoding="utf-8",
+    )
+    env = os.environ.copy()
+    env["PYTHONPATH"] = os.pathsep.join(
+        part for part in (repo_root, env.get("PYTHONPATH", "")) if part
+    )
+    env["PYTHONNOUSERSITE"] = "1"
+    env["PYTHONDONTWRITEBYTECODE"] = "1"
+    workers = []
+    for index in range(2):
+        log_path = tmp_path / f"publisher-{index}.log"
+        with log_path.open("w", encoding="utf-8") as log_file:
+            workers.append(subprocess.Popen(
+            [sys.executable, str(worker_script), str(tmp_path), repo_root],
+            cwd=repo_root,
+            env=env,
+            stdout=log_file,
+            stderr=subprocess.STDOUT,
+        ))
+    deadline = time.monotonic() + 45
+    try:
+        for worker in workers:
+            remaining = deadline - time.monotonic()
+            assert remaining > 0, "terminal publisher race exceeded 45 seconds"
+            try:
+                worker.wait(timeout=remaining)
+            except subprocess.TimeoutExpired as exc:
+                raise AssertionError("terminal publisher process hung") from exc
+        results = [
+            json.loads(path.read_text(encoding="utf-8"))
+            for path in tmp_path.glob("result-*.json")
+        ]
+        assert len(results) == 2, results
+        assert all(worker.returncode == 0 for worker in workers), [
+            (worker.returncode, (tmp_path / f"publisher-{index}.log").read_text(encoding="utf-8"))
+            for index, worker in enumerate(workers)
+        ]
+        assert [item["state"] for item in results].count("PASS") == 1, results
+        assert [item["state"] for item in results].count("LOCKED") == 1, results
+        assert (tmp_path / "SUCCESS.txt").is_file()
+        assert json.loads((tmp_path / "run_status.json").read_text())['status'] == "ok"
+        assert not (tmp_path / "crash_summary.json").exists()
+    finally:
+        for worker in workers:
+            if worker.poll() is None:
+                worker.terminate()
+                try:
+                    worker.wait(timeout=2)
+                except subprocess.TimeoutExpired:
+                    worker.kill()
+                    worker.wait(timeout=2)
+
+
+def test_superseded_terminal_generation_cannot_publish_success(tmp_path):
+    from ultimate_pipeline.governance.single_writer import worktree_lock
+    from ultimate_pipeline.main_pipeline import (
+        TerminalPublicationLeaseLost,
+        _assert_terminal_publication_lease,
+    )
+
+    original = worktree_lock.acquire_worktree_lease(
+        tmp_path, purpose="terminal_publication"
+    )
+    assert worktree_lock.release_lease(original)
+    successor = worktree_lock.acquire_worktree_lease(
+        tmp_path, purpose="terminal_publication"
+    )
+    try:
+        assert successor.generation > original.generation
+        with pytest.raises(TerminalPublicationLeaseLost, match="LEASE_LOST"):
+            _assert_terminal_publication_lease(
+                original, tmp_path, "SUCCESS promotion"
+            )
+        assert not (tmp_path / "SUCCESS.txt").exists()
+    finally:
+        assert worktree_lock.release_lease(successor)
+
+
+def test_settings_directory_resolution_can_be_non_mutating(tmp_path):
+    from ultimate_pipeline.config.settings import Settings
+
+    settings = Settings.__new__(Settings)
+    settings.OUTPUT_DIR_OVERRIDE = str(tmp_path / "out")
+    settings.BASE_OUTPUT_DIR = str(tmp_path / "base")
+    settings.timestamp = "fixed-run-id"
+
+    assert Path(settings.output_dir(create=False)) == tmp_path / "out"
+    assert Path(settings.logs_dir(create=False)) == tmp_path / "out" / "logs"
+    assert not (tmp_path / "out").exists()
+    assert not (tmp_path / "base").exists()
+
+
+def test_partial_terminal_lease_fails_closed_as_locked_unknown(tmp_path):
+    from ultimate_pipeline.governance.single_writer import worktree_lock
+
+    lease_path = worktree_lock._worktree_lease_path(tmp_path)
+    lease_path.parent.mkdir(parents=True, exist_ok=True)
+    malformed_record = b'{"status":"active"'
+    lease_path.write_bytes(malformed_record)
+    try:
+        with pytest.raises(worktree_lock.MalformedLeaseError, match="BLOCKED_MALFORMED_LEASE"):
+            worktree_lock.acquire_worktree_lease(
+                tmp_path, purpose="terminal_publication"
+            )
+    finally:
+        # Remove only the exact malformed record planted by this fixture.
+        if lease_path.is_file() and lease_path.read_bytes() == malformed_record:
+            lease_path.unlink()
+    assert not (tmp_path / "SUCCESS.txt").exists()
+
+
+@pytest.mark.parametrize("interrupt_after_acquire", [False, True])
+def test_pipeline_interruption_releases_output_root_lease(
+    tmp_path, monkeypatch, interrupt_after_acquire
+):
+    from types import MethodType, SimpleNamespace
+
+    from ultimate_pipeline.governance.single_writer import worktree_lock
+    from ultimate_pipeline.main_pipeline import MainPipeline
+
+    class _Report:
+        def add_dict(self, *args, **kwargs):
+            return None
+
+    pipeline = MainPipeline.__new__(MainPipeline)
+    pipeline.settings = SimpleNamespace()
+    pipeline.settings.logs_dir = lambda: str(tmp_path / "logs")
+    pipeline.out_dir = str(tmp_path)
+    pipeline._run_id = "interrupt-test"
+    pipeline._run_started_at = "2026-11-07T00:00:00Z"
+    pipeline._source_sha = "a" * 40
+    pipeline._profile = "debug"
+    pipeline._settings_digest = "b" * 64
+    pipeline._run_stage = "init"
+    pipeline.vreport = _Report()
+    pipeline._mark_stage = MethodType(MainPipeline._mark_stage, pipeline)
+    pipeline._write_run_status = MethodType(MainPipeline._write_run_status, pipeline)
+    pipeline._revoke_stale_success = MethodType(MainPipeline._revoke_stale_success, pipeline)
+    pipeline._write_run_identity = MethodType(MainPipeline._write_run_identity, pipeline)
+    pipeline._validate_stage_capability_contract = lambda: None
+
+    if interrupt_after_acquire:
+        real_acquire = worktree_lock.acquire_worktree_lease
+
+        def acquire_then_interrupt(*args, **kwargs):
+            real_acquire(*args, **kwargs)
+            raise KeyboardInterrupt("simulated interruption after lease publication")
+
+        monkeypatch.setattr(
+            worktree_lock, "acquire_worktree_lease", acquire_then_interrupt
+        )
+
+    def interrupt_run():
+        raise KeyboardInterrupt("simulated publisher interruption")
+
+    pipeline._run_internal = interrupt_run
+    expected = (
+        "simulated interruption after lease publication"
+        if interrupt_after_acquire
+        else "simulated publisher interruption"
+    )
+    with pytest.raises(KeyboardInterrupt, match=expected):
+        pipeline.run()
+
+    assert worktree_lock.current_generation(tmp_path) == 0
+    if interrupt_after_acquire:
+        assert not (tmp_path / "run_status.json").exists()
+    else:
+        assert json.loads((tmp_path / "run_status.json").read_text())['status'] == "failed"
+    assert not (tmp_path / "SUCCESS.txt").exists()
 
 
 def _write_fake_previous_run(out_dir: Path, run_id: str = "fake-old-run") -> None:
@@ -547,8 +813,9 @@ class TestMainPipelineRunTerminalChain:
         def mock_run_internal():
             terminal_calls.append("_run_internal")
             # Create minimal artifacts that the terminal chain expects
-            pipeline._write_run_identity()  # Already done in __init__, but ensure it's there
+            (tmp_path / "final.xodr").write_text("<OpenDRIVE/>", encoding="utf-8")
         pipeline._run_internal = mock_run_internal
+        pipeline._find_final_xodr = lambda: str(tmp_path / "final.xodr")
 
         # Mock the terminal chain steps to track order
         from ultimate_pipeline.quality import pipeline_health_summary as phs_module
@@ -582,29 +849,22 @@ class TestMainPipelineRunTerminalChain:
 
         from ultimate_pipeline.utils import finalize_run_pack as frp_module
         original_finalize = frp_module.finalize_run_pack
-        def mock_finalize(out_dir, key_paths, summary="", mandatory=None, emit_success=True):
+        def track_finalize(*args, **kwargs):
             terminal_calls.append("finalize_run_pack")
-            # Create a minimal PASS receipt
-            from ultimate_pipeline.utils.finalize_run_pack import STATUS_PASS
-            receipt = {
-                "schema": "RUN_PACK_FINALIZATION/v2",
-                "status": STATUS_PASS,
-                "files": {Path(k).name: "a" * 64 for k in key_paths if isinstance(k, str)},
-            }
-            # Write signature.json and SUCCESS.txt
-            import json as _json
-            sig_path = Path(out_dir) / "signature.json"
-            sig_path.write_text(_json.dumps(receipt, indent=2) + "\n", encoding="utf-8")
-            if emit_success:
-                (Path(out_dir) / "SUCCESS.txt").write_text("OK 2026-01-01T00:00:00Z\nstatus=PASS\n", encoding="utf-8")
-            return receipt
-        monkeypatch.setattr(frp_module, "finalize_run_pack", mock_finalize)
+            return original_finalize(*args, **kwargs)
+        monkeypatch.setattr(frp_module, "finalize_run_pack", track_finalize)
 
         original_verify = frp_module.verify_run_pack
-        def mock_verify(out_dir):
+        def track_verify(*args, **kwargs):
             terminal_calls.append("verify_run_pack")
-            return {"schema": "RUN_PACK_VERIFICATION/v2", "status": "PASS", "problems": []}
-        monkeypatch.setattr(frp_module, "verify_run_pack", mock_verify)
+            return original_verify(*args, **kwargs)
+        monkeypatch.setattr(frp_module, "verify_run_pack", track_verify)
+
+        original_write_success = frp_module.write_success_txt
+        def track_write_success(*args, **kwargs):
+            terminal_calls.append("write_success_txt")
+            return original_write_success(*args, **kwargs)
+        monkeypatch.setattr(frp_module, "write_success_txt", track_write_success)
 
         # Mock _write_run_status to track final status write
         original_write_status = pipeline._write_run_status
@@ -622,10 +882,14 @@ class TestMainPipelineRunTerminalChain:
             "_run_internal",
             "write_pipeline_health_summary",
             "write_final_run_verdict",
+            "_write_run_status(running)",
             "mandatory_pack_artifacts",
             "finalize_run_pack",
+            "_write_run_status(running)",
             "verify_run_pack",
             "_write_run_status(ok)",
+            "write_success_txt",
+            "verify_run_pack",
         ]
         assert terminal_calls == expected_order, f"Terminal chain order mismatch: {terminal_calls}"
 

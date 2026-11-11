@@ -398,7 +398,7 @@ def main() -> int:
         run_summary["screenshot_error"] = screenshot_result.get("error")
         run_summary["screenshot_cmd"] = screenshot_result.get("cmd")
         run_summary["screenshot_retries"] = screenshot_result.get("retries", max(0, args.screenshot_retries))
-        run_summary["screenshot_status"] = "ok" if screenshot_result.get("ok") else "failed"
+        run_summary["screenshot_status"] = "ok" if screenshot_result.get("ok") is True else "failed"
         screenshot_status_detail.update(
             {
                 "attempted": screenshot_result.get("attempted", False),

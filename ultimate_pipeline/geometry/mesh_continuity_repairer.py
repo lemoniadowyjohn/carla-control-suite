@@ -61,23 +61,23 @@ class MeshContinuityRepairer:
     # PUBLIC ENTRY POINT
     # -------------------------------------------------------------
     @staticmethod
-    def run(input_path, output_path):
+    def run(input_path, output_path, *, write_debug: bool = True):
         r = MeshContinuityRepairer(input_path)
-        r.process()
+        r.process(write_debug=write_debug)
         r.save(output_path)
 
     # -------------------------------------------------------------
     # MAIN PROCESSING
     # -------------------------------------------------------------
-    def process(self):
+    def process(self, *, write_debug: bool = True):
 
         if self.mode == "safe":
             print("🔍 SAFE mode: continuity diagnostics only.")
-            self.diagnose()
+            self.diagnose(write_debug=write_debug)
             return
 
         # Scan everything first
-        scan = self.scan_roads()
+        scan = self.scan_roads(write_debug=write_debug)
         roads_to_fix = []
 
         if self.selective:
@@ -122,8 +122,8 @@ class MeshContinuityRepairer:
     # -------------------------------------------------------------
     # SAFE DIAGNOSTICS — never modifies geometry
     # -------------------------------------------------------------
-    def diagnose(self):
-        scan = self.scan_roads()
+    def diagnose(self, *, write_debug: bool = True):
+        scan = self.scan_roads(write_debug=write_debug)
         bad = [r for r, d in scan.items()
                if d["max_gap"] > 2.0 or d["max_hdg"] > math.radians(5.0)]
 
@@ -136,7 +136,7 @@ class MeshContinuityRepairer:
     # -------------------------------------------------------------
     # SCAN ROADS FOR DISCONTINUITIES
     # -------------------------------------------------------------
-    def scan_roads(self):
+    def scan_roads(self, *, write_debug: bool = True):
         report = {}
 
         for road in self.root.findall("road"):
@@ -214,15 +214,17 @@ class MeshContinuityRepairer:
                 "local": local,
             }
 
-        # debug dump
-        debug_path = os.path.join(os.path.dirname(self.xodr_path),
-                                  "continuity_debug.json")
-        try:
-            with open(debug_path, "w", encoding="utf-8") as f:
-                json.dump(report, f, indent=2)
-            print(f"📄 continuity_debug.json written → {debug_path}")
-        except Exception:
-            pass
+        if write_debug:
+            # Preserve the direct-call diagnostic behavior.  Stage 6 passes
+            # write_debug=False and persists one compressed, hash-bound copy.
+            debug_path = os.path.join(os.path.dirname(self.xodr_path),
+                                      "continuity_debug.json")
+            try:
+                with open(debug_path, "w", encoding="utf-8") as f:
+                    json.dump(report, f, indent=2)
+                print(f"📄 continuity_debug.json written → {debug_path}")
+            except Exception:
+                pass
 
         return report
 

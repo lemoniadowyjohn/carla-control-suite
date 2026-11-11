@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+from pathlib import Path
 
 import pytest
 
@@ -186,14 +187,35 @@ def test_real_campaign_inputs_manifest_verifies_against_repo(tmp_path) -> None:
 class _DummySettings:
     """Minimal settings stand-in (only the fields the guard touches)."""
 
-    def __init__(self, manifest: str = ""):
+    def __init__(self, manifest: str = "", out_dir: str | Path = "."):
         self.INPUTS_MANIFEST = manifest
+        self._out_dir = str(out_dir)
 
     def output_dir(self) -> str:
-        return "."
+        return self._out_dir
 
     def logs_dir(self) -> str:
-        return "."
+        return self._out_dir
+
+
+@pytest.fixture(autouse=True)
+def _no_run_identity_in_cwd():
+    """Regression guard: pipeline construction must not write into the cwd.
+
+    MainPipeline.__init__ writes run_identity.json into settings.output_dir();
+    a settings stub returning "." therefore pollutes whatever directory pytest
+    runs from (historically the repository root). Snapshot the cwd file before
+    the test and require it to be byte-identical afterwards, so no test in this
+    module can leak run_identity.json back into the process cwd.
+    """
+    cwd_identity = Path.cwd() / "run_identity.json"
+    before = cwd_identity.read_bytes() if cwd_identity.is_file() else None
+    yield
+    after = cwd_identity.read_bytes() if cwd_identity.is_file() else None
+    assert after == before, (
+        "test wrote run_identity.json into the process cwd; "
+        "point settings.output_dir() inside tmp_path instead"
+    )
 
 
 def _make_wrapper_manifest(tmp_path, *, inputs: dict | None = None) -> str:
@@ -218,7 +240,7 @@ def _make_wrapper_manifest(tmp_path, *, inputs: dict | None = None) -> str:
 def test_guard_is_noop_without_manifest(tmp_path) -> None:
     from ultimate_pipeline.main_pipeline import MainPipeline
 
-    mp = MainPipeline(settings=_DummySettings(manifest=""))
+    mp = MainPipeline(settings=_DummySettings(manifest="", out_dir=tmp_path))
     mp._verify_pinned_inputs()  # must not raise
 
 
@@ -238,7 +260,7 @@ def test_guard_verifies_pinned_inputs(tmp_path) -> None:
             },
         },
     )
-    mp = MainPipeline(settings=_DummySettings(manifest=manifest_path))
+    mp = MainPipeline(settings=_DummySettings(manifest=manifest_path, out_dir=tmp_path))
     mp._verify_pinned_inputs()  # must not raise
 
 
@@ -257,7 +279,7 @@ def test_guard_aborts_on_drifted_input(tmp_path) -> None:
             },
         },
     )
-    mp = MainPipeline(settings=_DummySettings(manifest=manifest_path))
+    mp = MainPipeline(settings=_DummySettings(manifest=manifest_path, out_dir=tmp_path))
     with pytest.raises(RuntimeError, match="ABORT"):
         mp._verify_pinned_inputs()
 
@@ -266,7 +288,7 @@ def test_guard_aborts_on_missing_pinned_input(tmp_path) -> None:
     from ultimate_pipeline.main_pipeline import MainPipeline
 
     manifest_path = _make_wrapper_manifest(tmp_path)  # road_a.osm never created
-    mp = MainPipeline(settings=_DummySettings(manifest=manifest_path))
+    mp = MainPipeline(settings=_DummySettings(manifest=manifest_path, out_dir=tmp_path))
     with pytest.raises(RuntimeError, match="ABORT"):
         mp._verify_pinned_inputs()
 
@@ -274,7 +296,7 @@ def test_guard_aborts_on_missing_pinned_input(tmp_path) -> None:
 def test_guard_aborts_when_manifest_missing(tmp_path) -> None:
     from ultimate_pipeline.main_pipeline import MainPipeline
 
-    mp = MainPipeline(settings=_DummySettings(manifest=str(tmp_path / "nope.json")))
+    mp = MainPipeline(settings=_DummySettings(manifest=str(tmp_path / "nope.json"), out_dir=tmp_path))
     with pytest.raises(FileNotFoundError):
         mp._verify_pinned_inputs()
 
@@ -301,5 +323,5 @@ def test_guard_tolerates_pending_entries(tmp_path) -> None:
             },
         },
     )
-    mp = MainPipeline(settings=_DummySettings(manifest=manifest_path))
+    mp = MainPipeline(settings=_DummySettings(manifest=manifest_path, out_dir=tmp_path))
     mp._verify_pinned_inputs()  # pending entries are reported, never checked

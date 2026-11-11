@@ -2,6 +2,7 @@
 # ultimate_pipeline/diagnostics/continuity_summary.py
 
 from __future__ import annotations
+import gzip
 import os
 import sys
 import json
@@ -38,6 +39,34 @@ def pretty(value, stage_exists: bool):
     return "— (Stage Skipped/No Data)"
 
 
+def load_continuity_scan(run_dir: str) -> tuple[dict | None, list[str]]:
+    """Load v2 bounded-runtime detail, falling back to legacy debug JSON."""
+    runtime_path = os.path.join(run_dir, "stage6_containment_runtime.json")
+    try:
+        with open(runtime_path, "r", encoding="utf-8") as fh:
+            runtime = json.load(fh)
+        detail = runtime.get("mesh_continuity_detail", {})
+        detail_name = detail.get("path") if isinstance(detail, dict) else None
+        if isinstance(detail_name, str) and os.path.basename(detail_name) == detail_name:
+            detail_path = os.path.join(run_dir, detail_name)
+            with gzip.open(detail_path, "rt", encoding="utf-8") as fh:
+                scan = json.load(fh)
+            if isinstance(scan, dict):
+                return scan, ["stage6_containment_runtime.json", detail_name]
+    except (OSError, ValueError, json.JSONDecodeError):
+        pass
+
+    debug_path = os.path.join(run_dir, "continuity_debug.json")
+    try:
+        with open(debug_path, "r", encoding="utf-8") as fh:
+            scan = json.load(fh)
+        if isinstance(scan, dict):
+            return scan, ["continuity_debug.json"]
+    except (OSError, json.JSONDecodeError):
+        pass
+    return None, []
+
+
 # ---------------------------------------------------------
 # Main summary function
 # ---------------------------------------------------------
@@ -46,13 +75,14 @@ def run_summary(run_dir: str):
     print(f"\n🔍 Continuity summary for run:\n   {run_dir}\n")
 
     debug_path = os.path.join(run_dir, "continuity_debug.json")
+    data, continuity_sources = load_continuity_scan(run_dir)
 
     # Check if the continuity stage (Step 06) output exists in the folder
     stage_6_files = [f for f in os.listdir(run_dir) if f.startswith("06_")]
-    stage_exists = len(stage_6_files) > 0
+    stage_exists = len(stage_6_files) > 0 or bool(continuity_sources)
 
     # Create placeholder if missing
-    if not os.path.exists(debug_path):
+    if data is None:
         data = {
             "warning": "continuity stage did not run or debug was not saved",
             "max_gap": None,
@@ -62,13 +92,6 @@ def run_summary(run_dir: str):
         # Only write the placeholder if it's truly missing
         with open(debug_path, "w") as f:
             json.dump(data, f, indent=2)
-    else:
-        with open(debug_path, "r", encoding="utf-8") as f:
-            try:
-                data = json.load(f)
-            except json.JSONDecodeError:
-                data = {}
-
     max_gap = data.get("max_gap")
     max_heading = data.get("max_heading_jump")
     max_length = data.get("max_segment_length")

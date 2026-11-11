@@ -287,7 +287,7 @@ def main() -> int:
         return _finish_failed()
 
     num_classes = validate_num_classes(args.num_classes)
-    model = models.segmentation.fcn_resnet50(weights=None, num_classes=num_classes)
+    model = models.segmentation.fcn_resnet50(weights=None, weights_backbone=None, num_classes=num_classes)
     try:
         load_record: Dict[str, Any] = {}
         report["state_dict_load"] = load_state_dict_governed(

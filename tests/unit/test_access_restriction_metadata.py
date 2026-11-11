@@ -1,5 +1,8 @@
 import json
+from pathlib import Path
 import xml.etree.ElementTree as ET
+
+import pytest
 
 from ultimate_pipeline.enrichment.access_restriction_metadata import (
     AccessMatch,
@@ -8,6 +11,236 @@ from ultimate_pipeline.enrichment.access_restriction_metadata import (
     attach_access_metadata,
     match_access_ways,
 )
+
+
+def _xodr_root() -> ET.Element:
+    root = ET.Element("OpenDRIVE")
+    root.append(_road("1", "Access Road", 0))
+    return root
+
+
+def _set_non_strict(monkeypatch) -> None:
+    from ultimate_pipeline.config.settings import SETTINGS
+
+    monkeypatch.setattr(SETTINGS, "THESIS_STRICT", False)
+    monkeypatch.setattr(SETTINGS, "STRICT_QUALITY_GATES", False)
+    monkeypatch.setattr(SETTINGS, "RELEASE_PROFILE", "DEVELOPMENT")
+    monkeypatch.delenv("THESIS_STRICT", raising=False)
+    monkeypatch.delenv("UP_THESIS_STRICT", raising=False)
+    monkeypatch.delenv("UP_STRICT_QUALITY_GATES", raising=False)
+
+
+def test_missing_osm_source_is_strict_failure(tmp_path, monkeypatch):
+    from ultimate_pipeline.config.settings import SETTINGS
+    from ultimate_pipeline.enrichment.access_restriction_metadata import apply_access_metadata_from_osm
+
+    monkeypatch.setattr(SETTINGS, "THESIS_STRICT", True)
+    with pytest.raises(RuntimeError, match="OSM access source failure"):
+        apply_access_metadata_from_osm(_xodr_root(), tmp_path / "missing.osm")
+
+
+@pytest.mark.parametrize("flag", ["THESIS_STRICT", "UP_THESIS_STRICT"])
+def test_thesis_strict_environment_blocks_missing_osm(flag, tmp_path, monkeypatch):
+    from ultimate_pipeline.config.settings import SETTINGS
+    from ultimate_pipeline.enrichment.access_restriction_metadata import apply_access_metadata_from_osm
+
+    _set_non_strict(monkeypatch)
+    monkeypatch.setenv(flag, "1")
+    monkeypatch.setattr(SETTINGS, "THESIS_STRICT", False)
+    with pytest.raises(RuntimeError, match="OSM access source failure"):
+        apply_access_metadata_from_osm(_xodr_root(), tmp_path / "missing.osm")
+
+
+def test_missing_osm_source_is_explicit_source_failure_when_non_strict(tmp_path, monkeypatch):
+    from ultimate_pipeline.enrichment.access_restriction_metadata import apply_access_metadata_from_osm
+
+    _set_non_strict(monkeypatch)
+    report = apply_access_metadata_from_osm(_xodr_root(), tmp_path / "missing.osm")
+    assert report["source_status"] == "SOURCE_FAILURE"
+    assert report["source_failure_reason"]
+    assert report["osm_access_ways_considered"] == 0
+
+
+def test_release_profile_missing_osm_is_strict_failure(tmp_path, monkeypatch):
+    from ultimate_pipeline.config.settings import SETTINGS
+    from ultimate_pipeline.enrichment.access_restriction_metadata import apply_access_metadata_from_osm
+
+    monkeypatch.setattr(SETTINGS, "THESIS_STRICT", False)
+    monkeypatch.setattr(SETTINGS, "RELEASE_PROFILE", "STRUCTURAL_RELEASE")
+    monkeypatch.setenv("UP_STRICT_QUALITY_GATES", "0")
+    with pytest.raises(RuntimeError, match="OSM access source failure"):
+        apply_access_metadata_from_osm(_xodr_root(), tmp_path / "missing.osm")
+
+
+def test_malformed_osm_is_reported_as_source_failure_when_non_strict(tmp_path, monkeypatch):
+    from ultimate_pipeline.enrichment.access_restriction_metadata import apply_access_metadata_from_osm
+
+    _set_non_strict(monkeypatch)
+    source = tmp_path / "malformed.osm"
+    source.write_text("<osm><way></osm>", encoding="utf-8")
+    report = apply_access_metadata_from_osm(_xodr_root(), source)
+    assert report["source_status"] == "SOURCE_FAILURE"
+    assert "parse" in report["source_failure_reason"].lower()
+    assert report["osm_access_ways_considered"] == 0
+
+
+def test_valid_empty_osm_is_empty_not_source_failure(tmp_path, monkeypatch):
+    from ultimate_pipeline.enrichment.access_restriction_metadata import (
+        apply_access_metadata_from_osm,
+        extract_access_ways,
+    )
+
+    _set_non_strict(monkeypatch)
+    source = tmp_path / "empty.osm"
+    source.write_text('<osm version="0.6"></osm>', encoding="utf-8")
+    root = _xodr_root()
+    assert extract_access_ways(source, root) == []
+    report = apply_access_metadata_from_osm(root, source)
+    assert report["source_status"] == "EMPTY"
+    assert report["osm_access_ways_considered"] == 0
+
+
+def test_valid_osm_access_restriction_is_extracted_and_attached(tmp_path, monkeypatch):
+    from ultimate_pipeline.enrichment import access_restriction_metadata as access
+
+    _set_non_strict(monkeypatch)
+    source = tmp_path / "restricted.osm"
+    source.write_text(
+        '<osm version="0.6"><node id="1" lon="0" lat="0"/>'
+        '<node id="2" lon="0.001" lat="0"/><way id="w1">'
+        '<nd ref="1"/><nd ref="2"/><tag k="name" v="Access Road"/>'
+        '<tag k="highway" v="residential"/><tag k="access" v="destination"/>'
+        '</way></osm>',
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(access, "project_wgs84_to_xodr_native", lambda points: [(0.0, 0.0), (10.0, 0.0)])
+    root = _xodr_root()
+    report = access.apply_access_metadata_from_osm(root, source)
+    assert report["source_status"] == "OK"
+    assert report["osm_access_ways_considered"] == 1
+    assert report["metadata_records_written"] == 1
+    vector = root.find(f"./road[@id='1']/userData/vector[@key='{USERDATA_KEY}']")
+    assert vector is not None
+    assert json.loads(vector.get("value"))["tags"] == {"access": "destination"}
+
+
+def test_stage09_records_source_failure_without_clean_zero_count(tmp_path, monkeypatch):
+    from unittest import mock
+
+    from ultimate_pipeline.config.settings import SETTINGS
+    from ultimate_pipeline.pipeline_stages import stage_09_positional_semantics as stage09
+
+    _set_non_strict(monkeypatch)
+    final = tmp_path / "final.xodr"
+    final.write_text("fixture", encoding="utf-8")
+    root = _xodr_root()
+    tree = object()
+    report_calls = []
+    fake = mock.Mock()
+    fake.settings = mock.Mock(
+        ENABLE_TRAFFIC_LIGHTS=False,
+        ENABLE_BUILDINGS=False,
+        ENABLE_REALISM=False,
+        OSM_BUILDINGS_GEOJSON=None,
+        OSM_FILE=str(tmp_path / "missing.osm"),
+    )
+    fake.vreport.add_dict.side_effect = lambda *args: report_calls.append(args)
+    fake.vreport.add.side_effect = lambda *args: report_calls.append(args)
+    fake._assert_geometry_frozen = mock.Mock()
+    fake.authority_ledger.provide = mock.Mock()
+    monkeypatch.setattr(stage09, "_inject_main_pipeline_globals", lambda: None)
+    monkeypatch.setattr(stage09, "load_xodr", lambda _: (tree, root), raising=False)
+    save_xodr = mock.Mock()
+    monkeypatch.setattr(stage09, "save_xodr", save_xodr, raising=False)
+    monkeypatch.setattr(stage09, "XODRStatistics", mock.Mock(compute=lambda _: {}), raising=False)
+    monkeypatch.setattr(stage09, "RealismModule", mock.Mock(enrich=lambda _: 0), raising=False)
+    monkeypatch.setattr(
+        "ultimate_pipeline.enrichment.osm_meta_index.extract_positioned_osm_metadata_ways",
+        lambda _: [],
+    )
+    monkeypatch.setattr(
+        "ultimate_pipeline.enrichment.osm_meta_index.project_positioned_osm_metadata_ways",
+        lambda ways, _: [],
+    )
+    monkeypatch.setattr("ultimate_pipeline.enrichment.crosswalk_writer.extract_osm_crossings", lambda _: [])
+    monkeypatch.setattr(SETTINGS, "THESIS_STRICT", False)
+
+    stage09._step9_positional_semantics(fake, str(final))
+
+    access_reports = [args[1] for args in report_calls if args and args[0] == "osm_access_restriction_metadata_postfreeze"]
+    assert len(access_reports) == 1
+    assert access_reports[0]["source_status"] == "SOURCE_FAILURE"
+    assert access_reports[0]["osm_access_ways_considered"] == 0
+    assert not any(args[:2] == ("success", "osm_access_restriction_postfreeze") for args in report_calls)
+    save_xodr.assert_not_called()
+
+
+@pytest.mark.parametrize(
+    ("source_kind", "expected_status", "expected_summary"),
+    [
+        ("missing", "SOURCE_FAILURE", "SOURCE_FAILURE:"),
+        ("empty", "EMPTY", "0 road(s), 0 record(s)"),
+    ],
+)
+def test_stage04_distinguishes_access_source_failure_from_empty(
+    tmp_path, monkeypatch, capsys, source_kind, expected_status, expected_summary
+):
+    from unittest import mock
+
+    from ultimate_pipeline.pipeline_stages import stage_04_enrichment as stage04
+
+    _set_non_strict(monkeypatch)
+    from ultimate_pipeline.config.settings import SETTINGS
+    from ultimate_pipeline.enrichment.access_restriction_metadata import apply_access_metadata_from_osm
+
+    source = tmp_path / ("missing.osm" if source_kind == "missing" else "empty.osm")
+    if source_kind == "empty":
+        source.write_text('<osm version="0.6"></osm>', encoding="utf-8")
+    expected = apply_access_metadata_from_osm(_xodr_root(), source)
+    assert expected["source_status"] == expected_status
+
+    root = _xodr_root()
+    tree = object()
+    report_calls = []
+    fake = mock.Mock()
+    fake.settings = mock.Mock(
+        ENABLE_ROUNDABOUT_RECONSTRUCTION=False,
+        ENABLE_TRAFFIC_LIGHTS=False,
+        ENABLE_BUILDINGS=False,
+        ENABLE_REALISM=False,
+        OSM_BUILDINGS_GEOJSON=None,
+        OSM_FILE=str(source),
+        load_gps_bounds=mock.Mock(return_value={}),
+    )
+    fake.out_dir = str(tmp_path)
+    fake.vreport.add_dict.side_effect = lambda *args: report_calls.append(args)
+    fake.vreport.add.side_effect = lambda *args: report_calls.append(args)
+
+    monkeypatch.setattr(stage04, "_inject_main_pipeline_globals", lambda: None)
+    monkeypatch.setattr(stage04, "_mark_geometry_only_stage_contract", lambda _: None)
+    monkeypatch.setattr(stage04, "json", json, raising=False)
+    monkeypatch.setattr(stage04, "load_xodr", lambda _: (tree, root), raising=False)
+    monkeypatch.setattr(stage04, "save_xodr", mock.Mock(), raising=False)
+    monkeypatch.setattr(stage04, "RoundaboutRebuilder", mock.Mock(tag_roundabouts=mock.Mock(side_effect=RuntimeError("skip"))), raising=False)
+    monkeypatch.setattr(stage04, "resolve_buildings_geojson_for_stage4", lambda **_: None)
+    monkeypatch.setattr(stage04, "XODRStatistics", mock.Mock(compute=lambda _: {}), raising=False)
+    monkeypatch.setattr(stage04, "OSMPolygonLoader", mock.Mock(PROJ_STRING=""), raising=False)
+    monkeypatch.setattr(
+        "ultimate_pipeline.enrichment.osm_meta_index.extract_positioned_osm_metadata_ways",
+        lambda _: [],
+    )
+    monkeypatch.setattr("ultimate_pipeline.enrichment.crosswalk_writer.extract_osm_crossings", lambda _: [])
+    monkeypatch.setattr(SETTINGS, "THESIS_STRICT", False)
+
+    stage04._step4_enrichment(fake, str(tmp_path / "stage04.xodr"))
+
+    captured = capsys.readouterr().out
+    access_reports = [args[1] for args in report_calls if args and args[0] == "osm_access_restriction_metadata"]
+    assert len(access_reports) == 1
+    assert access_reports[0]["source_status"] == expected_status
+    assert expected_summary in captured
+    if source_kind == "missing":
+        assert "0 road(s), 0 record(s)" not in captured
 
 
 def _road(road_id: str, name: str, x: float) -> ET.Element:
@@ -73,3 +306,28 @@ def test_name_match_without_geometry_coverage_fails_closed():
     matches, outcomes = match_access_ways(root, [way], spacing_m=1.0)
     assert matches == []
     assert outcomes == {"unmatched_way": 1}
+
+
+def test_unresolved_matched_road_fails_before_any_metadata_mutation():
+    root = ET.Element("OpenDRIVE")
+    root.append(_road("1", "Access Road", 0))
+    valid = AccessMatch("w1", "1", {"access": "destination"}, 0.98, "HIGH", 0.1, 1.0)
+    missing = AccessMatch("w2", "missing", {"vehicle": "no"}, 0.98, "HIGH", 0.1, 1.0)
+
+    with pytest.raises(ValueError, match="access_metadata_unresolved_xodr_road_ids:missing"):
+        attach_access_metadata(root, [valid, missing])
+
+    assert root.findall(f"./road[@id='1']/userData/vector[@key='{USERDATA_KEY}']") == []
+
+
+def test_all_access_metadata_pipeline_callers_fail_closed():
+    """Both materialization stages must propagate an unresolved-road failure."""
+    repo_root = Path(__file__).resolve().parents[2]
+    for relative_path in (
+        "ultimate_pipeline/pipeline_stages/stage_04_enrichment.py",
+        "ultimate_pipeline/pipeline_stages/stage_09_positional_semantics.py",
+    ):
+        source = (repo_root / relative_path).read_text(encoding="utf-8")
+        assert "access metadata" in source.lower()
+        assert "failed closed" in source
+        assert "raise RuntimeError" in source

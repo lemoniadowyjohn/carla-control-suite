@@ -41,11 +41,11 @@ def test_report_status_falls_back_to_n_errors_count():
 
 
 def test_report_status_defaults_to_pass_for_empty_dict():
-    assert _report_status({}) == (True, "pass")
+    assert _report_status({}) == (False, "fail")
 
 
 def test_report_status_non_dict_input_treated_as_unknown_ok():
-    assert _report_status("not a dict") == (True, "unknown")
+    assert _report_status("not a dict") == (False, "unknown")
 
 
 # ---------------------------------------------------------------------------

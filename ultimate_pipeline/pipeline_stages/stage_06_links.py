@@ -5,6 +5,9 @@
 from __future__ import annotations
 
 import copy
+import gzip
+import hashlib
+import io
 import json
 import math
 import os
@@ -13,6 +16,7 @@ import xml.etree.ElementTree as ET
 from typing import Any, Dict, List
 
 from ultimate_pipeline.geometry.opendrive_geometry_kernel import endpoint as canonical_endpoint
+from ultimate_pipeline.core.file_utils import atomic_write_json
 
 
 PROTECTED_STAGE6_TAGS = (
@@ -24,6 +28,120 @@ PROTECTED_STAGE6_TAGS = (
     "objects",
     "LaneLinks",
 )
+
+
+# The runtime receipt is intentionally bounded.  Full per-road/per-segment
+# diagnostics live in the separately hash-bound gzip artifact.
+STAGE6_CONTINUITY_TOP_N = 20
+STAGE6_CONTINUITY_SUMMARY_MAX_BYTES = 32 * 1024
+STAGE6_CONTINUITY_DETAIL_FILENAME = "continuity_debug.json.gz"
+
+
+def _bounded_continuity_scan_summary(scan: Dict[str, Any]) -> Dict[str, Any]:
+    """Return a fixed-size summary of a potentially very large road scan."""
+    rows: List[Dict[str, Any]] = []
+    total_local = 0
+    for road_id, value in scan.items():
+        if not isinstance(value, dict) or "max_gap" not in value:
+            continue
+        local = value.get("local", [])
+        local_count = len(local) if isinstance(local, list) else 0
+        total_local += local_count
+        rows.append(
+            {
+                "road_id": str(road_id),
+                "max_gap": value.get("max_gap", 0.0),
+                "max_hdg": value.get("max_hdg", 0.0),
+                "max_len": value.get("max_len", 0.0),
+                "local_discontinuity_count": local_count,
+            }
+        )
+
+    rows.sort(
+        key=lambda row: (
+            float(row["max_gap"] or 0.0),
+            float(row["max_hdg"] or 0.0),
+            float(row["max_len"] or 0.0),
+            row["road_id"],
+        ),
+        reverse=True,
+    )
+    summary: Dict[str, Any] = {
+        "summary_version": 1,
+        "top_n": STAGE6_CONTINUITY_TOP_N,
+        "road_count": len(rows),
+        "total_local_discontinuities": total_local,
+        "worst_roads": rows[:STAGE6_CONTINUITY_TOP_N],
+        "omitted_road_count": max(0, len(rows) - STAGE6_CONTINUITY_TOP_N),
+    }
+    if isinstance(scan.get("error"), str):
+        summary["error"] = scan["error"]
+    return summary
+
+
+def _write_continuity_scan_detail(out_dir: str, scan: Dict[str, Any]) -> Dict[str, Any]:
+    """Write the full scan once as a deterministic, atomically-published artifact."""
+    os.makedirs(out_dir, exist_ok=True)
+    path = os.path.join(out_dir, STAGE6_CONTINUITY_DETAIL_FILENAME)
+    temp_path = path + ".tmp"
+    try:
+        with open(temp_path, "wb") as raw:
+            # filename="" and mtime=0 prevent wall-clock or path data from
+            # entering the gzip header, so the recorded hash is reproducible.
+            with gzip.GzipFile(
+                fileobj=raw, mode="wb", mtime=0, filename=""
+            ) as compressed:
+                with io.TextIOWrapper(compressed, encoding="utf-8") as text:
+                    json.dump(scan, text, indent=2, default=str, ensure_ascii=True, sort_keys=True)
+        # Re-open exactly as the established Windows-safe copy path does:
+        # close the gzip writer first, then flush/sync the completed temp file.
+        with open(temp_path, "r+b") as fh:
+            fh.flush()
+            os.fsync(fh.fileno())
+        os.replace(temp_path, path)
+    except Exception:
+        try:
+            os.remove(temp_path)
+        except OSError:
+            pass
+        raise
+    with open(path, "rb") as fh:
+        sha256 = hashlib.sha256(fh.read()).hexdigest()
+    return {
+        "path": STAGE6_CONTINUITY_DETAIL_FILENAME,
+        "sha256": sha256,
+        "bytes": os.path.getsize(path),
+        "encoding": "gzip",
+        "content": "full_mesh_continuity_scan",
+    }
+
+
+def _continuity_runtime_fields(out_dir: str, scan: Dict[str, Any]) -> Dict[str, Any]:
+    """Produce the bounded reader-facing summary and its full detail artifact once."""
+    return {
+        "mesh_continuity_scan": _bounded_continuity_scan_summary(scan),
+        "mesh_continuity_detail": _write_continuity_scan_detail(out_dir, scan),
+    }
+
+
+def _write_legacy_continuity_runtime_report(
+    out_dir: str, scan: Dict[str, Any]
+) -> Dict[str, Any]:
+    """Persist non-governed diagnostics in the v2 bounded runtime format."""
+    report: Dict[str, Any] = {
+        "schema": "stage6_containment_runtime_v2",
+        "mode": "NON_GOVERNED_DIAGNOSTIC",
+        **_continuity_runtime_fields(out_dir, scan),
+    }
+    atomic_write_json(
+        os.path.join(out_dir, "stage6_containment_runtime.json"),
+        report,
+        indent=2,
+        default=str,
+        ensure_ascii=True,
+        sort_keys=True,
+    )
+    return report
 
 
 def _stage6_governed_containment(settings_obj) -> bool:
@@ -237,13 +355,29 @@ def _semantic_stage6_diff(before_path: str, after_path: str) -> Dict[str, Any]:
 def _copy_artifact(src: str, dst: str) -> None:
     os.makedirs(os.path.dirname(os.path.abspath(dst)), exist_ok=True)
     if os.path.abspath(src) != os.path.abspath(dst):
-        shutil.copy2(src, dst)
+        # Write to a temp file in the same directory as the destination so
+        # that os.replace can atomically swap it. If the copy fails (e.g.,
+        # ENOSPC), the destination is either absent or a complete previous
+        # copy -- never a partial file.
+        temp_path = dst + ".tmp"
+        try:
+            shutil.copy2(src, temp_path)
+            with open(temp_path, "r+b") as f:
+                os.fsync(f.fileno())
+            os.replace(temp_path, dst)
+        except Exception:
+            try:
+                os.remove(temp_path)
+            except OSError:
+                # Cleanup must never hide the original copy/sync/replace
+                # failure; the temporary path may not have been created.
+                pass
+            raise
 
 
 def _write_stage6_containment_report(self, report: Dict[str, Any]) -> None:
     path = os.path.join(self.out_dir, "stage6_containment_runtime.json")
-    with open(path, "w", encoding="utf-8") as f:
-        json.dump(report, f, indent=2, default=str, ensure_ascii=True, sort_keys=True)
+    atomic_write_json(path, report, indent=2, default=str, ensure_ascii=True, sort_keys=True)
 
 
 def _run_stage6_read_only_diagnostic(
@@ -299,7 +433,7 @@ def _run_stage6_read_only_diagnostic(
     continuity_scan: Dict[str, Any] = {}
     try:
         r = MeshContinuityRepairer(geo_out)
-        continuity_scan = r.scan_roads()
+        continuity_scan = r.scan_roads(write_debug=False)
     except Exception as exc:
         continuity_scan = {"error": str(exc)}
     _copy_artifact(geo_out, cont_out)
@@ -311,8 +445,9 @@ def _run_stage6_read_only_diagnostic(
     )
 
     semantic_diff = _semantic_stage6_diff(elev_out, cont_out)
+    continuity_artifacts = _continuity_runtime_fields(self.out_dir, continuity_scan)
     containment_report: Dict[str, Any] = {
-        "schema": "stage6_containment_runtime_v1",
+        "schema": "stage6_containment_runtime_v2",
         "mode": "READ_ONLY_DIAGNOSTIC",
         "input_xodr": elev_out,
         "planview_output": geo_out,
@@ -327,7 +462,9 @@ def _run_stage6_read_only_diagnostic(
             "plan-view seam auto-repair",
         ],
         "observe_only_operations": observe_only,
-        "mesh_continuity_scan": continuity_scan,
+        # Retain the v1 field name as a mapping for readers that only inspect
+        # it, but bound its contents.  The full scan is one separate artifact.
+        **continuity_artifacts,
         "continuity_gate": continuity_report,
         "xodr_semantic_changes": semantic_diff,
     }
@@ -338,14 +475,6 @@ def _run_stage6_read_only_diagnostic(
             f"XODR semantic changes: {semantic_diff.get('changed')}"
         )
 
-    debug_path = os.path.join(self.out_dir, "continuity_debug.json")
-    try:
-        with open(debug_path, "w", encoding="utf-8") as f:
-            json.dump(continuity_scan, f, indent=2, default=str, ensure_ascii=True, sort_keys=True)
-        print(f"✅ continuity_debug.json written → {debug_path}")
-    except Exception as e:
-        print(f"⚠️ Could not create continuity debug file: {e}")
-
     tree, protected_root = load_xodr(cont_out)
     MeshChecker.quick_check(protected_root)
     self.qgate.gate_physics_feasibility(protected_root)
@@ -353,7 +482,11 @@ def _run_stage6_read_only_diagnostic(
 
     MapPlotter.save_preview(cont_out, self.out_dir, stage="05_continuity")
     heatmap_png = os.path.join(self.out_dir, "continuity_heatmap.png")
-    HeatmapGenerator.run(cont_out, heatmap_png, debug_json=debug_path)
+    HeatmapGenerator.run(
+        cont_out,
+        heatmap_png,
+        debug_json=os.path.join(self.out_dir, continuity_artifacts["mesh_continuity_detail"]["path"]),
+    )
     MapPlotter.save_preview(cont_out, self.out_dir, stage="06_post_continuity_planview")
 
     print("[DEBUG] Lanes after STEP 6:", _count_lanes(cont_out))
@@ -485,7 +618,7 @@ def _step6_planview_continuity(
     MapPlotter.save_preview(geo_out, self.out_dir, stage="05_planview_merge")
 
     # 6) continuity repair
-    MeshContinuityRepairer.run(geo_out, cont_out)
+    MeshContinuityRepairer.run(geo_out, cont_out, write_debug=False)
 
     # Geometric continuity check (XY/heading at road joins)
     continuity_report = self._stage_gate(
@@ -573,14 +706,18 @@ def _step6_planview_continuity(
             except Exception as e:
                 print(f"[STEP 6] Quarantine failed (continuing): {e}")
 
-    # continuity_debug.json
-    debug_path = os.path.join(self.out_dir, "continuity_debug.json")
+    # Persist both governed and non-governed scans through the same bounded
+    # runtime format.  The legacy unbounded continuity_debug.json is retained
+    # only as a reader fallback for historical runs.
+    debug_path = os.path.join(self.out_dir, STAGE6_CONTINUITY_DETAIL_FILENAME)
     try:
         r = MeshContinuityRepairer(cont_out)
-        scan = r.scan_roads()
-        with open(debug_path, "w", encoding="utf-8") as f:
-            json.dump(scan, f, indent=2)
-        print(f"✅ continuity_debug.json written → {debug_path}")
+        scan = r.scan_roads(write_debug=False)
+        legacy_report = _write_legacy_continuity_runtime_report(self.out_dir, scan)
+        debug_path = os.path.join(
+            self.out_dir, legacy_report["mesh_continuity_detail"]["path"]
+        )
+        print(f"✅ bounded continuity detail written → {debug_path}")
     except Exception as e:
         print(f"⚠️ Could not create continuity debug file: {e}")
 
@@ -704,15 +841,10 @@ def _step6_planview_continuity(
                 repair_path = os.path.join(
                     self.out_dir, "planview_internal_seams_step6_autorepair.json"
                 )
-                with open(repair_path, "w", encoding="utf-8") as f:
-                    json.dump(
-                        repair_report,
-                        f,
-                        indent=2,
-                        default=str,
-                        ensure_ascii=True,
-                        sort_keys=True,
-                    )
+                atomic_write_json(
+                    repair_path, repair_report, indent=2, default=str,
+                    ensure_ascii=True, sort_keys=True,
+                )
             except Exception as e:
                 print(
                     f"[STEP 6] planView seam auto-repair report write skipped: {e}"
@@ -721,15 +853,10 @@ def _step6_planview_continuity(
             seam_report_path = os.path.join(
                 self.out_dir, "planview_internal_seams_step6.json"
             )
-            with open(seam_report_path, "w", encoding="utf-8") as f:
-                json.dump(
-                    seam_report,
-                    f,
-                    indent=2,
-                    default=str,
-                    ensure_ascii=True,
-                    sort_keys=True,
-                )
+            atomic_write_json(
+                seam_report_path, seam_report, indent=2, default=str,
+                ensure_ascii=True, sort_keys=True,
+            )
         except Exception as e:
             print(f"[STEP 6] planView seam report write skipped: {e}")
 

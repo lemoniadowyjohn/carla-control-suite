@@ -110,8 +110,10 @@ def test_ordering_is_not_treated_as_sufficient(tmp_path, monkeypatch):
 
 def test_cli_exit_codes(tmp_path):
     """CLI: 0 when clean, 1 when a violation is present."""
+    import os
+
     clean = subprocess.run(
-        [sys.executable, str(REPO_ROOT / "tools" / "verify_import_authority.py")],
+        [sys.executable, "-S", str(REPO_ROOT / "tools" / "verify_import_authority.py")],
         capture_output=True, text=True, cwd=str(REPO_ROOT),
         env={**_clean_env()},
     )
@@ -119,9 +121,12 @@ def test_cli_exit_codes(tmp_path):
     assert "IMPORT_AUTHORITY_PASS" in clean.stdout
 
     dirty = subprocess.run(
-        [sys.executable, str(REPO_ROOT / "tools" / "verify_import_authority.py")],
+        [sys.executable, "-S", str(REPO_ROOT / "tools" / "verify_import_authority.py")],
         capture_output=True, text=True, cwd=str(REPO_ROOT),
-        env={**_clean_env(), "PYTHONPATH": str(tmp_path)},
+        env={
+            **_clean_env(),
+            "PYTHONPATH": os.pathsep.join((str(tmp_path), str(REPO_ROOT))),
+        },
     )
     # A PYTHONPATH that does not contain a CARLA checkout must not create a
     # false positive; the gate keys on repository module origin only.
@@ -132,8 +137,11 @@ def _clean_env() -> dict:
     import os
 
     env = dict(os.environ)
-    env.pop("PYTHONPATH", None)
+    env["PYTHONPATH"] = str(REPO_ROOT)
     env.pop("PYTHONHOME", None)
+    # The global interpreter may have user-site editable installs from another
+    # checkout. The subprocess must model CI's isolated environment.
+    env["PYTHONNOUSERSITE"] = "1"
     return env
 
 

@@ -21,7 +21,7 @@ from __future__ import annotations
 
 import importlib
 import random
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from typing import Optional, Tuple, Callable
 
 import numpy as np
@@ -289,7 +289,15 @@ class RealismAugmentor:
         return out
 
     def apply(self, img, seed):
-        return RealismAugmentor(AugmentationConfig(seed=seed)).apply_random(img)
+        # O5/G04b: honour the instance's own configuration; only the seed is
+        # overridden per call, keeping output deterministic per seed.
+        if img is None:
+            raise TypeError("apply() requires an image; got None")
+        if seed is None:
+            config = self.config
+        else:
+            config = replace(self.config, seed=seed)
+        return RealismAugmentor(config).apply_random(img)
 
 
 __all__ = ["AugmentationConfig", "RealismAugmentor"]

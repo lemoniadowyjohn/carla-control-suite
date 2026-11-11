@@ -81,7 +81,9 @@ def main() -> int:
         args.out.write_text(json.dumps(report, indent=2), encoding="utf-8")
 
     # human output
-    if not status.get("ok"):
+    status_ok_val = status.get("ok")
+    status_ok = status_ok_val if isinstance(status_ok_val, bool) else False
+    if not status_ok:
         print("[autopilot_check] CARLA not reachable / not available:", status)
         return 2
     print("[autopilot_check] CARLA reachable:", status)

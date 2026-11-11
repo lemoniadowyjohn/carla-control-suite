@@ -157,6 +157,11 @@ class MutexHandle:
         self.abandoned = False
 
     def try_acquire(self, name=MUTEX_NAME, timeout_ms=0):
+        if sys.platform != "win32" or _kernel32 is None:
+            raise ArbitrationError(
+                "UNSUPPORTED_PLATFORM",
+                detail="the machine-wide named-mutex control plane requires Windows",
+            )
         self.handle = _kernel32.CreateMutexW(None, False, name)
         if not self.handle:
             raise OSError("CreateMutexW failed: %d" % ctypes.get_last_error())

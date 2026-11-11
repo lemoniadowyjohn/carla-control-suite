@@ -30,6 +30,7 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 
 AUTHORITATIVE = "AUTHORITATIVE"
 BOUNDED = "BOUNDED"
+BOUNDED_DESCRIPTIVE = "BOUNDED_DESCRIPTIVE"
 PROTOTYPE = "PROTOTYPE"
 DEFERRED_RUNTIME = "DEFERRED_RUNTIME"
 DEFERRED_EXTERNAL_DATA = "DEFERRED_EXTERNAL_DATA"
@@ -43,6 +44,7 @@ MISSING = NOT_RUN
 VALID_STATUSES = frozenset({
     AUTHORITATIVE,
     BOUNDED,
+    BOUNDED_DESCRIPTIVE,
     PROTOTYPE,
     DEFERRED_RUNTIME,
     DEFERRED_EXTERNAL_DATA,
@@ -106,6 +108,9 @@ def _row(
     remaining_blocker: str = "",
     data_source: str = "",
     labels_available: bool | None = None,
+    superseded_value: Dict[str, Any] | None = None,
+    leakage_audit_status: str = "",
+    spatial_null_artifact: Dict[str, Any] | None = None,
 ) -> Dict[str, Any]:
     if status not in VALID_STATUSES:
         raise ValueError(f"invalid research row status: {status}")
@@ -150,6 +155,18 @@ def _row(
         # against the base metric->RQ allow-list only.
         "data_source": data_source,
         "labels_available": labels_available,
+        # GAP-010: a prior value this row's evidence supersedes (e.g. a
+        # train/eval leak fix that changed the measured number) must stay
+        # visible here rather than being silently dropped when the
+        # evidence source is repointed. None when this row has nothing to
+        # supersede.
+        "superseded_value": superseded_value,
+        # Leakage-audit status (PASS/FAIL/not applicable) for rows whose
+        # evidence comes from a pipeline with an explicit leakage-exclusion
+        # contract (e.g. the GAP-010 leak-free GNN retrain). Empty string
+        # when not applicable to this row.
+        "leakage_audit_status": leakage_audit_status,
+        "spatial_null_artifact": spatial_null_artifact or {},
     }
 
 
@@ -364,11 +381,135 @@ def _rq3_perceptual_gap_rows(root: Path) -> List[Dict[str, Any]]:
                        "or the C16 UE cook (blocked on a human operator)")]
 
 
+def _superseded_c21_value(root: Path) -> Dict[str, Any] | None:
+    """The pre-GAP-010 C21_GNN_AUTHORITATIVE value, if its evidence file is
+    still on disk, kept visible as a superseded_value rather than silently
+    dropped once the GAP-010 leak-free retrain takes over as the primary
+    evidence (see _gnn_latent_row)."""
+    c21_dir = root / "reports/post_audit_hardening/C21_GNN_AUTHORITATIVE"
+    agg_path = c21_dir / "aggregate_stats.json"
+    agg = _read_json(agg_path)
+    if agg is None:
+        return None
+    cd = agg.get("cosine_distance", {})
+    return {
+        "value": cd.get("mean"),
+        "artifact": "C21_GNN_AUTHORITATIVE/aggregate_stats.json",
+        "sha256": hashlib.sha256(agg_path.read_bytes()).hexdigest(),
+        "confidence_interval": cd.get("ci95_bootstrap"),
+        "note": (
+            "pre-GAP-010 value: the eval-pair reference (manual_grid0821.xodr) "
+            "hash-matched content already present in this run's training set "
+            "(a train/eval content-identity leak); superseded by the GAP-010 "
+            "leak-free retrain, which excludes that content from training."
+        ),
+    }
+
+
+_RQ4_BOUNDED_DESCRIPTIVE_BOUNDARY = (
+    "five-seed variability of one whole-map cosine distance for the pair "
+    "Grid0821 / candidate_connectivity_repaired; not a spatial separation test"
+)
+
+
+def _admissible_spatial_null_artifact(
+    root: Path, aggregate: Dict[str, Any],
+) -> tuple[bool, Dict[str, str]]:
+    """Validate hash-bound, schema-valid spatial-null evidence for RQ4."""
+    binding = aggregate.get("spatial_null_artifact")
+    if not isinstance(binding, dict):
+        return False, {}
+    rel = binding.get("path")
+    declared_sha = binding.get("sha256")
+    if not isinstance(rel, str) or not rel or not isinstance(declared_sha, str):
+        return False, {}
+    rel_path = Path(rel)
+    if rel_path.is_absolute() or ".." in rel_path.parts:
+        return False, {}
+    artifact_path = root / rel_path
+    if not artifact_path.is_file():
+        return False, {}
+    actual_sha = hashlib.sha256(artifact_path.read_bytes()).hexdigest()
+    if actual_sha != declared_sha:
+        return False, {}
+    artifact = _read_json(artifact_path)
+    if not isinstance(artifact, dict):
+        return False, {}
+    if (
+        artifact.get("schema_version") != "rq4_spatial_null/v1"
+        or artifact.get("rq") != "RQ4"
+        or artifact.get("metric") != "gnn_latent_cosine_distance"
+        or artifact.get("verdict") != "ADMISSIBLE"
+    ):
+        return False, {}
+    return True, {"path": rel_path.as_posix(), "sha256": actual_sha}
+
+
 def _gnn_latent_row(root: Path) -> Dict[str, Any]:
+    # GAP-010: the leak-free retrain (5-seed ensemble, same protocol as C21,
+    # with exclude_source_xodr active for the eval pair) is authoritative
+    # over the pre-GAP-010 C21_GNN_AUTHORITATIVE evidence, which had a real
+    # train/eval content-identity leak (the eval-pair reference hash-matched
+    # content already present in the training set). The old value is kept
+    # visible via superseded_value, never silently dropped.
+    leakfree_dir = (
+        root / "reports/production_readiness/20260924T000000Z_GAP010_RQ4_LEAKFREE_RETRAIN"
+    )
+    leakfree_agg_path = leakfree_dir / "aggregate_stats.json"
+    leakfree_agg = _read_json(leakfree_agg_path)
+    if leakfree_agg is not None:
+        cd = leakfree_agg.get("cosine_distance", {})
+        cs = leakfree_agg.get("cosine_similarity", {})
+        ci_excludes_zero = bool(leakfree_agg.get("ci_excludes_zero_similarity"))
+        seeds = leakfree_agg.get("seeds", [])
+        spatial_null_ok, spatial_null = _admissible_spatial_null_artifact(
+            root, leakfree_agg
+        )
+        status = AUTHORITATIVE if ci_excludes_zero and spatial_null_ok else BOUNDED_DESCRIPTIVE
+        agg_sha256 = hashlib.sha256(leakfree_agg_path.read_bytes()).hexdigest()
+        leakage_audit = _read_json(leakfree_dir / "POST_HOC_LEAKAGE_AUDIT.json") or {}
+        leakage_audit_status = str(leakage_audit.get("overall_status", "") or "")
+        evidence_rel = (
+            "reports/production_readiness/20260924T000000Z_GAP010_RQ4_LEAKFREE_RETRAIN/"
+            "aggregate_stats.json"
+        )
+        return _row(
+            "RQ4", "gnn_latent_cosine_distance", cd.get("mean"), status,
+            artifact=evidence_rel, sha256=agg_sha256,
+            evidence_path=evidence_rel,
+            evidence_sha256=agg_sha256,
+            thesis_baseline="Thesis fixed NT-Xent representation collapse and reported latent separation with K=1000 permutation p<0.001.",
+            unit="cosine_distance",
+            comparability="extension: multi-seed union-domain analysis, not the entire thesis RQ4 result",
+            method="5-seed union-domain GNN ensemble with bootstrap confidence intervals, "
+                   "GAP-010 leak-free retrain (exclude_source_xodr active for the eval pair)",
+            sample_size=len(seeds),
+            random_seeds=seeds,
+            confidence_interval=cd.get("ci95_bootstrap"),
+            claim_boundary=(
+                "Current leak-free ensemble has hash-bound admissible spatial-null evidence."
+                if status == AUTHORITATIVE else _RQ4_BOUNDED_DESCRIPTIVE_BOUNDARY
+            ),
+            superseded_value=_superseded_c21_value(root),
+            leakage_audit_status=leakage_audit_status,
+            spatial_null_artifact=spatial_null,
+            note=(
+                f"GAP-010 leak-free retrain: {len(seeds)}-seed ensemble (seeds={seeds}) "
+                f"trained on the UNION of both maps' tiles with exclude_source_xodr active "
+                f"for the eval pair (closes the train/eval content-identity leak the pre-fix "
+                f"C21 run had); cosine_distance 95% bootstrap CI={cd.get('ci95_bootstrap')}, "
+                f"cosine_similarity 95% CI={cs.get('ci95_bootstrap')} "
+                f"({'excludes' if ci_excludes_zero else 'includes'} zero/no-gap); "
+                f"leakage audit overall_status={leakage_audit_status or 'UNKNOWN'}"
+            ),
+        )
+
     # C21: union-training (auto + manual tiles, resolving the C18 OOD caveat) + a
     # 5-seed ensemble (resolving the C18 single-run caveat) supersedes the C18
     # PROTOTYPE result IF its bootstrap CI excludes zero similarity (no-gap) --
     # exactly the bar the C21 governed prompt itself set for AUTHORITATIVE.
+    # (Fallback path: used only when the GAP-010 leak-free retrain evidence
+    # above is not present on disk, e.g. an older checkout.)
     c21_dir = root / "reports/post_audit_hardening/C21_GNN_AUTHORITATIVE"
     agg_path = c21_dir / "aggregate_stats.json"
     agg = _read_json(agg_path)
@@ -377,7 +518,8 @@ def _gnn_latent_row(root: Path) -> Dict[str, Any]:
         cs = agg.get("cosine_similarity", {})
         ci_excludes_zero = bool(agg.get("ci_excludes_zero_similarity"))
         seeds = agg.get("seeds", [])
-        status = AUTHORITATIVE if ci_excludes_zero else BOUNDED
+        spatial_null_ok, spatial_null = _admissible_spatial_null_artifact(root, agg)
+        status = AUTHORITATIVE if ci_excludes_zero and spatial_null_ok else BOUNDED_DESCRIPTIVE
         agg_sha256 = hashlib.sha256(agg_path.read_bytes()).hexdigest()
         return _row(
             "RQ4", "gnn_latent_cosine_distance", cd.get("mean"), status,
@@ -391,7 +533,11 @@ def _gnn_latent_row(root: Path) -> Dict[str, Any]:
             sample_size=len(seeds),
             random_seeds=seeds,
             confidence_interval=cd.get("ci95_bootstrap"),
-            claim_boundary="Current C21 ensemble strengthens the thesis RQ4 result; it does not make RQ4 wholly new post-thesis work.",
+            claim_boundary=(
+                "Current C21 ensemble has hash-bound admissible spatial-null evidence."
+                if status == AUTHORITATIVE else _RQ4_BOUNDED_DESCRIPTIVE_BOUNDARY
+            ),
+            spatial_null_artifact=spatial_null,
             note=(
                 f"{len(seeds)}-seed ensemble (seeds={seeds}) trained on the UNION of both "
                 f"maps' tiles (resolves C18's OOD one-sided-training caveat); "

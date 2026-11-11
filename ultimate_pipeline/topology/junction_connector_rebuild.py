@@ -501,7 +501,13 @@ def _write_rebuild_geometry(
             )
             return "arc"
 
-    if not bool(allow_straight_chord_fallback):
+    allow_straight_chord_fallback_val = allow_straight_chord_fallback
+    allow_straight_chord_fallback = (
+        allow_straight_chord_fallback_val
+        if isinstance(allow_straight_chord_fallback_val, bool)
+        else False
+    )
+    if not allow_straight_chord_fallback:
         return None
 
     # OC-2 AREA-014: a straight chord that ignores either boundary heading is
@@ -541,9 +547,13 @@ def _summarize_worst_junctions(records: List[Dict[str, Any]], limit: int = 10) -
         item["connections"] += 1
         start_gap = float(rec.get("start_gap_m", 0.0) or 0.0)
         end_gap = float(rec.get("end_gap_m", 0.0) or 0.0)
-        if bool(rec.get("start_gap_issue", False)):
+        start_gap_issue_val = rec.get("start_gap_issue", False)
+        start_gap_issue = start_gap_issue_val if isinstance(start_gap_issue_val, bool) else False
+        end_gap_issue_val = rec.get("end_gap_issue", False)
+        end_gap_issue = end_gap_issue_val if isinstance(end_gap_issue_val, bool) else False
+        if start_gap_issue:
             item["start_gap_issues"] += 1
-        if bool(rec.get("end_gap_issue", False)):
+        if end_gap_issue:
             item["end_gap_issues"] += 1
         item["max_start_gap_m"] = max(float(item["max_start_gap_m"]), start_gap)
         item["max_end_gap_m"] = max(float(item["max_end_gap_m"]), end_gap)
@@ -1063,7 +1073,9 @@ def main(argv: List[str] | None = None) -> int:
         f"start_gap_before={report['start_gap_over_threshold_before']} "
         f"start_gap_after={report['start_gap_over_threshold_after']}"
     )
-    return 0 if bool(report.get("ok", False)) else 2
+    report_ok_val = report.get("ok", False)
+    report_ok = report_ok_val if isinstance(report_ok_val, bool) else False
+    return 0 if report_ok else 2
 
 
 if __name__ == "__main__":

@@ -1,0 +1,26 @@
+Task ID,Category,File,Change Description,Test Coverage,Status,Evidence
+V12-A,Exit-code propagation,ultimate_pipeline/tools/carla_preflight.py,Exit code based on ok is True,test_carlic_preflight.py,PASS,136/136 contract tests pass
+V12-B,Artifact paths,ultimate_pipeline/contracts/artifacts.py,Run ID with git SHA provenance,test_create_run_id_format,PASS,SHA in run_id
+V12-C,CLI environment restoration,ultimate_pipeline/tests/test_contracts.py,Fixed test_verify_import_authority fixture,test_verify_import_authority,PASS,Fixture resolved
+V13-A,Run-ID security,ultimate_pipeline/contracts/artifacts.py,create_run_id canonical format + redaction,test_create_run_id_format,PASS,No path traversal
+V13-B,Seed/config consistency,ultimate_pipeline/config/thesis_contract.py,Strict ok checking _is_true,test_thesis_contract_gates,PASS,No false success
+V13-C,Atomic artifact finalization,ultimate_pipeline/tools/artifact_integrity_check.py,G2 SHA256 + G3 mandatory gates,test_g2_g3_regression,PASS,Adversarial matrix passes
+V14-A,Perception arguments,ultimate_pipeline/tools/run_perception_safe.py,Safe perception with preflight,test_perception_preflight,PASS,Fail-closed
+V14-B,CARLA capability,ultimate_pipeline/tools/carla_preflight.py,Preflight gates with strict ok,test_preflight_gates,PASS,Import authority verified
+V14-C,Output-root precedence,ultimate_pipeline/contracts/artifacts.py,Run ID with deterministic timestamp,test_run_id_determinism,PASS,UUID + timestamp
+V14-D,Cross-experiment correctness,ultimate_pipeline/tests/test_deterministic_alignment.py,Geometry alignment determinism,16/16 tests,PASS,Centroid/hash matching
+V15-A,Experiment registry,ultimate_pipeline/experiments/registry.py,Registry integrity with SHA,test_registry_integrity,PASS,136/136 contracts
+V15-B,Simulator fencing,ultimate_pipeline/governance/single_writer/worktree_lock.py,Fenced O_EXCL lease,test_worktree_lease_race.py,OPEN,T2b specialist owned
+V15-C,Git provenance failure,ultimate_pipeline/tests/test_contracts.py,Verify import authority gate,test_verify_import_authority,PASS,Fixture resolved
+
+BOOLEAN-1,Boolean coercion,ultimate_pipeline/tools/run_experiments.py:190,ok normalization is True,test_boolean_coercion,PASS,Strict bool
+BOOLEAN-2,Boolean coercion,ultimate_pipeline/tools/run_experiments.py:340,import_ok normalization is True,test_import_ok,PASS,Strict bool
+BOOLEAN-3,Boolean coercion,ultimate_pipeline/tools/extract_elevation_stats.py:323-324,dem_qc_ok/coverage_ok is True,test_elevation_stats,PASS,Strict bool
+BOOLEAN-4,Boolean coercion,ultimate_pipeline/tools/phase_f5_bounded_offsets.py:228,solver_ok is True,test_phase_f5,PASS,Strict bool
+BOOLEAN-5,Boolean coercion,ultimate_pipeline/tools/carla_preflight.py:237,Exit code is True,test_carlic_preflight,PASS,Strict bool
+BOOLEAN-6,Boolean coercion,ultimate_pipeline/tools/smoke_load_xodr.py:401,screenshot_status is True,test_smoke_load,PASS,Strict bool
+BOOLEAN-7,Boolean coercion,ultimate_pipeline/tools/generate_n_runs.py:455,det_result ok is True,test_determinism,PASS,Strict bool
+BOOLEAN-8,Import defect,ultimate_pipeline/contracts/artifacts.py,re import + get_git_sha fix,test_create_run_id_format,PASS,No NameError
+
+CONTRACT-1,Contract test,ultimate_pipeline/tests/test_contracts.py,136 tests all pass,Full suite,PASS,All green
+CONTRACT-2,Deterministic alignment,ultimate_pipeline/tests/test_deterministic_alignment.py,16 tests all pass,Full suite,PASS,All green

@@ -72,10 +72,13 @@ class UnifiedRunner:
         self.artifacts: Optional[RunArtifacts] = None
 
     def check_carla(self) -> bool:
-        """Check if CARLA is available and reachable."""
-        if not self.config.carla.required:
-            return True
+        """Check if CARLA is available and reachable.
 
+        Called only when experiment.requires_carla is True. The
+        config.carla.required flag is an additional user-level requirement,
+        not a substitute for the experiment-level requirement. Always perform
+        the actual CARLA reachability check when called.
+        """
         try:
             import carla
             client = carla.Client(
@@ -267,12 +270,17 @@ def run_experiment(
     # Apply basic overrides
     all_overrides = {
         "experiment_id": experiment_id,
-        "outputs.artifact_root": artifact_root,
     }
     if seed is not None:
         all_overrides["seed"] = seed
     if strict:
         all_overrides["agent_sync.strict_validation"] = True
+
+    # Only set outputs.artifact_root from the function argument if the caller
+    # did not already provide it. This preserves the saved config's
+    # outputs.artifact_root when the caller does not override it.
+    if not (overrides and "outputs.artifact_root" in overrides):
+        all_overrides["outputs.artifact_root"] = artifact_root
 
     if overrides:
         all_overrides.update(overrides)

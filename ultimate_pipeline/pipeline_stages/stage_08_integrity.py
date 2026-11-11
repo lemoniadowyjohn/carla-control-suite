@@ -139,9 +139,11 @@ def _write_final_selected_xodr_status(final_out: str, out_dir: str) -> Dict[str,
         try:
             visual_payload = json.loads(visual_gate_path.read_text(encoding="utf-8"))
             visual_eval = evaluate_visual_smoke_report(visual_payload, require_files=False)
+            visual_eval_ok_val = visual_eval.get("ok", False)
+            visual_eval_ok = visual_eval_ok_val if isinstance(visual_eval_ok_val, bool) else False
             visual_gate = {
-                "ok": bool(visual_eval.get("ok", False)),
-                "status": "pass" if bool(visual_eval.get("ok", False)) else "fail",
+                "ok": visual_eval_ok,
+                "status": "pass" if visual_eval_ok else "fail",
                 "reason": str(visual_eval.get("reason") or ""),
             }
         except Exception as exc:
@@ -160,11 +162,11 @@ def _write_final_selected_xodr_status(final_out: str, out_dir: str) -> Dict[str,
         "worst_junction_sample": risk.get("worst_junction_sample", []),
         "junction_connector_risk_report_path": risk.get("path"),
         "junction_connector_risk_report_available": bool(risk.get("available")),
-        "CARLA_VISUAL_READY": "yes" if bool(visual_gate.get("ok", False)) else "no",
+        "CARLA_VISUAL_READY": "yes" if visual_gate.get("ok", False) is True else "no",
         "PERCEPTION_READY": "no",
         "perception_gate_reason": (
             ""
-            if bool(visual_gate.get("ok", False))
+            if visual_gate.get("ok", False) is True
             else "blocked_until_carla_visual_smoke_gate_passes"
         ),
         "carla_visual_smoke_gate_report_path": str(visual_gate_path),
@@ -252,7 +254,9 @@ def _step8f_optional_carla_elevation_validation(self, final_out: str) -> None:
             report["z_min"] = payload.get("waypoint_z_min")
             report["z_max"] = payload.get("waypoint_z_max")
             report["bounds"] = payload.get("map_bounds")
-            if bool(payload.get("load_ok")) and sampled > 0:
+            load_ok_val = payload.get("load_ok")
+            load_ok = load_ok_val if isinstance(load_ok_val, bool) else False
+            if load_ok and sampled > 0:
                 report["ok"] = True
                 report["reason"] = "ok"
             else:
@@ -312,12 +316,15 @@ def _step8f_optional_carla_elevation_validation(self, final_out: str) -> None:
     except Exception as e:
         print(f"[STEP 8] carla_elevation_validation.json write failed: {e}")
 
-    if strict_quality and not bool(report.get("ok", False)):
-        raise RuntimeError(
-            "CARLA elevation validation failed in strict mode: "
-            f"{report.get('reason')} (see {report_path})"
-        )
-    if not bool(report.get("ok", False)):
+    if strict_quality:
+        report_ok_val = report.get("ok", False)
+        report_ok = report_ok_val if isinstance(report_ok_val, bool) else False
+        if not report_ok:
+            raise RuntimeError(
+                "CARLA elevation validation failed in strict mode: "
+                f"{report.get('reason')} (see {report_path})"
+            )
+    if not report_ok:
         print(
             f"⚠️ CARLA elevation validation failed (non-strict): {report.get('reason')}"
         )
@@ -381,11 +388,8 @@ def _step8c_spawn_validation(self, final_out: str) -> None:
             pass
 
         payload = smoke.get("payload") if isinstance(smoke, dict) else None
-        load_ok = (
-            bool(payload.get("load_ok", False))
-            if isinstance(payload, dict)
-            else False
-        )
+        load_ok_val = payload.get("load_ok", False) if isinstance(payload, dict) else False
+        load_ok = load_ok_val if isinstance(load_ok_val, bool) else False
         spawn_n = (
             int(payload.get("spawn_points_count", 0))
             if isinstance(payload, dict)
@@ -405,7 +409,7 @@ def _step8c_spawn_validation(self, final_out: str) -> None:
         print(
             f"✅ Spawn points validated — final map is drivable. (spawn_points={spawn_n})"
         )
-        self.vreport.add("drivability", "spawn_points", f"ok ({spawn_n})")
+        self.vreport.add("success", "drivability", f"spawn_points: {f"ok ({spawn_n})"}")
         return
 
     loaded, self.client = carla_load_xodr_with_restart(
@@ -425,7 +429,7 @@ def _step8c_spawn_validation(self, final_out: str) -> None:
         raise RuntimeError("❌ No valid spawn points — final map NOT drivable")
 
     print("✅ Spawn points validated — final map is drivable.")
-    self.vreport.add("drivability", "spawn_points", "ok")
+    self.vreport.add("success", "drivability", f"spawn_points: {"ok"}")
 
 # ---------------- 8) 🔗 MARKINGS + INTEGRITY ----------------
 
@@ -518,11 +522,17 @@ def _step8_markings_and_integrity(self, lanes_out: str, final_out: str) -> str:
 
     # ---------------------------------------------------------
     # Lane-topology normalization moved to Stage 7 (source stage):
-    # id=0 driving-lane removal, missing-<link> creation, intra-road
-    # laneSection successor repair, and LaneLinkBuilder regeneration all run
-    # in Stage 7 now. Stage 8 is VALIDATION_ONLY for lane topology --
-    # it must never add/change/delete lane predecessor/successor links.
+    # id=0 driving-lane removal, missing-<link> creation, and intra-road
+    # laneSection successor repair all run in Stage 7 now. Stage 8 is
+    # VALIDATION_ONLY for lane topology -- it must never add/change/delete
+    # lane predecessor/successor links.
     # (GAP-048 closure: Stage-8 lane-topology mutation removed.)
+    # L2 review fix (2026-11-02): the claim that "LaneLinkBuilder
+    # regeneration" also runs in Stage 7 was stale/false -- grep confirms
+    # LaneLinkBuilder is never called in stage_07_lanes.py or anywhere else
+    # in the live pipeline; sanitize_junction_lane_links() immediately below
+    # (read-only sanity check, no mutation) is LaneLinkBuilder's only call
+    # site in the whole pipeline.
     # ---------------------------------------------------------
     # Junction laneLink sanity below is read-only validation (no mutation).
     junction_lanelink_sanity = LaneLinkBuilder.sanitize_junction_lane_links(
@@ -564,7 +574,10 @@ def _step8_markings_and_integrity(self, lanes_out: str, final_out: str) -> str:
             check_lane_link_targets_exist,
         )
 
-        ordinary_lane_link_report = check_lane_link_targets_exist(fixed_out)
+        # `fixed_out` (the old Stage-8 laneSection-repair output) disappeared
+        # when that repair moved to Stage 7 (GAP-048), which left this call
+        # raising NameError on every run. The map written above is final_out.
+        ordinary_lane_link_report = check_lane_link_targets_exist(final_out)
         ordinary_lane_link_path = os.path.join(
             self.out_dir, "ordinary_road_lane_link_targets.json"
         )
@@ -589,6 +602,78 @@ def _step8_markings_and_integrity(self, lanes_out: str, final_out: str) -> str:
             )
     except Exception as e:
         print(f"⚠️ Ordinary road lane-link advisory skipped: {e}")
+        self.vreport.add(
+            "error", "ordinary_road_lane_link_targets", f"{type(e).__name__}: {e}"
+        )
+
+    # L2 review: road->road <link> contactPoint presence + reciprocity
+    # (validation-only, no mutation; see
+    # ultimate_pipeline/quality/check_road_link_reciprocity.py).
+    #
+    # L2 review follow-up (2026-11-02): the exemption for a reciprocal
+    # link whose elementType != "road" used to be unconditional (any
+    # non-road elementType was treated as "legitimately junction-mediated"
+    # with no check that the named junction actually connects the two
+    # roads). That has been tightened to require a real <connection>
+    # linking the pair, or the referencing road being one of that junction's
+    # connecting roads (junction exit side); anything else is its own
+    # `junction_reference_unbacked` category. The first version of that
+    # rule missed the exit side and reported 22588/45176 false positives on
+    # the real map (reports/rq1_trial_runs/run_01/20261007_214826_524342/
+    # 07_lanes_...xodr, sha256 787870babc93644a...). The exit side is now
+    # backed structurally (connectingRoad of the junction AND
+    # road@junction == junction id); whether the carriageways actually meet
+    # is reported separately as junction_exit_geometry_gap, which is NOT
+    # gated: that map has 207 pre-existing exits whose reference lines sit
+    # 3.5-7 m beyond the combined carriageway width (GAP-026 connector
+    # geometry class). Measured on that map: contactpoint_invalid=0,
+    # asymmetric=0, junction_reference_unbacked=0 (gated) and
+    # junction_exit_geometry_gap=207 (reported).
+    try:
+        from ultimate_pipeline.quality.check_road_link_reciprocity import (
+            check_road_link_reciprocity,
+        )
+
+        road_link_reciprocity_report = check_road_link_reciprocity(final_out)
+        road_link_reciprocity_path = os.path.join(
+            self.out_dir, "road_link_reciprocity_report.json"
+        )
+        with open(road_link_reciprocity_path, "w", encoding="utf-8") as handle:
+            json.dump(road_link_reciprocity_report, handle, indent=2, sort_keys=True)
+        self.vreport.add_dict(
+            "road_link_reciprocity", road_link_reciprocity_report
+        )
+        reciprocity_totals = road_link_reciprocity_report["totals"]
+        reciprocity_violations = reciprocity_totals["violations"]
+        unbacked_junction_refs = reciprocity_totals.get(
+            "junction_reference_unbacked_count", 0
+        )
+        exit_geometry_gaps = reciprocity_totals.get(
+            "junction_exit_geometry_gap_count", 0
+        )
+        exit_heading_discontinuities = reciprocity_totals.get(
+            "junction_exit_heading_discontinuity_count", 0
+        )
+        print(
+            "[STEP 8] road_link_reciprocity: "
+            f"violations={reciprocity_violations} "
+            f"(junction_reference_unbacked={unbacked_junction_refs}, "
+            f"junction_exit_geometry_gap[report-only]={exit_geometry_gaps}, "
+            f"junction_exit_heading_discontinuity[report-only]={exit_heading_discontinuities}) "
+            f"-> {road_link_reciprocity_path}"
+        )
+        if reciprocity_violations > 0 and bool(getattr(s, "THESIS_STRICT", True)):
+            raise RuntimeError(
+                "road_link_reciprocity: "
+                f"{reciprocity_violations} contactPoint/reciprocity/junction-backing "
+                f"violation(s) found (THESIS_STRICT=True); report -> "
+                f"{road_link_reciprocity_path}"
+            )
+    except RuntimeError:
+        raise
+    except Exception as e:
+        print(f"⚠️ Road-link reciprocity check skipped: {e}")
+        self.vreport.add("error", "road_link_reciprocity", f"{type(e).__name__}: {e}")
 
     # NOTE: no AUTHORITATIVE MAP SWITCH here anymore: with lane-topology
     # repair moved to Stage 7 there is no _laneSectionFixed variant to
@@ -734,7 +819,7 @@ def _step8_markings_and_integrity(self, lanes_out: str, final_out: str) -> str:
         ok_schema, err = validate_xodr_schema(final_out, xsd_path)
         if not ok_schema:
             print(f"❌ XODR schema violation: {err}")
-            self.vreport.add("xodr_schema", "error", err)
+            self.vreport.add("error", "xodr_schema", err)
         else:
             print(
                 "✅ XODR schema validation passed."

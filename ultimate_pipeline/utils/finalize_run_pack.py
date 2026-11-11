@@ -442,6 +442,29 @@ def finalize_run_pack(
         )
 
     classification = classify_requested_paths(root, key_paths, mandatory=mandatory)
+
+    # Post-classification check: mandatory artifacts not in key_paths must fail
+    mandatory_norm = {m for m in (_normalize_request(e) for e in (mandatory or ())) if m}
+    key_path_keys = set()
+    for k in (key_paths or ()):
+        if isinstance(k, str):
+            key_path_keys.add(k)
+        else:
+            key_path_keys.add(_normalize_request(k)["rel_key"])
+    for m_key in mandatory_norm:
+        if m_key not in key_path_keys:
+            classification["failures"].append(
+                _failure(
+                    {
+                        "category": CATEGORY_MISSING,
+                        "detail": "mandatory artifact not in key_paths",
+                        "mandatory": True,
+                        "rel_key": m_key,
+                    },
+                    f"mandatory artifact not in key_paths: {m_key}",
+                )
+            )
+
     receipt = _build_receipt(classification, classification["failures"])
 
     text = json.dumps(receipt, indent=2, sort_keys=True) + "\n"

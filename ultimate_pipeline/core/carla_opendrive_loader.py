@@ -495,7 +495,12 @@ def load_opendrive_world(
                     os.environ.get("UP_CARLA_POSTLOAD_TICK_TIMEOUT_S", "2.0")
                 ),
             )
-            if not bool((tick_report or {}).get("ok", False)):
+            tick_ok_val = (tick_report or {}).get("ok", False)
+            if isinstance(tick_ok_val, bool):
+                tick_ok = tick_ok_val
+            else:
+                tick_ok = False
+            if not tick_ok:
                 raise RuntimeError("opendrive_load_tick_failed: world not confirmed")
 
             # NEW-250: bind the world that actually came up to the payload that
