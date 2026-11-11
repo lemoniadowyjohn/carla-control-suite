@@ -204,6 +204,8 @@ def parse_args(argv: Optional[list[str]] = None) -> argparse.Namespace:
     ap.add_argument("--carla-exe", default=None, help="Path to CarlaUE4.exe. If set (or env UP_CARLA_EXE), starts CARLA.")
     ap.add_argument("--carla-flags", default=None, help="Extra flags for CARLA executable (shell-split string). If omitted, uses carla_server.DEFAULT_FLAGS.")
     ap.add_argument("--kill-stale", action="store_true", help="Deprecated unsafe legacy option; unowned process killing is refused")
+    ap.add_argument("--attach-existing", action="store_true",
+                    help="Explicitly reuse a running CARLA server even when --carla-exe is given")
 
     args = ap.parse_args(argv)
 
@@ -252,11 +254,12 @@ def _start_carla_if_needed(args: argparse.Namespace, *, out_dir: Path):
         extra_flags=extra_flags,
         timeout_s=float(os.environ.get("UP_CARLA_START_TIMEOUT_S", "180.0")),
         kill_stale=bool(args.kill_stale),
+        attach_existing=bool(args.attach_existing),
         stdout_path=stdout_path,
         stderr_path=stderr_path,
     )
     if proc is None:
-        print(f"[carla] CARLA already reachable at {args.host}:{args.port} (not starting a new process).")
+        print(f"[carla] Explicit external CARLA attachment at {args.host}:{args.port}.")
     else:
         print(f"[carla] CARLA process started (pid={getattr(proc, 'pid', None)}).")
     return proc
