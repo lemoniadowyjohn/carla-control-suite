@@ -3483,7 +3483,10 @@ if str(_repo_root) not in sys.path:
             from ultimate_pipeline.quality.check_geometric_continuity import check_geometric_continuity
             acceptance_reports["geometric_continuity"] = check_geometric_continuity(final_out)
         except Exception as exc:
-            print(f"[AUTHORITY] geometric_continuity recompute skipped: {exc}")
+            print(f"[AUTHORITY] geometric_continuity recompute FAILED (NOT_RUN): {exc}")
+            acceptance_reports["geometric_continuity"] = {
+                "ok": None, "status": "NOT_RUN", "reason": f"{type(exc).__name__}: {exc}",
+            }
 
         # Recompute lane_section_successors directly on the final artifact (post-hygiene).
         # The G6 hygiene step can add lane links, so pre-hygiene evidence is stale.
@@ -3496,28 +3499,31 @@ if str(_repo_root) not in sys.path:
             )
             acceptance_reports["lane_section_successors"] = lane_conn_report
         except Exception as exc:
-            print(f"[AUTHORITY] lane_section_successors recompute skipped: {exc}")
+            print(f"[AUTHORITY] lane_section_successors recompute FAILED (NOT_RUN): {exc}")
+            acceptance_reports["lane_section_successors"] = {
+                "ok": None, "status": "NOT_RUN", "reason": f"{type(exc).__name__}: {exc}",
+            }
 
         # Recompute ALL mandatory structural gates on the final artifact (P0-L/P0-C).
         # These gates must run on the EXACT frozen artifact, not on pre-hygiene evidence.
-        mandatory_gates = [
-            ("junction_integrity", "gate_junction_integrity"),
-            ("lane_width_continuity", "gate_lane_width_continuity"),
-            ("lane_geometry_continuity", "gate_lane_geometry_continuity"),
-            ("elevation_missing_and_cliffs", "gate_elevation_missing_and_cliffs"),
-            ("elevation_smoothness", "gate_elevation_smoothness"),
-            ("physics_feasibility", "gate_physics_feasibility"),
-            ("post_tiling_integrity", "gate_post_tiling_integrity"),
-            ("carla_import_s", "gate_carla_import_s"),
-            ("carla_opendrive_compat", "gate_carla_opendrive_compat"),
-        ]
-        for gate_key, gate_method in mandatory_gates:
-            try:
-                gate_fn = getattr(self.qgate, gate_method)
-                acceptance_reports[gate_key] = gate_fn(final_out)
-                print(f"[AUTHORITY] {gate_key} recomputed on final artifact")
-            except Exception as exc:
-                print(f"[AUTHORITY] {gate_key} recompute skipped: {exc}")
+        # V85 Phase 2: the previous getattr(self.qgate, ...) loop named three
+        # methods that do not exist and three that take a parsed root and
+        # return None. Every failure was swallowed as "skipped", and
+        # elevation_continuity was never supplied, so 6/9 mandatory gates
+        # (plus continuity) never reached acceptance. The shared module below
+        # always yields one report per gate (NOT_RUN/BLOCKED_INPUT on error),
+        # using the same definitions as the promotion path.
+        from ultimate_pipeline.quality.final_artifact_gates import (
+            RELEASE_MANDATORY_GATES,
+            compute_final_artifact_reports,
+        )
+
+        for gate_key, gate_report in compute_final_artifact_reports(final_out).items():
+            acceptance_reports[gate_key] = gate_report
+            print(
+                f"[AUTHORITY] {gate_key} recomputed on final artifact: "
+                f"ok={gate_report.get('ok')} status={gate_report.get('status', '')}"
+            )
 
         # CODEX C7 (policy unchanged, code relocated): only require enrichment
         # completeness (buildings + functional signals) when this run was
@@ -3537,6 +3543,7 @@ if str(_repo_root) not in sys.path:
                 final_xodr_path=final_out,
                 out_dir=self.out_dir,
                 require_enrichment=require_enrichment,
+                mandatory_gates=RELEASE_MANDATORY_GATES,
             )
             self.map_acceptance = map_acceptance
             acc_path = os.path.join(self.out_dir, "map_acceptance.json")
