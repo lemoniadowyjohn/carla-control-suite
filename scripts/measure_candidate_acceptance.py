@@ -62,6 +62,76 @@ def _write_json(path: Path, data: Dict[str, Any]) -> None:
     path.write_text(json.dumps(data, indent=2, sort_keys=True, default=str), encoding="utf-8")
 
 
+def evaluate_candidate(
+    xodr: Path,
+    out_dir: Path,
+    dem: Optional[Path],
+    *,
+    purpose: str = "release",
+    require_enrichment: bool = False,
+    require_component_reachability: bool = False,
+) -> Dict[str, Any]:
+    """Guarded candidate acceptance shared by the CLI and regen_map_of_record (V86 A6/A8/A9).
+
+    1. XML boundary first. On a DOCTYPE/ENTITY or oversize input, NO checker
+       touches the bytes, and every mandatory gate is BLOCKED_INPUT.
+    2. One immutable content-addressed snapshot. Every checker reads it.
+    3. The verdict is bound to the snapshot digest (``evaluated_xodr_sha256``)
+       and compared with the published candidate path.
+    4. After the durable write, the candidate must still match the digest.
+       Otherwise ``artifact_identity_after_write`` is recorded and the
+       result is not release-eligible.
+    """
+    from ultimate_pipeline.quality.final_artifact_gates import (
+        ACCEPTANCE_POLICY_VERSION,
+        RELEASE_MANDATORY_GATES,
+        STATUS_BLOCKED_INPUT,
+        UnsafeXMLError,
+        check_xml_boundary,
+        not_run_report,
+        sha256_bytes,
+        snapshot_final_artifact,
+        verify_artifact_unchanged,
+    )
+
+    snapshot = snapshot_final_artifact(str(xodr), str(out_dir / ".acceptance_snapshot"))
+    evaluated_sha = snapshot["sha256"]
+    try:
+        check_xml_boundary(Path(snapshot["path"]).read_bytes())
+    except UnsafeXMLError as exc:
+        print(f"[gate] XML boundary REJECTED input: {exc}")
+        reports: Dict[str, Any] = {
+            gate: not_run_report(gate, f"XML boundary: {exc}", status=STATUS_BLOCKED_INPUT)
+            for gate in RELEASE_MANDATORY_GATES
+        }
+    else:
+        reports = run_gates(Path(snapshot["path"]), out_dir, dem)
+
+    acceptance = build_map_acceptance(
+        reports,
+        run_id=xodr.stem,
+        final_xodr_path=str(xodr),
+        out_dir=str(out_dir),
+        require_enrichment=require_enrichment,
+        require_component_reachability=require_component_reachability,
+        mandatory_gates=RELEASE_MANDATORY_GATES if purpose == "release" else None,
+        purpose=purpose,
+        policy_version=ACCEPTANCE_POLICY_VERSION,
+        evaluated_xodr_sha256=evaluated_sha,
+    )
+    _write_json(out_dir / "map_acceptance.json", acceptance)
+    unchanged, actual = verify_artifact_unchanged(str(xodr), evaluated_sha)
+    if not unchanged:
+        # The written acceptance described the snapshot. The candidate path no
+        # longer matches it, so the caller must not treat it as release-eligible.
+        acceptance = dict(acceptance, release_eligible=False,
+                          artifact_identity_after_write={"evaluated": evaluated_sha, "now": actual})
+        _write_json(out_dir / "map_acceptance.identity_failure.json", acceptance)
+    if sha256_bytes(Path(snapshot["path"]).read_bytes()) != evaluated_sha:
+        raise RuntimeError(f"acceptance snapshot {snapshot['path']} changed during evaluation")
+    return acceptance
+
+
 def run_gates(xodr: Path, out_dir: Path, dem: Optional[Path]) -> Dict[str, Any]:
     reports: Dict[str, Any] = {}
 
@@ -272,28 +342,12 @@ def main() -> int:
     out_dir.mkdir(parents=True, exist_ok=True)
 
     print(f"candidate: {xodr} ({xodr.stat().st_size / 1e6:.1f} MB)")
-    from ultimate_pipeline.quality.final_artifact_gates import (
-        ACCEPTANCE_POLICY_VERSION,
-        RELEASE_MANDATORY_GATES,
-        sha256_bytes,
-    )
-
-    evaluated_sha = sha256_bytes(xodr.read_bytes())
-    reports = run_gates(xodr, out_dir, args.dem)
-
-    acceptance = build_map_acceptance(
-        reports,
-        run_id=xodr.stem,
-        final_xodr_path=str(xodr),
-        out_dir=str(out_dir),
+    acceptance = evaluate_candidate(
+        xodr, out_dir, args.dem,
+        purpose=args.purpose,
         require_enrichment=args.require_enrichment,
         require_component_reachability=args.require_component_reachability,
-        mandatory_gates=RELEASE_MANDATORY_GATES if args.purpose == "release" else None,
-        purpose=args.purpose,
-        policy_version=ACCEPTANCE_POLICY_VERSION,
-        evaluated_xodr_sha256=evaluated_sha,
     )
-    _write_json(out_dir / "map_acceptance.json", acceptance)
 
     print("\n=== MAP ACCEPTANCE ===")
     print(f"valid_for_experiments: {acceptance['valid_for_experiments']}")

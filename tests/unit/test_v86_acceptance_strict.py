@@ -323,3 +323,123 @@ def test_standalone_cli_diagnostic_is_never_a_release_certificate(tmp_path):
     assert acc["release_eligible"] is False
     assert acc["acceptance_policy"]["purpose"] == "diagnostic"
     assert acc["mandatory_gates"] == []
+
+
+# ---- Review round 1: signal consumer, promotion-path snapshot + boundary ----------------
+@pytest.mark.parametrize(
+    "payload, expected",
+    [
+        ({"valid_for_experiments": True}, "INCOMPLETE"),  # pre-V86: cannot prove release eligibility
+        ({"valid_for_experiments": True, "release_eligible": False,
+          "acceptance_policy": {"purpose": "diagnostic"}}, "INCOMPLETE"),
+        ({"valid_for_experiments": True, "release_eligible": False,
+          "acceptance_policy": {"purpose": "legacy_unspecified"}}, "INCOMPLETE"),
+        ({"valid_for_experiments": False, "release_eligible": False,
+          "acceptance_policy": {"purpose": "release"}}, "FAIL"),
+        ({"valid_for_experiments": True, "release_eligible": True,
+          "acceptance_policy": {"purpose": "diagnostic"}}, "INCOMPLETE"),  # forged flag, wrong purpose
+        ({"valid_for_experiments": True, "release_eligible": True,
+          "acceptance_policy": {"purpose": "release"}}, "PASS"),
+    ],
+)
+def test_map_acceptance_signal_requires_release_eligibility(payload, expected):
+    from ultimate_pipeline.signals.index import release_acceptance_status
+
+    assert release_acceptance_status(payload) == expected
+
+
+@pytest.mark.parametrize("profile", ["structural_release", "STRUCTURAL_RELEASE"])
+def test_release_profiles_apply_release_acceptance_policy(profile):
+    from ultimate_pipeline.signals.index import apply_release_acceptance_policy, normalize_signal_status
+
+    legacy = {"valid_for_experiments": True}
+    base = normalize_signal_status("MAP_ACCEPTANCE", legacy)
+    assert base == "PASS"  # experiment semantics unchanged
+    assert apply_release_acceptance_policy("MAP_ACCEPTANCE", base, legacy, profile) == "INCOMPLETE"
+    good = {"valid_for_experiments": True, "release_eligible": True, "acceptance_policy": {"purpose": "release"}}
+    assert apply_release_acceptance_policy("MAP_ACCEPTANCE", "PASS", good, profile) == "PASS"
+
+
+@pytest.mark.parametrize("profile", ["debug", "visual_build", "perception_research"])
+def test_non_release_profiles_keep_experiment_semantics(profile):
+    from ultimate_pipeline.signals.index import apply_release_acceptance_policy
+
+    assert apply_release_acceptance_policy("MAP_ACCEPTANCE", "PASS", {"valid_for_experiments": True}, profile) == "PASS"
+
+
+def test_release_verdict_blocks_on_legacy_acceptance(tmp_path):
+    """Real verdict: a release profile cannot reach PASS from a non-release acceptance."""
+    from ultimate_pipeline.signals.verdict import compute_final_run_verdict
+
+    (tmp_path / "map_acceptance.json").write_text(json.dumps({"valid_for_experiments": True}), encoding="utf-8")
+    verdict = compute_final_run_verdict(str(tmp_path), profile="structural_release", settings=None, env={})
+    blocking = {f.get("signal_id"): f.get("status") for f in verdict["blocking_failures"]}
+    assert verdict["status"] != "PASS"
+    assert blocking.get("MAP_ACCEPTANCE") in ("INCOMPLETE", "FAIL"), verdict["blocking_failures"]
+
+
+def test_experiment_readiness_signal_keeps_experiment_semantics():
+    from ultimate_pipeline.signals.index import normalize_signal_status
+
+    assert normalize_signal_status("EXPERIMENT_READINESS", {"valid_for_experiments": True}) == "PASS"
+
+
+def test_promotion_evaluation_runs_every_checker_on_the_snapshot(tmp_path, monkeypatch):
+    sys.path.insert(0, str(REPO))
+    import scripts.measure_candidate_acceptance as mca
+
+    seen = []
+    real = mca.run_gates
+
+    def spy(xodr, out_dir, dem):
+        seen.append(Path(xodr))
+        return real(xodr, out_dir, dem)
+
+    monkeypatch.setattr(mca, "run_gates", spy)
+    cand = Path(_write(tmp_path, _xodr(_road(1, 0)), "cand.xodr"))
+    acc = mca.evaluate_candidate(cand, tmp_path / "out", tmp_path / "no_dem.tif")
+    assert len(seen) == 1 and seen[0].parent.name == ".acceptance_snapshot"
+    assert seen[0].name == acc["evaluated_xodr_sha256"] + ".xodr"
+
+
+def test_promotion_doctype_input_never_reaches_any_checker(tmp_path, monkeypatch):
+    sys.path.insert(0, str(REPO))
+    import scripts.measure_candidate_acceptance as mca
+
+    called = []
+    monkeypatch.setattr(mca, "run_gates", lambda *a, **k: called.append(1) or {})
+    cand = Path(_write(tmp_path, BILLION_LAUGHS, "evil.xodr"))
+    acc = mca.evaluate_candidate(cand, tmp_path / "out", None)
+    assert called == []
+    assert set(acc["mandatory_gate_status"].values()) == {"BLOCKED_INPUT"}
+    assert acc["release_eligible"] is False
+
+
+def test_promotion_candidate_replaced_after_write_is_not_release_eligible(tmp_path, monkeypatch):
+    sys.path.insert(0, str(REPO))
+    import scripts.measure_candidate_acceptance as mca
+
+    cand = Path(_write(tmp_path, _xodr(_road(1, 0)), "cand.xodr"))
+    good = {g: {"ok": True} for g in fag.RELEASE_MANDATORY_GATES}
+
+    def gates_then_tamper(xodr, out_dir, dem):
+        return good
+
+    real_write = mca._write_json
+
+    def write_then_tamper(path, data):
+        real_write(path, data)
+        if path.name == "map_acceptance.json":
+            cand.write_text(_xodr(_road(7, 0)), encoding="utf-8")
+
+    monkeypatch.setattr(mca, "run_gates", gates_then_tamper)
+    monkeypatch.setattr(mca, "_write_json", write_then_tamper)
+    acc = mca.evaluate_candidate(cand, tmp_path / "out", None)
+    assert acc["release_eligible"] is False
+    assert "artifact_identity_after_write" in acc
+
+
+def test_regen_map_of_record_uses_the_shared_guarded_evaluation():
+    src = (REPO / "scripts" / "regen_map_of_record.py").read_text(encoding="utf-8")
+    assert "evaluate_candidate(" in src
+    assert "run_gates(final_xodr" not in src
