@@ -410,6 +410,13 @@ def _write_payload(path: Path, payload: dict) -> None:
 
 
 def _publish_exclusive(path: Path, payload: dict | bytes) -> bool:
+    data = payload if isinstance(payload, bytes) else json.dumps(
+        payload, indent=2, sort_keys=True
+    ).encode("utf-8")
+    return _publish_exclusive_bytes(path, data)
+
+
+def _publish_exclusive_bytes(path: Path, data: bytes) -> bool:
     """Publish a COMPLETE lease record atomically and exclusively.
 
     Returns True when this caller won ownership.
@@ -421,9 +428,6 @@ def _publish_exclusive(path: Path, payload: dict | bytes) -> bool:
     is atomic and fails when the destination exists, on POSIX and Windows alike.
     """
     tmp = path.with_name(f"{path.name}.{os.getpid()}.{uuid.uuid4().hex}.pub")
-    data = payload if isinstance(payload, bytes) else json.dumps(
-        payload, indent=2, sort_keys=True
-    ).encode("utf-8")
     fd = os.open(str(tmp), os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o644)
     try:
         with os.fdopen(fd, "wb") as fh:
@@ -445,7 +449,7 @@ def _publish_exclusive(path: Path, payload: dict | bytes) -> bool:
             os.unlink(tmp)
         except OSError:
             pass
-        return _publish_exclusive_fallback(path, data)
+        return _publish_exclusive_fallback_bytes(path, data)
     finally:
         try:
             os.unlink(tmp)
@@ -456,15 +460,23 @@ def _publish_exclusive(path: Path, payload: dict | bytes) -> bool:
 
 
 def _publish_exclusive_fallback(path: Path, payload: dict | bytes) -> bool:
+    data = payload if isinstance(payload, bytes) else json.dumps(
+        payload, indent=2, sort_keys=True
+    ).encode("utf-8")
+    return _publish_exclusive_fallback_bytes(path, data)
+
+
+def _publish_exclusive_fallback_bytes(path: Path, data: bytes) -> bool:
     """O_EXCL reservation fallback for filesystems without hard links."""
     try:
         fd = os.open(str(path), os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o644)
     except FileExistsError:
         return False
+    except PermissionError:
+        if path.exists():
+            return False
+        raise
     try:
-        data = payload if isinstance(payload, bytes) else json.dumps(
-            payload, indent=2, sort_keys=True
-        ).encode("utf-8")
         with os.fdopen(fd, "wb") as fh:
             fh.write(data)
             fh.flush()
@@ -724,7 +736,7 @@ def _claim_lease_path(
     # successor that appeared while the original record was at the tombstone.
     try:
         raw = tomb.read_bytes()
-        restored = _publish_exclusive(path, raw)
+        restored = _publish_exclusive_bytes(path, raw)
     except OSError as exc:
         raise RuntimeError(
             f"LOCKED_UNKNOWN: failed to restore lease from {tomb} to {path}; "

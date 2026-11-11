@@ -255,6 +255,41 @@ def test_t5_restore_never_overwrites_a_successor(repo: Path, monkeypatch):
     assert original_read(orphaned[0]) == original
 
 
+def test_t5_rejected_claim_restores_original_when_destination_is_free(repo: Path):
+    path = _lease_path(repo)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    original = b"original lease bytes"
+    path.write_bytes(original)
+
+    reclaimed, tomb = wl._claim_by_rename(repo, "T5-restore", lambda _raw: False)
+
+    assert (reclaimed, tomb) == (False, None)
+    assert path.read_bytes() == original
+    assert not list(path.parent.glob(f"{path.name}.T5-restore.*.tombstone"))
+    assert not list(path.parent.glob(f"{path.name}.T5-restore.*.orphaned"))
+
+
+def test_t5_existing_destination_permission_error_means_not_published(
+    repo: Path, monkeypatch
+):
+    path = _lease_path(repo)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    original = b"existing successor bytes"
+    path.write_bytes(original)
+    original_open = os.open
+
+    def deny_existing_destination(file, flags, *args, **kwargs):
+        if Path(file) == path:
+            raise PermissionError("injected Windows existing-target denial")
+        return original_open(file, flags, *args, **kwargs)
+
+    monkeypatch.setattr(wl.os, "link", lambda *_args: (_ for _ in ()).throw(PermissionError()))
+    monkeypatch.setattr(wl.os, "open", deny_existing_destination)
+
+    assert wl._publish_exclusive(path, {"payload": "new lease bytes"}) is False
+    assert path.read_bytes() == original
+
+
 def test_t6_malformed_recovery_only_removes_the_bytes_it_audited(
     repo: Path, monkeypatch
 ):
@@ -284,7 +319,7 @@ def test_r1_restore_error_is_visible_and_keeps_tombstone(repo: Path, monkeypatch
     def deny_restore(_path, _payload):
         raise PermissionError("injected Windows sharing denial")
 
-    monkeypatch.setattr(wl, "_publish_exclusive", deny_restore)
+    monkeypatch.setattr(wl, "_publish_exclusive_bytes", deny_restore, raising=False)
     with pytest.raises(RuntimeError, match="recovery copy retained"):
         wl._claim_by_rename(repo, "R1", lambda _raw: False)
     assert not path.exists()
