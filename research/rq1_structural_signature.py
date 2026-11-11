@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 """RQ1 structural signature — versioned identity of the network STRUCTURE.
 
-Version: ``rq1-structural-signature/v1``
+The legacy ``v1`` payload remains available byte-for-byte for receipt
+verification. New RQ1 outputs use ``v2``, which extends v1 with geometry and
+standard OpenDRIVE junction lane-link attributes.
 
 Clear, non-aliased construction (never a generic report hash): a canonical
 JSON payload is built solely from frozen structural / topological fields of
@@ -21,10 +23,10 @@ the OpenDRIVE document and hashed with SHA256:
 Deterministic: parsed (never byte-compared), traversal is document order
 with stable canonical key ordering at payload level.
 
+v2 quantizes numeric geometry and profile attributes to 1e-9 and renders
+them at fixed nine-place precision. This applies identically to both inputs.
+
 Scientifically documented exclusions (with justification):
-  * planView/elevationProfile geometry numerics — geometry is the
-    normalization/geometry domain (covered by the RQ1 normalized XODR
-    identity and RQ2 curvature metrics), not network structure;
   * road ``name`` attributes — textual labeling metadata, not structure
     (a name-only change is captured by the normalized identity);
   * administrative attributes unrelated to the road network (e.g.
@@ -34,11 +36,16 @@ from __future__ import annotations
 
 import hashlib
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from decimal import Decimal, InvalidOperation, ROUND_HALF_EVEN
+from typing import Any, Dict, List, Optional, Tuple
 
 import xml.etree.ElementTree as ET
 
-STRUCTURAL_SIGNATURE_VERSION = "rq1-structural-signature/v1"
+STRUCTURAL_SIGNATURE_V1 = "rq1-structural-signature/v1"
+STRUCTURAL_SIGNATURE_V2 = "rq1-structural-signature/v2"
+# Default for new receipts. Historic receipt verification selects v1.
+STRUCTURAL_SIGNATURE_VERSION = STRUCTURAL_SIGNATURE_V2
+_NUMERIC_QUANTUM = Decimal("0.000000001")
 
 
 def _sha256_list(records: List[Any]) -> str:
@@ -115,6 +122,7 @@ def _lane_section_record(section: ET.Element) -> Dict[str, Any]:
 
 
 def _road_record(road: ET.Element) -> Dict[str, Any]:
+    """Legacy v1 record. Do not change: historic v1 digests depend on it."""
     lanes = road.find("lanes")
     sections: List[Dict[str, Any]] = []
     if lanes is not None:
@@ -134,6 +142,7 @@ def _road_record(road: ET.Element) -> Dict[str, Any]:
 
 
 def _junction_record(junction: ET.Element) -> Dict[str, Any]:
+    """Legacy v1 record. It intentionally retains the child-element path."""
     connections: List[Dict[str, Any]] = []
     for conn in junction.findall("connection"):
         ll: Dict[str, List[Any]] = {}
@@ -171,19 +180,121 @@ def _junction_record(junction: ET.Element) -> Dict[str, Any]:
     }
 
 
-def build_structural_payload(path: str | Path) -> Dict[str, Any]:
-    """Build the structural payload (canonical dict) from an XODR file."""
-    path = Path(path)
-    root = ET.fromstring(path.read_bytes())
+def _canonical_number(value: str) -> str:
+    """Render numeric OpenDRIVE text at the documented 1e-9 precision."""
+    try:
+        number = Decimal(value).quantize(_NUMERIC_QUANTUM, rounding=ROUND_HALF_EVEN)
+    except (InvalidOperation, ValueError):
+        return value
+    if number == 0:
+        number = Decimal(0).quantize(_NUMERIC_QUANTUM)
+    return format(number, ".9f")
 
-    roads = sorted(
-        [_road_record(r) for r in root.findall("road")], key=lambda r: _id_key(r["id"])
+
+def _canonical_attributes(element: ET.Element) -> Dict[str, str]:
+    return {key: _canonical_number(value) for key, value in element.attrib.items()}
+
+
+def _plan_view_records(road: ET.Element) -> List[Dict[str, Any]]:
+    plan_view = road.find("planView")
+    if plan_view is None:
+        return []
+    records: List[Dict[str, Any]] = []
+    for geometry in plan_view.findall("geometry"):
+        primitive = next(iter(geometry), None)
+        records.append(
+            {
+                "s": _canonical_number(geometry.attrib.get("s", "")),
+                "x": _canonical_number(geometry.attrib.get("x", "")),
+                "y": _canonical_number(geometry.attrib.get("y", "")),
+                "hdg": _canonical_number(geometry.attrib.get("hdg", "")),
+                "length": _canonical_number(geometry.attrib.get("length", "")),
+                "type": primitive.tag if primitive is not None else "",
+                "type_params": _canonical_attributes(primitive) if primitive is not None else {},
+            }
+        )
+    return records
+
+
+def _profile_records(road: ET.Element, profile_name: str) -> List[Dict[str, Any]]:
+    profile = road.find(profile_name)
+    if profile is None:
+        return []
+    return [
+        {"type": record.tag, "attrs": _canonical_attributes(record)}
+        for record in profile
+    ]
+
+
+def _road_record_v2(road: ET.Element) -> Dict[str, Any]:
+    record = _road_record(road)
+    record.update(
+        {
+            "length": _canonical_number(road.attrib.get("length", "")),
+            "planView": _plan_view_records(road),
+            "elevationProfile": _profile_records(road, "elevationProfile"),
+            "lateralProfile": _profile_records(road, "lateralProfile"),
+        }
     )
-    junctions = sorted(
-        [_junction_record(j) for j in root.findall("junction")], key=lambda j: _id_key(j["id"])
+    return record
+
+
+def _junction_record_v2(junction: ET.Element) -> Dict[str, Any]:
+    connections: List[Dict[str, Any]] = []
+    for conn in junction.findall("connection"):
+        lane_links = sorted(
+            [
+                [link.attrib.get("from", ""), link.attrib.get("to", "")]
+                for link in conn.findall("laneLink")
+            ]
+        )
+        connections.append(
+            {
+                "id": conn.attrib.get("id", ""),
+                "incomingRoad": conn.attrib.get("incomingRoad", ""),
+                "connectingRoad": conn.attrib.get("connectingRoad", ""),
+                "contactPoint": conn.attrib.get("contactPoint", ""),
+                "laneLinks": lane_links,
+            }
+        )
+    connections.sort(
+        key=lambda c: (
+            c["incomingRoad"],
+            c["connectingRoad"],
+            c["contactPoint"],
+            c["id"],
+            c["laneLinks"],
+        )
     )
     return {
-        "signature_version": STRUCTURAL_SIGNATURE_VERSION,
+        "id": junction.attrib.get("id", ""),
+        "type": junction.attrib.get("type", ""),
+        "connections": connections,
+    }
+
+
+def build_structural_payload(
+    path: str | Path, *, version: str = STRUCTURAL_SIGNATURE_VERSION
+) -> Dict[str, Any]:
+    """Build a canonical v1 or v2 structural payload from an XODR file."""
+    path = Path(path)
+    root = ET.fromstring(path.read_bytes())
+    if version == STRUCTURAL_SIGNATURE_V1:
+        road_builder = _road_record
+        junction_builder = _junction_record
+    elif version == STRUCTURAL_SIGNATURE_V2:
+        road_builder = _road_record_v2
+        junction_builder = _junction_record_v2
+    else:
+        raise ValueError(f"unsupported structural signature version: {version}")
+    roads = sorted(
+        [road_builder(r) for r in root.findall("road")], key=lambda r: _id_key(r["id"])
+    )
+    junctions = sorted(
+        [junction_builder(j) for j in root.findall("junction")], key=lambda j: _id_key(j["id"])
+    )
+    return {
+        "signature_version": version,
         "road_count": len(roads),
         "roads": roads,
         "junction_count": len(junctions),
@@ -206,18 +317,23 @@ def _canon(obj: Any) -> bytes:
     )
 
 
-def compute_structural_signature(path: str | Path, store_payload: Optional[str | Path] = None) -> Dict[str, Any]:
+def compute_structural_signature(
+    path: str | Path,
+    store_payload: Optional[str | Path] = None,
+    *,
+    version: str = STRUCTURAL_SIGNATURE_VERSION,
+) -> Dict[str, Any]:
     """Compute the versioned structural signature of an XODR file.
 
     Returns ``{version, sha256, road_count, junction_count}`` plus, when
     ``store_payload`` is given, ``payload_path``/``payload_sha256`` for
     divergence forensics.
     """
-    payload = build_structural_payload(path)
+    payload = build_structural_payload(path, version=version)
     canonical = _canon(payload)
     sha = hashlib.sha256(canonical).hexdigest()
     out = {
-        "version": STRUCTURAL_SIGNATURE_VERSION,
+        "version": version,
         "sha256": sha,
         "road_count": payload["road_count"],
         "junction_count": payload["junction_count"],
@@ -232,25 +348,40 @@ def compute_structural_signature(path: str | Path, store_payload: Optional[str |
     return out
 
 
-def structural_rules() -> Dict[str, Any]:
+def structural_rules(*, version: str = STRUCTURAL_SIGNATURE_VERSION) -> Dict[str, Any]:
     """Machine-readable field description embedded in receipts."""
-    return {
-        "version": STRUCTURAL_SIGNATURE_VERSION,
-        "included": [
+    if version == STRUCTURAL_SIGNATURE_V1:
+        included = [
             "road ids + count",
             "road junction attribute",
             "road predecessor/successor links",
             "lane sections (s, left/center/right lane id sets + types)",
             "per-lane width/laneWidth record digests (exact value strings)",
             "junction ids + count",
-            "junction connections (incoming/connecting road, contact point,"
-            " lane link from/to)",
+            "junction connections (incoming/connecting road, contact point, lane link child elements)",
             "signal/object counts per road",
-        ],
-        "excluded_documented": [
-            "planView/elevationProfile geometry numerics (geometry domain;"
-            " covered by normalized XODR identity + RQ2 curvature metrics)",
+        ]
+        excluded = [
+            "planView/elevationProfile geometry numerics (geometry domain; covered by normalized XODR identity + RQ2 curvature metrics)",
             "road name attributes (textual labeling, not structure)",
             "provenance bookkeeping attributes (e.g. geometryFreezeHash)",
-        ],
+        ]
+    elif version == STRUCTURAL_SIGNATURE_V2:
+        included = [
+            "v1 structural fields", "road length",
+            "ordered planView geometry primitives including type parameters",
+            "elevationProfile and lateralProfile records",
+            "junction laneLink from/to attributes with duplicates retained",
+            "numeric values quantized to 1e-9 fixed decimal",
+        ]
+        excluded = [
+            "road name attributes (textual labeling, not structure)",
+            "provenance bookkeeping attributes (e.g. geometryFreezeHash)",
+        ]
+    else:
+        raise ValueError(f"unsupported structural signature version: {version}")
+    return {
+        "version": version,
+        "included": included,
+        "excluded_documented": excluded,
     }
