@@ -124,13 +124,23 @@ def main() -> int:
     # The registry already verified the bytes; record the comparison so a
     # drift is visible in the evidence rather than assumed.
     pinned_sha = str(registry_entry.get("sha256") or "")
-    if pinned_sha:
-        report["candidate_matches_registry_pin"] = (
-            report["candidate_sha256"] == pinned_sha
+    report["candidate_matches_registry_pin"] = bool(pinned_sha) and (
+        report["candidate_sha256"] == pinned_sha
+    )
+    if not report["candidate_matches_registry_pin"]:
+        # A failed map-of-record identity check is terminal.  Continuing into
+        # source correspondence would overwrite BLOCKED_INPUT with PASS,
+        # incorrectly certifying an unverified or changed candidate.
+        report["status"] = "BLOCKED_INPUT"
+        report["reason"] = (
+            "candidate_digest_differs_from_registry_pin"
+            if pinned_sha else "candidate_registry_digest_missing"
         )
-        if not report["candidate_matches_registry_pin"]:
-            report["status"] = "BLOCKED_INPUT"
-            report["reason"] = "candidate_digest_differs_from_registry_pin"
+        (out_dir / "ORPHAN_ROAD_SOURCE_RECONCILIATION.json").write_text(
+            json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+        )
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 1
 
     from ultimate_pipeline.enrichment.osm_meta_index import (
         extract_structural_osm_lane_metadata_ways,
