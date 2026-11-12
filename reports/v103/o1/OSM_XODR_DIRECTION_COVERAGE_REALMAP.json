@@ -66,6 +66,26 @@
         "reversed": 6,
         "unmatched_correspondence": 2743
       },
+      "coverage_qualification": {
+        "minimum_authoritative_rate_percent": null,
+        "note": "the coverage status above is the CONTRACT verdict (directional evidence exists and is authoritative for at least one road). This block is the ADEQUACY verdict; it is UNDECLARED_THRESHOLD until a minimum authoritative rate is declared, so a PASS here must not be read as 'the coverage is adequate'.",
+        "reason": "no_declared_minimum_authoritative_rate",
+        "status": "UNDECLARED_THRESHOLD"
+      },
+      "population": {
+        "osm_way_count": 3057,
+        "osm_way_count_note": "denominator of matched_way_rate_percent; NOT a road denominator",
+        "xodr_road_count": 993,
+        "xodr_road_count_note": "denominator of matched_road_rate_percent and authoritative_road_rate_percent"
+      },
+      "rates": {
+        "authoritative_road_count": 35,
+        "authoritative_road_rate_percent": 3.5247,
+        "matched_road_count": 44,
+        "matched_road_rate_percent": 4.431,
+        "matched_way_count": 68,
+        "matched_way_rate_percent": 2.2244
+      },
       "reason": "",
       "release_required": true,
       "schema": "osm_directional_coverage/v1",
@@ -75,7 +95,8 @@
     "eligible_road_count": 44,
     "projected_way_count": 3057,
     "source_way_count": 3057,
-    "status": "PASS"
+    "status": "PASS",
+    "xodr_road_count": 993
   },
   "directional_coverage": {
     "contract_version": "osm_xodr_direction/v1",
@@ -92,6 +113,26 @@
       "not_assessable": 0,
       "reversed": 6,
       "unmatched_correspondence": 2743
+    },
+    "coverage_qualification": {
+      "minimum_authoritative_rate_percent": null,
+      "note": "the coverage status above is the CONTRACT verdict (directional evidence exists and is authoritative for at least one road). This block is the ADEQUACY verdict; it is UNDECLARED_THRESHOLD until a minimum authoritative rate is declared, so a PASS here must not be read as 'the coverage is adequate'.",
+      "reason": "no_declared_minimum_authoritative_rate",
+      "status": "UNDECLARED_THRESHOLD"
+    },
+    "population": {
+      "osm_way_count": 3057,
+      "osm_way_count_note": "denominator of matched_way_rate_percent; NOT a road denominator",
+      "xodr_road_count": 993,
+      "xodr_road_count_note": "denominator of matched_road_rate_percent and authoritative_road_rate_percent"
+    },
+    "rates": {
+      "authoritative_road_count": 35,
+      "authoritative_road_rate_percent": 3.5247,
+      "matched_road_count": 44,
+      "matched_road_rate_percent": 4.431,
+      "matched_way_count": 68,
+      "matched_way_rate_percent": 2.2244
     },
     "reason": "",
     "release_required": true,

@@ -583,6 +583,8 @@ def directional_coverage_report(
     reason: str = "",
     release_required: bool = True,
     match_class_counts: Optional[Mapping[str, Any]] = None,
+    xodr_road_count: Optional[int] = None,
+    minimum_authoritative_rate_percent: Optional[float] = None,
 ) -> dict[str, Any]:
     """Summarise directional coverage over the matched roads (registry T06).
 
@@ -594,6 +596,31 @@ def directional_coverage_report(
     The report never returns ``PASS`` for release-required directionality
     when the OSM source is missing or when no road matched: both are
     ``BLOCKED_INPUT``.
+
+    **Two populations, never mixed (V104 P2).**  The ``counts`` block mixes
+    two *different* denominators:
+
+    * ``matched`` / ``authoritative`` / ``forward`` / ``reversed`` ... count
+      **XODR roads** (the association map is keyed by XODR road id);
+    * ``correspondence_exact`` / ``correspondence_high`` /
+      ``ambiguous_correspondence`` / ``unmatched_correspondence`` count
+      **OSM ways** (the ``match_class_counts`` population).
+
+    Reporting "44 of 3057 roads matched" divides an XODR-road numerator by
+    an OSM-way denominator and is not a rate at all.  Every rate in this
+    report therefore states its denominator explicitly, and the
+    ``population`` block names both populations.
+
+    **The ``status`` verdict is the contract verdict, not an adequacy
+    verdict (V104 P2).**  Per the frozen V103-O1 contract, ``PASS`` means
+    "release-required directional evidence exists and is authoritative for at
+    least one road".  It does *not* mean "the coverage is adequate" -- no
+    minimum was declared, so no adequacy judgement can be made.  The
+    adequacy judgement is reported separately in ``coverage_qualification``,
+    whose status is ``UNDECLARED_THRESHOLD`` until a caller declares a
+    minimum via ``minimum_authoritative_rate_percent``.  A report that says
+    ``PASS`` while its coverage is 0.13% is therefore no longer possible to
+    read as "coverage is adequate".
     """
     matched = 0
     reversed_ = 0
@@ -670,6 +697,54 @@ def directional_coverage_report(
     # the association map down to EXACT/HIGH.
     class_counts = dict(match_class_counts or {})
 
+    # ------------------------------------------------------------------
+    # V104 P2: state the populations, then measure the rates against the
+    # population each numerator actually belongs to.
+    # ------------------------------------------------------------------
+    # The OSM-way population is the sum of the correspondence match classes.
+    source_way_count = sum(
+        int(class_counts.get(key, 0) or 0)
+        for key in ("EXACT", "HIGH", "AMBIGUOUS", "UNMATCHED")
+    )
+    # The XODR-road population is the number of roads in the audited map.
+    # It is supplied by the caller; when it is unknown the road-level rates
+    # are reported as None rather than computed against a wrong denominator.
+    road_population = int(xodr_road_count) if xodr_road_count else 0
+
+    def _rate(numerator: int, denominator: int) -> Optional[float]:
+        if not denominator:
+            return None
+        return round(100.0 * numerator / denominator, 4)
+
+    # Road-level rates: numerator and denominator are both XODR roads.
+    matched_road_rate = _rate(matched, road_population)
+    authoritative_road_rate = _rate(authoritative, road_population)
+    # Way-level rate: numerator and denominator are both OSM ways.
+    matched_way_count = int(class_counts.get("EXACT", 0) or 0) + int(
+        class_counts.get("HIGH", 0) or 0
+    )
+    matched_way_rate = _rate(matched_way_count, source_way_count)
+
+    # ------------------------------------------------------------------
+    # V104 P2: the adequacy verdict is separate from the contract verdict.
+    # ------------------------------------------------------------------
+    if minimum_authoritative_rate_percent is None:
+        qualification_status = "UNDECLARED_THRESHOLD"
+        qualification_reason = "no_declared_minimum_authoritative_rate"
+    elif authoritative_road_rate is None:
+        qualification_status = "UNDECLARED_THRESHOLD"
+        qualification_reason = "no_declared_minimum_authoritative_rate"
+    elif authoritative_road_rate < float(minimum_authoritative_rate_percent):
+        qualification_status = "BELOW_MINIMUM"
+        qualification_reason = (
+            f"authoritative_rate_below_minimum:"
+            f"{authoritative_road_rate:.4f}%<"
+            f"{float(minimum_authoritative_rate_percent):.4f}%"
+        )
+    else:
+        qualification_status = "MEETS_MINIMUM"
+        qualification_reason = ""
+
     return {
         "schema": "osm_directional_coverage/v1",
         "contract_version": OSM_DIRECTION_CONTRACT_VERSION,
@@ -677,6 +752,44 @@ def directional_coverage_report(
         "reason": reason or ("" if status == "PASS" else "no_authoritative_directional_coverage"),
         "release_required": bool(release_required),
         "source_sha256": source_sha256,
+        # V104 P2: the two populations, named and counted, so no reader can
+        # divide a road numerator by a way denominator.
+        "population": {
+            "xodr_road_count": road_population or None,
+            "osm_way_count": source_way_count or None,
+            "xodr_road_count_note": (
+                "denominator of matched_road_rate_percent and "
+                "authoritative_road_rate_percent"
+            ),
+            "osm_way_count_note": (
+                "denominator of matched_way_rate_percent; NOT a road denominator"
+            ),
+        },
+        "rates": {
+            "matched_road_rate_percent": matched_road_rate,
+            "authoritative_road_rate_percent": authoritative_road_rate,
+            "matched_way_rate_percent": matched_way_rate,
+            "matched_road_count": matched,
+            "authoritative_road_count": authoritative,
+            "matched_way_count": matched_way_count,
+        },
+        "coverage_qualification": {
+            "status": qualification_status,
+            "reason": qualification_reason,
+            "minimum_authoritative_rate_percent": (
+                None
+                if minimum_authoritative_rate_percent is None
+                else float(minimum_authoritative_rate_percent)
+            ),
+            "note": (
+                "the coverage status above is the CONTRACT verdict "
+                "(directional evidence exists and is authoritative for at "
+                "least one road). This block is the ADEQUACY verdict; it is "
+                "UNDECLARED_THRESHOLD until a minimum authoritative rate is "
+                "declared, so a PASS here must not be read as 'the coverage "
+                "is adequate'."
+            ),
+        },
         "counts": {
             "matched": matched,
             "forward": forward,

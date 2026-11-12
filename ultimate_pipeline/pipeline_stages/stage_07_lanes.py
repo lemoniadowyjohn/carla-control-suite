@@ -38,11 +38,13 @@ def _build_structural_osm_metadata(root, osm_path: str) -> tuple[dict, dict]:
             {},
             source_available=False,
             reason="osm_source_unavailable",
+            xodr_road_count=len(root.findall("./road")),
         )
         return {}, {
             "status": coverage["status"],
             "reason": "osm_source_unavailable",
             "eligible_road_count": 0,
+            "xodr_road_count": len(root.findall("./road")),
             "directional_coverage": coverage,
         }
     try:
@@ -130,6 +132,11 @@ def _build_structural_osm_metadata(root, osm_path: str) -> tuple[dict, dict]:
             source_sha256=osm_source_sha256,
             reason="",
             match_class_counts=report.get("match_class_counts"),
+            # V104 P2: the road-level coverage rate needs the XODR road
+            # population as its denominator.  Without it the report cannot
+            # state a road-level rate, and a reader would be left dividing a
+            # road count by the OSM way count.
+            xodr_road_count=len(root.findall("./road")),
         )
 
         return structural_osm_meta, {
@@ -137,6 +144,7 @@ def _build_structural_osm_metadata(root, osm_path: str) -> tuple[dict, dict]:
             "source_way_count": len(source_ways),
             "projected_way_count": len(positioned_ways),
             "eligible_road_count": len(structural_osm_meta),
+            "xodr_road_count": len(root.findall("./road")),
             "directional_coverage": coverage,
             "correspondence": report,
         }
