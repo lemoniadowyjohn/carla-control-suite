@@ -1004,10 +1004,21 @@ def _run_condition(
     else:
         result["errors"].append("no admissible real-unlabeled directory was evaluated")
 
-    result["ok"] = bool(result["sim"].get("ok")) and bool(result["real"].get("ok"))
-    result["status"] = (
-        STATUS_TRAINED_AND_EVALUATED if result["ok"] else STATUS_EVAL_FAILED
-    )
+    evaluated_ok = bool(result["sim"].get("ok")) and bool(result["real"].get("ok"))
+    # Evaluation can succeed on an explicitly reused checkpoint, but reuse is
+    # NEVER evidence that this experimental condition trained a new model.
+    # Keep arm-level diagnostic results while refusing a newly-trained claim.
+    result["trained_this_run"] = bool(trained)
+    result["checkpoint_reused"] = not trained
+    result["evaluation_completed"] = evaluated_ok
+    if not trained:
+        result["ok"] = False
+        result["status"] = STATUS_CHECKPOINT_REUSED
+    else:
+        result["ok"] = evaluated_ok
+        result["status"] = (
+            STATUS_TRAINED_AND_EVALUATED if evaluated_ok else STATUS_EVAL_FAILED
+        )
     return result
 
 
