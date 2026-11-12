@@ -212,6 +212,87 @@ def test_job_object_path_skipped_with_a_reason_off_windows(monkeypatch, capsys):
     assert cu._terminate_job_object(999) is False
 
 
+# ---------------------------------------------------------------------------
+# V94 round 2, item 6: no automatic orphan recovery, but the fail-closed
+# message must name the PID holding a busy port (when determinable) plus
+# an operator command. Read-only: never selects a kill target.
+# ---------------------------------------------------------------------------
+
+def test_describe_port_occupant_names_pid_and_operator_command(monkeypatch):
+    class FakeConn:
+        def __init__(self, port, pid, status):
+            self.laddr = SimpleNamespace(ip="0.0.0.0", port=port)
+            self.pid = pid
+            self.status = status
+
+    class FakeProc:
+        def __init__(self, pid):
+            self._pid = pid
+
+        def name(self):
+            return "CarlaUE4-Win64-Shipping.exe"
+
+    fake_psutil = SimpleNamespace(
+        net_connections=lambda kind="tcp": [
+            FakeConn(2000, 4321, "LISTEN"),
+            FakeConn(55000, 1, "ESTABLISHED"),  # unrelated port: must be ignored
+        ],
+        CONN_LISTEN="LISTEN",
+        Process=lambda pid: FakeProc(pid),
+    )
+    monkeypatch.setattr(cu, "psutil", fake_psutil)
+    monkeypatch.setattr(cu, "_IS_WINDOWS", True)
+
+    msg = cu.describe_port_occupant(2000)
+    assert "4321" in msg
+    assert "CarlaUE4-Win64-Shipping.exe" in msg
+    assert "taskkill" in msg and "4321" in msg.split("taskkill", 1)[1]
+
+
+def test_describe_port_occupant_degrades_gracefully_without_psutil(monkeypatch):
+    monkeypatch.setattr(cu, "psutil", None)
+    msg = cu.describe_port_occupant(2000)
+    assert "2000" in msg
+    assert "could not be determined" in msg
+
+
+def test_restart_rejects_foreign_port_and_names_the_holder(monkeypatch, tmp_path: Path, capsys):
+    """Positive control for describe_port_occupant: restart_carla's existing
+    fail-closed-on-occupied-port message (already covered without this
+    detail by test_restart_rejects_foreign_port_before_popen) must now also
+    name the holding PID when psutil can determine one."""
+    exe = tmp_path / "CarlaUE4.exe"
+    exe.write_bytes(b"stub")
+    monkeypatch.setattr(cu.SETTINGS, "CARLA_EXE", str(exe), raising=False)
+    monkeypatch.setattr(cu, "_require_gpu_tdr_clean_for_carla", lambda: None)
+    monkeypatch.setattr(cu, "_port_open", lambda host, port, timeout=1.0: port == 2000)
+
+    class FakeConn:
+        def __init__(self, port, pid, status):
+            self.laddr = SimpleNamespace(ip="0.0.0.0", port=port)
+            self.pid = pid
+            self.status = status
+
+    class FakeProc:
+        def name(self):
+            return "CarlaUE4.exe"
+
+    fake_psutil = SimpleNamespace(
+        net_connections=lambda kind="tcp": [FakeConn(2000, 8675, "LISTEN")],
+        CONN_LISTEN="LISTEN",
+        Process=lambda pid: FakeProc(),
+    )
+    monkeypatch.setattr(cu, "psutil", fake_psutil)
+    monkeypatch.setattr(
+        subprocess, "Popen",
+        lambda *a, **k: (_ for _ in ()).throw(AssertionError("must not launch into occupied port")),
+    )
+    assert cu.restart_carla(host="127.0.0.1", port=2000) is False
+    out = capsys.readouterr().out
+    assert "8675" in out
+    assert "taskkill" in out
+
+
 def test_crash_cache_cleanup_never_deletes_shared_directories(monkeypatch, tmp_path: Path):
     saved = tmp_path / "CarlaUE4" / "Saved"
     for name in ("Crashes", "Temp", "DerivedDataCache"):

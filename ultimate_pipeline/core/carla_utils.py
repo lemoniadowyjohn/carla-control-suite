@@ -370,6 +370,54 @@ def _wait_for_ports(host: str, ports: list[int], timeout_s: float = 60.0) -> boo
 _carla_port_open = _port_open
 
 
+def _port_holder_pid(port: int) -> int | None:
+    """Best-effort, read-only: the PID of whatever is LISTENing on `port`.
+
+    Never used to select a kill target -- only to make a fail-closed message
+    actionable. Returns None (never raises) if psutil is unavailable, the
+    query fails, or no listening PID can be found.
+    """
+    if psutil is None:
+        return None
+    try:
+        conns = psutil.net_connections(kind="tcp")
+    except Exception:
+        return None
+    listen = getattr(psutil, "CONN_LISTEN", "LISTEN")
+    for c in conns:
+        try:
+            laddr = c.laddr
+            if not laddr or int(getattr(laddr, "port", -1)) != int(port):
+                continue
+            if c.status != listen:
+                continue
+            if c.pid:
+                return int(c.pid)
+        except Exception:
+            continue
+    return None
+
+
+def describe_port_occupant(port: int) -> str:
+    """Operator-facing description of whatever holds `port`, for fail-closed
+    messages (never used to decide whether to terminate anything)."""
+    pid = _port_holder_pid(port)
+    if pid is None:
+        return (
+            f"port {port} appears occupied but the holding PID could not be "
+            "determined (psutil unavailable, insufficient permissions, or no "
+            "listener found)"
+        )
+    name = "<unknown>"
+    if psutil is not None:
+        try:
+            name = psutil.Process(pid).name()
+        except Exception:
+            pass
+    op_cmd = f"taskkill /PID {pid} /F" if _IS_WINDOWS else f"kill {pid}"
+    return f"port {port} is held by PID {pid} ({name}); operator command: `{op_cmd}`"
+
+
 def _resolve_rpc_streaming_ports(
     rpc_port: int,
     configured_streaming_port: int | None,
@@ -438,9 +486,13 @@ def restart_carla(host: str | None = None, port: int | None = None) -> bool:
     )
     ports = [port] if streaming_disabled else [port, streaming_port]
     # A different operator's simulator may own either port. Refuse to launch
-    # into its namespace; an occupied port never authorizes termination.
-    if any(_port_open(host, p, timeout=0.2) for p in ports):
-        print(f"[carla] Cannot restart: CARLA port namespace {ports} is already in use.")
+    # into its namespace; an occupied port never authorizes termination. Do
+    # not build automatic orphan recovery here -- name the holder (if it can
+    # be determined) and the operator command, and fail closed.
+    occupied = [p for p in ports if _port_open(host, p, timeout=0.2)]
+    if occupied:
+        details = "; ".join(describe_port_occupant(p) for p in occupied)
+        print(f"[carla] Cannot restart: CARLA port namespace {ports} is already in use. {details}")
         return False
 
     # C20 Tier 3: minimal-render / nullrhi diagnostic flags, opt-in via env so
@@ -478,8 +530,10 @@ def restart_carla(host: str | None = None, port: int | None = None) -> bool:
     for cmd in launch_variants:
         # C20 Tier 3: stop discarding the server log -- every past hang was
         # undiagnosable after the fact because stdout/stderr went to DEVNULL.
-        if any(_port_open(host, p, timeout=0.2) for p in ports):
-            print("[carla] Port namespace became occupied before launch; refusing overlap.")
+        occupied_before_launch = [p for p in ports if _port_open(host, p, timeout=0.2)]
+        if occupied_before_launch:
+            details = "; ".join(describe_port_occupant(p) for p in occupied_before_launch)
+            print(f"[carla] Port namespace became occupied before launch; refusing overlap. {details}")
             return False
         log_path = _resolve_carla_log_path_for_launch()
         cmd = [*cmd, "-log"]
