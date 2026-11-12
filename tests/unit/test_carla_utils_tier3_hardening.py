@@ -177,18 +177,26 @@ def _patch_restart_common(monkeypatch: pytest.MonkeyPatch, tmp_path: Path, *, cl
     monkeypatch.setattr(cu.SETTINGS, "CARLA_PORT", 2000, raising=False)
     monkeypatch.setattr(cu.SETTINGS, "CARLA_STREAMING_PORT", 2001, raising=False)
     monkeypatch.setattr(cu, "_cleanup_carla_crash_artifacts", lambda: None)
-    monkeypatch.setattr(cu, "_kill_stuck_carla", lambda proc=None, **_kw: None)
+    # P2-6: the stub must return a bool (the real function's contract),
+    # not None -- a round-2 regression the review caught.
+    monkeypatch.setattr(cu, "_kill_stuck_carla", lambda proc=None, **_kw: True)
     monkeypatch.setattr(cu, "_gpu_tdr_preflight", lambda: {"ok": True, "skipped": True})
     monkeypatch.setattr(cu.time, "sleep", lambda *_: None)
     monkeypatch.setattr(cu, "_vram_preflight", lambda: None)
     monkeypatch.setattr(cu, "_carla_module", lambda: _FakeCarlaModule(client))
+    # These restart_carla() tests exercise RPC-readiness logic, not the Job
+    # Object wiring itself (see test_restart_carla_wires_job_object_to_* for
+    # that) -- neutralize both so a fake pid never reaches a real
+    # Toolhelp/AssignProcessToJobObject call.
+    monkeypatch.setattr(cu, "_create_job_for_launch", lambda proc: None)
+    monkeypatch.setattr(cu, "_resume_suspended", lambda pid: None)
     monkeypatch.chdir(tmp_path)
 
     captured_cmds: list = []
 
     def _fake_popen(cmd, **kwargs):
         captured_cmds.append(cmd)
-        return SimpleNamespace()
+        return SimpleNamespace(pid=42_000 + len(captured_cmds))
 
     monkeypatch.setattr(subprocess, "Popen", _fake_popen)
     return captured_cmds
@@ -242,3 +250,78 @@ def test_restart_carla_writes_a_server_log_not_devnull(monkeypatch: pytest.Monke
     log_dir = tmp_path / "reports" / "post_audit_hardening" / "_carla_server_logs"
     assert log_dir.is_dir()
     assert list(log_dir.glob("carla_server_*.log"))
+
+
+# ---------------------------------------------------------------------------
+# P2-6 integration: restart_carla must actually wire the Job Object to the
+# PID it just launched -- the fake Popen has a pid, _create_job_for_launch
+# is called with that process, and the resulting job is passed to
+# _kill_stuck_carla on failure / stored (not leaked) on success.
+# ---------------------------------------------------------------------------
+
+class _FakeOwnedJob:
+    def __init__(self, pid: int):
+        self.pid = pid
+        self.terminated = 0
+
+    def terminate_owned(self):
+        self.terminated += 1
+
+
+def test_restart_carla_wires_job_object_to_the_launched_pid_on_failure(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path,
+) -> None:
+    """RPC never becomes ready -> the job created for the launched PID must
+    be the same object passed to _kill_stuck_carla(job=...)."""
+    _patch_restart_common(monkeypatch, tmp_path, client=_NeverReadyClient())
+    monkeypatch.setattr(cu, "_wait_for_ports", lambda *a, **k: True)
+    monkeypatch.setenv("UP_CARLA_READY_TIMEOUT_S", "0.01")
+
+    created_jobs: list = []
+
+    def _fake_create_job(proc):
+        job = _FakeOwnedJob(proc.pid)
+        created_jobs.append(job)
+        return job
+
+    kill_calls: list = []
+
+    def _fake_kill(proc, *, job=None):
+        kill_calls.append((proc.pid, job))
+        return True
+
+    monkeypatch.setattr(cu, "_create_job_for_launch", _fake_create_job)
+    monkeypatch.setattr(cu, "_kill_stuck_carla", _fake_kill)
+
+    assert cu.restart_carla() is False
+    assert created_jobs, "a job must be created for the launched process"
+    assert kill_calls, "_kill_stuck_carla must be called on RPC-never-ready failure"
+    for pid, job in kill_calls:
+        assert job is not None
+        assert job.pid == pid, "the job passed to _kill_stuck_carla must be the one created for that exact pid"
+    assert [j.pid for j in created_jobs] == [pid for pid, _ in kill_calls]
+
+
+def test_restart_carla_stores_job_on_success_instead_of_leaking(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path,
+) -> None:
+    """RPC becomes ready -> the job must be stored (reachable via the owned
+    registry, keyed by pid), not just a local variable that is dropped."""
+    _patch_restart_common(monkeypatch, tmp_path, client=_FlakyClient(fail_count=0))
+    monkeypatch.setattr(cu, "_wait_for_ports", lambda *a, **k: True)
+    monkeypatch.setattr(cu, "_OWNED_LAUNCHED_JOBS", {})
+
+    created_jobs: list = []
+
+    def _fake_create_job(proc):
+        job = _FakeOwnedJob(proc.pid)
+        created_jobs.append(job)
+        return job
+
+    monkeypatch.setattr(cu, "_create_job_for_launch", _fake_create_job)
+
+    assert cu.restart_carla() is True
+    assert created_jobs
+    launched_pid = created_jobs[0].pid
+    assert cu._OWNED_LAUNCHED_JOBS.get(launched_pid) is created_jobs[0]
+    assert created_jobs[0].terminated == 0, "a successful launch's job must never be terminated"
