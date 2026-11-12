@@ -52,6 +52,7 @@ import hmac
 import json
 import os
 import re
+import stat
 import sys
 import threading
 import time
@@ -329,6 +330,81 @@ def _write_payload(path: Path, payload: dict) -> None:
             pass
         raise
     _durable_replace(tmp, path)
+
+
+def _read_regular_file_bounded(path: Path, max_bytes: int) -> tuple[bytes, tuple[int, int]]:
+    """Read a regular non-symlink file through a stable descriptor, bounded."""
+    before = path.lstat()
+    if stat.S_ISLNK(before.st_mode) or not stat.S_ISREG(before.st_mode):
+        raise RuntimeError(f"recovery source is not a regular non-symlink file: {path}")
+    if not before.st_ino:
+        raise RuntimeError(f"filesystem has no stable file identity for: {path}")
+    if before.st_size > max_bytes:
+        raise RuntimeError(f"recovery source exceeds {max_bytes} bytes: {path}")
+    identity = (before.st_dev, before.st_ino)
+    flags = os.O_RDONLY | getattr(os, "O_BINARY", 0) | getattr(os, "O_NOFOLLOW", 0)
+    fd = os.open(str(path), flags)
+    with os.fdopen(fd, "rb") as stream:
+        opened = os.fstat(stream.fileno())
+        if (
+            not stat.S_ISREG(opened.st_mode)
+            or not opened.st_ino
+            or (opened.st_dev, opened.st_ino) != identity
+            or opened.st_size > max_bytes
+        ):
+            raise RuntimeError(f"recovery source changed while opening: {path}")
+        chunks = []
+        remaining = max_bytes + 1
+        while remaining:
+            chunk = stream.read(min(64 * 1024, remaining))
+            if not chunk:
+                break
+            chunks.append(chunk)
+            remaining -= len(chunk)
+        raw = b"".join(chunks)
+        after_open = os.fstat(stream.fileno())
+    after_path = path.lstat()
+    if (
+        len(raw) > max_bytes
+        or stat.S_ISLNK(after_path.st_mode)
+        or not stat.S_ISREG(after_path.st_mode)
+        or (after_open.st_dev, after_open.st_ino) != identity
+        or (after_path.st_dev, after_path.st_ino) != identity
+        or opened.st_size != after_open.st_size
+        or opened.st_mtime_ns != after_open.st_mtime_ns
+    ):
+        raise RuntimeError(f"recovery source changed during read: {path}")
+    return raw, identity
+
+
+def _write_recovery_bytes_exclusive(destination: Path, raw: bytes) -> None:
+    """Stage exact bytes durably and publish without replacing a successor."""
+    temp = destination.with_name(
+        f"{destination.name}.{os.getpid()}.{uuid.uuid4().hex}.recovery-tmp"
+    )
+    fd = os.open(str(temp), os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o600)
+    try:
+        with os.fdopen(fd, "wb") as stream:
+            stream.write(raw)
+            stream.flush()
+            os.fsync(stream.fileno())
+        _fsync_dir(temp.parent)
+        try:
+            os.link(str(temp), str(destination))
+        except FileExistsError as exc:
+            raise RuntimeError(
+                f"published lock appeared during recovery: {destination}"
+            ) from exc
+        _fsync_dir(destination.parent)
+    except BaseException:
+        try:
+            temp.unlink(missing_ok=True)
+            _fsync_dir(temp.parent)
+        except OSError:
+            pass
+        raise
+    temp.unlink()
+    _fsync_dir(temp.parent)
 
 
 def _publish_exclusive(path: Path, payload: dict) -> bool:
@@ -890,11 +966,20 @@ def release_common_git_lock(
             f"(expected generation={current.generation}); refusing"
         )
     if tomb is not None:
+        released = tomb.with_name(
+            f"{_get_common_git_lock_path(repo_root).name}.released.{uuid.uuid4().hex}.json"
+        )
         try:
-            tomb.unlink()
-            _fsync_dir(tomb.parent)
-        except OSError:
-            pass
+            # Keep the exact released bytes as auditable evidence. A failed
+            # finalization must be visible to the caller and must not discard
+            # the only record of the generation being released.
+            _durable_replace(tomb, released)
+        except (OSError, RuntimeError) as exc:
+            evidence = tomb if tomb.exists() else released
+            raise RuntimeError(
+                "common Git lock ownership was claimed, but release evidence "
+                f"could not be durably finalized; inspect {evidence}"
+            ) from exc
     return True
 
 
@@ -1088,11 +1173,7 @@ def recover_unresolved_tombstone(
     tomb = path.parent / tombstone_name
 
     with _common_git_claim(repo_root):
-        if tomb.is_symlink() or not tomb.is_file():
-            raise RuntimeError("selected lock tombstone is missing or not a regular file")
-        raw = tomb.read_bytes()
-        if len(raw) > 1024 * 1024:
-            raise RuntimeError("selected lock tombstone exceeds the recovery size limit")
+        raw, tomb_identity = _read_regular_file_bounded(tomb, 1024 * 1024)
         digest = hashlib.sha256(raw).hexdigest()
         if not hmac.compare_digest(digest, expected_sha256.lower()):
             raise RuntimeError("selected lock tombstone SHA-256 does not match operator input")
@@ -1118,50 +1199,72 @@ def recover_unresolved_tombstone(
         if path.is_symlink():
             raise RuntimeError("published common Git lock path is a symlink; refusing recovery")
         if path.exists():
-            current = path.read_bytes()
+            current, _ = _read_regular_file_bounded(path, 1024 * 1024)
             if not hmac.compare_digest(hashlib.sha256(current).hexdigest(), digest):
                 raise RuntimeError(
                     "published lock differs from selected tombstone; refusing recovery"
                 )
         else:
-            # Hard-link creation is atomic and exclusive. It makes the verified
-            # tombstone bytes visible as the published record without a
-            # zero-byte or partially copied interval, and fails if a successor
-            # appears after the existence check.
-            try:
-                os.link(str(tomb), str(path))
-            except FileExistsError as exc:
-                raise RuntimeError(
-                    "a lock appeared during tombstone recovery; refusing overwrite"
-                ) from exc
-            _fsync_dir(path.parent)
-            if not hmac.compare_digest(hashlib.sha256(path.read_bytes()).hexdigest(), digest):
+            # Publish bytes read from the identity-checked descriptor, not by
+            # linking the tombstone pathname after validation. A symlink swap
+            # at the source name therefore cannot redirect this publication.
+            _write_recovery_bytes_exclusive(path, raw)
+            restored, _ = _read_regular_file_bounded(path, 1024 * 1024)
+            if not hmac.compare_digest(hashlib.sha256(restored).hexdigest(), digest):
                 raise RuntimeError("restored common Git lock bytes failed verification")
 
-        # The published path now contains the verified exact bytes. Removing
-        # the duplicate evidence is safe only after durable publication and
-        # byte verification. A crash before this point is idempotently
-        # recoverable by invoking this function again with the same digest.
-        tomb.unlink()
-        _fsync_dir(path.parent)
-        record.update(intent_status="COMPLETE", recovered=True, completed_at=_utc_now())
+        # Recheck the original tombstone identity and bytes, then archive it by
+        # durable rename. This preserves evidence and avoids unlinking a path
+        # that may have been replaced after the first validation.
+        remaining, remaining_identity = _read_regular_file_bounded(
+            tomb, 1024 * 1024
+        )
+        if remaining_identity != tomb_identity or not hmac.compare_digest(
+            hashlib.sha256(remaining).hexdigest(), digest
+        ):
+            raise RuntimeError("selected tombstone changed during recovery; evidence retained")
+        recovered_path = path.with_name(
+            f"{path.name}.recovered.{uuid.uuid4().hex}.json"
+        )
+        _durable_replace(tomb, recovered_path)
+        archived, _ = _read_regular_file_bounded(recovered_path, 1024 * 1024)
+        if not hmac.compare_digest(hashlib.sha256(archived).hexdigest(), digest):
+            raise RuntimeError("archived recovery evidence failed SHA-256 verification")
+        record.update(
+            intent_status="COMPLETE",
+            recovered=True,
+            recovered_evidence_path=str(recovered_path),
+            completed_at=_utc_now(),
+        )
         _write_payload(intent_path, record)
         record["recovery_record_path"] = str(intent_path)
         return record
 
 
 def recover_malformed_lock(repo_root: Path, operator: str, reason: str) -> dict:
-    """Operator-only removal of malformed ownership evidence.
+    """Operator-only retirement of malformed ownership evidence.
 
     Never called by acquisition. Records a SHA-256 of the bytes removed, the
-    recovery timestamp and the stated operator intent, so the destruction is
-    auditable.
+    recovery timestamp and the stated operator intent. The malformed bytes are
+    archived rather than destroyed.
     """
     repo_root = Path(repo_root).resolve()
     path = _get_common_git_lock_path(repo_root)
+    if not isinstance(operator, str) or not operator.strip():
+        raise ValueError("operator identity is required for malformed-lock recovery")
+    if not isinstance(reason, str) or not reason.strip():
+        raise ValueError("recovery reason is required for malformed-lock recovery")
     try:
-        raw = path.read_bytes()
+        raw, _identity = _read_regular_file_bounded(path, 1024 * 1024)
     except FileNotFoundError:
+        status = get_lock_status(repo_root)
+        if status.get("status") == "BLOCKED_UNRESOLVED_TOMBSTONE":
+            return {
+                "recovered": False,
+                "status": status["status"],
+                "detail": "published lock is absent but unresolved tombstone evidence remains",
+                "unresolved_tombstones": status["unresolved_tombstones"],
+            }
         return {"recovered": False, "detail": "no lock present"}
     digest = hashlib.sha256(raw).hexdigest()
     record = {
@@ -1170,8 +1273,8 @@ def recover_malformed_lock(repo_root: Path, operator: str, reason: str) -> dict:
         "removed_sha256": digest,
         "removed_bytes": len(raw),
         "recovered_at": _utc_now(),
-        "operator": operator,
-        "reason": reason,
+        "operator": operator.strip(),
+        "reason": reason.strip(),
     }
     # Persist recovery intent before moving the sole malformed ownership
     # record. The uniquely named audit file is retained even if the operation
@@ -1189,12 +1292,29 @@ def recover_malformed_lock(repo_root: Path, operator: str, reason: str) -> dict:
         repo_root, "recover", lambda moved: hmac.compare_digest(moved, raw)
     )
     if claimed and tomb is not None:
+        moved, _ = _read_regular_file_bounded(tomb, 1024 * 1024)
+        if not hmac.compare_digest(hashlib.sha256(moved).hexdigest(), digest):
+            raise RuntimeError("malformed-lock recovery tombstone changed; evidence retained")
+        archive = path.with_name(f"{path.name}.recovered.{uuid.uuid4().hex}.json")
         try:
-            tomb.unlink()
-            _fsync_dir(tomb.parent)
-        except OSError:
-            pass
+            _durable_replace(tomb, archive)
+        except (OSError, RuntimeError) as exc:
+            raise RuntimeError(
+                f"malformed lock was claimed but could not be durably archived: {tomb}"
+            ) from exc
+        archived, _ = _read_regular_file_bounded(archive, 1024 * 1024)
+        if not hmac.compare_digest(hashlib.sha256(archived).hexdigest(), digest):
+            raise RuntimeError("malformed-lock recovery archive failed digest verification")
+        record["recovered_evidence_path"] = str(archive)
+        record["intent_status"] = "COMPLETE"
+        record["recovery_intent_path"] = intent_path.name
     else:
         record["recovered"] = False
+        record["intent_status"] = "NOT_RECOVERED"
         record["detail"] = "lock changed or vanished during recovery; nothing removed"
+    result_path = path.with_name(
+        f"{path.name}.recovery-result.{uuid.uuid4().hex}.json"
+    )
+    _write_payload(result_path, record)
+    record["recovery_result_path"] = str(result_path)
     return record
