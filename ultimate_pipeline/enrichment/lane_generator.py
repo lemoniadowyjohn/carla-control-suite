@@ -200,6 +200,13 @@ class LaneGenerator:
         OSM's directional tags are authoritative.  The combined tag is only
         considered when neither directional tag exists; it applies to the
         forward XODR carriageway, which is the OSM way direction convention.
+
+        V103-O1 (registry T02): the OSM directional tags are relative to the
+        **OSM way's** node order.  When the XODR reference line runs
+        opposite to the OSM way (``osm_direction == "reverse"``), the two
+        directional patterns are swapped so the turn geometry lands on the
+        carriageway the OSM source actually describes.  The provenance
+        source records the remap so the provenance stays honest.
         """
         meta = LaneGenerator._structural_feature_metadata(
             road, structural_osm_meta
@@ -216,14 +223,46 @@ class LaneGenerator:
                 patterns.append(
                     ("backward", backward, "osm:turn:lanes:backward", 1.0)
                 )
-            return patterns
+            return LaneGenerator._remap_patterns_to_xodr(patterns, meta)
 
         combined = LaneGenerator._split_turn_pattern(
             meta.get("turn:lanes") or meta.get("turn_lanes")
         )
-        return (
-            [("forward", combined, "osm:turn:lanes", 0.75)] if combined else []
+        if not combined:
+            return []
+        return LaneGenerator._remap_patterns_to_xodr(
+            [("forward", combined, "osm:turn:lanes", 0.75)], meta
         )
+
+    @staticmethod
+    def _remap_patterns_to_xodr(
+        patterns: list[tuple[str, list[str], str, float]],
+        meta: Mapping[str, Any],
+    ) -> list[tuple[str, list[str], str, float]]:
+        """Swap forward/backward patterns when the XODR reference is reversed.
+
+        ``forward``/``backward`` in this module always mean the **XODR**
+        direction (forward == increasing ``s`` == the right/negative-id
+        carriageway).  OSM's directional tags mean the **OSM way** direction.
+        The two coincide only when the correspondence says the OSM way runs
+        with the XODR reference line.
+        """
+        from ultimate_pipeline.enrichment.osm_direction import (
+            DIRECTION_KEY,
+            ORIENTATION_REVERSE,
+        )
+
+        orientation = str(meta.get(DIRECTION_KEY) or "").strip().lower()
+        if orientation != ORIENTATION_REVERSE:
+            return patterns
+
+        remapped: list[tuple[str, list[str], str, float]] = []
+        for direction, pattern, source, confidence in patterns:
+            flipped = "backward" if direction == "forward" else "forward"
+            remapped.append(
+                (flipped, pattern, f"{source}@xodr-reverse", confidence)
+            )
+        return remapped
 
     @staticmethod
     def _structural_feature_metadata(

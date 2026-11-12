@@ -39,7 +39,26 @@ def test_stage7_resolves_only_high_confidence_structural_metadata(
 
     assert report["status"] == "PASS"
     assert report["eligible_road_count"] == 1
-    assert metadata == {"42": {"lanes:forward": "2", "lanes:backward": "1"}}
+    # V103-O1: the raw OSM tags are preserved verbatim, and the directional
+    # association is carried alongside them under reserved (non-OSM-tag)
+    # keys so the lane stage can honour the OSM way orientation.
+    assert metadata["42"]["lanes:forward"] == "2"
+    assert metadata["42"]["lanes:backward"] == "1"
+    assert metadata["42"]["_osm_direction"] == "forward"
+    assert metadata["42"]["_osm_match_class"] in {"EXACT", "HIGH"}
+    assert set(metadata) == {"42"}
+    assert set(metadata["42"]) == {
+        "lanes:forward",
+        "lanes:backward",
+        "_osm_direction",
+        "_osm_way_id",
+        "_osm_match_class",
+        "_osm_match_confidence",
+    }
+    # Coverage reporting (registry T06).
+    assert report["directional_coverage"]["counts"]["matched"] == 1
+    assert report["directional_coverage"]["counts"]["forward"] == 1
+    assert report["directional_coverage"]["counts"]["reversed"] == 0
 
 
 def test_stage7_marks_missing_osm_source_not_run(tmp_path) -> None:

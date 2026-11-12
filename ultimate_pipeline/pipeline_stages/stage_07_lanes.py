@@ -40,20 +40,52 @@ def _build_structural_osm_metadata(root, osm_path: str) -> tuple[dict, dict]:
         from ultimate_pipeline.enrichment.osm_xodr_correspondence import (
             build_metadata_associations,
         )
+        from ultimate_pipeline.enrichment.osm_direction import (
+            DIRECTION_KEY,
+            MATCH_CLASS_KEY,
+            MATCH_CONFIDENCE_KEY,
+            ORIENTATION_UNKNOWN,
+            OSM_WAY_ID_KEY,
+            directional_coverage_report,
+        )
 
         source_ways = extract_structural_osm_lane_metadata_ways(osm_path)
         positioned_ways = project_positioned_osm_metadata_ways(source_ways, root)
         associations, report = build_metadata_associations(positioned_ways, root)
-        structural_osm_meta = {
-            road_id: dict(association["metadata"])
-            for road_id, association in sorted(associations.items())
-            if association.get("class") in {"EXACT", "HIGH"}
-        }
+
+        # V103-O1 (registry T02): the raw OSM *tags* alone are not enough.
+        # ``build_metadata_associations`` also resolves ``osm_direction`` --
+        # whether the OSM way's node order agrees with the XODR reference
+        # line.  Dropping it here meant OSM's directional facts (``oneway``,
+        # ``turn:lanes:forward``) were applied to the wrong carriageway on
+        # reversed roads.  The orientation is preserved under reserved keys
+        # that live outside the OSM tag namespace, so every existing consumer
+        # of the tag mapping keeps working unchanged.
+        structural_osm_meta = {}
+        for road_id, association in sorted(associations.items()):
+            if association.get("class") not in {"EXACT", "HIGH"}:
+                continue
+            tags = dict(association.get("metadata") or {})
+            tags[DIRECTION_KEY] = str(
+                association.get("osm_direction") or ORIENTATION_UNKNOWN
+            )
+            tags[OSM_WAY_ID_KEY] = str(association.get("osm_way_id") or "")
+            tags[MATCH_CLASS_KEY] = str(association.get("class") or "")
+            tags[MATCH_CONFIDENCE_KEY] = str(association.get("confidence"))
+            structural_osm_meta[road_id] = tags
+
+        coverage = directional_coverage_report(
+            structural_osm_meta,
+            source_available=True,
+            reason="",
+        )
+
         return structural_osm_meta, {
-            "status": "PASS",
+            "status": coverage["status"],
             "source_way_count": len(source_ways),
             "projected_way_count": len(positioned_ways),
             "eligible_road_count": len(structural_osm_meta),
+            "directional_coverage": coverage,
             "correspondence": report,
         }
     except Exception as exc:
