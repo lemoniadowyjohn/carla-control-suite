@@ -27,10 +27,23 @@ def _build_structural_osm_metadata(root, osm_path: str) -> tuple[dict, dict]:
     from pathlib import Path
 
     if not osm_path or not Path(osm_path).is_file():
+        # V104 review 4551582385: emit a directional coverage report with
+        # BLOCKED_INPUT even when the source is unavailable, so callers see
+        # the promised status instead of a bare NOT_RUN.
+        from ultimate_pipeline.enrichment.osm_direction import (
+            directional_coverage_report,
+        )
+
+        coverage = directional_coverage_report(
+            {},
+            source_available=False,
+            reason="osm_source_unavailable",
+        )
         return {}, {
-            "status": "NOT_RUN",
+            "status": coverage["status"],
             "reason": "osm_source_unavailable",
             "eligible_road_count": 0,
+            "directional_coverage": coverage,
         }
     try:
         from ultimate_pipeline.enrichment.osm_meta_index import (
@@ -43,15 +56,32 @@ def _build_structural_osm_metadata(root, osm_path: str) -> tuple[dict, dict]:
         from ultimate_pipeline.enrichment.osm_direction import (
             DIRECTION_KEY,
             MATCH_CLASS_KEY,
+            ASSOCIATION_SCHEMA_KEY,
+            ASSOCIATION_STATE_KEY,
             MATCH_CONFIDENCE_KEY,
             ORIENTATION_UNKNOWN,
             OSM_WAY_ID_KEY,
+            SOURCE_SHA_KEY,
             directional_coverage_report,
         )
 
         source_ways = extract_structural_osm_lane_metadata_ways(osm_path)
         positioned_ways = project_positioned_osm_metadata_ways(source_ways, root)
         associations, report = build_metadata_associations(positioned_ways, root)
+
+        # V104 review 4551582504: the coverage report must state which OSM
+        # input it describes.
+        osm_source_sha256 = ""
+        try:
+            import hashlib as _hashlib
+
+            _h = _hashlib.sha256()
+            with open(osm_path, "rb") as _fh:
+                for _chunk in iter(lambda: _fh.read(1024 * 1024), b""):
+                    _h.update(_chunk)
+            osm_source_sha256 = _h.hexdigest()
+        except OSError:
+            osm_source_sha256 = ""
 
         # V103-O1 (registry T02): the raw OSM *tags* alone are not enough.
         # ``build_metadata_associations`` also resolves ``osm_direction`` --
@@ -61,23 +91,45 @@ def _build_structural_osm_metadata(root, osm_path: str) -> tuple[dict, dict]:
         # reversed roads.  The orientation is preserved under reserved keys
         # that live outside the OSM tag namespace, so every existing consumer
         # of the tag mapping keeps working unchanged.
+        # V104 review 4551582442: build the *versioned* per-road association
+        # and propagate its contract fields into the geometry hand-off, so
+        # the consumer sees the schema, source hash and association state and
+        # not just four loose keys.
+        from ultimate_pipeline.enrichment.osm_direction import (
+            build_directional_association,
+        )
+
         structural_osm_meta = {}
         for road_id, association in sorted(associations.items()):
             if association.get("class") not in {"EXACT", "HIGH"}:
                 continue
             tags = dict(association.get("metadata") or {})
-            tags[DIRECTION_KEY] = str(
-                association.get("osm_direction") or ORIENTATION_UNKNOWN
+            record = build_directional_association(
+                xodr_road_id=road_id,
+                osm_way_id=str(association.get("osm_way_id") or ""),
+                osm_direction=association.get("osm_direction"),
+                match_class=str(association.get("class") or ""),
+                confidence=float(association.get("confidence") or 0.0),
+                source_sha256=osm_source_sha256,
             )
-            tags[OSM_WAY_ID_KEY] = str(association.get("osm_way_id") or "")
-            tags[MATCH_CLASS_KEY] = str(association.get("class") or "")
-            tags[MATCH_CONFIDENCE_KEY] = str(association.get("confidence"))
+            tags[DIRECTION_KEY] = record.osm_direction
+            tags[OSM_WAY_ID_KEY] = record.osm_way_id
+            tags[MATCH_CLASS_KEY] = record.match_class
+            tags[MATCH_CONFIDENCE_KEY] = str(record.confidence)
+            tags[ASSOCIATION_SCHEMA_KEY] = record.schema
+            tags[ASSOCIATION_STATE_KEY] = record.state
+            tags[SOURCE_SHA_KEY] = record.source_sha256
             structural_osm_meta[road_id] = tags
 
+        # V104 review 4551582370: the ambiguous / unmatched correspondence
+        # population must reach the coverage report instead of being
+        # filtered out before it is counted.
         coverage = directional_coverage_report(
             structural_osm_meta,
             source_available=True,
+            source_sha256=osm_source_sha256,
             reason="",
+            match_class_counts=report.get("match_class_counts"),
         )
 
         return structural_osm_meta, {
@@ -93,6 +145,12 @@ def _build_structural_osm_metadata(root, osm_path: str) -> tuple[dict, dict]:
             "status": "INCOMPLETE",
             "reason": f"structural_osm_correspondence_failed:{exc}",
             "eligible_road_count": 0,
+            "directional_coverage": {
+                "schema": "osm_directional_coverage/v1",
+                "status": "BLOCKED_INPUT",
+                "reason": f"structural_osm_correspondence_failed:{exc}",
+                "counts": {},
+            },
         }
 
 

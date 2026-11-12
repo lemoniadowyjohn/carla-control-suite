@@ -54,17 +54,28 @@ def test_stage7_resolves_only_high_confidence_structural_metadata(
         "_osm_way_id",
         "_osm_match_class",
         "_osm_match_confidence",
+        # V104 review 4551582442 / 4551582504: the versioned association
+        # contract and the OSM source identity reach the geometry consumer.
+        "_osm_association_schema",
+        "_osm_association_state",
+        "_osm_source_sha256",
     }
+    assert metadata["42"]["_osm_association_schema"] == "osm_xodr_direction/v1"
+    assert metadata["42"]["_osm_association_state"] in {"ok", "incomplete", "ambiguous"}
     # Coverage reporting (registry T06).
     assert report["directional_coverage"]["counts"]["matched"] == 1
     assert report["directional_coverage"]["counts"]["forward"] == 1
     assert report["directional_coverage"]["counts"]["reversed"] == 0
 
 
-def test_stage7_marks_missing_osm_source_not_run(tmp_path) -> None:
+def test_stage7_marks_missing_osm_source_blocked_input(tmp_path) -> None:
     metadata, report = _build_structural_osm_metadata(
         ET.Element("OpenDRIVE"), str(tmp_path / "missing.osm")
     )
 
     assert metadata == {}
-    assert report["status"] == "NOT_RUN"
+    # V104 review 4551582385: a missing OSM source is BLOCKED_INPUT, and the
+    # directional coverage report is still emitted.
+    assert report["status"] == "BLOCKED_INPUT"
+    assert report["reason"] == "osm_source_unavailable"
+    assert report["directional_coverage"]["status"] == "BLOCKED_INPUT"

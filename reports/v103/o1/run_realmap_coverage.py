@@ -15,6 +15,8 @@ import json
 import os
 import sys
 import xml.etree.ElementTree as ET
+
+from safe_xml import safe_parse
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[3]
@@ -120,7 +122,9 @@ def main() -> int:
         _build_structural_osm_metadata,
     )
 
-    root = ET.parse(str(xodr_path)).getroot()
+    # V104 security finding: parse through the safe XML boundary
+    # (rejects a DOCTYPE/ENTITY declaration in any encoding).
+    root = safe_parse(str(xodr_path))
     road_count = len(root.findall("./road"))
 
     meta, report = _build_structural_osm_metadata(root, str(osm_path))

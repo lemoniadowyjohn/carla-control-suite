@@ -52,6 +52,8 @@ Design rules
 from __future__ import annotations
 
 import json
+import os
+import uuid
 from dataclasses import dataclass, field
 from enum import Enum
 from pathlib import Path
@@ -87,6 +89,13 @@ OSM_WAY_ID_KEY = "_osm_way_id"
 MATCH_CLASS_KEY = "_osm_match_class"
 MATCH_CONFIDENCE_KEY = "_osm_match_confidence"
 
+#: V104 review 4551582442 / 4551582504: the versioned per-road association
+#: contract and the OSM source identity must reach the geometry consumer, not
+#: just four loose keys.
+ASSOCIATION_SCHEMA_KEY = "_osm_association_schema"
+ASSOCIATION_STATE_KEY = "_osm_association_state"
+SOURCE_SHA_KEY = "_osm_source_sha256"
+
 #: Values of ``osm_direction`` produced by
 #: :func:`ultimate_pipeline.enrichment.osm_xodr_correspondence._osm_direction`.
 ORIENTATION_FORWARD = "forward"
@@ -113,6 +122,8 @@ class DirectionalState(str, Enum):
     """Quality of a directional lane-count resolution."""
 
     OK = "ok"
+    #: The source admits more than one candidate and none is authoritative.
+    AMBIGUOUS = "ambiguous"
     #: The source disagrees with itself (e.g. ``lanes`` vs directional tags).
     CONFLICTING = "conflicting"
     #: The source cannot decide statically (conditional/reversible oneway).
@@ -177,6 +188,14 @@ def parse_oneway(tags: Mapping[str, Any] | None) -> OnewayState:
         junction = (_tag(tags, "junction") or "").strip().lower()
         if junction == "roundabout":
             return OnewayState.FORWARD
+        # V104 review 4551582303: OSM's implicit one-way defaults.  A
+        # ``highway=motorway`` / ``motorway_link`` is one-way unless tagged
+        # otherwise, exactly like a roundabout.  Without this the lane total
+        # of a motorway was split in half and a counterflow lane was
+        # generated on a road that cannot carry contraflow traffic.
+        highway = str(_tag(tags, "highway") or "").strip().lower()
+        if highway in ("motorway", "motorway_link"):
+            return OnewayState.FORWARD
         return OnewayState.UNKNOWN
 
     value = raw.strip().lower()
@@ -233,34 +252,70 @@ class DirectionalLaneCounts:
         }
 
 
+def historical_split_counts(
+    tags: Mapping[str, Any] | None,
+) -> tuple[int, int, str, float]:
+    """The pre-V103 lane assignment as ``(backward, forward, source, confidence)``.
+
+    The historical implementation returned ``total // 2`` for the *backward*
+    (left) carriageway and ``total - total // 2`` for the *forward* (right)
+    carriageway.  V104 review 4551555409 requires that an odd lane total
+    keeps exactly that assignment unless authoritative OSM evidence demands a
+    correction, so this is the single definition of the historical split and
+    every fallback path routes through it.
+    """
+    total = _parse_lane_count(_tag(tags, "lanes"))
+    if total is not None:
+        total = int(total)
+        return total // 2, total - total // 2, "osm:lanes", 0.9
+    return 1, 1, "fallback", 0.0
+
+
 def resolve_directional_lane_counts(
     tags: Mapping[str, Any] | None,
     *,
     osm_direction: Optional[str] = None,
+    orientation_required: bool = False,
 ) -> DirectionalLaneCounts:
     """Resolve the directional driving-lane counts for one road.
 
     Resolution order (first decisive rule wins):
 
     1. ``lanes:forward`` / ``lanes:backward`` present -> used directly.
-       These are already directional and do not need ``oneway``.  A
-       disagreeing ``lanes`` total is reported as
-       :attr:`DirectionalState.CONFLICTING` but the directional tags win.
+       These are already directional and do not need ``oneway``.
+       * Both present -> used as-is; a disagreeing ``lanes`` total is
+         reported as :attr:`DirectionalState.CONFLICTING`.
+       * One present and a ``lanes`` total present -> the missing side is
+         resolved from the total when the arithmetic is consistent
+         (V104 review 4551582330); otherwise the result is flagged
+         ``incomplete`` rather than silently treating the missing tag as
+         zero.
+       * One present and no total -> the missing side is unknown; the result
+         is flagged ``incomplete`` and is therefore never authoritative.
     2. Only ``lanes`` present, and ``oneway`` is decidable -> **all** lanes
        belong to the legal direction.  A one-way road therefore never gains
        a counterflow driving lane (the T01 fix).
     3. Only ``lanes`` present, and ``oneway`` is bidirectional -> the
-       historical deterministic split.
+       historical deterministic split (V104 review 4551555409).
     4. Only ``lanes`` present and ``oneway`` is undecidable -> the
        historical split is retained for geometry compatibility but the
-       result is flagged ``unsupported`` / lower confidence so it is never
-       presented as authoritative.
-    5. No lane tags at all -> the historical one-lane-per-side fallback,
-       flagged ``incomplete``.
+       result is flagged ``unsupported`` so it is never presented as
+       authoritative.
+    5. No lane tags at all -> the one-lane-per-side fallback, placed in the
+       legal direction when ``oneway`` is decidable (V104 review
+       4551582316), flagged ``incomplete``.
 
-    The counts are then mapped from *OSM-way-relative* to
-    *XODR-relative* using ``osm_direction``.  A reversed XODR road swaps
-    the two sides.
+    A conditional one-way restriction makes the permitted direction
+    time-dependent, so a static ``oneway`` value combined with
+    ``oneway:conditional`` is never reported as authoritative when the lane
+    counts depend on it (V104 review 4551582276).
+
+    The counts are then mapped from *OSM-way-relative* to *XODR-relative*
+    using ``osm_direction``.  A reversed XODR road swaps the two sides.
+    When the orientation is required but unknown, the resolution falls back
+    to the orientation-independent historical split and is flagged
+    ``incomplete`` -- OSM-way-relative counts must never be applied to an
+    arbitrary XODR carriageway (V104 review 4551582252).
     """
     forward_tag = _parse_lane_count(_tag(tags, "lanes:forward"))
     backward_tag = _parse_lane_count(_tag(tags, "lanes:backward"))
@@ -271,40 +326,70 @@ def resolve_directional_lane_counts(
 
     notes: list[str] = []
 
+    # A conditional restriction can change the permitted direction.  Without
+    # a time/vehicle context the static plain ``oneway`` value is not a
+    # static fact.
+    conditional_conflict = bool(conditional) and oneway in (
+        OnewayState.FORWARD,
+        OnewayState.BACKWARD,
+        OnewayState.BIDIRECTIONAL,
+    )
+
+    state = DirectionalState.OK
+    source = ""
+    confidence = 0.0
+
     if forward_tag is not None or backward_tag is not None:
-        forward = int(forward_tag or 0)
-        backward = int(backward_tag or 0)
         source = "osm:lanes:forward+backward"
         confidence = 1.0
-        state = DirectionalState.OK
-        if total_tag is not None and int(total_tag) != forward + backward:
-            state = DirectionalState.CONFLICTING
-            notes.append(
-                f"lanes_total_mismatch:{total_tag}!={forward + backward}"
-            )
+        if forward_tag is not None and backward_tag is not None:
+            forward = int(forward_tag)
+            backward = int(backward_tag)
+            if total_tag is not None and int(total_tag) != forward + backward:
+                state = DirectionalState.CONFLICTING
+                notes.append(f"lanes_total_mismatch:{total_tag}!={forward + backward}")
+        elif total_tag is not None:
+            # One directional tag is missing; the total resolves it when the
+            # arithmetic is consistent.
+            known = int(forward_tag if forward_tag is not None else backward_tag)
+            missing = int(total_tag) - known
+            if missing >= 0:
+                forward = int(forward_tag) if forward_tag is not None else missing
+                backward = int(backward_tag) if backward_tag is not None else missing
+                notes.append(f"partial_directional_counts_resolved_from_total:{missing}")
+            else:
+                forward = int(forward_tag or 0)
+                backward = int(backward_tag or 0)
+                state = DirectionalState.CONFLICTING
+                notes.append(f"lanes_total_mismatch:{total_tag}!={forward + backward}")
+        else:
+            # The missing side cannot be resolved from the source.  It is
+            # NOT silently treated as zero.
+            forward = int(forward_tag or 0)
+            backward = int(backward_tag or 0)
+            state = DirectionalState.INCOMPLETE
+            notes.append("partial_directional_counts_unknown_side")
     elif total_tag is not None:
         total = int(total_tag)
+        # Historical assignment (V104 review 4551555409): the backward
+        # (left) carriageway receives total // 2, the forward (right)
+        # carriageway the remainder.
+        split_forward = total - total // 2
+        split_backward = total // 2
         if oneway is OnewayState.FORWARD:
             forward, backward = total, 0
             source = "osm:oneway+lanes"
             confidence = 1.0
-            state = DirectionalState.OK
         elif oneway is OnewayState.BACKWARD:
             forward, backward = 0, total
             source = "osm:oneway+lanes"
             confidence = 1.0
-            state = DirectionalState.OK
         elif oneway is OnewayState.BIDIRECTIONAL:
-            forward = total // 2
-            backward = total - total // 2
+            forward, backward = split_forward, split_backward
             source = "osm:lanes"
             confidence = 0.9
-            state = DirectionalState.OK
         else:
-            # Undecidable direction: keep the historical split so valid
-            # geometry is not destroyed, but never present it as proven.
-            forward = total // 2
-            backward = total - total // 2
+            forward, backward = split_forward, split_backward
             source = "osm:lanes"
             confidence = 0.5
             state = DirectionalState.UNSUPPORTED
@@ -312,10 +397,22 @@ def resolve_directional_lane_counts(
                 notes.append("reversible_oneway")
             if conditional:
                 notes.append("oneway_conditional")
-            if oneway is OnewayState.UNKNOWN:
-                notes.append("oneway_unknown")
+            notes.append("oneway_unknown")
+        if conditional_conflict and state is DirectionalState.OK:
+            # The conditional rule can change the permitted direction, so the
+            # static lane counts are not an authoritative fact.
+            state = DirectionalState.UNSUPPORTED
+            notes.append("oneway_conditional_conflicts_with_static_oneway")
     else:
-        forward, backward = 1, 1
+        # No lane-count evidence at all.  A decidable oneway still decides
+        # where the single fallback lane goes, so a one-way road does not
+        # gain a counterflow lane.
+        if oneway is OnewayState.FORWARD:
+            forward, backward = 1, 0
+        elif oneway is OnewayState.BACKWARD:
+            forward, backward = 0, 1
+        else:
+            forward, backward = 1, 1
         source = "fallback"
         confidence = 0.0
         state = DirectionalState.INCOMPLETE
@@ -337,7 +434,14 @@ def resolve_directional_lane_counts(
         orientation = ORIENTATION_FORWARD
     else:
         orientation = ORIENTATION_UNKNOWN
-        if source != "fallback":
+        if orientation_required:
+            # A correspondence association exists but could not orient the
+            # road, so the OSM-way-relative counts cannot be attributed to
+            # an XODR carriageway.  Fall back to the orientation-independent
+            # historical split and mark the resolution non-authoritative.
+            backward, forward, source, confidence = historical_split_counts(tags)
+            if state is DirectionalState.OK:
+                state = DirectionalState.INCOMPLETE
             notes.append("orientation_unknown")
 
     return DirectionalLaneCounts(
@@ -382,11 +486,24 @@ class RoadOSMDirectionalAssociation:
         return self.osm_direction in (ORIENTATION_FORWARD, ORIENTATION_REVERSE)
 
     @property
+    def has_usable_confidence(self) -> bool:
+        """True when the match carries usable confidence evidence."""
+        try:
+            return float(self.confidence) > 0.0
+        except (TypeError, ValueError):
+            return False
+
+    @property
     def is_trustworthy(self) -> bool:
-        """True when class, confidence and orientation are all usable."""
+        """True when class, confidence and orientation are all usable.
+
+        V104 review 4551582421: a match with zero (or unusable) confidence
+        carries no confidence evidence at all and must not be trusted.
+        """
         return (
             self.match_class in {"EXACT", "HIGH"}
             and self.is_oriented
+            and self.has_usable_confidence
             and self.state == DirectionalState.OK.value
         )
 
@@ -465,6 +582,7 @@ def directional_coverage_report(
     source_sha256: str = "",
     reason: str = "",
     release_required: bool = True,
+    match_class_counts: Optional[Mapping[str, Any]] = None,
 ) -> dict[str, Any]:
     """Summarise directional coverage over the matched roads (registry T06).
 
@@ -512,13 +630,26 @@ def directional_coverage_report(
         if resolved.source == "fallback":
             fallback += 1
 
-        # A road is authoritative for directionality only when its match class
-        # is trustworthy, its orientation is known, and the source does not
-        # contradict itself.
+        # V104 review 4551555419 / 4551582396 / 4551582407: a road is
+        # authoritative for directionality only when
+        #   * its match class is explicitly EXACT/HIGH (an absent match class
+        #     is NOT evidence of an authoritative match),
+        #   * its orientation is known,
+        #   * its confidence is usable,
+        #   * and the lane resolution itself is authoritative (an
+        #     ``unsupported`` or ``fallback`` resolution is not).
+        match_class_ok = match_class in {"EXACT", "HIGH"}
+        try:
+            confidence = float(meta.get(MATCH_CONFIDENCE_KEY))
+        except (TypeError, ValueError):
+            confidence = 0.0
         if (
-            not road_ambiguous
+            match_class_ok
+            and not road_ambiguous
             and orientation != ORIENTATION_UNKNOWN
+            and confidence > 0.0
             and not road_conflicting
+            and resolved.is_authoritative
         ):
             authoritative += 1
 
@@ -533,6 +664,11 @@ def directional_coverage_report(
         status = "INCOMPLETE"
     else:
         status = "PASS"
+
+    # V104 review 4551582370: the ambiguous / unmatched correspondence
+    # population is reported here so it is not lost when the stage filters
+    # the association map down to EXACT/HIGH.
+    class_counts = dict(match_class_counts or {})
 
     return {
         "schema": "osm_directional_coverage/v1",
@@ -550,8 +686,46 @@ def directional_coverage_report(
             "not_assessable": not_assessable,
             "fallback": fallback,
             "authoritative": authoritative,
+            "ambiguous_correspondence": int(class_counts.get("AMBIGUOUS", 0)),
+            "unmatched_correspondence": int(class_counts.get("UNMATCHED", 0)),
+            "correspondence_exact": int(class_counts.get("EXACT", 0)),
+            "correspondence_high": int(class_counts.get("HIGH", 0)),
         },
     }
+
+
+def _atomic_write_json(path: "os.PathLike[str] | str", payload: Mapping[str, Any]) -> str:
+    """Write JSON atomically: unique temp file in the destination directory,
+    fsync, then ``os.replace``.
+
+    V104 review 4551582458: writing directly to the destination lets an
+    interrupted or concurrent write leave a truncated artifact that a later
+    reader cannot load.
+    """
+    import tempfile
+
+    target = Path(path)
+    target.parent.mkdir(parents=True, exist_ok=True)
+    text = json.dumps(payload, indent=2, sort_keys=True, default=str, ensure_ascii=True)
+    if not text.endswith("\n"):
+        text += "\n"
+    fd, tmp_name = tempfile.mkstemp(
+        dir=str(target.parent), prefix=f".{target.name}.", suffix=".tmp"
+    )
+    tmp = Path(tmp_name)
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8", newline="\n") as handle:
+            handle.write(text)
+            handle.flush()
+            os.fsync(handle.fileno())
+        os.replace(str(tmp), str(target))
+    except BaseException:
+        try:
+            tmp.unlink()
+        except OSError:
+            pass
+        raise
+    return str(target)
 
 
 def write_direction_contract(
@@ -587,8 +761,8 @@ def write_direction_contract(
     }
     target = Path(out_path)
     target.parent.mkdir(parents=True, exist_ok=True)
-    target.write_text(
-        json.dumps(payload, indent=2, sort_keys=True, ensure_ascii=True) + "\n",
-        encoding="utf-8",
-    )
+    # V104 review 4551582458: write to a unique temporary file in the
+    # destination directory and atomically replace the destination, so an
+    # interrupted or concurrent write can never leave a truncated artifact.
+    _atomic_write_json(target, payload)
     return str(target)

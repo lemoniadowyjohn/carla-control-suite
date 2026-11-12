@@ -46,24 +46,30 @@
         "HIGH": 68,
         "UNMATCHED": 2743
       },
+      "orientation_conflicting_road_count": 0,
+      "orientation_conflicts": [],
       "source_way_count": 3057
     },
     "directional_coverage": {
       "contract_version": "osm_xodr_direction/v1",
       "counts": {
         "ambiguous": 0,
-        "authoritative": 44,
+        "ambiguous_correspondence": 246,
+        "authoritative": 35,
         "conflicting": 0,
+        "correspondence_exact": 0,
+        "correspondence_high": 68,
         "fallback": 5,
         "forward": 38,
         "matched": 44,
         "not_assessable": 0,
-        "reversed": 6
+        "reversed": 6,
+        "unmatched_correspondence": 2743
       },
       "reason": "",
       "release_required": true,
       "schema": "osm_directional_coverage/v1",
-      "source_sha256": "",
+      "source_sha256": "b9e074656f744c31e6aabb0a16e6b2246824ca74e202ea2c316ff7f22364f24f",
       "status": "PASS"
     },
     "eligible_road_count": 44,
@@ -75,18 +81,22 @@
     "contract_version": "osm_xodr_direction/v1",
     "counts": {
       "ambiguous": 0,
-      "authoritative": 44,
+      "ambiguous_correspondence": 246,
+      "authoritative": 35,
       "conflicting": 0,
+      "correspondence_exact": 0,
+      "correspondence_high": 68,
       "fallback": 5,
       "forward": 38,
       "matched": 44,
       "not_assessable": 0,
-      "reversed": 6
+      "reversed": 6,
+      "unmatched_correspondence": 2743
     },
     "reason": "",
     "release_required": true,
     "schema": "osm_directional_coverage/v1",
-    "source_sha256": "",
+    "source_sha256": "b9e074656f744c31e6aabb0a16e6b2246824ca74e202ea2c316ff7f22364f24f",
     "status": "PASS"
   },
   "inputs": {

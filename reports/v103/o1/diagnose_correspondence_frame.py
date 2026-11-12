@@ -2,6 +2,8 @@
 
 import sys
 import xml.etree.ElementTree as ET
+
+from safe_xml import safe_parse
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[3]
@@ -10,7 +12,8 @@ sys.path.insert(0, str(REPO))
 XODR = REPO / "campaigns/ingolstadt_cooked_perception_v1/source/manual/Grid0828.xodr"
 OSM = REPO / "campaigns/ingolstadt_cooked_perception_v1/source/ingolstadt_authoritative.osm"
 
-root = ET.parse(str(XODR)).getroot()
+# V104 security finding: parse through the safe XML boundary.
+root = safe_parse(str(XODR))
 header = root.find("header")
 print("=== XODR header attrs ===")
 for k, v in (header.attrib if header is not None else {}).items():

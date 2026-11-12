@@ -75,6 +75,14 @@ _STRUCTURAL_LANE_METADATA_TAGS = {
     "name",
     "highway",
     "oneway",
+    # V103-O1 review: the directional resolver needs the implicit one-way
+    # facts.  ``junction=roundabout`` carries OSM's implicit one-way default
+    # and ``oneway:conditional`` makes the direction time-dependent; without
+    # them the resolver cannot see that a roundabout is one-way (it would
+    # split the lane total and invent a counterflow lane) nor that a
+    # conditional restriction makes the direction undecidable.
+    "junction",
+    "oneway:conditional",
     "lanes",
     "lanes:forward",
     "lanes:backward",

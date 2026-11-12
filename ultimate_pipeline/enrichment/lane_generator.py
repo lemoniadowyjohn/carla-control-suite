@@ -249,11 +249,24 @@ class LaneGenerator:
         """
         from ultimate_pipeline.enrichment.osm_direction import (
             DIRECTION_KEY,
+            ORIENTATION_FORWARD,
             ORIENTATION_REVERSE,
         )
 
         orientation = str(meta.get(DIRECTION_KEY) or "").strip().lower()
-        if orientation != ORIENTATION_REVERSE:
+        if orientation == ORIENTATION_REVERSE:
+            pass
+        elif orientation == ORIENTATION_FORWARD:
+            return patterns
+        elif DIRECTION_KEY in meta:
+            # V104 review 4551582252: a correspondence association exists but
+            # could not orient the road.  Applying OSM's forward/backward
+            # facts to an arbitrary XODR carriageway is a guess, so the
+            # directional turn patterns are not applied at all.
+            return []
+        else:
+            # No correspondence association: the tags are XODR-native OSM
+            # provenance, which is aligned by construction.
             return patterns
 
         remapped: list[tuple[str, list[str], str, float]] = []
@@ -514,6 +527,24 @@ class LaneGenerator:
             return 0
         for lane_section in LaneGenerator._ordered_lane_sections(lanes):
             for side_name, source, confidence in sides:
+                # V104 review 4551582473: reconcile against an existing
+                # *generated* cycle lane on the opposite side.  A previous
+                # run that mapped the OSM cycleway to the other side would
+                # otherwise leave a phantom cycle lane on both carriageways.
+                # Imported (non-generated) biking lanes are preserved.
+                for other_side_name in ("left", "right"):
+                    if other_side_name == side_name:
+                        continue
+                    other_side = lane_section.find(other_side_name)
+                    if other_side is None:
+                        continue
+                    for other_lane in list(other_side.findall("lane")):
+                        if other_lane.get("type") != "biking":
+                            continue
+                        if not LaneGenerator._is_generated_cycle_lane(other_lane):
+                            # Not produced by this generator: leave it alone.
+                            continue
+                        other_side.remove(other_lane)
                 side = LaneGenerator._ensure(lane_section, side_name)
                 if any(
                     lane.get("type") == "biking"
@@ -546,6 +577,22 @@ class LaneGenerator:
                 LaneGenerator._set_vector(user_data, "cycle_lane_source", source)
                 created += 1
         return created
+
+    @staticmethod
+    def _is_generated_cycle_lane(lane: ET.Element) -> bool:
+        """True when a biking lane was produced by this generator.
+
+        Generated cycle lanes carry an ``osm:cycleway*`` provenance source.
+        Imported biking lanes (from the source map) do not, and are never
+        removed by the cycle-lane reconciliation.
+        """
+        for vector in lane.findall("./userData/vector"):
+            if vector.get("key") != "lane_count_source":
+                continue
+            value = str(vector.get("value") or "").strip().lower()
+            if value.startswith("osm:cycleway"):
+                return True
+        return False
 
     @staticmethod
     def _annotate_existing_lane_count_provenance(

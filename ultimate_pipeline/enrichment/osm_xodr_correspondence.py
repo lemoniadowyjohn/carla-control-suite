@@ -280,6 +280,7 @@ def build_metadata_associations(
 
     associations: dict[str, dict[str, Any]] = {}
     conflicts: list[dict[str, Any]] = []
+    orientation_conflicts: list[dict[str, Any]] = []
     for road_id in sorted(candidates):
         matches = sorted(
             candidates[road_id],
@@ -312,7 +313,40 @@ def build_metadata_associations(
             continue
         road_el = roads_by_id.get(road_id)
         road_points = _road_samples(road_el) if road_el is not None else []
-        osm_direction = _osm_direction(_way_points(selected_way), road_points)
+
+        # V104 review 4551582349: compare the orientation of EVERY coalesced
+        # candidate, not just the selected one.  When equally eligible ways
+        # run in opposite node-order directions the selection is ambiguous and
+        # must not yield an authoritative direction -- otherwise the chosen
+        # direction silently drives lane generation, turns and cycleway
+        # sides while an equally eligible match describes the opposite.
+        orientations: Dict[str, Optional[str]] = {}
+        for candidate_result, candidate_way in matches:
+            orientations[candidate_result.osm_way_id] = _osm_direction(
+                _way_points(candidate_way), road_points
+            )
+        known_orientations = {
+            value for value in orientations.values() if value is not None
+        }
+        orientation_conflict = len(known_orientations) > 1
+        if orientation_conflict:
+            orientation_conflicts.append(
+                {
+                    "xodr_road_id": road_id,
+                    "selected_osm_way_id": selected_result.osm_way_id,
+                    "conflicting_osm_way_ids": [
+                        way_id
+                        for way_id, value in sorted(orientations.items())
+                        if value is not None
+                    ],
+                    "reason": "conflicting_osm_orientation",
+                }
+            )
+
+        osm_direction = orientations.get(selected_result.osm_way_id)
+        if orientation_conflict:
+            # No authoritative direction can be selected.
+            osm_direction = None
         associations[road_id] = {
             "class": selected_result.match_class,
             "confidence": selected_result.confidence,
@@ -328,5 +362,7 @@ def build_metadata_associations(
         "eligible_road_count": len(associations),
         "conflicting_road_count": len(conflicts),
         "conflicts": conflicts,
+        "orientation_conflicting_road_count": len(orientation_conflicts),
+        "orientation_conflicts": orientation_conflicts,
     }
     return associations, report

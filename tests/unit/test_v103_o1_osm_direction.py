@@ -21,12 +21,14 @@ from ultimate_pipeline.enrichment.lane_generator import LaneGenerator
 from ultimate_pipeline.enrichment.osm_direction import (
     DIRECTION_KEY,
     MATCH_CLASS_KEY,
+    MATCH_CONFIDENCE_KEY,
     OSM_DIRECTION_CONTRACT_VERSION,
     ORIENTATION_REVERSE,
     OnewayState,
     RoadOSMDirectionalAssociation,
     build_directional_association,
     directional_coverage_report,
+    historical_split_counts,
     parse_oneway,
     resolve_directional_lane_counts,
     write_direction_contract,
@@ -367,9 +369,27 @@ def test_t06_zero_matched_roads_is_never_a_pass():
 def test_t06_coverage_counts_matched_reversed_and_not_assessable():
     report = directional_coverage_report(
         {
-            "1": {DIRECTION_KEY: "forward", MATCH_CLASS_KEY: "EXACT"},
-            "2": {DIRECTION_KEY: ORIENTATION_REVERSE, MATCH_CLASS_KEY: "EXACT"},
-            "3": {DIRECTION_KEY: "unknown", MATCH_CLASS_KEY: "HIGH"},
+            "1": {
+                DIRECTION_KEY: "forward",
+                MATCH_CLASS_KEY: "EXACT",
+                MATCH_CONFIDENCE_KEY: "0.95",
+                "lanes": "2",
+                "oneway": "yes",
+            },
+            "2": {
+                DIRECTION_KEY: ORIENTATION_REVERSE,
+                MATCH_CLASS_KEY: "EXACT",
+                MATCH_CONFIDENCE_KEY: "0.90",
+                "lanes": "2",
+                "oneway": "yes",
+            },
+            "3": {
+                DIRECTION_KEY: "unknown",
+                MATCH_CLASS_KEY: "HIGH",
+                MATCH_CONFIDENCE_KEY: "0.80",
+                "lanes": "2",
+                "oneway": "yes",
+            },
         },
         source_available=True,
     )
@@ -379,6 +399,9 @@ def test_t06_coverage_counts_matched_reversed_and_not_assessable():
     assert report["counts"]["forward"] == 1
     assert report["counts"]["reversed"] == 1
     assert report["counts"]["not_assessable"] == 1
+    # V104 review 4551582421: only the two oriented, confident, resolvable
+    # roads count as authoritative.
+    assert report["counts"]["authoritative"] == 2
 
 
 def test_t06_all_not_assessable_is_incomplete_for_release():
