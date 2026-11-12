@@ -58,3 +58,44 @@ def test_strict_wrapper_cannot_relabel_vacuous_requirement_as_success():
     )
     assert out["status"] == COMPLETION_FAIL
     assert out["complete"] is False
+
+
+def test_empty_frame_set_cannot_pass_synchronization():
+    from ultimate_pipeline.perception.rq3_frame_set import (
+        ArmFrameSet,
+        validate_arm_frame_set,
+        intersect_frame_sets,
+    )
+
+    empty_manual = ArmFrameSet(arm_name="manual")
+    empty_auto = ArmFrameSet(arm_name="auto")
+    per_arm = validate_arm_frame_set(empty_manual)
+    assert per_arm["valid"] is False
+    assert per_arm["accepted_count"] == 0
+    paired = intersect_frame_sets(empty_manual, empty_auto)
+    assert paired["valid"] is False
+    assert paired["accepted_count"] == 0
+
+
+def test_empty_required_modalities_cannot_pass_with_captured_members():
+    from ultimate_pipeline.perception.rq3_frame_set import (
+        ArmFrameSet,
+        FrameMember,
+        validate_arm_frame_set,
+    )
+
+    arm = ArmFrameSet(arm_name="manual")
+    arm.add(
+        FrameMember(
+            frame_index=0,
+            frame_id=100,
+            timestamp=1.0,
+            modality="rgb",
+            sensor_name="front_rgb",
+            sha256="a" * 64,
+            committed=True,
+        )
+    )
+    result = validate_arm_frame_set(arm, required_modalities=())
+    assert result["valid"] is False
+    assert result["accepted_count"] == 0
