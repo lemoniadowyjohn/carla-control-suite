@@ -125,7 +125,7 @@ def test_ensure_carla_ready_timeout_s_expires_eventually(monkeypatch: pytest.Mon
 
 def test_vram_preflight_no_action_when_clean(monkeypatch: pytest.MonkeyPatch) -> None:
     killed = []
-    monkeypatch.setattr(cu, "_kill_stuck_carla", lambda: killed.append(True))
+    monkeypatch.setattr(cu, "_kill_stuck_carla", lambda proc=None: killed.append(True))
     monkeypatch.setattr(
         subprocess, "run",
         lambda *a, **k: SimpleNamespace(stdout="0\n"),
@@ -136,7 +136,7 @@ def test_vram_preflight_no_action_when_clean(monkeypatch: pytest.MonkeyPatch) ->
 
 def test_vram_preflight_never_kills_when_dirty(monkeypatch: pytest.MonkeyPatch, capsys) -> None:
     killed = []
-    monkeypatch.setattr(cu, "_kill_stuck_carla", lambda: killed.append(True))
+    monkeypatch.setattr(cu, "_kill_stuck_carla", lambda proc=None: killed.append(True))
     monkeypatch.setattr(cu.time, "sleep", lambda *_: None)
     monkeypatch.setattr(
         subprocess, "run",
@@ -151,7 +151,7 @@ def test_vram_preflight_gracefully_skips_when_nvidia_smi_missing(monkeypatch: py
     def _raise(*a, **k):
         raise FileNotFoundError("nvidia-smi not found")
     killed = []
-    monkeypatch.setattr(cu, "_kill_stuck_carla", lambda: killed.append(True))
+    monkeypatch.setattr(cu, "_kill_stuck_carla", lambda proc=None: killed.append(True))
     monkeypatch.setattr(subprocess, "run", _raise)
     cu._vram_preflight()  # must not raise
     assert killed == []
@@ -177,7 +177,7 @@ def _patch_restart_common(monkeypatch: pytest.MonkeyPatch, tmp_path: Path, *, cl
     monkeypatch.setattr(cu.SETTINGS, "CARLA_PORT", 2000, raising=False)
     monkeypatch.setattr(cu.SETTINGS, "CARLA_STREAMING_PORT", 2001, raising=False)
     monkeypatch.setattr(cu, "_cleanup_carla_crash_artifacts", lambda: None)
-    monkeypatch.setattr(cu, "_kill_stuck_carla", lambda: None)
+    monkeypatch.setattr(cu, "_kill_stuck_carla", lambda proc=None: None)
     monkeypatch.setattr(cu, "_gpu_tdr_preflight", lambda: {"ok": True, "skipped": True})
     monkeypatch.setattr(cu.time, "sleep", lambda *_: None)
     monkeypatch.setattr(cu, "_vram_preflight", lambda: None)
