@@ -39,7 +39,7 @@ Failure modes:
 from __future__ import annotations
 
 import xml.etree.ElementTree as ET
-from typing import Any, Dict, Iterable, Mapping
+from typing import Any, Dict, Iterable, List, Mapping, Optional, Tuple
 
 _TAGS_OF_INTEREST = {
     "name",
@@ -339,26 +339,97 @@ def extract_structural_osm_lane_metadata_ways(
     return records
 
 
+def _has_offset_element(root: ET.Element) -> bool:
+    """True when the XODR header carries an ``<offset>`` element.
+
+    The presence of the *element* -- not its value -- is the discriminator
+    between the two coordinate conventions used in this repository:
+
+    * **governed auto-generated maps** carry ``<offset x y>`` and store
+      *local* coordinates; the global position is ``bare-tmerc - offset``.
+    * **maps that already store global coordinates** (for example the
+      manual reference map ``Grid0828.xodr``) carry no ``<offset>`` and
+      their coordinates live directly in their declared CRS.
+    """
+    hdr = root.find(".//header")
+    if hdr is None:
+        return False
+    return hdr.find("offset") is not None
+
+
+def _project_to_declared_crs(
+    lonlat_points: List[Tuple[float, float]],
+    proj4: str,
+) -> List[Tuple[float, float]]:
+    """Project WGS84 points straight into the XODR's *declared* CRS."""
+    from pyproj import Transformer
+
+    transformer = Transformer.from_crs("EPSG:4326", proj4, always_xy=True)
+    return [transformer.transform(lon, lat) for lon, lat in lonlat_points]
+
+
 def project_positioned_osm_metadata_ways(
     ways: Iterable[Mapping[str, Any]],
     root: ET.Element,
 ) -> list[dict[str, Any]]:
     """Project WGS84 OSM polylines into the current XODR local frame.
 
-    This deliberately uses the same verified bare-tmerc plus header-offset
-    conversion as crosswalk enrichment.  It does not trust the XODR header's
-    declared CRS, which is metadata-only for the governed Osm2Odr artifacts.
+    Two coordinate conventions are supported, and the choice is made from the
+    XODR header itself:
+
+    * **Governed auto-generated maps** (the Osm2Odr output) carry an
+      ``<offset>`` element and store *local* coordinates.  Their global
+      position is the verified bare-tmerc projection minus that offset --
+      the same conversion the crosswalk enrichment uses.
+    * **Maps that already store global coordinates** carry no ``<offset>``
+      element; their coordinates live directly in the CRS the header
+      declares.  Projecting those with the bare-tmerc default lands the
+      source hundreds of kilometres away and silently produces **zero**
+      correspondence matches.
+
+    The second case was measured on the pinned manual reference map
+    (``Grid0828.xodr``, whose header declares
+    ``+proj=tmerc +lat_0=0 +lon_0=9 +k=0.9996 +x_0=500000 +y_0=0``):
+    the bare-tmerc projection placed the OSM source ~161 km east and ~63 km
+    north of the map's own coordinates, and every one of the 3057 source
+    ways came back ``UNMATCHED``.  Using the declared CRS reproduces the
+    map's own frame exactly (pyproj ``EPSG:32632`` and the header CRS agree
+    to the centimetre).
+
+    When the header declares no usable CRS the function falls back to the
+    previous bare-tmerc behaviour rather than failing.
     """
-    from ultimate_pipeline.domain_gap.local_registration import read_offset
+    from ultimate_pipeline.domain_gap.local_registration import (
+        read_georef_proj4,
+        read_offset,
+    )
     from ultimate_pipeline.enrichment.crosswalk_writer import project_crossing_to_local
 
     offset = read_offset(root)
+
+    declared_proj4: Optional[str] = None
+    if not _has_offset_element(root):
+        try:
+            declared_proj4 = read_georef_proj4(root)
+        except Exception:
+            declared_proj4 = None
+
     projected: list[dict[str, Any]] = []
     for way in ways:
         try:
-            geometry = project_crossing_to_local(list(way["geometry"]), offset)
-        except (KeyError, TypeError, ValueError):
+            raw_geometry = list(way["geometry"])
+        except (KeyError, TypeError):
             continue
+        if declared_proj4:
+            try:
+                geometry = _project_to_declared_crs(raw_geometry, declared_proj4)
+            except Exception:
+                continue
+        else:
+            try:
+                geometry = project_crossing_to_local(raw_geometry, offset)
+            except (KeyError, TypeError, ValueError):
+                continue
         if len(geometry) < 2:
             continue
         record = dict(way)

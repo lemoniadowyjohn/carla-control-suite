@@ -1,0 +1,122 @@
+{
+  "correspondence_report": {
+    "correspondence": {
+      "conflicting_road_count": 4,
+      "conflicts": [
+        {
+          "conflicting_osm_way_ids": [
+            "266507549"
+          ],
+          "reason": "conflicting_high_confidence_osm_metadata",
+          "selected_osm_way_id": "1377264638",
+          "xodr_road_id": "3003380"
+        },
+        {
+          "conflicting_osm_way_ids": [
+            "306086242"
+          ],
+          "reason": "conflicting_high_confidence_osm_metadata",
+          "selected_osm_way_id": "1020252889",
+          "xodr_road_id": "3006190"
+        },
+        {
+          "conflicting_osm_way_ids": [
+            "816754713",
+            "1066379879"
+          ],
+          "reason": "conflicting_high_confidence_osm_metadata",
+          "selected_osm_way_id": "816754687",
+          "xodr_road_id": "3006770"
+        },
+        {
+          "conflicting_osm_way_ids": [
+            "816754717",
+            "950184987",
+            "816754695"
+          ],
+          "reason": "conflicting_high_confidence_osm_metadata",
+          "selected_osm_way_id": "816754691",
+          "xodr_road_id": "3006800"
+        }
+      ],
+      "eligible_road_count": 44,
+      "match_class_counts": {
+        "AMBIGUOUS": 246,
+        "EXACT": 0,
+        "HIGH": 68,
+        "UNMATCHED": 2743
+      },
+      "source_way_count": 3057
+    },
+    "directional_coverage": {
+      "contract_version": "osm_xodr_direction/v1",
+      "counts": {
+        "ambiguous": 0,
+        "authoritative": 44,
+        "conflicting": 0,
+        "fallback": 5,
+        "forward": 38,
+        "matched": 44,
+        "not_assessable": 0,
+        "reversed": 6
+      },
+      "reason": "",
+      "release_required": true,
+      "schema": "osm_directional_coverage/v1",
+      "source_sha256": "",
+      "status": "PASS"
+    },
+    "eligible_road_count": 44,
+    "projected_way_count": 3057,
+    "source_way_count": 3057,
+    "status": "PASS"
+  },
+  "directional_coverage": {
+    "contract_version": "osm_xodr_direction/v1",
+    "counts": {
+      "ambiguous": 0,
+      "authoritative": 44,
+      "conflicting": 0,
+      "fallback": 5,
+      "forward": 38,
+      "matched": 44,
+      "not_assessable": 0,
+      "reversed": 6
+    },
+    "reason": "",
+    "release_required": true,
+    "schema": "osm_directional_coverage/v1",
+    "source_sha256": "",
+    "status": "PASS"
+  },
+  "inputs": {
+    "manual_xodr": {
+      "actual_bytes": 66530869,
+      "actual_sha256": "5eaece230e02f6c1b2075db851894870790e86ac64710abb3465bcfc533e9b0c",
+      "is_git_lfs_pointer": false,
+      "path": "campaigns/ingolstadt_cooked_perception_v1/source/manual/Grid0828.xodr",
+      "present": true
+    },
+    "roads_osm": {
+      "actual_bytes": 11154738,
+      "actual_sha256": "b9e074656f744c31e6aabb0a16e6b2246824ca74e202ea2c316ff7f22364f24f",
+      "bytes_match": true,
+      "expected_bytes": 11154738,
+      "expected_sha256": "b9e074656f744c31e6aabb0a16e6b2246824ca74e202ea2c316ff7f22364f24f",
+      "is_git_lfs_pointer": false,
+      "path": "campaigns/ingolstadt_cooked_perception_v1/source/ingolstadt_authoritative.osm",
+      "sha256_match": true
+    }
+  },
+  "orientation_breakdown": {
+    "forward": 38,
+    "reverse": 6
+  },
+  "reason": "",
+  "repo_root": "F:\\v103\\o1",
+  "schema": "v103_o1_realmap_coverage/v1",
+  "source_sha256": "b9e074656f744c31e6aabb0a16e6b2246824ca74e202ea2c316ff7f22364f24f",
+  "status": "PASS",
+  "structural_osm_meta_roads": 44,
+  "xodr_road_count": 993
+}

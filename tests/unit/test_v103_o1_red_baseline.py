@@ -66,3 +66,60 @@ def test_baseline_oneway_reverse_keeps_the_single_lane_in_the_reverse_direction(
     assert (backward, forward) == (1, 0), (
         f"oneway=-1 lanes=1 produced backward={backward} forward={forward}"
     )
+
+
+# ---------------------------------------------------------------------------
+# Real-map coordinate-frame defect
+# ---------------------------------------------------------------------------
+
+DECLARED_CRS = (
+    "+proj=tmerc +lat_0=0 +lon_0=9 +k=0.9996 +x_0=500000 +y_0=0 "
+    "+datum=WGS84 +units=m +no_defs"
+)
+PROBE_LON = 11.4611034
+PROBE_LAT = 48.7732712
+
+
+def test_baseline_projection_uses_the_declared_crs_when_the_map_has_no_offset():
+    """A map without ``<offset>`` stores global coordinates in its declared CRS.
+
+    On the unmodified base the OSM source was always projected with the
+    hardcoded bare-tmerc default (``lon_0=0``), which places it ~161 km east
+    and ~63 km north of such a map.  On the pinned Ingolstadt pair that
+    silently turned all 3057 source ways into ``UNMATCHED``.
+    """
+    from ultimate_pipeline.enrichment.osm_meta_index import (
+        project_positioned_osm_metadata_ways,
+    )
+
+    root = ET.Element("OpenDRIVE")
+    header = ET.SubElement(root, "header")
+    geo = ET.SubElement(header, "geoReference")
+    geo.text = DECLARED_CRS  # no <offset> element -> global coordinates
+    ET.SubElement(root, "road", id="1", length="10")
+
+    ways = [
+        {
+            "id": "w1",
+            "geometry": [(PROBE_LON, PROBE_LAT), (PROBE_LON + 0.001, PROBE_LAT)],
+            "metadata": {"lanes": "2"},
+        }
+    ]
+
+    projected = project_positioned_osm_metadata_ways(ways, root)
+
+    assert len(projected) == 1
+    x, y = projected[0]["geometry"][0]
+
+    from pyproj import Transformer
+
+    ref_x, ref_y = Transformer.from_crs(
+        "EPSG:4326", DECLARED_CRS, always_xy=True
+    ).transform(PROBE_LON, PROBE_LAT)
+
+    assert abs(x - ref_x) < 1.0, (
+        f"projected x {x} does not match the map's declared CRS {ref_x}"
+    )
+    assert abs(y - ref_y) < 1.0, (
+        f"projected y {y} does not match the map's declared CRS {ref_y}"
+    )

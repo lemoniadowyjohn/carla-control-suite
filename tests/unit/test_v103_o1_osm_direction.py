@@ -457,6 +457,120 @@ def test_resolution_is_deterministic_under_tag_order_permutation():
 
 
 # ---------------------------------------------------------------------------
+# Real-map frame defect — OSM projected into the wrong coordinate frame
+# ---------------------------------------------------------------------------
+
+DECLARED_CRS = (
+    "+proj=tmerc +lat_0=0 +lon_0=9 +k=0.9996 +x_0=500000 +y_0=0 "
+    "+datum=WGS84 +units=m +no_defs"
+)
+PROBE_LON = 11.4611034
+PROBE_LAT = 48.7732712
+
+
+def _global_crs_root() -> ET.Element:
+    """An XODR whose coordinates are already global in its declared CRS.
+
+    This is the shape of the pinned manual reference map
+    (``Grid0828.xodr``): a full ``geoReference`` and **no** ``<offset>``
+    element.  The governed auto-generated maps carry an ``<offset>`` and
+    store local coordinates instead.
+    """
+    root = ET.Element("OpenDRIVE")
+    header = ET.SubElement(root, "header")
+    geo = ET.SubElement(header, "geoReference")
+    geo.text = DECLARED_CRS
+    ET.SubElement(root, "road", id="1", length="10")
+    return root
+
+
+def test_projection_uses_the_declared_crs_when_the_map_has_no_offset():
+    """A map without ``<offset>`` stores global coordinates in its declared CRS.
+
+    Projecting the OSM source with the hardcoded bare-tmerc default places
+    it ~161 km east and ~63 km north of the map, which silently produced
+    **zero** correspondence matches on the pinned Ingolstadt pair.
+    """
+    from ultimate_pipeline.enrichment.osm_meta_index import (
+        project_positioned_osm_metadata_ways,
+    )
+
+    ways = [
+        {
+            "id": "w1",
+            "geometry": [(PROBE_LON, PROBE_LAT), (PROBE_LON + 0.001, PROBE_LAT)],
+            "metadata": {"lanes": "2"},
+        }
+    ]
+
+    projected = project_positioned_osm_metadata_ways(ways, _global_crs_root())
+
+    assert len(projected) == 1
+    x, y = projected[0]["geometry"][0]
+
+    # Reference: the same point in the same CRS as the map declares.
+    from pyproj import Transformer
+
+    ref_x, ref_y = Transformer.from_crs(
+        "EPSG:4326", DECLARED_CRS, always_xy=True
+    ).transform(PROBE_LON, PROBE_LAT)
+
+    assert abs(x - ref_x) < 1.0, f"x {x} != declared-CRS reference {ref_x}"
+    assert abs(y - ref_y) < 1.0, f"y {y} != declared-CRS reference {ref_y}"
+
+    # The bare-tmerc default (lon_0=0) is nowhere near the declared frame.
+    from ultimate_pipeline.domain_gap.local_registration import (
+        BARE_TMERC_DEFAULT,
+    )
+
+    bare_x, bare_y = Transformer.from_crs(
+        "EPSG:4326", BARE_TMERC_DEFAULT, always_xy=True
+    ).transform(PROBE_LON, PROBE_LAT)
+    assert abs(x - bare_x) > 100_000
+    assert abs(y - bare_y) > 10_000
+
+
+def test_projection_still_uses_bare_tmerc_minus_offset_for_governed_maps():
+    """The governed auto-map convention must be unchanged by the fix."""
+    from ultimate_pipeline.enrichment.osm_meta_index import (
+        project_positioned_osm_metadata_ways,
+    )
+
+    root = ET.Element("OpenDRIVE")
+    header = ET.SubElement(root, "header")
+    geo = ET.SubElement(header, "geoReference")
+    geo.text = DECLARED_CRS
+    off = ET.SubElement(header, "offset")
+    off.set("x", "1000.0")
+    off.set("y", "2000.0")
+    ET.SubElement(root, "road", id="1", length="10")
+
+    ways = [
+        {
+            "id": "w1",
+            "geometry": [(PROBE_LON, PROBE_LAT), (PROBE_LON + 0.001, PROBE_LAT)],
+            "metadata": {"lanes": "2"},
+        }
+    ]
+
+    projected = project_positioned_osm_metadata_ways(ways, root)
+
+    assert len(projected) == 1
+    x, y = projected[0]["geometry"][0]
+
+    from ultimate_pipeline.enrichment.crosswalk_writer import (
+        project_crossing_to_local,
+    )
+
+    ref_x, ref_y = project_crossing_to_local(
+        [(PROBE_LON, PROBE_LAT)], (1000.0, 2000.0)
+    )[0]
+
+    assert abs(x - ref_x) < 1e-6
+    assert abs(y - ref_y) < 1e-6
+
+
+# ---------------------------------------------------------------------------
 # Independent-review follow-ups (V103-O1 review round 1)
 # ---------------------------------------------------------------------------
 
