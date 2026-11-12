@@ -28,7 +28,8 @@ links through junction internals; it only creates road-to-road links.
 """
 from __future__ import annotations
 import xml.etree.ElementTree as ET
-from typing import List, Dict, Any, Tuple, Optional, Set
+from pathlib import Path
+from typing import Any, Dict, List, Mapping, Optional, Sequence, Set, Tuple
 import math
 
 from ultimate_pipeline.core.repair_diff import diff_log
@@ -171,17 +172,90 @@ def _add_road_link(road: ET.Element, target_id: str, contact_point: str, link_ty
     elem.set("contactPoint", contact_point)
 
 
+def _build_source_authority_pairs(
+    osm_ways: Optional[Sequence[Mapping[str, Any]]],
+    associations: Optional[Mapping[str, Mapping[str, Any]]],
+    *,
+    vehicle_class: str = "motor_vehicle",
+) -> Tuple[Set[Tuple[str, str]], Dict[str, Any]]:
+    """Road-id pairs whose connection is **proven by the OSM source**.
+
+    A pair ``(orphan_road_id, target_road_id)`` is proven only when the two
+    roads correspond to OSM ways that share an OSM node and that node is
+    traversable for the vehicle class.  Geometry is not consulted here at
+    all -- geometry may only veto a proven pair later, never create one.
+    """
+    info: Dict[str, Any] = {
+        "enabled": bool(osm_ways) and bool(associations),
+        "proven_pair_count": 0,
+        "reason": "",
+    }
+    if not osm_ways or not associations:
+        info["reason"] = "osm_source_unavailable"
+        return set(), info
+
+    from ultimate_pipeline.quality.osm_road_link_topology import (
+        build_osm_source_adjacency,
+    )
+
+    adjacency = build_osm_source_adjacency(osm_ways, vehicle_class=vehicle_class)
+
+    road_by_way: Dict[str, str] = {}
+    for road_id, association in associations.items():
+        if not isinstance(association, Mapping):
+            continue
+        way_id = str(association.get("osm_way_id", "")).strip()
+        if way_id:
+            road_by_way.setdefault(way_id, str(road_id))
+
+    proven: Set[Tuple[str, str]] = set()
+    for way_id, road_id in road_by_way.items():
+        for key, neighbours in adjacency["adjacent_by_way_node"].items():
+            if not key.startswith(f"{way_id}@"):
+                continue
+            for neighbour in neighbours:
+                neighbour_road = road_by_way.get(str(neighbour))
+                if not neighbour_road or neighbour_road == road_id:
+                    continue
+                proven.add((road_id, neighbour_road))
+                proven.add((neighbour_road, road_id))
+
+    info["proven_pair_count"] = len(proven)
+    info["reason"] = "source_proven"
+    return proven, info
+
+
 def repair_orphan_roads(
     root: ET.Element,
     max_snap_m: float = 5.0,
     max_heading_diff_deg: float = 30.0,
     max_height_diff_m: float = 1.0,
     strict: bool = False,
+    osm_ways: Optional[Sequence[Mapping[str, Any]]] = None,
+    associations: Optional[Mapping[str, Mapping[str, Any]]] = None,
+    vehicle_class: str = "motor_vehicle",
+    require_source_authority: bool = True,
 ) -> Dict[str, Any]:
     """P0-B source-stage repair: connect orphan roads within max_snap_m.
 
     L1/L2: fail-closed, reciprocal links, contactPoint, junction avoidance.
+
+    V103-O3 (registry **T03**): a repair is only performed when the OSM
+    source **proves** the connection.  Geometric proximity, heading and Z
+    are *necessary filters applied after* the source proof -- they can veto
+    a proven candidate, they can never create one.  Without OSM source
+    evidence the orphan stays unconnected and the residual reason says so.
+
+    ``require_source_authority=False`` restores the pre-V103 geometry-only
+    behaviour for callers that explicitly opt out (the source-stage caller
+    in ``stage_03_topology_repair.py`` does not opt out).
     """
+    proven_pairs, source_info = _build_source_authority_pairs(
+        osm_ways, associations, vehicle_class=vehicle_class
+    )
+    if require_source_authority and not source_info["enabled"]:
+        source_info["reason"] = "osm_source_unavailable"
+
     road_ids: Dict[str, ET.Element] = {
         str(r.get("id")).strip(): r
         for r in root.findall("road")
@@ -232,6 +306,7 @@ def repair_orphan_roads(
     residuals = 0
     errors = []
     residual_reasons: Dict[str, int] = {}
+    source_refused = 0
 
     def _bump_reason(reason: str) -> None:
         residual_reasons[reason] = residual_reasons.get(reason, 0) + 1
@@ -269,6 +344,8 @@ def repair_orphan_roads(
         # candidate was rejected ONLY because it is a junction-internal
         # connector road, so the residual reason is accurate.
         target_is_junction_internal_hit = False
+        # Per-orphan flag: did the OSM source refuse a geometric candidate?
+        orphan_source_refused = False
 
         # Try nearest connected road endpoint
         for target_rid in connected_roads:
@@ -346,6 +423,16 @@ def repair_orphan_roads(
                     if _link_slot_occupied(target_road, target_link_type_needed):
                         continue
 
+                    # V103-O3 (registry T03): the OSM source must PROVE this
+                    # connection.  Geometric proximity + heading + Z are
+                    # necessary filters applied *after* the proof; they can
+                    # only veto a candidate, never create one.
+                    if require_source_authority:
+                        if (rid, target_rid) not in proven_pairs:
+                            source_refused += 1
+                            orphan_source_refused = True
+                            continue
+
                     # All checks passed
                     best_dist_sq = d_sq
                     best_target = target_rid
@@ -418,7 +505,12 @@ def repair_orphan_roads(
         else:
             # No nearby connection possible within threshold
             residuals += 1
-            if target_is_junction_internal_hit:
+            if orphan_source_refused:
+                # The geometry found a candidate but the OSM source did not
+                # prove the connection (registry T03).  Report the source
+                # refusal, not a geometric miss.
+                _bump_reason("no_source_proof")
+            elif target_is_junction_internal_hit:
                 _bump_reason("target_is_junction_internal")
             else:
                 _bump_reason("no_target_within_threshold")
@@ -440,9 +532,336 @@ def repair_orphan_roads(
         "orphan_roads_found": len(orphan_ids),
         "repaired_connections": repaired,
         "residual_unconnected": residuals,
+        # V103-O3 (registry T03): a repair is only performed with positive
+        # OSM graph evidence.  Geometry alone is never sufficient.
+        "source_authority": {
+            "required": bool(require_source_authority),
+            "enabled": source_info["enabled"],
+            "reason": source_info["reason"],
+            "proven_pair_count": source_info["proven_pair_count"],
+            "geometry_only_candidates_refused": source_refused,
+        },
         "residual_reasons": residual_reasons,
         "threshold_m": max_snap_m,
         "max_heading_diff_deg": max_heading_diff_deg,
         "max_height_diff_m": max_height_diff_m,
         "errors": errors,
     }
+
+
+# ---------------------------------------------------------------------------
+# V103-O3: OSM-source reconciliation (registry T03 / R15 / OSM-04)
+# ---------------------------------------------------------------------------
+
+ORPHAN_STATUS_REPAIRED = "REPAIRED"
+ORPHAN_STATUS_UNRESOLVED = "UNRESOLVED"
+ORPHAN_STATUS_SKIPPED = "SKIPPED"
+
+#: Maximum planar distance (m) between the two roads' closest geometry
+#: points for a source-proven candidate to survive the *geometric* filter.
+DEFAULT_MAX_GAP_M = 25.0
+
+#: Maximum absolute Z difference (m) at the closest points.
+DEFAULT_MAX_DZ_M = 2.0
+
+
+def find_orphan_roads(root: ET.Element) -> List[str]:
+    """XODR road ids that are completely isolated from the link graph.
+
+    An orphan is a road that declares **no** ``predecessor`` and **no**
+    ``successor`` element at all -- it cannot be reached from anywhere.
+
+    A road that links to a junction is *not* an orphan: the junction (or the
+    connector roads registered in it) provides the connection.
+    """
+    orphans: List[str] = []
+    for road in root.findall("./road"):
+        road_id = str(road.get("id", "")).strip()
+        if not road_id:
+            continue
+        has_any_link = False
+        for role in ("predecessor", "successor"):
+            links = road.find("link")
+            if links is not None and links.find(role) is not None:
+                has_any_link = True
+                break
+        if not has_any_link:
+            orphans.append(road_id)
+    return sorted(orphans)
+
+
+def find_unreachable_roads(root: ET.Element) -> List[str]:
+    """Roads that declare links but are registered nowhere reachable.
+
+    This is the stricter notion behind the registry's "orphan *drivable*
+    roads": a road is drivable (it has lane geometry and link elements) but
+    it cannot be reached, because every link it declares points at a
+    junction that never lists it in a ``<connection>``.
+    """
+    registered: Set[str] = set()
+    for junction in root.findall("./junction"):
+        for connection in junction.findall("./connection"):
+            for attribute in ("incomingRoad", "connectingRoad", "road"):
+                value = connection.get(attribute)
+                if value:
+                    registered.add(str(value))
+
+    unreachable: List[str] = []
+    for road in root.findall("./road"):
+        road_id = str(road.get("id", "")).strip()
+        if not road_id or road_id in registered:
+            continue
+        links = road.find("link")
+        has_link = links is not None and (
+            links.find("predecessor") is not None or links.find("successor") is not None
+        )
+        if not has_link:
+            # Fully isolated: already reported as an orphan.
+            continue
+        unreachable.append(road_id)
+    return sorted(unreachable)
+
+
+def _reconcile_road_points(
+    road: Optional[ET.Element],
+) -> List[Tuple[float, float, float]]:
+    """``(x, y, z)`` samples of one XODR road."""
+    points: List[Tuple[float, float, float]] = []
+    if road is None:
+        return points
+    for geometry in road.findall("./planView/geometry"):
+        try:
+            x = float(geometry.get("x", "0"))
+            y = float(geometry.get("y", "0"))
+        except (TypeError, ValueError):
+            continue
+        z = 0.0
+        elevation = road.find("./elevationProfile/elevation")
+        if elevation is not None:
+            try:
+                z = float(elevation.get("a", "0"))
+            except (TypeError, ValueError):
+                z = 0.0
+        points.append((x, y, z))
+    return points
+
+
+def _closest_gap(
+    points_a: Sequence[Tuple[float, float, float]],
+    points_b: Sequence[Tuple[float, float, float]],
+) -> Tuple[float, float]:
+    """Smallest planar distance and the Z difference at that pair."""
+    best = (float("inf"), 0.0)
+    for ax, ay, az in points_a:
+        for bx, by, bz in points_b:
+            gap = ((ax - bx) ** 2 + (ay - by) ** 2) ** 0.5
+            if gap < best[0]:
+                best = (gap, abs(az - bz))
+    return best
+
+
+def reconcile_orphan_roads(
+    root: ET.Element,
+    *,
+    osm_ways: Sequence[Mapping[str, Any]],
+    associations: Mapping[str, Mapping[str, Any]],
+    vehicle_class: str = "motor_vehicle",
+    max_gap_m: float = DEFAULT_MAX_GAP_M,
+    max_dz_m: float = DEFAULT_MAX_DZ_M,
+) -> List[Dict[str, Any]]:
+    """Reconcile every orphan road against the OSM source.
+
+    A candidate is ``REPAIRED`` only when the OSM source proves exactly one
+    continuation **and** the geometric filters do not veto it.  Anything the
+    source cannot decide stays ``UNRESOLVED`` -- it is never repaired on a
+    guess.
+    """
+    from ultimate_pipeline.quality.osm_road_link_topology import (
+        build_osm_source_adjacency,
+    )
+
+    ways = list(osm_ways)
+    adjacency = build_osm_source_adjacency(ways, vehicle_class=vehicle_class)
+
+    node_refs_by_way: Dict[str, List[str]] = {}
+    for way in ways:
+        way_id = str(way.get("id", ""))
+        refs = [str(r) for r in way.get("node_refs", ()) if r]
+        if way_id and refs:
+            node_refs_by_way[way_id] = refs
+
+    road_by_way: Dict[str, str] = {}
+    for road_id, association in sorted(associations.items()):
+        if not isinstance(association, Mapping):
+            continue
+        way_id = str(association.get("osm_way_id", "")).strip()
+        if way_id:
+            road_by_way.setdefault(way_id, str(road_id))
+
+    roads_by_id = {
+        str(road.get("id", "")).strip(): road
+        for road in root.findall("./road")
+        if road.get("id")
+    }
+
+    results: List[Dict[str, Any]] = []
+    for orphan_id in find_orphan_roads(root):
+        association = associations.get(orphan_id)
+        if not isinstance(association, Mapping):
+            results.append(
+                {
+                    "xodr_road_id": orphan_id,
+                    "status": ORPHAN_STATUS_UNRESOLVED,
+                    "reason": "no_source_correspondence",
+                    "source_way_id": "",
+                    "neighbour_way_id": "",
+                    "shared_node_id": "",
+                    "neighbour_xodr_road_id": "",
+                    "gap_m": "",
+                    "dz_m": "",
+                    "evidence": "",
+                }
+            )
+            continue
+
+        source_way_id = str(association.get("osm_way_id", ""))
+        if not source_way_id:
+            results.append(
+                {
+                    "xodr_road_id": orphan_id,
+                    "status": ORPHAN_STATUS_UNRESOLVED,
+                    "reason": "no_source_way",
+                    "source_way_id": "",
+                    "neighbour_way_id": "",
+                    "shared_node_id": "",
+                    "neighbour_xodr_road_id": "",
+                    "gap_m": "",
+                    "dz_m": "",
+                    "evidence": "",
+                }
+            )
+            continue
+
+        proven: List[Tuple[str, str]] = []
+        for node_id in node_refs_by_way.get(source_way_id, []):
+            key = f"{source_way_id}@{node_id}"
+            for neighbour in adjacency["adjacent_by_way_node"].get(key, ()):
+                proven.append((node_id, str(neighbour)))
+
+        if not proven:
+            results.append(
+                {
+                    "xodr_road_id": orphan_id,
+                    "status": ORPHAN_STATUS_UNRESOLVED,
+                    "reason": "no_shared_osm_node",
+                    "source_way_id": source_way_id,
+                    "neighbour_way_id": "",
+                    "shared_node_id": "",
+                    "neighbour_xodr_road_id": "",
+                    "gap_m": "",
+                    "dz_m": "",
+                    "evidence": "",
+                }
+            )
+            continue
+
+        orphan_points = _reconcile_road_points(roads_by_id.get(orphan_id))
+
+        viable: List[Tuple[str, str, str, float, float]] = []
+        for node_id, neighbour_way_id in proven:
+            neighbour_road_id = road_by_way.get(neighbour_way_id)
+            if not neighbour_road_id or neighbour_road_id == orphan_id:
+                continue
+            neighbour_points = _reconcile_road_points(
+                roads_by_id.get(neighbour_road_id)
+            )
+            if not orphan_points or not neighbour_points:
+                continue
+            gap, dz = _closest_gap(orphan_points, neighbour_points)
+            # Geometric filters are NECESSARY conditions applied AFTER the
+            # source proof; they can only veto.
+            if gap > max_gap_m or dz > max_dz_m:
+                continue
+            viable.append((node_id, neighbour_way_id, neighbour_road_id, gap, dz))
+
+        if not viable:
+            results.append(
+                {
+                    "xodr_road_id": orphan_id,
+                    "status": ORPHAN_STATUS_UNRESOLVED,
+                    "reason": "source_proof_rejected_by_geometry",
+                    "source_way_id": source_way_id,
+                    "neighbour_way_id": "",
+                    "shared_node_id": "",
+                    "neighbour_xodr_road_id": "",
+                    "gap_m": "",
+                    "dz_m": "",
+                    "evidence": "",
+                }
+            )
+            continue
+
+        if len(viable) > 1:
+            results.append(
+                {
+                    "xodr_road_id": orphan_id,
+                    "status": ORPHAN_STATUS_UNRESOLVED,
+                    "reason": "ambiguous_multiple_source_proven_continuations",
+                    "source_way_id": source_way_id,
+                    "neighbour_way_id": "",
+                    "shared_node_id": "",
+                    "neighbour_xodr_road_id": "",
+                    "gap_m": "",
+                    "dz_m": "",
+                    "evidence": "candidate_count=%d" % len(viable),
+                }
+            )
+            continue
+
+        node_id, neighbour_way_id, neighbour_road_id, gap, dz = viable[0]
+        results.append(
+            {
+                "xodr_road_id": orphan_id,
+                "status": ORPHAN_STATUS_REPAIRED,
+                "reason": "shared_osm_node_proven",
+                "source_way_id": source_way_id,
+                "neighbour_way_id": neighbour_way_id,
+                "shared_node_id": node_id,
+                "neighbour_xodr_road_id": neighbour_road_id,
+                "gap_m": "%.3f" % gap,
+                "dz_m": "%.3f" % dz,
+                "evidence": "vehicle_class=%s;source_proof=shared_osm_node"
+                % vehicle_class,
+            }
+        )
+    return results
+
+
+def write_orphan_reconciliation_csv(
+    path: str,
+    rows: Sequence[Mapping[str, Any]],
+) -> str:
+    """Write the ``ORPHAN_ROAD_SOURCE_RECONCILIATION.csv`` deliverable."""
+    import csv
+    import os as _os
+
+    target = Path(path)
+    target.parent.mkdir(parents=True, exist_ok=True)
+    fieldnames = [
+        "xodr_road_id",
+        "status",
+        "reason",
+        "source_way_id",
+        "neighbour_way_id",
+        "shared_node_id",
+        "neighbour_xodr_road_id",
+        "gap_m",
+        "dz_m",
+        "evidence",
+    ]
+    with target.open("w", encoding="utf-8", newline="") as handle:
+        writer = csv.DictWriter(handle, fieldnames=fieldnames)
+        writer.writeheader()
+        for row in rows:
+            writer.writerow({k: row.get(k, "") for k in fieldnames})
+    return str(target)

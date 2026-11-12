@@ -38,7 +38,33 @@ def _id_key(value: str) -> tuple[int, int | str]:
         return 1, value
 
 
-def extract_osm_highway_ways(osm_path: str | Path) -> list[dict[str, Any]]:
+#: Tags that decide whether two ways that share an OSM node are actually
+#: traversable from one to the other.  V103-O3 (registry T09/T03): a shared
+#: node is *necessary* evidence of adjacency, but it is not *sufficient* --
+#: a bridge and the road it crosses share no node, and two ways meeting at a
+#: grade-separated node are not connected for a vehicle.
+_RESTRICTION_TAGS = (
+    "oneway",
+    "junction",
+    "bridge",
+    "tunnel",
+    "layer",
+    "access",
+    "motor_vehicle",
+    "motorcar",
+    "motor_vehicle:forward",
+    "motor_vehicle:backward",
+    "psv",
+    "bus",
+    "bicycle",
+    "service",
+    "hgv",
+    "destination",
+    "living_street",
+)
+
+
+def _extract_osm_highway_ways(osm_path: str | Path) -> list[dict[str, Any]]:
     """Return geometry-bearing OSM ``highway=*`` ways with endpoint node IDs.
 
     The correspondence engine needs projected geometry while the topology
@@ -78,6 +104,9 @@ def extract_osm_highway_ways(osm_path: str | Path) -> list[dict[str, Any]]:
         points = [node_coordinates[ref] for ref in node_refs if ref in node_coordinates]
         if len(node_refs) < 2 or len(points) < 2:
             continue
+        way_metadata = {
+            key: tags[key] for key in _RESTRICTION_TAGS if key in tags
+        }
         ways.append(
             {
                 "id": str(way_id),
@@ -87,10 +116,301 @@ def extract_osm_highway_ways(osm_path: str | Path) -> list[dict[str, Any]]:
                 "node_refs": node_refs,
                 # The matcher accepts metadata-free ways.  The topology audit
                 # uses its correspondence and orientation, not tag enrichment.
-                "metadata": {},
+                "metadata": way_metadata,
+                # Restriction facts are carried separately so the *tag
+                # enrichment* index (street-name keyed) is never polluted with
+                # them.
+                "restrictions": way_metadata,
             }
         )
     return sorted(ways, key=lambda way: _id_key(str(way["id"])))
+
+
+def extract_osm_highway_ways(osm_path: str | Path) -> list[dict[str, Any]]:
+    """Public wrapper for :func:`_extract_osm_highway_ways`."""
+    return _extract_osm_highway_ways(osm_path)
+
+
+def _way_restrictions(way: Mapping[str, Any]) -> dict[str, str]:
+    """Restriction tags for one way, from either ``restrictions`` or ``metadata``."""
+    out: dict[str, str] = {}
+    for source in ("restrictions", "metadata"):
+        raw = way.get(source)
+        if isinstance(raw, Mapping):
+            for key, value in raw.items():
+                text = str(value).strip().lower()
+                if text:
+                    out[str(key).strip().lower()] = text
+    return out
+
+
+def _way_is_oneway_forward(restrictions: Mapping[str, str]) -> bool | None:
+    """Return True/False for oneway, or None when it cannot be decided.
+
+    ``junction=roundabout`` implies a one-way along the way's node order
+    (the OSM default).  ``oneway=reversible`` and ``oneway:conditional``
+    are explicitly undecidable without a time context.
+    """
+    oneway = str(restrictions.get("oneway", "")).strip().lower()
+    if oneway in {"yes", "true", "1"}:
+        return True
+    if oneway in {"-1", "reverse"}:
+        return False
+    if oneway in {"no", "false", "0"}:
+        return False
+    if oneway in {"reversible"}:
+        return None
+    if oneway:
+        return None
+    if str(restrictions.get("junction", "")).strip().lower() == "roundabout":
+        return True
+    return None
+
+
+def _way_layer(restrictions: Mapping[str, str]) -> tuple[int, bool, bool]:
+    """``(layer, is_bridge, is_tunnel)`` for one way."""
+    raw_layer = str(restrictions.get("layer", "")).strip()
+    try:
+        layer = int(raw_layer)
+    except (TypeError, ValueError):
+        layer = 0
+    is_bridge = str(restrictions.get("bridge", "")).strip().lower() in {
+        "yes",
+        "true",
+        "1",
+        "viaduct",
+    }
+    is_tunnel = str(restrictions.get("tunnel", "")).strip().lower() in {
+        "yes",
+        "true",
+        "1",
+        "building_passage",
+    }
+    return layer, is_bridge, is_tunnel
+
+
+def _vehicle_eligible(restrictions: Mapping[str, str], vehicle_class: str) -> bool | None:
+    """Eligibility of one way for one vehicle class.
+
+    Returns True/False, or None when the source does not decide (the way is
+    then *eligible-unknown*, not *ineligible*).
+    """
+    key = {
+        "motorcar": "motorcar",
+        "motor_vehicle": "motor_vehicle",
+        "bus": "psv",
+        "psv": "psv",
+        "bicycle": "bicycle",
+        "hgv": "hgv",
+        "service": "service",
+    }.get(vehicle_class, vehicle_class)
+    for tag in (key, "access"):
+        raw = str(restrictions.get(tag, "")).strip().lower()
+        if not raw:
+            continue
+        if raw in {"no", "private", "delivery", "destination", "customers"}:
+            return False
+        if raw in {"yes", "permissive", "designated", "official", "destination"}:
+            return True
+        if raw in {"destination"}:
+            return True
+    return None
+
+
+def build_osm_source_adjacency(
+    osm_ways: Iterable[Mapping[str, Any]],
+    *,
+    vehicle_class: str = "motor_vehicle",
+) -> dict[str, Any]:
+    """Build **source-grounded** OSM way adjacency over every shared node.
+
+    ``build_osm_way_adjacency`` is deliberately endpoint-only: it answers
+    "which ways meet at this way's *end* node?", which is the right question
+    for an XODR road *endpoint* boundary check.  It cannot answer "which ways
+    are traversable from one another along the source?", which is what the
+    orphan-road repair and the road-graph audit need -- registry issues
+    **T09** (endpoint-only adjacency misses interior-node cases) and **T03**
+    (a geometry-only orphan repair lacks OSM node proof).
+
+    This function answers that second question from the OSM source alone:
+
+    * adjacency is established **only** by a shared ``nd`` reference.  Two
+      ways that merely cross in XY, or that share a street *name*, are never
+      connected -- no edge is ever fabricated from geometry.
+    * the shared node's role in each way is recorded (``start`` / ``end`` /
+      ``interior``), so a split way and its continuation are distinguishable
+      from a genuine through-junction.
+    * **existence** (the ways share a node) is kept separate from
+      **eligibility** (a vehicle may legally traverse).  A way whose access
+      tag forbids the vehicle class is still topologically adjacent; it is
+      simply not eligible.
+    * grade separation is honoured: a ``bridge=yes`` / ``tunnel=yes`` way and
+      a way at a different ``layer`` are not traversable to each other.
+    * oneway is respected for the *directed* adjacency.
+
+    Anything the source cannot decide is reported as ``UNRESOLVED`` rather
+    than guessed.
+    """
+    ways = sorted(
+        (dict(way) for way in osm_ways),
+        key=lambda way: _id_key(str(way.get("id", ""))),
+    )
+
+    node_members: dict[str, list[tuple[str, str]]] = defaultdict(list)
+    node_role_by_way: dict[tuple[str, str], str] = {}
+    restrictions_by_way: dict[str, dict[str, str]] = {}
+    oneway_by_way: dict[str, bool | None] = {}
+    geometry_by_way: dict[str, list[tuple[float, float]]] = {}
+
+    for way in ways:
+        way_id = str(way.get("id", ""))
+        refs = [str(ref) for ref in way.get("node_refs", ()) if ref]
+        if not way_id or len(refs) < 2:
+            continue
+        restrictions = _way_restrictions(way)
+        restrictions_by_way[way_id] = restrictions
+        oneway_by_way[way_id] = _way_is_oneway_forward(restrictions)
+        geometry_by_way[way_id] = [
+            (float(x), float(y)) for x, y in (way.get("geometry") or [])
+        ]
+        last_index = len(refs) - 1
+        for index, node_id in enumerate(refs):
+            if index == 0:
+                role = "start"
+            elif index == last_index:
+                role = "end"
+            else:
+                role = "interior"
+            node_role_by_way[(way_id, node_id)] = role
+            node_members[node_id].append((way_id, role))
+
+    def _traversable(
+        way_a: str,
+        way_b: str,
+        node_id: str,
+        role_a: str,
+        role_b: str,
+    ) -> tuple[bool, str]:
+        """Is there a traversable connection between two ways at a node?"""
+        restr_a = restrictions_by_way.get(way_a, {})
+        restr_b = restrictions_by_way.get(way_b, {})
+        layer_a, bridge_a, tunnel_a = _way_layer(restr_a)
+        layer_b, bridge_b, tunnel_b = _way_layer(restr_b)
+
+        if layer_a != layer_b:
+            return False, "layer_mismatch"
+        if bridge_a != bridge_b:
+            return False, "bridge_tunnel_mismatch"
+        if tunnel_a != tunnel_b:
+            return False, "bridge_tunnel_mismatch"
+
+        eligible_a = _vehicle_eligible(restr_a, vehicle_class)
+        eligible_b = _vehicle_eligible(restr_b, vehicle_class)
+        if eligible_a is False or eligible_b is False:
+            return False, "access_restricted"
+
+        # Direction: a oneway way may only be entered at its start node and
+        # left at its end node.
+        oneway_a = oneway_by_way.get(way_a)
+        oneway_b = oneway_by_way.get(way_b)
+        if oneway_a is True and role_a == "end":
+            # Traversing towards way_a's end would be against its oneway.
+            return False, "oneway_against"
+        if oneway_b is True and role_b == "end":
+            return False, "oneway_against"
+        if oneway_a is False and role_a == "start":
+            # oneway=-1: traffic runs against the node order, so entering at
+            # the start node is against the oneway.
+            return False, "oneway_against"
+        if oneway_b is False and role_b == "start":
+            return False, "oneway_against"
+
+        return True, "shared_node"
+
+    adjacent_by_way_node: dict[tuple[str, str], tuple[str, ...]] = {}
+    blocked_by_way_node: dict[tuple[str, str], list[dict[str, str]]] = {}
+    unresolved: list[dict[str, str]] = []
+    undirected_edges: set[tuple[str, str]] = set()
+
+    for node_id in sorted(node_members, key=_id_key):
+        members = sorted(
+            node_members[node_id], key=lambda item: (_id_key(item[0]), item[1])
+        )
+        for way_id, role in members:
+            neighbours: list[str] = []
+            blocked: list[dict[str, str]] = []
+            for other_id, other_role in members:
+                if other_id == way_id:
+                    continue
+                ok, reason = _traversable(
+                    way_id, other_id, node_id, role, other_role
+                )
+                if ok:
+                    neighbours.append(other_id)
+                    undirected_edges.add(tuple(sorted((way_id, other_id), key=_id_key)))
+                else:
+                    blocked.append(
+                        {"neighbour_way_id": other_id, "reason": reason}
+                    )
+                    if reason == "oneway_against" and oneway_by_way.get(way_id) is None:
+                        unresolved.append(
+                            {
+                                "node_id": node_id,
+                                "way_id": way_id,
+                                "other_way_id": other_id,
+                                "reason": "oneway_undetermined",
+                            }
+                        )
+            adjacent_by_way_node[(way_id, node_id)] = tuple(
+                sorted(set(neighbours), key=_id_key)
+            )
+            if blocked:
+                blocked_by_way_node[(way_id, node_id)] = blocked
+
+    return {
+        "schema": "osm_source_adjacency/v1",
+        "vehicle_class": vehicle_class,
+        "node_members": {
+            node_id: tuple(members)
+            for node_id, members in sorted(node_members.items(), key=lambda i: _id_key(i[0]))
+        },
+        "node_role_by_way": {
+            f"{way_id}@{node_id}": role
+            for (way_id, node_id), role in sorted(
+                node_role_by_way.items(), key=lambda i: (_id_key(i[0]), _id_key(i[1]))
+            )
+        },
+        "adjacent_by_way_node": {
+            f"{way_id}@{node_id}": neighbours
+            for (way_id, node_id), neighbours in sorted(
+                adjacent_by_way_node.items(), key=lambda i: (_id_key(i[0]), _id_key(i[1]))
+            )
+        },
+        "blocked_by_way_node": {
+            f"{way_id}@{node_id}": blocked
+            for (way_id, node_id), blocked in sorted(
+                blocked_by_way_node.items(), key=lambda i: (_id_key(i[0]), _id_key(i[1]))
+            )
+        },
+        "oneway_by_way": {
+            way_id: (None if value is None else bool(value))
+            for way_id, value in sorted(oneway_by_way.items(), key=lambda i: _id_key(i[0]))
+        },
+        "restrictions_by_way": {
+            way_id: dict(sorted(restr.items()))
+            for way_id, restr in sorted(restrictions_by_way.items(), key=lambda i: _id_key(i[0]))
+        },
+        "unresolved": sorted(
+            unresolved, key=lambda i: (_id_key(i["way_id"]), _id_key(i["node_id"]))
+        ),
+        "summary": {
+            "way_count": len(restrictions_by_way),
+            "shared_node_count": len(node_members),
+            "adjacency_edge_count": len(undirected_edges),
+            "blocked_pair_count": len(blocked_by_way_node),
+            "unresolved_count": len(unresolved),
+        },
+    }
 
 
 def build_osm_way_adjacency(
