@@ -50,6 +50,14 @@ _GENERATION_CLAIM_TIMEOUT_S = 30.0
 _GENERATION_CLAIM_CLEANUP_RETRIES = 1000
 
 
+class GenerationClaimTimeout(RuntimeError):
+    """A particular lease scope was busy for the configured claim interval."""
+
+
+class MalformedGenerationClaim(RuntimeError):
+    """A scope claim exists but its owner record is malformed; retain it."""
+
+
 class MalformedLeaseError(RuntimeError):
     """A lease file exists but cannot be parsed.
 
@@ -238,7 +246,7 @@ def _generation_claim_at_path(
     def _remaining_s() -> float:
         remaining = deadline - time.monotonic()
         if remaining <= 0:
-            raise RuntimeError(
+            raise GenerationClaimTimeout(
                 f"LOCKED_UNKNOWN: timed out waiting for generation claim at {path} "
                 f"after {timeout_s:.3f}s"
             )
@@ -299,7 +307,7 @@ def _generation_claim_at_path(
                 time.sleep(min(0.001, _remaining_s()))
                 continue
             except (OSError, UnicodeError, ValueError, KeyError, TypeError) as exc:
-                raise RuntimeError(
+                raise MalformedGenerationClaim(
                     f"LOCKED_UNKNOWN: malformed generation claim at {path}: {exc}"
                 ) from exc
             permission_denials = 0
@@ -386,20 +394,23 @@ def _generation_claim(
 # durable writes
 # ---------------------------------------------------------------------------
 
-def _fsync_dir(directory: Path) -> None:
+def _fsync_dir(directory: Path, *, required: bool = False) -> None:
     try:
         fd = os.open(str(directory), os.O_RDONLY)
     except OSError:
+        if required:
+            raise
         return
     try:
         os.fsync(fd)
     except OSError:
-        pass
+        if required:
+            raise
     finally:
         os.close(fd)
 
 
-def _write_payload(path: Path, payload: dict) -> None:
+def _write_payload(path: Path, payload: dict, *, durable: bool = False) -> None:
     """Serialise, fsync and atomically replace ``path`` via a unique temp file."""
     tmp = path.with_name(f"{path.name}.{os.getpid()}.{uuid.uuid4().hex}.tmp")
     try:
@@ -411,8 +422,19 @@ def _write_payload(path: Path, payload: dict) -> None:
                 os.fsync(fh.fileno())
         except BaseException:
             raise
-        os.replace(tmp, path)
-        _fsync_dir(path.parent)
+        if os.name == "nt" and durable:
+            # MOVEFILE_WRITE_THROUGH asks Windows to flush the move before it
+            # returns.  The file itself was fsynced above.
+            import ctypes
+
+            move_file = ctypes.WinDLL("kernel32", use_last_error=True).MoveFileExW
+            move_file.argtypes = [ctypes.c_wchar_p, ctypes.c_wchar_p, ctypes.c_uint32]
+            move_file.restype = ctypes.c_int
+            if not move_file(str(tmp), str(path), 0x1 | 0x8):
+                raise ctypes.WinError(ctypes.get_last_error())
+        else:
+            os.replace(tmp, path)
+            _fsync_dir(path.parent, required=durable)
     finally:
         try:
             tmp.unlink(missing_ok=True)
@@ -1138,7 +1160,9 @@ def list_worktree_leases(repo_root: Path) -> list[WorktreeLease]:
     return [lease for _path, lease in _iter_worktree_leases(repo_root)]
 
 
-def cleanup_expired_leases(repo_root: Path) -> int:
+def cleanup_expired_leases(
+    repo_root: Path, *, diagnostics: list[dict] | None = None
+) -> int:
     """Sweep independent expired/dead leases and retain corrupt evidence."""
     removed = 0
     for lease_path, lease in _iter_worktree_leases(repo_root):
@@ -1174,13 +1198,28 @@ def cleanup_expired_leases(repo_root: Path) -> int:
                     except OSError:
                         pass
                     removed += 1
-        except MalformedLeaseError:
+        except MalformedLeaseError as exc:
             # Changed between listing and under-claim reread: operator-only.
+            if diagnostics is not None:
+                diagnostics.append({
+                    "status": "LOCKED_UNKNOWN",
+                    "lease_path": str(lease_path),
+                    "reason": str(exc),
+                    "evidence_preserved": True,
+                })
             continue
-        except RuntimeError as exc:
-            if "timed out waiting for generation claim" in str(exc):
-                continue
-            raise
+        except (GenerationClaimTimeout, MalformedGenerationClaim) as exc:
+            # A claim is scoped to this physical lease.  Keep its bytes for
+            # operator recovery and continue with unrelated expired entries.
+            if diagnostics is not None:
+                diagnostics.append({
+                    "status": "LOCKED_UNKNOWN",
+                    "lease_path": str(lease_path),
+                    "claim_path": str(_generation_claim_path_for_lease(lease_path)),
+                    "reason": str(exc),
+                    "evidence_preserved": True,
+                })
+            continue
     return removed
 
 
@@ -1214,9 +1253,10 @@ def recover_malformed_lease(
                 "LOCKED_UNKNOWN: valid lease evidence cannot be removed "
                 "through malformed-lease recovery"
             )
-        audit_dir = path.parent / "recovery_audit"
-        audit_dir.mkdir(parents=True, exist_ok=True)
-        audit = audit_dir / f"{path.name}.{uuid.uuid4().hex}.json"
+        # Keep the intent receipt in the already-existing lease namespace.
+        # This avoids a newly-created directory entry whose parent durability
+        # would otherwise need a separate crash-safe publication protocol.
+        audit = path.parent / f"{path.name}.recovery.{uuid.uuid4().hex}.json"
         record = {
             "recovered": False,
             "path": str(path),
@@ -1227,7 +1267,7 @@ def recover_malformed_lease(
             "reason": reason,
             "audit_path": str(audit),
         }
-        _write_payload(audit, {**record, "phase": "INTENT"})
+        _write_payload(audit, {**record, "phase": "INTENT"}, durable=True)
         claimed, tomb = _claim_lease_path(
             path, "recover", lambda candidate: candidate == raw
         )
@@ -1237,7 +1277,7 @@ def recover_malformed_lease(
             except OSError as exc:
                 _write_payload(audit, {
                     **record, "phase": "BLOCKED_TOMBSTONE", "tombstone": str(tomb),
-                })
+                }, durable=True)
                 raise RuntimeError(
                     f"LOCKED_UNKNOWN: recovered bytes retained at {tomb}; "
                     f"operator inspection required"
@@ -1247,5 +1287,5 @@ def recover_malformed_lease(
         else:
             record["detail"] = "lease changed or vanished; nothing removed"
             record["phase"] = "NO_CHANGE"
-        _write_payload(audit, record)
+        _write_payload(audit, record, durable=True)
         return record

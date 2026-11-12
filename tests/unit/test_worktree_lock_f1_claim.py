@@ -7,6 +7,7 @@ import os
 import subprocess
 import sys
 import threading
+import time
 from pathlib import Path
 
 import pytest
@@ -428,7 +429,7 @@ def test_r3_busy_lease_does_not_block_other_cleanup(repo: Path, monkeypatch):
     original_claim = getattr(wl, "_generation_claim_at_path", original_root_claim)
 
     def busy_timeout():
-        raise RuntimeError(
+        raise wl.GenerationClaimTimeout(
             "LOCKED_UNKNOWN: timed out waiting for generation claim at injected busy lease"
         )
 
@@ -516,6 +517,81 @@ def test_v94_nonexpired_malformed_claim_does_not_block_other_cleanup(
     assert _lease_path(first).exists()
     assert not _lease_path(later).exists()
     assert claim.read_bytes() == b""
+
+
+def test_v104_expired_malformed_generation_claim_isolated_with_diagnostics(
+    repo: Path,
+):
+    roots = [repo / "first-expired", repo / "second-expired"]
+    for root in roots:
+        root.mkdir()
+    first, later = sorted(roots, key=lambda root: str(_lease_path(root)))
+    for root in (first, later):
+        wl._write_lease(wl.WorktreeLease(
+            worktree_root=str(root.resolve()), generation=1,
+            holder_pid=99999999, expires_at="2020-01-01T00:00:00Z",
+        ))
+
+    first_path = _lease_path(first)
+    later_path = _lease_path(later)
+    claim = wl._generation_claim_path_for_lease(first_path)
+    claim.write_bytes(b"")
+    old_time = time.time() - 2
+    os.utime(claim, (old_time, old_time))
+    diagnostics: list[dict] = []
+
+    assert wl.cleanup_expired_leases(repo, diagnostics=diagnostics) == 1
+    assert first_path.exists(), "lease beside malformed claim must remain"
+    assert claim.read_bytes() == b"", "malformed claim evidence must remain"
+    assert not later_path.exists(), "unrelated expired lease must still be reclaimed"
+    assert len(diagnostics) == 1
+    assert diagnostics[0]["status"] == "LOCKED_UNKNOWN"
+    assert diagnostics[0]["lease_path"] == str(first_path)
+    assert diagnostics[0]["claim_path"] == str(claim)
+    assert diagnostics[0]["evidence_preserved"] is True
+    assert "malformed generation claim" in diagnostics[0]["reason"]
+
+
+def test_v104_recovery_publishes_durable_intent_before_claim(
+    repo: Path, monkeypatch
+):
+    retired = repo.parent / "durable-intent-worktree"
+    retired.mkdir()
+    (retired / ".git").write_text(
+        f"gitdir: {repo / '.git' / 'worktrees' / retired.name}\n",
+        encoding="utf-8",
+    )
+    lease = wl.WorktreeLease(worktree_root=str(retired.resolve()), generation=1)
+    wl._write_lease(lease)
+    physical = lock_paths.worktree_lease_path(repo, retired)
+    physical.write_bytes(b"{ malformed recovery evidence")
+    (retired / ".git").unlink()
+    retired.rmdir()
+
+    original_write = wl._write_payload
+    original_claim = wl._claim_lease_path
+    phases: list[str] = []
+
+    def observed_write(path: Path, payload: dict, *, durable: bool = False):
+        assert durable is True, "recovery receipt must use durable publication"
+        original_write(path, payload, durable=durable)
+        phases.append(str(payload.get("phase", "")))
+
+    def claim_after_intent(path: Path, tag: str, expect):
+        assert phases and phases[0] == "INTENT"
+        assert list(path.parent.glob(f"{path.name}.recovery.*.json"))
+        return original_claim(path, tag, expect)
+
+    monkeypatch.setattr(wl, "_write_payload", observed_write)
+    monkeypatch.setattr(wl, "_claim_lease_path", claim_after_intent)
+    result = wl.recover_malformed_lease(
+        repo, retired, "test-operator", "verify durable intent ordering"
+    )
+    assert result["recovered"] is True
+    assert phases == ["INTENT", "COMPLETE"]
+    assert not physical.exists()
+    assert not retired.exists()
+    assert not (physical.parent / "recovery_audit").exists()
 
 
 def test_v94_malformed_after_listing_skips_entry_and_cleans_next(
