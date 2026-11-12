@@ -3853,7 +3853,7 @@ if str(_repo_root) not in sys.path:
         from ultimate_pipeline.core.odr_io import save_xodr as _save_xodr
 
         try:
-            tree = ET_xml.parse(xodr_path)
+            tree = ET_xml.ElementTree(parse_xodr_file(xodr_path))
             root = tree.getroot()
             header = root.find("header")
             if header is None:

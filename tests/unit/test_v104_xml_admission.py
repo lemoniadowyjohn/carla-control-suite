@@ -2,11 +2,13 @@
 from __future__ import annotations
 
 import pytest
+from types import SimpleNamespace
 
 from ultimate_pipeline.quality.final_artifact_gates import (
     UnsafeXMLError,
     parse_xodr_bytes,
 )
+from ultimate_pipeline.pipeline_stages.stage_08_hygiene import _step8h_map_hygiene
 
 
 ROOT = b"<OpenDRIVE><header revMajor='1' revMinor='4'/></OpenDRIVE>"
@@ -59,3 +61,31 @@ def test_declaration_text_in_comment_is_not_an_active_doctype() -> None:
 def test_declaration_text_in_cdata_is_not_an_active_doctype() -> None:
     payload = b'<OpenDRIVE><header/><userData><![CDATA[<!DOCTYPE OpenDRIVE>]]></userData></OpenDRIVE>'
     assert parse_xodr_bytes(payload).tag == "OpenDRIVE"
+
+
+def test_production_hygiene_stage_rejects_dtd_before_any_repair_parser(
+    tmp_path, monkeypatch
+) -> None:
+    """The actual stage entrypoint must reject hostile input before repair."""
+    from ultimate_pipeline.quality import map_hygiene
+
+    def forbidden_legacy_parse(*_args, **_kwargs):
+        raise AssertionError("legacy ElementTree.parse path was reached")
+
+    monkeypatch.setattr(map_hygiene.ET, "parse", forbidden_legacy_parse)
+    payload = (
+        b'<!DOCTYPE OpenDRIVE [<!ENTITY roadname "hostile">]>'
+        b'<OpenDRIVE><header/><road id="1" name="&roadname;" '
+        b'length="1" junction="-1"/></OpenDRIVE>'
+    )
+    source = tmp_path / "candidate.xodr"
+    source.write_bytes(payload)
+    out_dir = tmp_path / "reports"
+    stage = SimpleNamespace(
+        settings=SimpleNamespace(ENABLE_MAP_HYGIENE=True), out_dir=out_dir
+    )
+
+    with pytest.raises(UnsafeXMLError):
+        _step8h_map_hygiene(stage, str(source))
+
+    assert not (out_dir / "08h1_island_quarantined.xodr").exists()

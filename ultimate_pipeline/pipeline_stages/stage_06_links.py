@@ -301,7 +301,9 @@ def _observe_planview_operation(
 
 
 def _protected_stage6_signature(path: str) -> Dict[str, Any]:
-    root = ET.parse(path).getroot()
+    from ultimate_pipeline.quality.xml_admission import parse_xodr_file
+
+    root = parse_xodr_file(path)
     roads: Dict[str, Any] = {}
     for road in root.findall("road"):
         rid = str(road.get("id", ""))

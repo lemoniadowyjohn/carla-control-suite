@@ -4,6 +4,7 @@ from __future__ import annotations
 import hashlib
 import xml.etree.ElementTree as ET
 from typing import Any, Dict, List, Tuple, Optional
+from ultimate_pipeline.quality.xml_admission import parse_xodr_bytes, read_xodr_bytes
 
 try:
     from lxml import etree
@@ -142,7 +143,8 @@ def validate_xodr_schema_structured(
 
     # OpenDRIVE revision/profile claimed by the file under test (§15).
     try:
-        probe = ET.parse(xodr_path).getroot()
+        xodr_bytes = read_xodr_bytes(xodr_path)
+        probe = parse_xodr_bytes(xodr_bytes)
         header = probe.find("header") if probe is not None else None
         evidence["statistics"]["header_revision"] = {
             "revMajor": header.get("revMajor") if header is not None else None,
@@ -160,7 +162,7 @@ def validate_xodr_schema_structured(
     try:
         schema = etree.XMLSchema(file=xsd_path)
         parser = etree.XMLParser(schema=schema)
-        etree.parse(xodr_path, parser)
+        etree.fromstring(xodr_bytes, parser)
         evidence["status"] = "PASS"
         evidence["envelope_status"] = "PASS"
         return evidence

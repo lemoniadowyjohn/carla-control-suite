@@ -37,6 +37,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Tuple, Union
 
 from ultimate_pipeline.artifacts.map_event_record import append_event, build_record
+from ultimate_pipeline.quality.xml_admission import parse_xodr_file
 
 def _load_tree_and_root(xodr_or_root: Union[str, os.PathLike, ET.Element]) -> Tuple[ET.ElementTree, ET.Element]:
     if isinstance(xodr_or_root, ET.Element):
@@ -47,7 +48,7 @@ def _load_tree_and_root(xodr_or_root: Union[str, os.PathLike, ET.Element]) -> Tu
     if not isinstance(xodr_or_root, (str, os.PathLike)):
         raise TypeError(f"Expected xodr path or XML Element, got {type(xodr_or_root)}")
 
-    tree = ET.parse(str(xodr_or_root))
+    tree = ET.ElementTree(parse_xodr_file(xodr_or_root))
     return tree, tree.getroot()
 
 
