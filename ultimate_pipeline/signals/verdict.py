@@ -208,6 +208,12 @@ def compute_final_run_verdict(
         except Exception:
             pass
 
+    if not isinstance(current_run_id, str) or not current_run_id:
+        blocking_failures.append({
+            "signal_id": "RUN_IDENTITY", "status": STATUS_FAIL,
+            "error": "current run identity missing or unreadable",
+        })
+
     for sid in candidate_ids:
         entry = SIGNAL_REGISTRY[sid]
         enabled = is_signal_enabled(sid, settings=settings, env=env_map)
@@ -430,6 +436,7 @@ def compute_final_run_verdict(
 
     verdict_payload: dict[str, Any] = {
         "schema": VERDICT_SCHEMA,
+        "run_id": current_run_id,
         "generated_at_utc": datetime.now(timezone.utc).isoformat(),
         "release_profile": resolved_profile,
         "status": status,

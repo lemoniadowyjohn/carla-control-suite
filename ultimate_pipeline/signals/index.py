@@ -234,6 +234,9 @@ def normalize_signal_status(
             return STATUS_FAIL
         return STATUS_MISSING
 
+    # Release signals cannot pass without a durable current identity.
+    if signal_id in {"MAP_ACCEPTANCE", "FINAL_ARTIFACT_RECEIPT", "FINAL_RUN_VERDICT"} and not run_id:
+        return STATUS_INCOMPLETE
     # Stale evidence rejection: if run_id is provided, artifact must bind to it
     if run_id and not _check_run_id_binding(payload, run_id):
         return STATUS_INCOMPLETE
@@ -257,15 +260,13 @@ def normalize_signal_status(
         return STATUS_FAIL
 
     if signal_id in {"MAP_ACCEPTANCE", "EXPERIMENT_READINESS"}:
-        # Experiment semantics. Release profiles additionally apply
-        # release_acceptance_status() (V86 A9) in verdict.py and the index.
         if isinstance(payload, dict):
-            valid = payload.get("valid_for_experiments")
-            if valid is None:
-                valid = payload.get("valid")
-            if valid is None:
-                return STATUS_INCOMPLETE
-            return STATUS_PASS if _truthy(valid) else STATUS_FAIL
+            if signal_id == "MAP_ACCEPTANCE":
+                policy = payload.get("acceptance_policy")
+                return (STATUS_PASS if payload.get("release_eligible") is True
+                        and isinstance(policy, dict) and policy.get("purpose") == "release"
+                        else STATUS_FAIL)
+            return STATUS_PASS if payload.get("valid_for_experiments") is True else STATUS_FAIL
         return STATUS_FAIL
 
     if signal_id == "FINAL_ARTIFACT_RECEIPT":

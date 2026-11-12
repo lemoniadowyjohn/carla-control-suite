@@ -422,7 +422,8 @@ def finalize_run_pack(
     *,
     summary: str = "",
     mandatory: Optional[Iterable[Any]] = None,
-    emit_success: bool = True,
+    emit_success: bool = False,
+    purpose: str = "generic_pack",
 ) -> Dict[str, Any]:
     """Fail-closed finalization of a run pack.
 
@@ -490,8 +491,13 @@ def finalize_run_pack(
     except OSError as exc:
         raise FinalizationError(f"finalization state could not be written: {exc}", receipt)
 
-    if receipt["status"] == STATUS_PASS and emit_success:
-        _write_success_bound(root, receipt, summary)
+    if emit_success:
+        # Production SUCCESS cannot be issued by a generic file-hash utility.
+        if purpose != "production_map_release":
+            raise FinalizationError("generic bundle PASS is not production map success", receipt)
+        raise FinalizationError(
+            "call guarded write_success_txt after release evidence verification", receipt
+        )
 
     return receipt
 
@@ -518,7 +524,9 @@ def _write_success_bound(out_dir: Path, receipt: Dict[str, Any], summary: str) -
 # ---------------------------------------------------------------------------
 
 
-def verify_run_pack(out_dir: str | os.PathLike[str]) -> Dict[str, Any]:
+def verify_run_pack(
+    out_dir: str | os.PathLike[str], *, require_success: bool = False,
+) -> Dict[str, Any]:
     """Re-verify a finalized run pack against its manifest.
 
     Detects post-finalization tampering of a hashed artifact and any attempt to
@@ -621,6 +629,8 @@ def verify_run_pack(out_dir: str | os.PathLike[str]) -> Dict[str, Any]:
             if _success_field(success_text, "status") != STATUS_PASS:
                 result["problems"].append("SUCCESS.txt does not assert finalization status PASS")
 
+    if require_success and not result["success_present"]:
+        result["problems"].append("publication SUCCESS is missing")
     result["status"] = STATUS_PASS if not result["problems"] else STATUS_FAIL
     return result
 
@@ -650,13 +660,17 @@ def write_signature_json(out_dir: str, key_paths: Iterable[Any]) -> Dict[str, An
     return receipt
 
 
-def write_success_txt(out_dir: str, summary: str = "") -> None:
+def write_success_txt(
+    out_dir: str, summary: str = "", *, purpose: str = "generic_pack"
+) -> None:
     """Write SUCCESS.txt, but only for a recorded PASS finalization.
 
     Retained for existing callers. It is now a *gated* operation: without a
     PASS state recorded by :func:`finalize_run_pack` for the same release root
     it raises rather than publishing an unbound success marker.
     """
+    if purpose != "production_map_release":
+        raise FinalizationError("generic bundles cannot publish SUCCESS.txt")
     root = Path(out_dir).expanduser().resolve()
     sig_path = root / SIGNATURE_FILENAME
     if not sig_path.is_file():
@@ -690,4 +704,7 @@ def write_success_txt(out_dir: str, summary: str = "") -> None:
         raise FinalizationError(
             f"refusing to write SUCCESS.txt: cannot digest manifest ({exc})"
         )
+    checked = verify_run_pack(root)
+    if checked.get("status") != STATUS_PASS:
+        raise FinalizationError("cannot publish SUCCESS for a tampered or incomplete pack")
     _write_success_bound(root, receipt, summary)
