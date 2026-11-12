@@ -33,7 +33,7 @@ from ultimate_pipeline.gui.run_status import RunStatus, normalize
 
 __all__ = [
     "FINAL_VERDICT_NAME", "SUCCESS_MARKER", "AUTHORITATIVE_ONLY",
-    "LockAuthority", "LockObservation", "observe_lock", "observe_all_locks",
+    "LockAuthority", "LockObservation", "observe_lock", "observe_all_locks", "observe_worktree_leases",
     "RunVerdict", "read_final_verdict", "JobState", "Job", "JobSupervisor",
     "CrashClass", "classify_crash", "FailureTimeline", "ProgressEvent",
     "EvidenceRecord", "EvidenceBrowser", "scrub_sensitive_paths",
@@ -72,7 +72,9 @@ class LockObservation:
 
     @property
     def blocking(self) -> bool:
-        return self.state == "active" and not self.stale
+        # A malformed/unreadable/unknown lease cannot authorize a mutation.
+        return not self.stale and (
+            self.malformed or self.state.lower() not in ("absent", "released"))
 
     def as_dict(self) -> dict:
         return {"authority": self.authority, "path": self.path, "state": self.state,
@@ -97,6 +99,10 @@ def _expiry_delta(expires_at: str) -> timedelta | None:
 def observe_lock(path: Path, authority: LockAuthority) -> LockObservation:
     """Read one lock file. A malformed lock is reported, never repaired."""
     target = Path(path)
+    if target.is_symlink():
+        return LockObservation(authority.value, str(target), "malformed",
+                               malformed=True,
+                               detail="symlink lease paths are untrusted")
     if not target.exists():
         return LockObservation(authority.value, str(target), "absent",
                                detail="no lock file present")
@@ -111,6 +117,10 @@ def observe_lock(path: Path, authority: LockAuthority) -> LockObservation:
         return LockObservation(authority.value, str(target), "malformed",
                                malformed=True,
                                detail="lock is not valid JSON; reported, not repaired")
+    if not isinstance(payload, dict):
+        return LockObservation(authority.value, str(target), "malformed",
+                               malformed=True,
+                               detail="lock payload must be a JSON object")
 
     state = str(payload.get("status", "unknown"))
     remaining = _expiry_delta(str(payload.get("expires_at", "")))
@@ -128,21 +138,47 @@ def observe_lock(path: Path, authority: LockAuthority) -> LockObservation:
     )
 
 
+def observe_worktree_leases(repo_root: Path) -> tuple[LockObservation, ...]:
+    """Inspect EVERY worktree lease, not only the first glob result."""
+    lease_dir = Path(repo_root) / ".agent_locks" / "worktree_leases"
+    return tuple(observe_lock(path, LockAuthority.WORKTREE_LEASE)
+                 for path in sorted(lease_dir.glob("*.lock")))
+
+
+def _aggregate_worktree_leases(root: Path) -> LockObservation:
+    observations = observe_worktree_leases(root)
+    path = str(Path(root) / ".agent_locks" / "worktree_leases")
+    if not observations:
+        return LockObservation(LockAuthority.WORKTREE_LEASE.value, path, "absent",
+                               detail="no worktree lease files")
+    uncertain = [o for o in observations if not o.stale and
+                 (o.malformed or o.state.lower() not in ("active", "released"))]
+    active = [o for o in observations if o.state.lower() == "active" and not o.stale]
+    if uncertain:
+        return LockObservation(LockAuthority.WORKTREE_LEASE.value, path,
+                               "malformed", malformed=True,
+                               detail=f"{len(uncertain)} unverifiable of {len(observations)} leases")
+    if active:
+        return LockObservation(LockAuthority.WORKTREE_LEASE.value, path,
+                               "active", owner="MULTIPLE" if len(active) > 1 else active[0].owner,
+                               detail=f"{len(active)} active of {len(observations)} leases")
+    return LockObservation(LockAuthority.WORKTREE_LEASE.value, path,
+                           "stale" if all(o.stale for o in observations) else "released",
+                           stale=all(o.stale for o in observations),
+                           detail=f"{len(observations)} leases; none active")
+
+
 def observe_all_locks(repo_root: Path) -> dict[str, LockObservation]:
-    """Three authorities, reported separately."""
+    """Three authorities, reported separately; worktrees aggregated safely."""
     root = Path(repo_root)
     locks = root / ".agent_locks"
-    leases = locks / "worktree_leases"
-    observations = {
+    return {
         LockAuthority.REPO_WRITER.value: observe_lock(
             locks / "writer.lock", LockAuthority.REPO_WRITER),
-        LockAuthority.WORKTREE_LEASE.value: observe_lock(
-            next(iter(sorted(leases.glob("*.lock"))), locks / "none.lock"),
-            LockAuthority.WORKTREE_LEASE),
+        LockAuthority.WORKTREE_LEASE.value: _aggregate_worktree_leases(root),
         LockAuthority.MACHINE_LEASE.value: observe_lock(
             locks / "machine.lock", LockAuthority.MACHINE_LEASE),
     }
-    return observations
 
 
 # --------------------------------------------------------------- verdicts
@@ -187,6 +223,13 @@ def read_final_verdict(run_dir: Path) -> RunVerdict:
             RunStatus.NOT_EVALUATED.value, malformed=True,
             detail="final verdict carries no status field")
     normalized = normalize("signals_verdict", str(raw))
+    if normalized.status is RunStatus.PASS:
+        # This reader only parses a file. The production terminal verifier
+        # must independently bind run identity, input hashes, lease generation,
+        # source revision, final artifact and acceptance before UI success.
+        return RunVerdict(RunStatus.NOT_EVALUATED.value,
+                          detail="unverified PASS in final_run_verdict.json; "
+                                 "canonical backend verification required")
     return RunVerdict(normalized.status.value, detail=f"raw label {raw!r}")
 
 
@@ -304,8 +347,11 @@ class JobSupervisor:
     """Runs work cooperatively with deadlines, progress and honest outcomes."""
 
     def __init__(self, *, allow_scheduling: bool = False) -> None:
+        import threading
         self.allow_scheduling = allow_scheduling
         self._sequence = 0
+        self._run_lock = threading.RLock()
+        self._started_job_ids: set[str] = set()
 
     def _event(self, timeline: FailureTimeline, stage: str, message: str = "") -> None:
         self._sequence += 1
@@ -332,9 +378,30 @@ class JobSupervisor:
         token: CancellationToken | None = None,
         run_dir: Path | None = None,
     ) -> Job:
-        job.state = JobState.RUNNING.value
+        # This is only local duplicate prevention; the authenticated backend
+        # must provide persistent idempotency and runtime lease fencing.
+        with self._run_lock:
+            if (not self.allow_scheduling or
+                    job.state != JobState.PENDING.value or
+                    job.job_id in self._started_job_ids):
+                if job.state == JobState.PENDING.value:
+                    job.state = JobState.NOT_SUBMITTED.value
+                    job.blocked_stage = "authorization"
+                return job
+            self._started_job_ids.add(job.job_id)
+            job.state = JobState.RUNNING.value
         self._event(job.timeline, "start", f"job {job.job_id}")
         own_token = token or CancellationToken()
+        import time
+        import math
+        if (isinstance(deadline_s, bool) or not isinstance(deadline_s, (int, float))
+                or not math.isfinite(deadline_s) or deadline_s <= 0):
+            job.state = JobState.FAILED.value
+            job.blocked_stage = "deadline"
+            job.timeline.crash_class = CrashClass.TIMEOUT.value
+            self._event(job.timeline, "failed", "invalid deadline")
+            return job
+        started_at = time.monotonic()
 
         def guarded(cancellation: CancellationToken) -> Any:
             # The stage event must be emitted BEFORE the work of that stage and
@@ -352,6 +419,9 @@ class JobSupervisor:
 
         try:
             guarded(own_token)
+            if time.monotonic() - started_at > deadline_s:
+                own_token.cancel("deadline exceeded")
+                raise TimeoutError("job exceeded its allowed deadline")
         except OperationCancelled:
             job.state = JobState.CANCELLED.value
             job.blocked_stage = job.timeline.events[-1].stage if job.timeline.events else ""
@@ -368,15 +438,18 @@ class JobSupervisor:
 
         if run_dir is not None:
             job.verdict = read_final_verdict(run_dir)
-        job.state = JobState.SUCCEEDED.value if (
-            job.verdict is None or job.verdict.status == RunStatus.PASS.value) \
-            else JobState.FAILED.value
+        # Local callback completion is NOT release success, including when
+        # no run directory exists. Success must arrive via verified backend.
+        job.state = JobState.FAILED.value
+        job.blocked_stage = "terminal_verification"
+        self._event(job.timeline, "terminal_verification",
+                    "verified backend terminal result unavailable")
         self._event(job.timeline, "finished", job.state)
         return job
 
 
 # --------------------------------------------------------------- evidence
-_PRIVATE_PATH_RE = re.compile(r"(?i)([A-Z]:\\Users\\[^\\\s\"']+)")
+_PRIVATE_PATH_RE = re.compile(r"(?i)([A-Z]:\\Users\\)[^\\\s\"']+")
 
 
 def scrub_sensitive_paths(text: str) -> str:
@@ -431,9 +504,9 @@ class EvidenceBrowser:
             payload, schema_ok = None, False
 
         digest = hashlib.sha256(raw).hexdigest()
-        sha_ok = (not expected_sha) or digest == expected_sha
-        recorded = recorded_sha or (payload or {}).get("git_sha", "")
-        revision_ok = (not recorded) or recorded == self.current_sha
+        sha_ok = bool(expected_sha) and digest == expected_sha
+        recorded = recorded_sha or (payload if isinstance(payload, dict) else {}).get("git_sha", "")
+        revision_ok = bool(recorded) and recorded == self.current_sha
         age = None
         if target.exists():
             age = (datetime.now(timezone.utc) -

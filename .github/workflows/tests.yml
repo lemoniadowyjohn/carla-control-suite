@@ -41,10 +41,12 @@ jobs:
     # Phase-2 delta 4: the hermetic Windows suite runs ~30 min; hosted runners
     # are slower and start cold, so 60 min left too little headroom.
     timeout-minutes: 90
+    env:
+      # GUI tests require an offscreen Qt platform (GUI-integration lane).
+      QT_QPA_PLATFORM: offscreen
+      PYTHONDONTWRITEBYTECODE: "1"
     permissions:
       contents: read
-    env:
-      PYTHONDONTWRITEBYTECODE: "1"
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
         with:
@@ -83,8 +85,26 @@ jobs:
       - name: Install YOLO layer without its transitive GUI OpenCV
         run: pip install --no-deps -r requirements-yolo.txt
 
-      - name: Install package editable for tests
-        run: pip install -e .
+      - name: Install package editable with GUI test dependencies
+        run: pip install -e ".[gui]"
+
+      - name: Representative optional imports (full offline profile)
+        run: |
+          python - <<'PY'
+          import importlib
+          for mod in (
+              "ultimate_pipeline.domain_gap",
+              "ultimate_pipeline.domain_gap_gnn",
+              "ultimate_pipeline.carla_tools",
+              "ultimate_pipeline.quality",
+              "ultimate_pipeline.sensors",
+              "ultimate_pipeline.topology",
+              "ultimate_pipeline.experiments",
+              "ultimate_pipeline.tools",
+          ):
+              importlib.import_module(mod)
+          print("OPTIONAL_IMPORT_SMOKE_OK")
+          PY
 
       # Phase-2 delta 1: fail closed before running any test if a repository
       # module could be supplied by another checkout. Ordering is not accepted
@@ -155,15 +175,12 @@ jobs:
         run: |
           /tmp/up-wheel-smoke/bin/python -I - <<'PY'
           import importlib
+          # Clean wheel promises ONLY the core extra-free imports.
+          # Optional surface imports are tested above against full CI deps.
           mods = [
-              "ultimate_pipeline.domain_gap",
-              "ultimate_pipeline.domain_gap_gnn",
-              "ultimate_pipeline.carla_tools",
-              "ultimate_pipeline.quality",
-              "ultimate_pipeline.sensors",
-              "ultimate_pipeline.topology",
-              "ultimate_pipeline.experiments",
-              "ultimate_pipeline.tools",
+              "ultimate_pipeline",
+              "ultimate_pipeline.cli",
+              "ultimate_pipeline.common",
           ]
           for mod in mods:
               importlib.import_module(mod)
