@@ -668,3 +668,47 @@ def test_claim_restore_never_clobbers_a_concurrent_successor(repo, monkeypatch):
         "displaced evidence must be preserved as a tombstone"
     Path(tomb).unlink()
     path.unlink()
+
+
+def test_failed_tombstone_restore_blocks_acquisition_and_preserves_evidence(
+    repo, monkeypatch
+):
+    """An un-restorable displaced generation must block fresh publication."""
+    from ultimate_pipeline.governance.single_writer import common_git_lock as cgl
+
+    cgl.acquire_common_git_lock(repo, "git test", timeout_seconds=2)
+    path = cgl._get_common_git_lock_path(repo)
+    original = path.read_bytes()
+    # Make the audited bytes fail the predicate, then deny only the restore.
+    # The production path must stop instead of treating the now-absent final
+    # pathname as an empty namespace and publishing a new owner over the gap.
+    original_durable_replace = cgl._durable_replace
+    moved = {"tomb": None}
+
+    def fail_tombstone_restore(source, destination):
+        source = Path(source)
+        destination = Path(destination)
+        if destination == path and source.name.endswith(".tombstone"):
+            moved["tomb"] = source
+            raise PermissionError("injected restore denial")
+        result = original_durable_replace(source, destination)
+        if destination.name.endswith(".tombstone"):
+            moved["tomb"] = destination
+        return result
+
+    monkeypatch.setattr(cgl, "_durable_replace", fail_tombstone_restore)
+    with pytest.raises(RuntimeError, match="restore"):
+        cgl._claim_by_rename(repo, "adversarial", lambda raw: False)
+
+    # The complete original lock must remain recoverable under the tombstone,
+    # and the failed claim must not publish another generation.
+    assert moved["tomb"] is not None and moved["tomb"].exists()
+    assert moved["tomb"].read_bytes() == original
+    assert not path.exists()
+
+    # Explicit recovery is required before acquisition can resume. The
+    # acquisition path itself must surface uncertainty instead of publishing.
+    with pytest.raises(RuntimeError, match="unresolved"):
+        cgl.acquire_common_git_lock(repo, "git retry", timeout_seconds=1)
+    assert not path.exists()
+    assert moved["tomb"].read_bytes() == original

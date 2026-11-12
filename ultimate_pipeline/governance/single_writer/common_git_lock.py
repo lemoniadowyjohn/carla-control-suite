@@ -344,6 +344,15 @@ def _publish_exclusive(path: Path, payload: dict) -> bool:
     if the destination exists, on both POSIX and Windows. The published path is
     therefore never seen empty or half-written.
     """
+    unresolved_tombstones = sorted(
+        path.parent.glob(f"{path.name}.*.tombstone")
+    )
+    if unresolved_tombstones:
+        sample = unresolved_tombstones[0]
+        raise RuntimeError(
+            "common Git lock recovery evidence is unresolved; refusing new "
+            f"publication while tombstone remains: {sample}"
+        )
     tmp = path.with_name(f"{path.name}.{os.getpid()}.{uuid.uuid4().hex}.pub")
     data = json.dumps(payload, indent=2, sort_keys=True)
     fd = os.open(str(tmp), os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o644)
@@ -584,8 +593,22 @@ def _claim_by_rename_claimed(repo_root: Path, tag: str, expect):
         # evidence is never destroyed.
         try:
             _durable_replace(tomb, path)
-        except OSError:
-            pass
+        except OSError as exc:
+            # The bytes moved to ``tomb`` were not proven to be ours. If the
+            # restore fails, returning an ordinary miss lets acquisition treat
+            # the now-absent published path as an empty namespace and publish
+            # a new owner while the displaced generation exists only in the
+            # tombstone. Keep the tombstone as recovery evidence and stop the
+            # enclosing operation so no caller can publish across this gap.
+            evidence = (
+                f"; preserved evidence at {tomb}"
+                if tomb.exists()
+                else "; published-path state is uncertain"
+            )
+            raise RuntimeError(
+                "failed to restore an unowned common Git lock generation"
+                f"{evidence}"
+            ) from exc
         return False, None
 
 
