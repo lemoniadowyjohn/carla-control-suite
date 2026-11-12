@@ -541,15 +541,33 @@ def _resolve_final_artifact_receipt_impl(
         raise FinalArtifactReceiptError("Receipt source_manifest.sha256 is required")
     source_manifest_path_value = source_manifest.get("path")
     if isinstance(source_manifest_path_value, str) and source_manifest_path_value:
-        # Unlike final_xodr/immediate_parent/acceptance_receipt (always
-        # relativized via ``_receipt_path`` in ``build_receipt``),
-        # ``source_manifest.path`` is recorded as the caller's literal
-        # ``source_manifest_identity["inputs_manifest_path"]``, which is
-        # typically an ABSOLUTE path. ``_resolve_within_root`` still enforces
-        # containment after resolving either form.
-        source_manifest_file = _resolve_within_root(
-            root, Path(source_manifest_path_value), what="source_manifest.path"
+        # V93 round 2 (F1 regression): unlike final_xodr/immediate_parent/
+        # acceptance_receipt (produced INSIDE this run and always relativized
+        # via ``_receipt_path`` in ``build_receipt``), ``source_manifest`` is
+        # the pinned GENERATION INPUT this artifact came from
+        # (``main_pipeline._source_manifest_identity`` records the absolute
+        # ``<repo>/campaigns/.../INPUTS_MANIFEST.json``) -- an external
+        # input that lives outside ``out_dir``/``run_dir`` by design in every
+        # real production run. Containment is the wrong rule for this field:
+        # applying ``_resolve_within_root`` here rejected every production
+        # receipt. Accept both an absolute path and a run_dir-relative path
+        # (for older/alternate producers); rehash when the file is present
+        # (a mismatch is still a hard failure -- the provenance claim would
+        # be false), and record explicit UNVERIFIED, never a raise, when
+        # the file is simply absent (the common case for external inputs
+        # that may have been moved/archived after the run, or for synthetic
+        # test fixtures) -- never a silent pass, never a false containment
+        # rejection either.
+        source_manifest_path = Path(source_manifest_path_value)
+        source_manifest_file = (
+            source_manifest_path
+            if source_manifest_path.is_absolute()
+            else (root / source_manifest_path)
         )
+        try:
+            source_manifest_file = source_manifest_file.resolve()
+        except (OSError, RuntimeError):
+            pass
         if source_manifest_file.is_file():
             actual_source_manifest_sha = sha256_file(str(source_manifest_file))
             if actual_source_manifest_sha != source_manifest_sha_value:
@@ -611,14 +629,15 @@ def _resolve_final_artifact_receipt_impl(
     if not acceptance_file.is_file() or sha256_file(str(acceptance_file)) != acceptance.get("sha256"):
         raise FinalArtifactReceiptError("Receipt acceptance receipt SHA-256 does not match disk")
 
-    # V93-18: the resolver, like the builder, must not trust the receipt's
-    # self-reported ``map_acceptance_status`` alone -- that is a claim ABOUT
-    # the acceptance file, not the file itself. Parse the acceptance file's
-    # own content and require it to independently say the same thing. A
-    # receipt whose acceptance_receipt hash matches disk but whose actual
-    # content says ``valid_for_experiments: false`` (e.g. a receipt forged or
-    # replayed against a since-failed acceptance) must be rejected here, not
-    # just at build time.
+    # V93-18/round-2 F2: the resolver, like the builder, must not trust the
+    # receipt's self-reported ``map_acceptance_status`` alone -- that is a
+    # claim ABOUT the acceptance file, not the file itself. Parse the
+    # acceptance file's own content and require it to independently satisfy
+    # the SAME shared release contract ``build_receipt`` requires
+    # (``validate_release_acceptance_contract``) -- a bare or diagnostic
+    # acceptance (even one whose hash matches disk) must be rejected here,
+    # not just at build time. Identity is REQUIRED, not merely checked when
+    # present.
     try:
         with acceptance_file.open("r", encoding="utf-8") as fh:
             acceptance_file_payload = json.load(fh)
@@ -628,28 +647,20 @@ def _resolve_final_artifact_receipt_impl(
         ) from exc
     if not isinstance(acceptance_file_payload, dict):
         raise FinalArtifactReceiptError("Acceptance receipt root must be a JSON object")
-    if acceptance_file_payload.get("valid_for_experiments") is not True:
+
+    from ultimate_pipeline.quality.map_acceptance import (
+        validate_release_acceptance_contract,
+    )
+
+    contract_problems = validate_release_acceptance_contract(
+        acceptance_file_payload,
+        expected_xodr_sha256=actual_sha,
+        expected_run_id=root.name,
+    )
+    if contract_problems:
         raise FinalArtifactReceiptError(
-            "Receipt is not published: on-disk acceptance receipt does not "
-            "record valid_for_experiments=True"
-        )
-    file_final_sha = acceptance_file_payload.get("final_xodr_sha256")
-    if isinstance(file_final_sha, str) and file_final_sha and file_final_sha != actual_sha:
-        raise FinalArtifactReceiptError(
-            "Receipt is not published: on-disk acceptance receipt "
-            "final_xodr_sha256 does not match the resolved final XODR"
-        )
-    file_eval_sha = acceptance_file_payload.get("evaluated_xodr_sha256")
-    if isinstance(file_eval_sha, str) and file_eval_sha and file_eval_sha != actual_sha:
-        raise FinalArtifactReceiptError(
-            "Receipt is not published: on-disk acceptance receipt "
-            "evaluated_xodr_sha256 does not match the resolved final XODR"
-        )
-    file_run_id = acceptance_file_payload.get("run_id")
-    if isinstance(file_run_id, str) and file_run_id and file_run_id != root.name:
-        raise FinalArtifactReceiptError(
-            "Receipt is not published: on-disk acceptance receipt run_id "
-            f"{file_run_id!r} does not match run directory {root.name!r}"
+            "Receipt is not published: on-disk acceptance receipt fails the "
+            f"release contract: {contract_problems}"
         )
 
     capability_state = _required_mapping(receipt, "capability_state")
@@ -1026,43 +1037,39 @@ class ArtifactAuthorityLedger:
         # truth is a failure, not an implicit pass.  Certification failures
         # are represented explicitly by the pipeline and are equally
         # non-publishable.
+        #
+        # V93 round 2 (F2): a bare ``valid_for_experiments: True`` -- with no
+        # ``release_eligible``, no ``acceptance_policy.purpose == "release"``,
+        # no ``mandatory_gates`` covering the authoritative set, and no
+        # identity binding -- used to be sufficient to reach PUBLISHED here.
+        # That let a diagnostic (or outright bare/forged) acceptance become a
+        # resolvable receipt. ``validate_release_acceptance_contract`` is the
+        # ONE shared definition of "valid release acceptance"
+        # (main_pipeline._require_valid_map_acceptance uses the same
+        # function); it is now applied here to BOTH the in-memory
+        # ``map_acceptance`` dict and the on-disk acceptance file
+        # independently, with the identity fields REQUIRED (not merely
+        # checked when present) and bound to the actual published artifact's
+        # sha256 and this receipt's run_id.
+        from ultimate_pipeline.quality.map_acceptance import (
+            validate_release_acceptance_contract,
+        )
+
         publication_reasons: List[str] = []
-        if acceptance.get("valid_for_experiments") is not True:
-            publication_reasons.append("map acceptance is not valid for experiments")
-        if acceptance_file_payload.get("valid_for_experiments") is not True:
-            publication_reasons.append(
-                "on-disk acceptance receipt does not record valid_for_experiments=True"
-            )
-        file_final_sha = acceptance_file_payload.get("final_xodr_sha256")
-        if (
-            isinstance(file_final_sha, str)
-            and file_final_sha
-            and file_final_sha != final_sha
-        ):
-            publication_reasons.append(
-                "on-disk acceptance receipt final_xodr_sha256 does not match the "
-                "published final artifact"
-            )
-        file_eval_sha = acceptance_file_payload.get("evaluated_xodr_sha256")
-        if (
-            isinstance(file_eval_sha, str)
-            and file_eval_sha
-            and file_eval_sha != final_sha
-        ):
-            publication_reasons.append(
-                "on-disk acceptance receipt evaluated_xodr_sha256 does not match "
-                "the published final artifact"
-            )
-        file_run_id = acceptance_file_payload.get("run_id")
-        if (
-            isinstance(file_run_id, str)
-            and file_run_id
-            and file_run_id != effective_run_id
-        ):
-            publication_reasons.append(
-                f"on-disk acceptance receipt run_id {file_run_id!r} does not match "
-                f"receipt run_id {effective_run_id!r}"
-            )
+        memory_contract_problems = validate_release_acceptance_contract(
+            acceptance, expected_xodr_sha256=final_sha, expected_run_id=effective_run_id
+        )
+        publication_reasons.extend(
+            f"in-memory map_acceptance: {problem}" for problem in memory_contract_problems
+        )
+        file_contract_problems = validate_release_acceptance_contract(
+            acceptance_file_payload,
+            expected_xodr_sha256=final_sha,
+            expected_run_id=effective_run_id,
+        )
+        publication_reasons.extend(
+            f"on-disk acceptance receipt: {problem}" for problem in file_contract_problems
+        )
         certification_reason = _literal_spec_publication_reason(certification)
         if certification_reason:
             publication_reasons.append(certification_reason)

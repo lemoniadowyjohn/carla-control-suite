@@ -359,6 +359,22 @@ def test_standalone_cli_diagnostic_is_never_a_release_certificate(tmp_path):
     assert acc["mandatory_gates"] == []
 
 
+# V93 round 2 (F2 "make signals.index.release_acceptance_status
+# consistent"): release_acceptance_status now independently re-derives the
+# verdict via validate_release_acceptance_contract, so a payload must
+# genuinely carry mandatory_gates + identity, not just the three
+# self-reported fields (valid_for_experiments/release_eligible/purpose) --
+# those alone are exactly the "forged flag" shape this closes.
+_FULL_RELEASE_PAYLOAD = {
+    "valid_for_experiments": True,
+    "release_eligible": True,
+    "acceptance_policy": {"purpose": "release"},
+    "mandatory_gates": list(fag.RELEASE_MANDATORY_GATES),
+    "final_xodr_sha256": "a" * 64,
+    "evaluated_xodr_sha256": "a" * 64,
+}
+
+
 # ---- Review round 1: signal consumer, promotion-path snapshot + boundary ----------------
 @pytest.mark.parametrize(
     "payload, expected",
@@ -372,8 +388,13 @@ def test_standalone_cli_diagnostic_is_never_a_release_certificate(tmp_path):
           "acceptance_policy": {"purpose": "release"}}, "FAIL"),
         ({"valid_for_experiments": True, "release_eligible": True,
           "acceptance_policy": {"purpose": "diagnostic"}}, "INCOMPLETE"),  # forged flag, wrong purpose
+        (_FULL_RELEASE_PAYLOAD, "PASS"),
+        # V93 round 2 (F2): the three self-reported fields alone -- no
+        # mandatory_gates, no identity -- must NOT be enough, even though
+        # release_eligible/purpose look correct. This is the forged-flag
+        # shape the pre-round-2 test wrongly asserted PASS for.
         ({"valid_for_experiments": True, "release_eligible": True,
-          "acceptance_policy": {"purpose": "release"}}, "PASS"),
+          "acceptance_policy": {"purpose": "release"}}, "INCOMPLETE"),
     ],
 )
 def test_map_acceptance_signal_requires_release_eligibility(payload, expected):
@@ -394,7 +415,7 @@ def test_release_profiles_apply_release_acceptance_policy(profile):
     base = normalize_signal_status("MAP_ACCEPTANCE", legacy)
     assert base == "PASS"  # experiment semantics unchanged
     assert apply_release_acceptance_policy("MAP_ACCEPTANCE", base, legacy, profile) == "INCOMPLETE"
-    good = {"valid_for_experiments": True, "release_eligible": True, "acceptance_policy": {"purpose": "release"}}
+    good = _FULL_RELEASE_PAYLOAD
     assert apply_release_acceptance_policy("MAP_ACCEPTANCE", "PASS", good, profile) == "PASS"
 
 

@@ -55,7 +55,7 @@ import uuid
 import xml.etree.ElementTree as ET
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Tuple
 import ultimate_pipeline.bootstrap_repo_root  # noqa: F401
 import random
 import numpy as np
@@ -3645,25 +3645,39 @@ if str(_repo_root) not in sys.path:
             )
             self.map_acceptance = map_acceptance
             acc_path = os.path.join(self.out_dir, "map_acceptance.json")
-            with open(acc_path, "w", encoding="utf-8") as f:
+            # F3 (V93 round 2): this first write must be atomic too -- a
+            # crash mid-write here must never leave a torn/partial
+            # map_acceptance.json that a later reader could misparse as
+            # something other than what it actually is.
+            tmp_first_acc_path = f"{acc_path}.tmp"
+            with open(tmp_first_acc_path, "w", encoding="utf-8") as f:
                 json.dump(map_acceptance, f, indent=2, default=str)
+                f.flush()
+                os.fsync(f.fileno())
+            os.replace(tmp_first_acc_path, acc_path)
             print(f"[AUTHORITY] map_acceptance.json -> {acc_path}")
             # V86 A6: the published artifact must still be byte-identical to the
             # snapshot the gates evaluated. Tampering after evaluation and
             # before the receipt fails the run.
             unchanged, actual_sha = verify_artifact_unchanged(final_out, snapshot["sha256"])
             if not unchanged:
-                # PR #30 review (Sourcery "Failed run leaves passing receipt"):
-                # map_acceptance.json was already durably written above with a
-                # PASSING payload (it had to be, to even reach this identity
-                # check). If we just raise, that passing file remains on disk
-                # describing a run that is about to fail -- a later reader of
-                # this out_dir (a retried run that doesn't start clean, an
-                # external tool, _require_valid_map_acceptance if this run
-                # were ever resumed) could trust it. Atomically replace it
-                # with an explicit, non-eligible failure payload BEFORE
-                # raising, so no passing acceptance artifact survives this
-                # failure.
+                # PR #30 review (Sourcery "Failed run leaves passing receipt")
+                # + V93 round 2 F3: map_acceptance.json (root) AND the nested
+                # artifacts/<run_id>/map_acceptance.json copy were already
+                # durably written above with a PASSING payload (they had to
+                # be, to even reach this identity check). If we just raise,
+                # those passing files remain on disk describing a run that is
+                # about to fail -- a later reader of this out_dir (a retried
+                # run that doesn't start clean, an external tool,
+                # _require_valid_map_acceptance if this run were ever
+                # resumed) could trust either one. Invalidate BOTH before
+                # raising. The failure payload carries NO stale digests: the
+                # original map_acceptance's own ``acceptance_artifact_sha256``
+                # / ``payload_sha256`` were computed over the now-superseded
+                # PASSING content and are dropped rather than copied forward
+                # unchanged (V93-17's non-self-referential-digest rule cuts
+                # both ways -- a digest over content that is no longer on
+                # disk is worse than no digest).
                 failure_reason = {
                     "gate": "artifact_identity",
                     "reason": (
@@ -3671,7 +3685,11 @@ if str(_repo_root) not in sys.path:
                         f"(evaluated sha256={snapshot['sha256']}, now {actual_sha})"
                     ),
                 }
-                failure_payload = dict(map_acceptance)
+                failure_payload = {
+                    k: v
+                    for k, v in map_acceptance.items()
+                    if k not in ("acceptance_artifact_sha256", "payload_sha256")
+                }
                 failure_payload["valid_for_experiments"] = False
                 failure_payload["valid"] = False
                 failure_payload["release_eligible"] = False
@@ -3682,13 +3700,42 @@ if str(_repo_root) not in sys.path:
                 failure_payload["failed_gates"] = list(
                     map_acceptance.get("failed_gates") or []
                 ) + ["artifact_identity"]
-                tmp_acc_path = f"{acc_path}.tmp"
-                with open(tmp_acc_path, "w", encoding="utf-8") as fh:
-                    json.dump(failure_payload, fh, indent=2, default=str)
-                    fh.flush()
-                    os.fsync(fh.fileno())
-                os.replace(tmp_acc_path, acc_path)
                 self.map_acceptance = failure_payload
+
+                nested_acc_path = map_acceptance.get("acceptance_artifact")
+                rewrite_errors: List[Tuple[str, Exception]] = []
+                for target_path in (acc_path, nested_acc_path):
+                    if not target_path:
+                        continue
+                    try:
+                        tmp_target_path = f"{target_path}.tmp"
+                        with open(tmp_target_path, "w", encoding="utf-8") as fh:
+                            json.dump(failure_payload, fh, indent=2, default=str)
+                            fh.flush()
+                            os.fsync(fh.fileno())
+                        os.replace(tmp_target_path, target_path)
+                    except OSError as rewrite_exc:
+                        # The rewrite itself failed (e.g. disk full). Fall
+                        # back to unlinking the passing file outright: a
+                        # MISSING acceptance artifact is a safe failure mode
+                        # (every downstream reader -- _require_valid_map_
+                        # acceptance, the receipt builder -- already treats a
+                        # missing/unparsable file as fail-closed); a PASSING
+                        # one left behind is not.
+                        try:
+                            os.unlink(target_path)
+                        except OSError:
+                            pass
+                        rewrite_errors.append((target_path, rewrite_exc))
+
+                if rewrite_errors:
+                    detail = "; ".join(f"{p}: {e}" for p, e in rewrite_errors)
+                    raise RuntimeError(
+                        "TERMINAL_FAILED(ARTIFACT_IDENTITY): final artifact changed "
+                        f"after acceptance (evaluated {snapshot['sha256']}, now "
+                        f"{actual_sha}); additionally failed to durably invalidate "
+                        f"stale passing acceptance artifact(s): {detail}"
+                    ) from rewrite_errors[0][1]
                 raise RuntimeError(
                     "TERMINAL_FAILED(ARTIFACT_IDENTITY): final artifact changed after "
                     f"acceptance (evaluated {snapshot['sha256']}, now {actual_sha})"

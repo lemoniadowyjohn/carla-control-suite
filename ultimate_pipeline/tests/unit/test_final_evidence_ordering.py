@@ -42,6 +42,7 @@ from __future__ import annotations
 
 import inspect
 import json
+import os
 import re
 import types
 from pathlib import Path
@@ -599,3 +600,79 @@ class TestPublishedEvidenceIsAuthoritative:
             for item in payload["hard_fail_reasons"]
         )
         assert "artifact_identity" in payload["failed_gates"]
+        # F3 (V93 round 2): the failure payload carries no stale digests --
+        # acceptance_artifact_sha256/payload_sha256 were computed over the
+        # now-superseded PASSING content and must not be copied forward.
+        assert "acceptance_artifact_sha256" not in payload
+        assert "payload_sha256" not in payload
+
+        # F3: the nested artifacts/<run_id>/map_acceptance.json copy must
+        # ALSO be invalidated, not just the root file.
+        run_id = Path(out_dir).name
+        nested_path = Path(out_dir) / "artifacts" / run_id / "map_acceptance.json"
+        assert nested_path.is_file()
+        nested_payload = json.loads(nested_path.read_text(encoding="utf-8"))
+        assert nested_payload["valid_for_experiments"] is False
+        assert nested_payload["release_eligible"] is False
+        assert any(
+            item.get("gate") == "artifact_identity"
+            for item in nested_payload["hard_fail_reasons"]
+        )
+
+    def test_map_acceptance_rewrite_failure_still_raises_and_unlinks(
+        self, staged, monkeypatch
+    ):
+        """F3: if the invalidating rewrite itself fails (os.replace raises,
+        e.g. disk full), the run must still raise TERMINAL_FAILED (chaining
+        the OSError), and the passing file must not survive -- fall back to
+        unlinking it."""
+        pipe, xodr, out_dir = staged
+        import ultimate_pipeline.quality.map_acceptance as map_acceptance_mod
+
+        real_build = map_acceptance_mod.build_map_acceptance
+
+        def mutate_after_gates(*args, **kwargs):
+            result = real_build(*args, **kwargs)
+            Path(xodr).write_text(
+                BASE_XODR.replace('name="p0c"', 'name="p0c-mutated"'),
+                encoding="utf-8",
+            )
+            return result
+
+        monkeypatch.setattr(map_acceptance_mod, "build_map_acceptance", mutate_after_gates)
+
+        # Let the FIRST atomic write of map_acceptance.json (the PASSING
+        # content, before the identity check even runs) succeed; fail only
+        # the SECOND (invalidating) rewrite, simulating a disk-full fault at
+        # exactly the point F3 is hardening.
+        real_replace = os.replace
+        replace_calls_to_map_acceptance = {"count": 0}
+
+        def failing_replace(src, dst, *args, **kwargs):
+            if str(dst).endswith("map_acceptance.json"):
+                replace_calls_to_map_acceptance["count"] += 1
+                if replace_calls_to_map_acceptance["count"] > 1:
+                    raise OSError(28, "simulated disk full")
+            return real_replace(src, dst, *args, **kwargs)
+
+        monkeypatch.setattr(main_pipeline_mod.os, "replace", failing_replace)
+
+        with pytest.raises(RuntimeError, match="ARTIFACT_IDENTITY") as exc_info:
+            pipe._publish_final_artifact_authority(xodr, seam_report={"ok": True})
+
+        # The OSError must be reachable in the exception chain, not swallowed.
+        cause_chain = []
+        cur = exc_info.value
+        while cur is not None:
+            cause_chain.append(cur)
+            cur = cur.__cause__
+        assert any(isinstance(e, OSError) for e in cause_chain), [
+            type(e).__name__ for e in cause_chain
+        ]
+
+        # The passing file must not survive: either the rewrite's fallback
+        # unlink removed it, or it never existed under this name.
+        acc_path = Path(out_dir) / "map_acceptance.json"
+        if acc_path.exists():
+            payload = json.loads(acc_path.read_text(encoding="utf-8"))
+            assert payload.get("valid_for_experiments") is not True

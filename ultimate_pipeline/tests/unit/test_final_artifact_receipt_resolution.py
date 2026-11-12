@@ -26,6 +26,7 @@ from ultimate_pipeline.contracts.stage_capabilities import (
     STRUCTURE_FROZEN,
 )
 from ultimate_pipeline.contracts.stage_contracts import QualityStatus
+from ultimate_pipeline.quality.final_artifact_gates import RELEASE_MANDATORY_GATES
 from ultimate_pipeline.signals.index import STATUS_PASS, normalize_signal_status
 
 
@@ -37,6 +38,22 @@ XODR = """<?xml version=\"1.0\" encoding=\"UTF-8\"?>
 </road></OpenDRIVE>"""
 
 
+def _release_acceptance_payload(xodr_path: Path, run_id: str) -> dict:
+    """A minimal acceptance payload that genuinely satisfies
+    ``validate_release_acceptance_contract`` (V93 round 2, F2)."""
+    sha = sha256_file(str(xodr_path))
+    return {
+        "valid_for_experiments": True,
+        "release_eligible": True,
+        "acceptance_policy": {"purpose": "release"},
+        "mandatory_gates": list(RELEASE_MANDATORY_GATES),
+        "final_xodr_sha256": sha,
+        "evaluated_xodr_sha256": sha,
+        "run_id": run_id,
+        "failed_gates": [],
+    }
+
+
 def _write_receipt(
     run_dir: Path, final_name: str = "published.xodr", *, schema_version: int = 1
 ) -> Path:
@@ -45,7 +62,9 @@ def _write_receipt(
     parent = run_dir / "08h3_parent.xodr"
     parent.write_text(XODR, encoding="utf-8")
     acceptance = run_dir / "map_acceptance.json"
-    acceptance.write_text('{"valid_for_experiments": true}', encoding="utf-8")
+    acceptance.write_text(
+        json.dumps(_release_acceptance_payload(final, run_dir.name)), encoding="utf-8"
+    )
     source_manifest = run_dir / "inputs_manifest.json"
     source_manifest.write_text('{"inputs": {}}', encoding="utf-8")
     receipt = {

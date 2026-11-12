@@ -468,6 +468,24 @@ def finalize_run_pack(
             f"release root could not be created: {root.as_posix()}: {exc}"
         )
 
+    # F4 (V93 round 2): revoke any stale PACK_COMPLETE.txt from a PREVIOUS
+    # finalize_run_pack call against this same root before classifying
+    # anything new -- the same reason SUCCESS.txt is explicitly revoked by
+    # callers before a new run starts (core/terminal_authority.py,
+    # perception/train_launcher.py). Without this, a run that reaches only
+    # FAIL this time (or crashes before reaching this function at all on a
+    # later attempt) could leave an OLDER successful marker on disk, where a
+    # reader would see "PACK_COMPLETE.txt exists" and wrongly treat the
+    # CURRENT attempt as complete.
+    try:
+        (root / PACK_COMPLETE_FILENAME).unlink()
+    except FileNotFoundError:
+        pass
+    except OSError as exc:
+        raise FinalizationError(
+            f"could not revoke stale {PACK_COMPLETE_FILENAME}: {exc}"
+        )
+
     classification = classify_requested_paths(root, key_paths, mandatory=mandatory)
 
     # Post-classification check: mandatory artifacts not in key_paths must fail
@@ -575,18 +593,23 @@ def _write_success_bound(out_dir: Path, receipt: Dict[str, Any], summary: str) -
 def verify_run_pack(out_dir: str | os.PathLike[str]) -> Dict[str, Any]:
     """Re-verify a finalized run pack against its manifest.
 
-    Detects post-finalization tampering of a hashed artifact and any attempt to
-    publish SUCCESS.txt without a complete, PASS manifest.
+    Detects post-finalization tampering of a hashed artifact and any attempt
+    to publish SUCCESS.txt or PACK_COMPLETE.txt without a complete, PASS
+    manifest (F4, V93 round 2: PACK_COMPLETE.txt is now bound and verified
+    exactly like SUCCESS.txt -- it is a real completion claim, not an
+    unverified side artifact).
     """
     root = Path(out_dir).expanduser().resolve()
     sig_path = root / SIGNATURE_FILENAME
     success_path = root / SUCCESS_FILENAME
+    pack_complete_path = root / PACK_COMPLETE_FILENAME
 
     result: Dict[str, Any] = {
         "schema": "RUN_PACK_VERIFICATION/v2",
         "release_root": root.as_posix(),
         "signature_present": sig_path.is_file(),
         "success_present": success_path.is_file(),
+        "pack_complete_present": pack_complete_path.is_file(),
         "status": STATUS_FAIL,
         "problems": [],
     }
@@ -594,6 +617,8 @@ def verify_run_pack(out_dir: str | os.PathLike[str]) -> Dict[str, Any]:
         result["problems"].append("signature.json is missing")
         if result["success_present"]:
             result["problems"].append("SUCCESS.txt present without signature.json")
+        if result["pack_complete_present"]:
+            result["problems"].append("PACK_COMPLETE.txt present without signature.json")
         return result
 
     try:
@@ -660,26 +685,60 @@ def verify_run_pack(out_dir: str | os.PathLike[str]) -> Dict[str, Any]:
         else:
             if not success_text.startswith("OK "):
                 result["problems"].append("SUCCESS.txt does not carry an OK header")
-            bound_manifest = _success_field(success_text, "manifest_sha256")
+            bound_manifest = _marker_field(success_text, "manifest_sha256")
             if bound_manifest is None:
                 result["problems"].append("SUCCESS.txt is not bound to a manifest digest")
             elif bound_manifest != actual_manifest_digest:
                 result["problems"].append(
                     "SUCCESS.txt manifest digest does not match signature.json on disk"
                 )
-            bound_signature = _success_field(success_text, "signature_sha256")
+            bound_signature = _marker_field(success_text, "signature_sha256")
             if bound_signature != recomputed:
                 result["problems"].append(
                     "SUCCESS.txt signature digest does not match the manifest file map"
                 )
-            if _success_field(success_text, "status") != STATUS_PASS:
+            if _marker_field(success_text, "status") != STATUS_PASS:
                 result["problems"].append("SUCCESS.txt does not assert finalization status PASS")
+
+    # F4 (V93 round 2): PACK_COMPLETE.txt is bound and re-verified the same
+    # way SUCCESS.txt is -- a mutant that wrote it on a FAIL (or left a stale
+    # one behind, or rewrote its binding) must be caught here just as
+    # readily as the SUCCESS.txt equivalent.
+    if result["pack_complete_present"]:
+        try:
+            pack_complete_text = pack_complete_path.read_text(encoding="utf-8")
+        except OSError as exc:
+            result["problems"].append(f"PACK_COMPLETE.txt unreadable: {exc}")
+        else:
+            if not pack_complete_text.startswith("PACK_COMPLETE "):
+                result["problems"].append(
+                    "PACK_COMPLETE.txt does not carry a PACK_COMPLETE header"
+                )
+            bound_manifest = _marker_field(pack_complete_text, "manifest_sha256")
+            if bound_manifest is None:
+                result["problems"].append(
+                    "PACK_COMPLETE.txt is not bound to a manifest digest"
+                )
+            elif bound_manifest != actual_manifest_digest:
+                result["problems"].append(
+                    "PACK_COMPLETE.txt manifest digest does not match signature.json on disk"
+                )
+            bound_signature = _marker_field(pack_complete_text, "signature_sha256")
+            if bound_signature != recomputed:
+                result["problems"].append(
+                    "PACK_COMPLETE.txt signature digest does not match the manifest file map"
+                )
+            if _marker_field(pack_complete_text, "status") != STATUS_PASS:
+                result["problems"].append(
+                    "PACK_COMPLETE.txt does not assert finalization status PASS"
+                )
 
     result["status"] = STATUS_PASS if not result["problems"] else STATUS_FAIL
     return result
 
 
-def _success_field(text: str, field: str) -> Optional[str]:
+def _marker_field(text: str, field: str) -> Optional[str]:
+    """Parse one ``key=value`` line from a SUCCESS.txt/PACK_COMPLETE.txt body."""
     for line in text.splitlines():
         if line.startswith(f"{field}="):
             return line.split("=", 1)[1].strip()

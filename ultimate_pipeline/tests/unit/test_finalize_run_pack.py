@@ -303,6 +303,55 @@ def test_verify_detects_manifest_without_success_as_incomplete_evidence(tmp_path
     assert any("not PASS" in p for p in result["problems"])
 
 
+def test_verify_kills_the_pack_complete_on_fail_mutant(tmp_path):
+    """F4 (V93 round 2): reproduces, as a permanent regression test, the exact
+    mutant the review found -- ``if emit_success:`` with the
+    ``receipt["status"] == STATUS_PASS`` condition dropped at
+    ``finalize_run_pack.py`` ~520. Live-verified: with that condition
+    removed, ``finalize_run_pack`` wrote a real PACK_COMPLETE.txt for a FAIL
+    manifest, and the pre-F4 test suite (checking only SUCCESS.txt absence)
+    did not catch it. This test asserts the two things that now do:
+    (1) the real (unmutated) finalize_run_pack never writes PACK_COMPLETE.txt
+    on FAIL (already covered elsewhere, re-asserted here for locality), and
+    (2) verify_run_pack independently flags a HAND-CRAFTED PACK_COMPLETE.txt
+    that asserts PASS beside a FAIL manifest -- the exact shape the mutant
+    would have produced -- even if some other code path ever managed to
+    write one.
+    """
+    _write(tmp_path / "a.bin", "aaa")
+    receipt = finalize_run_pack(tmp_path, ["a.bin", "missing.bin"])
+    assert receipt["status"] == "FAIL"
+    assert not (tmp_path / PACK_COMPLETE_FILENAME).exists()
+
+    # Hand-craft the exact artifact the mutant produced (PACK_COMPLETE.txt
+    # asserting status=PASS, bound to a manifest that is actually FAIL).
+    manifest = json.loads((tmp_path / "signature.json").read_text(encoding="utf-8"))
+    assert manifest["status"] == "FAIL"
+    mutant_body = (
+        "PACK_COMPLETE 2026-01-01T00:00:00Z\n"
+        "status=PASS\n"
+        f"schema={manifest['schema']}\n"
+        f"manifest_sha256={hash_file_sha256(tmp_path / 'signature.json')}\n"
+        f"signature_sha256={manifest['signature_sha256']}\n"
+        f"requested_count={manifest['requested_count']}\n"
+        f"hashed_count={manifest['hashed_count']}\n"
+    )
+    (tmp_path / PACK_COMPLETE_FILENAME).write_text(mutant_body, encoding="utf-8")
+
+    result = verify_run_pack(tmp_path)
+    assert result["status"] == "FAIL"
+    assert any(
+        "PACK_COMPLETE.txt does not assert finalization status PASS" not in p
+        and "manifest status is" in p
+        for p in result["problems"]
+    )
+    # The PACK_COMPLETE-specific check does NOT fire here (the hand-crafted
+    # marker DOES claim PASS, matching the mutant exactly) -- it is the
+    # generic "manifest status is not PASS" check above that catches it,
+    # proving PACK_COMPLETE presence alone cannot override a FAIL manifest.
+    assert result["pack_complete_present"] is True
+
+
 def test_verify_detects_rewritten_success_binding(tmp_path):
     _write(tmp_path / "a.bin", "aaa")
     finalize_run_pack(tmp_path, ["a.bin"], emit_success=False)

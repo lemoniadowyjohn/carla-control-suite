@@ -44,7 +44,7 @@ def test_mandatory_artifact_omitted_from_key_paths_fails(tmp_path):
         f["mandatory"] is True and "key_paths" in f["message"]
         for f in receipt["failures"]
     )
-    assert not (tmp_path / "SUCCESS.txt").exists()
+    assert not (tmp_path / PACK_COMPLETE_FILENAME).exists()  # F4
 
 
 def test_empty_key_paths_with_nonempty_mandatory_fails(tmp_path):
@@ -54,7 +54,7 @@ def test_empty_key_paths_with_nonempty_mandatory_fails(tmp_path):
     assert any(
         f["mandatory"] is True for f in receipt["failures"]
     )
-    assert not (tmp_path / "SUCCESS.txt").exists()
+    assert not (tmp_path / PACK_COMPLETE_FILENAME).exists()  # F4
 
 
 def test_mandatory_artifact_present_in_key_paths_passes(tmp_path):
@@ -80,7 +80,7 @@ def test_mandatory_artifact_missing_on_disk_fails(tmp_path):
         f for f in receipt["failures"] if f.get("mandatory") is True
     ]
     assert len(mandatory_failures) >= 1
-    assert not (tmp_path / "SUCCESS.txt").exists()
+    assert not (tmp_path / PACK_COMPLETE_FILENAME).exists()  # F4
 
 
 def test_multiple_mandatory_one_missing_fails(tmp_path):
@@ -91,7 +91,7 @@ def test_multiple_mandatory_one_missing_fails(tmp_path):
         tmp_path, ["present.bin"], mandatory=["present.bin", "absent.bin"]
     )
     assert receipt["status"] == "FAIL"
-    assert not (tmp_path / "SUCCESS.txt").exists()
+    assert not (tmp_path / PACK_COMPLETE_FILENAME).exists()  # F4
 
 
 def test_multiple_mandatory_all_present_passes(tmp_path):
@@ -119,7 +119,7 @@ def test_no_mandatory_all_optional_missing_is_ok(tmp_path):
     # that behavior.
     receipt = finalize_run_pack(tmp_path, ["missing.bin"])
     assert receipt["status"] == "FAIL"
-    assert not (tmp_path / "SUCCESS.txt").exists()
+    assert not (tmp_path / PACK_COMPLETE_FILENAME).exists()  # F4
 
 
 def test_mandatory_artifact_unreadable_fails(tmp_path, monkeypatch):
@@ -141,7 +141,7 @@ def test_mandatory_artifact_unreadable_fails(tmp_path, monkeypatch):
         tmp_path, ["locked.bin"], mandatory=["locked.bin"]
     )
     assert receipt["status"] == "FAIL"
-    assert not (tmp_path / "SUCCESS.txt").exists()
+    assert not (tmp_path / PACK_COMPLETE_FILENAME).exists()  # F4
 
 
 def test_mandatory_artifact_outside_root_fails(tmp_path):
@@ -157,4 +157,4 @@ def test_mandatory_artifact_outside_root_fails(tmp_path):
         out_dir, [str(outside)], mandatory=[str(outside)]
     )
     assert receipt["status"] == "FAIL"
-    assert not (out_dir / "SUCCESS.txt").exists()
+    assert not (out_dir / PACK_COMPLETE_FILENAME).exists()  # F4

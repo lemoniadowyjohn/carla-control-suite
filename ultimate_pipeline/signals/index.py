@@ -177,25 +177,35 @@ def release_acceptance_status(payload: Any) -> str:
 
     Release-quality acceptance is ``release_eligible``. It must come from an
     explicit ``purpose == "release"`` evaluation with the authoritative
-    mandatory gate set. ``valid_for_experiments`` alone (a diagnostic, legacy
+    mandatory gate set AND identity evidence binding it to the actual
+    published artifact. ``valid_for_experiments`` alone (a diagnostic, legacy
     or thesis evaluation) never satisfies a release profile. A pre-V86
     payload cannot prove release eligibility: an explicit failure is FAIL,
     anything else INCOMPLETE, never a fresh release certificate.
+
+    V93 round 2 (F2 "make signals.index.release_acceptance_status
+    consistent"): trusting a self-reported ``release_eligible: True`` on an
+    arbitrary payload is the same class of bug as build_receipt/the resolver
+    trusting a bare ``valid_for_experiments: True`` -- a forged or
+    hand-written payload could set that flag directly without satisfying the
+    gate-superset or identity conditions it is supposed to summarize. This
+    now independently re-derives the same verdict via
+    ``map_acceptance.validate_release_acceptance_contract``, the one shared
+    definition of "valid release acceptance" also used by
+    ``main_pipeline._require_valid_map_acceptance`` and
+    ``ArtifactAuthorityLedger.build_receipt``/``resolve_final_artifact_receipt``.
     """
     if not isinstance(payload, dict):
         return STATUS_FAIL
     valid = payload.get("valid_for_experiments", payload.get("valid"))
     if valid is False:
         return STATUS_FAIL
-    policy = payload.get("acceptance_policy")
-    if (
-        isinstance(policy, dict)
-        and policy.get("purpose") == "release"
-        and payload.get("release_eligible") is True
-        and valid is True
-    ):
-        return STATUS_PASS
-    return STATUS_INCOMPLETE
+    from ultimate_pipeline.quality.map_acceptance import (
+        validate_release_acceptance_contract,
+    )
+
+    problems = validate_release_acceptance_contract(payload)
+    return STATUS_PASS if not problems else STATUS_INCOMPLETE
 
 
 #: Profiles whose verdict is a release claim (V86 A9). Mirrors settings.py
