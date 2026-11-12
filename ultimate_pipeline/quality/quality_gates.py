@@ -16,6 +16,7 @@ MainPipeline expects:
 
 from __future__ import annotations
 
+import hashlib
 import json
 import os
 import tempfile
@@ -45,6 +46,7 @@ TRANSPORT_GATES = frozenset(
         "xodr_minimum_size",
         "xml_parse",
         "quality_gate_manager_import",
+        "xodr_identity_changed",
     }
 )
 
@@ -151,6 +153,7 @@ def run_quality_gates(
 
         source_xodr_path = xodr_path
         admitted_bytes = read_xodr_bytes(source_xodr_path)
+        admitted_sha256 = hashlib.sha256(admitted_bytes).hexdigest()
         root = parse_xodr_bytes(admitted_bytes)
         # Existing gate APIs accept paths and reopen them. Point every such
         # consumer at a private snapshot of the already-admitted bytes.
@@ -258,6 +261,21 @@ def run_quality_gates(
         # Bare name, matching DRIVABILITY_GATES -- see the _try() comment above.
         qgate.fail("external_libopendrive", external_rep)
 
+    # Do not let reports about the admitted snapshot authorize a candidate path
+    # that changed while the sweep was in progress.
+    try:
+        current_bytes = read_xodr_bytes(source_xodr_path)
+        current_sha256 = hashlib.sha256(current_bytes).hexdigest()
+        if current_sha256 != admitted_sha256:
+            raise RuntimeError(
+                f"candidate SHA-256 changed from {admitted_sha256} to {current_sha256}"
+            )
+    except Exception as e:
+        _transport(
+            "xodr_identity_changed",
+            {"error": str(e), "path": source_xodr_path, "admitted_sha256": admitted_sha256},
+        )
+
     failures = qgate.get_failures()
 
     # --- Write artifacts ---
@@ -270,7 +288,11 @@ def run_quality_gates(
 
     try:
         from ultimate_pipeline.quality.check_carla_opendrive_compat import StrictCarlaOpendriveGate
-        artifacts["carla_compat_report"] = {"issues": StrictCarlaOpendriveGate.validate(root), "xodr_path": source_xodr_path}
+        artifacts["carla_compat_report"] = {
+            "issues": StrictCarlaOpendriveGate.validate(root),
+            "xodr_path": source_xodr_path,
+            "admitted_xodr_sha256": admitted_sha256,
+        }
     except Exception as e:
         artifacts["carla_compat_report"] = {"error": str(e)}
 

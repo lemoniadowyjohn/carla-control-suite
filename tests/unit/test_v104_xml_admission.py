@@ -103,6 +103,7 @@ def test_production_quality_wrapper_admits_before_legacy_xml_parser(
     source = tmp_path / "hostile.xodr"
     source.write_bytes(
         b'<!DOCTYPE OpenDRIVE [<!ENTITY x "expanded">]>'
+        b'<!--' + b'padding' * 2000 + b'-->'
         b'<OpenDRIVE><header/><road name="&x;"/></OpenDRIVE>'
     )
     original_parse = ET.parse
@@ -119,7 +120,7 @@ def test_production_quality_wrapper_admits_before_legacy_xml_parser(
     pipeline.settings = SimpleNamespace(ENABLE_QUALITY_GATES_WRAPPER=True)
     pipeline.out_dir = str(tmp_path / "reports")
 
-    with pytest.raises(RuntimeError, match="Quality gate failures"):
+    with pytest.raises(RuntimeError, match="Drivability gates failed|Quality gate failures"):
         pipeline._run_quality_gates_wrapper(str(source))
     assert legacy_candidate_reads == []
 
@@ -157,3 +158,51 @@ def test_mandatory_gates_share_admitted_snapshot_and_reject_late_replacement(
     assert len(seen_paths) == 2
     assert all(Path(path) != source for path in seen_paths)
     assert {report["status"] for report in reports.values()} == {gates.STATUS_BLOCKED_INPUT}
+
+
+def test_quality_gate_wrapper_blocks_candidate_replaced_after_admission(
+    tmp_path, monkeypatch
+) -> None:
+    """The legacy production quality wrapper cannot bless stale snapshot bytes."""
+    from ultimate_pipeline.quality import quality_gates
+
+    source = tmp_path / "candidate.xodr"
+    original = (
+        b"<OpenDRIVE><header/>"
+        b"<userData>" + b"x" * 12_000 + b"</userData></OpenDRIVE>"
+    )
+    source.write_bytes(original)
+
+    class QGate:
+        def __init__(self):
+            self.failures = {}
+
+        def __getattr__(self, name):
+            if name == "get_failures":
+                return lambda: dict(self.failures)
+            if name == "fail":
+                return lambda key, payload: self.failures.__setitem__(key, payload)
+            return lambda *_args, **_kwargs: None
+
+    qgate = QGate()
+    real_checker = __import__(
+        "ultimate_pipeline.quality.check_lane_link_targets_exist",
+        fromlist=["check_lane_link_targets_exist"],
+    ).check_lane_link_targets_exist
+
+    def replace_after_admission(path, *args, **kwargs):
+        assert Path(path) != source
+        source.write_bytes(original + b"<!-- replacement -->")
+        return {"ok": True, "status": "PASS"}
+
+    monkeypatch.setattr(
+        "ultimate_pipeline.quality.check_lane_link_targets_exist.check_lane_link_targets_exist",
+        replace_after_admission,
+    )
+    result = quality_gates.run_quality_gates(str(source), qgate=qgate)
+    assert "xodr_identity_changed" in result
+    assert result["xodr_identity_changed"]["ok"] is False
+    monkeypatch.setattr(
+        "ultimate_pipeline.quality.check_lane_link_targets_exist.check_lane_link_targets_exist",
+        real_checker,
+    )

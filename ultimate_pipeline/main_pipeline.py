@@ -4089,11 +4089,11 @@ if str(_repo_root) not in sys.path:
 
         try:
             from ultimate_pipeline.quality.quality_gates import run_quality_gates
-            from ultimate_pipeline.quality.quality_gates import DRIVABILITY_GATES
+            from ultimate_pipeline.quality.quality_gates import BLOCKING_GATE_NAMES
 
             failures = run_quality_gates(final_out, out_dir=self.out_dir)
 
-            drivability_failures = sorted(set(failures.keys()) & set(DRIVABILITY_GATES))
+            drivability_failures = sorted(set(failures.keys()) & set(BLOCKING_GATE_NAMES))
             if drivability_failures:
                 raise RuntimeError(
                     f"❌ Drivability gates failed: {drivability_failures}"
