@@ -163,6 +163,49 @@ def run_has_v2_lifecycle_artifact(root: str) -> bool:
     return False
 
 
+def release_acceptance_status(payload: Any) -> str:
+    """Release-profile MAP_ACCEPTANCE status (V86 A9).
+
+    Release-quality acceptance is ``release_eligible``. It must come from an
+    explicit ``purpose == "release"`` evaluation with the authoritative
+    mandatory gate set. ``valid_for_experiments`` alone (a diagnostic, legacy
+    or thesis evaluation) never satisfies a release profile. A pre-V86
+    payload cannot prove release eligibility: an explicit failure is FAIL,
+    anything else INCOMPLETE, never a fresh release certificate.
+    """
+    if not isinstance(payload, dict):
+        return STATUS_FAIL
+    valid = payload.get("valid_for_experiments", payload.get("valid"))
+    if valid is False:
+        return STATUS_FAIL
+    policy = payload.get("acceptance_policy")
+    if (
+        isinstance(policy, dict)
+        and policy.get("purpose") == "release"
+        and payload.get("release_eligible") is True
+        and valid is True
+    ):
+        return STATUS_PASS
+    return STATUS_INCOMPLETE
+
+
+#: Profiles whose verdict is a release claim (V86 A9). Mirrors settings.py
+#: ``_apply_release_profile``: every profile except DEVELOPMENT and
+#: EXPERIMENTAL_UNSAFE (both alias to ``debug``) is release. VISUAL_RELEASE and
+#: PERCEPTION_RELEASE alias to visual_build / perception_research. This is NOT
+#: MAP_ACCEPTANCE's ``required_release_profiles``, which also lists ``debug``.
+RELEASE_GRADE_PROFILES = frozenset({"structural_release", "visual_build", "perception_research"})
+
+
+def apply_release_acceptance_policy(signal_id: str, status: str, payload: Any, profile: str) -> str:
+    """Tighten MAP_ACCEPTANCE for release-grade profiles (V86 A9)."""
+    if signal_id != "MAP_ACCEPTANCE" or status != STATUS_PASS:
+        return status
+    if canonical_release_profile(profile) not in RELEASE_GRADE_PROFILES:
+        return status
+    return release_acceptance_status(payload)
+
+
 def normalize_signal_status(
     signal_id: str,
     payload: Any,
@@ -214,6 +257,8 @@ def normalize_signal_status(
         return STATUS_FAIL
 
     if signal_id in {"MAP_ACCEPTANCE", "EXPERIMENT_READINESS"}:
+        # Experiment semantics. Release profiles additionally apply
+        # release_acceptance_status() (V86 A9) in verdict.py and the index.
         if isinstance(payload, dict):
             valid = payload.get("valid_for_experiments")
             if valid is None:
@@ -404,6 +449,7 @@ def build_signal_index(
                 run_id=current_run_id,
                 legacy_receipt_in_v2_run=legacy_receipt_in_v2_run,
             )
+            status = apply_release_acceptance_policy(sid, status, payload, profile)
 
         index[sid] = {
             "signal_id": sid,

@@ -16,8 +16,11 @@ MainPipeline expects:
 
 from __future__ import annotations
 
+import hashlib
 import json
 import os
+import tempfile
+from pathlib import Path
 from typing import Any, Dict, Optional
 
 MIN_XODR_SIZE_BYTES = 10_000  # Minimum bytes for a real road-network XODR; stubs are ~796 bytes
@@ -43,12 +46,17 @@ TRANSPORT_GATES = frozenset(
         "xodr_minimum_size",
         "xml_parse",
         "quality_gate_manager_import",
+        "xodr_identity_changed",
     }
 )
 
 #: Every gate name a consumer must treat as blocking when it appears in the
 #: returned failure mapping.
 BLOCKING_GATE_NAMES = frozenset(DRIVABILITY_GATES) | TRANSPORT_GATES
+
+
+class QualityGateInputError(RuntimeError):
+    """The input was unsafe or changed while gate reports were produced."""
 
 
 def _resolve_vreport(vreport: Optional[object]) -> object:
@@ -143,11 +151,29 @@ def run_quality_gates(
             },
         )
 
-    # --- Parse XML (hard requirement for most gates) ---
+    # --- Admit one bounded byte snapshot before any downstream parser runs ---
     try:
-        import xml.etree.ElementTree as ET
+        from ultimate_pipeline.quality.xml_admission import parse_xodr_bytes, read_xodr_bytes
 
-        root = ET.parse(xodr_path).getroot()
+        source_xodr_path = xodr_path
+        admitted_bytes = read_xodr_bytes(source_xodr_path)
+        admitted_sha256 = hashlib.sha256(admitted_bytes).hexdigest()
+        root = parse_xodr_bytes(admitted_bytes)
+        # Existing gate APIs accept paths and reopen them. Point every such
+        # consumer at a private snapshot of the already-admitted bytes.
+        snapshot_directory = tempfile.TemporaryDirectory(
+            prefix="up-quality-xodr-", dir=str(Path(source_xodr_path).resolve().parent)
+        )
+        snapshot_path = Path(snapshot_directory.name) / "admitted.xodr"
+        with snapshot_path.open("xb") as stream:
+            stream.write(admitted_bytes)
+            stream.flush()
+            os.fsync(stream.fileno())
+        try:
+            snapshot_path.chmod(0o400)
+        except OSError:
+            pass
+        xodr_path = str(snapshot_path)
     except Exception as e:
         return _transport("xml_parse", {"error": str(e), "path": xodr_path})
 
@@ -239,6 +265,21 @@ def run_quality_gates(
         # Bare name, matching DRIVABILITY_GATES -- see the _try() comment above.
         qgate.fail("external_libopendrive", external_rep)
 
+    # Do not let reports about the admitted snapshot authorize a candidate path
+    # that changed while the sweep was in progress.
+    try:
+        current_bytes = read_xodr_bytes(source_xodr_path)
+        current_sha256 = hashlib.sha256(current_bytes).hexdigest()
+        if current_sha256 != admitted_sha256:
+            raise RuntimeError(
+                f"candidate SHA-256 changed from {admitted_sha256} to {current_sha256}"
+            )
+    except Exception as e:
+        _transport(
+            "xodr_identity_changed",
+            {"error": str(e), "path": source_xodr_path, "admitted_sha256": admitted_sha256},
+        )
+
     failures = qgate.get_failures()
 
     # --- Write artifacts ---
@@ -251,7 +292,11 @@ def run_quality_gates(
 
     try:
         from ultimate_pipeline.quality.check_carla_opendrive_compat import StrictCarlaOpendriveGate
-        artifacts["carla_compat_report"] = {"issues": StrictCarlaOpendriveGate.validate(root), "xodr_path": xodr_path}
+        artifacts["carla_compat_report"] = {
+            "issues": StrictCarlaOpendriveGate.validate(root),
+            "xodr_path": source_xodr_path,
+            "admitted_xodr_sha256": admitted_sha256,
+        }
     except Exception as e:
         artifacts["carla_compat_report"] = {"error": str(e)}
 
@@ -283,4 +328,10 @@ def run_quality_gates(
         for k, v in failures.items():
             print(f"  - {k}: {v}")
 
+    if "xodr_identity_changed" in failures:
+        snapshot_directory.cleanup()
+        raise QualityGateInputError(
+            "candidate XODR identity changed during quality-gate evaluation"
+        )
+    snapshot_directory.cleanup()
     return failures

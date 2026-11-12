@@ -53,6 +53,7 @@ import sys
 import traceback
 import uuid
 import xml.etree.ElementTree as ET
+from ultimate_pipeline.quality.xml_admission import parse_xodr_file
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional
@@ -417,7 +418,7 @@ def deep_clone(elem: ET.Element) -> ET.Element:
 
 def _count_lanes(xpath: str) -> int:
     try:
-        r = ET.parse(xpath).getroot()
+        r = parse_xodr_file(xpath)
         return len(r.findall(".//lane"))
     except Exception:
         return -1
@@ -1154,7 +1155,7 @@ class MainPipeline:
     @staticmethod
     def _read_georef_info(path: str) -> dict:
         try:
-            tree = ET.parse(path)
+            tree = ET.ElementTree(parse_xodr_file(path))
             root = tree.getroot()
             header = root.find("header")
             if header is None:
@@ -1174,7 +1175,7 @@ class MainPipeline:
     @staticmethod
     def _read_offset(path: str) -> dict:
         try:
-            tree = ET.parse(path)
+            tree = ET.ElementTree(parse_xodr_file(path))
             root = tree.getroot()
             header = root.find("header")
             if header is None:
@@ -1571,7 +1572,7 @@ class MainPipeline:
         }
 
         try:
-            tree = ET.parse(final_out)
+            tree = ET.ElementTree(parse_xodr_file(final_out))
             root = tree.getroot()
             header = root.find("header")
             if header is None:
@@ -3420,13 +3421,18 @@ if str(_repo_root) not in sys.path:
         return identity
 
     def _collect_final_acceptance_reports(
-        self, final_out: str, *, seam_report: Optional[Dict[str, Any]] = None
+        self,
+        final_out: str,
+        *,
+        seam_report: Optional[Dict[str, Any]] = None,
+        expected_sha256: Optional[str] = None,
     ) -> Dict[str, Any]:
         """Assemble every acceptance report for the FINAL artifact (V85 Phase 2).
 
         Every RELEASE_MANDATORY_GATES gate gets a report dict. A failed recompute
         yields an explicit NOT_RUN report: never silently absent, never stale
-        pre-hygiene evidence.
+        pre-hygiene evidence. V86: ``final_out`` is the immutable
+        content-addressed snapshot, and ``expected_sha256`` is its digest.
         """
         acceptance_reports: Dict[str, Any] = {}
         if isinstance(seam_report, dict):
@@ -3475,7 +3481,14 @@ if str(_repo_root) not in sys.path:
                 out_json=os.path.join(self.out_dir, "lane_successor_autofix_report.json"),
                 allow_dead_ends=True,
             )
-            acceptance_reports["lane_section_successors"] = lane_conn_report
+            # V86 A4: state 'ok' explicitly from broken_count. Acceptance no
+            # longer infers success.
+            from ultimate_pipeline.quality.final_artifact_gates import (
+                normalize_lane_section_report,
+            )
+            acceptance_reports["lane_section_successors"] = normalize_lane_section_report(
+                lane_conn_report
+            )
         except Exception as exc:
             print(f"[AUTHORITY] lane_section_successors recompute FAILED (NOT_RUN): {exc}")
             acceptance_reports["lane_section_successors"] = {
@@ -3496,7 +3509,9 @@ if str(_repo_root) not in sys.path:
             compute_final_artifact_reports,
         )
 
-        for gate_key, gate_report in compute_final_artifact_reports(final_out).items():
+        for gate_key, gate_report in compute_final_artifact_reports(
+            final_out, expected_sha256=expected_sha256
+        ).items():
             acceptance_reports[gate_key] = gate_report
             print(
                 f"[AUTHORITY] {gate_key} recomputed on final artifact: "
@@ -3571,10 +3586,26 @@ if str(_repo_root) not in sys.path:
         )
 
         # ---- acceptance evidence, recomputed against the FINAL artifact ----
-        from ultimate_pipeline.quality.final_artifact_gates import RELEASE_MANDATORY_GATES
+        from ultimate_pipeline.quality.final_artifact_gates import (
+            ACCEPTANCE_POLICY_VERSION,
+            RELEASE_MANDATORY_GATES,
+            snapshot_final_artifact,
+            verify_artifact_unchanged,
+        )
 
+        # V86 A6: every release validator evaluates ONE immutable,
+        # content-addressed copy of the final artifact. Replacing final_out
+        # during validation can no longer mix two maps into one passing
+        # receipt.
+        snapshot = snapshot_final_artifact(
+            final_out, os.path.join(self.out_dir, ".acceptance_snapshot")
+        )
+        print(
+            f"[AUTHORITY] acceptance snapshot {snapshot['sha256'][:16]}... "
+            f"({snapshot['bytes']} bytes) -> {snapshot['path']}"
+        )
         acceptance_reports = self._collect_final_acceptance_reports(
-            final_out, seam_report=seam_report
+            snapshot["path"], seam_report=seam_report, expected_sha256=snapshot["sha256"]
         )
 
         # CODEX C7 (policy unchanged, code relocated): only require enrichment
@@ -3596,12 +3627,24 @@ if str(_repo_root) not in sys.path:
                 out_dir=self.out_dir,
                 require_enrichment=require_enrichment,
                 mandatory_gates=RELEASE_MANDATORY_GATES,
+                purpose="release",
+                policy_version=ACCEPTANCE_POLICY_VERSION,
+                evaluated_xodr_sha256=snapshot["sha256"],
             )
             self.map_acceptance = map_acceptance
             acc_path = os.path.join(self.out_dir, "map_acceptance.json")
             with open(acc_path, "w", encoding="utf-8") as f:
                 json.dump(map_acceptance, f, indent=2, default=str)
             print(f"[AUTHORITY] map_acceptance.json -> {acc_path}")
+            # V86 A6: the published artifact must still be byte-identical to the
+            # snapshot the gates evaluated. Tampering after evaluation and
+            # before the receipt fails the run.
+            unchanged, actual_sha = verify_artifact_unchanged(final_out, snapshot["sha256"])
+            if not unchanged:
+                raise RuntimeError(
+                    "TERMINAL_FAILED(ARTIFACT_IDENTITY): final artifact changed after "
+                    f"acceptance (evaluated {snapshot['sha256']}, now {actual_sha})"
+                )
         except Exception as exc:
             raise RuntimeError(
                 "❌ Final map acceptance could not be produced against the "
@@ -3662,7 +3705,7 @@ if str(_repo_root) not in sys.path:
                 certify_topology,
             )
 
-            final_root = ET.parse(final_out).getroot()
+            final_root = ET.ElementTree(parse_xodr_file(final_out)).getroot()
             topology_certification = certify_topology(
                 component_reachability_summary(final_root, literal=True),
                 component_reachability_summary(final_root),
@@ -3810,7 +3853,7 @@ if str(_repo_root) not in sys.path:
         from ultimate_pipeline.core.odr_io import save_xodr as _save_xodr
 
         try:
-            tree = ET_xml.parse(xodr_path)
+            tree = ET_xml.ElementTree(parse_xodr_file(xodr_path))
             root = tree.getroot()
             header = root.find("header")
             if header is None:
@@ -4046,11 +4089,18 @@ if str(_repo_root) not in sys.path:
 
         try:
             from ultimate_pipeline.quality.quality_gates import run_quality_gates
-            from ultimate_pipeline.quality.quality_gates import DRIVABILITY_GATES
+            from ultimate_pipeline.quality.quality_gates import (
+                BLOCKING_GATE_NAMES,
+                QualityGateInputError,
+            )
 
             failures = run_quality_gates(final_out, out_dir=self.out_dir)
+            if {"xml_parse", "xodr_identity_changed"} & set(failures):
+                raise QualityGateInputError(
+                    "OpenDRIVE admission or identity verification failed"
+                )
 
-            drivability_failures = sorted(set(failures.keys()) & set(DRIVABILITY_GATES))
+            drivability_failures = sorted(set(failures.keys()) & set(BLOCKING_GATE_NAMES))
             if drivability_failures:
                 raise RuntimeError(
                     f"❌ Drivability gates failed: {drivability_failures}"
@@ -4062,8 +4112,8 @@ if str(_repo_root) not in sys.path:
                     f"❌ Quality gate failures in strict mode: {sorted(failures.keys())}"
                 )
         except Exception as e:
-            if strict_mode:
-                raise  # Re-raise in strict mode
+            if strict_mode or e.__class__.__name__ == "QualityGateInputError":
+                raise  # Unsafe input identity is always terminal.
             print(f"⚠️ Quality gates wrapper failed: {e}")
 
     def _run_geometric_continuity_gate(self, xodr_path: str, context: str) -> None:

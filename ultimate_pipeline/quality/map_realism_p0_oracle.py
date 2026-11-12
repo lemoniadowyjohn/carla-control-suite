@@ -28,6 +28,7 @@ import math
 import re
 import hashlib
 import xml.etree.ElementTree as ET
+from ultimate_pipeline.quality.xml_admission import parse_xodr_file
 from typing import Any, Dict, List, Optional, Tuple
 
 __all__ = [
@@ -595,7 +596,7 @@ def scan_structure_terrain_separation(
 # ---------------------------------------------------------------------------
 
 def scan_map_realism_p0(xodr_path: str, dem: Optional[str] = None, osm_path: Optional[str] = None) -> Dict[str, Any]:
-    root = ET.parse(xodr_path).getroot()
+    root = parse_xodr_file(xodr_path)
 
     sha = hashlib.sha256(open(xodr_path, "rb").read()).hexdigest()
 

@@ -24,6 +24,7 @@ import json
 import math
 import os
 import xml.etree.ElementTree as ET
+from ultimate_pipeline.quality.xml_admission import parse_xodr_file
 from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Any, Dict, List, Optional
@@ -119,7 +120,7 @@ def check_elevation_missing_and_cliffs(
     # It must never crash the caller on malformed/partial XODR.
     p = Path(xodr_path)
     try:
-        tree = ET.parse(str(p))
+        tree = ET.ElementTree(parse_xodr_file(str(p)))
         root = tree.getroot()
     except Exception as exc:
         # Return a minimal, machine-parseable failure report.

@@ -45,6 +45,7 @@ from __future__ import annotations
 import math
 import os
 import xml.etree.ElementTree as ET
+from ultimate_pipeline.quality.xml_admission import parse_xodr_file
 from typing import Any, Dict, List, Tuple, Union
 
 # contactPoint on A's link -> which of B's own link slots is the
@@ -216,7 +217,7 @@ def _load_tree_and_root(
         return tree, xodr_or_root
     if not isinstance(xodr_or_root, (str, os.PathLike)):
         raise TypeError(f"Expected xodr path or XML Element, got {type(xodr_or_root)}")
-    tree = ET.parse(str(xodr_or_root))
+    tree = ET.ElementTree(parse_xodr_file(xodr_or_root))
     return tree, tree.getroot()
 
 

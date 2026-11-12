@@ -202,13 +202,14 @@ def _rebase_to_local(xodr_in: Path, xodr_out: Path) -> Dict[str, Any]:
     header <offset> element and in the returned report.
     """
     import xml.etree.ElementTree as _ET
+    from ultimate_pipeline.quality.xml_admission import parse_xodr_file
 
     from ultimate_pipeline.geometry.opendrive_rebase import (
         planview_min_xy,
         rebase_xodr_coordinates,
     )
 
-    tree = _ET.parse(xodr_in)
+    tree = _ET.ElementTree(parse_xodr_file(xodr_in))
     root = tree.getroot()
     min_x, min_y = planview_min_xy(root)
     already_local = max(abs(min_x), abs(min_y)) < 10_000.0
@@ -334,20 +335,20 @@ def _find_final_xodr_historical_recovery(run_dir: Path) -> Path:
 
 
 def _measure_acceptance(final_xodr: Path, out_dir: Path) -> Dict[str, Any]:
-    from scripts.measure_candidate_acceptance import run_gates
-    from ultimate_pipeline.quality.map_acceptance import build_map_acceptance
+    from scripts.measure_candidate_acceptance import evaluate_candidate
 
     dem = REPO_ROOT / "cities" / "ingolstadt" / "dem" / "dem_ing.tif"
-    reports = run_gates(final_xodr, out_dir, dem)
-    acceptance = build_map_acceptance(
-        reports,
-        run_id=final_xodr.stem,
-        final_xodr_path=str(final_xodr),
-        out_dir=str(out_dir),
+    # V86 A6/A8/A9: map-of-record promotion is a release-purpose evaluation.
+    # It uses the XML boundary, an immutable snapshot every checker reads, a
+    # digest-bound verdict and a post-write identity check. It shares the
+    # implementation with the measure_candidate_acceptance CLI.
+    out_dir.mkdir(parents=True, exist_ok=True)
+    acceptance = evaluate_candidate(
+        final_xodr, out_dir, dem,
+        purpose="release",
         require_enrichment=True,
         require_component_reachability=True,
     )
-    _write_json(out_dir / "map_acceptance.json", acceptance)
     print(f"[acceptance] valid_for_experiments={acceptance['valid_for_experiments']}")
     for gate in acceptance.get("hard_fail_reasons", []):
         print(f"  FAIL {gate['gate']}: {gate['reason']}")
@@ -462,7 +463,7 @@ def cmd_verify_only(args: argparse.Namespace) -> int:
     out_dir.mkdir(parents=True, exist_ok=True)
     acceptance = _measure_acceptance(xodr, out_dir)
     print(f"sha256: {acceptance.get('final_xodr_sha256')}")
-    return 0 if acceptance["valid_for_experiments"] else 1
+    return 0 if acceptance.get("release_eligible") is True else 1
 
 
 def cmd_regen(args: argparse.Namespace) -> int:
@@ -524,7 +525,7 @@ def cmd_regen(args: argparse.Namespace) -> int:
         print(f"[frame] already local ({rebase_report.get('reason')}); no re-base needed")
 
     acceptance = _measure_acceptance(measured, out_dir / "acceptance")
-    if not acceptance["valid_for_experiments"]:
+    if acceptance.get("release_eligible") is not True:
         print("ERROR: acceptance FAILED; refusing to emit a candidate.", file=sys.stderr)
         return 1
 

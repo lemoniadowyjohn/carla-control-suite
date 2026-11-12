@@ -56,7 +56,7 @@ import json
 import os
 from pathlib import Path
 import subprocess
-import xml.etree.ElementTree as ET
+from ultimate_pipeline.quality.xml_admission import parse_xodr_file
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from typing import Any, Dict, Iterable, List, Optional, Sequence, Tuple
@@ -264,7 +264,7 @@ def compute_structure_fingerprint(source: Any) -> Dict[str, Any]:
     aspect listed in :data:`STRUCTURAL_ASPECTS`.
     """
     if isinstance(source, (str, os.PathLike)):
-        root = ET.parse(os.fspath(source)).getroot()
+        root = parse_xodr_file(os.fspath(source))
     else:
         root = source
 

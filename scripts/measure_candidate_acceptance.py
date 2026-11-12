@@ -14,7 +14,6 @@ from __future__ import annotations
 
 import argparse
 import json
-import os
 import sys
 from datetime import datetime
 from pathlib import Path
@@ -51,7 +50,7 @@ from ultimate_pipeline.quality.map_acceptance import (
     build_map_acceptance,
     component_reachability_summary,
 )
-import xml.etree.ElementTree as ET
+from ultimate_pipeline.quality.xml_admission import parse_xodr_file
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_DEM = REPO_ROOT / "cities" / "ingolstadt" / "dem" / "dem_ing.tif"
@@ -62,8 +61,93 @@ def _write_json(path: Path, data: Dict[str, Any]) -> None:
     path.write_text(json.dumps(data, indent=2, sort_keys=True, default=str), encoding="utf-8")
 
 
+def evaluate_candidate(
+    xodr: Path,
+    out_dir: Path,
+    dem: Optional[Path],
+    *,
+    purpose: str = "release",
+    require_enrichment: bool = False,
+    require_component_reachability: bool = False,
+) -> Dict[str, Any]:
+    """Guarded candidate acceptance shared by the CLI and regen_map_of_record (V86 A6/A8/A9).
+
+    1. XML boundary first. On a DOCTYPE/ENTITY or oversize input, NO checker
+       touches the bytes, and every mandatory gate is BLOCKED_INPUT.
+    2. One immutable content-addressed snapshot. Every checker reads it.
+    3. The verdict is bound to the snapshot digest (``evaluated_xodr_sha256``)
+       and compared with the published candidate path.
+    4. After the durable write, the candidate must still match the digest.
+       Otherwise ``artifact_identity_after_write`` is recorded and the
+       result is not release-eligible.
+    """
+    from ultimate_pipeline.quality.final_artifact_gates import (
+        ACCEPTANCE_POLICY_VERSION,
+        RELEASE_MANDATORY_GATES,
+        STATUS_BLOCKED_INPUT,
+        UnsafeXMLError,
+        check_xml_boundary,
+        not_run_report,
+        sha256_bytes,
+        snapshot_final_artifact,
+        verify_artifact_unchanged,
+    )
+
+    snapshot = snapshot_final_artifact(str(xodr), str(out_dir / ".acceptance_snapshot"))
+    evaluated_sha = snapshot["sha256"]
+    try:
+        check_xml_boundary(read_xodr_bytes(snapshot["path"]))
+    except UnsafeXMLError as exc:
+        print(f"[gate] XML boundary REJECTED input: {exc}")
+        reports: Dict[str, Any] = {
+            gate: not_run_report(gate, f"XML boundary: {exc}", status=STATUS_BLOCKED_INPUT)
+            for gate in RELEASE_MANDATORY_GATES
+        }
+    else:
+        reports = run_gates(Path(snapshot["path"]), out_dir, dem)
+
+    acceptance = build_map_acceptance(
+        reports,
+        run_id=xodr.stem,
+        final_xodr_path=str(xodr),
+        out_dir=str(out_dir),
+        require_enrichment=require_enrichment,
+        require_component_reachability=require_component_reachability,
+        mandatory_gates=RELEASE_MANDATORY_GATES if purpose == "release" else None,
+        purpose=purpose,
+        policy_version=ACCEPTANCE_POLICY_VERSION,
+        evaluated_xodr_sha256=evaluated_sha,
+    )
+    _write_json(out_dir / "map_acceptance.json", acceptance)
+    unchanged, actual = verify_artifact_unchanged(str(xodr), evaluated_sha)
+    if not unchanged:
+        # The written acceptance described the snapshot. The candidate path no
+        # longer matches it, so the caller must not treat it as release-eligible.
+        acceptance = dict(acceptance, release_eligible=False,
+                          artifact_identity_after_write={"evaluated": evaluated_sha, "now": actual})
+        _write_json(out_dir / "map_acceptance.identity_failure.json", acceptance)
+    if sha256_bytes(read_xodr_bytes(snapshot["path"])) != evaluated_sha:
+        raise RuntimeError(f"acceptance snapshot {snapshot['path']} changed during evaluation")
+    return acceptance
+
+
 def run_gates(xodr: Path, out_dir: Path, dem: Optional[Path]) -> Dict[str, Any]:
     reports: Dict[str, Any] = {}
+
+    # V86 A2/A8: structural scope, evaluated through the hardened XML
+    # boundary (no DOCTYPE/ENTITY; size-capped). The definition is shared
+    # with the production pipeline.
+    from ultimate_pipeline.quality.final_artifact_gates import (
+        check_artifact_structure,
+        parse_xodr_bytes,
+    )
+    try:
+        rep = check_artifact_structure(parse_xodr_bytes(read_xodr_bytes(xodr)))
+    except Exception as exc:  # noqa: BLE001 - recorded, fail-closed
+        rep = {"ok": None, "status": "BLOCKED_INPUT", "reason": f"{type(exc).__name__}: {exc}"}
+    reports["artifact_structure"] = rep
+    _write_json(out_dir / "artifact_structure.json", rep)
+    print(f"[gate] artifact_structure: ok={rep.get('ok')} roads={rep.get('road_count')}")
 
     rep = check_geometric_continuity(str(xodr), eps_xy=0.05, eps_hdg=0.01)
     reports["geometric_continuity"] = rep
@@ -75,7 +159,12 @@ def run_gates(xodr: Path, out_dir: Path, dem: Optional[Path]) -> Dict[str, Any]:
     _write_json(out_dir / "lane_link_target_report.json", rep)
     print(f"[gate] lane_connectivity: ok={rep.get('ok')} broken={rep.get('still_broken_count', rep.get('num_issues', '?'))}")
 
-    rep = repair_and_assert_lane_section_successors(str(xodr), out_path=None, strict=True)
+    from ultimate_pipeline.quality.final_artifact_gates import normalize_lane_section_report
+
+    # V86 A4: explicit 'ok' from the failures list (no inferred success).
+    rep = normalize_lane_section_report(
+        repair_and_assert_lane_section_successors(str(xodr), out_path=None, strict=True)
+    )
     reports["lane_section_successors"] = rep
     _write_json(out_dir / "lane_section_successors.json", rep)
     print(f"[gate] lane_section_successors: ok={rep.get('ok')} broken={rep.get('still_broken_count', rep.get('num_issues', '?'))}")
@@ -130,7 +219,7 @@ def run_gates(xodr: Path, out_dir: Path, dem: Optional[Path]) -> Dict[str, Any]:
         f"zero_ratio={rep.get('zero_ratio')} max_link_dz={rep.get('max_link_dz')}"
     )
 
-    physics_root = ET.parse(str(xodr)).getroot()
+    physics_root = parse_xodr_file(str(xodr))
 
     elev_issues = ElevationSmoothnessGate.validate(physics_root)
     rep = {"ok": len(elev_issues) == 0, "issue_count": len(elev_issues), "issues": elev_issues}
@@ -207,7 +296,7 @@ def run_gates(xodr: Path, out_dir: Path, dem: Optional[Path]) -> Dict[str, Any]:
         print(f"[info] elevation_summary failed: {exc}")
 
     try:
-        comp_root = ET.parse(str(xodr)).getroot()
+        comp_root = parse_xodr_file(str(xodr))
         comp_rep = component_reachability_summary(comp_root)
         if comp_rep is not None:
             reports["component_reachability"] = comp_rep
@@ -230,6 +319,16 @@ def main() -> int:
         action="store_true",
         help="Hard-fail acceptance if >5% of lanes are off the main drivable component",
     )
+    ap.add_argument(
+        "--purpose",
+        choices=("release", "diagnostic"),
+        default="release",
+        help=(
+            "release (default): enforce the authoritative mandatory gate set; the only "
+            "result that can be release-eligible. diagnostic: informational only, never "
+            "release-eligible."
+        ),
+    )
     args = ap.parse_args()
 
     xodr = args.xodr.expanduser().resolve()
@@ -242,17 +341,12 @@ def main() -> int:
     out_dir.mkdir(parents=True, exist_ok=True)
 
     print(f"candidate: {xodr} ({xodr.stat().st_size / 1e6:.1f} MB)")
-    reports = run_gates(xodr, out_dir, args.dem)
-
-    acceptance = build_map_acceptance(
-        reports,
-        run_id=xodr.stem,
-        final_xodr_path=str(xodr),
-        out_dir=str(out_dir),
+    acceptance = evaluate_candidate(
+        xodr, out_dir, args.dem,
+        purpose=args.purpose,
         require_enrichment=args.require_enrichment,
         require_component_reachability=args.require_component_reachability,
     )
-    _write_json(out_dir / "map_acceptance.json", acceptance)
 
     print("\n=== MAP ACCEPTANCE ===")
     print(f"valid_for_experiments: {acceptance['valid_for_experiments']}")
@@ -264,6 +358,9 @@ def main() -> int:
         print(f"  metric {key}: {value}")
     print(f"sha256: {acceptance.get('final_xodr_sha256')}")
     print(f"reports written to: {out_dir}")
+    print(f"purpose: {args.purpose} release_eligible: {acceptance['release_eligible']}")
+    if args.purpose == "release":
+        return 0 if acceptance["release_eligible"] else 1
     return 0 if acceptance["valid_for_experiments"] else 1
 
 
