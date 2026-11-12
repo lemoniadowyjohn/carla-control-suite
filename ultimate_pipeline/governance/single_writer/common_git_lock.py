@@ -52,6 +52,7 @@ import hmac
 import json
 import os
 import sys
+import threading
 import time
 import uuid
 from contextlib import contextmanager
@@ -75,6 +76,10 @@ _CLAIM_RENAME_RETRY_S = 2.0
 _CLAIM_RENAME_RETRY_DELAY_S = 0.005
 _LOCK_FILENAME = lock_paths.COMMON_GIT_LOCK_FILENAME
 _LEDGER_FILENAME = "common_git_lock.generations"
+_LEDGER_CLAIM_FILENAME = "common_git_lock.generations.claim"
+_LEDGER_CLAIM_TIMEOUT_S = 30.0
+_LEDGER_THREAD_LOCKS: dict[str, threading.Lock] = {}
+_LEDGER_THREAD_LOCKS_GUARD = threading.Lock()
 
 
 class MalformedLockError(RuntimeError):
@@ -197,27 +202,108 @@ def _ledger_path(repo_root: Path) -> Path:
     return lock_paths.agent_locks_dir(repo_root) / _LEDGER_FILENAME
 
 
+@contextmanager
+def _common_git_claim(repo_root: Path, timeout_seconds: float = _LEDGER_CLAIM_TIMEOUT_S):
+    """Cross-process serialization for shared lock and generation-ledger writes.
+
+    The claim file is persistent and never removed, avoiding an unlink/recreate
+    ABA window. POSIX uses flock; Windows locks byte zero with msvcrt. A
+    per-process mutex also serializes threads on implementations where the
+    operating-system byte lock is process-scoped.
+    """
+    root = Path(repo_root).resolve()
+    path = lock_paths.agent_locks_dir(root) / _LEDGER_CLAIM_FILENAME
+    path.parent.mkdir(parents=True, exist_ok=True)
+    key = os.path.normcase(str(path.resolve()))
+    with _LEDGER_THREAD_LOCKS_GUARD:
+        local_lock = _LEDGER_THREAD_LOCKS.setdefault(key, threading.Lock())
+    deadline = time.monotonic() + max(0.0, float(timeout_seconds))
+    if not local_lock.acquire(timeout=max(0.0, float(timeout_seconds))):
+        raise RuntimeError(f"LOCKED_UNKNOWN: timed out waiting for {path}")
+    stream = None
+    try:
+        stream = open(path, "a+b")
+        stream.seek(0, os.SEEK_END)
+        if stream.tell() == 0:
+            stream.write(b"\0")
+            stream.flush()
+            os.fsync(stream.fileno())
+            _fsync_dir(path.parent)
+        while True:
+            try:
+                if os.name == "nt":
+                    import msvcrt
+
+                    stream.seek(0)
+                    msvcrt.locking(stream.fileno(), msvcrt.LK_NBLCK, 1)
+                else:
+                    import fcntl
+
+                    fcntl.flock(stream.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+                break
+            except (OSError, BlockingIOError):
+                if time.monotonic() >= deadline:
+                    raise RuntimeError(f"LOCKED_UNKNOWN: timed out waiting for {path}")
+                time.sleep(min(0.01, max(0.0, deadline - time.monotonic())))
+        try:
+            yield
+        finally:
+            if os.name == "nt":
+                import msvcrt
+
+                stream.seek(0)
+                msvcrt.locking(stream.fileno(), msvcrt.LK_UNLCK, 1)
+            else:
+                import fcntl
+
+                fcntl.flock(stream.fileno(), fcntl.LOCK_UN)
+    finally:
+        if stream is not None:
+            stream.close()
+        local_lock.release()
+
+
 # ---------------------------------------------------------------------------
 # durable, atomic publication
 # ---------------------------------------------------------------------------
 
 def _fsync_dir(directory: Path) -> None:
-    """Best-effort parent-directory durability.
+    """Persist directory-entry changes where the platform exposes fsync.
 
-    On POSIX fsync of the containing directory is what makes a rename/create
-    durable. Windows rejects opening a directory this way, so failure is
-    expected and ignored there.
+    POSIX directory fsync failures are authority failures. Windows uses
+    MoveFileExW(MOVEFILE_WRITE_THROUGH) for replacements because opening a
+    directory for fsync is not supported by the standard Python API.
     """
     try:
         fd = os.open(str(directory), os.O_RDONLY)
-    except OSError:
-        return
+    except OSError as exc:
+        if os.name == "nt":
+            return
+        raise RuntimeError(f"cannot open lock directory for fsync: {directory}: {exc}") from exc
     try:
         os.fsync(fd)
-    except OSError:
-        pass
+    except OSError as exc:
+        if os.name != "nt":
+            raise RuntimeError(f"cannot fsync lock directory {directory}: {exc}") from exc
     finally:
         os.close(fd)
+
+
+def _durable_replace(source: Path, destination: Path) -> None:
+    """Atomically replace a lock record with platform durability semantics."""
+    if os.name == "nt":
+        import ctypes
+
+        move_file_ex = ctypes.WinDLL("kernel32", use_last_error=True).MoveFileExW
+        move_file_ex.argtypes = [ctypes.c_wchar_p, ctypes.c_wchar_p, ctypes.c_uint32]
+        move_file_ex.restype = ctypes.c_int
+        flags = 0x1 | 0x8  # MOVEFILE_REPLACE_EXISTING | MOVEFILE_WRITE_THROUGH
+        if not move_file_ex(str(source), str(destination), flags):
+            error = ctypes.get_last_error()
+            raise OSError(error, ctypes.FormatError(error), str(destination))
+        return
+    os.replace(source, destination)
+    _fsync_dir(destination.parent)
 
 
 def _write_payload(path: Path, payload: dict) -> None:
@@ -241,8 +327,7 @@ def _write_payload(path: Path, payload: dict) -> None:
         except OSError:
             pass
         raise
-    os.replace(tmp, path)
-    _fsync_dir(path.parent)
+    _durable_replace(tmp, path)
 
 
 def _publish_exclusive(path: Path, payload: dict) -> bool:
@@ -359,11 +444,28 @@ def _read_lock(repo_root: Path) -> Optional[CommonGitLock]:
     return lock
 
 
-def _write_lock(lock: CommonGitLock) -> None:
+def _write_lock(
+    lock: CommonGitLock,
+    *,
+    expected_owner: tuple[str, str, int] | None = None,
+) -> None:
     """Durably publish ``lock``."""
     path = _get_common_git_lock_path(Path(lock.repo_root))
     path.parent.mkdir(parents=True, exist_ok=True)
-    _write_payload(path, lock.to_json())
+    with _common_git_claim(Path(lock.repo_root)):
+        if expected_owner is not None:
+            current = _read_lock(Path(lock.repo_root))
+            lock_id, owner_token, generation = expected_owner
+            if (
+                current is None
+                or current.lock_id != lock_id
+                or current.generation != generation
+                or not hmac_compare(current.owner_token, owner_token)
+            ):
+                raise RuntimeError(
+                    "cannot renew: lock ownership changed before durable publication"
+                )
+        _write_payload(path, lock.to_json())
 
 
 # ---------------------------------------------------------------------------
@@ -385,23 +487,36 @@ def _issue_generation(repo_root: Path, floor: int = 0) -> int:
     """
     path = _ledger_path(repo_root)
     path.parent.mkdir(parents=True, exist_ok=True)
-    highest = max(0, int(floor))
-    try:
-        with open(path, "r", encoding="utf-8") as fh:
-            for line in fh:
-                line = line.strip()
-                if line.isdigit():
-                    highest = max(highest, int(line))
-    except (FileNotFoundError, OSError):
-        pass
-    nxt = highest + 1
-    fd = os.open(str(path), os.O_CREAT | os.O_WRONLY | os.O_APPEND, 0o644)
-    try:
-        os.write(fd, f"{nxt}\n".encode("ascii"))
-        os.fsync(fd)
-    finally:
-        os.close(fd)
-    return nxt
+    with _common_git_claim(repo_root):
+        highest = max(0, int(floor))
+        try:
+            with open(path, "r", encoding="ascii") as fh:
+                raw_values = [line.strip() for line in fh if line.strip()]
+            if any(not value.isdigit() for value in raw_values):
+                raise RuntimeError("LOCKED_UNKNOWN: common Git generation ledger is malformed")
+            values = [int(value) for value in raw_values]
+            if values != sorted(set(values)) or any(value <= 0 for value in values):
+                raise RuntimeError("LOCKED_UNKNOWN: common Git generation ledger is corrupt")
+            highest = max([highest, *values])
+        except FileNotFoundError:
+            pass
+        except OSError as exc:
+            raise RuntimeError(f"LOCKED_UNKNOWN: cannot read generation ledger: {exc}") from exc
+        nxt = highest + 1
+        fd = os.open(str(path), os.O_CREAT | os.O_WRONLY | os.O_APPEND, 0o644)
+        try:
+            payload = f"{nxt}\n".encode("ascii")
+            view = memoryview(payload)
+            while view:
+                written = os.write(fd, view)
+                if written <= 0:
+                    raise OSError("generation ledger append made no progress")
+                view = view[written:]
+            os.fsync(fd)
+        finally:
+            os.close(fd)
+        _fsync_dir(path.parent)
+        return nxt
 
 
 # ---------------------------------------------------------------------------
@@ -429,13 +544,19 @@ def _claim_by_rename(repo_root: Path, tag: str, expect):
     That is a transient condition, not evidence of a successor, so it is retried
     for a bounded interval before giving up.
     """
+    with _common_git_claim(repo_root):
+        return _claim_by_rename_claimed(repo_root, tag, expect)
+
+
+def _claim_by_rename_claimed(repo_root: Path, tag: str, expect):
+    """Rename/verify/restore while the common-Git mutation claim is held."""
     path = _get_common_git_lock_path(repo_root)
     deadline = time.time() + _CLAIM_RENAME_RETRY_S
     while True:
         tomb = path.with_name(
             f"{path.name}.{tag}.{uuid.uuid4().hex}.tombstone")
         try:
-            os.replace(path, tomb)
+            _durable_replace(path, tomb)
         except OSError:
             # A concurrent reader can hold the published record open on
             # Windows. Give it a bounded moment to finish and retry; only a
@@ -462,7 +583,7 @@ def _claim_by_rename(repo_root: Path, tag: str, expect):
         # A concurrent acquirer may briefly observe the path missing, but the
         # evidence is never destroyed.
         try:
-            os.replace(tomb, path)
+            _durable_replace(tomb, path)
         except OSError:
             pass
         return False, None
@@ -559,8 +680,8 @@ def reclaim_decision(lock: CommonGitLock) -> tuple[bool, str]:
                 )
             return False, "holder is alive and is the same process"
         return False, (
-            f"holder is alive but its process start identity could not be "
-            f"confirmed; refusing to reclaim"
+            "holder is alive but its process start identity could not be "
+            "confirmed; refusing to reclaim"
         )
 
     # UNKNOWN
@@ -612,7 +733,8 @@ def acquire_common_git_lock(
         )
 
         try:
-            won = _publish_exclusive(path, candidate.to_json())
+            with _common_git_claim(repo_root):
+                won = _publish_exclusive(path, candidate.to_json())
         except OSError as exc:
             raise RuntimeError(f"Failed to create common Git lock: {exc}") from exc
         if won:
@@ -642,6 +764,7 @@ def acquire_common_git_lock(
             if claimed and tomb is not None:
                 try:
                     tomb.unlink()
+                    _fsync_dir(tomb.parent)
                 except OSError:
                     pass
             time.sleep(_FRESH_PUBLISH_REREAD_DELAY_S)
@@ -745,6 +868,7 @@ def release_common_git_lock(
     if tomb is not None:
         try:
             tomb.unlink()
+            _fsync_dir(tomb.parent)
         except OSError:
             pass
     return True
@@ -789,7 +913,10 @@ def renew_common_git_lock(
             f"cannot renew: generation {current.generation} was superseded "
             f"before renewal completed; refusing"
         )
-    _write_lock(updated)
+    _write_lock(
+        updated,
+        expected_owner=(current.lock_id, current.owner_token, current.generation),
+    )
     return updated
 
 
@@ -806,15 +933,27 @@ def common_git_lock(
             subprocess.run(["git", "fetch"])
     """
     lock = acquire_common_git_lock(repo_root, operation, timeout_seconds)
+    body_error: BaseException | None = None
     try:
         yield lock
+    except BaseException as exc:
+        body_error = exc
+        raise
     finally:
         try:
             release_common_git_lock(Path(lock.repo_root), lock.owner_token, lock.lock_id)
-        except RuntimeError:
-            # The lock was reclaimed or superseded; do not mask the body's
-            # outcome with a release error.
-            pass
+        except Exception as release_error:
+            if body_error is None:
+                raise
+            note = (
+                "repository-global lock release failed after the operation error: "
+                f"{type(release_error).__name__}: {release_error}"
+            )
+            add_note = getattr(body_error, "add_note", None)
+            if callable(add_note):
+                add_note(note)
+            else:
+                setattr(body_error, "lock_release_error", note)
 
 
 def get_lock_status(repo_root: Path) -> dict:
@@ -885,10 +1024,25 @@ def recover_malformed_lock(repo_root: Path, operator: str, reason: str) -> dict:
         "operator": operator,
         "reason": reason,
     }
-    claimed, tomb = _claim_by_rename(repo_root, "recover", lambda _raw: True)
+    # Persist recovery intent before moving the sole malformed ownership
+    # record. The uniquely named audit file is retained even if the operation
+    # crashes after the rename.
+    intent_path = path.with_name(
+        f"{path.name}.recovery.{uuid.uuid4().hex}.json"
+    )
+    intent = dict(record, intent_status="INTENT")
+    _write_payload(intent_path, intent)
+    intent_bytes = intent_path.read_bytes()
+    record["recovery_intent_path"] = intent_path.name
+    record["recovery_intent_sha256"] = hashlib.sha256(intent_bytes).hexdigest()
+
+    claimed, tomb = _claim_by_rename(
+        repo_root, "recover", lambda moved: hmac.compare_digest(moved, raw)
+    )
     if claimed and tomb is not None:
         try:
             tomb.unlink()
+            _fsync_dir(tomb.parent)
         except OSError:
             pass
     else:

@@ -561,7 +561,7 @@ def test_claim_survives_a_concurrent_reader_holding_the_lock_open(repo):
     (WinError 32); the claim must retry and succeed once the reader is done
     rather than surfacing a misleading "the lock changed" refusal.
     """
-    incumbent = cgl.acquire_common_git_lock(repo, "incumbent")
+    cgl.acquire_common_git_lock(repo, "incumbent")
     path = _lock_path(repo)
     before = path.read_bytes()
 
@@ -644,21 +644,21 @@ def test_claim_restore_never_clobbers_a_concurrent_successor(repo, monkeypatch):
         expires_at="2999-01-01T00:00:00Z",
     ))
 
-    real_replace = os.replace
+    real_durable_replace = cgl._durable_replace
     successor_bytes = json.dumps(
         {"lock_id": "successor", "owner_token": "t", "generation": 8}
     ).encode("utf-8")
     injected = {"done": False}
 
     def replace_and_publish_a_successor(src, dst):
-        real_replace(src, dst)
+        real_durable_replace(src, dst)
         # The claim has just moved the published record away; a successor
         # publishes into the window before the claim inspects the path.
         if not injected["done"] and Path(dst).name.endswith(".tombstone"):
             injected["done"] = True
             path.write_bytes(successor_bytes)
 
-    monkeypatch.setattr(cgl.os, "replace", replace_and_publish_a_successor)
+    monkeypatch.setattr(cgl, "_durable_replace", replace_and_publish_a_successor)
     claimed, tomb = cgl._claim_by_rename(repo, "reclaim", lambda raw: False)
     monkeypatch.undo()
 
