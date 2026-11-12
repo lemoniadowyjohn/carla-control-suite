@@ -227,10 +227,14 @@ def test_t4_cleanup_rechecks_a_renewed_record_under_claim(repo: Path, monkeypatc
     path.write_text(json.dumps(renewed_record), encoding="utf-8")
     successor_bytes = path.read_bytes()
 
-    if hasattr(wl, "_iter_worktree_leases"):
-        monkeypatch.setattr(wl, "_iter_worktree_leases", lambda _root: iter([(path, stale)]))
-    else:
-        monkeypatch.setattr(wl, "list_worktree_leases", lambda _root: [stale])
+    # Inject the stale enumeration snapshot at the actual production inventory
+    # boundary. `_cleanup_inventory` is the path consumed by the detailed
+    # sweeper; patching `_iter_worktree_leases` here would be vacuous because
+    # the hardened sweeper deliberately uses a stricter inventory reader.
+    leases_dir = path.parent
+    monkeypatch.setattr(
+        wl, "_cleanup_inventory", lambda _root: (leases_dir, [(path, stale, "")])
+    )
     monkeypatch.setattr(wl, "reclaim_decision", lambda _lease: (True, "injected dead owner"))
     observed_claimed_reads: list[Path] = []
     original_read = wl._read_lease_at_path
@@ -428,7 +432,7 @@ def test_r3_busy_lease_does_not_block_other_cleanup(repo: Path, monkeypatch):
     original_claim = getattr(wl, "_generation_claim_at_path", original_root_claim)
 
     def busy_timeout():
-        raise RuntimeError(
+        raise wl.GenerationClaimError(
             "LOCKED_UNKNOWN: timed out waiting for generation claim at injected busy lease"
         )
 

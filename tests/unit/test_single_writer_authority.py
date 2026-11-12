@@ -729,7 +729,8 @@ def test_multiprocess_stress_bounded(tmp_path):
         "    os.write(fd, (text + chr(10)).encode('ascii')); os.fsync(fd)\n"
         "try:\n"
         "    lock = cgl.acquire_common_git_lock(repo, 'stress', timeout_seconds=30)\n"
-        "except RuntimeError:\n"
+        "except RuntimeError as exc:\n"
+        "    print('REJECT ' + str(exc), file=sys.stderr)\n"
         "    sys.exit(0)\n"
         "mark('ENTER %d %d' % (os.getpid(), lock.generation))\n"
         "mark('EXIT  %d %d' % (os.getpid(), lock.generation))\n"
@@ -752,26 +753,40 @@ def test_multiprocess_stress_bounded(tmp_path):
             )
             for _ in range(contenders)
         ]
-        for proc in procs:
-            proc.communicate(timeout=120)
+        outcomes = [proc.communicate(timeout=120) for proc in procs]
+        assert all(proc.returncode == 0 for proc in procs), outcomes
+        # RuntimeError is the documented contention response, but a round in
+        # which all eight callers fail is not evidence that arbitration ran.
+        assert any(not stderr.strip() for _stdout, stderr in outcomes), (
+            "no contender acquired the lock in this stress round", outcomes
+        )
 
     # Verify mutual exclusion across every round, from the append-only log.
     depth = 0
     entered = 0
+    round_entered = 0
+    rounds_seen = 0
     generations = []
     for line in log.read_text(encoding="utf-8").splitlines():
         if line == "ROUND":
             assert depth == 0, "a round ended while a holder was inside"
+            if rounds_seen:
+                assert round_entered > 0, "stress round had no successful lock owner"
+            rounds_seen += 1
+            round_entered = 0
             continue
         kind, _pid, generation = line.split()
         if kind == "ENTER":
             assert depth == 0, "two processes held the lock at once"
             depth += 1
             entered += 1
+            round_entered += 1
             generations.append(int(generation))
         else:
             assert depth == 1, "EXIT without ENTER"
             depth -= 1
+    assert rounds_seen == 25
+    assert round_entered > 0, "final stress round had no successful lock owner"
     assert depth == 0
     assert entered == len(generations)
     assert len(set(generations)) == len(generations), "a fencing generation was reused"

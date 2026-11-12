@@ -68,6 +68,44 @@ class MalformedLeaseError(RuntimeError):
         self.reason = reason
 
 
+class GenerationClaimError(RuntimeError):
+    """A per-worktree generation claim is malformed, busy, or unreadable."""
+
+
+class LeaseInventoryError(RuntimeError):
+    """The common-Git lease authority could not be enumerated reliably."""
+
+
+class RecoveryDurabilityError(RuntimeError):
+    """Recovery evidence cannot be made durable on the current filesystem."""
+
+
+class LeaseRestoreError(RuntimeError):
+    """An unmatched tombstone could not be restored safely."""
+
+
+@dataclass(frozen=True)
+class LeaseCleanupEntry:
+    path: str
+    worktree_root: str
+    status: str
+    detail: str = ""
+    error_type: str = ""
+
+
+@dataclass(frozen=True)
+class LeaseCleanupReport:
+    entries: tuple[LeaseCleanupEntry, ...]
+
+    @property
+    def removed_count(self) -> int:
+        return sum(entry.status == "REMOVED" for entry in self.entries)
+
+    @property
+    def overall_ok(self) -> bool:
+        return all(entry.status != "LOCKED_UNKNOWN" for entry in self.entries)
+
+
 def _utc_now() -> str:
     return time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
 
@@ -238,7 +276,7 @@ def _generation_claim_at_path(
     def _remaining_s() -> float:
         remaining = deadline - time.monotonic()
         if remaining <= 0:
-            raise RuntimeError(
+            raise GenerationClaimError(
                 f"LOCKED_UNKNOWN: timed out waiting for generation claim at {path} "
                 f"after {timeout_s:.3f}s"
             )
@@ -265,7 +303,7 @@ def _generation_claim_at_path(
                 # exclusive create. Retry the namespace operation.
                 continue
             except OSError as exc:
-                raise RuntimeError(
+                raise GenerationClaimError(
                     f"LOCKED_UNKNOWN: cannot inspect generation claim at {path}: {exc}"
                 ) from exc
             claim_age = time.time() - claim_stat.st_mtime
@@ -293,13 +331,13 @@ def _generation_claim_at_path(
                 # the claim. Re-read after that atomic namespace transition.
                 permission_denials += 1
                 if permission_denials > 200:
-                    raise RuntimeError(
+                    raise GenerationClaimError(
                         f"LOCKED_UNKNOWN: generation claim remained unreadable at {path}"
                     ) from exc
                 time.sleep(min(0.001, _remaining_s()))
                 continue
             except (OSError, UnicodeError, ValueError, KeyError, TypeError) as exc:
-                raise RuntimeError(
+                raise GenerationClaimError(
                     f"LOCKED_UNKNOWN: malformed generation claim at {path}: {exc}"
                 ) from exc
             permission_denials = 0
@@ -361,12 +399,12 @@ def _generation_claim_at_path(
                 # claim open for its liveness check. Retry, then fail visibly
                 # instead of reporting success with a leaked live-owner claim.
                 if _cleanup_attempt + 1 == _GENERATION_CLAIM_CLEANUP_RETRIES:
-                    raise RuntimeError(
+                    raise GenerationClaimError(
                         f"LOCKED_UNKNOWN: could not release generation claim at {path}"
                     ) from exc
                 time.sleep(0.005)
             except OSError as exc:
-                raise RuntimeError(
+                raise GenerationClaimError(
                     f"LOCKED_UNKNOWN: could not release generation claim at {path}: {exc}"
                 ) from exc
 
@@ -397,6 +435,57 @@ def _fsync_dir(directory: Path) -> None:
         pass
     finally:
         os.close(fd)
+
+
+def _fsync_directory_required(directory: Path) -> None:
+    """Flush directory metadata or fail closed when durability is unsupported."""
+    directory = Path(directory)
+    if os.name == "nt":
+        import ctypes
+        from ctypes import wintypes
+
+        kernel32 = ctypes.WinDLL("kernel32", use_last_error=True)
+        create_file = kernel32.CreateFileW
+        create_file.argtypes = [
+            wintypes.LPCWSTR, wintypes.DWORD, wintypes.DWORD, wintypes.LPVOID,
+            wintypes.DWORD, wintypes.DWORD, wintypes.HANDLE,
+        ]
+        create_file.restype = wintypes.HANDLE
+        flush = kernel32.FlushFileBuffers
+        flush.argtypes = [wintypes.HANDLE]
+        flush.restype = wintypes.BOOL
+        close = kernel32.CloseHandle
+        close.argtypes = [wintypes.HANDLE]
+        close.restype = wintypes.BOOL
+        handle = create_file(
+            str(directory), 0x80000000 | 0x40000000,
+            0x00000001 | 0x00000002 | 0x00000004, None, 3,
+            0x02000000, None,
+        )
+        if handle == wintypes.HANDLE(-1).value:
+            raise RecoveryDurabilityError(
+                f"LOCKED_UNKNOWN: cannot open directory for durable flush "
+                f"{directory} (WinError={ctypes.get_last_error()})"
+            )
+        try:
+            if not flush(handle):
+                raise RecoveryDurabilityError(
+                    f"LOCKED_UNKNOWN: directory durability unsupported for {directory} "
+                    f"(WinError={ctypes.get_last_error()})"
+                )
+        finally:
+            close(handle)
+        return
+    try:
+        fd = os.open(str(directory), os.O_RDONLY)
+        try:
+            os.fsync(fd)
+        finally:
+            os.close(fd)
+    except OSError as exc:
+        raise RecoveryDurabilityError(
+            f"LOCKED_UNKNOWN: cannot durably flush directory {directory}: {exc}"
+        ) from exc
 
 
 def _write_payload(path: Path, payload: dict) -> None:
@@ -478,26 +567,57 @@ def _publish_exclusive_fallback(path: Path, payload: dict | bytes) -> bool:
 
 
 def _publish_exclusive_fallback_bytes(path: Path, data: bytes) -> bool:
-    """O_EXCL reservation fallback for filesystems without hard links."""
+    """Publish from a fully written temp file or fail closed.
+
+    O_EXCL reservation followed by writes exposes an empty/truncated destination
+    to concurrent readers. If hard-link publication is unavailable, this
+    fallback also stages complete bytes first, then retries the same atomic
+    no-overwrite operation. There is intentionally no unsafe reservation path.
+    """
+    tmp = path.with_name(f"{path.name}.{os.getpid()}.{uuid.uuid4().hex}.fallback")
     try:
-        fd = os.open(str(path), os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o644)
-    except FileExistsError:
-        return False
-    except PermissionError:
-        if path.exists():
-            return False
-        raise
+        fd = os.open(str(tmp), os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o600)
+    except OSError as exc:
+        raise RuntimeError(f"UNSUPPORTED_FILESYSTEM: cannot stage lease bytes: {exc}") from exc
     try:
         with os.fdopen(fd, "wb") as fh:
-            fh.write(data)
+            view = memoryview(data)
+            while view:
+                count = fh.write(view)
+                if count is None or count <= 0:
+                    raise OSError("temporary lease write made no progress")
+                view = view[count:]
             fh.flush()
             os.fsync(fh.fileno())
     except BaseException:
         try:
-            path.unlink()
+            tmp.unlink()
         except OSError:
             pass
         raise
+    try:
+        os.link(str(tmp), str(path))
+    except FileExistsError:
+        return False
+    except OSError as exc:
+        try:
+            path.stat()
+        except FileNotFoundError:
+            raise RuntimeError(
+                f"UNSUPPORTED_FILESYSTEM: exclusive atomic publication unavailable "
+                f"for {path}: {exc}"
+            ) from exc
+        except OSError as inspect_exc:
+            raise RuntimeError(
+                f"LOCKED_UNKNOWN: cannot determine exclusive publication outcome for "
+                f"{path}: {inspect_exc}"
+            ) from inspect_exc
+        return False
+    finally:
+        try:
+            tmp.unlink()
+        except OSError:
+            pass
     _fsync_dir(path.parent)
     return True
 
@@ -717,10 +837,34 @@ def _generation_marker_path(worktree_root: Path) -> Path:
     return ledger.with_name(f"{ledger.name}.initialized")
 
 
+def _generation_authority_path(worktree_root: Path) -> Path:
+    """Independent high-water record that survives local ledger co-loss."""
+    ledger = _ledger_path(worktree_root)
+    return ledger.with_name(f"{ledger.name}.highwater.json")
+
+
 def _generation_high_water(worktree_root: Path) -> int:
-    """Read an intact monotonic ledger; missing initialized ledgers fail closed."""
+    """Read and reconcile the independent fence and compatibility ledger."""
     path = _ledger_path(worktree_root)
     marker = _generation_marker_path(worktree_root)
+    authority = _generation_authority_path(worktree_root)
+    authority_high = None
+    try:
+        authority_data = json.loads(authority.read_text(encoding="utf-8"))
+    except FileNotFoundError:
+        authority_data = None
+    except (OSError, UnicodeError, json.JSONDecodeError) as exc:
+        raise RuntimeError(f"LOCKED_UNKNOWN: generation high-water unreadable: {exc}") from exc
+    if authority_data is not None:
+        if (
+            not isinstance(authority_data, dict)
+            or authority_data.get("schema") != "worktree-generation-high-water/v1"
+            or authority_data.get("worktree_identity") != lock_paths.worktree_identity(worktree_root)
+            or type(authority_data.get("high_water")) is not int
+            or authority_data["high_water"] < 0
+        ):
+            raise RuntimeError("LOCKED_UNKNOWN: malformed generation high-water authority")
+        authority_high = authority_data["high_water"]
     try:
         marker_data = marker.read_bytes()
     except FileNotFoundError:
@@ -732,9 +876,14 @@ def _generation_high_water(worktree_root: Path) -> int:
     try:
         raw = path.read_bytes()
     except FileNotFoundError:
+        # A surviving initialization marker proves that this ledger was
+        # initialized. Even when the independent high-water file survives,
+        # a missing ledger is corruption (and must not be silently repaired).
+        # The high-water authority only protects the distinct case where both
+        # legacy ledger artifacts were lost together.
         if marker_data is not None:
             raise RuntimeError("LOCKED_UNKNOWN: initialized generation ledger is missing")
-        return 0
+        return authority_high if authority_high is not None else 0
     except OSError as exc:
         raise RuntimeError(f"LOCKED_UNKNOWN: generation ledger unreadable: {exc}") from exc
     if not raw or not raw.endswith(b"\n"):
@@ -748,7 +897,11 @@ def _generation_high_water(worktree_root: Path) -> int:
         if not line.isdigit() or int(line) <= previous:
             raise RuntimeError("LOCKED_UNKNOWN: corrupt or nonmonotonic generation ledger")
         previous = int(line)
-    return previous
+    if authority_high is not None and previous > authority_high:
+        raise RuntimeError(
+            "LOCKED_UNKNOWN: generation ledger exceeds independent high-water authority"
+        )
+    return max(previous, authority_high or 0)
 
 
 def _issue_generation(worktree_root: Path, floor: int = 0) -> int:
@@ -757,10 +910,18 @@ def _issue_generation(worktree_root: Path, floor: int = 0) -> int:
     path.parent.mkdir(parents=True, exist_ok=True)
     high = _generation_high_water(worktree_root)
     marker = _generation_marker_path(worktree_root)
+    nxt = max(0, high, int(floor)) + 1
+    authority_path = _generation_authority_path(worktree_root)
+    _write_payload(authority_path, {
+        "schema": "worktree-generation-high-water/v1",
+        "worktree_identity": lock_paths.worktree_identity(worktree_root),
+        "high_water": nxt,
+        "updated_at": _utc_now(),
+    })
+    _fsync_directory_required(authority_path.parent)
     if not marker.exists():
         if not _publish_exclusive_bytes(marker, b"worktree-generation-ledger/v1\n"):
             raise RuntimeError("LOCKED_UNKNOWN: generation marker publication raced")
-    nxt = max(0, high, int(floor)) + 1
     fd = os.open(str(path), os.O_CREAT | os.O_WRONLY | os.O_APPEND, 0o644)
     try:
         payload = f"{nxt}\n".encode("ascii")
@@ -773,7 +934,7 @@ def _issue_generation(worktree_root: Path, floor: int = 0) -> int:
         os.fsync(fd)
     finally:
         os.close(fd)
-    _fsync_dir(path.parent)
+    _fsync_directory_required(path.parent)
     return nxt
 
 # ---------------------------------------------------------------------------
@@ -807,12 +968,12 @@ def _claim_lease_path(
         raw = tomb.read_bytes()
         restored = _publish_exclusive_bytes(path, raw)
     except OSError as exc:
-        raise RuntimeError(
+        raise LeaseRestoreError(
             f"LOCKED_UNKNOWN: failed to restore lease from {tomb} to {path}; "
             f"recovery copy retained at {tomb}: {exc}"
         ) from exc
     except Exception as exc:
-        raise RuntimeError(
+        raise LeaseRestoreError(
             f"LOCKED_UNKNOWN: failed to restore lease from {tomb} to {path}; "
             f"recovery copy retained at {tomb}: {exc}"
         ) from exc
@@ -822,13 +983,13 @@ def _claim_lease_path(
             try:
                 os.replace(tomb, orphan)
             except OSError as exc:
-                raise RuntimeError(
+                raise LeaseRestoreError(
                     f"LOCKED_UNKNOWN: successor lease exists at {path}; could not "
                     f"preserve displaced lease {tomb} as an orphan: {exc}. "
                     f"The displaced lease remains at {tomb}."
                 ) from exc
             return False, None
-        raise RuntimeError(
+        raise LeaseRestoreError(
             f"LOCKED_UNKNOWN: exclusive restore did not publish {tomb} to {path}; "
             f"recovery copy retained at {tomb}"
         )
@@ -1138,50 +1299,129 @@ def list_worktree_leases(repo_root: Path) -> list[WorktreeLease]:
     return [lease for _path, lease in _iter_worktree_leases(repo_root)]
 
 
-def cleanup_expired_leases(repo_root: Path) -> int:
-    """Sweep independent expired/dead leases and retain corrupt evidence."""
-    removed = 0
-    for lease_path, lease in _iter_worktree_leases(repo_root):
-        # Do not consult blocked/malformed claims for unexpired records.
-        if not lease.is_expired():
+def _cleanup_inventory(repo_root: Path):
+    """Read common-Git lease rows; enumeration errors are global failures."""
+    common = lock_paths.resolve_git_common_dir(Path(repo_root))
+    leases_dir = common / lock_paths.AGENT_LOCKS_DIRNAME / lock_paths.WORKTREE_LEASES_DIRNAME
+    try:
+        leases_dir.stat()
+    except FileNotFoundError:
+        return leases_dir, []
+    try:
+        with os.scandir(leases_dir) as scan:
+            candidates = sorted(
+                (Path(item.path), item.is_symlink(), item.is_file(follow_symlinks=False))
+                for item in scan if item.name.endswith(".lease.json")
+            )
+    except OSError as exc:
+        raise LeaseInventoryError(
+            f"LOCKED_UNKNOWN: cannot enumerate common-Git lease authority at "
+            f"{leases_dir}: {exc}"
+        ) from exc
+    rows = []
+    for path, is_symlink, is_file in candidates:
+        if is_symlink or not is_file:
+            rows.append((path, None, "lease entry is a symlink or non-regular file"))
             continue
         try:
-            with _generation_claim_at_path(lease_path):
-                current = _read_lease_at_path(lease_path)
+            raw = path.read_bytes()
+            data = json.loads(raw.decode("utf-8"))
+            if not isinstance(data, dict):
+                raise ValueError("lease JSON must be an object")
+            lease = WorktreeLease.from_json(data)
+            if not _lease_path_matches_identity(path, lease):
+                raise ValueError("lease path/root identity is inconsistent")
+            rows.append((path, lease, ""))
+        except (OSError, UnicodeError, json.JSONDecodeError, TypeError, ValueError) as exc:
+            rows.append((path, None, f"malformed or unreadable lease: {exc}"))
+    return leases_dir, rows
+
+
+def cleanup_expired_leases_detailed(repo_root: Path) -> LeaseCleanupReport:
+    """Sweep independent dead leases and return per-entry authority status."""
+    _leases_dir, rows = _cleanup_inventory(repo_root)
+    entries: list[LeaseCleanupEntry] = []
+    for path, lease, error in rows:
+        if lease is None:
+            entries.append(LeaseCleanupEntry(
+                str(path), "", "LOCKED_UNKNOWN", error, "MalformedLeaseError"
+            ))
+            continue
+        root = Path(lease.worktree_root)
+        if not lease.is_expired():
+            entries.append(LeaseCleanupEntry(str(path), str(root), "NOT_EXPIRED"))
+            continue
+        may, why = reclaim_decision(lease)
+        if not may:
+            entries.append(LeaseCleanupEntry(
+                str(path), str(root), "OWNER_NOT_PROVEN_DEAD", why
+            ))
+            continue
+        try:
+            with _generation_claim_at_path(path):
+                try:
+                    current = _read_lease_at_path(path)
+                except MalformedLeaseError as exc:
+                    entries.append(LeaseCleanupEntry(
+                        str(path), str(root), "LOCKED_UNKNOWN", str(exc),
+                        "MalformedLeaseError",
+                    ))
+                    continue
                 if (
                     current is None
-                    or not _lease_path_matches_identity(lease_path, current)
+                    or not _lease_path_matches_identity(path, current)
                     or current.generation != lease.generation
                     or current.lease_id != lease.lease_id
                     or not _token_eq(current.owner_token, lease.owner_token)
                 ):
+                    entries.append(LeaseCleanupEntry(
+                        str(path), str(root), "LOCKED_UNKNOWN",
+                        "lease identity changed after enumeration", "LeaseIdentityChanged",
+                    ))
                     continue
-                # Recheck expiry, liveness and identity under the claim.
                 if not current.is_expired():
+                    entries.append(LeaseCleanupEntry(
+                        str(path), str(root), "NOT_EXPIRED", "renewed before claim"
+                    ))
                     continue
-                may, _why = reclaim_decision(current)
+                may, why = reclaim_decision(current)
                 if not may:
+                    entries.append(LeaseCleanupEntry(
+                        str(path), str(root), "OWNER_NOT_PROVEN_DEAD", why
+                    ))
                     continue
                 claimed, tomb = _claim_lease_path(
-                    lease_path, "cleanup",
-                    _lease_matches(
-                        current.lease_id, current.owner_token, current.generation
-                    ),
+                    path, "cleanup",
+                    _lease_matches(current.lease_id, current.owner_token, current.generation),
                 )
                 if claimed and tomb is not None:
                     try:
                         tomb.unlink()
-                    except OSError:
-                        pass
-                    removed += 1
-        except MalformedLeaseError:
-            # Changed between listing and under-claim reread: operator-only.
-            continue
-        except RuntimeError as exc:
-            if "timed out waiting for generation claim" in str(exc):
-                continue
-            raise
-    return removed
+                    except OSError as exc:
+                        entries.append(LeaseCleanupEntry(
+                            str(path), str(root), "LOCKED_UNKNOWN",
+                            f"tombstone retained at {tomb}: {exc}", type(exc).__name__,
+                        ))
+                        continue
+                    entries.append(LeaseCleanupEntry(str(path), str(root), "REMOVED"))
+                else:
+                    entries.append(LeaseCleanupEntry(
+                        str(path), str(root), "LOCKED_UNKNOWN",
+                        f"claim mismatch; evidence retained at {tomb or path}",
+                        "LeaseIdentityChanged",
+                    ))
+        except (GenerationClaimError, MalformedLeaseError, LeaseRestoreError, OSError) as exc:
+            # Per-scope contention, malformed state, and I/O failures do not
+            # authorize deletion. Continue with unrelated lease scopes.
+            entries.append(LeaseCleanupEntry(
+                str(path), str(root), "LOCKED_UNKNOWN", str(exc), type(exc).__name__
+            ))
+    return LeaseCleanupReport(tuple(entries))
+
+
+def cleanup_expired_leases(repo_root: Path) -> int:
+    """Backward-compatible removed count; use the detailed API for diagnostics."""
+    return cleanup_expired_leases_detailed(repo_root).removed_count
 
 
 def recover_malformed_lease(
@@ -1216,7 +1456,25 @@ def recover_malformed_lease(
             )
         audit_dir = path.parent / "recovery_audit"
         audit_dir.mkdir(parents=True, exist_ok=True)
+        # The newly created directory entry itself must be durable before any
+        # source lease can be moved or deleted.
+        _fsync_directory_required(audit_dir.parent)
         audit = audit_dir / f"{path.name}.{uuid.uuid4().hex}.json"
+        evidence_copy = audit_dir / f"{path.name}.{uuid.uuid4().hex}.orphaned"
+        evidence_fd = os.open(
+            str(evidence_copy), os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o600
+        )
+        try:
+            view = memoryview(raw)
+            while view:
+                count = os.write(evidence_fd, view)
+                if count <= 0:
+                    raise OSError("recovery evidence write made no progress")
+                view = view[count:]
+            os.fsync(evidence_fd)
+        finally:
+            os.close(evidence_fd)
+        _fsync_directory_required(audit_dir)
         record = {
             "recovered": False,
             "path": str(path),
@@ -1226,12 +1484,25 @@ def recover_malformed_lease(
             "operator": operator,
             "reason": reason,
             "audit_path": str(audit),
+            "evidence_copy": str(evidence_copy),
         }
         _write_payload(audit, {**record, "phase": "INTENT"})
+        _fsync_directory_required(audit_dir)
         claimed, tomb = _claim_lease_path(
             path, "recover", lambda candidate: candidate == raw
         )
         if claimed and tomb is not None:
+            try:
+                _fsync_directory_required(path.parent)
+            except RecoveryDurabilityError as exc:
+                _write_payload(audit, {
+                    **record, "phase": "BLOCKED_TOMBSTONE", "tombstone": str(tomb),
+                    "detail": str(exc),
+                })
+                raise RuntimeError(
+                    f"LOCKED_UNKNOWN: recovery tombstone retained at {tomb}; "
+                    "operator inspection required"
+                ) from exc
             try:
                 tomb.unlink()
             except OSError as exc:
@@ -1242,10 +1513,12 @@ def recover_malformed_lease(
                     f"LOCKED_UNKNOWN: recovered bytes retained at {tomb}; "
                     f"operator inspection required"
                 ) from exc
+            _fsync_directory_required(path.parent)
             record["recovered"] = True
             record["phase"] = "COMPLETE"
         else:
             record["detail"] = "lease changed or vanished; nothing removed"
             record["phase"] = "NO_CHANGE"
         _write_payload(audit, record)
+        _fsync_directory_required(audit_dir)
         return record

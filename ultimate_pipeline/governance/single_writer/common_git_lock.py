@@ -47,11 +47,13 @@ Malformed evidence is never silently destroyed
 from __future__ import annotations
 
 import calendar
+import errno
 import hashlib
 import hmac
 import json
 import os
 import sys
+import threading
 import time
 import uuid
 from contextlib import contextmanager
@@ -75,6 +77,110 @@ _CLAIM_RENAME_RETRY_S = 2.0
 _CLAIM_RENAME_RETRY_DELAY_S = 0.005
 _LOCK_FILENAME = lock_paths.COMMON_GIT_LOCK_FILENAME
 _LEDGER_FILENAME = "common_git_lock.generations"
+_GENERATION_CLAIM_FILENAME = "common_git_lock.generation.claim"
+_TRANSITION_CLAIM_FILENAME = "common_git_lock.transition.claim"
+_LOCAL_CLAIM_LOCKS: dict[str, threading.Lock] = {}
+_LOCAL_CLAIM_LOCKS_GUARD = threading.Lock()
+
+
+class CommonGitLockReleaseError(RuntimeError):
+    """The body completed, but verified release of its authority failed."""
+
+
+class GenerationLedgerError(RuntimeError):
+    """The durable fencing ledger is missing, corrupt, or unreadable."""
+
+
+class UnsupportedFilesystemError(RuntimeError):
+    """The common-Git filesystem cannot provide required atomic publication."""
+
+
+@contextmanager
+def _cross_process_file_claim(repo_root: Path, filename: str, timeout_s: float = 30.0):
+    """Serialize one common-Git operation with an OS-released file lock.
+
+    The lock file is persistent metadata in the canonical common-Git namespace;
+    its existence conveys no ownership. POSIX uses ``flock`` and Windows uses
+    a one-byte ``msvcrt.locking`` region. The kernel releases either lock after
+    process death, so no PID-based stale-claim recovery can race a successor.
+    """
+    directory = lock_paths.agent_locks_dir(Path(repo_root))
+    with _cross_process_file_claim_at(directory, filename, timeout_s):
+        yield
+
+
+@contextmanager
+def _cross_process_file_claim_at(directory: Path, filename: str, timeout_s: float = 30.0):
+    """The file-claim implementation for an already resolved common directory."""
+    directory.mkdir(parents=True, exist_ok=True)
+    path = directory / filename
+    key = os.path.normcase(str(path.resolve()))
+    with _LOCAL_CLAIM_LOCKS_GUARD:
+        local_lock = _LOCAL_CLAIM_LOCKS.setdefault(key, threading.Lock())
+    timeout_s = max(0.0, float(timeout_s))
+    if not local_lock.acquire(timeout=timeout_s):
+        raise TimeoutError(f"timed out waiting for in-process common-Git claim {path}")
+    try:
+        fd = os.open(str(path), os.O_CREAT | os.O_RDWR, 0o600)
+        deadline = time.monotonic() + timeout_s
+        acquired = False
+        try:
+            if os.name == "nt":
+                import msvcrt
+
+                while True:
+                    os.lseek(fd, 0, os.SEEK_SET)
+                    try:
+                        msvcrt.locking(fd, msvcrt.LK_NBLCK, 1)
+                        acquired = True
+                        break
+                    except OSError as exc:
+                        if exc.errno not in (errno.EACCES, errno.EDEADLK, errno.EAGAIN):
+                            raise
+                        if time.monotonic() >= deadline:
+                            raise TimeoutError(
+                                f"timed out waiting for common-Git claim {path}"
+                            ) from exc
+                        time.sleep(0.01)
+            else:
+                import fcntl
+
+                while True:
+                    try:
+                        fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+                        acquired = True
+                        break
+                    except OSError as exc:
+                        if exc.errno not in (errno.EACCES, errno.EAGAIN):
+                            raise
+                        if time.monotonic() >= deadline:
+                            raise TimeoutError(
+                                f"timed out waiting for common-Git claim {path}"
+                            ) from exc
+                        time.sleep(0.01)
+            yield
+        finally:
+            if acquired:
+                if os.name == "nt":
+                    import msvcrt
+
+                    os.lseek(fd, 0, os.SEEK_SET)
+                    msvcrt.locking(fd, msvcrt.LK_UNLCK, 1)
+                else:
+                    import fcntl
+
+                    fcntl.flock(fd, fcntl.LOCK_UN)
+            os.close(fd)
+    finally:
+        local_lock.release()
+
+
+def _generation_claim(repo_root: Path):
+    return _cross_process_file_claim(repo_root, _GENERATION_CLAIM_FILENAME)
+
+
+def _transition_claim(repo_root: Path):
+    return _cross_process_file_claim(repo_root, _TRANSITION_CLAIM_FILENAME)
 
 
 class MalformedLockError(RuntimeError):
@@ -197,6 +303,14 @@ def _ledger_path(repo_root: Path) -> Path:
     return lock_paths.agent_locks_dir(repo_root) / _LEDGER_FILENAME
 
 
+def _generation_authority_path(repo_root: Path) -> Path:
+    return _ledger_path(repo_root).with_name(f"{_LEDGER_FILENAME}.highwater")
+
+
+def _generation_marker_path(repo_root: Path) -> Path:
+    return _ledger_path(repo_root).with_name(f"{_LEDGER_FILENAME}.initialized")
+
+
 # ---------------------------------------------------------------------------
 # durable, atomic publication
 # ---------------------------------------------------------------------------
@@ -220,6 +334,47 @@ def _fsync_dir(directory: Path) -> None:
         os.close(fd)
 
 
+def _fsync_dir_required(directory: Path) -> None:
+    """Require directory-entry durability for fencing authority updates."""
+    if os.name != "nt":
+        fd = os.open(str(directory), os.O_RDONLY)
+        try:
+            os.fsync(fd)
+        finally:
+            os.close(fd)
+        return
+    import ctypes
+    from ctypes import wintypes
+
+    kernel32 = ctypes.WinDLL("kernel32", use_last_error=True)
+    create_file = kernel32.CreateFileW
+    create_file.argtypes = [
+        wintypes.LPCWSTR, wintypes.DWORD, wintypes.DWORD, wintypes.LPVOID,
+        wintypes.DWORD, wintypes.DWORD, wintypes.HANDLE,
+    ]
+    create_file.restype = wintypes.HANDLE
+    flush = kernel32.FlushFileBuffers
+    flush.argtypes = [wintypes.HANDLE]
+    flush.restype = wintypes.BOOL
+    close = kernel32.CloseHandle
+    close.argtypes = [wintypes.HANDLE]
+    close.restype = wintypes.BOOL
+    handle = create_file(
+        str(directory), 0x80000000 | 0x40000000,
+        0x00000001 | 0x00000002 | 0x00000004,
+        None, 3, 0x02000000, None,
+    )
+    invalid = wintypes.HANDLE(-1).value
+    if handle == invalid:
+        raise OSError(ctypes.get_last_error(), "cannot open common-Git directory for flush")
+    try:
+        if not flush(handle):
+            raise OSError(ctypes.get_last_error(), "cannot flush common-Git directory")
+    finally:
+        if not close(handle):
+            raise OSError(ctypes.get_last_error(), "cannot close common-Git directory handle")
+
+
 def _write_payload(path: Path, payload: dict) -> None:
     """Serialise, fsync and atomically replace ``path``.
 
@@ -241,8 +396,65 @@ def _write_payload(path: Path, payload: dict) -> None:
         except OSError:
             pass
         raise
-    os.replace(tmp, path)
-    _fsync_dir(path.parent)
+    _atomic_replace(tmp, path)
+    _fsync_dir_required(path.parent)
+
+
+def _atomic_replace(source: Path, destination: Path) -> None:
+    """Replace a file atomically and request write-through durability on NT."""
+    if os.name != "nt":
+        os.replace(source, destination)
+        return
+    import ctypes
+    from ctypes import wintypes
+
+    move_file = ctypes.WinDLL("kernel32", use_last_error=True).MoveFileExW
+    move_file.argtypes = [wintypes.LPCWSTR, wintypes.LPCWSTR, wintypes.DWORD]
+    move_file.restype = wintypes.BOOL
+    # MOVEFILE_REPLACE_EXISTING | MOVEFILE_WRITE_THROUGH
+    if not move_file(str(source), str(destination), 0x1 | 0x8):
+        error = ctypes.get_last_error()
+        raise OSError(error, "write-through atomic replacement failed", str(destination))
+
+
+def _publish_exclusive_bytes(path: Path, data: bytes) -> bool:
+    """Atomically publish complete bytes without an empty-file visibility gap."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    tmp = path.with_name(f"{path.name}.{os.getpid()}.{uuid.uuid4().hex}.tmp")
+    fd = os.open(str(tmp), os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o600)
+    try:
+        with os.fdopen(fd, "wb") as stream:
+            view = memoryview(data)
+            while view:
+                count = stream.write(view)
+                if count is None or count <= 0:
+                    raise OSError("atomic publication made no progress")
+                view = view[count:]
+            stream.flush()
+            os.fsync(stream.fileno())
+        try:
+            os.link(str(tmp), str(path))
+        except FileExistsError:
+            return False
+        except NotImplementedError as exc:
+            raise UnsupportedFilesystemError(
+                f"UNSUPPORTED_FILESYSTEM: atomic no-replace link unavailable for {path}"
+            ) from exc
+        except OSError as exc:
+            if exc.errno in (errno.EOPNOTSUPP, errno.ENOTSUP) or getattr(
+                exc, "winerror", None
+            ) in (1, 50):
+                raise UnsupportedFilesystemError(
+                    f"UNSUPPORTED_FILESYSTEM: atomic no-replace link unavailable for {path}"
+                ) from exc
+            raise
+        _fsync_dir_required(path.parent)
+        return True
+    finally:
+        try:
+            tmp.unlink()
+        except FileNotFoundError:
+            pass
 
 
 def _publish_exclusive(path: Path, payload: dict) -> bool:
@@ -256,8 +468,9 @@ def _publish_exclusive(path: Path, payload: dict) -> bool:
     which is indistinguishable from corruption and would abort every competing
     acquirer. Instead the complete record is written and fsynced to a unique
     temp file, then hard-linked into place: link creation is atomic and fails
-    if the destination exists, on both POSIX and Windows. The published path is
-    therefore never seen empty or half-written.
+    if the destination exists. The published path is therefore never seen empty
+    or half-written. Filesystems without atomic no-replace hard-link support
+    fail closed; no O_EXCL reservation fallback is used.
     """
     tmp = path.with_name(f"{path.name}.{os.getpid()}.{uuid.uuid4().hex}.pub")
     data = json.dumps(payload, indent=2, sort_keys=True)
@@ -277,45 +490,32 @@ def _publish_exclusive(path: Path, payload: dict) -> bool:
         os.link(str(tmp), str(path))
     except FileExistsError:
         return False
-    except (OSError, NotImplementedError):
-        # Filesystems without hard links (some network shares) fall back to
-        # O_EXCL reservation. The empty-file window returns there, so the
-        # published record is written immediately and unreadable-bytes are
-        # retried rather than treated as corruption.
-        try:
-            os.unlink(tmp)
-        except OSError:
-            pass
-        return _publish_exclusive_fallback(path, payload)
+    except NotImplementedError as exc:
+        raise UnsupportedFilesystemError(
+            f"UNSUPPORTED_FILESYSTEM: atomic no-replace link unavailable for {path}"
+        ) from exc
+    except OSError as exc:
+        if exc.errno in (errno.EOPNOTSUPP, errno.ENOTSUP) or getattr(
+            exc, "winerror", None
+        ) in (1, 50):
+            raise UnsupportedFilesystemError(
+                f"UNSUPPORTED_FILESYSTEM: atomic no-replace link unavailable for {path}"
+            ) from exc
+        raise
     finally:
         try:
             os.unlink(tmp)
         except OSError:
             pass
-    _fsync_dir(path.parent)
+    _fsync_dir_required(path.parent)
     return True
 
 
 def _publish_exclusive_fallback(path: Path, payload: dict) -> bool:
-    """O_EXCL reservation fallback for filesystems without hard links."""
-    data = json.dumps(payload, indent=2, sort_keys=True)
-    try:
-        fd = os.open(str(path), os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o644)
-    except FileExistsError:
-        return False
-    try:
-        with os.fdopen(fd, "w", encoding="utf-8") as fh:
-            fh.write(data)
-            fh.flush()
-            os.fsync(fh.fileno())
-    except BaseException:
-        try:
-            path.unlink()
-        except OSError:
-            pass
-        raise
-    _fsync_dir(path.parent)
-    return True
+    """Compatibility name; unsafe O_EXCL reservation is no longer supported."""
+    raise UnsupportedFilesystemError(
+        f"UNSUPPORTED_FILESYSTEM: no safe atomic exclusive publisher for {path}"
+    )
 
 
 class _LockRead:
@@ -359,11 +559,18 @@ def _read_lock(repo_root: Path) -> Optional[CommonGitLock]:
     return lock
 
 
-def _write_lock(lock: CommonGitLock) -> None:
-    """Durably publish ``lock``."""
+def _write_lock_unlocked(lock: CommonGitLock) -> None:
+    """Durably publish while the caller holds the transition claim."""
     path = _get_common_git_lock_path(Path(lock.repo_root))
     path.parent.mkdir(parents=True, exist_ok=True)
     _write_payload(path, lock.to_json())
+
+
+def _write_lock(lock: CommonGitLock) -> None:
+    """Durably publish under repository-global transition serialization."""
+    repo_root = Path(lock.repo_root).resolve()
+    with _transition_claim(repo_root):
+        _write_lock_unlocked(lock)
 
 
 # ---------------------------------------------------------------------------
@@ -371,54 +578,165 @@ def _write_lock(lock: CommonGitLock) -> None:
 # ---------------------------------------------------------------------------
 
 def _issue_generation(repo_root: Path, floor: int = 0) -> int:
-    """Append one line to the ledger and return the generation it represents.
+    """Durably issue one unique, monotonic generation in allocation order.
 
-    O_APPEND writes below PIPE_BUF are atomic on POSIX and are atomic appends on
-    Windows, so concurrent winners cannot collide. Reading the file afterwards
-    yields the highest issued value. A crash can leave a gap in the sequence,
-    which is harmless; a generation is never reused or reordered.
-
-    ``floor`` raises the ledger to at least the generation currently published.
-    That keeps the sequence monotonic even if the ledger is truncated or the
-    published record was written by an older writer, so a fencing token is
-    never issued below a generation that has already been handed out.
+    The OS file claim is independent of lock publication. A crash after this
+    function returns may leave a gap, but no process can reuse that number.
+    Existing malformed, truncated, unreadable, or nonmonotonic ledgers are
+    never repaired by truncation or by ignoring bad rows.
     """
-    path = _ledger_path(repo_root)
-    path.parent.mkdir(parents=True, exist_ok=True)
-    highest = max(0, int(floor))
-    try:
-        with open(path, "r", encoding="utf-8") as fh:
-            for line in fh:
-                line = line.strip()
-                if line.isdigit():
-                    highest = max(highest, int(line))
-    except (FileNotFoundError, OSError):
-        pass
-    nxt = highest + 1
-    fd = os.open(str(path), os.O_CREAT | os.O_WRONLY | os.O_APPEND, 0o644)
-    try:
-        os.write(fd, f"{nxt}\n".encode("ascii"))
-        os.fsync(fd)
-    finally:
-        os.close(fd)
-    return nxt
+    repo_root = Path(repo_root).resolve()
+    if type(floor) is not int or floor < 0:
+        raise GenerationLedgerError("invalid generation floor")
+    common_dir = lock_paths.resolve_git_common_dir(repo_root)
+    directory = common_dir / lock_paths.AGENT_LOCKS_DIRNAME
+    directory.mkdir(parents=True, exist_ok=True)
+    path = directory / _LEDGER_FILENAME
+    with _cross_process_file_claim_at(directory, _GENERATION_CLAIM_FILENAME):
+        highest = 0
+        authority_path = directory / f"{_LEDGER_FILENAME}.highwater"
+        authority_missing = False
+        try:
+            authority_raw = authority_path.read_bytes()
+        except FileNotFoundError:
+            authority_raw = b""
+            authority_missing = True
+        except OSError as exc:
+            raise GenerationLedgerError(f"generation high-water unreadable: {exc}") from exc
+        authority_high = 0
+        if not authority_missing and not authority_raw:
+            raise GenerationLedgerError("generation high-water authority is empty")
+        if authority_raw:
+            if not authority_raw.endswith(b"\n"):
+                raise GenerationLedgerError("generation high-water is truncated")
+            try:
+                authority_lines = authority_raw.decode("utf-8").splitlines()
+            except UnicodeError as exc:
+                raise GenerationLedgerError("generation high-water is not UTF-8") from exc
+            expected_header = (
+                "common-git-generation-high-water/v1 "
+                f"{common_dir}"
+            )
+            if not authority_lines or authority_lines[0] != expected_header:
+                raise GenerationLedgerError("generation high-water authority is malformed")
+            for line in authority_lines[1:]:
+                if not line.isdecimal() or int(line) <= authority_high:
+                    raise GenerationLedgerError(
+                        "generation high-water is corrupt or nonmonotonic"
+                    )
+                authority_high = int(line)
+        marker_path = directory / f"{_LEDGER_FILENAME}.initialized"
+        try:
+            marker = marker_path.read_bytes()
+        except FileNotFoundError:
+            marker = None
+        except OSError as exc:
+            raise GenerationLedgerError(f"generation marker unreadable: {exc}") from exc
+        expected_marker = b"common-git-generation-ledger/v1\n"
+        if marker is not None and marker != expected_marker:
+            raise GenerationLedgerError("generation initialization marker is corrupt")
+        ledger_missing = False
+        try:
+            raw = path.read_bytes()
+        except FileNotFoundError:
+            ledger_missing = True
+            if not authority_missing:
+                raise GenerationLedgerError(
+                    "generation ledger missing while high-water authority exists"
+                )
+            if marker is not None:
+                raise GenerationLedgerError("initialized generation ledger is missing")
+            raw = b""
+        except OSError as exc:
+            raise GenerationLedgerError(f"cannot read generation ledger: {exc}") from exc
+        if not ledger_missing and not raw:
+            raise GenerationLedgerError("generation ledger is empty")
+        if raw:
+            if not raw.endswith(b"\n"):
+                raise GenerationLedgerError("generation ledger is truncated")
+            try:
+                lines = raw.decode("ascii").splitlines()
+            except UnicodeError as exc:
+                raise GenerationLedgerError("generation ledger is not ASCII") from exc
+            for line in lines:
+                if not line.isdecimal() or int(line) <= highest:
+                    raise GenerationLedgerError("generation ledger is corrupt or nonmonotonic")
+                highest = int(line)
+        if highest < authority_high:
+            raise GenerationLedgerError(
+                "generation ledger is below independent high-water authority"
+            )
+        nxt = max(highest, floor) + 1
+        if marker is None:
+            if not _publish_exclusive_bytes(marker_path, expected_marker):
+                try:
+                    marker = marker_path.read_bytes()
+                except OSError as exc:
+                    raise GenerationLedgerError(
+                        f"generation marker publication could not be verified: {exc}"
+                    ) from exc
+                if marker != expected_marker:
+                    raise GenerationLedgerError("generation marker conflicts with authority")
+        fd = os.open(str(path), os.O_CREAT | os.O_WRONLY | os.O_APPEND, 0o600)
+        try:
+            payload = f"{nxt}\n".encode("ascii")
+            written = 0
+            while written < len(payload):
+                count = os.write(fd, payload[written:])
+                if count <= 0:
+                    raise OSError("generation ledger append made no progress")
+                written += count
+            os.fsync(fd)
+        except OSError as exc:
+            raise GenerationLedgerError(f"generation ledger publication failed: {exc}") from exc
+        finally:
+            os.close(fd)
+        if ledger_missing:
+            _fsync_dir_required(path.parent)
+        authority_header = (
+            "common-git-generation-high-water/v1 "
+            f"{common_dir}\n"
+        ).encode("utf-8")
+        authority_fd = os.open(
+            str(authority_path), os.O_CREAT | os.O_WRONLY | os.O_APPEND, 0o600
+        )
+        try:
+            authority_payload = (
+                authority_header if authority_missing else b""
+            ) + f"{nxt}\n".encode("ascii")
+            authority_written = 0
+            while authority_written < len(authority_payload):
+                count = os.write(authority_fd, authority_payload[authority_written:])
+                if count <= 0:
+                    raise OSError("generation high-water append made no progress")
+                authority_written += count
+            os.fsync(authority_fd)
+        except OSError as exc:
+            raise GenerationLedgerError(
+                f"generation high-water publication failed: {exc}"
+            ) from exc
+        finally:
+            os.close(authority_fd)
+        if authority_missing:
+            _fsync_dir_required(authority_path.parent)
+        return nxt
 
 
 # ---------------------------------------------------------------------------
 # ABA-safe transition primitives
 # ---------------------------------------------------------------------------
 
-def _claim_by_rename(repo_root: Path, tag: str, expect):
+def _claim_by_rename_unlocked(repo_root: Path, tag: str, expect):
     """Atomically move the published lock onto a private tombstone.
 
-    ``os.replace`` is the linearization point of every ownership transition in
-    this module. Afterwards the caller owns *exactly* the bytes that were at the
+    ``os.replace`` is the claim linearization point. Afterwards the caller owns
+    *exactly* the bytes that were at the
     published path; nobody else can write there because the path is gone.
 
     ``expect`` receives the bytes actually moved and returns True when they are
     the generation the caller is entitled to act on. When it returns False the
-    bytes are restored to the published path, because they belong to someone
-    else and must not be destroyed.
+    bytes are restored only through exclusive no-replace publication; a successor
+    already at the destination is never overwritten.
 
     On success the caller owns the returned tombstone path and must unlink it.
 
@@ -444,6 +762,7 @@ def _claim_by_rename(repo_root: Path, tag: str, expect):
                 time.sleep(_CLAIM_RENAME_RETRY_DELAY_S)
                 continue
             return False, None
+        _fsync_dir_required(path.parent)
         try:
             moved = tomb.read_bytes()
         except OSError:
@@ -459,13 +778,29 @@ def _claim_by_rename(repo_root: Path, tag: str, expect):
             # Hand the tombstone back: the displaced evidence stays reachable by
             # the caller instead of being orphaned.
             return False, tomb
-        # A concurrent acquirer may briefly observe the path missing, but the
-        # evidence is never destroyed.
+        # Restore with an atomic no-replace publication. A check followed by
+        # os.replace could overwrite a successor published in between.
         try:
-            os.replace(tomb, path)
+            os.link(str(tomb), str(path))
+        except FileExistsError:
+            return False, tomb
+        except (OSError, NotImplementedError):
+            # If exclusive restoration is unavailable, keep the tombstone as
+            # recovery evidence and fail closed.
+            return False, tomb
+        try:
+            tomb.unlink()
         except OSError:
-            pass
+            return False, tomb
+        _fsync_dir_required(path.parent)
         return False, None
+
+
+def _claim_by_rename(repo_root: Path, tag: str, expect):
+    """Serialize a public claim operation in the common-Git namespace."""
+    repo_root = Path(repo_root).resolve()
+    with _transition_claim(repo_root):
+        return _claim_by_rename_unlocked(repo_root, tag, expect)
 
 
 def _lock_matches(lock_id: str, owner_token: str, generation: int):
@@ -594,75 +929,64 @@ def acquire_common_git_lock(
     start_time = time.time()
 
     while True:
-        state, existing, reason = _read_state(repo_root)
-        if state is _LockRead.MALFORMED:
-            raise MalformedLockError(path, reason)
-        floor = existing.generation if (existing is not None) else 0
-        generation = _issue_generation(repo_root, floor)
-
-        candidate = CommonGitLock(
-            repo_root=str(repo_root),
-            operation=operation,
-            generation=generation,
-            holder_pid=pid,
-            holder_ppid=os.getppid(),
-            holder_cmdline=" ".join(sys.argv),
-            holder_start_identity=start_identity or "",
-            expires_at=_utc_in(timeout_seconds),
-        )
-
-        try:
-            won = _publish_exclusive(path, candidate.to_json())
-        except OSError as exc:
-            raise RuntimeError(f"Failed to create common Git lock: {exc}") from exc
-        if won:
-            return candidate
-
-        # Another acquirer won. Re-read and decide whether that lock may be
-        # reclaimed, or refuse.
-        state, existing, reason = _read_state(repo_root)
-        if state is _LockRead.MALFORMED:
-            raise MalformedLockError(path, reason)
-        if state is _LockRead.ABSENT:
-            time.sleep(_FRESH_PUBLISH_REREAD_DELAY_S)
-            continue
-
-        may_reclaim, why = reclaim_decision(existing)
-        if may_reclaim:
-            # ABA-safe reclaim: rename the exact generation we judged, then
-            # verify the bytes we actually moved. If the lock changed under us
-            # it is restored untouched and we reevaluate the new owner.
-            claimed, tomb = _claim_by_rename(
-                repo_root,
-                "reclaim",
-                _lock_matches(
-                    existing.lock_id, existing.owner_token, existing.generation
-                ),
-            )
-            if claimed and tomb is not None:
+        with _transition_claim(repo_root):
+            state, existing, reason = _read_state(repo_root)
+            if state is _LockRead.MALFORMED:
+                raise MalformedLockError(path, reason)
+            if state is _LockRead.ABSENT:
+                generation = _issue_generation(repo_root)
+                candidate = CommonGitLock(
+                    repo_root=str(repo_root),
+                    operation=operation,
+                    generation=generation,
+                    holder_pid=pid,
+                    holder_ppid=os.getppid(),
+                    holder_cmdline=" ".join(sys.argv),
+                    holder_start_identity=start_identity or "",
+                    expires_at=_utc_in(timeout_seconds),
+                )
                 try:
-                    tomb.unlink()
-                except OSError:
-                    pass
-            time.sleep(_FRESH_PUBLISH_REREAD_DELAY_S)
-            continue
+                    won = _publish_exclusive(path, candidate.to_json())
+                except OSError as exc:
+                    raise RuntimeError(f"Failed to create common Git lock: {exc}") from exc
+                if won:
+                    return candidate
+                state, existing, reason = _read_state(repo_root)
+                if state is _LockRead.MALFORMED:
+                    raise MalformedLockError(path, reason)
+                if state is _LockRead.ABSENT:
+                    continue
 
-        waited = int(time.time() - start_time)
-        if waited >= timeout_seconds:
-            raise RuntimeError(
-                f"Failed to acquire common Git lock after {timeout_seconds}s: "
-                f"held by pid={existing.holder_pid} "
-                f"(operation={existing.operation!r}, generation={existing.generation}, "
-                f"acquired={existing.acquired_at}, expires={existing.expires_at}); "
-                f"not reclaimable because {why}"
+            may_reclaim, why = reclaim_decision(existing)
+            if may_reclaim:
+                claimed, tomb = _claim_by_rename_unlocked(
+                    repo_root,
+                    "reclaim",
+                    _lock_matches(existing.lock_id, existing.owner_token, existing.generation),
+                )
+                if claimed and tomb is not None:
+                    try:
+                        tomb.unlink()
+                        _fsync_dir_required(tomb.parent)
+                    except OSError:
+                        pass
+                time.sleep(_FRESH_PUBLISH_REREAD_DELAY_S)
+                continue
+
+            waited = int(time.time() - start_time)
+            message = (
+                f"held by pid={existing.holder_pid} (operation={existing.operation!r}, "
+                f"generation={existing.generation}, acquired={existing.acquired_at}, "
+                f"expires={existing.expires_at}); not reclaimable because {why}"
             )
-        raise RuntimeError(
-            f"Common Git lock held by pid={existing.holder_pid} "
-            f"(operation={existing.operation!r}, generation={existing.generation}, "
-            f"acquired={existing.acquired_at}, expires={existing.expires_at}); "
-            f"not reclaimable because {why}. "
-            f"Waited {waited}s, {int(timeout_seconds - waited)}s remaining."
-        )
+            if waited >= timeout_seconds:
+                raise RuntimeError(
+                    f"Failed to acquire common Git lock after {timeout_seconds}s: {message}"
+                )
+            raise RuntimeError(
+                f"Common Git lock {message}. Waited {waited}s, "
+                f"{int(timeout_seconds - waited)}s remaining."
+            )
 
 
 def _require_mine(
@@ -709,44 +1033,42 @@ def release_common_git_lock(
     A previous owner that wakes up late therefore cannot delete its successor.
     """
     repo_root = Path(repo_root).resolve()
-    current = _read_lock(repo_root)
-    current = _require_mine(current, owner_token, lock_id, "release")
+    with _transition_claim(repo_root):
+        current = _read_lock(repo_root)
+        current = _require_mine(current, owner_token, lock_id, "release")
 
-    claimed, tomb = _claim_by_rename(
-        repo_root,
-        "release",
-        _lock_matches(current.lock_id, current.owner_token, current.generation),
-    )
-    if not claimed:
-        # Distinguish a changed owner from a rename that never happened. On
-        # Windows a concurrent reader can hold the published record open beyond
-        # the retry budget, which denies the rename without changing the owner.
-        # Reporting that as "the lock changed" would be false evidence.
-        try:
-            latest = _read_lock(repo_root)
-        except Exception:
-            latest = None
-        unchanged = (
-            latest is not None
-            and latest.lock_id == current.lock_id
-            and latest.owner_token == current.owner_token
-            and latest.generation == current.generation
+        claimed, tomb = _claim_by_rename_unlocked(
+            repo_root,
+            "release",
+            _lock_matches(current.lock_id, current.owner_token, current.generation),
         )
-        if unchanged:
-            raise RuntimeError(
-                f"cannot release: the published lock could not be claimed "
-                f"(rename persistently denied; generation={current.generation} "
-                f"is unchanged); refusing"
+        if not claimed:
+            try:
+                latest = _read_lock(repo_root)
+            except Exception:
+                latest = None
+            unchanged = (
+                latest is not None
+                and latest.lock_id == current.lock_id
+                and latest.owner_token == current.owner_token
+                and latest.generation == current.generation
             )
-        raise RuntimeError(
-            f"cannot release: the published lock changed while releasing "
-            f"(expected generation={current.generation}); refusing"
-        )
-    if tomb is not None:
-        try:
-            tomb.unlink()
-        except OSError:
-            pass
+            if unchanged:
+                raise RuntimeError(
+                    f"cannot release: the published lock could not be claimed "
+                    f"(rename persistently denied; generation={current.generation} "
+                    f"is unchanged); refusing"
+                )
+            raise RuntimeError(
+                f"cannot release: the published lock changed while releasing "
+                f"(expected generation={current.generation}); refusing"
+            )
+        if tomb is not None:
+            try:
+                tomb.unlink()
+                _fsync_dir_required(tomb.parent)
+            except OSError as exc:
+                raise RuntimeError(f"release tombstone retained at {tomb}: {exc}") from exc
     return True
 
 
@@ -764,33 +1086,45 @@ def renew_common_git_lock(
     successor: the token and generation must both still match.
     """
     repo_root = Path(repo_root).resolve()
-    current = _require_mine(_read_lock(repo_root), owner_token, lock_id, "renew")
-
-    pid, start_identity = process_identity.current_process_identity()
-    if current.holder_pid != pid or (
-        current.holder_start_identity
-        and start_identity
-        and current.holder_start_identity != start_identity
-    ):
-        raise RuntimeError(
-            f"cannot renew: caller identity no longer matches the published owner "
-            f"(published pid={current.holder_pid}, caller pid={pid})"
-        )
-
-    updated = CommonGitLock.from_json(current.to_json())
-    updated.expires_at = _utc_in(ttl_seconds)
-    # Renewal must not race a successor: re-check and rewrite only if the
-    # published generation is still ours.
-    latest = _read_lock(repo_root)
-    if latest is None or latest.generation != current.generation or not hmac_compare(
-        latest.owner_token, owner_token
-    ):
-        raise RuntimeError(
-            f"cannot renew: generation {current.generation} was superseded "
-            f"before renewal completed; refusing"
-        )
-    _write_lock(updated)
-    return updated
+    with _transition_claim(repo_root):
+        current = _require_mine(_read_lock(repo_root), owner_token, lock_id, "renew")
+        pid, start_identity = process_identity.current_process_identity()
+        if (
+            current.holder_pid != pid
+            or not current.holder_start_identity
+            or not start_identity
+            or current.holder_start_identity != start_identity
+        ):
+            raise RuntimeError(
+                "cannot renew: exact caller process identity does not match "
+                f"published owner (published pid={current.holder_pid}, caller pid={pid})"
+            )
+        updated = CommonGitLock.from_json(current.to_json())
+        updated.expires_at = _utc_in(ttl_seconds)
+        latest = _read_lock(repo_root)
+        if (
+            latest is None
+            or latest.lock_id != current.lock_id
+            or latest.generation != current.generation
+            or not hmac_compare(latest.owner_token, owner_token)
+            or latest.holder_pid != pid
+            or latest.holder_start_identity != start_identity
+        ):
+            raise RuntimeError(
+                f"cannot renew: generation {current.generation} was superseded "
+                "or process identity changed; refusing"
+            )
+        _write_lock_unlocked(updated)
+        published = _read_lock(repo_root)
+        if (
+            published is None
+            or published.lock_id != current.lock_id
+            or published.generation != current.generation
+            or not hmac_compare(published.owner_token, owner_token)
+            or published.expires_at != updated.expires_at
+        ):
+            raise RuntimeError("cannot renew: exact owner publication was not verified")
+        return updated
 
 
 @contextmanager
@@ -808,13 +1142,27 @@ def common_git_lock(
     lock = acquire_common_git_lock(repo_root, operation, timeout_seconds)
     try:
         yield lock
-    finally:
+    except BaseException as body_error:
         try:
             release_common_git_lock(Path(lock.repo_root), lock.owner_token, lock.lock_id)
-        except RuntimeError:
-            # The lock was reclaimed or superseded; do not mask the body's
-            # outcome with a release error.
-            pass
+        except Exception as release_error:
+            # Keep the original body exception as the primary error while
+            # attaching the failed authority release for operators/callers.
+            try:
+                setattr(body_error, "lock_release_error", release_error)
+            except Exception:
+                pass
+            if hasattr(body_error, "add_note"):
+                body_error.add_note(f"common Git lock release also failed: {release_error!r}")
+        raise
+    else:
+        try:
+            release_common_git_lock(Path(lock.repo_root), lock.owner_token, lock.lock_id)
+        except Exception as release_error:
+            raise CommonGitLockReleaseError(
+                "operation body completed, but common Git authority release "
+                "was not verified; success must not be claimed"
+            ) from release_error
 
 
 def get_lock_status(repo_root: Path) -> dict:
@@ -869,29 +1217,72 @@ def recover_malformed_lock(repo_root: Path, operator: str, reason: str) -> dict:
     recovery timestamp and the stated operator intent, so the destruction is
     auditable.
     """
+    if not isinstance(operator, str) or not operator.strip():
+        raise ValueError("operator identity is required for malformed-lock recovery")
+    if not isinstance(reason, str) or not reason.strip():
+        raise ValueError("reason is required for malformed-lock recovery")
     repo_root = Path(repo_root).resolve()
     path = _get_common_git_lock_path(repo_root)
-    try:
-        raw = path.read_bytes()
-    except FileNotFoundError:
-        return {"recovered": False, "detail": "no lock present"}
-    digest = hashlib.sha256(raw).hexdigest()
-    record = {
-        "recovered": True,
-        "path": str(path),
-        "removed_sha256": digest,
-        "removed_bytes": len(raw),
-        "recovered_at": _utc_now(),
-        "operator": operator,
-        "reason": reason,
-    }
-    claimed, tomb = _claim_by_rename(repo_root, "recover", lambda _raw: True)
-    if claimed and tomb is not None:
+    with _transition_claim(repo_root):
         try:
+            audited_raw = path.read_bytes()
+        except FileNotFoundError:
+            return {"recovered": False, "detail": "no lock present"}
+        state, _parsed, detail = _read_state(repo_root)
+        if state is not _LockRead.MALFORMED:
+            return {
+                "recovered": False,
+                "detail": "lock is absent or parseable; malformed recovery refused",
+            }
+        digest = hashlib.sha256(audited_raw).hexdigest()
+        audit_dir = lock_paths.agent_locks_dir(repo_root) / "common_git_lock_recovery"
+        audit_dir.mkdir(parents=True, exist_ok=True)
+        _fsync_dir_required(audit_dir.parent)
+        evidence_path = audit_dir / f"lock-{digest}.raw"
+        if not _publish_exclusive_bytes(evidence_path, audited_raw):
+            if evidence_path.read_bytes() != audited_raw:
+                raise RuntimeError("recovery evidence path contains different bytes")
+        receipt_path = audit_dir / f"lock-{digest}.json"
+        record = {
+            "schema": "common-git-lock-recovery/v1",
+            "status": "INTENT",
+            "path": str(path),
+            "audited_sha256": digest,
+            "removed_sha256": digest,
+            "audited_bytes": len(audited_raw),
+            "removed_bytes": len(audited_raw),
+            "evidence_path": str(evidence_path),
+            "operator": operator.strip(),
+            "reason": reason.strip(),
+            "detail": detail,
+            "recovered_at": _utc_now(),
+        }
+        _write_payload(receipt_path, record)
+        _fsync_dir_required(audit_dir)
+        claimed, tomb = _claim_by_rename_unlocked(
+            repo_root, "recover", lambda moved: moved == audited_raw
+        )
+        if not claimed or tomb is None:
+            record["status"] = "LOCKED_UNKNOWN"
+            record["recovered"] = False
+            _write_payload(receipt_path, record)
+            _fsync_dir_required(audit_dir)
+            return record
+        try:
+            if hashlib.sha256(tomb.read_bytes()).hexdigest() != digest:
+                raise RuntimeError("claimed malformed-lock bytes differ from audited bytes")
             tomb.unlink()
+            _fsync_dir_required(path.parent)
         except OSError:
-            pass
-    else:
-        record["recovered"] = False
-        record["detail"] = "lock changed or vanished during recovery; nothing removed"
-    return record
+            # Tombstone and exact evidence copy are both retained on failure.
+            record["status"] = "LOCKED_UNKNOWN"
+            record["recovered"] = False
+            record["tombstone_path"] = str(tomb)
+            _write_payload(receipt_path, record)
+            _fsync_dir_required(audit_dir)
+            raise
+        record["status"] = "RECOVERED"
+        record["recovered"] = True
+        _write_payload(receipt_path, record)
+        _fsync_dir_required(audit_dir)
+        return record
