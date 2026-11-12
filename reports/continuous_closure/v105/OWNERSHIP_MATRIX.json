@@ -1,0 +1,53 @@
+{
+  "opencode_owned": {
+    "O1": [
+      "ultimate_pipeline/enrichment/lane_width_policy.py",
+      "ultimate_pipeline/enrichment/lane_generator.py",
+      "ultimate_pipeline/enrichment/osm_xodr_correspondence.py",
+      "ultimate_pipeline/enrichment/osm_direction.py",
+      "ultimate_pipeline/enrichment/osm_meta_index.py",
+      "ultimate_pipeline/pipeline_stages/stage_07_lanes.py"
+    ],
+    "O2": [
+      "ultimate_pipeline/osm/restriction_*",
+      "ultimate_pipeline/osm/legal_movement_*"
+    ],
+    "O3": [
+      "ultimate_pipeline/quality/osm_road_link_topology.py",
+      "ultimate_pipeline/topology/orphan_road_repair.py"
+    ],
+    "O4": [
+      "ultimate_pipeline/quality/map_realism_p0_oracle.py",
+      "ultimate_pipeline/topology/connector_elevation_reconciler.py"
+    ],
+    "O5": [
+      "CI audit + patch proposal only (DOC_ONLY_NO_WRITE)"
+    ],
+    "O6": [
+      "research-owned files and tests"
+    ]
+  },
+  "read_only_for_opencode": [
+    "ultimate_pipeline/governance/single_writer/worktree_lock.py",
+    "ultimate_pipeline/quality/final_artifact_gates.py",
+    "ultimate_pipeline/quality/map_acceptance.py",
+    "ultimate_pipeline/contracts/artifact_authority.py",
+    "ultimate_pipeline/main_pipeline.py"
+  ],
+  "schema": "v105_ownership_matrix/v1",
+  "single_writers": {
+    "Chat 1 / Codex": [
+      "ultimate_pipeline/quality/map_acceptance.py",
+      "ultimate_pipeline/quality/final_artifact_gates.py",
+      "ultimate_pipeline/contracts/artifact_authority.py",
+      "ultimate_pipeline/main_pipeline.py"
+    ],
+    "Codex C3": [
+      "ultimate_pipeline/governance/single_writer/worktree_lock.py"
+    ],
+    "Codex C4": [
+      "ultimate_pipeline/gui/** (lifecycle-owned files)"
+    ]
+  },
+  "updated_utc": "2026-11-12T15:03:22.124790+00:00"
+}

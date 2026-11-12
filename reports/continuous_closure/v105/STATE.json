@@ -1,0 +1,122 @@
+{
+  "disk": {
+    "C:": "6.9 GB free",
+    "E:": "6.9 GB free",
+    "F:": "41.2 GB free"
+  },
+  "environment": {
+    "defusedxml": "NOT INSTALLED",
+    "git_lfs": "3.5.1 (GitHub; windows amd64)",
+    "platform": "win32",
+    "pytest": "9.1.1",
+    "python": "3.14.5",
+    "torch": "NOT INSTALLED (23 pre-existing collection errors)"
+  },
+  "git_common_dir": "F:/v103/_gitdirs/base.git (independent clone, own common dir)",
+  "main_lineage_warning": "main has a disconnected Git history from the production branch; ordinary merging between them is not valid",
+  "open_pull_requests_observed": {
+    "28": {
+      "draft": false,
+      "head": "b8a93e7205182d0b92d1ed730f43f214497d3a19",
+      "review_threads": 7
+    },
+    "30": {
+      "draft": true,
+      "head": "4d38a1fc1ebdf47bb308fa80c4fc1a0d78a9b86f",
+      "review_threads": 19
+    },
+    "31": {
+      "draft": true,
+      "head": "884f019c5",
+      "review_threads": null
+    },
+    "32": {
+      "draft": true,
+      "head": "6b2c348b5",
+      "review_threads": null
+    },
+    "33": {
+      "draft": true,
+      "head": "cf24666edae14943969c0f32d1266f5916a6e542",
+      "review_threads": null
+    },
+    "34": {
+      "draft": true,
+      "head": "aea4aea5cd4d4c00ece00ba75dc99a5a9fbcd1aa",
+      "review_threads": 0
+    },
+    "35": {
+      "draft": true,
+      "head": "9c4c0f264",
+      "review_threads": null
+    },
+    "36": {
+      "draft": true,
+      "head": "941cace20",
+      "review_threads": null
+    },
+    "37": {
+      "draft": true,
+      "head": "a72700bb1",
+      "review_threads": 2
+    },
+    "38": {
+      "draft": true,
+      "head": "a954194967a21da4c49b26a90850be22df57fa10",
+      "review_threads": null
+    },
+    "39": {
+      "draft": false,
+      "head": "102a588cf3336c9b28a3260298f240bd328d513d",
+      "review_threads": 23
+    },
+    "40": {
+      "draft": false,
+      "head": "ee94abca8f4c94972329306ecabbd4530886dc71",
+      "review_threads": null
+    },
+    "41": {
+      "draft": false,
+      "head": "6f0b02a227872ae3dfc056f4e6ab97c586c4c6e3",
+      "review_threads": null
+    },
+    "42": {
+      "draft": false,
+      "head": "6b0894b605dc36b0681a8d6b25450f7fbc6e684d",
+      "review_threads": null
+    },
+    "43": {
+      "draft": false,
+      "head": "bf9ba23f4366652d8959d9a9f81583a1614ffa5b",
+      "review_threads": null
+    }
+  },
+  "production_branch": "integration/production-large-map-20260918",
+  "production_sha": "225ed15d0da6444cc257835ca777aba281553f3c",
+  "production_sha_source": "git ls-remote origin refs/heads/integration/production-large-map-20260918",
+  "release_state": "NO_GO",
+  "release_state_reason": [
+    "V96-XMLBOUND-001 still reproduced on PR #30 head 4d38a1fc (no repair exists)",
+    "6 GUI release-authority defects reproduced (unbound PASS, stale, contradictory, missing receipt, digest mismatch)",
+    "9 locking review findings open (PR #28 + PR #37), not independently reproduced",
+    "no integrated candidate SHA exists; no independent final audit; no operator approval"
+  ],
+  "schema": "v105_execution_state/v1",
+  "staging_quarantine": {
+    "access": "read-only, not mutated",
+    "branch": "integration/v97-staging-20261112",
+    "path": "E:/wt-v97/staging",
+    "unique_history": "mixed-author, preserved via refs/archive/opencode-v97/v97-staging-20261112"
+  },
+  "updated_utc": "2026-11-12T15:03:22.124790+00:00",
+  "v97_archive_ref_count": 6,
+  "v97_archive_refs": {
+    "refs/archive/opencode-v97/v94-lifecycle-v97-20261112": "b043d57635c089e26ba883aa548637840df42f01",
+    "refs/archive/opencode-v97/v94-terminal-authority-v97-20261112": "974b81c9140b605c62e9c407b91694850956646a",
+    "refs/archive/opencode-v97/v95-geometry-strict-v97-20261112": "6d18b6c441d6874876bcc073034fb82e96d5cd63",
+    "refs/archive/opencode-v97/v95-gui-authority-v97-20261112": "e40cda3185e4143b0f47a79265d6d25556999eed",
+    "refs/archive/opencode-v97/v95-research-guarded-v97-20261112": "bb69157711ca7067d2ebe82f50e9c24833f4f1d7",
+    "refs/archive/opencode-v97/v97-staging-20261112": "89b2b22b294be47fb55ed40fb78e2d86081ceb3a"
+  },
+  "v97_archive_refs_preserved": true
+}
