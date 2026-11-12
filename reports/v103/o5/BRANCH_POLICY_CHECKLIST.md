@@ -122,13 +122,15 @@ without CI either.
    attempt proves the pull-request rule, and only the ruleset content proves
    the gate is required.
 
-   **Correction (2026-11-12, review 4551961622).** The refusal test must not
-   be able to modify production. Run it against a **throwaway branch with
-   the same ruleset applied**, never against the production branch; if the
-   production ruleset is absent or misconfigured, the push would succeed and
-   the test would itself rewrite production history. — push a throwaway commit to the production branch with
-   the gate not run and confirm the push is **REFUSED** by GitHub, not
-   merely that the badge is red.
+   **Safe refusal test (2026-11-12, review 4551961622).** Never push,
+   delete, or force-push the production branch as a test. Use a newly created
+   **disposable test branch**, confirm through the GitHub API that the same
+   proposed ruleset applies to that exact test ref, and only then attempt a
+   non-destructive, rejected operation on the test branch. If it unexpectedly
+   succeeds, record **CONTROL FAILURE** and leave production unchanged.
+   Separately inspect the effective required-check contexts through the
+   GitHub API. A rejected push alone does NOT prove that the offline release
+   gate is mandatory.
 3. Confirm the ruleset appears on the branch's protection summary, **and**
    that the ruleset's required status checks contain the gate display name and
    all seven predecessor display names. Note that the branch name contains
