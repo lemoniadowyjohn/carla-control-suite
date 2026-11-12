@@ -36,10 +36,10 @@ name:
 | `offline tests` | `offline-tests` | `tests.yml` |
 | `governance integrity` | `governance-integrity` | `tests.yml` |
 | `package / wheel smoke` | `package-wheel-smoke` | `tests.yml` |
-| `thesis rq contract` | `thesis-rq-contract` | `tests.yml` |
+| `thesis RQ contract` | `thesis-rq-contract` | `tests.yml` |
 | `research provenance` | `research-provenance` | `tests.yml` |
-| `offline evidence graph` | `offline-evidence-graph` | `tests.yml` |
-| `windows single writer` | `windows-single-writer` | `tests.yml` |
+| `offline evidence graph / freshness` | `offline-evidence-graph` | `tests.yml` |
+| `Windows named-mutex arbitration` | `windows-single-writer` | `tests.yml` |
 
 **Two corrections (2026-11-12, reviews 4551933335 / 4551961563):**
 
@@ -77,8 +77,15 @@ Rules:
   - Block force pushes                     -> YES
   - Require a pull request before merging   -> yes
   - Require status checks to pass:
-        required contexts: offline release gate, offline-tests,
-                           governance-integrity, package-wheel-smoke
+        required contexts:
+          - offline release gate
+          - offline tests
+          - governance integrity
+          - package / wheel smoke
+          - thesis RQ contract
+          - research provenance
+          - offline evidence graph / freshness
+          - Windows named-mutex arbitration
         strict: yes
   - Require review: 1 approving review, dismiss stale on push
   - Require signed commits
