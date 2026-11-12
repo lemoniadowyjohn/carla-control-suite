@@ -1210,12 +1210,45 @@ def release_worktree_lease(
             )
         if tomb is not None:
             try:
+                _fsync_directory_required(tomb.parent)
+            except (OSError, RecoveryDurabilityError) as exc:
+                raise LeaseReleaseError(
+                    f"LOCKED_UNKNOWN: claimed release tombstone is not durable; "
+                    f"preserved at {tomb}: {exc}"
+                ) from exc
+            try:
+                raw = tomb.read_bytes()
+                evidence = tomb.with_name(
+                    f"{tomb.name}.{uuid.uuid4().hex}.orphaned"
+                )
+                if not _publish_exclusive_bytes(evidence, raw):
+                    raise OSError("release evidence path unexpectedly exists")
+            except (OSError, RecoveryDurabilityError) as exc:
+                raise LeaseReleaseError(
+                    f"LOCKED_UNKNOWN: cannot durably preserve release evidence; "
+                    f"tombstone retained at {tomb}: {exc}"
+                ) from exc
+            try:
                 tomb.unlink()
             except OSError as exc:
                 raise LeaseReleaseError(
-                    f"LOCKED_UNKNOWN: lease release did not complete; verified "
-                    f"tombstone retained at {tomb}: {exc}"
+                    f"LOCKED_UNKNOWN: lease release did not complete; tombstone "
+                    f"and evidence retained at {tomb} and {evidence}: {exc}"
                 ) from exc
+            try:
+                _fsync_directory_required(tomb.parent)
+            except (OSError, RecoveryDurabilityError) as exc:
+                raise LeaseReleaseError(
+                    f"LOCKED_UNKNOWN: release deletion durability is unverified; "
+                    f"recovery evidence retained at {evidence}: {exc}"
+                ) from exc
+            # The lease removal is now durable. A leftover evidence copy is
+            # harmless; failure to remove it cannot turn the completed release
+            # into a false authority claim.
+            try:
+                evidence.unlink()
+            except OSError:
+                pass
     return True
 
 

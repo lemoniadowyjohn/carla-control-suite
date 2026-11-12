@@ -235,6 +235,7 @@ def test_release_tombstone_unlink_failure_is_not_reported_as_success(
     _git("init", cwd=root)
     _git("commit", "--allow-empty", "-m", "fixture", cwd=root)
     lease = wl.acquire_worktree_lease(root, purpose="release-unlink-fault")
+    original_lease_bytes = wl._worktree_lease_path(root).read_bytes()
     original = Path.unlink
     attempted: list[Path] = []
 
@@ -245,18 +246,59 @@ def test_release_tombstone_unlink_failure_is_not_reported_as_success(
         return original(path, *args, **kwargs)
 
     monkeypatch.setattr(Path, "unlink", fail_owned_tombstone)
-    with pytest.raises(RuntimeError, match="LOCKED_UNKNOWN.*tombstone retained"):
+    with pytest.raises(RuntimeError, match="LOCKED_UNKNOWN.*tombstone and evidence retained"):
         wl.release_worktree_lease(root, lease.owner_token, lease.lease_id)
 
     assert len(attempted) == 1, "release never attempted tombstone deletion"
     tomb = attempted[0]
     assert tomb.exists(), "failed release discarded its only recoverable lease record"
+    orphaned = list(tomb.parent.glob(f"{tomb.name}.*.orphaned"))
+    assert len(orphaned) == 1, "release did not preserve a durable evidence copy"
+    assert tomb.read_bytes() == original_lease_bytes
+    assert orphaned[0].read_bytes() == original_lease_bytes
     assert not wl._worktree_lease_path(root).exists(), (
         "the test did not reach the claimed-tombstone release state"
     )
     data = json.loads(tomb.read_text(encoding="utf-8"))
     assert data["lease_id"] == lease.lease_id
     assert data["owner_token"] == lease.owner_token
+
+
+@pytest.mark.parametrize("fail_at", [1, 3])
+def test_release_requires_directory_durability_at_claim_and_delete(
+    tmp_path, monkeypatch, fail_at
+):
+    root = tmp_path / f"release-fsync-{fail_at}"
+    root.mkdir()
+    _git("init", cwd=root)
+    _git("commit", "--allow-empty", "-m", "fixture", cwd=root)
+    lease = wl.acquire_worktree_lease(root, purpose=f"release-fsync-{fail_at}")
+    real_sync = wl._fsync_directory_required
+    calls = []
+
+    def fail_selected_sync(directory: Path):
+        calls.append(directory)
+        if len(calls) == fail_at:
+            raise wl.RecoveryDurabilityError("injected release directory sync failure")
+        real_sync(directory)
+
+    monkeypatch.setattr(wl, "_fsync_directory_required", fail_selected_sync)
+    with pytest.raises(wl.LeaseReleaseError, match="LOCKED_UNKNOWN"):
+        wl.release_worktree_lease(root, lease.owner_token, lease.lease_id)
+
+    assert len(calls) == fail_at, "release skipped an expected durability boundary"
+    lease_path = wl._worktree_lease_path(root)
+    tombstones = list(lease_path.parent.glob(f"{lease_path.name}.release.*.tombstone"))
+    evidence = list(lease_path.parent.glob(f"{lease_path.name}.release.*.tombstone.*.orphaned"))
+    assert not lease_path.exists(), "release did not reach its claimed lease state"
+    if fail_at == 1:
+        assert len(tombstones) == 1, "pre-delete flush failure must retain tombstone"
+    else:
+        assert not tombstones
+        assert len(evidence) == 1, "post-delete flush failure must retain exact evidence"
+        saved = json.loads(evidence[0].read_text(encoding="utf-8"))
+        assert saved["lease_id"] == lease.lease_id
+        assert saved["owner_token"] == lease.owner_token
 
 
 def test_renewal_rejects_a_successor_written_after_its_publish(tmp_path, monkeypatch):
