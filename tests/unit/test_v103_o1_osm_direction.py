@@ -457,6 +457,127 @@ def test_resolution_is_deterministic_under_tag_order_permutation():
 
 
 # ---------------------------------------------------------------------------
+# Independent-review follow-ups (V103-O1 review round 1)
+# ---------------------------------------------------------------------------
+
+def test_cycleway_sides_swap_on_a_reversed_xodr_reference():
+    """OSM ``cycleway:left``/``right`` are OSM-way-relative."""
+    root = ET.Element("OpenDRIVE")
+    road = ET.SubElement(root, "road", id="42", junction="-1", length="100.0")
+    ET.SubElement(road, "lanes")
+
+    LaneGenerator.ensure_lanes(
+        root,
+        verbose=False,
+        structural_osm_meta={
+            "42": {
+                "cycleway:right": "lane",
+                DIRECTION_KEY: ORIENTATION_REVERSE,
+            }
+        },
+    )
+
+    lane_sections = road.findall("./lanes/laneSection")
+    assert lane_sections
+    # The OSM right side of a reversed way is the XODR left carriageway.
+    left_bike = lane_sections[0].findall("./left/lane[@type='biking']")
+    right_bike = lane_sections[0].findall("./right/lane[@type='biking']")
+    assert len(left_bike) == 1
+    assert right_bike == []
+    provenance = lane_sections[0].find(
+        "./left/lane/userData/vector[@key='cycle_lane_source']"
+    )
+    assert provenance is not None
+    assert provenance.get("value") == "osm:cycleway:right@xodr-reverse"
+
+
+def test_cycleway_sides_do_not_swap_on_an_aligned_xodr_reference():
+    root = ET.Element("OpenDRIVE")
+    road = ET.SubElement(root, "road", id="42", junction="-1", length="100.0")
+    ET.SubElement(road, "lanes")
+
+    LaneGenerator.ensure_lanes(
+        root,
+        verbose=False,
+        structural_osm_meta={
+            "42": {"cycleway:right": "lane", DIRECTION_KEY: "forward"}
+        },
+    )
+
+    lane_sections = road.findall("./lanes/laneSection")
+    assert len(lane_sections[0].findall("./right/lane[@type='biking']")) == 1
+    assert lane_sections[0].findall("./left/lane[@type='biking']") == []
+    provenance = lane_sections[0].find(
+        "./right/lane/userData/vector[@key='cycle_lane_source']"
+    )
+    assert provenance is not None
+    assert provenance.get("value") == "osm:cycleway:right"
+
+
+def test_coverage_is_incomplete_when_every_matched_road_conflicts():
+    report = directional_coverage_report(
+        {
+            "1": {
+                DIRECTION_KEY: "forward",
+                MATCH_CLASS_KEY: "EXACT",
+                "lanes": "4",
+                "lanes:forward": "2",
+                "lanes:backward": "1",
+            }
+        },
+        source_available=True,
+    )
+
+    assert report["status"] == "INCOMPLETE"
+    assert report["counts"]["conflicting"] == 1
+    assert report["counts"]["authoritative"] == 0
+
+
+def test_coverage_is_incomplete_when_every_matched_road_is_ambiguous():
+    report = directional_coverage_report(
+        {"1": {DIRECTION_KEY: "forward", MATCH_CLASS_KEY: "AMBIGUOUS"}},
+        source_available=True,
+    )
+
+    assert report["status"] == "INCOMPLETE"
+    assert report["counts"]["ambiguous"] == 1
+    assert report["counts"]["authoritative"] == 0
+
+
+def test_reversible_oneway_records_the_note():
+    resolved = resolve_directional_lane_counts({"oneway": "reversible", "lanes": "2"})
+
+    assert resolved.state == "unsupported"
+    assert "reversible_oneway" in resolved.notes
+
+
+def test_reserved_direction_keys_are_not_shadowed_by_xodr_provenance():
+    """An XODR attribute/vector must never override the reserved keys."""
+    root = ET.Element("OpenDRIVE")
+    road = ET.SubElement(
+        root,
+        "road",
+        id="1",
+        junction="-1",
+        length="100.0",
+        **{"_osm_direction": "forward"},
+    )
+    user_data = ET.SubElement(road, "userData")
+    ET.SubElement(user_data, "vector", key="_osm_direction", value="reverse")
+    ET.SubElement(road, "lanes")
+
+    backward, forward, _source, _confidence = driving_lane_counts(
+        road,
+        structural_osm_meta={
+            "1": {"oneway": "yes", "lanes": "2", DIRECTION_KEY: ORIENTATION_REVERSE}
+        },
+    )
+
+    # The reserved key survives: the reversed mapping still applies.
+    assert (backward, forward) == (2, 0)
+
+
+# ---------------------------------------------------------------------------
 # Mutation control — proves the tests really bind the one-way rule
 # ---------------------------------------------------------------------------
 

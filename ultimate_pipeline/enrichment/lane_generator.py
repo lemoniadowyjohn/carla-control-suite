@@ -481,9 +481,25 @@ class LaneGenerator:
             return str(value or "").strip().lower() in {"lane", "track"}
 
         sides: list[tuple[str, str, float]] = []
+        # V103-O1: OSM's ``cycleway:left`` / ``cycleway:right`` are relative to
+        # the **OSM way's** node order.  When the XODR reference line runs
+        # opposite to the OSM way, the two sides swap.
+        from ultimate_pipeline.enrichment.osm_direction import (
+            DIRECTION_KEY,
+            ORIENTATION_REVERSE,
+        )
+
+        reversed_reference = (
+            str(meta.get(DIRECTION_KEY) or "").strip().lower() == ORIENTATION_REVERSE
+        )
         for side in ("left", "right"):
             if is_dedicated(meta.get(f"cycleway:{side}")):
-                sides.append((side, f"osm:cycleway:{side}", 1.0))
+                xodr_side = side
+                source = f"osm:cycleway:{side}"
+                if reversed_reference:
+                    xodr_side = "right" if side == "left" else "left"
+                    source = f"{source}@xodr-reverse"
+                sides.append((xodr_side, source, 1.0))
         if not sides and is_dedicated(meta.get("cycleway")):
             # The generic OSM tag confirms a facility but not a side.  Keep
             # that uncertainty visible in provenance instead of duplicating

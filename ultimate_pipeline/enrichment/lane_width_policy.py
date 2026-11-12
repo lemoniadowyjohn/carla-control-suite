@@ -8,6 +8,9 @@ from typing import Any, Dict, Mapping, Optional
 
 from ultimate_pipeline.enrichment.osm_direction import (
     DIRECTION_KEY,
+    MATCH_CLASS_KEY,
+    MATCH_CONFIDENCE_KEY,
+    OSM_WAY_ID_KEY,
     resolve_directional_lane_counts,
 )
 
@@ -163,6 +166,21 @@ def road_lane_width_metadata(
                 meta[_clean_key(str(key))] = _clean_value(value)
     meta.update(_metadata_from_attrs(road))
     meta.update(_metadata_from_vectors(road))
+    # V103-O1: re-apply the reserved directional keys last.  Direct XODR
+    # provenance stays authoritative over the external indexes for real OSM
+    # tags, but a reserved key must never be shadowed by an XODR attribute or
+    # vector that happens to share its cleaned name.
+    if structural_osm_meta and road_id and road_id in structural_osm_meta:
+        resolved = structural_osm_meta[road_id]
+        for reserved in (
+            DIRECTION_KEY,
+            OSM_WAY_ID_KEY,
+            MATCH_CLASS_KEY,
+            MATCH_CONFIDENCE_KEY,
+        ):
+            value = resolved.get(reserved)
+            if value is not None:
+                meta[_clean_key(str(reserved))] = _clean_value(value)
     return meta
 
 

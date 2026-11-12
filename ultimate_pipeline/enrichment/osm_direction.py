@@ -308,7 +308,7 @@ def resolve_directional_lane_counts(
             source = "osm:lanes"
             confidence = 0.5
             state = DirectionalState.UNSUPPORTED
-            if reversible:
+            if reversible or oneway is OnewayState.REVERSIBLE:
                 notes.append("reversible_oneway")
             if conditional:
                 notes.append("oneway_conditional")
@@ -484,6 +484,7 @@ def directional_coverage_report(
     not_assessable = 0
     fallback = 0
     forward = 0
+    authoritative = 0
 
     for road_id, meta in sorted((associations or {}).items()):
         if not isinstance(meta, Mapping):
@@ -498,22 +499,37 @@ def directional_coverage_report(
             not_assessable += 1
 
         match_class = str(meta.get(MATCH_CLASS_KEY) or "").strip().upper()
-        if match_class and match_class not in {"EXACT", "HIGH"}:
+        road_ambiguous = bool(match_class) and match_class not in {"EXACT", "HIGH"}
+        if road_ambiguous:
             ambiguous += 1
 
         resolved = resolve_directional_lane_counts(
             meta, osm_direction=orientation if orientation != ORIENTATION_UNKNOWN else None
         )
-        if resolved.state == DirectionalState.CONFLICTING.value:
+        road_conflicting = resolved.state == DirectionalState.CONFLICTING.value
+        if road_conflicting:
             conflicting += 1
         if resolved.source == "fallback":
             fallback += 1
+
+        # A road is authoritative for directionality only when its match class
+        # is trustworthy, its orientation is known, and the source does not
+        # contradict itself.
+        if (
+            not road_ambiguous
+            and orientation != ORIENTATION_UNKNOWN
+            and not road_conflicting
+        ):
+            authoritative += 1
 
     if not source_available:
         status = "BLOCKED_INPUT"
     elif matched == 0:
         status = "BLOCKED_INPUT"
-    elif not_assessable == matched and release_required:
+    elif authoritative == 0 and release_required:
+        # Nothing matched authoritatively: ambiguous, conflicting or
+        # not-assessable roads are not a release-eligible directionality
+        # result.
         status = "INCOMPLETE"
     else:
         status = "PASS"
@@ -533,6 +549,7 @@ def directional_coverage_report(
             "conflicting": conflicting,
             "not_assessable": not_assessable,
             "fallback": fallback,
+            "authoritative": authoritative,
         },
     }
 
