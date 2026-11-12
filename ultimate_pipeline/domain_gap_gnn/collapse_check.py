@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+import math
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List
@@ -107,8 +108,13 @@ def run_collapse_check(
     tile_self = _pairwise_mean_cosine(z_tiles)
     cross = _cross_mean_cosine(z_noise, z_tiles)
 
-    verdict = "NOT_COLLAPSED" if noise_self < 0.95 else "COLLAPSED"
-    if noise_self > 0.95:
+    if not all(math.isfinite(score) for score in (noise_self, tile_self, cross)):
+        verdict = "INDETERMINATE"
+    else:
+        verdict = "NOT_COLLAPSED" if noise_self < 0.95 else "COLLAPSED"
+    if verdict == "INDETERMINATE":
+        interpretation = "Nonfinite collapse statistic; clearance is denied."
+    elif noise_self >= 0.95:
         interpretation = (
             "Noise embeddings are too similar; encoder likely collapsed and "
             "whole-map cosine claims are unreliable."
@@ -126,22 +132,22 @@ def run_collapse_check(
 
     payload = {
         "checkpoint": str(checkpoint),
-        "noise_self_cosine": float(noise_self),
-        "tile_self_cosine": float(tile_self),
-        "cross_cosine": float(cross),
+        "noise_self_cosine": float(noise_self) if math.isfinite(noise_self) else None,
+        "tile_self_cosine": float(tile_self) if math.isfinite(tile_self) else None,
+        "cross_cosine": float(cross) if math.isfinite(cross) else None,
         "verdict": verdict,
         "interpretation": interpretation,
         "timestamp": datetime.now(timezone.utc).isoformat(),
     }
     out_path.parent.mkdir(parents=True, exist_ok=True)
-    out_path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
+    out_path.write_text(json.dumps(payload, indent=2, allow_nan=False) + "\n", encoding="utf-8")
     return payload
 
 
 def main() -> int:
     payload = run_collapse_check()
     print(json.dumps(payload, indent=2))
-    return 0
+    return 0 if payload.get("verdict") == "NOT_COLLAPSED" else 2
 
 
 if __name__ == "__main__":

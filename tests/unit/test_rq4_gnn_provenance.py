@@ -260,7 +260,12 @@ def test_stale_checkpoint_with_mismatched_manifest_not_reused(tmp_path):
     train_dir.mkdir(parents=True)
     (train_dir / "map_encoder_epoch50.pt").write_bytes(b"stale-bytes")
     (train_dir / "map_encoder_epoch50.pt.manifest.json").write_text(
-        json.dumps({"graph_schema_sha256": "OLD"}), encoding="utf-8"
+        json.dumps({
+            "graph_schema_sha256": "OLD",
+            "checkpoint_file_sha256": prov.sha256_file(
+                train_dir / "map_encoder_epoch50.pt"
+            ),
+        }), encoding="utf-8"
     )
     expected = {"graph_schema_sha256": "NEW"}
     assert ks._try_reuse_checkpoint(train_dir, 50, expected, on_mismatch="retrain") is None

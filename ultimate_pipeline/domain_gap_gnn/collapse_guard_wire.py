@@ -21,7 +21,6 @@ from __future__ import annotations
 
 import json
 import math
-import os
 from pathlib import Path
 from typing import Any, Dict, Mapping, Optional
 
@@ -134,6 +133,21 @@ def blocked_payload(verdict: Mapping[str, Any]) -> Dict[str, Any]:
 def collapsed_payload(checkpoint: str, *, tiles_dir: Optional[str] = None) -> Dict[str, Any]:
     """Backward-compatible entrypoint for structured NOT_RUN results."""
     verdict = collapse_verdict(checkpoint, tiles_dir=tiles_dir)
+    if verdict.get("status") == "ok":
+        # This helper emits a SCREENING RECEIPT, not an inferred latent metric.
+        # A passed screen is neither a collapse nor a scientific gap result.
+        return {
+            "enabled": False,
+            "status": "ok",
+            "reason": None,
+            "note": "Encoder passed collapse screening; no latent-gap metric computed",
+            "encoder": {
+                "checkpoint": verdict.get("checkpoint"),
+                "verdict": verdict.get("verdict"),
+                "noise_self_cosine": verdict.get("noise_self_cosine"),
+            },
+            "metrics": None,
+        }
     return blocked_payload(verdict)
 
 

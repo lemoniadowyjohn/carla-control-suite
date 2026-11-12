@@ -78,6 +78,9 @@ def _matrix():
                     "normalized_xodr_sha256": NORMALIZED,
                     "structural_signature": STRUCTURAL,
                     "settings_digest": SETTINGS,
+                    "tileset_digest": "7" * 64,
+                    "map_acceptance_digest": "8" * 64,
+                    "final_receipt_digest": "9" * 64,
                 },
             }
             for idx in range(5)
@@ -157,3 +160,85 @@ def test_five_is_nonnegotiable_even_with_matching_summary():
 def test_four_receipts_never_pass_as_five_runs():
     result = _adjudicate(_receipts()[:4], _matrix())
     assert result["claim_status"] == "NOT_RUN"
+
+
+def test_v95_hidden_raw_divergence_cannot_claim_authority():
+    receipts = _receipts()
+    matrix = _matrix()
+    other = "9" * 64
+    receipts[2]["map_identities"]["final_xodr_sha256"] = other
+    matrix["per_run"][2]["identities"]["raw_xodr_sha256"] = other
+    # Fabricated summary: 5 coherent children with divergent raw bytes,
+    # but an intentionally false 'all equal' verdict and empty gap list.
+    claim = _adjudicate(receipts, matrix)
+    assert claim["claim_status"] == "NOT_RUN"
+    assert "contradict" in " ".join(claim["adjudication"]["problems"])
+
+
+def test_v95_truthful_measured_raw_difference_is_bounded():
+    import json
+    receipts = _receipts()
+    matrix = _matrix()
+    other = "9" * 64
+    receipts[2]["map_identities"]["final_xodr_sha256"] = other
+    matrix["per_run"][2]["identities"]["raw_xodr_sha256"] = other
+    matrix["all_raw_equal"] = False
+    matrix["divergence_classification"] = "RAW_DIFFERENT_NORMALIZED_EQUAL"
+    values = sorted({json.dumps(v, sort_keys=True, separators=(",", ":")) for v in (RAW, other)})
+    matrix["identity_gaps"] = [{
+        "identity": "raw_xodr_sha256", "distinct_count": 2,
+        "distinct_values": values,
+    }]
+    claim = _adjudicate(receipts, matrix)
+    assert claim["claim_status"] == "BOUNDED", claim["adjudication"]["problems"]
+
+
+def test_v95_hidden_input_context_difference_not_admitted():
+    receipts = _receipts()
+    matrix = _matrix()
+    # The prior equivalence key matched only input XODR SHA, not OSM context.
+    # The deeper measured-row checker must detect this omitted gap.
+    matrix["per_run"][2]["identities"]["input_identity"]["osm"] = "changed"
+    claim = _adjudicate(receipts, matrix)
+    assert claim["claim_status"] == "NOT_RUN"
+
+
+def test_v95_false_gap_metadata_does_not_convert_to_bounded():
+    receipts = _receipts()
+    matrix = _matrix()
+    matrix["identity_gaps"] = [{
+        "identity": "raw_xodr_sha256", "distinct_count": 2,
+        "distinct_values": ["fabricated"],
+    }]
+    claim = _adjudicate(receipts, matrix)
+    assert claim["claim_status"] == "NOT_RUN"
+
+
+def test_v95_malformed_run_count_is_not_uncaught_exception():
+    matrix = _matrix()
+    matrix["valid_run_count"] = "oops"
+    assert _adjudicate(_receipts(), matrix)["claim_status"] == "NOT_RUN"
+
+
+def test_v95_nonhashable_matrix_identity_is_not_uncaught_exception():
+    matrix = _matrix()
+    matrix["per_run"][2]["identities"]["raw_xodr_sha256"] = ["bad"]
+    assert _adjudicate(_receipts(), matrix)["claim_status"] == "NOT_RUN"
+
+
+def test_v95_nonstring_gap_identity_fails_closed():
+    matrix = _matrix()
+    matrix["identity_gaps"] = [{"identity": ["unhashable"]}]
+    assert _adjudicate(_receipts(), matrix)["claim_status"] == "NOT_RUN"
+
+
+def test_v95_nonhashable_run_id_fails_closed():
+    matrix = _matrix()
+    matrix["per_run"][1]["run_id"] = ["not-a-run-id"]
+    assert _adjudicate(_receipts(), matrix)["claim_status"] == "NOT_RUN"
+
+
+def test_v95_noninteger_count_fails_closed():
+    matrix = _matrix()
+    matrix["valid_run_count"] = 5.0
+    assert _adjudicate(_receipts(), matrix)["claim_status"] == "NOT_RUN"

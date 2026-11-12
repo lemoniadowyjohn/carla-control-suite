@@ -193,6 +193,93 @@ def _rq1_matrix_key(row: Dict[str, Any]) -> tuple:
 
 
 
+def _rq1_measured_matrix_consistency(
+    matrix: Dict[str, Any], rows: List[Dict[str, Any]]
+) -> List[str]:
+    """Recompute the reported matrix from row evidence, never trust flags alone.
+
+    This checks internal consistency, NOT independent authenticity of the
+    underlying experiments. Real outputs and input hashes still need verification.
+    """
+    import json
+
+    problems: List[str] = []
+    names = (
+        "input_identity", "raw_xodr_sha256", "normalized_xodr_sha256",
+        "structural_signature", "tileset_digest", "map_acceptance_digest",
+        "final_receipt_digest", "settings_digest",
+    )
+    observed_gaps = set()
+    fingerprints: Dict[str, List[str]] = {}
+    for name in names:
+        values = [(row.get("identities") or {}).get(name) for row in rows]
+        fingerprints[name] = sorted({
+            json.dumps(value, sort_keys=True, separators=(",", ":"), default=str)
+            for value in values
+        })
+        if any(value is None for value in values) or len(fingerprints[name]) != 1:
+            observed_gaps.add(name)
+    for name in ("raw_xodr_sha256", "normalized_xodr_sha256", "structural_signature"):
+        values = [(row.get("identities") or {}).get(name) for row in rows]
+        if any(not isinstance(v, str) or not v for v in values):
+            problems.append(f"missing measured {name} in RQ1 matrix rows")
+
+    flags = {
+        "all_raw_equal": "raw_xodr_sha256",
+        "all_normalized_equal": "normalized_xodr_sha256",
+        "all_structural_equal": "structural_signature",
+    }
+    for flag, name in flags.items():
+        recorded = matrix.get(flag)
+        measured = name not in observed_gaps
+        if not isinstance(recorded, bool) or recorded != measured:
+            problems.append(f"RQ1 matrix {flag} contradicts measured per-run {name}")
+
+    gaps = matrix.get("identity_gaps")
+    if not isinstance(gaps, list):
+        problems.append("RQ1 matrix identity_gaps is not a list")
+        return problems
+    declared = [g.get("identity") for g in gaps if isinstance(g, dict)]
+    if len(declared) != len(gaps) or len(set(declared)) != len(declared):
+        problems.append("RQ1 matrix identity_gaps has invalid/duplicate entries")
+    elif set(declared) != observed_gaps:
+        problems.append("RQ1 matrix identity_gaps contradict measured per-run rows")
+    for gap in gaps:
+        if not isinstance(gap, dict):
+            continue
+        name = gap.get("identity")
+        if name not in fingerprints:
+            problems.append(f"RQ1 unknown identity gap {name!r}")
+            continue
+        if "distinct_count" in gap and (
+            not isinstance(gap["distinct_count"], int)
+            or gap["distinct_count"] != len(fingerprints[name])
+        ):
+            problems.append(f"RQ1 inconsistent distinct_count for {name}")
+        if "distinct_values" in gap and gap["distinct_values"] != fingerprints[name]:
+            problems.append(f"RQ1 inconsistent distinct_values for {name}")
+
+    raw = "raw_xodr_sha256" not in observed_gaps
+    norm = "normalized_xodr_sha256" not in observed_gaps
+    structural = "structural_signature" not in observed_gaps
+    if not raw and norm and structural:
+        expected_class = "RAW_DIFFERENT_NORMALIZED_EQUAL"
+    elif not norm and structural:
+        expected_class = "NORMALIZED_DIFFERENT_STRUCTURAL_EQUAL"
+    elif not structural:
+        expected_class = "STRUCTURAL_DIFFERENCE"
+    else:
+        expected_class = "NO_DIFFERENCE"
+    if matrix.get("divergence_classification") != expected_class:
+        problems.append("RQ1 divergence classification contradicts measured rows")
+    first = next((name for name in (
+        "raw_xodr_sha256", "normalized_xodr_sha256", "structural_signature"
+    ) if name in observed_gaps), None)
+    if "first_divergent_stage" in matrix and matrix["first_divergent_stage"] != first:
+        problems.append("RQ1 first divergent stage contradicts measured rows")
+    return problems
+
+
 def adjudicate_rq1(
     run_receipts: List[Dict[str, Any]],
     determinism_matrix: Optional[Dict[str, Any]] = None,
@@ -240,14 +327,16 @@ def adjudicate_rq1(
     if required_valid_runs != RQ1_REQUIRED_VALID_RUNS:
         problems.append("RQ1 required five-run threshold cannot be overridden")
         return _claim("RQ1", "NOT_RUN", None, problems, statuses, contract, detail)
-    problems.extend(_rq1_receipt_coherence(valid, current_source_sha))
-    if problems:
-        return _claim("RQ1", "NOT_RUN", None, problems, statuses, contract, detail)
-
+    # Report insufficient runs BEFORE coherence checks. Missing runs remain
+    # visible even when the available partial receipts are also malformed.
     if len(valid) < required_valid_runs:
         problems.append(
             f"missing required runs: {len(valid)}/{required_valid_runs} valid receipts"
         )
+        return _claim("RQ1", "NOT_RUN", None, problems, statuses, contract, detail)
+
+    problems.extend(_rq1_receipt_coherence(valid, current_source_sha))
+    if problems:
         return _claim("RQ1", "NOT_RUN", None, problems, statuses, contract, detail)
 
     # Repeatability comes ONLY from the measured determinism matrix (raw /
@@ -262,9 +351,11 @@ def adjudicate_rq1(
         "normalized": bool(determinism_matrix.get("all_normalized_equal")),
         "structural": bool(determinism_matrix.get("all_structural_equal")),
     }
-    valid_run_count = int(
-        determinism_matrix.get("valid_run_count", detail["receipts_valid"]) or 0
-    )
+    raw_count = determinism_matrix.get("valid_run_count")
+    if not isinstance(raw_count, int):
+        problems.append("malformed RQ1 matrix valid_run_count")
+        return _claim("RQ1", "NOT_RUN", None, problems, statuses, contract, detail)
+    valid_run_count = raw_count
     detail["identity_repeatability"] = all_equal
     detail["matrix_valid_run_count"] = valid_run_count
     detail["divergence_classification"] = determinism_matrix.get(
@@ -284,8 +375,17 @@ def adjudicate_rq1(
     if (
         not isinstance(rows, list) or len(rows) != len(valid)
         or not all(isinstance(row, dict) and row.get("valid") is True for row in rows)
+        or any(not isinstance(row.get("run_id"), str)
+               or not row.get("run_id") for row in rows)
         or len({row.get("run_id") for row in rows}) != len(rows)
         or any(not row.get("run_id") for row in rows)
+        or any(not isinstance(row.get("identities"), dict)
+               or not isinstance(row["identities"].get("input_identity"), dict)
+               for row in rows)
+        or any(not isinstance(value, (str, type(None)))
+               for row in rows for value in _rq1_matrix_key(row))
+        or any(not isinstance(value, (str, type(None)))
+               for receipt in valid for value in _rq1_evidence_key(receipt))
         or Counter(_rq1_matrix_key(row) for row in rows)
         != Counter(_rq1_evidence_key(receipt) for receipt in valid)
     ):
@@ -295,10 +395,16 @@ def adjudicate_rq1(
     if not isinstance(gaps, list):
         problems.append("matrix identity_gaps evidence missing or malformed")
         return _claim("RQ1", "NOT_RUN", None, problems, statuses, contract, detail)
-    if any(not isinstance(gap, dict) or not gap.get("identity") for gap in gaps):
+    if any(not isinstance(gap, dict)
+           or not isinstance(gap.get("identity"), str)
+           or not gap.get("identity") for gap in gaps):
         problems.append("matrix identity_gaps contains malformed entries")
         return _claim("RQ1", "NOT_RUN", None, problems, statuses, contract, detail)
     gap_names = {gap["identity"] for gap in gaps}
+    consistency_problems = _rq1_measured_matrix_consistency(determinism_matrix, rows)
+    if consistency_problems:
+        problems.extend(consistency_problems)
+        return _claim("RQ1", "NOT_RUN", None, problems, statuses, contract, detail)
     if gap_names & {"input_identity", "settings_digest"}:
         problems.append("RQ1 runs use mixed source inputs or settings")
         return _claim("RQ1", "NOT_RUN", None, problems, statuses, contract, detail)

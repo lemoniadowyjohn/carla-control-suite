@@ -243,3 +243,58 @@ def test_collapse_screening_uses_exact_training_width_and_strictness(
     )
     assert out["verdict"] == "NOT_COLLAPSED"
     assert seen == [{"width_mode": "polynomial", "strict": True}]
+
+
+def test_v95_passed_collapse_helper_does_not_raise_or_fabricate_metrics(tmp_path, monkeypatch):
+    cp = _checkpoint(tmp_path)
+    monkeypatch.setattr(
+        guard, "run_collapse_check",
+        lambda **kwargs: _verdict("NOT_COLLAPSED", noise=0.30),
+    )
+    receipt = guard.collapsed_payload(cp)
+    assert receipt["status"] == "ok"
+    assert receipt["enabled"] is False and receipt["metrics"] is None
+    assert receipt["encoder"]["verdict"] == "NOT_COLLAPSED"
+
+
+@pytest.mark.parametrize("verdict,exit_code", [
+    ("COLLAPSED", 2), ("INDETERMINATE", 2), ("NOT_COLLAPSED", 0),
+])
+def test_v95_collapse_check_cli_status_matches_verdict(monkeypatch, verdict, exit_code):
+    from ultimate_pipeline.domain_gap_gnn import collapse_check
+    monkeypatch.setattr(collapse_check, "run_collapse_check", lambda: {"verdict": verdict})
+    assert collapse_check.main() == exit_code
+
+
+def test_v95_collapse_nan_cannot_be_not_collapsed(tmp_path, monkeypatch):
+    from types import SimpleNamespace
+    from torch_geometric.data import Data
+    from ultimate_pipeline.domain_gap_gnn import collapse_check as cc
+
+    class FakeEncoder:
+        cfg = SimpleNamespace(node_dim=4)
+        _v94_graph_width_mode = "legacy"
+        _v94_graph_strict = False
+        def __call__(self, batch):
+            return torch.ones((batch.num_graphs, 4))
+
+    class FakeDataset:
+        def __init__(self, *args, **kwargs):
+            pass
+        def __len__(self):
+            return 5
+        def __getitem__(self, idx):
+            return Data(x=torch.ones((2, 4)), edge_index=torch.tensor([[0], [1]]))
+
+    monkeypatch.setattr(cc, "_load_model", lambda *_: FakeEncoder())
+    monkeypatch.setattr(cc, "MapTileDataset", FakeDataset)
+    monkeypatch.setattr(cc, "_pairwise_mean_cosine", lambda *_: float("nan"))
+    monkeypatch.setattr(cc, "_cross_mean_cosine", lambda *_: 0.2)
+    ckpt = tmp_path / "checkpoint.pt"
+    ckpt.write_bytes(b"placeholder")
+    tiles = tmp_path / "tiles"
+    tiles.mkdir()
+    receipt = cc.run_collapse_check(ckpt, tiles, tmp_path / "receipt.json")
+    assert receipt["verdict"] == "INDETERMINATE"
+    assert receipt["noise_self_cosine"] is None
+    assert json.loads((tmp_path / "receipt.json").read_text())["noise_self_cosine"] is None

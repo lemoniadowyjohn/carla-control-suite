@@ -160,9 +160,10 @@ class TestAdjudicatorRQ1:
             for _ in range(n)
         ]
 
-    def test_authoritative_requires_exact_valid_run_count_and_metrics(self):
+    def test_duplicate_synthetic_receipts_never_establish_authority(self):
         claim = adjudicate_rq1(self._runs(5), _matrix())
-        assert claim["claim_status"] == "AUTHORITATIVE", claim["adjudication"]["problems"]
+        assert claim["claim_status"] == "NOT_RUN"
+        assert claim["adjudication"]["problems"]
 
     def test_missing_runs_not_run(self):
         claim = adjudicate_rq1(self._runs(4), _matrix())
@@ -196,9 +197,9 @@ class TestAdjudicatorRQ1:
         claim = adjudicate_rq1([r0] + self._runs(4), _matrix())
         assert claim["claim_status"] == "NOT_RUN"
 
-    def test_mismatched_identities_bounded_not_authoritative(self):
+    def test_summary_only_divergence_is_not_measured_evidence(self):
         claim = adjudicate_rq1(self._runs(5), _matrix(all_raw_equal=False, divergence_classification="RAW_DIFFERENT_NORMALIZED_EQUAL"))
-        assert claim["claim_status"] == "BOUNDED"
+        assert claim["claim_status"] == "NOT_RUN"
 
     def test_matrix_missing_not_run(self):
         claim = adjudicate_rq1(self._runs(5), None)
@@ -477,10 +478,30 @@ class TestRQ2MetricComparisonClassification:
         assert agreement["m.x"].startswith("MATCH(atol=1e-9)")
         assert [c["metric"] for c in changes] == ["m.y"]
 
-    def test_structural_values_not_counted_as_changes(self):
+    def test_structural_values_are_compared_not_silently_ignored(self):
         agreement, changes = _aggregate_metric_comparison(
             {"m.d": {"a": 1}}, {"m.d": {"a": 2}}
         )
-        assert changes == []
-        assert "STRUCTURAL_VALUE" in agreement["m.d"]
+        assert "m.d" not in agreement
+        assert len(changes) == 1 and changes[0]["note"] == "structural value changed"
 
+
+
+def test_v95_rq2_metric_absence_is_not_null_both():
+    agreement, changes = _aggregate_metric_comparison({"m.a": None}, {})
+    assert "m.a" not in agreement
+    assert changes and "absent" in changes[0]["note"]
+
+
+def test_v95_rq2_nonfinite_numeric_comparison_is_not_match():
+    agreement, changes = _aggregate_metric_comparison(
+        {"m.a": float("nan")}, {"m.a": float("nan")}
+    )
+    assert "m.a" not in agreement
+    assert changes and "nonfinite" in changes[0]["note"]
+
+
+def test_v95_rq2_boolean_is_not_numeric_one():
+    agreement, changes = _aggregate_metric_comparison({"m.a": True}, {"m.a": 1})
+    assert "m.a" not in agreement
+    assert changes and "boolean" in changes[0]["note"]

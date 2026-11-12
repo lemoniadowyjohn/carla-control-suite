@@ -24,6 +24,7 @@ Rules honored:
 from __future__ import annotations
 
 import json
+import math
 import subprocess
 import sys
 from datetime import datetime, timezone
@@ -123,8 +124,20 @@ def _aggregate_metric_comparison(
     agreement: Dict[str, Any] = {}
     for key in sorted(set(frozen_flat) | set(current_flat)):
         fv, cv = frozen_flat.get(key), current_flat.get(key)
+        # A missing metric is not equivalent to an explicitly unavailable
+        # metric. Both are scientific evidence gaps, never a match.
+        if key not in frozen_flat or key not in current_flat:
+            changes.append({
+                "metric": key, "frozen": fv, "current": cv,
+                "note": "metric key absent on one side",
+            })
+            continue
         if isinstance(fv, dict) or isinstance(cv, dict):
-            agreement[key] = "STRUCTURAL_VALUE (compare via subkeys)"
+            if isinstance(fv, dict) and isinstance(cv, dict) and fv == cv:
+                agreement[key] = "STRUCTURAL_MATCH(exact)"
+            else:
+                changes.append({"metric": key, "frozen": fv, "current": cv,
+                                "note": "structural value changed"})
             continue
         if fv is None and cv is None:
             agreement[key] = "NULL_BOTH (unavailable on both sides; not a value change)"
@@ -132,7 +145,18 @@ def _aggregate_metric_comparison(
         if fv is None or cv is None:
             changes.append({"metric": key, "frozen": fv, "current": cv, "note": "unavailable side"})
             continue
+        if isinstance(fv, bool) or isinstance(cv, bool):
+            if type(fv) is not type(cv) or fv != cv:
+                changes.append({"metric": key, "frozen": fv, "current": cv,
+                                "note": "boolean metric/type mismatch"})
+            else:
+                agreement[key] = "MATCH(exact boolean)"
+            continue
         if isinstance(fv, (int, float)) and isinstance(cv, (int, float)):
+            if not (math.isfinite(float(fv)) and math.isfinite(float(cv))):
+                changes.append({"metric": key, "frozen": fv, "current": cv,
+                                "note": "nonfinite metric not admissible"})
+                continue
             if abs(float(fv) - float(cv)) <= 1e-9:
                 agreement[key] = "MATCH(atol=1e-9)"
             else:

@@ -26,10 +26,14 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+import pytest
+
 import torch
 
 from ultimate_pipeline.domain_gap_gnn import latent_gap_runner as lgr
 from ultimate_pipeline.domain_gap_gnn.map_encoder import MapEncoder, MapEncoderConfig
+from ultimate_pipeline.domain_gap_gnn import gnn_provenance as prov
+from ultimate_pipeline.domain_gap_gnn.graph_builder import graph_schema_hash
 
 
 MINIMAL_XODR = """<?xml version="1.0" encoding="UTF-8"?>
@@ -43,9 +47,37 @@ MINIMAL_XODR = """<?xml version="1.0" encoding="UTF-8"?>
 """
 
 
+@pytest.fixture(autouse=True)
+def _mock_collapse_screen_only_for_orchestration(monkeypatch):
+    # Tests in this legacy module target latent-runner flow, not the collapse
+    # algorithm. V94/V95 guard tests exercise real collapse validation.
+    monkeypatch.setattr(
+        lgr, "collapse_verdict", lambda *args, **kwargs: {
+            "status": "ok", "reason": None, "verdict": "NOT_COLLAPSED",
+        }
+    )
+
+
 def _write_checkpoint(path: Path, cfg: MapEncoderConfig) -> None:
     model = MapEncoder(cfg).eval()
-    torch.save({"cfg": vars(cfg), "model_state": model.state_dict()}, str(path))
+    versions = prov.get_torch_versions()
+    metadata = prov.build_checkpoint_metadata(
+        graph_schema_sha256=graph_schema_hash(width_mode="legacy"),
+        training_dataset_manifest_sha256="1" * 64,
+        tile_selection_sha256="2" * 64,
+        source_tile_hashes=[],
+        selection_seed=0,
+        training_seed=0,
+        model_config={
+            **vars(cfg),
+            "architecture": "MapEncoder/GCNConv+global_mean_pool+proj",
+        },
+        training_config={"width_mode": "legacy", "strict_dataset": False},
+        git_sha="a" * 40,
+        torch_version=versions["torch_version"],
+        torch_geometric_version=versions["torch_geometric_version"],
+    )
+    prov.save_checkpoint(path, model.state_dict(), metadata)
 
 
 def _fake_graph(node_dim: int):
@@ -68,7 +100,7 @@ def test_compute_whole_map_latent_gap_end_to_end(tmp_path: Path, monkeypatch):
     auto_xodr.write_text(MINIMAL_XODR, encoding="utf-8")
 
     monkeypatch.setattr(
-        lgr.MapGraphBuilder, "build_from_xodr", staticmethod(lambda path: _fake_graph(cfg.node_dim))
+        lgr.MapGraphBuilder, "build_from_xodr", staticmethod(lambda path, **kwargs: _fake_graph(cfg.node_dim))
     )
 
     result = lgr.compute_whole_map_latent_gap(str(manual_xodr), str(auto_xodr), str(ckpt_path))
@@ -90,7 +122,7 @@ def test_compute_whole_map_latent_gap_reports_error_when_manual_graph_build_fail
     manual_xodr.write_text(MINIMAL_XODR, encoding="utf-8")
     auto_xodr.write_text(MINIMAL_XODR, encoding="utf-8")
 
-    def _build(path):
+    def _build(path, **kwargs):
         return None if "manual" in str(path) else _fake_graph(cfg.node_dim)
 
     monkeypatch.setattr(lgr.MapGraphBuilder, "build_from_xodr", staticmethod(_build))
@@ -112,7 +144,7 @@ def test_compute_whole_map_latent_gap_deterministic_across_calls(tmp_path: Path,
 
     torch.manual_seed(0)
     fixed_graph = _fake_graph(cfg.node_dim)
-    monkeypatch.setattr(lgr.MapGraphBuilder, "build_from_xodr", staticmethod(lambda path: fixed_graph))
+    monkeypatch.setattr(lgr.MapGraphBuilder, "build_from_xodr", staticmethod(lambda path, **kwargs: fixed_graph))
 
     r1 = lgr.compute_whole_map_latent_gap(str(manual_xodr), str(auto_xodr), str(ckpt_path))
     r2 = lgr.compute_whole_map_latent_gap(str(manual_xodr), str(auto_xodr), str(ckpt_path))
@@ -139,7 +171,7 @@ def test_compute_per_tile_latent_gap_filename_pairing_intersects_and_computes(tm
     (manual_dir / "tile_9_9.xodr").write_text(MINIMAL_XODR, encoding="utf-8")
 
     monkeypatch.setattr(
-        lgr.MapGraphBuilder, "build_from_xodr", staticmethod(lambda path: _fake_graph(cfg.node_dim))
+        lgr.MapGraphBuilder, "build_from_xodr", staticmethod(lambda path, **kwargs: _fake_graph(cfg.node_dim))
     )
     out_json = tmp_path / "per_tile.json"
 
@@ -172,7 +204,7 @@ def test_compute_per_tile_latent_gap_skips_shape_mismatched_pairs(tmp_path: Path
     # so mismatch this test by returning None -- treated as skip, same
     # code path as a build failure -- keeping this test focused on the
     # skip bookkeeping rather than fabricating a shape-only mismatch).
-    def _build(path):
+    def _build(path, **kwargs):
         return None if "auto_tiles" in str(path) else _fake_graph(cfg.node_dim)
 
     monkeypatch.setattr(lgr.MapGraphBuilder, "build_from_xodr", staticmethod(_build))
