@@ -93,6 +93,7 @@ import os
 import subprocess
 import sys
 from datetime import datetime
+from uuid import uuid4
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Sequence, Tuple
 
@@ -460,11 +461,15 @@ def eval_sim_labeled(
     min_frames: int = 1,
 ) -> Dict[str, Any]:
     """Run labeled sim evaluation against an explicitly identified split."""
-    eval_dir = out_dir / "eval" / condition_name
-    eval_dir.mkdir(parents=True, exist_ok=True)
+    # Every evaluator invocation writes into a newly created directory.
+    # A zero-exit child which fails to write its report must NEVER read a
+    # prior invocation's status=ok JSON for the same condition.
+    invocation_id = uuid4().hex
+    eval_dir = out_dir / "eval" / condition_name / f"invocation_{invocation_id}"
+    eval_dir.mkdir(parents=True, exist_ok=False)
 
     out_json = eval_dir / "sim_labeled_eval.json"
-    log_file = log_dir / f"eval_sim_{condition_name}.log"
+    log_file = log_dir / f"eval_sim_{condition_name}_{invocation_id}.log"
 
     cmd = [
         sys.executable, "-m", "ultimate_pipeline.perception.eval_sim_labeled",
@@ -491,6 +496,8 @@ def eval_sim_labeled(
 
     result: Dict[str, Any] = {
         "condition": condition_name,
+        "evaluation_invocation_id": invocation_id,
+        "evaluation_report_path": str(out_json),
         "ok": ret == 0 and payload.get("status") == "ok",
         "exit_code": int(ret),
         "status": payload.get("status") or ("missing_report" if not payload else "unknown"),
@@ -550,11 +557,12 @@ def eval_real_unlabeled(
     min_images: int = 1,
 ) -> Dict[str, Any]:
     """Run unlabeled real-world shift evaluation."""
-    eval_dir = out_dir / "eval" / condition_name
-    eval_dir.mkdir(parents=True, exist_ok=True)
+    invocation_id = uuid4().hex
+    eval_dir = out_dir / "eval" / condition_name / f"invocation_{invocation_id}"
+    eval_dir.mkdir(parents=True, exist_ok=False)
 
     out_json = eval_dir / "real_u_eval_report.json"
-    log_file = log_dir / f"eval_real_u_{condition_name}.log"
+    log_file = log_dir / f"eval_real_u_{condition_name}_{invocation_id}.log"
 
     cmd = [
         sys.executable, "-m", "ultimate_pipeline.perception.eval_real_unlabeled",
@@ -584,6 +592,8 @@ def eval_real_unlabeled(
     real_block = payload.get("real") if isinstance(payload.get("real"), dict) else {}
     result: Dict[str, Any] = {
         "condition": condition_name,
+        "evaluation_invocation_id": invocation_id,
+        "evaluation_report_path": str(out_json),
         "ok": ret == 0 and payload.get("status") == "ok",
         "exit_code": int(ret),
         "status": payload.get("status") or ("missing_report" if not payload else "unknown"),
