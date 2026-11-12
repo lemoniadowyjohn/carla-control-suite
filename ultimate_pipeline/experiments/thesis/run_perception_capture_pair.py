@@ -37,7 +37,12 @@ def _resolve_calib_path(explicit_path: Optional[str]) -> str:
         if p.is_file():
             print(f"Using explicit calib path: {p}")
             return str(p)
-        print(f"Warning: Explicit calib path not found: {p}, trying fallbacks")
+        # In a paired thesis experiment the selected calibration is part of
+        # the scientific contract. Silently replacing a missing explicit rig
+        # with another JSON file invalidates sensor-equivalence claims.
+        raise FileNotFoundError(
+            f"explicit --calib-json does not exist: {p}"
+        )
 
     if standard_path.is_file():
         print(f"Using standard calib path: {standard_path}")
