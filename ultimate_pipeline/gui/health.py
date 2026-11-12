@@ -94,7 +94,8 @@ class ConnectionHealth:
 
     @property
     def healthy(self) -> bool:
-        return self.state in (ConnectionState.HEALTHY, ConnectionState.VERSION_MISMATCH)
+        return self.state is ConnectionState.HEALTHY and bool(self.stages) and all(
+            stage.ok and not stage.unsupported for stage in self.stages)
 
     @property
     def first_failing_stage(self) -> StageOutcome | None:
@@ -152,7 +153,8 @@ def probe_stages(
                 duration_ms=int((time.perf_counter() - started) * 1000),
             )
         return StageOutcome(
-            stage, True, value=outcome,
+            stage, outcome is True, value=outcome,
+            detail="probe did not return True" if outcome is not True else "",
             duration_ms=int((time.perf_counter() - started) * 1000),
         )
 
@@ -163,32 +165,44 @@ def probe_stages(
         health.state = ConnectionState.UNHEALTHY
         return health
 
-    # Stage 2 - RPC handshake
-    result: Result = backend.probe(host=host, port=port, timeout_s=timeout_s)
-    health.stages.append(
-        StageOutcome(
-            HealthStage.RPC_HANDSHAKE, result.ok,
-            detail=result.reason or "handshake ok",
-            duration_ms=0,
-        )
-    )
-    if not result.ok:
+    # Stage 2 - RPC handshake; an exception is a failed probe, not a crash.
+    try:
+        result: Result = backend.probe(host=host, port=port, timeout_s=timeout_s)
+        rpc_ok = result.ok is True
+        detail = result.reason or ("handshake ok" if rpc_ok else "handshake failed")
+    except Exception as exc:
+        rpc_ok = False
+        detail = f"RPC handshake unavailable: {type(exc).__name__}"
+    health.stages.append(StageOutcome(HealthStage.RPC_HANDSHAKE, rpc_ok, detail=detail))
+    if not rpc_ok:
         health.state = ConnectionState.UNHEALTHY
         return health
 
-    # Stage 3 - server version (warning only; backend enforces nothing)
-    version = backend.server_version()
+    # Stage 3 - lack of a version cannot be treated as a healthy backend.
+    try:
+        version = backend.server_version()
+    except Exception:
+        version = None
     health.server_version = version
+    version_ok = isinstance(version, str) and bool(version)
     health.stages.append(
-        StageOutcome(
-            HealthStage.SERVER_VERSION, version is not None,
-            detail="" if version else "server did not report a version",
-            value=version,
-        )
+        StageOutcome(HealthStage.SERVER_VERSION, version_ok,
+                     detail="" if version_ok else "server version unavailable",
+                     value=version if version_ok else None)
     )
+    if not version_ok:
+        health.state = ConnectionState.UNHEALTHY
+        return health
 
     # Stage 4 - map enumeration (may legitimately be unsupported)
-    maps: Tri = backend.available_maps()
+    try:
+        maps: Tri = backend.available_maps()
+    except Exception as exc:
+        health.stages.append(StageOutcome(
+            HealthStage.MAP_ENUMERATION, False,
+            detail=f"map enumeration unavailable: {type(exc).__name__}"))
+        health.state = ConnectionState.UNHEALTHY
+        return health
     if maps.state == TriState.PROBE_UNSUPPORTED:
         health.stages.append(
             StageOutcome(HealthStage.MAP_ENUMERATION, False, detail=maps.reason, unsupported=True)
@@ -197,24 +211,36 @@ def probe_stages(
         health.stages.append(
             StageOutcome(HealthStage.MAP_ENUMERATION, True, detail=maps.reason, value=[])
         )
-    else:
+    elif maps.state == TriState.AVAILABLE:
         names = list(maps.value or [])
         health.stages.append(
             StageOutcome(HealthStage.MAP_ENUMERATION, True, value=names,
                          detail=f"{len(names)} maps")
         )
+    else:
+        health.stages.append(StageOutcome(HealthStage.MAP_ENUMERATION, False,
+                                          detail="unknown map enumeration state"))
 
     # Stage 5 - world ready (read-only: does NOT load a world)
-    world = backend.read_settings()
+    try:
+        world = backend.read_settings()
+    except Exception as exc:
+        health.stages.append(StageOutcome(
+            HealthStage.WORLD_READY, False,
+            detail=f"world settings unavailable: {type(exc).__name__}"))
+        health.state = ConnectionState.UNHEALTHY
+        return health
     health.stages.append(
         StageOutcome(
-            HealthStage.WORLD_READY, bool(getattr(world, "available", True)),
+            HealthStage.WORLD_READY, getattr(world, "available", None) is True,
             detail="world settings read without loading a world",
             value=repr(world),
         )
     )
 
-    if version and expected_version and version != expected_version:
+    if any(not stage.ok or stage.unsupported for stage in health.stages):
+        health.state = ConnectionState.UNHEALTHY
+    elif version and expected_version and version != expected_version:
         health.state = ConnectionState.VERSION_MISMATCH
     else:
         health.state = ConnectionState.HEALTHY

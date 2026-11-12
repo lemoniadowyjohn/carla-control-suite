@@ -47,7 +47,8 @@ def _run_dir(tmp_path: Path, *, verdict=None, marker=None, raw: str | None = Non
 
 
 def test_T_EXP_01_only_final_run_verdict_is_authoritative(tmp_path):
-    assert read_final_verdict(_run_dir(tmp_path, verdict="PASS")).status == "PASS"
+    # A standalone PASS JSON is diagnostic, not a verified runtime result.
+    assert read_final_verdict(_run_dir(tmp_path, verdict="PASS")).status == "NOT_EVALUATED"
     # SUCCESS.txt alone is never authoritative
     assert read_final_verdict(_run_dir(tmp_path, marker="ok", name="marker_only")).status == "NOT_EVALUATED"
     # neither present
@@ -98,7 +99,7 @@ def test_T_EXP_06_resume_is_never_claimed_without_a_checkpoint():
 
 # =========================================================== T-EXP-CANCEL
 def test_T_EXP_CANCEL_01_cancellation_is_cooperative_and_recorded():
-    supervisor = JobSupervisor()
+    supervisor = JobSupervisor(allow_scheduling=True)
     job = supervisor.submit("j", "exp")
     token = CancellationToken()
     token.cancel("operator stop")
@@ -113,7 +114,7 @@ def test_T_EXP_CANCEL_01_cancellation_is_cooperative_and_recorded():
 
 
 def test_T_EXP_CANCEL_02_timeout_is_classified_and_recorded():
-    supervisor = JobSupervisor()
+    supervisor = JobSupervisor(allow_scheduling=True)
     job = supervisor.submit("j", "exp")
 
     def boom(_t):
@@ -145,7 +146,7 @@ def test_T_EXP_CANCEL_04_exception_chain_is_unwound_for_the_operator():
 
 
 def test_T_EXP_CANCEL_05_blocked_stage_is_the_exact_stage():
-    supervisor = JobSupervisor()
+    supervisor = JobSupervisor(allow_scheduling=True)
     job = supervisor.submit("j", "exp")
 
     def boom(_t):
@@ -157,7 +158,7 @@ def test_T_EXP_CANCEL_05_blocked_stage_is_the_exact_stage():
 
 
 def test_T_EXP_CANCEL_06_dead_watchdog_does_not_produce_success():
-    supervisor = JobSupervisor()
+    supervisor = JobSupervisor(allow_scheduling=True)
     job = supervisor.submit("j", "exp")
 
     def returns_after_cancel(_t):

@@ -46,8 +46,10 @@ class CancellationToken:
             if self._event.is_set():
                 return
             self._reason = reason
+            # Make publication atomic with on_cancel() registration.
+            self._event.set()
             callbacks = list(self._callbacks)
-        self._event.set()
+            self._callbacks.clear()
         for callback in callbacks:
             try:
                 callback(reason)

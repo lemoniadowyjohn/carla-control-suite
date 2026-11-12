@@ -39,6 +39,8 @@ jobs:
     name: offline tests
     runs-on: ubuntu-latest
     timeout-minutes: 60
+    env:
+      QT_QPA_PLATFORM: offscreen
     permissions:
       contents: read
     steps:
@@ -69,8 +71,26 @@ jobs:
       - name: Install YOLO layer without its transitive GUI OpenCV
         run: pip install --no-deps -r requirements-yolo.txt
 
-      - name: Install package editable for tests
-        run: pip install -e .
+      - name: Install package editable with GUI test dependencies
+        run: pip install -e ".[gui]"
+
+      - name: Representative optional imports (full offline profile)
+        run: |
+          python - <<'PY'
+          import importlib
+          for mod in (
+              "ultimate_pipeline.domain_gap",
+              "ultimate_pipeline.domain_gap_gnn",
+              "ultimate_pipeline.carla_tools",
+              "ultimate_pipeline.quality",
+              "ultimate_pipeline.sensors",
+              "ultimate_pipeline.topology",
+              "ultimate_pipeline.experiments",
+              "ultimate_pipeline.tools",
+          ):
+              importlib.import_module(mod)
+          print("OPTIONAL_IMPORT_SMOKE_OK")
+          PY
 
       - name: Run offline pytest
         run: python -m pytest -q
@@ -111,15 +131,12 @@ jobs:
         run: |
           /tmp/up-wheel-smoke/bin/python -I - <<'PY'
           import importlib
+          # Clean wheel promises ONLY the core extra-free imports.
+          # Optional surface imports are tested above against full CI deps.
           mods = [
-              "ultimate_pipeline.domain_gap",
-              "ultimate_pipeline.domain_gap_gnn",
-              "ultimate_pipeline.carla_tools",
-              "ultimate_pipeline.quality",
-              "ultimate_pipeline.sensors",
-              "ultimate_pipeline.topology",
-              "ultimate_pipeline.experiments",
-              "ultimate_pipeline.tools",
+              "ultimate_pipeline",
+              "ultimate_pipeline.cli",
+              "ultimate_pipeline.common",
           ]
           for mod in mods:
               importlib.import_module(mod)
