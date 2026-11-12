@@ -31,6 +31,8 @@ import argparse
 import json
 import os
 import shlex
+import socket
+import subprocess
 import signal
 import sys
 import time
@@ -137,6 +139,8 @@ def _ready_probe(host: str, port: int, *, timeout_s: float, sleep_s: float = 0.3
                     attempt["sync_world"] = bool(world.get_settings().synchronous_mode)
                 except Exception as exc:
                     attempt["settings_error"] = str(exc)
+            if time.monotonic() >= deadline:
+                raise TimeoutError("readiness_budget_exhausted_after_settings")
             report["ok"] = True
             report["status"] = "RPC_MAP_READY_FRAMES_UNVERIFIED"
             report["attempts"].append(attempt)
@@ -255,6 +259,7 @@ def _start_carla_if_needed(args: argparse.Namespace, *, out_dir: Path):
         timeout_s=float(os.environ.get("UP_CARLA_START_TIMEOUT_S", "180.0")),
         kill_stale=bool(args.kill_stale),
         attach_existing=bool(args.attach_existing),
+        attach_only=bool(args.attach_existing),
         stdout_path=stdout_path,
         stderr_path=stderr_path,
     )
@@ -265,18 +270,24 @@ def _start_carla_if_needed(args: argparse.Namespace, *, out_dir: Path):
     return proc
 
 
-def _terminate_proc(proc) -> None:
+def _terminate_proc(proc) -> bool:
+    """Return whether the owned Popen handle is confirmed reaped."""
     if proc is None:
-        return
+        return True
     try:
-        # Best-effort: try a graceful terminate, then kill
+        if proc.poll() is not None:
+            return True
         proc.terminate()
         try:
             proc.wait(timeout=10)
-        except Exception:
-            proc.kill()
-    except Exception:
-        pass
+        except subprocess.TimeoutExpired:
+            if proc.poll() is None:
+                proc.kill()
+                proc.wait(timeout=10)
+        return proc.poll() is not None
+    except Exception as exc:
+        print(f"[capture] Owned server cleanup failed: {exc}")
+        return False
 
 
 def main(argv: Optional[list[str]] = None) -> int:
@@ -285,12 +296,30 @@ def main(argv: Optional[list[str]] = None) -> int:
     out_dir = Path(args.out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
 
+    from ultimate_pipeline.carla_tools.v94_port_reservation import PortLease
     proc = None
+    port_lease = None
+    managed = bool(args.carla_exe or os.environ.get("UP_CARLA_EXE"))
     try:
+        if not managed and not args.attach_existing:
+            raise RuntimeError("External CARLA requires explicit --attach-existing")
+        if managed and not args.attach_existing:
+            if str(args.host).lower() not in ("127.0.0.1", "localhost", "::1"):
+                raise RuntimeError("Managed CARLA launch requires a loopback host")
+            port_lease = PortLease((int(args.port), int(args.port)+1, int(args.tm_port)))
+            port_lease.acquire()
+            try:
+                with socket.create_connection((str(args.host), int(args.tm_port)), timeout=0.1):
+                    raise RuntimeError("Traffic Manager port already occupied by a foreign process")
+            except OSError:
+                pass
         proc = _start_carla_if_needed(args, out_dir=out_dir)
 
         ready_timeout_s = float(os.environ.get("UP_CARLA_READY_TIMEOUT_S", "180"))
-        ready_report = _ready_probe(str(args.host), int(args.port), timeout_s=ready_timeout_s)
+        from ultimate_pipeline.carla_tools.rpc_watchdog import supervise
+        ready_report = supervise(_ready_probe, args=(str(args.host), int(args.port)),
+                                 kwargs={"timeout_s": ready_timeout_s},
+                                 timeout_s=ready_timeout_s)
         ready_ok_val = ready_report.get("ok", False)
         ready_ok = ready_ok_val if isinstance(ready_ok_val, bool) else False
         if not ready_ok:
@@ -351,9 +380,35 @@ def main(argv: Optional[list[str]] = None) -> int:
     except KeyboardInterrupt:
         print("\n[capture] Interrupted.")
         return 130
+    except Exception as exc:
+        # Never publish success after an ordinary exception. Best effort when
+        # the output volume is exhausted or non-writable.
+        try:
+            _write_json(out_dir / "carla_capture_failure.json", {
+                "ok": False, "status": "FAIL", "error_type": type(exc).__name__,
+                "error": str(exc),
+            })
+        except OSError as receipt_error:
+            print(f"[capture] Failure receipt unavailable: {receipt_error}")
+        print(f"[capture] Failed: {type(exc).__name__}: {exc}")
+        return 1
     finally:
-        # Clean up CARLA if we started it
-        _terminate_proc(proc)
+        # Release the cooperative port namespace only when owned process exit
+        # and port vacancy can be independently observed.
+        cleanup_ok = _terminate_proc(proc)
+        if port_lease is not None:
+            occupied = False
+            for port in (int(args.port), int(args.port)+1):
+                try:
+                    with socket.create_connection((str(args.host), port), timeout=0.1):
+                        occupied = True
+                except OSError:
+                    pass
+            if not cleanup_ok or occupied:
+                raise RuntimeError(
+                    "Owned CARLA cleanup unverified; retaining port lease for operator review"
+                )
+            port_lease.release()
 
 
 if __name__ == "__main__":
