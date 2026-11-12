@@ -94,6 +94,43 @@ def _elevation_at_s(segments: List[Tuple[float, float, float, float, float]], s:
     return _poly_z(seg, s)
 
 
+def _stationary_points(
+    segments: List[Tuple[float, float, float, float, float]],
+    length: float,
+) -> List[float]:
+    """All interior extrema of the exact cubic elevation polynomials.
+
+    Looking only at evenly spaced samples misses a high peak or deep valley
+    whose values at BOTH surrounding sample points are equal. Every cubic's
+    derivative is quadratic, so at most two stationary points occur per
+    segment. This is deterministic and bounded by the number of segments.
+    """
+    extrema: List[float] = []
+    for idx, (s0, _a, b, c, d) in enumerate(segments):
+        end = segments[idx + 1][0] if idx + 1 < len(segments) else length
+        local_length = end - s0
+        roots: List[float] = []
+        if d:
+            qa, qb, qc = 3.0 * d, 2.0 * c, b
+            discriminant = qb * qb - 4.0 * qa * qc
+            if not math.isfinite(discriminant):
+                raise ValueError("non-finite derivative discriminant")
+            if discriminant >= 0.0:
+                radical = math.sqrt(discriminant)
+                roots = [(-qb - radical) / (2.0 * qa), (-qb + radical) / (2.0 * qa)]
+        elif c:
+            roots = [-b / (2.0 * c)]
+        for local_s in roots:
+            if not math.isfinite(local_s):
+                raise ValueError("non-finite derivative root")
+            if 0.0 < local_s < local_length:
+                absolute_s = s0 + local_s
+                if not math.isfinite(absolute_s):
+                    raise ValueError("non-finite stationary position")
+                extrema.append(absolute_s)
+    return extrema
+
+
 def check_elevation_seams(
     xodr_path: str,
     *,
@@ -173,47 +210,63 @@ def check_elevation_seams(
             if segments and segments[-1][0] > length:
                 raise ValueError("elevation segment starts beyond road length")
 
+            # Include *both* nominal sample points and every actual piecewise
+            # polynomial boundary. Otherwise a continuous triangular hill at
+            # s=2.5 m can be invisible at the 0/5/10 m nominal samples.
+            regular_positions = [0.0]
             s = 0.0
-            prev_z = _elevation_at_s(segments, s)
-            road_jumps: List[float] = []
-            boundary_jumps: List[float] = []
-            steps = 0
-
-            z_min = prev_z if z_min is None else min(z_min, prev_z)
-            z_max = prev_z if z_max is None else max(z_max, prev_z)
-
-            # Explicitly evaluate both sides of every polynomial boundary.
-            # Sampling only at 0,5,10... can miss a spike at 2 m that
-            # returns to zero at 4 m, even on an otherwise flat road.
-            for previous, current in zip(segments, segments[1:]):
-                boundary_s = current[0]
-                left_z = _poly_z(previous, boundary_s)
-                right_z = current[1]
-                boundary_jumps.append(abs(right_z - left_z))
-                z_min = min(z_min, left_z, right_z)
-                z_max = max(z_max, left_z, right_z)
-
-            # Include the final partial interval; a 3 m road must be measured
-            # even with the historical default 5 m sample interval.
             while s < length:
                 next_s = min(length, s + sample_step_m)
                 if next_s <= s:
                     raise ValueError("sampling interval cannot advance at road precision")
                 s = next_s
-                z = _elevation_at_s(segments, s)
-                dz = abs(z - prev_z)
-                road_jumps.append(dz)
-                all_jumps.append(dz)
-                if dz > step_threshold_m:
+                regular_positions.append(s)
+            boundary_indices = {segment[0]: idx for idx, segment in enumerate(segments) if idx}
+            extrema = _stationary_points(segments, length)
+            base_positions = set(regular_positions) | set(boundary_indices)
+            extra_extrema = set(extrema) - base_positions
+            positions = sorted(base_positions | set(extrema))
+            if len(positions) - 1 > max_samples_per_road:
+                raise ValueError("sampling requires more than 1000000 intervals")
+
+            prev_z = _poly_z(segments[0], 0.0) if segments else 0.0
+            road_jumps: List[float] = []
+            boundary_jumps: List[float] = []
+            steps = 0
+            active_index = 0
+
+            z_min = prev_z if z_min is None else min(z_min, prev_z)
+            z_max = prev_z if z_max is None else max(z_max, prev_z)
+
+            for position in positions[1:]:
+                # Evaluate just BEFORE a boundary using its preceding segment.
+                # After accounting for the continuous interval, evaluate the
+                # right-hand segment. This prevents a discontinuity from being
+                # double-counted as an interval jump.
+                left_z = _poly_z(segments[active_index], position) if segments else 0.0
+                interval_jump = abs(left_z - prev_z)
+                road_jumps.append(interval_jump)
+                all_jumps.append(interval_jump)
+                if interval_jump > step_threshold_m:
                     steps += 1
-                prev_z = z
-                z_min = min(z_min, z)
-                z_max = max(z_max, z)
+                z_min = min(z_min, left_z)
+                z_max = max(z_max, left_z)
+                if position in boundary_indices:
+                    active_index = boundary_indices[position]
+                    right_z = _poly_z(segments[active_index], position)
+                    boundary_jumps.append(abs(right_z - left_z))
+                    z_min = min(z_min, right_z)
+                    z_max = max(z_max, right_z)
+                    prev_z = right_z
+                else:
+                    prev_z = left_z
 
             all_boundary_jumps.extend(boundary_jumps)
             per_road[rid] = {
                 "road_id": rid,
                 "samples": len(road_jumps) + 1,
+                "extrema_samples": len(extra_extrema),
+                "boundary_samples": len(boundary_indices),
                 "step_count": steps,
                 "max_jump": max(road_jumps + boundary_jumps, default=0.0),
                 "p95_jump": _percentile(road_jumps, 95.0),
