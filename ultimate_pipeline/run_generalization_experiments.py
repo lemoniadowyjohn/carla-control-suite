@@ -523,6 +523,17 @@ def eval_sim_labeled(
         result["model_identity_matches_request"] = bool(expected_model) and expected_model == result.get(
             "model_sha256"
         )
+    # A successful evaluator process is not enough to establish that its
+    # metrics describe the requested model and evaluation dataset.
+    identity_failures = []
+    if eval_dataset_identity is not None and not result["dataset_identity_matches_request"]:
+        identity_failures.append("evaluation dataset identity differs from the requested split")
+    if model_identity is not None and not result["model_identity_matches_request"]:
+        identity_failures.append("evaluated checkpoint identity differs from the requested model")
+    if identity_failures:
+        result["ok"] = False
+        result["status"] = "identity_mismatch"
+        result["errors"].extend(identity_failures)
     return result
 
 
