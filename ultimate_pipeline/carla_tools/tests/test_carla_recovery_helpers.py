@@ -12,10 +12,30 @@ helpers that the orchestration is built on.
 from __future__ import annotations
 
 import socket
+import subprocess
 
+import psutil as _real_psutil
 import pytest
 
 from ultimate_pipeline.carla_tools import carla_recovery as cr
+
+
+@pytest.fixture(autouse=True)
+def _safety_trap_real_process_control(monkeypatch):
+    """SAFETY FIRST (V94 round 3): no test in this file may ever reach the
+    REAL psutil.process_iter or subprocess.run (e.g. taskkill), whether the
+    code under test is HEAD or an overlay of an older, vulnerable commit.
+    Patching the real, shared module objects here closes that hole
+    regardless of which SUT module did `import psutil`/`import subprocess`.
+    """
+    def _trap_process_iter(*a, **k):
+        raise AssertionError("REAL psutil.process_iter must never be called by a test in this file")
+
+    def _trap_run(*a, **k):
+        raise AssertionError(f"REAL subprocess.run must never be called by a test in this file (args={a!r})")
+
+    monkeypatch.setattr(_real_psutil, "process_iter", _trap_process_iter)
+    monkeypatch.setattr(subprocess, "run", _trap_run)
 
 
 def _closed_port() -> int:
@@ -164,10 +184,12 @@ def test_kill_stale_processes_by_name_removed():
 
 
 def test_restart_carla_fails_closed_when_port_already_held(monkeypatch):
+    """P2-4: occupancy is decided by _port_open (both the RPC and the
+    streaming port), never by whether a holding PID could be resolved."""
     from ultimate_pipeline.core import carla_utils as cu
 
     monkeypatch.setattr(cr.SETTINGS, "CARLA_KILL_ON_FAIL", True, raising=False)
-    monkeypatch.setattr(cu, "_port_holder_pid", lambda port: 4321)
+    monkeypatch.setattr(cr, "_port_open", lambda host, port: True)
     monkeypatch.setattr(cu, "describe_port_occupant", lambda port: f"port {port} is held by PID 4321")
 
     class TrapPS:
@@ -176,11 +198,38 @@ def test_restart_carla_fails_closed_when_port_already_held(monkeypatch):
             raise AssertionError("must not enumerate processes")
 
     monkeypatch.setattr(cr, "psutil", TrapPS)
+    purged = []
     started = []
+    monkeypatch.setattr(cr, "_purge_temp_dirs", lambda: purged.append(True))
     monkeypatch.setattr(cr, "_start_carla", lambda: started.append(True))
 
     assert cr.restart_carla(host="127.0.0.1", port=2000) is False
+    assert purged == []
     assert started == []
+
+
+def test_restart_carla_fails_closed_when_port_open_but_holder_pid_unknown(monkeypatch):
+    """P2-4 (the exact regression): an open port whose holding PID cannot
+    be resolved (AccessDenied, or no psutil) must NOT be treated as "port
+    free" -- that previously purged %LOCALAPPDATA%\\CarlaUE4 and the Carla
+    temp dirs underneath a live simulator, then started a second instance
+    into its namespace. describe_port_occupant is used only for the
+    message; it must not influence the occupancy decision itself."""
+    from ultimate_pipeline.core import carla_utils as cu
+
+    monkeypatch.setattr(cr.SETTINGS, "CARLA_KILL_ON_FAIL", True, raising=False)
+    monkeypatch.setattr(cr, "_port_open", lambda host, port: True)
+    monkeypatch.setattr(cu, "_port_holder_pid", lambda port: None)  # unresolvable PID
+    monkeypatch.setattr(cu, "describe_port_occupant", lambda port: f"port {port} occupied (holder unknown)")
+
+    purged = []
+    started = []
+    monkeypatch.setattr(cr, "_purge_temp_dirs", lambda: purged.append(True))
+    monkeypatch.setattr(cr, "_start_carla", lambda: started.append(True))
+
+    assert cr.restart_carla(host="127.0.0.1", port=2000) is False
+    assert purged == [], "must not purge when the port is occupied, even with an unknown holder"
+    assert started == [], "must not start a second instance when the port is occupied"
 
 
 def test_restart_carla_purges_and_starts_when_port_free(monkeypatch):
@@ -250,3 +299,50 @@ def test_get_reliable_client_skips_kill_when_port_not_open(monkeypatch):
         cr.get_reliable_client()
     assert purged == [True]
     assert started == [True]
+
+
+def test_get_reliable_client_retries_its_own_just_launched_instance(monkeypatch):
+    """P2-5: a CARLA this loop itself just launched can still be loading --
+    that is not a foreign holder. It must keep retrying (and keep that
+    process's handle, not abandon it for a second launch) until the world
+    becomes available, instead of raising on the first transient error."""
+    monkeypatch.setattr(cr.SETTINGS, "CARLA_KILL_ON_FAIL", True, raising=False)
+    monkeypatch.setattr(cr.SETTINGS, "CARLA_HOST", "127.0.0.1", raising=False)
+    monkeypatch.setattr(cr.SETTINGS, "CARLA_PORT", 2000, raising=False)
+    monkeypatch.setattr(cr.SETTINGS, "CARLA_STARTUP_WAIT", 0.0, raising=False)
+    monkeypatch.setattr(cr, "probe_streaming_port", lambda *a, **k: {"status": "disabled"})
+    monkeypatch.setattr(cr, "_purge_temp_dirs", lambda: None)
+    monkeypatch.setattr(cr.time, "sleep", lambda *_: None)
+
+    class FakeOwnedProc:
+        def __init__(self):
+            self.alive = True
+
+        def poll(self):
+            return None if self.alive else 0
+
+    launched: list = []
+
+    def _fake_start_carla():
+        p = FakeOwnedProc()
+        launched.append(p)
+        return p
+
+    monkeypatch.setattr(cr, "_start_carla", _fake_start_carla)
+    # Port "opens" only once this loop has launched something itself.
+    monkeypatch.setattr(cr, "_port_open", lambda host, port: bool(launched))
+
+    attempts = {"n": 0}
+    sentinel_client = object()
+
+    def _fake_create_client():
+        attempts["n"] += 1
+        if attempts["n"] < 2:
+            raise RuntimeError("still loading")
+        return sentinel_client
+
+    monkeypatch.setattr(cr, "_create_client", _fake_create_client)
+
+    client = cr.get_reliable_client()
+    assert client is sentinel_client
+    assert len(launched) == 1, "must not start a second instance while its own launch is still loading"
