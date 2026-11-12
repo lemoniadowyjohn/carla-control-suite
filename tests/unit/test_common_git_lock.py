@@ -11,6 +11,7 @@ Tests that previously pinned those defective behaviours were rewritten; see
 `test_single_writer_authority.py` for the cross-platform property suite.
 """
 import calendar
+import hashlib
 import json
 import os
 import subprocess
@@ -676,7 +677,7 @@ def test_failed_tombstone_restore_blocks_acquisition_and_preserves_evidence(
     """An un-restorable displaced generation must block fresh publication."""
     from ultimate_pipeline.governance.single_writer import common_git_lock as cgl
 
-    cgl.acquire_common_git_lock(repo, "git test", timeout_seconds=2)
+    original_lock = cgl.acquire_common_git_lock(repo, "git test", timeout_seconds=2)
     path = cgl._get_common_git_lock_path(repo)
     original = path.read_bytes()
     # Make the audited bytes fail the predicate, then deny only the restore.
@@ -706,9 +707,106 @@ def test_failed_tombstone_restore_blocks_acquisition_and_preserves_evidence(
     assert moved["tomb"].read_bytes() == original
     assert not path.exists()
 
-    # Explicit recovery is required before acquisition can resume. The
-    # acquisition path itself must surface uncertainty instead of publishing.
+    status = cgl.get_lock_status(repo)
+    assert status["status"] == "BLOCKED_UNRESOLVED_TOMBSTONE"
+    assert status["unresolved_tombstones"][0]["sha256"] == hashlib.sha256(
+        original
+    ).hexdigest()
+
+    # The acquisition path must surface uncertainty instead of publishing.
     with pytest.raises(RuntimeError, match="unresolved"):
         cgl.acquire_common_git_lock(repo, "git retry", timeout_seconds=1)
     assert not path.exists()
     assert moved["tomb"].read_bytes() == original
+
+    with pytest.raises(ValueError, match="operator identity"):
+        cgl.recover_unresolved_tombstone(
+            repo, moved["tomb"].name, "", "verified recovery", hashlib.sha256(original).hexdigest()
+        )
+    with pytest.raises(RuntimeError, match="SHA-256"):
+        cgl.recover_unresolved_tombstone(
+            repo, moved["tomb"].name, "operator", "verified recovery", "0" * 64
+        )
+    assert moved["tomb"].read_bytes() == original
+
+    recovery = cgl.recover_unresolved_tombstone(
+        repo,
+        moved["tomb"].name,
+        "operator@example.invalid",
+        "restore displaced generation after digest verification",
+        hashlib.sha256(original).hexdigest(),
+    )
+    assert recovery["recovered"] is True
+    assert recovery["intent_status"] == "COMPLETE"
+    assert Path(recovery["recovery_record_path"]).is_file()
+    assert path.read_bytes() == original
+    assert not moved["tomb"].exists()
+    assert cgl.get_lock_status(repo)["status"] == "active"
+    assert cgl.release_common_git_lock(
+        repo, original_lock.owner_token, original_lock.lock_id
+    ) is True
+    successor = cgl.acquire_common_git_lock(repo, "git after recovery", timeout_seconds=2)
+    assert cgl.release_common_git_lock(
+        repo, successor.owner_token, successor.lock_id
+    ) is True
+
+
+def test_tombstone_recovery_retries_after_crash_between_link_and_cleanup(repo, monkeypatch):
+    from ultimate_pipeline.governance.single_writer import common_git_lock as cgl
+
+    original_lock = cgl.acquire_common_git_lock(repo, "git test", timeout_seconds=2)
+    path = cgl._get_common_git_lock_path(repo)
+    tomb = path.with_name(f"{path.name}.crash-fixture.tombstone")
+    raw = path.read_bytes()
+    path.unlink()
+    tomb.write_bytes(raw)
+    digest = hashlib.sha256(raw).hexdigest()
+    original_link = cgl.os.link
+    injected = {"raised": False}
+
+    def link_then_crash(source, destination):
+        result = original_link(source, destination)
+        if Path(destination) == path and not injected["raised"]:
+            injected["raised"] = True
+            raise OSError("injected crash after atomic link")
+        return result
+
+    monkeypatch.setattr(cgl.os, "link", link_then_crash)
+    with pytest.raises(OSError, match="crash after atomic link"):
+        cgl.recover_unresolved_tombstone(
+            repo, tomb.name, "operator", "fault test", digest
+        )
+    assert path.read_bytes() == raw
+    assert tomb.read_bytes() == raw
+    assert cgl.get_lock_status(repo)["status"] == "BLOCKED_UNRESOLVED_TOMBSTONE"
+
+    monkeypatch.setattr(cgl.os, "link", original_link)
+    recovered = cgl.recover_unresolved_tombstone(
+        repo, tomb.name, "operator", "retry after verified interrupted recovery", digest
+    )
+    assert recovered["recovered"] is True
+    assert path.read_bytes() == raw
+    assert not tomb.exists()
+    assert cgl.release_common_git_lock(
+        repo, original_lock.owner_token, original_lock.lock_id
+    ) is True
+
+
+def test_tombstone_recovery_rejects_path_escape_and_corrupted_record(repo):
+    from ultimate_pipeline.governance.single_writer import common_git_lock as cgl
+
+    path = cgl._get_common_git_lock_path(repo)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    tomb = path.with_name(f"{path.name}.corrupt.tombstone")
+    tomb.write_bytes(b"tampered")
+    digest = hashlib.sha256(b"expected original").hexdigest()
+    with pytest.raises(ValueError, match="namespace"):
+        cgl.recover_unresolved_tombstone(
+            repo, "..\\outside.tombstone", "operator", "test", digest
+        )
+    with pytest.raises(RuntimeError, match="SHA-256"):
+        cgl.recover_unresolved_tombstone(
+            repo, tomb.name, "operator", "test", digest
+        )
+    assert tomb.read_bytes() == b"tampered"
+    assert not path.exists()

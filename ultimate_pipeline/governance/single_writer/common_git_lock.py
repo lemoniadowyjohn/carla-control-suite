@@ -51,6 +51,7 @@ import hashlib
 import hmac
 import json
 import os
+import re
 import sys
 import threading
 import time
@@ -981,7 +982,35 @@ def common_git_lock(
 
 def get_lock_status(repo_root: Path) -> dict:
     """Current authority status, with the evidence behind any reclaim verdict."""
+    path = _get_common_git_lock_path(repo_root)
+    tombstones = []
+    for tomb in sorted(path.parent.glob(f"{path.name}.*.tombstone")):
+        record = {"path": str(tomb), "name": tomb.name}
+        try:
+            if tomb.is_symlink() or not tomb.is_file():
+                record["error"] = "not a regular non-symlink file"
+            else:
+                digest = hashlib.sha256()
+                size = 0
+                with tomb.open("rb") as stream:
+                    while chunk := stream.read(64 * 1024):
+                        digest.update(chunk)
+                        size += len(chunk)
+                record.update(sha256=digest.hexdigest(), bytes=size)
+        except OSError as exc:
+            record["error"] = f"unreadable: {exc}"
+        tombstones.append(record)
     state, lock, reason = _read_state(repo_root)
+    if tombstones:
+        return {
+            "status": "BLOCKED_UNRESOLVED_TOMBSTONE",
+            "lock_id": lock.lock_id if lock is not None else None,
+            "detail": "lock recovery evidence requires explicit operator recovery",
+            "path": str(path),
+            "published_lock_state": state,
+            "published_lock_detail": reason,
+            "unresolved_tombstones": tombstones,
+        }
     if state is _LockRead.ABSENT:
         return {"status": "unlocked", "lock_id": None}
     if state is _LockRead.MALFORMED:
@@ -1022,6 +1051,103 @@ def get_lock_status(repo_root: Path) -> dict:
         "expired": expired,
         "repo_root": lock.repo_root,
     }
+
+
+def recover_unresolved_tombstone(
+    repo_root: Path,
+    tombstone_name: str,
+    operator: str,
+    reason: str,
+    expected_sha256: str,
+) -> dict:
+    """Explicitly restore one verified tombstone without overwriting a lock.
+
+    Recovery is deliberately conservative: it only republishes the exact bytes
+    named by the operator's expected digest, using an exclusive hard-link
+    operation. If the published path already contains those bytes, it removes
+    only the duplicate tombstone. A different published lock is never replaced.
+    A durable intent record is written before either filesystem transition.
+    """
+    repo_root = Path(repo_root).resolve()
+    path = _get_common_git_lock_path(repo_root)
+    if not isinstance(operator, str) or not operator.strip():
+        raise ValueError("operator identity is required for tombstone recovery")
+    if not isinstance(reason, str) or not reason.strip():
+        raise ValueError("recovery reason is required for tombstone recovery")
+    if not isinstance(expected_sha256, str) or not re.fullmatch(
+        r"[0-9a-f]{64}", expected_sha256, re.IGNORECASE
+    ):
+        raise ValueError("expected tombstone SHA-256 must be 64 hexadecimal characters")
+    if (
+        not isinstance(tombstone_name, str)
+        or Path(tombstone_name).name != tombstone_name
+        or not tombstone_name.startswith(f"{path.name}.")
+        or not tombstone_name.endswith(".tombstone")
+    ):
+        raise ValueError("tombstone name is outside the common Git lock namespace")
+    tomb = path.parent / tombstone_name
+
+    with _common_git_claim(repo_root):
+        if tomb.is_symlink() or not tomb.is_file():
+            raise RuntimeError("selected lock tombstone is missing or not a regular file")
+        raw = tomb.read_bytes()
+        if len(raw) > 1024 * 1024:
+            raise RuntimeError("selected lock tombstone exceeds the recovery size limit")
+        digest = hashlib.sha256(raw).hexdigest()
+        if not hmac.compare_digest(digest, expected_sha256.lower()):
+            raise RuntimeError("selected lock tombstone SHA-256 does not match operator input")
+
+        intent_path = path.with_name(
+            f"{path.name}.tombstone-recovery.{uuid.uuid4().hex}.json"
+        )
+        record = {
+            "schema": "common_git_lock_tombstone_recovery/v1",
+            "intent_status": "INTENT",
+            "recovered": False,
+            "common_git_dir": str(path.parent),
+            "published_lock_path": str(path),
+            "tombstone_path": str(tomb),
+            "tombstone_sha256": digest,
+            "tombstone_bytes": len(raw),
+            "operator": operator.strip(),
+            "reason": reason.strip(),
+            "created_at": _utc_now(),
+        }
+        _write_payload(intent_path, record)
+
+        if path.is_symlink():
+            raise RuntimeError("published common Git lock path is a symlink; refusing recovery")
+        if path.exists():
+            current = path.read_bytes()
+            if not hmac.compare_digest(hashlib.sha256(current).hexdigest(), digest):
+                raise RuntimeError(
+                    "published lock differs from selected tombstone; refusing recovery"
+                )
+        else:
+            # Hard-link creation is atomic and exclusive. It makes the verified
+            # tombstone bytes visible as the published record without a
+            # zero-byte or partially copied interval, and fails if a successor
+            # appears after the existence check.
+            try:
+                os.link(str(tomb), str(path))
+            except FileExistsError as exc:
+                raise RuntimeError(
+                    "a lock appeared during tombstone recovery; refusing overwrite"
+                ) from exc
+            _fsync_dir(path.parent)
+            if not hmac.compare_digest(hashlib.sha256(path.read_bytes()).hexdigest(), digest):
+                raise RuntimeError("restored common Git lock bytes failed verification")
+
+        # The published path now contains the verified exact bytes. Removing
+        # the duplicate evidence is safe only after durable publication and
+        # byte verification. A crash before this point is idempotently
+        # recoverable by invoking this function again with the same digest.
+        tomb.unlink()
+        _fsync_dir(path.parent)
+        record.update(intent_status="COMPLETE", recovered=True, completed_at=_utc_now())
+        _write_payload(intent_path, record)
+        record["recovery_record_path"] = str(intent_path)
+        return record
 
 
 def recover_malformed_lock(repo_root: Path, operator: str, reason: str) -> dict:
