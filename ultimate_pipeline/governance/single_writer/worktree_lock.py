@@ -84,6 +84,14 @@ class LeaseRestoreError(RuntimeError):
     """An unmatched tombstone could not be restored safely."""
 
 
+class LeaseReleaseError(RuntimeError):
+    """The owned lease was claimed but its release tombstone could not be removed."""
+
+
+class LeaseRenewalError(RuntimeError):
+    """A renewal could not be durably published and verified as the current lease."""
+
+
 @dataclass(frozen=True)
 class LeaseCleanupEntry:
     path: str
@@ -424,19 +432,6 @@ def _generation_claim(
 # durable writes
 # ---------------------------------------------------------------------------
 
-def _fsync_dir(directory: Path) -> None:
-    try:
-        fd = os.open(str(directory), os.O_RDONLY)
-    except OSError:
-        return
-    try:
-        os.fsync(fd)
-    except OSError:
-        pass
-    finally:
-        os.close(fd)
-
-
 def _fsync_directory_required(directory: Path) -> None:
     """Flush directory metadata or fail closed when durability is unsupported."""
     directory = Path(directory)
@@ -501,7 +496,7 @@ def _write_payload(path: Path, payload: dict) -> None:
         except BaseException:
             raise
         os.replace(tmp, path)
-        _fsync_dir(path.parent)
+        _fsync_directory_required(path.parent)
     finally:
         try:
             tmp.unlink(missing_ok=True)
@@ -555,7 +550,7 @@ def _publish_exclusive_bytes(path: Path, data: bytes) -> bool:
             os.unlink(tmp)
         except OSError:
             pass
-    _fsync_dir(path.parent)
+    _fsync_directory_required(path.parent)
     return True
 
 
@@ -618,7 +613,7 @@ def _publish_exclusive_fallback_bytes(path: Path, data: bytes) -> bool:
             tmp.unlink()
         except OSError:
             pass
-    _fsync_dir(path.parent)
+    _fsync_directory_required(path.parent)
     return True
 
 
@@ -1216,8 +1211,11 @@ def release_worktree_lease(
         if tomb is not None:
             try:
                 tomb.unlink()
-            except OSError:
-                pass
+            except OSError as exc:
+                raise LeaseReleaseError(
+                    f"LOCKED_UNKNOWN: lease release did not complete; verified "
+                    f"tombstone retained at {tomb}: {exc}"
+                ) from exc
     return True
 
 
@@ -1252,6 +1250,14 @@ def renew_worktree_lease(
         updated.expires_at = _utc_in(lease_minutes * 60)
         # _write_payload is intentionally called only while the claim is held.
         _write_payload(_worktree_lease_path(worktree_root), updated.to_json())
+        persisted = _read_lease(worktree_root)
+        if persisted is None or persisted.to_json() != updated.to_json():
+            actual_generation = None if persisted is None else persisted.generation
+            raise LeaseRenewalError(
+                "LOCKED_UNKNOWN: renewal publication could not be verified as the "
+                f"current owner/generation (expected generation={updated.generation}, "
+                f"observed generation={actual_generation}); successor evidence preserved"
+            )
         return updated
 
 

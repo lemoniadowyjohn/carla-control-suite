@@ -225,3 +225,81 @@ def test_generation_marker_and_ledger_coloss_cannot_reuse_retired_generation(
         assert next_lease.generation > generation
     finally:
         wl.release_worktree_lease(root, next_lease.owner_token, next_lease.lease_id)
+
+
+def test_release_tombstone_unlink_failure_is_not_reported_as_success(
+    tmp_path, monkeypatch
+):
+    root = tmp_path / "release-unlink"
+    root.mkdir()
+    _git("init", cwd=root)
+    _git("commit", "--allow-empty", "-m", "fixture", cwd=root)
+    lease = wl.acquire_worktree_lease(root, purpose="release-unlink-fault")
+    original = Path.unlink
+    attempted: list[Path] = []
+
+    def fail_owned_tombstone(path: Path, *args, **kwargs):
+        if ".release." in path.name and path.name.endswith(".tombstone"):
+            attempted.append(path)
+            raise PermissionError("injected tombstone deletion denial")
+        return original(path, *args, **kwargs)
+
+    monkeypatch.setattr(Path, "unlink", fail_owned_tombstone)
+    with pytest.raises(RuntimeError, match="LOCKED_UNKNOWN.*tombstone retained"):
+        wl.release_worktree_lease(root, lease.owner_token, lease.lease_id)
+
+    assert len(attempted) == 1, "release never attempted tombstone deletion"
+    tomb = attempted[0]
+    assert tomb.exists(), "failed release discarded its only recoverable lease record"
+    assert not wl._worktree_lease_path(root).exists(), (
+        "the test did not reach the claimed-tombstone release state"
+    )
+    data = json.loads(tomb.read_text(encoding="utf-8"))
+    assert data["lease_id"] == lease.lease_id
+    assert data["owner_token"] == lease.owner_token
+
+
+def test_renewal_rejects_a_successor_written_after_its_publish(tmp_path, monkeypatch):
+    root = tmp_path / "renewal-successor"
+    root.mkdir()
+    _git("init", cwd=root)
+    _git("commit", "--allow-empty", "-m", "fixture", cwd=root)
+    lease = wl.acquire_worktree_lease(root, purpose="renewal-successor")
+    original_write = wl._write_payload
+    successor = {}
+
+    def replace_after_write(path: Path, payload: dict):
+        original_write(path, payload)
+        successor.update(payload)
+        successor["lease_id"] = "successor-lease"
+        successor["owner_token"] = "successor-token"
+        original_write(path, successor)
+
+    monkeypatch.setattr(wl, "_write_payload", replace_after_write)
+    with pytest.raises(wl.LeaseRenewalError, match="successor evidence preserved"):
+        wl.renew_worktree_lease(root, lease.owner_token, lease.lease_id)
+
+    persisted = wl._read_lease(root)
+    assert persisted is not None
+    assert persisted.lease_id == "successor-lease"
+    assert persisted.owner_token == "successor-token"
+
+
+def test_renewal_directory_durability_failure_is_observable(tmp_path, monkeypatch):
+    root = tmp_path / "renewal-durability"
+    root.mkdir()
+    _git("init", cwd=root)
+    _git("commit", "--allow-empty", "-m", "fixture", cwd=root)
+    lease = wl.acquire_worktree_lease(root, purpose="renewal-durability")
+    called = []
+
+    def fail_directory_sync(directory: Path):
+        called.append(directory)
+        raise wl.RecoveryDurabilityError("injected directory sync failure")
+
+    monkeypatch.setattr(wl, "_fsync_directory_required", fail_directory_sync)
+    with pytest.raises(wl.RecoveryDurabilityError, match="injected directory sync failure"):
+        wl.renew_worktree_lease(root, lease.owner_token, lease.lease_id)
+    assert called, "renewal did not request required directory durability"
+    persisted = wl._read_lease(root)
+    assert persisted is not None and persisted.lease_id == lease.lease_id
