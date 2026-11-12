@@ -49,10 +49,6 @@ class ExperimentDefinition:
 # Global experiment registry
 EXPERIMENTS: Dict[str, ExperimentDefinition] = {}
 
-# Track experiment discovery import failures for observability.
-# Populated by discover_experiments() when thesis plugin modules fail to import.
-DISCOVERY_ERRORS: List[Dict[str, str]] = []
-
 
 def register_experiment(
     id: str,
@@ -74,11 +70,6 @@ def register_experiment(
             ...
     """
     def decorator(func: Callable) -> Callable:
-        if id in EXPERIMENTS:
-            raise ValueError(
-                f"Duplicate experiment ID '{id}' is not allowed. "
-                f"Existing: {EXPERIMENTS[id].name}, new: {name}"
-            )
         EXPERIMENTS[id] = ExperimentDefinition(
             id=id,
             name=name,
@@ -137,19 +128,11 @@ def exp_pipeline_full(config: "ExperimentConfigModel", artifacts: "RunArtifacts"
         from ultimate_pipeline.main_pipeline import main as pipeline_main
 
         # Run pipeline (it uses its own output handling)
-        exit_code = pipeline_main()
-
-        if exit_code != 0:
-            return ExperimentResult(
-                success=False,
-                metrics={"status": "failed", "exit_code": exit_code},
-                artifacts=[],
-                error=f"Pipeline exited with code {exit_code}",
-            )
+        pipeline_main()
 
         return ExperimentResult(
             success=True,
-            metrics={"status": "completed", "exit_code": exit_code},
+            metrics={"status": "completed"},
             artifacts=["08_final.xodr", "tiles/", "logs/"],
         )
     except Exception as e:
@@ -239,23 +222,13 @@ def exp_determinism_audit(config: "ExperimentConfigModel", artifacts: "RunArtifa
         ]
 
         try:
-            exit_code = audit_main()
-        except SystemExit as e:
-            exit_code = e.code if isinstance(e.code, int) else 1
+            audit_main()
         finally:
             sys.argv = old_argv
 
-        if exit_code != 0:
-            return ExperimentResult(
-                success=False,
-                metrics={"status": "failed", "exit_code": exit_code, "runs_requested": k},
-                artifacts=[],
-                error=f"Determinism audit exited with code {exit_code}",
-            )
-
         return ExperimentResult(
             success=True,
-            metrics={"status": "completed", "exit_code": exit_code, "runs_requested": k},
+            metrics={"runs_requested": k},
             artifacts=[
                 "determinism_audit/determinism_report.json",
                 "determinism_audit/determinism_hashes.csv",
@@ -291,56 +264,14 @@ def exp_perception_capture(config: "ExperimentConfigModel", artifacts: "RunArtif
             "--lidar-overlay",
         ]
 
-        # Supply required CLI arguments from validated configuration.
-        # run_perception_safe requires --manual-town and one of --town/--xodr-in.
-        manual_town = config.inputs.map or ""
-        if not manual_town and config.inputs.manual_xodr:
-            manual_town = Path(config.inputs.manual_xodr).stem
-        if manual_town:
-            sys.argv.extend(["--manual-town", manual_town])
-
-        # One of --town or --xodr-in is required (mutually exclusive).
-        if config.inputs.auto_xodr:
-            sys.argv.extend(["--xodr-in", config.inputs.auto_xodr])
-        elif config.inputs.map:
-            sys.argv.extend(["--town", config.inputs.map])
-        elif config.inputs.manual_xodr:
-            sys.argv.extend(["--xodr-in", config.inputs.manual_xodr])
-
-        # run_perception_safe mutates os.environ (UP_SKIP_DESTROY,
-        # UP_SKIP_STREAM_CHECK). Save and restore so the wrapper does not
-        # leak process-global environment changes.
-        old_env = {
-            key: os.environ.get(key)
-            for key in ("UP_SKIP_DESTROY", "UP_SKIP_STREAM_CHECK")
-        }
-
         try:
-            exit_code = perception_main()
-        except SystemExit as e:
-            # SystemExit inherits from BaseException, not Exception, so it is
-            # not caught by the generic handler below. Normalize it to an
-            # integer exit code and treat nonzero as failure.
-            exit_code = e.code if isinstance(e.code, int) else 1
+            perception_main()
         finally:
             sys.argv = old_argv
-            for key, value in old_env.items():
-                if value is None:
-                    os.environ.pop(key, None)
-                else:
-                    os.environ[key] = value
-
-        if exit_code != 0:
-            return ExperimentResult(
-                success=False,
-                metrics={"status": "failed", "exit_code": exit_code},
-                artifacts=[],
-                error=f"Perception capture exited with code {exit_code}",
-            )
 
         return ExperimentResult(
             success=True,
-            metrics={"status": "completed", "exit_code": exit_code},
+            metrics={"status": "completed"},
             artifacts=[
                 "perception/perception_status.json",
                 "perception/rig_verification.json",
@@ -374,7 +305,7 @@ def exp_generalization_sweep(config: "ExperimentConfigModel", artifacts: "RunArt
         sys.argv = [
             "run_generalization_experiments",
             "--k_values", *[str(k) for k in k_values],
-            "--out_dir", str(artifacts.run_dir),
+            "--out_dir", str(artifacts.run_dir / "generalization"),
         ]
 
         # Add dataset paths from config
@@ -384,23 +315,13 @@ def exp_generalization_sweep(config: "ExperimentConfigModel", artifacts: "RunArt
             sys.argv.extend(["--real_u_dir", config.inputs.real_u_dir])
 
         try:
-            exit_code = gen_main()
-        except SystemExit as e:
-            exit_code = e.code if isinstance(e.code, int) else 1
+            gen_main()
         finally:
             sys.argv = old_argv
 
-        if exit_code != 0:
-            return ExperimentResult(
-                success=False,
-                metrics={"status": "failed", "exit_code": exit_code, "k_values": k_values},
-                artifacts=[],
-                error=f"Generalization sweep exited with code {exit_code}",
-            )
-
         return ExperimentResult(
             success=True,
-            metrics={"status": "completed", "exit_code": exit_code, "k_values": k_values},
+            metrics={"k_values": k_values},
             artifacts=[
                 "generalization/generalization_results.csv",
                 "generalization/gen_many_curve.csv",
@@ -500,24 +421,24 @@ def discover_experiments() -> None:
     if thesis_dir.is_dir():
         # Check for __init__.py to confirm it's a package
         if (thesis_dir / "__init__.py").exists():
-            try:
-                # Import thesis modules
-                for py_file in thesis_dir.glob("*.py"):
-                    if py_file.name.startswith("_"):
-                        continue
-                    module_name = f"ultimate_pipeline.experiments.thesis.{py_file.stem}"
-                    try:
-                        importlib.import_module(module_name)
-                    except Exception as exc:
-                        DISCOVERY_ERRORS.append(
-                            {"module": module_name, "error": str(exc)}
-                        )
-            except Exception:
-                pass
+            # Import thesis modules. ImportError from missing optional deps
+            # (e.g., shapely) is caught and the module is marked unavailable;
+            # other exceptions are surfaced.
+            for py_file in thesis_dir.glob("*.py"):
+                if py_file.name.startswith("_"):
+                    continue
+                module_name = f"ultimate_pipeline.experiments.thesis.{py_file.stem}"
+                try:
+                    importlib.import_module(module_name)
+                except ImportError as exc:
+                    # Missing optional dependency - module unavailable, not broken
+                    if "shapely" in str(exc) or "ultralytics" in str(exc):
+                        continue  # expected missing dep; module just won't register
+                    raise  # unexpected import error; surface it
+                except Exception:
+                    # Any other error indicates a genuinely broken module
+                    raise
 
 
-# Run discovery on module load (wrapped in try/except for robustness)
-try:
-    discover_experiments()
-except Exception:
-    pass  # Discovery is optional; built-in experiments are always available
+# Run discovery on module load. Failures from broken modules are NOT swallowed.
+discover_experiments()

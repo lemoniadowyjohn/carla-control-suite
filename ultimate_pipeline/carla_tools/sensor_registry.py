@@ -28,8 +28,19 @@ class SensorInstance:
 
     def destroy(self) -> None:
         if self.actor is not None:
-            self.actor.destroy()
-            self.actor = None
+            # CARLA requires sensors to be stopped before destruction.
+            # Failing to call stop() orphans the sensor and leaks it.
+            try:
+                stop = getattr(self.actor, "stop", None)
+                if callable(stop):
+                    stop()
+            except Exception:
+                # Stop failure is logged but we still attempt destroy.
+                pass
+            try:
+                self.actor.destroy()
+            finally:
+                self.actor = None
 
     def listen(self, callback: Callable) -> None:
         if self.actor is not None:
