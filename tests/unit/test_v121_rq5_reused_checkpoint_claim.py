@@ -48,7 +48,7 @@ def test_checkpoint_reuse_never_emits_new_training_success(
         require_manifest=True,
         device="cpu",
         epochs=1,
-        batch_size=1,
+        batch=1,
     )
     result = rq5._run_condition(
         condition="generated_k_k001",
@@ -103,7 +103,7 @@ def test_fresh_training_retains_success_status(tmp_path, monkeypatch):
     )
     args = argparse.Namespace(
         seed=42, skip_training=False, allow_checkpoint_reuse=False,
-        require_manifest=True, device="cpu", epochs=1, batch_size=1,
+        require_manifest=True, device="cpu", epochs=1, batch=1,
     )
     result = rq5._run_condition(
         condition="generated_k_k001", k=1,
