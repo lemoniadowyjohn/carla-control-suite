@@ -23,6 +23,15 @@ sys.path.insert(0, str(REPO))
 
 HISTORICAL_IDS = ("42367", "43405", "46369", "46698", "48129", "51657")
 
+#: The registry key of the audited map.  V104 review 4551845563: the map
+#: under audit must be resolved and verified through the registry pin, not
+#: through a hardcoded path -- otherwise a re-pinned map-of-record would
+#: still be audited through this stale file and the report would claim the
+#: historical ids were absent from the *current* map.
+CANDIDATE_REGISTRY_KEY = "auto_map_of_record"
+
+#: Retained for the human-readable report label only; the authoritative
+#: resolution is the registry lookup below.
 CANDIDATE = (
     "campaigns/ingolstadt_cooked_perception_v1/candidate/"
     "ingolstadt_perception_map_of_record_20260916_232831.xodr"
@@ -57,8 +66,33 @@ def main() -> int:
     }
 
     osm_path = REPO / OSM
-    candidate_path = REPO / CANDIDATE
-    if not osm_path.is_file() or not candidate_path.is_file():
+
+    # V104 review 4551845563: resolve the audited map through the registry
+    # and verify its bytes.  A hardcoded path is not authority.
+    candidate_path = None
+    registry_entry = {}
+    try:
+        from ultimate_pipeline.carla_tools.map_registry import verify_pinned_map
+
+        registry_entry = verify_pinned_map(CANDIDATE_REGISTRY_KEY, base_dir=REPO)
+        raw = registry_entry.get("path") or registry_entry.get("relative_path")
+        if raw:
+            candidate_path = Path(raw)
+            if not candidate_path.is_absolute():
+                candidate_path = (REPO / candidate_path).resolve()
+        report["candidate_registry_key"] = CANDIDATE_REGISTRY_KEY
+        report["candidate_registry_sha256"] = registry_entry.get("sha256")
+        report["candidate_registry_path"] = str(candidate_path or "")
+    except Exception as exc:
+        report["status"] = "BLOCKED_INPUT"
+        report["reason"] = f"map_of_record_pin_unverified:{type(exc).__name__}: {exc}"
+        (out_dir / "ORPHAN_ROAD_SOURCE_RECONCILIATION.json").write_text(
+            json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+        )
+        print(json.dumps(report, indent=2))
+        return 1
+
+    if not osm_path.is_file() or candidate_path is None or not candidate_path.is_file():
         report["status"] = "BLOCKED_INPUT"
         report["reason"] = "OSM source or candidate map missing"
         (out_dir / "ORPHAN_ROAD_SOURCE_RECONCILIATION.json").write_text(
@@ -87,6 +121,16 @@ def main() -> int:
         return 1
 
     report["candidate_sha256"] = sha256_file(candidate_path)
+    # The registry already verified the bytes; record the comparison so a
+    # drift is visible in the evidence rather than assumed.
+    pinned_sha = str(registry_entry.get("sha256") or "")
+    if pinned_sha:
+        report["candidate_matches_registry_pin"] = (
+            report["candidate_sha256"] == pinned_sha
+        )
+        if not report["candidate_matches_registry_pin"]:
+            report["status"] = "BLOCKED_INPUT"
+            report["reason"] = "candidate_digest_differs_from_registry_pin"
 
     from ultimate_pipeline.enrichment.osm_meta_index import (
         extract_structural_osm_lane_metadata_ways,

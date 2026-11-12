@@ -1,6 +1,10 @@
 {
   "candidate": "campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_perception_map_of_record_20260916_232831.xodr",
+  "candidate_matches_registry_pin": true,
   "candidate_orphan_count": 0,
+  "candidate_registry_key": "auto_map_of_record",
+  "candidate_registry_path": "F:\\v103\\o3\\campaigns\\ingolstadt_cooked_perception_v1\\candidate\\ingolstadt_perception_map_of_record_20260916_232831.xodr",
+  "candidate_registry_sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
   "candidate_road_count": 32267,
   "candidate_sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
   "candidate_unreachable_count": 326,

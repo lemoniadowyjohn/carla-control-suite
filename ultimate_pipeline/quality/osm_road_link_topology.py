@@ -28,6 +28,13 @@ from ultimate_pipeline.enrichment.osm_xodr_correspondence import (
 
 
 _ELIGIBLE_MATCH_CLASSES = frozenset({"EXACT", "HIGH"})
+
+#: V104 review 4551845520: the oneway state is three-valued.  A
+#: bidirectional way is NOT the same thing as a reverse one-way way.
+ONEWAY_FORWARD = "forward"
+ONEWAY_REVERSE = "reverse"
+ONEWAY_BIDIRECTIONAL = "bidirectional"
+ONEWAY_UNKNOWN = "unknown"
 _ENDPOINTS = ("start", "end")
 
 
@@ -50,6 +57,9 @@ _RESTRICTION_TAGS = (
     "tunnel",
     "layer",
     "access",
+    # V104 review 4551845558: without the inherited ``vehicle`` tag the
+    # access hierarchy cannot be evaluated.
+    "vehicle",
     "motor_vehicle",
     "motorcar",
     "motor_vehicle:forward",
@@ -153,18 +163,49 @@ def _way_is_oneway_forward(restrictions: Mapping[str, str]) -> bool | None:
     """
     oneway = str(restrictions.get("oneway", "")).strip().lower()
     if oneway in {"yes", "true", "1"}:
-        return True
+        return ONEWAY_FORWARD
     if oneway in {"-1", "reverse"}:
-        return False
+        return ONEWAY_REVERSE
     if oneway in {"no", "false", "0"}:
-        return False
+        # V104 review 4551845520: a bidirectional way is NOT a reverse one-way
+        # way.  Both used to return False, so a ``oneway=no`` way was treated
+        # as reverse-only traffic and could not be entered at its start.
+        return ONEWAY_BIDIRECTIONAL
     if oneway in {"reversible"}:
-        return None
+        return ONEWAY_UNKNOWN
     if oneway:
-        return None
+        return ONEWAY_UNKNOWN
     if str(restrictions.get("junction", "")).strip().lower() == "roundabout":
-        return True
-    return None
+        return ONEWAY_FORWARD
+    return ONEWAY_UNKNOWN
+
+
+def _can_leave(oneway_state: str, role: str) -> bool:
+    """May traffic leave this way at a node with the given role?
+
+    * ``forward``  -- traffic runs start -> end, so it leaves at the end.
+    * ``reverse``  -- traffic runs end -> start, so it leaves at the start.
+    * bidirectional / unknown -- it may leave anywhere.
+    """
+    if oneway_state == ONEWAY_FORWARD:
+        return role == "end"
+    if oneway_state == ONEWAY_REVERSE:
+        return role == "start"
+    return True
+
+
+def _can_enter(oneway_state: str, role: str) -> bool:
+    """May traffic enter this way at a node with the given role?
+
+    * ``forward``  -- traffic runs start -> end, so it enters at the start.
+    * ``reverse``  -- traffic runs end -> start, so it enters at the end.
+    * bidirectional / unknown -- it may be entered anywhere.
+    """
+    if oneway_state == ONEWAY_FORWARD:
+        return role == "start"
+    if oneway_state == ONEWAY_REVERSE:
+        return role == "end"
+    return True
 
 
 def _way_layer(restrictions: Mapping[str, str]) -> tuple[int, bool, bool]:
@@ -204,7 +245,11 @@ def _vehicle_eligible(restrictions: Mapping[str, str], vehicle_class: str) -> bo
         "hgv": "hgv",
         "service": "service",
     }.get(vehicle_class, vehicle_class)
-    for tag in (key, "access"):
+    # V104 review 4551845558: the access hierarchy runs from the specific
+    # vehicle class through ``vehicle`` to ``access``.  A way tagged
+    # ``vehicle=no`` (with no class-specific override) forbids motor traffic
+    # unless a more specific tag says otherwise.
+    for tag in (key, "vehicle", "access"):
         raw = str(restrictions.get(tag, "")).strip().lower()
         if not raw:
             continue
@@ -259,7 +304,7 @@ def build_osm_source_adjacency(
     node_members: dict[str, list[tuple[str, str]]] = defaultdict(list)
     node_role_by_way: dict[tuple[str, str], str] = {}
     restrictions_by_way: dict[str, dict[str, str]] = {}
-    oneway_by_way: dict[str, bool | None] = {}
+    oneway_by_way: dict[str, str] = {}
     geometry_by_way: dict[str, list[tuple[float, float]]] = {}
 
     for way in ways:
@@ -297,33 +342,43 @@ def build_osm_source_adjacency(
         layer_a, bridge_a, tunnel_a = _way_layer(restr_a)
         layer_b, bridge_b, tunnel_b = _way_layer(restr_b)
 
-        if layer_a != layer_b:
-            return False, "layer_mismatch"
-        if bridge_a != bridge_b:
-            return False, "bridge_tunnel_mismatch"
-        if tunnel_a != tunnel_b:
-            return False, "bridge_tunnel_mismatch"
+        # V104 review 4551845530: a bridge or tunnel way meets its approach
+        # road at a shared endpoint, and their layer / structure tags differ
+        # even though the roads are connected there.  Only a crossing in which
+        # both ways continue *through* the node is a grade separation.
+        has_structure_a = bool(bridge_a or tunnel_a)
+        has_structure_b = bool(bridge_b or tunnel_b)
+        endpoint_handoff = (role_a == "end" and role_b == "start") or (
+            role_a == "start" and role_b == "end"
+        )
+        # A structure transition is a bridge/tunnel way meeting its UNTAGGED
+        # approach road.  When both ways carry a structure tag the shared node
+        # is a crossing, not a transition.
+        structure_transition = endpoint_handoff and has_structure_a != has_structure_b
+        if not structure_transition:
+            if layer_a != layer_b:
+                return False, "layer_mismatch"
+            if bridge_a != bridge_b:
+                return False, "bridge_tunnel_mismatch"
+            if tunnel_a != tunnel_b:
+                return False, "bridge_tunnel_mismatch"
 
         eligible_a = _vehicle_eligible(restr_a, vehicle_class)
         eligible_b = _vehicle_eligible(restr_b, vehicle_class)
         if eligible_a is False or eligible_b is False:
             return False, "access_restricted"
 
-        # Direction: a oneway way may only be entered at its start node and
-        # left at its end node.
-        oneway_a = oneway_by_way.get(way_a)
-        oneway_b = oneway_by_way.get(way_b)
-        if oneway_a is True and role_a == "end":
-            # Traversing towards way_a's end would be against its oneway.
-            return False, "oneway_against"
-        if oneway_b is True and role_b == "end":
-            return False, "oneway_against"
-        if oneway_a is False and role_a == "start":
-            # oneway=-1: traffic runs against the node order, so entering at
-            # the start node is against the oneway.
-            return False, "oneway_against"
-        if oneway_b is False and role_b == "start":
-            return False, "oneway_against"
+        # V104 review 4551845512: departure and arrival are DIFFERENT
+        # questions.  Travelling a -> b needs to be able to LEAVE a at this
+        # node and to ENTER b at this node.  Applying the entry rule to both
+        # ways rejected two consecutive forward one-way ways (a ends at the
+        # shared node, b starts there), which is a legal continuation.
+        oneway_a = oneway_by_way.get(way_a, ONEWAY_UNKNOWN)
+        oneway_b = oneway_by_way.get(way_b, ONEWAY_UNKNOWN)
+        if not _can_leave(oneway_a, role_a):
+            return False, "oneway_departure_against"
+        if not _can_enter(oneway_b, role_b):
+            return False, "oneway_arrival_against"
 
         return True, "shared_node"
 
@@ -336,23 +391,58 @@ def build_osm_source_adjacency(
         members = sorted(
             node_members[node_id], key=lambda item: (_id_key(item[0]), item[1])
         )
+        # V104 review 4551845512: a pair of ways is adjacent when a legal
+        # traversal exists in EITHER direction.  Each ordered pair is still
+        # evaluated separately, so the blocked record can explain the
+        # direction that is NOT allowed.
+        directed: dict[tuple[str, str], tuple[bool, str]] = {}
+        for way_id, role in members:
+            for other_id, other_role in members:
+                if other_id == way_id:
+                    continue
+                directed[(way_id, other_id)] = _traversable(
+                    way_id, other_id, node_id, role, other_role
+                )
+
         for way_id, role in members:
             neighbours: list[str] = []
             blocked: list[dict[str, str]] = []
             for other_id, other_role in members:
                 if other_id == way_id:
                     continue
-                ok, reason = _traversable(
-                    way_id, other_id, node_id, role, other_role
-                )
-                if ok:
+                forward_ok, forward_reason = directed[(way_id, other_id)]
+                reverse_ok, reverse_reason = directed[(other_id, way_id)]
+                if forward_ok or reverse_ok:
                     neighbours.append(other_id)
                     undirected_edges.add(tuple(sorted((way_id, other_id), key=_id_key)))
+                    if not forward_ok:
+                        blocked.append(
+                            {
+                                "neighbour_way_id": other_id,
+                                "reason": forward_reason,
+                                "direction": "blocked_but_reverse_allowed",
+                            }
+                        )
+                    elif not reverse_ok:
+                        blocked.append(
+                            {
+                                "neighbour_way_id": other_id,
+                                "reason": reverse_reason,
+                                "direction": "blocked_but_forward_allowed",
+                            }
+                        )
                 else:
                     blocked.append(
-                        {"neighbour_way_id": other_id, "reason": reason}
+                        {
+                            "neighbour_way_id": other_id,
+                            "reason": forward_reason,
+                            "direction": "blocked_both_ways",
+                        }
                     )
-                    if reason == "oneway_against" and oneway_by_way.get(way_id) is None:
+                    if (
+                        forward_reason in {"oneway_arrival_against", "oneway_departure_against"}
+                        and oneway_by_way.get(way_id) == ONEWAY_UNKNOWN
+                    ):
                         unresolved.append(
                             {
                                 "node_id": node_id,
@@ -393,7 +483,7 @@ def build_osm_source_adjacency(
             )
         },
         "oneway_by_way": {
-            way_id: (None if value is None else bool(value))
+            way_id: value
             for way_id, value in sorted(oneway_by_way.items(), key=lambda i: _id_key(i[0]))
         },
         "restrictions_by_way": {

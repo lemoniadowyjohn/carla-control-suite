@@ -606,10 +606,44 @@ def find_unreachable_roads(root: ET.Element) -> List[str]:
                 if value:
                     registered.add(str(value))
 
+    # V104 review 4551845539: a road linked DIRECTLY to another road is
+    # reachable through that link even when it appears in no junction
+    # connection.  Compute reachability transitively from the junction
+    # roots over road-to-road links, so a reciprocal chain leading to a
+    # registered junction road is not reported as unreachable.
+    road_links: Dict[str, Set[str]] = {}
+    for road in root.findall("./road"):
+        road_id = str(road.get("id", "")).strip()
+        if not road_id:
+            continue
+        targets: Set[str] = set()
+        links = road.find("link")
+        if links is not None:
+            for role in ("predecessor", "successor"):
+                element = links.find(role)
+                if element is None:
+                    continue
+                if (element.get("elementType") or "").strip().lower() == "road":
+                    target = str(element.get("elementId") or "").strip()
+                    if target:
+                        targets.add(target)
+        road_links[road_id] = targets
+
+    reachable: Set[str] = set(registered)
+    changed = True
+    while changed:
+        changed = False
+        for road_id, targets in road_links.items():
+            if road_id in reachable:
+                continue
+            if targets & reachable:
+                reachable.add(road_id)
+                changed = True
+
     unreachable: List[str] = []
     for road in root.findall("./road"):
         road_id = str(road.get("id", "")).strip()
-        if not road_id or road_id in registered:
+        if not road_id or road_id in reachable:
             continue
         links = road.find("link")
         has_link = links is not None and (
@@ -629,20 +663,40 @@ def _reconcile_road_points(
     points: List[Tuple[float, float, float]] = []
     if road is None:
         return points
+    elevation = road.find("./elevationProfile/elevation")
+    z = 0.0
+    if elevation is not None:
+        try:
+            z = float(elevation.get("a", "0"))
+        except (TypeError, ValueError):
+            z = 0.0
     for geometry in road.findall("./planView/geometry"):
         try:
             x = float(geometry.get("x", "0"))
             y = float(geometry.get("y", "0"))
         except (TypeError, ValueError):
             continue
-        z = 0.0
-        elevation = road.find("./elevationProfile/elevation")
-        if elevation is not None:
-            try:
-                z = float(elevation.get("a", "0"))
-            except (TypeError, ValueError):
-                z = 0.0
         points.append((x, y, z))
+        # V104 review 4551845553: a geometry primitive's ORIGIN is not the
+        # whole road.  Two roads that touch end-to-end were sampled only at
+        # their origins, so the measured gap was the full road length
+        # instead of zero.  Include the primitive's endpoint.
+        try:
+            length = float(geometry.get("length", "0"))
+            heading = float(geometry.get("hdg", "0"))
+        except (TypeError, ValueError):
+            length = 0.0
+            heading = 0.0
+        if length > 0.0:
+            import math as _math
+
+            points.append(
+                (
+                    x + length * _math.cos(heading),
+                    y + length * _math.sin(heading),
+                    z,
+                )
+            )
     return points
 
 
