@@ -659,44 +659,41 @@ def find_unreachable_roads(root: ET.Element) -> List[str]:
 def _reconcile_road_points(
     road: Optional[ET.Element],
 ) -> List[Tuple[float, float, float]]:
-    """``(x, y, z)`` samples of one XODR road."""
-    points: List[Tuple[float, float, float]] = []
-    if road is None:
-        return points
-    elevation = road.find("./elevationProfile/elevation")
-    z = 0.0
-    if elevation is not None:
-        try:
-            z = float(elevation.get("a", "0"))
-        except (TypeError, ValueError):
-            z = 0.0
-    for geometry in road.findall("./planView/geometry"):
-        try:
-            x = float(geometry.get("x", "0"))
-            y = float(geometry.get("y", "0"))
-        except (TypeError, ValueError):
-            continue
-        points.append((x, y, z))
-        # V104 review 4551845553: a geometry primitive's ORIGIN is not the
-        # whole road.  Two roads that touch end-to-end were sampled only at
-        # their origins, so the measured gap was the full road length
-        # instead of zero.  Include the primitive's endpoint.
-        try:
-            length = float(geometry.get("length", "0"))
-            heading = float(geometry.get("hdg", "0"))
-        except (TypeError, ValueError):
-            length = 0.0
-            heading = 0.0
-        if length > 0.0:
-            import math as _math
+    """Sample every reference-line primitive at its actual start and end.
 
-            points.append(
-                (
-                    x + length * _math.cos(heading),
-                    y + length * _math.sin(heading),
-                    z,
-                )
+    Reconciliation must use the SAME canonical OpenDRIVE geometry kernel as
+    _road_endpoints().  Straight chord projection is wrong for arc, spiral,
+    poly3 and paramPoly3 and can reject legitimate source-proven links.
+    Elevation is evaluated at each sampled global road station, rather than
+    being copied from the road's first elevation record.
+
+    Malformed/unsupported geometry yields no candidate samples, not a
+    fictitious straight-line endpoint that could authorize a repair.
+    """
+    if road is None:
+        return []
+    points: List[Tuple[float, float, float]] = []
+    geometries = sorted(
+        road.findall("./planView/geometry"),
+        key=lambda g: _safe_float(g.get("s"), 0.0),
+    )
+    try:
+        for geometry in geometries:
+            s0 = float(geometry.attrib["s"])
+            length = float(geometry.attrib["length"])
+            start = _kernel_pose_at_s(geometry, 0.0)
+            stop = _kernel_endpoint(geometry)
+            start_z = _road_z(road, s0)
+            stop_z = _road_z(road, s0 + length)
+            values = (
+                start.x, start.y, start_z, stop.x, stop.y, stop_z,
             )
+            if not all(math.isfinite(value) for value in values):
+                return []
+            points.append((start.x, start.y, start_z))
+            points.append((stop.x, stop.y, stop_z))
+    except (KeyError, TypeError, ValueError, ZeroDivisionError, OverflowError):
+        return []
     return points
 
 
