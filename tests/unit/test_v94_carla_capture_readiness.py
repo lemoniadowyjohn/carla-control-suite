@@ -37,6 +37,25 @@ class Client:
         return World()
 
 
+def _pin_monotonic_near_zero(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Anchor time.monotonic() near 0 for the duration of a test.
+
+    On a long-uptime host, time.monotonic() can already be ~8e5 s. At that
+    magnitude, float64 has only ~1.8e-10 s of precision, so two monotonic()
+    calls microseconds apart can round `deadline - time.monotonic()` UP past
+    the original timeout_s (observed: 0.05000000004656613 > 0.05) even
+    though no real time passed. That is a test-determinism problem, not a
+    production bug: the production clamp (min(client_timeout_s, remaining))
+    is sound given small-epoch inputs. Subtracting a fixed baseline from the
+    real monotonic clock (rather than freezing it) keeps real elapsed-time
+    behavior -- sleeps and pacing still advance it -- while making the
+    precision-loss case unreachable regardless of host uptime.
+    """
+    real_monotonic = time.monotonic
+    base = real_monotonic()
+    monkeypatch.setattr(time, "monotonic", lambda: real_monotonic() - base)
+
+
 def test_synchronous_world_passes_rpc_readiness_without_frames(monkeypatch):
     Client.instances.clear()
     monkeypatch.setattr(capture, "_try_import_carla", lambda: (SimpleNamespace(Client=Client), None))
@@ -54,6 +73,7 @@ def test_client_timeout_is_capped_to_deadline(monkeypatch):
         pass
 
     InspectClient.instances.clear()
+    _pin_monotonic_near_zero(monkeypatch)
     monkeypatch.setenv("UP_CARLA_CLIENT_TIMEOUT_S", "180")
     monkeypatch.setattr(capture, "_try_import_carla", lambda: (SimpleNamespace(Client=InspectClient), None))
     result = capture._ready_probe("127.0.0.1", 2222, timeout_s=0.05, sleep_s=0.0)
@@ -71,6 +91,7 @@ def test_failing_rpc_bounded_under_transport_timeout(monkeypatch):
             raise TimeoutError("injected stalled RPC")
 
     FailingClient.instances.clear()
+    _pin_monotonic_near_zero(monkeypatch)
     monkeypatch.setenv("UP_CARLA_CLIENT_TIMEOUT_S", "180")
     monkeypatch.setattr(capture, "_try_import_carla", lambda: (SimpleNamespace(Client=FailingClient), None))
     started = time.monotonic()
