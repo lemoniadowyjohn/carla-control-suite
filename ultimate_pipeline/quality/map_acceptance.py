@@ -15,7 +15,7 @@ import hashlib
 import json
 import os
 import sys
-import xml.etree.ElementTree as ET
+from ultimate_pipeline.quality.xml_admission import parse_xodr_file
 from typing import Any, Dict, List, Optional, Sequence
 
 from ultimate_pipeline.utils.file_hashing import safe_sha256_file
@@ -205,7 +205,7 @@ def _enrichment_completeness_counts(final_xodr_path: str) -> Optional[Dict[str, 
     present.
     """
     try:
-        root = ET.parse(final_xodr_path).getroot()
+        root = parse_xodr_file(final_xodr_path)
     except Exception:
         return None
 
@@ -793,7 +793,7 @@ def build_map_acceptance(
         # acceptance gate and the certifier can never disagree due to a
         # tolerance mismatch. A sub-1e-6 excess must be caught by both.
         try:
-            li_root = ET.parse(final_xodr_path).getroot()
+            li_root = parse_xodr_file(final_xodr_path)
             li_summary = length_invariant_summary(li_root)
         except Exception:
             li_summary = None
@@ -1054,7 +1054,7 @@ def build_map_acceptance(
         pass  # precomputed evidence supplied by the caller
     elif final_xodr_path and os.path.exists(final_xodr_path):
         try:
-            comp_root = ET.parse(final_xodr_path).getroot()
+            comp_root = parse_xodr_file(final_xodr_path)
         except Exception:
             comp_root = None
         if comp_root is not None:

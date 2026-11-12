@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import math
 import xml.etree.ElementTree as ET
+from ultimate_pipeline.quality.xml_admission import parse_xodr_file
 from typing import Any, Dict, Optional, Tuple
 
 
@@ -37,7 +38,7 @@ def check_origin_sanity(
     }
 
     try:
-        tree = ET.parse(xodr_path)
+        tree = ET.ElementTree(parse_xodr_file(xodr_path))
         root = tree.getroot()
     except Exception as e:
         report["ok"] = False

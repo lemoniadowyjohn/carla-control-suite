@@ -202,13 +202,14 @@ def _rebase_to_local(xodr_in: Path, xodr_out: Path) -> Dict[str, Any]:
     header <offset> element and in the returned report.
     """
     import xml.etree.ElementTree as _ET
+    from ultimate_pipeline.quality.xml_admission import parse_xodr_file
 
     from ultimate_pipeline.geometry.opendrive_rebase import (
         planview_min_xy,
         rebase_xodr_coordinates,
     )
 
-    tree = _ET.parse(xodr_in)
+    tree = _ET.ElementTree(parse_xodr_file(xodr_in))
     root = tree.getroot()
     min_x, min_y = planview_min_xy(root)
     already_local = max(abs(min_x), abs(min_y)) < 10_000.0

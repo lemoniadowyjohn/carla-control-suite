@@ -53,6 +53,7 @@ import sys
 import traceback
 import uuid
 import xml.etree.ElementTree as ET
+from ultimate_pipeline.quality.xml_admission import parse_xodr_file
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional
@@ -417,7 +418,7 @@ def deep_clone(elem: ET.Element) -> ET.Element:
 
 def _count_lanes(xpath: str) -> int:
     try:
-        r = ET.parse(xpath).getroot()
+        r = parse_xodr_file(xpath)
         return len(r.findall(".//lane"))
     except Exception:
         return -1
@@ -1154,7 +1155,7 @@ class MainPipeline:
     @staticmethod
     def _read_georef_info(path: str) -> dict:
         try:
-            tree = ET.parse(path)
+            tree = ET.ElementTree(parse_xodr_file(path))
             root = tree.getroot()
             header = root.find("header")
             if header is None:
@@ -1174,7 +1175,7 @@ class MainPipeline:
     @staticmethod
     def _read_offset(path: str) -> dict:
         try:
-            tree = ET.parse(path)
+            tree = ET.ElementTree(parse_xodr_file(path))
             root = tree.getroot()
             header = root.find("header")
             if header is None:
@@ -1571,7 +1572,7 @@ class MainPipeline:
         }
 
         try:
-            tree = ET.parse(final_out)
+            tree = ET.ElementTree(parse_xodr_file(final_out))
             root = tree.getroot()
             header = root.find("header")
             if header is None:
@@ -3704,7 +3705,7 @@ if str(_repo_root) not in sys.path:
                 certify_topology,
             )
 
-            final_root = ET.parse(final_out).getroot()
+            final_root = ET.ElementTree(parse_xodr_file(final_out)).getroot()
             topology_certification = certify_topology(
                 component_reachability_summary(final_root, literal=True),
                 component_reachability_summary(final_root),

@@ -19,10 +19,11 @@ from __future__ import annotations
 import hashlib
 import math
 import os
-import re
 import xml.etree.ElementTree as ET
 from pathlib import Path
 from typing import Any, Callable, Dict, Optional, Tuple
+
+from ultimate_pipeline.quality import xml_admission as _xml_admission
 
 STATUS_PASS = "PASS"
 STATUS_FAIL = "FAIL"
@@ -35,7 +36,9 @@ ACCEPTANCE_POLICY_VERSION = "v86.1"
 
 #: The largest final artifact accepted at the XML boundary. The map of record
 #: is about 150 MB; this bounds memory if the input is hostile.
-MAX_XODR_BYTES = 1 << 30
+MAX_XODR_BYTES = _xml_admission.MAX_XODR_BYTES
+UnsafeXMLError = _xml_admission.UnsafeXMLError
+
 
 #: Gates the production release path must have evaluated, and passed, on the
 #: final artifact. They are hard-fail classes in ``build_map_acceptance``.
@@ -117,37 +120,29 @@ def normalize_lane_section_report(report: Any) -> Dict[str, Any]:
     return out
 
 
-# --- V86 A8: XML boundary ----------------------------------------------------
-_PROLOG_DECL = re.compile(rb"<!\s*(DOCTYPE|ENTITY)", re.IGNORECASE)
-
-
-class UnsafeXMLError(ValueError):
-    """The artifact violates the XML boundary policy."""
-
-
+# --- V104: parser-level XML admission -----------------------------------------
 def check_xml_boundary(data: bytes) -> None:
-    """Reject inputs that OpenDRIVE never needs and that enable XML attacks.
-
-    Threat model: an XODR may come from an untrusted source (download, PR,
-    operator copy). ``xml.etree`` on CPython 3.12 uses expat, which does not
-    fetch external entities and limits entity amplification. That protection
-    depends on the expat version, so the boundary does not rely on it: any
-    DOCTYPE or ENTITY declaration is rejected outright, and the size is
-    capped. Tested behaviour is in tests/unit/test_v86_acceptance_strict.py.
-    It does not defend against a well-formed but semantically hostile map;
-    the quality gates do that.
-    """
+    """Validate the full XML document with the encoding-aware Expat policy."""
     if len(data) > MAX_XODR_BYTES:
-        raise UnsafeXMLError(f"artifact is {len(data)} bytes > limit {MAX_XODR_BYTES}")
-    root_at = data.find(b"<OpenDRIVE")
-    prolog = data if root_at < 0 else data[:root_at]
-    if _PROLOG_DECL.search(prolog) or _PROLOG_DECL.search(data[: 1 << 16]):
-        raise UnsafeXMLError("DOCTYPE/ENTITY declarations are not permitted in OpenDRIVE input")
+        raise UnsafeXMLError(
+            f"artifact is {len(data)} bytes > limit {MAX_XODR_BYTES}"
+        )
+    _xml_admission.check_xml_boundary(data)
 
 
 def parse_xodr_bytes(data: bytes) -> ET.Element:
-    check_xml_boundary(data)
-    return ET.fromstring(data)
+    """Parse OpenDRIVE with DTD/entity rejection and bounded complexity."""
+    if len(data) > MAX_XODR_BYTES:
+        raise UnsafeXMLError(
+            f"artifact is {len(data)} bytes > limit {MAX_XODR_BYTES}"
+        )
+    return _xml_admission.parse_xodr_bytes(data)
+
+
+def parse_xodr_file(path: str | os.PathLike[str]) -> ET.Element:
+    """Bounded one-snapshot file read followed by strict OpenDRIVE parsing."""
+    data = _xml_admission.read_xodr_bytes(path)
+    return parse_xodr_bytes(data)
 
 
 # --- V86 A6: immutable content-addressed snapshot ------------------------------
@@ -162,7 +157,7 @@ def snapshot_final_artifact(final_out: str, snapshot_dir: str) -> Dict[str, Any]
     which is made read-only. Every gate runs on that path. ``verify_artifact_unchanged``
     later proves the published ``final_out`` still has the same digest.
     """
-    data = Path(final_out).read_bytes()
+    data = _xml_admission.read_xodr_bytes(final_out)
     digest = sha256_bytes(data)
     snap_dir = Path(snapshot_dir)
     snap_dir.mkdir(parents=True, exist_ok=True)
@@ -291,7 +286,7 @@ def compute_final_artifact_reports(
     root = None
     parse_error = None
     try:
-        data = Path(str(xodr_path)).read_bytes()
+        data = _xml_admission.read_xodr_bytes(xodr_path)
         if expected_sha256 is not None and sha256_bytes(data) != expected_sha256:
             raise RuntimeError(
                 f"artifact digest {sha256_bytes(data)} != expected {expected_sha256}"

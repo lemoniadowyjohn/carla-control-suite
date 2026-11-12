@@ -14,7 +14,6 @@ from __future__ import annotations
 
 import argparse
 import json
-import os
 import sys
 from datetime import datetime
 from pathlib import Path
@@ -51,7 +50,7 @@ from ultimate_pipeline.quality.map_acceptance import (
     build_map_acceptance,
     component_reachability_summary,
 )
-import xml.etree.ElementTree as ET
+from ultimate_pipeline.quality.xml_admission import parse_xodr_file
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_DEM = REPO_ROOT / "cities" / "ingolstadt" / "dem" / "dem_ing.tif"
@@ -97,7 +96,7 @@ def evaluate_candidate(
     snapshot = snapshot_final_artifact(str(xodr), str(out_dir / ".acceptance_snapshot"))
     evaluated_sha = snapshot["sha256"]
     try:
-        check_xml_boundary(Path(snapshot["path"]).read_bytes())
+        check_xml_boundary(read_xodr_bytes(snapshot["path"]))
     except UnsafeXMLError as exc:
         print(f"[gate] XML boundary REJECTED input: {exc}")
         reports: Dict[str, Any] = {
@@ -127,7 +126,7 @@ def evaluate_candidate(
         acceptance = dict(acceptance, release_eligible=False,
                           artifact_identity_after_write={"evaluated": evaluated_sha, "now": actual})
         _write_json(out_dir / "map_acceptance.identity_failure.json", acceptance)
-    if sha256_bytes(Path(snapshot["path"]).read_bytes()) != evaluated_sha:
+    if sha256_bytes(read_xodr_bytes(snapshot["path"])) != evaluated_sha:
         raise RuntimeError(f"acceptance snapshot {snapshot['path']} changed during evaluation")
     return acceptance
 
@@ -143,7 +142,7 @@ def run_gates(xodr: Path, out_dir: Path, dem: Optional[Path]) -> Dict[str, Any]:
         parse_xodr_bytes,
     )
     try:
-        rep = check_artifact_structure(parse_xodr_bytes(xodr.read_bytes()))
+        rep = check_artifact_structure(parse_xodr_bytes(read_xodr_bytes(xodr)))
     except Exception as exc:  # noqa: BLE001 - recorded, fail-closed
         rep = {"ok": None, "status": "BLOCKED_INPUT", "reason": f"{type(exc).__name__}: {exc}"}
     reports["artifact_structure"] = rep
@@ -220,7 +219,7 @@ def run_gates(xodr: Path, out_dir: Path, dem: Optional[Path]) -> Dict[str, Any]:
         f"zero_ratio={rep.get('zero_ratio')} max_link_dz={rep.get('max_link_dz')}"
     )
 
-    physics_root = ET.parse(str(xodr)).getroot()
+    physics_root = parse_xodr_file(str(xodr))
 
     elev_issues = ElevationSmoothnessGate.validate(physics_root)
     rep = {"ok": len(elev_issues) == 0, "issue_count": len(elev_issues), "issues": elev_issues}
@@ -297,7 +296,7 @@ def run_gates(xodr: Path, out_dir: Path, dem: Optional[Path]) -> Dict[str, Any]:
         print(f"[info] elevation_summary failed: {exc}")
 
     try:
-        comp_root = ET.parse(str(xodr)).getroot()
+        comp_root = parse_xodr_file(str(xodr))
         comp_rep = component_reachability_summary(comp_root)
         if comp_rep is not None:
             reports["component_reachability"] = comp_rep

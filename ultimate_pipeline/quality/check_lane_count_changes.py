@@ -6,6 +6,7 @@ from collections import Counter
 from pathlib import Path
 from typing import Any
 import xml.etree.ElementTree as ET
+from ultimate_pipeline.quality.xml_admission import parse_xodr_file
 
 
 def _float(value: str | None) -> float:
@@ -71,7 +72,7 @@ def check_lane_count_changes(xodr_path: str | Path) -> dict[str, Any]:
     lanes remain visible as unexplained rather than being assumed correct.
     """
 
-    root = ET.parse(xodr_path).getroot()
+    root = parse_xodr_file(xodr_path)
     roads = {
         str(road.get("id")): road
         for road in root.findall("./road")
