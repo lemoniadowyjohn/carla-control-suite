@@ -161,24 +161,16 @@ def dump_carla_crash(context: dict):
     except Exception as e:
         print(f"⚠ Failed to write CARLA crash dump: {e}")
 
-def _kill_stale_processes():
-    """Kill leftover Unreal/Carla processes."""
-    if not _PSUTIL_AVAILABLE:
-        # Soft-fail on environments where psutil isn't installed
-        return
-    targets = ["CarlaUE4", "UE4Editor", "UE4Editor-Cmd", "CarlaUE4-Win64-Shipping"]
-
-    for proc in psutil.process_iter(["pid", "name"]):
-        name = proc.info["name"]
-        if not name:
-            continue
-        if any(t in name for t in targets):
-            try:
-                proc.kill()
-                proc.wait(1)
-                print(f"💀 Killed stale CARLA process: {name}")
-            except Exception:
-                pass
+# V94 round 2, item 4: the automatic by-name kill that used to live here
+# (substring match over ["CarlaUE4", "UE4Editor", "UE4Editor-Cmd",
+# "CarlaUE4-Win64-Shipping"] via psutil.process_iter) is permanently removed.
+# An image name does not identify a launch owner, a run, or a port -- it
+# matched UE4Editor too, so it could kill an unrelated editor session or
+# another operator's simulator. restart_carla()/get_reliable_client() below
+# now fail closed (naming the PID holding the port, when determinable, via
+# ultimate_pipeline.core.carla_utils.describe_port_occupant) instead of
+# calling this. No automatic orphan recovery is built to replace it -- that
+# is an owner decision pending (see V93_RUNTIME_ROUND2_BRIEF.md item 6).
 
 
 def _purge_temp_dirs():
@@ -252,9 +244,16 @@ def restart_carla(
     wait_s = float(startup_wait_s or SETTINGS.CARLA_STARTUP_WAIT)
     max_tries = int(retries or SETTINGS.CARLA_CONNECT_RETRIES)
 
-    # Reset CARLA and purge cache
+    # Automatic image-wide kill-by-name is permanently disabled (see the
+    # comment above _purge_temp_dirs's former neighbor, _kill_stale_processes,
+    # for why). If something already holds the RPC port, fail closed instead
+    # of silently killing it.
     if SETTINGS.CARLA_KILL_ON_FAIL:
-        _kill_stale_processes()
+        from ultimate_pipeline.core.carla_utils import _port_holder_pid, describe_port_occupant
+        holder_pid = _port_holder_pid(p)
+        if holder_pid is not None:
+            print(f"❌ Refusing automatic CARLA restart: {describe_port_occupant(p)}")
+            return False
         _purge_temp_dirs()
 
     _start_carla()
@@ -324,15 +323,21 @@ def get_reliable_client() -> carla.Client:
                 print(f"?? Connected to CARLA successfully (RPC:{port}, Stream:{streaming_port}).")
                 return client
             except Exception:
-                print("? CARLA responded but world unavailable - purging + restart")
+                # Something holds this port but its world is unavailable.
+                # Automatic image-wide kill-by-name is permanently disabled
+                # -- fail closed and name the holder instead of guessing.
                 if SETTINGS.CARLA_KILL_ON_FAIL:
-                    _kill_stale_processes()
-                    _purge_temp_dirs()
+                    from ultimate_pipeline.core.carla_utils import describe_port_occupant
+                    raise RuntimeError(
+                        f"CARLA responded on port {port} but its world is unavailable; "
+                        f"refusing automatic image-wide kill-by-name. {describe_port_occupant(port)}"
+                    )
+                print("? CARLA responded but world unavailable - retrying")
                 time.sleep(2)
 
         elif SETTINGS.CARLA_KILL_ON_FAIL:
-            # Port closed or unusable → kill + purge + start
-            _kill_stale_processes()
+            # Nothing holds this port, so there is nothing to kill -- the old
+            # by-name kill here was a no-op at best. Still purge the cache.
             _purge_temp_dirs()
 
         _start_carla()

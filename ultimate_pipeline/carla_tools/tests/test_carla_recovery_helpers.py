@@ -148,3 +148,105 @@ def test_wait_for_ports_requires_streaming_when_flagged(listening_server):
         "127.0.0.1", listening_server.port, _closed_port(),
         timeout_s=0.3, require_streaming=True,
     ) is False
+
+
+# ---------------------------------------------------------------------------
+# V94 round 2, item 4: automatic by-name kill is permanently removed from
+# restart_carla() and get_reliable_client(). They must fail closed instead
+# (naming the port holder via carla_utils.describe_port_occupant), never
+# calling psutil.process_iter or killing by image name.
+# ---------------------------------------------------------------------------
+
+def test_kill_stale_processes_by_name_removed():
+    """The old substring-match kill (which matched UE4Editor too) is gone
+    entirely, not merely unreachable -- nothing can accidentally call it."""
+    assert not hasattr(cr, "_kill_stale_processes")
+
+
+def test_restart_carla_fails_closed_when_port_already_held(monkeypatch):
+    from ultimate_pipeline.core import carla_utils as cu
+
+    monkeypatch.setattr(cr.SETTINGS, "CARLA_KILL_ON_FAIL", True, raising=False)
+    monkeypatch.setattr(cu, "_port_holder_pid", lambda port: 4321)
+    monkeypatch.setattr(cu, "describe_port_occupant", lambda port: f"port {port} is held by PID 4321")
+
+    class TrapPS:
+        @staticmethod
+        def process_iter(*_a, **_k):
+            raise AssertionError("must not enumerate processes")
+
+    monkeypatch.setattr(cr, "psutil", TrapPS)
+    started = []
+    monkeypatch.setattr(cr, "_start_carla", lambda: started.append(True))
+
+    assert cr.restart_carla(host="127.0.0.1", port=2000) is False
+    assert started == []
+
+
+def test_restart_carla_purges_and_starts_when_port_free(monkeypatch):
+    """Positive control for the test above: when nothing holds the port,
+    restart proceeds normally (purge + start) without any kill-by-name."""
+    from ultimate_pipeline.core import carla_utils as cu
+
+    monkeypatch.setattr(cr.SETTINGS, "CARLA_KILL_ON_FAIL", True, raising=False)
+    monkeypatch.setattr(cu, "_port_holder_pid", lambda port: None)
+
+    purged = []
+    started = []
+    monkeypatch.setattr(cr, "_purge_temp_dirs", lambda: purged.append(True))
+    monkeypatch.setattr(cr, "_start_carla", lambda: started.append(True))
+    monkeypatch.setattr(cr, "_wait_for_ports", lambda *a, **k: True)
+
+    assert cr.restart_carla(host="127.0.0.1", port=2000, retries=1, startup_wait_s=0.01) is True
+    assert purged == [True]
+    assert started == [True]
+
+
+def test_get_reliable_client_fails_closed_on_broken_but_listening_port(monkeypatch):
+    """If the port is open but the world is unavailable, get_reliable_client
+    must raise naming the holder instead of killing by name."""
+    from ultimate_pipeline.core import carla_utils as cu
+
+    monkeypatch.setattr(cr.SETTINGS, "CARLA_KILL_ON_FAIL", True, raising=False)
+    monkeypatch.setattr(cr.SETTINGS, "CARLA_HOST", "127.0.0.1", raising=False)
+    monkeypatch.setattr(cr.SETTINGS, "CARLA_PORT", 2000, raising=False)
+    monkeypatch.setattr(cr, "probe_streaming_port", lambda *a, **k: {"status": "disabled"})
+    monkeypatch.setattr(cr, "_port_open", lambda host, port: True)
+
+    def _broken_client():
+        raise RuntimeError("world unavailable")
+
+    monkeypatch.setattr(cr, "_create_client", _broken_client)
+    monkeypatch.setattr(cu, "describe_port_occupant", lambda port: f"port {port} is held by PID 999")
+
+    with pytest.raises(RuntimeError, match="refusing automatic image-wide kill-by-name"):
+        cr.get_reliable_client()
+
+
+def test_get_reliable_client_skips_kill_when_port_not_open(monkeypatch):
+    """Positive control: when the port isn't even open, there's nothing to
+    kill -- no process_iter/kill-by-name call, just purge + start."""
+    monkeypatch.setattr(cr.SETTINGS, "CARLA_KILL_ON_FAIL", True, raising=False)
+    monkeypatch.setattr(cr.SETTINGS, "CARLA_HOST", "127.0.0.1", raising=False)
+    monkeypatch.setattr(cr.SETTINGS, "CARLA_PORT", 2000, raising=False)
+    monkeypatch.setattr(cr.SETTINGS, "CARLA_CONNECT_RETRIES", 1, raising=False)
+    monkeypatch.setattr(cr.SETTINGS, "CARLA_STARTUP_WAIT", 0.01, raising=False)
+    monkeypatch.setattr(cr, "probe_streaming_port", lambda *a, **k: {"status": "disabled"})
+    monkeypatch.setattr(cr, "_port_open", lambda host, port: False)
+
+    class TrapPS:
+        @staticmethod
+        def process_iter(*_a, **_k):
+            raise AssertionError("must not enumerate processes")
+
+    monkeypatch.setattr(cr, "psutil", TrapPS)
+    purged = []
+    started = []
+    monkeypatch.setattr(cr, "_purge_temp_dirs", lambda: purged.append(True))
+    monkeypatch.setattr(cr, "_start_carla", lambda: started.append(True))
+    monkeypatch.setattr(cr, "dump_carla_crash", lambda *a, **k: None)
+
+    with pytest.raises(RuntimeError):
+        cr.get_reliable_client()
+    assert purged == [True]
+    assert started == [True]
