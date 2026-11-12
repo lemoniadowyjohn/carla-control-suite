@@ -546,6 +546,10 @@ def test_operator_recovery_is_explicit_and_audited(repo):
     intent_bytes = intent.read_bytes()
     assert hashlib.sha256(intent_bytes).hexdigest() == record["recovery_intent_sha256"]
     assert json.loads(intent_bytes)["removed_sha256"] == record["removed_sha256"]
+    assert json.loads(intent_bytes)["recovered"] is True
+    assert json.loads(intent_bytes)["intent_status"] == "COMPLETE"
+    assert record["recovery_intent_sha256"] == hashlib.sha256(intent_bytes).hexdigest()
+    assert (path.parent / record["recovered_evidence_path"]).is_file()
     assert not path.exists()
 
 
@@ -560,6 +564,7 @@ def test_recovery_crash_after_intent_preserves_malformed_lock(repo, monkeypatch)
         assert len(intents) == 1
         intent = json.loads(intents[0].read_text(encoding="utf-8"))
         assert intent["removed_sha256"] == hashlib.sha256(original).hexdigest()
+        assert intent["recovered"] is False
         raise RuntimeError("simulated crash after durable recovery intent")
 
     monkeypatch.setattr(cgl, "_claim_by_rename", crash_before_claim)
@@ -567,6 +572,25 @@ def test_recovery_crash_after_intent_preserves_malformed_lock(repo, monkeypatch)
         cgl.recover_malformed_lock(repo, "operator@example.invalid", "verified")
     assert path.read_bytes() == original
     assert len(list(path.parent.glob(f"{path.name}.recovery.*.json"))) == 1
+
+
+def test_malformed_recovery_changed_lock_stays_unrecovered(repo, monkeypatch):
+    path = _lock_path(repo)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_bytes(b"{ original malformed")
+
+    def replace_before_claim(_repo_root, _tag, _expect):
+        path.write_bytes(b"{ successor malformed")
+        return False, None
+
+    monkeypatch.setattr(cgl, "_claim_by_rename", replace_before_claim)
+    result = cgl.recover_malformed_lock(repo, "operator@example.invalid", "changed lock test")
+    assert result["recovered"] is False
+    intent_path = path.parent / result["recovery_intent_path"]
+    intent = json.loads(intent_path.read_text(encoding="utf-8"))
+    assert intent["recovered"] is False
+    assert intent["intent_status"] == "NOT_RECOVERED"
+    assert path.read_bytes() == b"{ successor malformed"
 
 
 def test_generation_ledger_corruption_fails_closed(repo):

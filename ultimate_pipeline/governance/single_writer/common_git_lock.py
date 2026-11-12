@@ -932,54 +932,84 @@ def release_common_git_lock(
     A previous owner that wakes up late therefore cannot delete its successor.
     """
     repo_root = Path(repo_root).resolve()
-    current = _read_lock(repo_root)
-    current = _require_mine(current, owner_token, lock_id, "release")
+    with _common_git_claim(repo_root):
+        current = _read_lock(repo_root)
+        current = _require_mine(current, owner_token, lock_id, "release")
 
-    claimed, tomb = _claim_by_rename(
-        repo_root,
-        "release",
-        _lock_matches(current.lock_id, current.owner_token, current.generation),
-    )
-    if not claimed:
-        # Distinguish a changed owner from a rename that never happened. On
-        # Windows a concurrent reader can hold the published record open beyond
-        # the retry budget, which denies the rename without changing the owner.
-        # Reporting that as "the lock changed" would be false evidence.
-        try:
-            latest = _read_lock(repo_root)
-        except Exception:
-            latest = None
-        unchanged = (
-            latest is not None
-            and latest.lock_id == current.lock_id
-            and latest.owner_token == current.owner_token
-            and latest.generation == current.generation
+        claimed, tomb = _claim_by_rename_claimed(
+            repo_root,
+            "release",
+            _lock_matches(current.lock_id, current.owner_token, current.generation),
         )
-        if unchanged:
-            raise RuntimeError(
-                f"cannot release: the published lock could not be claimed "
-                f"(rename persistently denied; generation={current.generation} "
-                f"is unchanged); refusing"
+        if not claimed:
+            # Distinguish a changed owner from a rename that never happened. On
+            # Windows a concurrent reader can hold the published record open beyond
+            # the retry budget, which denies the rename without changing the owner.
+            # Reporting that as "the lock changed" would be false evidence.
+            try:
+                latest = _read_lock(repo_root)
+            except Exception:
+                latest = None
+            unchanged = (
+                latest is not None
+                and latest.lock_id == current.lock_id
+                and latest.owner_token == current.owner_token
+                and latest.generation == current.generation
             )
-        raise RuntimeError(
-            f"cannot release: the published lock changed while releasing "
-            f"(expected generation={current.generation}); refusing"
-        )
-    if tomb is not None:
-        released = tomb.with_name(
-            f"{_get_common_git_lock_path(repo_root).name}.released.{uuid.uuid4().hex}.json"
-        )
-        try:
-            # Keep the exact released bytes as auditable evidence. A failed
-            # finalization must be visible to the caller and must not discard
-            # the only record of the generation being released.
-            _durable_replace(tomb, released)
-        except (OSError, RuntimeError) as exc:
-            evidence = tomb if tomb.exists() else released
+            if unchanged:
+                raise RuntimeError(
+                    f"cannot release: the published lock could not be claimed "
+                    f"(rename persistently denied; generation={current.generation} "
+                    f"is unchanged); refusing"
+                )
             raise RuntimeError(
-                "common Git lock ownership was claimed, but release evidence "
-                f"could not be durably finalized; inspect {evidence}"
-            ) from exc
+                f"cannot release: the published lock changed while releasing "
+                f"(expected generation={current.generation}); refusing"
+            )
+        if tomb is not None:
+            name = _get_common_git_lock_path(repo_root).name
+            released = tomb.with_name(f"{name}.released.{uuid.uuid4().hex}.json")
+            check_tomb = tomb.with_name(
+                f"{name}.release-check.{uuid.uuid4().hex}.tombstone"
+            )
+            tomb_bytes, tomb_identity = _read_regular_file_bounded(tomb, 1024 * 1024)
+            tomb_digest = hashlib.sha256(tomb_bytes).hexdigest()
+            if not _lock_matches(
+                current.lock_id, current.owner_token, current.generation
+            )(tomb_bytes):
+                raise RuntimeError(
+                    "claimed release tombstone does not match the authorized generation"
+                )
+            try:
+                # Publish an exclusive copy of the exact captured bytes before
+                # retiring the tombstone. The common-Git claim remains held for
+                # the full sequence, so a cooperating writer cannot replace the
+                # tombstone between validation and archival.
+                _write_recovery_bytes_exclusive(released, tomb_bytes)
+                archived, _ = _read_regular_file_bounded(released, 1024 * 1024)
+                if not hmac.compare_digest(
+                    hashlib.sha256(archived).hexdigest(), tomb_digest
+                ):
+                    raise RuntimeError("staged release archive failed SHA-256 verification")
+                _durable_replace(tomb, check_tomb)
+                moved, moved_identity = _read_regular_file_bounded(
+                    check_tomb, 1024 * 1024
+                )
+                if moved_identity != tomb_identity or not hmac.compare_digest(
+                    hashlib.sha256(moved).hexdigest(), tomb_digest
+                ):
+                    raise RuntimeError(
+                        "release tombstone changed during archival; exact captured "
+                        f"bytes remain at {released} and changed evidence remains at {check_tomb}"
+                    )
+                check_tomb.unlink()
+                _fsync_dir(check_tomb.parent)
+            except (OSError, RuntimeError) as exc:
+                evidence = check_tomb if check_tomb.exists() else tomb
+                raise RuntimeError(
+                    "common Git lock ownership was claimed, but release evidence "
+                    f"could not be durably finalized; inspect {released} and {evidence}"
+                ) from exc
     return True
 
 
@@ -1268,7 +1298,7 @@ def recover_malformed_lock(repo_root: Path, operator: str, reason: str) -> dict:
         return {"recovered": False, "detail": "no lock present"}
     digest = hashlib.sha256(raw).hexdigest()
     record = {
-        "recovered": True,
+        "recovered": False,
         "path": str(path),
         "removed_sha256": digest,
         "removed_bytes": len(raw),
@@ -1284,9 +1314,6 @@ def recover_malformed_lock(repo_root: Path, operator: str, reason: str) -> dict:
     )
     intent = dict(record, intent_status="INTENT")
     _write_payload(intent_path, intent)
-    intent_bytes = intent_path.read_bytes()
-    record["recovery_intent_path"] = intent_path.name
-    record["recovery_intent_sha256"] = hashlib.sha256(intent_bytes).hexdigest()
 
     claimed, tomb = _claim_by_rename(
         repo_root, "recover", lambda moved: hmac.compare_digest(moved, raw)
@@ -1305,13 +1332,21 @@ def recover_malformed_lock(repo_root: Path, operator: str, reason: str) -> dict:
         archived, _ = _read_regular_file_bounded(archive, 1024 * 1024)
         if not hmac.compare_digest(hashlib.sha256(archived).hexdigest(), digest):
             raise RuntimeError("malformed-lock recovery archive failed digest verification")
+        record["recovered"] = True
         record["recovered_evidence_path"] = str(archive)
         record["intent_status"] = "COMPLETE"
-        record["recovery_intent_path"] = intent_path.name
     else:
         record["recovered"] = False
         record["intent_status"] = "NOT_RECOVERED"
         record["detail"] = "lock changed or vanished during recovery; nothing removed"
+    # Keep the durable intent truthful across the state transition. If this
+    # update fails after archival, the original INTENT and archived bytes
+    # remain available and the operation raises instead of claiming success.
+    final_intent = dict(record)
+    _write_payload(intent_path, final_intent)
+    intent_bytes = intent_path.read_bytes()
+    record["recovery_intent_path"] = intent_path.name
+    record["recovery_intent_sha256"] = hashlib.sha256(intent_bytes).hexdigest()
     result_path = path.with_name(
         f"{path.name}.recovery-result.{uuid.uuid4().hex}.json"
     )

@@ -906,16 +906,15 @@ def test_tombstone_recovery_symlink_swap_is_not_read_or_linked(repo, monkeypatch
 def test_release_archive_failure_is_observable_and_preserves_tombstone(repo, monkeypatch):
     lock = cgl.acquire_common_git_lock(repo, "git release failure", timeout_seconds=2)
     path = cgl._get_common_git_lock_path(repo)
-    original_replace = cgl._durable_replace
+    original_write = cgl._write_recovery_bytes_exclusive
 
-    def fail_archive(source, destination):
-        source = Path(source)
+    def fail_archive(destination, raw):
         destination = Path(destination)
-        if source.name.endswith(".tombstone") and ".released." in destination.name:
+        if ".released." in destination.name:
             raise PermissionError("injected release archive denial")
-        return original_replace(source, destination)
+        return original_write(destination, raw)
 
-    monkeypatch.setattr(cgl, "_durable_replace", fail_archive)
+    monkeypatch.setattr(cgl, "_write_recovery_bytes_exclusive", fail_archive)
     with pytest.raises(RuntimeError, match="could not be durably finalized"):
         cgl.release_common_git_lock(repo, lock.owner_token, lock.lock_id)
 
@@ -935,7 +934,7 @@ def test_release_durability_failure_never_returns_success(repo, monkeypatch):
         source = Path(source)
         destination = Path(destination)
         result = original_replace(source, destination)
-        if source.name.endswith(".tombstone") and ".released." in destination.name:
+        if source.name.endswith(".tombstone") and ".release-check." in destination.name:
             raise RuntimeError("injected directory durability failure")
         return result
 
@@ -946,3 +945,50 @@ def test_release_durability_failure_never_returns_success(repo, monkeypatch):
     assert len(archives) == 1
     assert archives[0].read_bytes() == raw
     assert not path.exists()
+
+
+def test_release_archive_corruption_is_never_reported_as_success(repo, monkeypatch):
+    lock = cgl.acquire_common_git_lock(repo, "git release corrupt archive", timeout_seconds=2)
+    path = cgl._get_common_git_lock_path(repo)
+    original = path.read_bytes()
+    original_write = cgl._write_recovery_bytes_exclusive
+
+    def corrupt_after_archive(destination, raw):
+        destination = Path(destination)
+        original_write(destination, raw)
+        if ".released." in destination.name:
+            destination.write_bytes(b"corrupted release archive")
+
+    monkeypatch.setattr(cgl, "_write_recovery_bytes_exclusive", corrupt_after_archive)
+    with pytest.raises(RuntimeError, match="could not be durably finalized") as exc:
+        cgl.release_common_git_lock(repo, lock.owner_token, lock.lock_id)
+    assert "staged release archive failed SHA-256 verification" in str(exc.value.__cause__)
+    archives = list(path.parent.glob(f"{path.name}.released.*.json"))
+    assert len(archives) == 1
+    assert archives[0].read_bytes() == b"corrupted release archive"
+    assert any(path.parent.glob(f"{path.name}.release.*.tombstone"))
+    assert original not in [archive.read_bytes() for archive in archives]
+
+
+def test_release_tombstone_swap_preserves_captured_generation(repo, monkeypatch):
+    lock = cgl.acquire_common_git_lock(repo, "git release tombstone race", timeout_seconds=2)
+    path = cgl._get_common_git_lock_path(repo)
+    original = path.read_bytes()
+    original_replace = cgl._durable_replace
+
+    def swap_before_check(source, destination):
+        source = Path(source)
+        destination = Path(destination)
+        if source.name.endswith(".tombstone") and ".release-check." in destination.name:
+            source.write_bytes(b"replacement after claim")
+        return original_replace(source, destination)
+
+    monkeypatch.setattr(cgl, "_durable_replace", swap_before_check)
+    with pytest.raises(RuntimeError, match="could not be durably finalized") as exc:
+        cgl.release_common_git_lock(repo, lock.owner_token, lock.lock_id)
+    assert "changed during archival" in str(exc.value.__cause__)
+    archives = list(path.parent.glob(f"{path.name}.released.*.json"))
+    retained = list(path.parent.glob(f"{path.name}.release-check.*.tombstone"))
+    assert len(archives) == 1 and archives[0].read_bytes() == original
+    assert len(retained) == 1 and retained[0].read_bytes() == b"replacement after claim"
+    assert cgl.get_lock_status(repo)["status"] == "BLOCKED_UNRESOLVED_TOMBSTONE"
