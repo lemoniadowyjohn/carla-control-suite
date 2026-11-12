@@ -11,6 +11,7 @@ Tests that previously pinned those defective behaviours were rewritten; see
 `test_single_writer_authority.py` for the cross-platform property suite.
 """
 import calendar
+import hashlib
 import json
 import os
 import subprocess
@@ -561,7 +562,7 @@ def test_claim_survives_a_concurrent_reader_holding_the_lock_open(repo):
     (WinError 32); the claim must retry and succeed once the reader is done
     rather than surfacing a misleading "the lock changed" refusal.
     """
-    incumbent = cgl.acquire_common_git_lock(repo, "incumbent")
+    cgl.acquire_common_git_lock(repo, "incumbent")
     path = _lock_path(repo)
     before = path.read_bytes()
 
@@ -644,21 +645,21 @@ def test_claim_restore_never_clobbers_a_concurrent_successor(repo, monkeypatch):
         expires_at="2999-01-01T00:00:00Z",
     ))
 
-    real_replace = os.replace
+    real_durable_replace = cgl._durable_replace
     successor_bytes = json.dumps(
         {"lock_id": "successor", "owner_token": "t", "generation": 8}
     ).encode("utf-8")
     injected = {"done": False}
 
     def replace_and_publish_a_successor(src, dst):
-        real_replace(src, dst)
+        real_durable_replace(src, dst)
         # The claim has just moved the published record away; a successor
         # publishes into the window before the claim inspects the path.
         if not injected["done"] and Path(dst).name.endswith(".tombstone"):
             injected["done"] = True
             path.write_bytes(successor_bytes)
 
-    monkeypatch.setattr(cgl.os, "replace", replace_and_publish_a_successor)
+    monkeypatch.setattr(cgl, "_durable_replace", replace_and_publish_a_successor)
     claimed, tomb = cgl._claim_by_rename(repo, "reclaim", lambda raw: False)
     monkeypatch.undo()
 
@@ -668,3 +669,326 @@ def test_claim_restore_never_clobbers_a_concurrent_successor(repo, monkeypatch):
         "displaced evidence must be preserved as a tombstone"
     Path(tomb).unlink()
     path.unlink()
+
+
+def test_failed_tombstone_restore_blocks_acquisition_and_preserves_evidence(
+    repo, monkeypatch
+):
+    """An un-restorable displaced generation must block fresh publication."""
+    from ultimate_pipeline.governance.single_writer import common_git_lock as cgl
+
+    original_lock = cgl.acquire_common_git_lock(repo, "git test", timeout_seconds=2)
+    path = cgl._get_common_git_lock_path(repo)
+    original = path.read_bytes()
+    # Make the audited bytes fail the predicate, then deny only the restore.
+    # The production path must stop instead of treating the now-absent final
+    # pathname as an empty namespace and publishing a new owner over the gap.
+    original_durable_replace = cgl._durable_replace
+    moved = {"tomb": None}
+
+    def fail_tombstone_restore(source, destination):
+        source = Path(source)
+        destination = Path(destination)
+        if destination == path and source.name.endswith(".tombstone"):
+            moved["tomb"] = source
+            raise PermissionError("injected restore denial")
+        result = original_durable_replace(source, destination)
+        if destination.name.endswith(".tombstone"):
+            moved["tomb"] = destination
+        return result
+
+    monkeypatch.setattr(cgl, "_durable_replace", fail_tombstone_restore)
+    with pytest.raises(RuntimeError, match="restore"):
+        cgl._claim_by_rename(repo, "adversarial", lambda raw: False)
+
+    # The complete original lock must remain recoverable under the tombstone,
+    # and the failed claim must not publish another generation.
+    assert moved["tomb"] is not None and moved["tomb"].exists()
+    assert moved["tomb"].read_bytes() == original
+    assert not path.exists()
+
+    status = cgl.get_lock_status(repo)
+    assert status["status"] == "BLOCKED_UNRESOLVED_TOMBSTONE"
+    assert status["unresolved_tombstones"][0]["sha256"] == hashlib.sha256(
+        original
+    ).hexdigest()
+
+    # The acquisition path must surface uncertainty instead of publishing.
+    with pytest.raises(RuntimeError, match="unresolved"):
+        cgl.acquire_common_git_lock(repo, "git retry", timeout_seconds=1)
+    assert not path.exists()
+    assert moved["tomb"].read_bytes() == original
+
+    with pytest.raises(ValueError, match="operator identity"):
+        cgl.recover_unresolved_tombstone(
+            repo, moved["tomb"].name, "", "verified recovery", hashlib.sha256(original).hexdigest()
+        )
+    with pytest.raises(RuntimeError, match="SHA-256"):
+        cgl.recover_unresolved_tombstone(
+            repo, moved["tomb"].name, "operator", "verified recovery", "0" * 64
+        )
+    assert moved["tomb"].read_bytes() == original
+
+    recovery = cgl.recover_unresolved_tombstone(
+        repo,
+        moved["tomb"].name,
+        "operator@example.invalid",
+        "restore displaced generation after digest verification",
+        hashlib.sha256(original).hexdigest(),
+    )
+    assert recovery["recovered"] is True
+    assert recovery["intent_status"] == "COMPLETE"
+    assert Path(recovery["recovery_record_path"]).is_file()
+    assert path.read_bytes() == original
+    assert not moved["tomb"].exists()
+    assert cgl.get_lock_status(repo)["status"] == "active"
+    assert cgl.release_common_git_lock(
+        repo, original_lock.owner_token, original_lock.lock_id
+    ) is True
+    successor = cgl.acquire_common_git_lock(repo, "git after recovery", timeout_seconds=2)
+    assert cgl.release_common_git_lock(
+        repo, successor.owner_token, successor.lock_id
+    ) is True
+
+
+def test_tombstone_recovery_retries_after_crash_between_link_and_cleanup(repo, monkeypatch):
+    from ultimate_pipeline.governance.single_writer import common_git_lock as cgl
+
+    original_lock = cgl.acquire_common_git_lock(repo, "git test", timeout_seconds=2)
+    path = cgl._get_common_git_lock_path(repo)
+    tomb = path.with_name(f"{path.name}.crash-fixture.tombstone")
+    raw = path.read_bytes()
+    path.unlink()
+    tomb.write_bytes(raw)
+    digest = hashlib.sha256(raw).hexdigest()
+    original_link = cgl.os.link
+    injected = {"raised": False}
+
+    def link_then_crash(source, destination):
+        result = original_link(source, destination)
+        if Path(destination) == path and not injected["raised"]:
+            injected["raised"] = True
+            raise OSError("injected crash after atomic link")
+        return result
+
+    monkeypatch.setattr(cgl.os, "link", link_then_crash)
+    with pytest.raises(OSError, match="crash after atomic link"):
+        cgl.recover_unresolved_tombstone(
+            repo, tomb.name, "operator", "fault test", digest
+        )
+    assert path.read_bytes() == raw
+    assert tomb.read_bytes() == raw
+    assert cgl.get_lock_status(repo)["status"] == "BLOCKED_UNRESOLVED_TOMBSTONE"
+
+    monkeypatch.setattr(cgl.os, "link", original_link)
+    recovered = cgl.recover_unresolved_tombstone(
+        repo, tomb.name, "operator", "retry after verified interrupted recovery", digest
+    )
+    assert recovered["recovered"] is True
+    assert path.read_bytes() == raw
+    assert not tomb.exists()
+    assert cgl.release_common_git_lock(
+        repo, original_lock.owner_token, original_lock.lock_id
+    ) is True
+
+
+def test_tombstone_recovery_rejects_path_escape_and_corrupted_record(repo):
+    from ultimate_pipeline.governance.single_writer import common_git_lock as cgl
+
+    path = cgl._get_common_git_lock_path(repo)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    tomb = path.with_name(f"{path.name}.corrupt.tombstone")
+    tomb.write_bytes(b"tampered")
+    digest = hashlib.sha256(b"expected original").hexdigest()
+    with pytest.raises(ValueError, match="namespace"):
+        cgl.recover_unresolved_tombstone(
+            repo, "..\\outside.tombstone", "operator", "test", digest
+        )
+    with pytest.raises(RuntimeError, match="SHA-256"):
+        cgl.recover_unresolved_tombstone(
+            repo, tomb.name, "operator", "test", digest
+        )
+    assert tomb.read_bytes() == b"tampered"
+    assert not path.exists()
+
+
+def test_tombstone_recovery_rejects_inode_replacement_before_read(repo, monkeypatch):
+    path = cgl._get_common_git_lock_path(repo)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    tomb = path.with_name(f"{path.name}.inode-race.tombstone")
+    replacement = path.with_name("attacker-replacement.bin")
+    tomb.write_bytes(b"original lock evidence")
+    replacement.write_bytes(b"different replacement bytes")
+    expected = hashlib.sha256(b"original lock evidence").hexdigest()
+    original_open = cgl.os.open
+    swapped = False
+
+    def replace_before_open(filename, flags, *args, **kwargs):
+        nonlocal swapped
+        if Path(filename) == tomb and not swapped:
+            swapped = True
+            cgl.os.replace(replacement, tomb)
+        return original_open(filename, flags, *args, **kwargs)
+
+    monkeypatch.setattr(cgl.os, "open", replace_before_open)
+    with pytest.raises(RuntimeError, match="changed while opening"):
+        cgl.recover_unresolved_tombstone(
+            repo, tomb.name, "operator", "inode race test", expected
+        )
+    assert swapped
+    assert tomb.read_bytes() == b"different replacement bytes"
+    assert not path.exists()
+
+
+def test_tombstone_recovery_symlink_swap_is_not_read_or_linked(repo, monkeypatch):
+    path = cgl._get_common_git_lock_path(repo)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    tomb = path.with_name(f"{path.name}.symlink-race.tombstone")
+    external = path.parent.parent / "external-lock-target.bin"
+    tomb.write_bytes(b"original lock evidence")
+    external.write_bytes(b"external secret bytes")
+    expected = hashlib.sha256(b"original lock evidence").hexdigest()
+    try:
+        tomb.unlink()
+        tomb.symlink_to(external)
+    except OSError as exc:
+        pytest.skip(f"symlink creation unavailable in this Windows environment: {exc}")
+    # Start with a regular path for the lstat and swap it to a symlink exactly
+    # at the open boundary. If the implementation follows it, the descriptor
+    # identity differs and no stream read or publication is allowed.
+    tomb.unlink()
+    tomb.write_bytes(b"original lock evidence")
+    original_open = cgl.os.open
+    original_fdopen = cgl.os.fdopen
+    swapped = False
+    reads = []
+
+    class ReadTracker:
+        def __init__(self, wrapped):
+            self.wrapped = wrapped
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *args):
+            return self.wrapped.__exit__(*args)
+
+        def fileno(self):
+            return self.wrapped.fileno()
+
+        def read(self, count=-1):
+            reads.append(count)
+            return self.wrapped.read(count)
+
+    def swap_to_symlink_before_open(filename, flags, *args, **kwargs):
+        nonlocal swapped
+        if Path(filename) == tomb and not swapped:
+            swapped = True
+            tomb.unlink()
+            tomb.symlink_to(external)
+        return original_open(filename, flags, *args, **kwargs)
+
+    monkeypatch.setattr(cgl.os, "open", swap_to_symlink_before_open)
+    monkeypatch.setattr(
+        cgl.os, "fdopen", lambda fd, *a, **kw: ReadTracker(original_fdopen(fd, *a, **kw))
+    )
+    with pytest.raises(RuntimeError, match="changed while opening"):
+        cgl.recover_unresolved_tombstone(
+            repo, tomb.name, "operator", "symlink race test", expected
+        )
+    assert swapped
+    assert reads == []
+    assert external.read_bytes() == b"external secret bytes"
+    assert not path.exists()
+    assert tomb.is_symlink()
+
+
+def test_release_archive_failure_is_observable_and_preserves_tombstone(repo, monkeypatch):
+    lock = cgl.acquire_common_git_lock(repo, "git release failure", timeout_seconds=2)
+    path = cgl._get_common_git_lock_path(repo)
+    original_write = cgl._write_recovery_bytes_exclusive
+
+    def fail_archive(destination, raw):
+        destination = Path(destination)
+        if ".released." in destination.name:
+            raise PermissionError("injected release archive denial")
+        return original_write(destination, raw)
+
+    monkeypatch.setattr(cgl, "_write_recovery_bytes_exclusive", fail_archive)
+    with pytest.raises(RuntimeError, match="could not be durably finalized"):
+        cgl.release_common_git_lock(repo, lock.owner_token, lock.lock_id)
+
+    tombstones = list(path.parent.glob(f"{path.name}.*.tombstone"))
+    assert len(tombstones) == 1
+    assert json.loads(tombstones[0].read_text(encoding="utf-8"))["lock_id"] == lock.lock_id
+    assert cgl.get_lock_status(repo)["status"] == "BLOCKED_UNRESOLVED_TOMBSTONE"
+
+
+def test_release_durability_failure_never_returns_success(repo, monkeypatch):
+    lock = cgl.acquire_common_git_lock(repo, "git release fsync failure", timeout_seconds=2)
+    path = cgl._get_common_git_lock_path(repo)
+    raw = path.read_bytes()
+    original_replace = cgl._durable_replace
+
+    def replace_then_report_durability_failure(source, destination):
+        source = Path(source)
+        destination = Path(destination)
+        result = original_replace(source, destination)
+        if source.name.endswith(".tombstone") and ".release-check." in destination.name:
+            raise RuntimeError("injected directory durability failure")
+        return result
+
+    monkeypatch.setattr(cgl, "_durable_replace", replace_then_report_durability_failure)
+    with pytest.raises(RuntimeError, match="could not be durably finalized"):
+        cgl.release_common_git_lock(repo, lock.owner_token, lock.lock_id)
+    archives = list(path.parent.glob(f"{path.name}.released.*.json"))
+    assert len(archives) == 1
+    assert archives[0].read_bytes() == raw
+    assert not path.exists()
+
+
+def test_release_archive_corruption_is_never_reported_as_success(repo, monkeypatch):
+    lock = cgl.acquire_common_git_lock(repo, "git release corrupt archive", timeout_seconds=2)
+    path = cgl._get_common_git_lock_path(repo)
+    original = path.read_bytes()
+    original_write = cgl._write_recovery_bytes_exclusive
+
+    def corrupt_after_archive(destination, raw):
+        destination = Path(destination)
+        original_write(destination, raw)
+        if ".released." in destination.name:
+            destination.write_bytes(b"corrupted release archive")
+
+    monkeypatch.setattr(cgl, "_write_recovery_bytes_exclusive", corrupt_after_archive)
+    with pytest.raises(RuntimeError, match="could not be durably finalized") as exc:
+        cgl.release_common_git_lock(repo, lock.owner_token, lock.lock_id)
+    assert "staged release archive failed SHA-256 verification" in str(exc.value.__cause__)
+    archives = list(path.parent.glob(f"{path.name}.released.*.json"))
+    assert len(archives) == 1
+    assert archives[0].read_bytes() == b"corrupted release archive"
+    assert any(path.parent.glob(f"{path.name}.release.*.tombstone"))
+    assert original not in [archive.read_bytes() for archive in archives]
+
+
+def test_release_tombstone_swap_preserves_captured_generation(repo, monkeypatch):
+    lock = cgl.acquire_common_git_lock(repo, "git release tombstone race", timeout_seconds=2)
+    path = cgl._get_common_git_lock_path(repo)
+    original = path.read_bytes()
+    original_replace = cgl._durable_replace
+
+    def swap_before_check(source, destination):
+        source = Path(source)
+        destination = Path(destination)
+        if source.name.endswith(".tombstone") and ".release-check." in destination.name:
+            source.write_bytes(b"replacement after claim")
+        return original_replace(source, destination)
+
+    monkeypatch.setattr(cgl, "_durable_replace", swap_before_check)
+    with pytest.raises(RuntimeError, match="could not be durably finalized") as exc:
+        cgl.release_common_git_lock(repo, lock.owner_token, lock.lock_id)
+    assert "changed during archival" in str(exc.value.__cause__)
+    archives = list(path.parent.glob(f"{path.name}.released.*.json"))
+    retained = list(path.parent.glob(f"{path.name}.release-check.*.tombstone"))
+    assert len(archives) == 1 and archives[0].read_bytes() == original
+    assert len(retained) == 1 and retained[0].read_bytes() == b"replacement after claim"
+    assert cgl.get_lock_status(repo)["status"] == "BLOCKED_UNRESOLVED_TOMBSTONE"
