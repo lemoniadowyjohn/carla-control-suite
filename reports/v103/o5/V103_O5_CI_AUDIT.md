@@ -13,10 +13,11 @@ Registry issues addressed: **R25**, **R26**, **R27**, **R28**, **R29**.
 |---|---|---|---|
 | 1 | **R27** | The production branch `integration/production-large-map-20260918` is **not protected** (GitHub API: `404 "Branch not protected"`) and the repository has **zero rulesets**. | **P0 — confirmed** |
 | 2 | **R26** | The `offline-release-gate` job is internally **fail-closed** (bare `needs:`, no `if: always()`, no `contains(..., 'success')`, no `!contains(..., 'failure')`; the gate script exits non-zero unless PASS) — but with **no required status checks** (§1.1) nothing forces it to have run before a push lands. | **P0 — confirmed (aggregate fail-open)** |
-| 3 | **R28** | All three GitHub Actions are referenced with **36-character** commit refs, not full 40-character SHAs. | **P1 — confirmed** |
+| 3 | **R28** | *RETRACTED 2026-11-12.* Every GitHub Action ref in both workflows is already a **full 40-character** commit SHA (all 19 refs verified mechanically). The earlier "36-character prefix" claim was **false** and is withdrawn, and the placeholder replacement in the proposal is withdrawn with it, because replacing an already-correct SHA with a placeholder would make the workflow worse. | **RETRACTED — confirmed** |
 | 4 | **R25** | `pyproject.toml` declares `requires-python = ">=3.10"`; **every** CI job is hardcoded to `python-version: "3.12"`. Python 3.10/3.11/3.13/3.14 are never exercised. | **P1 — confirmed** |
 | 5 | **R29** | The wider offline suite currently aborts with **23 collection errors** in this environment, all `ModuleNotFoundError: No module named 'torch'`. The CI `pytest` invocation uses `set -o pipefail` and has **no** `--continue-on-collection-errors`, so those errors **fail the job** rather than being swallowed. | **P1 — confirmed** |
 | 6 | **R28** | `pip check` runs in **one** of seven jobs (`package-wheel-smoke`); artifacts are uploaded but **never downloaded or validated**. | **P2 — confirmed** |
+| 7 | **R29 (P1)** | A blanket `pip check` on the existing headless profile **fails by design**: that profile installs `ultralytics` with `--no-deps`, so `pip check` reports the intentionally absent `opencv-python` and exits non-zero, breaking the job it was meant to strengthen. The 3.14 matrix leg would also install `torch==2.9.1`, which has no 3.14 wheel. | **P1 (see 4.2 / 4.3)** |
 
 ### 1.1 R26 + R27 interaction (the important one)
 
@@ -61,6 +62,16 @@ mechanism is fail-closed; the *policy* that requires it is missing. That is
 the actual R26/R27 defect, and it is a **governance** defect, not a
 workflow-logic defect — fixing it needs the owner to apply branch
 protection or a ruleset, which this agent cannot do.
+
+**Correction (2026-11-12, review 4551933349).** GitHub documents that a
+required status check is satisfied by a **successful, skipped or neutral**
+conclusion. A bare `needs:` list therefore does NOT make the gate
+fail-closed *as a required check*: when a predecessor fails, the gate job is
+**skipped**, and a skipped required check still satisfies the requirement.
+Requiring only the gate plus three of its seven predecessors would let a
+failed predecessor through. The protection plan must require **all seven**
+predecessor checks by their exact job **display names**; see
+`BRANCH_POLICY_CHECKLIST.md` section 2.
 
 ---
 
@@ -133,21 +144,24 @@ repository administration):
 applied by this PR. Applying it requires lifting C08 for exactly these
 paths.
 
-### 4.1 Full 40-character action pinning (R28)
+### 4.1 Action pinning (R28) — ALREADY CORRECT, NOTHING TO CHANGE
 
-Every action reference becomes a full 40-character commit SHA. The current
-36-character refs are **valid git object prefixes** and do resolve, so this is
-hardening rather than a broken pin — but a 36-char prefix admits ~2^20
-alternative objects, while a 40-char SHA admits exactly one.
+*Retracted 2026-11-12.* Every action reference in both workflows is already
+a full **40-character** commit SHA. This was verified mechanically over all
+19 references:
 
-```diff
--      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
-+      - uses: actions/checkout@<40-char-sha> # v4.3.1
+```
+actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5       len=40
+actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065   len=40
+actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 len=40
 ```
 
-(The proposal lists the exact replacement SHAs to be resolved and verified by
-the owner before application; this agent does not resolve them, because
-guessing a SHA would be worse than leaving a valid prefix in place.)
+The earlier audit claim that these were 36-character prefixes was **false**,
+and the proposed replacement with unresolved placeholders is withdrawn:
+replacing an already-correct full SHA with a placeholder would make the
+workflow *worse*. **No action is required here.** The remaining R28 items
+are the artifact-validation gap (4.5) and the absent SBOM / provenance /
+dependency-review jobs (finding 6).
 
 ### 4.2 Python matrix (R25)
 
@@ -160,18 +174,37 @@ guessing a SHA would be worse than leaving a valid prefix in place.)
 
 with the 3.14 leg restricted to the offline, torch-free profile so the
 missing `torch==2.9.1` wheel does not turn the matrix into a false
-failure. `requirements.txt` keeps `torch==2.9.1` untouched — **no pin is
+failure. The `requirements-profile` matrix property must actually be
+**read** by the dependency steps: `offline-tests` installs torch
+unconditionally today, so the 3.14 leg would install `torch==2.9.1`, which
+has no 3.14 wheel, and fail before the intended torch-free tests ran
+(review 4551961593). The proposal now gates the torch install on the
+profile and wires `matrix.python-version` into every `setup-python` step
+(review 4551933397). `requirements.txt` keeps `torch==2.9.1` untouched — **no pin is
 relaxed** by this proposal.
 
-### 4.3 `pip check` everywhere (R25/R28)
+### 4.3 `pip check` everywhere (R25/R28) — SCOPED, NOT BLANKET
+
+A blanket `pip check` is **wrong** for the existing headless profile: it
+installs `ultralytics` with `--no-deps`, so `pip check` reports the
+intentionally absent `opencv-python` and exits non-zero, failing the job the
+change was meant to strengthen (review 4551961605).
 
 ```diff
      - name: Install (offline profile)
        run: |
          python -m pip install --upgrade pip
          python -m pip install -e .
-+        python -m pip check
++        # Only in the profiles that install a closed dependency set.
++        # The headless profile installs ultralytics with --no-deps on
++        # purpose, so a blanket pip check would fail by design.
++        if [ "${{ matrix.requirements-profile }}" != "ultralytics-no-deps" ]; then
++          python -m pip check
++        fi
 ```
+
+Every install step must be covered, not only one (review 4551961683); the
+proposal now adds the check to each install step with the same guard.
 
 ### 4.4 Explicit predecessor-result assertion (R26, belt-and-braces)
 
@@ -192,15 +225,27 @@ guards against a future `if: always()` regression:
 +        PREDECESSOR_RESULTS: ${{ join(needs.*.result, ',') }}
 ```
 
-### 4.5 Artifact validation (R28)
+### 4.5 Artifact validation (R28) — DOWNLOAD FIRST
+
+The pytest log is produced by the **separate `offline-tests` job**; the
+release-gate job neither creates it nor downloads it, so a local `test -s`
+check would fail on a fresh runner even when every test passed (reviews
+4551933373 / 4551961587). The artifact must be downloaded first.
 
 ```diff
-+    - name: Validate uploaded pytest log exists and is non-empty
++    - name: Download the pytest log artifact
++      uses: actions/download-artifact@<owner-resolved-sha> # v4.3.0
++      with:
++        name: pytest-log
++        path: ci-artifacts
++    - name: Validate the downloaded pytest log
 +      run: |
-+        test -s ci-artifacts/pytest.log || { echo "pytest log missing/empty"; exit 1; }
++        test -s ci-artifacts/pytest.log || {
++          echo "pytest log missing/empty"; exit 1; }
 ```
 
----
+The owner resolves the `download-artifact` SHA; this agent does not invent
+SHAs.
 
 ## 5. R29 — full-suite errors and skipped prerequisites
 
