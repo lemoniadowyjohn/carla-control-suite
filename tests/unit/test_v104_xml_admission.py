@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import pytest
+from pathlib import Path
 from types import SimpleNamespace
 
 from ultimate_pipeline.quality.final_artifact_gates import (
@@ -89,3 +90,70 @@ def test_production_hygiene_stage_rejects_dtd_before_any_repair_parser(
         _step8h_map_hygiene(stage, str(source))
 
     assert not (out_dir / "08h1_island_quarantined.xodr").exists()
+
+
+def test_production_quality_wrapper_admits_before_legacy_xml_parser(
+    tmp_path, monkeypatch
+) -> None:
+    """The MainPipeline wrapper must reject DTD before a path parser sees it."""
+    import xml.etree.ElementTree as ET
+
+    from ultimate_pipeline.main_pipeline import MainPipeline
+
+    source = tmp_path / "hostile.xodr"
+    source.write_bytes(
+        b'<!DOCTYPE OpenDRIVE [<!ENTITY x "expanded">]>'
+        b'<OpenDRIVE><header/><road name="&x;"/></OpenDRIVE>'
+    )
+    original_parse = ET.parse
+    legacy_candidate_reads = []
+
+    def guarded_parse(path, *args, **kwargs):
+        if str(path) == str(source):
+            legacy_candidate_reads.append(str(path))
+        return original_parse(path, *args, **kwargs)
+
+    monkeypatch.setattr(ET, "parse", guarded_parse)
+    monkeypatch.setenv("UP_STRICT_QUALITY_GATES", "1")
+    pipeline = MainPipeline.__new__(MainPipeline)
+    pipeline.settings = SimpleNamespace(ENABLE_QUALITY_GATES_WRAPPER=True)
+    pipeline.out_dir = str(tmp_path / "reports")
+
+    with pytest.raises(RuntimeError, match="Quality gate failures"):
+        pipeline._run_quality_gates_wrapper(str(source))
+    assert legacy_candidate_reads == []
+
+
+def test_mandatory_gates_share_admitted_snapshot_and_reject_late_replacement(
+    tmp_path, monkeypatch
+) -> None:
+    """Path-based gates see admitted bytes; late source replacement blocks all."""
+    import hashlib
+
+    from ultimate_pipeline.quality import final_artifact_gates as gates
+
+    source = tmp_path / "candidate.xodr"
+    admitted = ROOT + b"\n"
+    source.write_bytes(admitted)
+    seen_paths = []
+
+    def first_gate(path, _root):
+        seen_paths.append(path)
+        assert Path(path).read_bytes() == admitted
+        source.write_bytes(ROOT + b"<!-- replaced during gate pass -->\n")
+        return {"ok": True, "status": "PASS"}
+
+    def second_gate(path, _root):
+        seen_paths.append(path)
+        assert Path(path).read_bytes() == admitted
+        return {"ok": True, "status": "PASS"}
+
+    monkeypatch.setattr(
+        gates, "_gate_table", lambda _scope: {"first": first_gate, "second": second_gate}
+    )
+    reports = gates.compute_final_artifact_reports(
+        str(source), expected_sha256=hashlib.sha256(admitted).hexdigest()
+    )
+    assert len(seen_paths) == 2
+    assert all(Path(path) != source for path in seen_paths)
+    assert {report["status"] for report in reports.values()} == {gates.STATUS_BLOCKED_INPUT}

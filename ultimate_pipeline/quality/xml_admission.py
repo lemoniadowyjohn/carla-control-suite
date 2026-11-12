@@ -7,6 +7,8 @@ checks from the same Expat parse, avoiding a second parser with weaker policy.
 from __future__ import annotations
 
 import os
+import tempfile
+from contextlib import contextmanager
 import xml.etree.ElementTree as ET
 import xml.parsers.expat as expat
 from pathlib import Path
@@ -155,3 +157,34 @@ def read_xodr_bytes(path: str | os.PathLike[str]) -> bytes:
 def parse_xodr_file(path: str | os.PathLike[str]) -> ET.Element:
     """Read and parse a path through the bounded OpenDRIVE admission policy."""
     return parse_xodr_bytes(read_xodr_bytes(path))
+
+
+@contextmanager
+def admitted_xodr_snapshot(data: bytes, *, parent: str | os.PathLike[str] | None = None):
+    """Expose admitted bytes to path-based legacy gates through a private snapshot.
+
+    Several established quality gates accept a path and reopen it internally.
+    Giving those gates the caller's mutable candidate path would let them
+    inspect different bytes from the tree parsed at admission. This helper
+    writes the already bounded and admitted bytes into a unique private temp
+    directory and keeps that snapshot alive for the complete gate pass.
+    """
+    if not isinstance(data, bytes) or len(data) > MAX_XODR_BYTES:
+        raise UnsafeXMLError("invalid or oversized admitted OpenDRIVE snapshot")
+    # Co-locate with the candidate by default so large-map validation does not
+    # unexpectedly consume a small system-temp volume.
+    with tempfile.TemporaryDirectory(
+        prefix="up-admitted-xodr-", dir=os.fspath(parent) if parent is not None else None
+    ) as directory:
+        snapshot = Path(directory) / "admitted.xodr"
+        with snapshot.open("xb") as stream:
+            stream.write(data)
+            stream.flush()
+            os.fsync(stream.fileno())
+        try:
+            snapshot.chmod(0o400)
+        except OSError:
+            # The private directory remains isolated on platforms that do not
+            # support POSIX permission bits (notably Windows).
+            pass
+        yield snapshot

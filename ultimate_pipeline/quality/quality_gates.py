@@ -18,6 +18,8 @@ from __future__ import annotations
 
 import json
 import os
+import tempfile
+from pathlib import Path
 from typing import Any, Dict, Optional
 
 MIN_XODR_SIZE_BYTES = 10_000  # Minimum bytes for a real road-network XODR; stubs are ~796 bytes
@@ -143,11 +145,28 @@ def run_quality_gates(
             },
         )
 
-    # --- Parse XML (hard requirement for most gates) ---
+    # --- Admit one bounded byte snapshot before any downstream parser runs ---
     try:
-        import xml.etree.ElementTree as ET
+        from ultimate_pipeline.quality.xml_admission import parse_xodr_bytes, read_xodr_bytes
 
-        root = ET.parse(xodr_path).getroot()
+        source_xodr_path = xodr_path
+        admitted_bytes = read_xodr_bytes(source_xodr_path)
+        root = parse_xodr_bytes(admitted_bytes)
+        # Existing gate APIs accept paths and reopen them. Point every such
+        # consumer at a private snapshot of the already-admitted bytes.
+        snapshot_directory = tempfile.TemporaryDirectory(
+            prefix="up-quality-xodr-", dir=str(Path(source_xodr_path).resolve().parent)
+        )
+        snapshot_path = Path(snapshot_directory.name) / "admitted.xodr"
+        with snapshot_path.open("xb") as stream:
+            stream.write(admitted_bytes)
+            stream.flush()
+            os.fsync(stream.fileno())
+        try:
+            snapshot_path.chmod(0o400)
+        except OSError:
+            pass
+        xodr_path = str(snapshot_path)
     except Exception as e:
         return _transport("xml_parse", {"error": str(e), "path": xodr_path})
 
@@ -251,7 +270,7 @@ def run_quality_gates(
 
     try:
         from ultimate_pipeline.quality.check_carla_opendrive_compat import StrictCarlaOpendriveGate
-        artifacts["carla_compat_report"] = {"issues": StrictCarlaOpendriveGate.validate(root), "xodr_path": xodr_path}
+        artifacts["carla_compat_report"] = {"issues": StrictCarlaOpendriveGate.validate(root), "xodr_path": source_xodr_path}
     except Exception as e:
         artifacts["carla_compat_report"] = {"error": str(e)}
 
@@ -283,4 +302,5 @@ def run_quality_gates(
         for k, v in failures.items():
             print(f"  - {k}: {v}")
 
+    snapshot_directory.cleanup()
     return failures

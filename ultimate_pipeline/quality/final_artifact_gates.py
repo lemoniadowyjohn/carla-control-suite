@@ -295,22 +295,44 @@ def compute_final_artifact_reports(
     except Exception as exc:  # noqa: BLE001 - recorded, fail-closed
         parse_error = f"{type(exc).__name__}: {exc}"
 
-    for gate, fn in _gate_table(expected_scope).items():
-        if root is None:
+    gate_table = _gate_table(expected_scope)
+    if root is None:
+        for gate in gate_table:
             reports[gate] = not_run_report(
                 gate, f"final artifact could not be parsed: {parse_error}",
                 status=STATUS_BLOCKED_INPUT,
             )
-            continue
-        try:
-            rep = fn(str(xodr_path), root)
-        except Exception as exc:  # noqa: BLE001 - recorded, fail-closed
-            reports[gate] = not_run_report(gate, f"{type(exc).__name__}: {exc}")
-            continue
-        if not isinstance(rep, dict):
+        return reports
+
+    # Path-based legacy gates must see the exact bytes that passed admission,
+    # even if the caller's candidate path changes while this pass is running.
+    # Root-based gates receive the tree built from those same admitted bytes.
+    with _xml_admission.admitted_xodr_snapshot(
+        data, parent=Path(xodr_path).resolve().parent
+    ) as snapshot:
+        for gate, fn in gate_table.items():
+            try:
+                rep = fn(str(snapshot), root)
+            except Exception as exc:  # noqa: BLE001 - recorded, fail-closed
+                reports[gate] = not_run_report(gate, f"{type(exc).__name__}: {exc}")
+                continue
+            if not isinstance(rep, dict):
+                reports[gate] = not_run_report(
+                    gate, f"gate returned {type(rep).__name__}, not a report dict"
+                )
+                continue
+            reports[gate] = rep
+
+    # The candidate must still be the admitted artifact when report production
+    # completes. A concurrent replacement invalidates every computed result.
+    try:
+        if sha256_bytes(_xml_admission.read_xodr_bytes(xodr_path)) != sha256_bytes(data):
+            raise RuntimeError("final artifact changed during mandatory gate evaluation")
+    except Exception as exc:  # noqa: BLE001 - fail closed on late mutation
+        for gate in gate_table:
             reports[gate] = not_run_report(
-                gate, f"gate returned {type(rep).__name__}, not a report dict"
+                gate,
+                f"final artifact identity changed during gate evaluation: {type(exc).__name__}: {exc}",
+                status=STATUS_BLOCKED_INPUT,
             )
-            continue
-        reports[gate] = rep
     return reports
