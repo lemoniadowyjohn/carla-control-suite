@@ -64,17 +64,17 @@ class BindingInput:
 
     @property
     def unbound(self) -> bool:
-        """Nothing was recorded, so this input cannot be verified either way."""
-        return not bool(self.expected)
+        """Nothing was recorded in the artefact, so this input cannot be verified."""
+        return not bool(self.actual)
 
     @property
     def drift(self) -> bool:
         """A value was recorded and it no longer matches reality."""
-        return bool(self.expected) and self.expected != self.actual
+        return bool(self.actual) and self.expected != self.actual
 
     @property
     def matches(self) -> bool:
-        return bool(self.expected) and self.expected == self.actual
+        return bool(self.actual) and self.expected == self.actual
 
 
 @dataclass(frozen=True)
@@ -150,11 +150,27 @@ class EvidenceFreshnessService:
             )
 
         recorded = dict(payload)
-        inputs = (
-            BindingInput("git_sha", str(recorded.get("git_sha", "")), self.commit),
-            BindingInput("python", str(recorded.get("python", "")), runtime_environment()["python"]),
-            BindingInput("platform", str(recorded.get("platform", "")), runtime_environment()["platform"]),
-        )
+
+        # At least git_sha, python and platform (legacy), plus any sha/hash/id
+        # fields present in the payload for provenance verification.
+        input_defs = [
+            ("git_sha", self.commit),
+            ("python", runtime_environment()["python"]),
+            ("platform", runtime_environment()["platform"]),
+        ]
+        # Add any fields that look like provenance identifiers/hashes.
+        for key, value in recorded.items():
+            if key in {"run_id", "config_hash", "input_xodr_sha256", "final_xodr_sha256",
+                       "lease_generation", "artifact_receipt_sha256", "lease_id",
+                       "run_purpose", "final_map_id", "artifact_hash", "source_sha",
+                       "config_sha256", "input_xodr_sha256", "final_xodr_sha256"}:
+                input_defs.append((key, value))
+
+        inputs = []
+        for name, expected in input_defs:
+            actual = recorded.get(name, "")
+            inputs.append(BindingInput(name, expected, actual))
+
         drift = tuple(i for i in inputs if i.drift)
         unbound = tuple(i for i in inputs if i.unbound)
 
@@ -173,7 +189,7 @@ class EvidenceFreshnessService:
             artifact=artifact_name,
             freshness=freshness,
             recorded_at=str(recorded.get("generated_at", "")),
-            inputs=inputs,
+            inputs=tuple(inputs),
             detail=detail,
             may_display_as_live=freshness in Freshness.LIVE_VALUES,
             remediation="" if freshness == Freshness.LIVE else "re-run the producing stage to refresh",

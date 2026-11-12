@@ -113,6 +113,11 @@ def build_registry(*, mode: AppMode = AppMode.MOCK,
 
     Imports are local so that constructing the registry never pulls a heavy
     dependency into the process at import time.
+
+    ``mode == LIVE`` never instantiates mocks as if they were a connected
+    CARLA backend.  Without a verified real adapter, live services are
+    registered unavailable so the UI can disable live controls with an
+    explicit reason instead of showing an inert mock button.
     """
     from ultimate_pipeline.gui.adapters.mock_services import build_mock_registry
     from ultimate_pipeline.gui.audit import AuditJournal
@@ -129,25 +134,45 @@ def build_registry(*, mode: AppMode = AppMode.MOCK,
     from ultimate_pipeline.gui.services.sensors import SensorService
 
     registry = ServiceRegistry()
-    mocks = build_mock_registry()
 
-    session = RuntimeSession()
+    if mode == AppMode.LIVE:
+        # No verified real CARLA adapter exists yet; do not present mocks as live.
+        registry.register_unavailable(
+            "carla_backend",
+            "no verified live CARLA backend; live controls disabled until an "
+            "exclusive authority grant connects a real adapter",
+            "ultimate_pipeline/gui/shell/services.py")
+        registry.register_unavailable(
+            "traffic_manager",
+            "live traffic-manager control disabled: no verified live adapter",
+            "ultimate_pipeline/gui/shell/services.py")
+        registry.register_unavailable(
+            "map_registry",
+            "live map registry disabled: no verified live adapter",
+            "ultimate_pipeline/gui/shell/services.py")
+        session = RuntimeSession()
+    else:
+        mocks = build_mock_registry()
+        session = RuntimeSession()
+        registry.register("carla_backend", mocks["carla"],
+                          "ultimate_pipeline/gui/adapters/mock_backend.py")
+        registry.register("sensors", SensorService(mocks["carla"]),
+                          "ultimate_pipeline/gui/services/sensors.py")
+        registry.register("traffic_manager", mocks["traffic_manager"],
+                          "ultimate_pipeline/gui/adapters/mock_traffic.py")
+        registry.register("map_registry", mocks["map_registry"],
+                          "ultimate_pipeline/gui/adapters/mock_services.py")
+        registry.register("calibration", mocks["calibration"],
+                          "ultimate_pipeline/gui/adapters/mock_services.py")
+        registry.register("quality", mocks["quality"],
+                          "ultimate_pipeline/gui/adapters/mock_services.py")
+        registry.register("experiments", mocks["experiments"],
+                          "ultimate_pipeline/gui/adapters/mock_services.py")
+
+    # The runtime session is the single world-identity owner regardless of
+    # mode; it must be registered in both LIVE and MOCK branches.
     registry.register("runtime_session", session,
                       "ultimate_pipeline/gui/session/runtime_session.py")
-    registry.register("carla_backend", mocks["carla"],
-                      "ultimate_pipeline/gui/adapters/mock_backend.py")
-    registry.register("sensors", SensorService(mocks["carla"]),
-                      "ultimate_pipeline/gui/services/sensors.py")
-    registry.register("traffic_manager", mocks["traffic_manager"],
-                      "ultimate_pipeline/gui/adapters/mock_traffic.py")
-    registry.register("map_registry", mocks["map_registry"],
-                      "ultimate_pipeline/gui/adapters/mock_services.py")
-    registry.register("calibration", mocks["calibration"],
-                      "ultimate_pipeline/gui/adapters/mock_services.py")
-    registry.register("quality", mocks["quality"],
-                      "ultimate_pipeline/gui/adapters/mock_services.py")
-    registry.register("experiments", mocks["experiments"],
-                      "ultimate_pipeline/gui/adapters/mock_services.py")
 
     registry.register("mutators", mutator_registry,
                       "ultimate_pipeline/gui/fuzz/mutators.py")
