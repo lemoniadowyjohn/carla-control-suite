@@ -358,7 +358,12 @@ class TestLateMutationInvalidatesAcceptance:
         }
         receipt = ledger.build_receipt(
             final_artifact_path=path,
-            map_acceptance={"valid_for_experiments": True, "failed_gates": []},
+            map_acceptance={
+                "valid_for_experiments": True,
+                "failed_gates": [],
+                "release_eligible": True,
+                "acceptance_policy": {"purpose": "release"},
+            },
             topology_certification={"SPEC_TOPOLOGY": QualityStatus.PASS.value},
             semantic_authority_profile={"release_profile": "structural_release"},
             source_manifest_identity=source_manifest_identity,

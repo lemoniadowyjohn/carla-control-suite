@@ -17,6 +17,7 @@ import pytest
 from ultimate_pipeline.utils.finalize_run_pack import (
     CATEGORY_MISSING,
     finalize_run_pack,
+    write_success_txt,
 )
 
 
@@ -64,6 +65,7 @@ def test_mandatory_artifact_present_in_key_paths_passes(tmp_path):
         tmp_path, ["required.bin"], mandatory=["required.bin"]
     )
     assert receipt["status"] == "PASS"
+    write_success_txt(str(tmp_path), summary="x", purpose="production_map_release")
     assert (tmp_path / "SUCCESS.txt").is_file()
 
 
@@ -100,6 +102,7 @@ def test_multiple_mandatory_all_present_passes(tmp_path):
         tmp_path, ["a.bin", "b.bin"], mandatory=["a.bin", "b.bin"]
     )
     assert receipt["status"] == "PASS"
+    write_success_txt(str(tmp_path), summary="x", purpose="production_map_release")
     assert (tmp_path / "SUCCESS.txt").is_file()
 
 

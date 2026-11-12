@@ -56,6 +56,12 @@ def test_all_required_files_present_passes(tmp_path):
     assert receipt["requested_count"] == 2
     assert receipt["hashed_count"] == 2
     assert receipt["failures"] == []
+    # A generic finalize is never a publication: SUCCESS requires the guarded
+    # release path (V94 terminal authority).
+    assert not (tmp_path / "SUCCESS.txt").is_file()
+    write_success_txt(
+        str(tmp_path), summary="guarded release", purpose="production_map_release"
+    )
     assert (tmp_path / "SUCCESS.txt").is_file()
 
     expected = hash_file_sha256(tmp_path / "final.xodr")
@@ -212,6 +218,9 @@ def test_blank_entries_are_not_requested_artifacts(tmp_path):
 def test_success_txt_is_bound_to_manifest_and_signature(tmp_path):
     _write(tmp_path / "a.bin", "aaa")
     receipt = finalize_run_pack(tmp_path, ["a.bin"], summary="run_full_domain_gap")
+    write_success_txt(
+        str(tmp_path), summary="run_full_domain_gap", purpose="production_map_release"
+    )
 
     text = (tmp_path / "SUCCESS.txt").read_text(encoding="utf-8")
     assert text.startswith("OK ")
@@ -279,6 +288,7 @@ def test_verify_detects_manifest_without_success_as_incomplete_evidence(tmp_path
 def test_verify_detects_rewritten_success_binding(tmp_path):
     _write(tmp_path / "a.bin", "aaa")
     finalize_run_pack(tmp_path, ["a.bin"])
+    write_success_txt(str(tmp_path), summary="x", purpose="production_map_release")
     success = tmp_path / "SUCCESS.txt"
     text = success.read_text(encoding="utf-8").replace(
         "manifest_sha256=", "manifest_sha256=0000", 1
@@ -326,12 +336,24 @@ def test_write_success_txt_refuses_on_failed_finalization(tmp_path):
 
 def test_write_success_txt_allowed_after_pass(tmp_path):
     _write(tmp_path / "a.bin", "aaa")
-    write_signature_json(str(tmp_path), ["a.bin"])
-    write_success_txt(str(tmp_path), summary="main_pipeline")
+    finalize_run_pack(tmp_path, ["a.bin"])
+    write_success_txt(
+        str(tmp_path), summary="main_pipeline", purpose="production_map_release"
+    )
     text = (tmp_path / "SUCCESS.txt").read_text(encoding="utf-8")
     assert text.startswith("OK ")
     assert "summary=main_pipeline" in text
     assert verify_run_pack(tmp_path)["status"] == "PASS"
+
+
+def test_write_success_txt_refuses_generic_purpose_after_pass(tmp_path):
+    # Even a recorded PASS finalization must not publish SUCCESS through the
+    # generic entry point: only the guarded production_map_release purpose may.
+    _write(tmp_path / "a.bin", "aaa")
+    finalize_run_pack(tmp_path, ["a.bin"])
+    with pytest.raises(FinalizationError):
+        write_success_txt(str(tmp_path), summary="x")
+    assert not (tmp_path / "SUCCESS.txt").exists()
 
 
 # ---------------------------------------------------------------------------
@@ -357,6 +379,7 @@ def test_release_root_with_spaces(tmp_path):
     _write(root / "a.bin", "aaa")
     receipt = finalize_run_pack(root, ["a.bin"])
     assert receipt["status"] == "PASS"
+    write_success_txt(str(root), summary="x", purpose="production_map_release")
     assert (root / "SUCCESS.txt").is_file()
 
 
