@@ -4,6 +4,7 @@ from ultimate_pipeline.carla_tools.reload_ready_for_sensors import _reload_ready
 # python -m ultimate_pipeline.perception.run_capture_end2end --town Grid0828 --carla-exe "E:\CARLA\CARLA_0.9.16\CarlaUE4.exe" --kill-stale --out-dir .\datasets\smoke\grid0828 --duration 10 --fps 10 --low-mem
 
 import importlib
+import math
 import os
 import socket
 import subprocess
@@ -57,14 +58,27 @@ def _stop_owned_server(proc: subprocess.Popen) -> None:
 
 
 def wait_for_port(host: str, port: int, timeout_s: float = 60.0) -> bool:
-    """Wait until TCP port is reachable."""
-    t0 = time.time()
-    while time.time() - t0 < timeout_s:
+    """Monotonic TCP probe; no connect or sleep may exceed remaining budget."""
+    budget = float(timeout_s)
+    if not math.isfinite(budget) or budget < 0:
+        raise ValueError("port readiness timeout must be finite and nonnegative")
+    if not 1 <= int(port) <= 65535:
+        return False
+    deadline = time.monotonic() + budget
+    # A zero budget is a single nonblocking attempt, useful for preflight.
+    first = True
+    while first or time.monotonic() < deadline:
+        first = False
+        remaining = deadline - time.monotonic()
         try:
-            with socket.create_connection((host, port), timeout=2.0):
+            with socket.create_connection((host, int(port)), timeout=max(0.001, min(0.2, remaining))):
                 return True
-        except Exception:
-            time.sleep(1.0)
+        except (OSError, TimeoutError):
+            pass
+        remaining = deadline - time.monotonic()
+        if remaining <= 0:
+            break
+        time.sleep(min(0.1, remaining))
     return False
 
 def _env_float(name: str, default: float) -> float:
@@ -140,18 +154,12 @@ def start_carla(
             stdout=stdout_handle if stdout_handle is not None else subprocess.DEVNULL,
             stderr=stderr_handle if stderr_handle is not None else subprocess.DEVNULL,
         )
-    except Exception:
-        if stdout_handle is not None:
-            try:
-                stdout_handle.close()
-            except Exception:
-                pass
-        if stderr_handle is not None:
-            try:
-                stderr_handle.close()
-            except Exception:
-                pass
-        raise
+    finally:
+        # On Windows, Popen duplicates/inherits OS handles for the child; the
+        # parent's file descriptors must always be closed, including success.
+        for handle in (stdout_handle, stderr_handle):
+            if handle is not None:
+                handle.close()
 
 def ensure_carla_server(
     *,
@@ -162,6 +170,7 @@ def ensure_carla_server(
     timeout_s: float = 120.0,
     kill_stale: bool = False,
     attach_existing: bool = True,
+    attach_only: bool = False,
     stdout_path: Optional[Path | str] = None,
     stderr_path: Optional[Path | str] = None,
 ) -> Optional[subprocess.Popen]:
@@ -170,6 +179,8 @@ def ensure_carla_server(
     `attach_existing=False` forbids accidental mutation of another operator's
     CARLA world. The default preserves legacy callers' external-attach mode.
     """
+    if attach_only and not attach_existing:
+        raise ValueError("attach_only requires attach_existing")
     if kill_stale:
         kill_stale_carla()  # Refuse regardless of current port occupancy.
     if wait_for_port(host, port, timeout_s=3.0):
@@ -179,12 +190,39 @@ def ensure_carla_server(
             )
         _handshake_carla_ready(host=host, port=port)
         return None
+    if attach_only:
+        raise RuntimeError("attach-only CARLA unavailable; refusing launch")
 
+    # Validate the explicitly requested port namespace. An extra flag
+    # must never silently redirect a managed launcher to a foreign namespace.
+    if not 1 <= int(port) <= 65533:
+        raise ValueError("invalid CARLA RPC port for RPC/streaming pair")
     flags: List[str] = list(extra_flags or DEFAULT_FLAGS)
-    if not any(str(f).startswith("-carla-rpc-port") for f in flags):
+    def _declared_ports(keys):
+        declared = []
+        for flag in flags:
+            value = str(flag).lower()
+            for key in keys:
+                if value.startswith(key):
+                    if not value.startswith(key + "="):
+                        raise ValueError(f"ambiguous CARLA port flag: {flag}")
+                    try:
+                        declared.append(int(value.split("=", 1)[1]))
+                    except ValueError as exc:
+                        raise ValueError(f"invalid CARLA port flag: {flag}") from exc
+        return declared
+    rpc_flags = _declared_ports(("-carla-rpc-port", "-carla-port"))
+    stream_flags = _declared_ports(("-carla-streaming-port",))
+    if any(p != int(port) for p in rpc_flags) or len(rpc_flags) > 1:
+        raise ValueError("conflicting or duplicate CARLA RPC flags")
+    if any(p != int(port) + 1 for p in stream_flags) or len(stream_flags) > 1:
+        raise ValueError("conflicting or duplicate CARLA streaming flags")
+    if not rpc_flags:
         flags.append(f"-carla-rpc-port={int(port)}")
-    if not any(str(f).startswith("-carla-streaming-port") for f in flags):
+    if not stream_flags:
         flags.append(f"-carla-streaming-port={int(port)+1}")
+    if wait_for_port(host, int(port)+1, timeout_s=0.01):
+        raise RuntimeError("CARLA streaming port already occupied; refusing launch")
     proc = start_carla(
         carla_exe,
         flags,

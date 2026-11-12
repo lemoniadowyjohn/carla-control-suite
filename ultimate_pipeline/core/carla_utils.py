@@ -362,6 +362,9 @@ def restart_carla(host: str | None = None, port: int | None = None) -> bool:
                 client = _carla_module().Client(host, port)
                 client.set_timeout(2.0)
                 rpc_ready = ensure_carla_ready(client, timeout_s=_carla_ready_timeout_s())
+                if rpc_ready and getattr(launched_proc, "poll", lambda: None)() is not None:
+                    print("[carla] Launch-owned server process exited; refusing port-based success")
+                    rpc_ready = False
                 if rpc_ready:
                     if streaming_disabled:
                         print(f"✅ CARLA restarted and RPC-ready on {host}:{port} (streaming disabled)")
@@ -414,52 +417,74 @@ def ensure_carla_ready(
     require_map: bool = False,
     timeout_s: float | None = None,
 ) -> bool:
-    """Check if CARLA responds.
+    """Bounded, read-only CARLA RPC check (does not tick or restart).
 
-    This function does not restart CARLA.
-
-    Notes:
-    - On Windows restarts, the RPC port can be open before the simulator is fully ready.
-      A single `get_world()` probe is often too optimistic.
-    - `require_map=True` waits until `world.get_map()` also succeeds.
-    - C20 Tier 3: pass `timeout_s` for a wall-clock deadline instead of a fixed
-      retry count -- overrides `retries` when given (retries*delay_s was a
-      hardcoded ~30s ceiling, far too short for a slow-starting server).
+    Individual native calls must honor Client.set_timeout; an externally
+    supervised probe is required for a *hard* watchdog guarantee.
     """
-    last_exc: Exception | None = None
-    deadline = (time.time() + float(timeout_s)) if timeout_s is not None else None
+    import math
+
+    delay_s = float(delay_s)
+    if not math.isfinite(delay_s) or delay_s < 0:
+        raise ValueError("CARLA readiness delay must be finite and nonnegative")
+    if timeout_s is not None:
+        timeout_s = float(timeout_s)
+        if not math.isfinite(timeout_s) or timeout_s < 0:
+            raise ValueError("CARLA readiness timeout must be finite and nonnegative")
+    deadline = time.monotonic() + timeout_s if timeout_s is not None else None
     attempts = 0
+    last_exc = None
     while True:
+        if deadline is not None and time.monotonic() >= deadline:
+            break
+        if deadline is None and attempts >= max(1, int(retries)):
+            break
         attempts += 1
-        if deadline is None and attempts > max(1, int(retries)):
-            break
-        if deadline is not None and time.time() >= deadline:
-            break
         try:
+            if deadline is not None:
+                remaining = deadline - time.monotonic()
+                if remaining <= 0:
+                    break
+                client.set_timeout(min(2.0, remaining))
             world = client.get_world()
             if require_map:
+                if deadline is not None:
+                    remaining = deadline - time.monotonic()
+                    if remaining <= 0:
+                        break
+                    client.set_timeout(min(2.0, remaining))
                 world.get_map()
-
-            # Helpful debug: version mismatch can produce weird streaming behavior.
+            if deadline is not None and time.monotonic() >= deadline:
+                break  # No late success after the time budget expired.
             try:
+                if deadline is not None:
+                    remaining = deadline - time.monotonic()
+                    if remaining <= 0:
+                        break
+                    client.set_timeout(min(2.0, remaining))
                 sv = client.get_server_version()
+                if deadline is not None:
+                    remaining = deadline - time.monotonic()
+                    if remaining <= 0:
+                        break
+                    client.set_timeout(min(2.0, remaining))
                 cv = client.get_client_version()
                 if sv and cv and sv != cv:
-                    print(
-                        f"⚠ CARLA version mismatch (server={sv}, client={cv}). "
-                        "Consider using matching PythonAPI."
-                    )
+                    print(f"⚠ CARLA version mismatch (server={sv}, client={cv})")
             except Exception:
-                pass
-
-            return True
-        except Exception as e:
-            last_exc = e
-            time.sleep(float(delay_s))
-
+                pass  # Version reporting remains diagnostic, not readiness.
+            return deadline is None or time.monotonic() < deadline
+        except Exception as exc:
+            last_exc = exc
+        if deadline is not None:
+            remaining = deadline - time.monotonic()
+            if remaining <= 0:
+                break
+            time.sleep(min(delay_s, remaining))
+        else:
+            time.sleep(delay_s)
     if last_exc is not None:
-        # Keep it low-noise but actionable when diagnosing readiness races.
-        print(f"[WARN] CARLA not ready after {retries} probes: {last_exc}")
+        print(f"[WARN] CARLA not ready after {attempts} attempts: {last_exc}")
     return False
 
 

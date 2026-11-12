@@ -110,7 +110,7 @@ def test_ensure_carla_ready_timeout_s_overrides_retries(monkeypatch: pytest.Monk
 def test_ensure_carla_ready_timeout_s_expires_eventually(monkeypatch: pytest.MonkeyPatch) -> None:
     """Negative control: timeout_s must actually bound the wait, not loop forever."""
     fake_now = [0.0]
-    monkeypatch.setattr(time, "time", lambda: fake_now[0])
+    monkeypatch.setattr(time, "monotonic", lambda: fake_now[0])
 
     def _fake_sleep(seconds: float) -> None:
         fake_now[0] += seconds
@@ -177,18 +177,33 @@ def _patch_restart_common(monkeypatch: pytest.MonkeyPatch, tmp_path: Path, *, cl
     monkeypatch.setattr(cu.SETTINGS, "CARLA_PORT", 2000, raising=False)
     monkeypatch.setattr(cu.SETTINGS, "CARLA_STREAMING_PORT", 2001, raising=False)
     monkeypatch.setattr(cu, "_cleanup_carla_crash_artifacts", lambda: None)
-    monkeypatch.setattr(cu, "_kill_stuck_carla", lambda: None)
+    # Verify the exact handle is forwarded, not just that no exception occurs.
+    class _CapturedCommands(list):
+        pass
+
+    # Set below after captured_cmds is created; tests must observe cleanup.
     monkeypatch.setattr(cu, "_gpu_tdr_preflight", lambda: {"ok": True, "skipped": True})
     monkeypatch.setattr(cu.time, "sleep", lambda *_: None)
     monkeypatch.setattr(cu, "_vram_preflight", lambda: None)
     monkeypatch.setattr(cu, "_carla_module", lambda: _FakeCarlaModule(client))
     monkeypatch.chdir(tmp_path)
 
-    captured_cmds: list = []
+    captured_cmds: list = _CapturedCommands()
+    captured_cmds.launched = []
+    captured_cmds.stopped = []
+
+    def _stop_owned(proc):
+        assert any(proc is launched for launched in captured_cmds.launched), "foreign process handle"
+        captured_cmds.stopped.append(proc)
+        return True
+
+    monkeypatch.setattr(cu, "_kill_stuck_carla", _stop_owned)
 
     def _fake_popen(cmd, **kwargs):
         captured_cmds.append(cmd)
-        return SimpleNamespace()
+        proc = SimpleNamespace(pid=1234 + len(captured_cmds))
+        captured_cmds.launched.append(proc)
+        return proc
 
     monkeypatch.setattr(subprocess, "Popen", _fake_popen)
     return captured_cmds
@@ -196,10 +211,13 @@ def _patch_restart_common(monkeypatch: pytest.MonkeyPatch, tmp_path: Path, *, cl
 
 def test_restart_carla_rejects_port_open_but_rpc_never_ready(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
     """The exact C20 bug: port opens, RPC never responds -- must NOT report success."""
-    _patch_restart_common(monkeypatch, tmp_path, client=_NeverReadyClient())
+    cmds = _patch_restart_common(monkeypatch, tmp_path, client=_NeverReadyClient())
     monkeypatch.setattr(cu, "_wait_for_ports", lambda *a, **k: True)
     monkeypatch.setenv("UP_CARLA_READY_TIMEOUT_S", "0.01")
     assert cu.restart_carla() is False
+    assert cmds.launched, "must exercise failing-launch cleanup"
+    assert len(cmds.stopped) == len(cmds.launched), "every failed launch must be reaped"
+    assert all(a is b for a, b in zip(cmds.stopped, cmds.launched)), "exact handle required"
 
 
 def test_restart_carla_blocks_when_gpu_tdr_preflight_fails(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
