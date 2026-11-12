@@ -120,7 +120,7 @@ def test_production_quality_wrapper_admits_before_legacy_xml_parser(
     pipeline.settings = SimpleNamespace(ENABLE_QUALITY_GATES_WRAPPER=True)
     pipeline.out_dir = str(tmp_path / "reports")
 
-    with pytest.raises(RuntimeError, match="Drivability gates failed|Quality gate failures"):
+    with pytest.raises(RuntimeError, match="OpenDRIVE admission"):
         pipeline._run_quality_gates_wrapper(str(source))
     assert legacy_candidate_reads == []
 
@@ -138,11 +138,26 @@ def test_mandatory_gates_share_admitted_snapshot_and_reject_late_replacement(
     source.write_bytes(admitted)
     seen_paths = []
 
+    from ultimate_pipeline.quality.check_lane_link_targets_exist import (
+        check_lane_link_targets_exist,
+    )
+    import xml.etree.ElementTree as ET
+
+    original_parse = ET.parse
+    raw_candidate_parses = []
+
+    def guarded_parse(path, *args, **kwargs):
+        if Path(path) == source:
+            raw_candidate_parses.append(str(path))
+        return original_parse(path, *args, **kwargs)
+
+    monkeypatch.setattr(ET, "parse", guarded_parse)
+
     def first_gate(path, _root):
         seen_paths.append(path)
         assert Path(path).read_bytes() == admitted
         source.write_bytes(ROOT + b"<!-- replaced during gate pass -->\n")
-        return {"ok": True, "status": "PASS"}
+        return check_lane_link_targets_exist(path, allow_dead_ends=True)
 
     def second_gate(path, _root):
         seen_paths.append(path)
@@ -157,14 +172,20 @@ def test_mandatory_gates_share_admitted_snapshot_and_reject_late_replacement(
     )
     assert len(seen_paths) == 2
     assert all(Path(path) != source for path in seen_paths)
+    assert raw_candidate_parses == []
     assert {report["status"] for report in reports.values()} == {gates.STATUS_BLOCKED_INPUT}
 
 
-def test_quality_gate_wrapper_blocks_candidate_replaced_after_admission(
+def test_quality_gate_mainpipeline_wrapper_blocks_candidate_replaced_after_admission(
     tmp_path, monkeypatch
 ) -> None:
-    """The legacy production quality wrapper cannot bless stale snapshot bytes."""
-    from ultimate_pipeline.quality import quality_gates
+    """MainPipeline must stop if the candidate changes during the real gate pass."""
+    import xml.etree.ElementTree as ET
+
+    from ultimate_pipeline.main_pipeline import MainPipeline
+    from ultimate_pipeline.quality.check_lane_link_targets_exist import (
+        check_lane_link_targets_exist,
+    )
 
     source = tmp_path / "candidate.xodr"
     original = (
@@ -173,36 +194,30 @@ def test_quality_gate_wrapper_blocks_candidate_replaced_after_admission(
     )
     source.write_bytes(original)
 
-    class QGate:
-        def __init__(self):
-            self.failures = {}
+    original_parse = ET.parse
+    raw_candidate_parses = []
 
-        def __getattr__(self, name):
-            if name == "get_failures":
-                return lambda: dict(self.failures)
-            if name == "fail":
-                return lambda key, payload: self.failures.__setitem__(key, payload)
-            return lambda *_args, **_kwargs: None
+    def guarded_parse(path, *args, **kwargs):
+        if Path(path) == source:
+            raw_candidate_parses.append(str(path))
+        return original_parse(path, *args, **kwargs)
 
-    qgate = QGate()
-    real_checker = __import__(
-        "ultimate_pipeline.quality.check_lane_link_targets_exist",
-        fromlist=["check_lane_link_targets_exist"],
-    ).check_lane_link_targets_exist
+    monkeypatch.setattr(ET, "parse", guarded_parse)
 
     def replace_after_admission(path, *args, **kwargs):
         assert Path(path) != source
+        assert Path(path).read_bytes() == original
         source.write_bytes(original + b"<!-- replacement -->")
-        return {"ok": True, "status": "PASS"}
+        return check_lane_link_targets_exist(path, allow_dead_ends=True)
 
     monkeypatch.setattr(
         "ultimate_pipeline.quality.check_lane_link_targets_exist.check_lane_link_targets_exist",
         replace_after_admission,
     )
-    result = quality_gates.run_quality_gates(str(source), qgate=qgate)
-    assert "xodr_identity_changed" in result
-    assert result["xodr_identity_changed"]["ok"] is False
-    monkeypatch.setattr(
-        "ultimate_pipeline.quality.check_lane_link_targets_exist.check_lane_link_targets_exist",
-        real_checker,
-    )
+    pipeline = MainPipeline.__new__(MainPipeline)
+    pipeline.settings = SimpleNamespace(ENABLE_QUALITY_GATES_WRAPPER=True)
+    pipeline.out_dir = str(tmp_path / "reports")
+    monkeypatch.delenv("UP_STRICT_QUALITY_GATES", raising=False)
+    with pytest.raises(RuntimeError, match="candidate XODR identity changed"):
+        pipeline._run_quality_gates_wrapper(str(source))
+    assert raw_candidate_parses == []

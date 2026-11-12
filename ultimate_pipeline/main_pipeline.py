@@ -4089,9 +4089,16 @@ if str(_repo_root) not in sys.path:
 
         try:
             from ultimate_pipeline.quality.quality_gates import run_quality_gates
-            from ultimate_pipeline.quality.quality_gates import BLOCKING_GATE_NAMES
+            from ultimate_pipeline.quality.quality_gates import (
+                BLOCKING_GATE_NAMES,
+                QualityGateInputError,
+            )
 
             failures = run_quality_gates(final_out, out_dir=self.out_dir)
+            if {"xml_parse", "xodr_identity_changed"} & set(failures):
+                raise QualityGateInputError(
+                    "OpenDRIVE admission or identity verification failed"
+                )
 
             drivability_failures = sorted(set(failures.keys()) & set(BLOCKING_GATE_NAMES))
             if drivability_failures:
@@ -4105,8 +4112,8 @@ if str(_repo_root) not in sys.path:
                     f"❌ Quality gate failures in strict mode: {sorted(failures.keys())}"
                 )
         except Exception as e:
-            if strict_mode:
-                raise  # Re-raise in strict mode
+            if strict_mode or e.__class__.__name__ == "QualityGateInputError":
+                raise  # Unsafe input identity is always terminal.
             print(f"⚠️ Quality gates wrapper failed: {e}")
 
     def _run_geometric_continuity_gate(self, xodr_path: str, context: str) -> None:

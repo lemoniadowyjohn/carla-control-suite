@@ -55,6 +55,10 @@ TRANSPORT_GATES = frozenset(
 BLOCKING_GATE_NAMES = frozenset(DRIVABILITY_GATES) | TRANSPORT_GATES
 
 
+class QualityGateInputError(RuntimeError):
+    """The input was unsafe or changed while gate reports were produced."""
+
+
 def _resolve_vreport(vreport: Optional[object]) -> object:
     if vreport is not None:
         return vreport
@@ -324,5 +328,10 @@ def run_quality_gates(
         for k, v in failures.items():
             print(f"  - {k}: {v}")
 
+    if "xodr_identity_changed" in failures:
+        snapshot_directory.cleanup()
+        raise QualityGateInputError(
+            "candidate XODR identity changed during quality-gate evaluation"
+        )
     snapshot_directory.cleanup()
     return failures
