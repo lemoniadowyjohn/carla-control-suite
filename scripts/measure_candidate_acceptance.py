@@ -126,7 +126,10 @@ def evaluate_candidate(
         # longer matches it, so the caller must not treat it as release-eligible.
         acceptance = dict(acceptance, release_eligible=False,
                           artifact_identity_after_write={"evaluated": evaluated_sha, "now": actual})
+        # Persist the refusal in the canonical receipt too: diagnostic-only
+        # sidecars cannot invalidate an earlier eligible JSON on disk.
         _write_json(out_dir / "map_acceptance.identity_failure.json", acceptance)
+        _write_json(out_dir / "map_acceptance.json", acceptance)
     if sha256_bytes(Path(snapshot["path"]).read_bytes()) != evaluated_sha:
         raise RuntimeError(f"acceptance snapshot {snapshot['path']} changed during evaluation")
     return acceptance

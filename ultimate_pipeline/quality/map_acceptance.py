@@ -157,11 +157,13 @@ def _mandatory_gate_status(gate: str, report: Any) -> tuple[str, str]:
         return "FAIL", f"declared status {declared!r} (ok={ok})"
     if not ok:
         return "FAIL", _reason_from_report(report)
-    nonzero = {
-        key: report[key] for key in _ISSUE_COUNT_KEYS
-        if isinstance(report.get(key), (int, float)) and not isinstance(report.get(key), bool)
-        and report[key] != 0
-    }
+    for key in _ISSUE_COUNT_KEYS:
+        if key in report and (type(report[key]) is not int or report[key] < 0):
+            return "FAIL", f"malformed issue counter {key}={report[key]!r}"
+    if "issues" in report and not isinstance(report["issues"], list):
+        return "FAIL", "malformed issues field: expected a list"
+    nonzero = {key: report[key] for key in _ISSUE_COUNT_KEYS
+               if key in report and report[key] != 0}
     if isinstance(report.get("issues"), list) and report["issues"]:
         nonzero["len(issues)"] = len(report["issues"])
     if nonzero:
@@ -644,8 +646,10 @@ def build_map_acceptance(
 ) -> Dict[str, Any]:
     if purpose not in (None, "release", "diagnostic"):
         raise ValueError(f"unknown acceptance purpose {purpose!r}")
-    if purpose == "release" and not mandatory_gates:
-        raise ValueError("release-purpose acceptance requires the authoritative mandatory_gates set")
+    if purpose == "release":
+        from ultimate_pipeline.quality.final_artifact_gates import RELEASE_MANDATORY_GATES
+        if mandatory_gates is None or tuple(mandatory_gates) != tuple(RELEASE_MANDATORY_GATES):
+            raise ValueError("release-purpose acceptance requires the exact authoritative mandatory gate set")
     hard_fail_reasons: List[Dict[str, str]] = []
     soft_warnings: List[Dict[str, str]] = []
     metrics: Dict[str, Any] = {}
@@ -1179,7 +1183,13 @@ def build_map_acceptance(
     # authoritative mandatory gate set can be release-eligible. Legacy and
     # diagnostic calls stay informational and are labelled as such.
     release_eligible = bool(
-        purpose == "release" and valid_for_experiments and mandatory_gates
+        purpose == "release"
+        and valid_for_experiments
+        and bool(final_xodr_path)
+        and isinstance(evaluated_xodr_sha256, str)
+        and len(evaluated_xodr_sha256) == 64
+        and final_xodr_sha256 == evaluated_xodr_sha256
+        and mandatory_gates is not None
     )
 
     # Compute SHA256 for all linked artifacts

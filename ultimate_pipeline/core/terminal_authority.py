@@ -107,19 +107,35 @@ def write_run_identity(
     started_at_utc: str,
 ) -> None:
     """Write run_identity.json at admission time."""
+    identity = {
+        "run_id": run_id,
+        "source_sha": source_sha,
+        "profile": profile,
+        "settings_digest": settings_digest,
+        "started_at_utc": started_at_utc,
+        "out_dir": str(out_dir),
+    }
+    path = Path(out_dir) / "run_identity.json"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temp = path.with_name(f".{path.name}.{os.getpid()}.{uuid.uuid4().hex}.tmp")
+    fd = os.open(temp, os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o600)
     try:
-        identity = {
-            "run_id": run_id,
-            "source_sha": source_sha,
-            "profile": profile,
-            "settings_digest": settings_digest,
-            "started_at_utc": started_at_utc,
-            "out_dir": str(out_dir),
-        }
-        path = Path(out_dir) / "run_identity.json"
-        path.write_text(json.dumps(identity, indent=2, sort_keys=True) + "\n", encoding="utf-8")
-    except Exception as e:
-        print(f"⚠️ Failed to write run_identity.json: {e}")
+        with os.fdopen(fd, "wb") as stream:
+            stream.write((json.dumps(identity, indent=2, sort_keys=True) + "\n").encode("utf-8"))
+            stream.flush()
+            os.fsync(stream.fileno())
+        os.replace(temp, path)
+        if os.name != "nt":
+            directory_fd = os.open(path.parent, os.O_RDONLY)
+            try:
+                os.fsync(directory_fd)
+            finally:
+                os.close(directory_fd)
+        if json.loads(path.read_text(encoding="utf-8")) != identity:
+            raise RuntimeError("run_identity.json durable reread differs")
+    except BaseException:
+        temp.unlink(missing_ok=True)
+        raise
 
 
 def read_run_identity(out_dir: str | os.PathLike[str]) -> dict | None:

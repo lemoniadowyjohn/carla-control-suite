@@ -116,7 +116,11 @@ def _require_valid_map_acceptance(out_dir) -> None:
         raise RuntimeError(
             f"TERMINAL_FAILED(MAP_ACCEPTANCE): {path} missing or unreadable: {exc}"
         ) from exc
-    if not isinstance(payload, dict) or payload.get("valid_for_experiments") is not True:
+    if (not isinstance(payload, dict)
+            or payload.get("valid_for_experiments") is not True
+            or payload.get("release_eligible") is not True
+            or not isinstance(payload.get("acceptance_policy"), dict)
+            or payload["acceptance_policy"].get("purpose") != "release"):
         failed = payload.get("failed_gates") if isinstance(payload, dict) else None
         raise RuntimeError(
             "TERMINAL_FAILED(MAP_ACCEPTANCE): final map acceptance is not valid "
@@ -1022,6 +1026,7 @@ class MainPipeline:
             "message": message,
             "error": error,
             "out_dir": self.out_dir,
+            "run_id": self._run_id,
             "timestamp": datetime.now().isoformat(),
         }
         status_path = Path(self.out_dir) / "run_status.json"
@@ -1875,7 +1880,10 @@ if str(_repo_root) not in sys.path:
                 ) from lease_exc
             self._run_output_lease = terminal_lease
 
-            # No shared output is touched until the lease is held.
+            # Revoke prior commit under this run's output-root lease BEFORE mutation.
+            from ultimate_pipeline.core.terminal_release import revoke_previous_commit
+            revoke_previous_commit(terminal_root)
+            # Legacy marker is not release authority; still revoke it for consumers.
             self._revoke_stale_success()
             ensure_dir(self.out_dir)
             ensure_dir(self.settings.logs_dir())
@@ -1957,6 +1965,10 @@ if str(_repo_root) not in sys.path:
             # receipt capability (artifact_authority) checked
             # valid_for_experiments.
             _require_valid_map_acceptance(self.out_dir)
+            from ultimate_pipeline.core.terminal_release import validate_release_candidate
+            validate_release_candidate(
+                self.out_dir, final_xodr_path, require_status=False, require_success=False
+            )
 
             # Persist terminal status before publishing SUCCESS. Re-read it
             # afterwards because _write_run_status is intentionally best-effort.
@@ -1975,13 +1987,17 @@ if str(_repo_root) not in sys.path:
                 terminal_lease, terminal_root, "SUCCESS promotion"
             )
             from ultimate_pipeline.utils.finalize_run_pack import write_success_txt
-            write_success_txt(self.out_dir, summary="main_pipeline")
+            write_success_txt(
+                self.out_dir, summary="main_pipeline", purpose="production_map_release"
+            )
             terminal_success_published = True
-            verify_result = verify_run_pack(self.out_dir)
+            verify_result = verify_run_pack(self.out_dir, require_success=True)
             if verify_result.get("status") != "PASS":
                 raise RuntimeError(
                     f"Published terminal pack verification failed: {verify_result.get('problems', [])}"
                 )
+            from ultimate_pipeline.core.terminal_release import publish_terminal_release
+            publish_terminal_release(self.out_dir, final_xodr_path, terminal_lease)
 
             # The lease remains held through SUCCESS publication and final
             # verification; release failure invalidates this publisher's result.
@@ -2002,11 +2018,15 @@ if str(_repo_root) not in sys.path:
             return self.out_dir
         except BaseException as e:
             lease_lost = isinstance(e, TerminalPublicationLeaseLost)
-            if lease_lost or terminal_success_published:
-                # Revoke only the marker produced by this terminal attempt.
-                # SUCCESS is a single file and its removal is fail-closed.
+            if terminal_success_published and terminal_lease is not None:
+                # Only a CURRENT owner can revoke its own publication evidence.
+                # An owner whose lease was superseded cannot touch the successor.
                 try:
-                    (Path(self.out_dir) / "SUCCESS.txt").unlink(missing_ok=True)
+                    from ultimate_pipeline.governance.single_writer.worktree_lock import lease_is_current
+                    if lease_is_current(terminal_lease):
+                        from ultimate_pipeline.core.terminal_release import revoke_previous_commit
+                        revoke_previous_commit(terminal_root)
+                        (terminal_root / "SUCCESS.txt").unlink(missing_ok=True)
                 except OSError:
                     pass
             # Keep console signal for local debugging
@@ -3621,7 +3641,7 @@ if str(_repo_root) not in sys.path:
         try:
             map_acceptance = build_map_acceptance(
                 acceptance_reports,
-                run_id=os.path.basename(os.path.normpath(self.out_dir)),
+                run_id=self._run_id,
                 final_xodr_path=final_out,
                 out_dir=self.out_dir,
                 require_enrichment=require_enrichment,
@@ -3728,7 +3748,7 @@ if str(_repo_root) not in sys.path:
             semantic_authority_profile=self._semantic_authority_profile(),
             source_manifest_identity=self._source_manifest_identity(),
             receipt_root=self.out_dir,
-            run_id=os.path.basename(os.path.normpath(self.out_dir)),
+            run_id=self._run_id,
             immediate_parent_path=immediate_parent_path or final_out,
             acceptance_receipt_path=acc_path,
             stage=stage,

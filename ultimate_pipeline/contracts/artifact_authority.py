@@ -834,6 +834,11 @@ class ArtifactAuthorityLedger:
         publication_reasons: List[str] = []
         if acceptance.get("valid_for_experiments") is not True:
             publication_reasons.append("map acceptance is not valid for experiments")
+        if acceptance.get("release_eligible") is not True:
+            publication_reasons.append("canonical map release eligibility is not TRUE")
+        if (not isinstance(acceptance.get("acceptance_policy"), dict)
+                or acceptance["acceptance_policy"].get("purpose") != "release"):
+            publication_reasons.append("candidate acceptance is not release-purposed")
         certification_reason = _literal_spec_publication_reason(certification)
         if certification_reason:
             publication_reasons.append(certification_reason)
@@ -901,6 +906,8 @@ class ArtifactAuthorityLedger:
             "lane_count": fingerprint["counts"]["lane_count"],
             "structure_fingerprint": fingerprint,
             "map_acceptance_status": {
+                "release_eligible": acceptance.get("release_eligible"),
+                "acceptance_purpose": (acceptance.get("acceptance_policy") or {}).get("purpose"),
                 "valid_for_experiments": acceptance.get("valid_for_experiments"),
                 "failed_gates": acceptance.get("failed_gates", []),
                 "hard_fail_reasons": acceptance.get("hard_fail_reasons", []),

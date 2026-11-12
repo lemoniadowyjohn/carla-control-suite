@@ -102,6 +102,13 @@ def normalize_lane_section_report(report: Any) -> Dict[str, Any]:
         return not_run_report("lane_section_successors", f"report is {type(report).__name__}")
     out = dict(report)
     if isinstance(out.get("ok"), bool):
+        if out["ok"] is True and (
+            (type(out.get("broken_count")) is int and out["broken_count"] != 0)
+            or (isinstance(out.get("failures"), list) and bool(out["failures"]))
+            or (isinstance(out.get("issues"), list) and bool(out["issues"]))
+        ):
+            out["ok"] = False
+            out["status"] = "FAIL"
         return out
     broken = out.get("broken_count")
     failures = out.get("failures")
@@ -139,10 +146,21 @@ def check_xml_boundary(data: bytes) -> None:
     """
     if len(data) > MAX_XODR_BYTES:
         raise UnsafeXMLError(f"artifact is {len(data)} bytes > limit {MAX_XODR_BYTES}")
-    root_at = data.find(b"<OpenDRIVE")
-    prolog = data if root_at < 0 else data[:root_at]
-    if _PROLOG_DECL.search(prolog) or _PROLOG_DECL.search(data[: 1 << 16]):
+    # Expat parses the declaration in its actual XML encoding (UTF-8/16/32).
+    # Raw-byte prefix regexes are bypassable by non-ASCII encodings/comments.
+    from xml.parsers import expat
+    parser = expat.ParserCreate()
+
+    def reject_declaration(*_args):
         raise UnsafeXMLError("DOCTYPE/ENTITY declarations are not permitted in OpenDRIVE input")
+
+    parser.StartDoctypeDeclHandler = reject_declaration
+    parser.EntityDeclHandler = reject_declaration
+    parser.ExternalEntityRefHandler = reject_declaration
+    try:
+        parser.Parse(data, True)
+    except expat.ExpatError as exc:
+        raise UnsafeXMLError(f"unsafe or malformed XML: {exc}") from exc
 
 
 def parse_xodr_bytes(data: bytes) -> ET.Element:
@@ -162,7 +180,15 @@ def snapshot_final_artifact(final_out: str, snapshot_dir: str) -> Dict[str, Any]
     which is made read-only. Every gate runs on that path. ``verify_artifact_unchanged``
     later proves the published ``final_out`` still has the same digest.
     """
-    data = Path(final_out).read_bytes()
+    source = Path(final_out)
+    if source.is_symlink():
+        raise UnsafeXMLError("symlinked release candidate is not accepted")
+    if source.stat().st_size > MAX_XODR_BYTES:
+        raise UnsafeXMLError("release candidate exceeds configured XML byte cap")
+    with source.open("rb") as stream:
+        data = stream.read(MAX_XODR_BYTES + 1)
+    if len(data) > MAX_XODR_BYTES:
+        raise UnsafeXMLError("release candidate grew past configured XML byte cap")
     digest = sha256_bytes(data)
     snap_dir = Path(snapshot_dir)
     snap_dir.mkdir(parents=True, exist_ok=True)
