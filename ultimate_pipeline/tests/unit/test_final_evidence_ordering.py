@@ -44,6 +44,7 @@ import inspect
 import json
 import re
 import types
+from pathlib import Path
 
 import pytest
 
@@ -555,3 +556,46 @@ class TestPublishedEvidenceIsAuthoritative:
         with pytest.raises(ArtifactAuthorityError) as exc:
             pipe.authority_ledger.build_receipt(final_artifact_path=xodr)
         assert "INVALIDATED" in str(exc.value)
+
+    def test_map_acceptance_file_is_invalidated_on_post_acceptance_identity_failure(
+        self, staged, monkeypatch
+    ):
+        """PR #30 review (Sourcery "Failed run leaves passing receipt"):
+        map_acceptance.json is durably written with a PASSING payload before
+        the post-acceptance identity re-check runs. If the final artifact is
+        mutated in that window (simulated here as a side effect of the gate
+        computation itself), the run must fail -- AND the on-disk
+        map_acceptance.json must no longer say PASS when the run is done,
+        instead of leaving a passing file behind for a run that failed.
+        """
+        pipe, xodr, out_dir = staged
+        import ultimate_pipeline.quality.map_acceptance as map_acceptance_mod
+
+        real_build = map_acceptance_mod.build_map_acceptance
+
+        def mutate_after_gates(*args, **kwargs):
+            result = real_build(*args, **kwargs)
+            # Simulate a mutation of the published artifact landing between
+            # the acceptance snapshot and the post-write identity re-check --
+            # a non-structural byte edit is enough to break byte identity.
+            Path(xodr).write_text(
+                BASE_XODR.replace('name="p0c"', 'name="p0c-mutated"'),
+                encoding="utf-8",
+            )
+            return result
+
+        monkeypatch.setattr(map_acceptance_mod, "build_map_acceptance", mutate_after_gates)
+
+        with pytest.raises(RuntimeError, match="ARTIFACT_IDENTITY"):
+            pipe._publish_final_artifact_authority(xodr, seam_report={"ok": True})
+
+        acc_path = Path(out_dir) / "map_acceptance.json"
+        assert acc_path.is_file()
+        payload = json.loads(acc_path.read_text(encoding="utf-8"))
+        assert payload["valid_for_experiments"] is False
+        assert payload["release_eligible"] is False
+        assert any(
+            item.get("gate") == "artifact_identity"
+            for item in payload["hard_fail_reasons"]
+        )
+        assert "artifact_identity" in payload["failed_gates"]

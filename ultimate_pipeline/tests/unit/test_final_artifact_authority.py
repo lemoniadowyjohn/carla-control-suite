@@ -349,7 +349,13 @@ class TestLateMutationInvalidatesAcceptance:
     def test_clean_run_produces_a_complete_receipt(self, tmp_path):
         ledger, path = self._frozen_ledger_with_acceptance(tmp_path)
         acceptance_path = tmp_path / "map_acceptance.json"
-        acceptance_path.write_text("{}", encoding="utf-8")
+        # V93-18: build_receipt now independently parses the ON-DISK
+        # acceptance file and requires it to agree with the in-memory
+        # map_acceptance dict passed below -- a bare "{}" (no
+        # valid_for_experiments) would no longer authorize PUBLISHED.
+        acceptance_path.write_text(
+            json.dumps({"valid_for_experiments": True}), encoding="utf-8"
+        )
         source_manifest = tmp_path / "inputs_manifest.json"
         source_manifest.write_text('{"inputs": {}}', encoding="utf-8")
         source_manifest_identity = {

@@ -62,6 +62,7 @@ __all__ = [
     "verify_run_pack",
     "write_signature_json",
     "write_success_txt",
+    "PACK_COMPLETE_FILENAME",
 ]
 
 FINALIZATION_SCHEMA = "RUN_PACK_FINALIZATION/v2"
@@ -87,6 +88,17 @@ OPTIONAL_CATEGORIES = frozenset({CATEGORY_REQUESTED, CATEGORY_UNEXPECTED})
 
 SIGNATURE_FILENAME = "signature.json"
 SUCCESS_FILENAME = "SUCCESS.txt"
+#: V93-25: a file-manifest PASS (every requested artifact present and
+#: hashed) is a real, narrower claim than the governed pipeline SUCCESS_MARKER
+#: invariant ("SUCCESS.txt present IFF final_run_verdict.status == PASS AND
+#: run_status == ok AND pack verifies", signals/registry.py). A caller that
+#: only ever finalizes a file manifest (e.g. run_full_domain_gap.py's
+#: standalone sweep/smoke tool, which never writes final_run_verdict.json or
+#: run_status.json) gets THIS marker from finalize_run_pack's own default
+#: success path. Only ``write_success_txt`` -- an explicit, separate call --
+#: may write the literal governed ``SUCCESS.txt``, and only when that
+#: invariant's two other files are present and PASS/ok.
+PACK_COMPLETE_FILENAME = "PACK_COMPLETE.txt"
 _STATE_FILENAME = ".run_pack_finalization_state.json"
 
 _CHUNK = 1024 * 1024
@@ -427,11 +439,26 @@ def finalize_run_pack(
     """Fail-closed finalization of a run pack.
 
     Writes ``signature.json`` atomically, then -- only if the finalization
-    status is ``PASS`` -- ``SUCCESS.txt`` bound to the manifest digest.
+    status is ``PASS`` and ``emit_success`` is true -- ``PACK_COMPLETE.txt``
+    bound to the manifest digest.
+
+    V93-25: this no longer writes the literal ``SUCCESS.txt``. A file-manifest
+    PASS (every requested artifact present and hashed) is a real but
+    *narrower* claim than the governed SUCCESS_MARKER invariant
+    ("SUCCESS.txt present IFF final_run_verdict.status == PASS AND
+    run_status == ok AND pack verifies"). A single dummy file used to be
+    enough to produce a literal SUCCESS.txt here by relying on this
+    function's default ``emit_success=True``; it is now ``PACK_COMPLETE.txt``
+    instead -- an honest, narrower, still-genuine claim ("this requested file
+    manifest is complete and verified"), never confusable with the
+    governed main-pipeline claim. Only :func:`write_success_txt` -- an
+    explicit, separate call, used by ``main_pipeline.py`` only after its own
+    additional checks (``_require_valid_map_acceptance``, ``run_status.json``
+    write) -- may write the literal governed ``SUCCESS.txt``.
 
     Returns the finalization receipt. Raises :class:`FinalizationError` (with
-    ``.receipt``) only when the *manifest itself* could not be written; in that
-    case ``SUCCESS.txt`` is never emitted.
+    ``.receipt``) only when the *manifest itself* could not be written; in
+    that case neither marker is ever emitted.
     """
     root = Path(out_dir).expanduser().resolve()
     try:
@@ -491,13 +518,40 @@ def finalize_run_pack(
         raise FinalizationError(f"finalization state could not be written: {exc}", receipt)
 
     if receipt["status"] == STATUS_PASS and emit_success:
-        _write_success_bound(root, receipt, summary)
+        _write_pack_complete_bound(root, receipt, summary)
 
     return receipt
 
 
+def _write_pack_complete_bound(out_dir: Path, receipt: Dict[str, Any], summary: str) -> None:
+    """Write PACK_COMPLETE.txt bound to the finalized manifest (V93-25).
+
+    This is the generic "this requested file manifest hashed and verified"
+    claim -- NOT the governed pipeline SUCCESS_MARKER. See
+    :func:`write_success_txt` for that.
+    """
+    ts = receipt["generated_at_utc"]
+    body = (
+        f"PACK_COMPLETE {ts}\n"
+        f"status={receipt['status']}\n"
+        f"schema={receipt['schema']}\n"
+        f"manifest_sha256={receipt['manifest_sha256']}\n"
+        f"signature_sha256={receipt['signature_sha256']}\n"
+        f"requested_count={receipt['requested_count']}\n"
+        f"hashed_count={receipt['hashed_count']}\n"
+    )
+    if summary:
+        body += f"summary={summary.strip()}\n"
+    _atomic_write_text(out_dir / PACK_COMPLETE_FILENAME, body)
+
+
 def _write_success_bound(out_dir: Path, receipt: Dict[str, Any], summary: str) -> None:
-    """Write SUCCESS.txt bound to the finalized manifest."""
+    """Write SUCCESS.txt bound to the finalized manifest.
+
+    Reserved for :func:`write_success_txt`'s own gated call (V93-25); the
+    generic ``finalize_run_pack(..., emit_success=True)`` default path uses
+    :func:`_write_pack_complete_bound` instead.
+    """
     ts = receipt["generated_at_utc"]
     body = (
         f"OK {ts}\n"
@@ -650,12 +704,73 @@ def write_signature_json(out_dir: str, key_paths: Iterable[Any]) -> Dict[str, An
     return receipt
 
 
-def write_success_txt(out_dir: str, summary: str = "") -> None:
-    """Write SUCCESS.txt, but only for a recorded PASS finalization.
+#: Artifacts the signals/registry.py SUCCESS_MARKER invariant names
+#: explicitly: "SUCCESS.txt present IFF final_run_verdict.status == PASS AND
+#: run_status == ok AND pack verifies". write_success_txt is the one place
+#: that invariant is enforced in code (V93-25).
+_FINAL_RUN_VERDICT_FILENAME = "final_run_verdict.json"
+_RUN_STATUS_FILENAME = "run_status.json"
 
-    Retained for existing callers. It is now a *gated* operation: without a
-    PASS state recorded by :func:`finalize_run_pack` for the same release root
-    it raises rather than publishing an unbound success marker.
+
+def _require_verdict_and_run_status_pass(root: Path) -> None:
+    """Fail closed unless this out_dir's final_run_verdict/run_status already
+    say PASS/ok (V93-25: the SUCCESS_MARKER invariant, enforced here because
+    this is the one function that writes the literal governed SUCCESS.txt).
+    """
+    verdict_path = root / _FINAL_RUN_VERDICT_FILENAME
+    if not verdict_path.is_file():
+        raise FinalizationError(
+            f"refusing to write SUCCESS.txt: {_FINAL_RUN_VERDICT_FILENAME} "
+            "is missing -- the SUCCESS_MARKER invariant requires "
+            "final_run_verdict.status == PASS"
+        )
+    try:
+        verdict = json.loads(verdict_path.read_text(encoding="utf-8"))
+    except (OSError, ValueError) as exc:
+        raise FinalizationError(
+            f"refusing to write SUCCESS.txt: {_FINAL_RUN_VERDICT_FILENAME} "
+            f"unreadable ({exc})"
+        )
+    if not isinstance(verdict, dict) or verdict.get("status") != "PASS":
+        got = verdict.get("status") if isinstance(verdict, dict) else "non-object"
+        raise FinalizationError(
+            f"refusing to write SUCCESS.txt: {_FINAL_RUN_VERDICT_FILENAME} "
+            f"status is {got!r}, not PASS"
+        )
+
+    run_status_path = root / _RUN_STATUS_FILENAME
+    if not run_status_path.is_file():
+        raise FinalizationError(
+            f"refusing to write SUCCESS.txt: {_RUN_STATUS_FILENAME} is "
+            "missing -- the SUCCESS_MARKER invariant requires run_status == ok"
+        )
+    try:
+        run_status = json.loads(run_status_path.read_text(encoding="utf-8"))
+    except (OSError, ValueError) as exc:
+        raise FinalizationError(
+            f"refusing to write SUCCESS.txt: {_RUN_STATUS_FILENAME} unreadable ({exc})"
+        )
+    if not isinstance(run_status, dict) or run_status.get("status") != "ok":
+        got = run_status.get("status") if isinstance(run_status, dict) else "non-object"
+        raise FinalizationError(
+            f"refusing to write SUCCESS.txt: {_RUN_STATUS_FILENAME} status "
+            f"is {got!r}, not 'ok'"
+        )
+
+
+def write_success_txt(out_dir: str, summary: str = "") -> None:
+    """Write SUCCESS.txt, but only for a recorded PASS finalization AND a
+    PASS/ok final_run_verdict.json + run_status.json in the same out_dir.
+
+    V93-25: this is the ONE function that may write the literal, governed
+    ``SUCCESS.txt`` (signals/registry.py's SUCCESS_MARKER invariant:
+    "SUCCESS.txt present IFF final_run_verdict.status == PASS AND
+    run_status == ok AND pack verifies"). ``finalize_run_pack``'s own
+    default success path writes the narrower ``PACK_COMPLETE.txt`` instead;
+    a caller (main_pipeline.py) that wants the governed marker must call
+    this function explicitly, AFTER final_run_verdict.json and
+    run_status.json already say PASS/ok -- exactly the sequencing
+    main_pipeline.py's terminal chain already uses.
     """
     root = Path(out_dir).expanduser().resolve()
     sig_path = root / SIGNATURE_FILENAME
@@ -679,6 +794,7 @@ def write_success_txt(out_dir: str, summary: str = "") -> None:
         raise FinalizationError(
             "refusing to write SUCCESS.txt: no recorded PASS finalization state"
         )
+    _require_verdict_and_run_status_pass(root)
     # Re-read the manifest from disk and recompute its digest rather than trusting
     # the in-memory receipt: the digest is a property of the emitted bytes.
     # (The manifest cannot embed its own digest, so the on-disk value is the

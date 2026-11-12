@@ -8,7 +8,17 @@ marker step of a run.
 V5 replaces the historical best-effort contract (silent skipping + independently
 emitted SUCCESS.txt) with a fail-closed one. The tests below therefore assert
 that a requested artifact which is missing / unreadable / out-of-root / a
-duplicate / hash-failing now produces ``status == FAIL`` and **no** SUCCESS.txt.
+duplicate / hash-failing now produces ``status == FAIL`` and **no** PACK_COMPLETE.txt.
+
+V93-25: ``finalize_run_pack``'s own default ``emit_success=True`` path now
+writes ``PACK_COMPLETE.txt`` (a narrower "this requested file manifest hashed
+and verified" claim), not the literal governed ``SUCCESS.txt``. Only
+``write_success_txt`` may write the literal ``SUCCESS.txt``, and only when
+``final_run_verdict.json`` (status PASS) and ``run_status.json`` (status ok)
+are also present in the same out_dir -- the SUCCESS_MARKER invariant in
+signals/registry.py. ``_write_verdict_and_status_pass`` below is the shared
+test helper that satisfies that for the tests that exercise
+``write_success_txt`` directly.
 """
 from __future__ import annotations
 
@@ -25,6 +35,7 @@ from ultimate_pipeline.utils.finalize_run_pack import (
     CATEGORY_MISSING,
     CATEGORY_OUTSIDE_ROOT,
     CATEGORY_UNREADABLE,
+    PACK_COMPLETE_FILENAME,
     FinalizationError,
     classify_requested_paths,
     finalize_run_pack,
@@ -39,6 +50,16 @@ def _write(path, text="x"):
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(text, encoding="utf-8")
     return path
+
+
+def _write_verdict_and_status_pass(root) -> None:
+    """Satisfy write_success_txt's SUCCESS_MARKER gate (V93-25)."""
+    (root / "final_run_verdict.json").write_text(
+        json.dumps({"status": "PASS"}), encoding="utf-8"
+    )
+    (root / "run_status.json").write_text(
+        json.dumps({"status": "ok"}), encoding="utf-8"
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -56,7 +77,10 @@ def test_all_required_files_present_passes(tmp_path):
     assert receipt["requested_count"] == 2
     assert receipt["hashed_count"] == 2
     assert receipt["failures"] == []
-    assert (tmp_path / "SUCCESS.txt").is_file()
+    # V93-25: the generic default path writes PACK_COMPLETE.txt, not the
+    # literal governed SUCCESS.txt.
+    assert (tmp_path / PACK_COMPLETE_FILENAME).is_file()
+    assert not (tmp_path / "SUCCESS.txt").exists()
 
     expected = hash_file_sha256(tmp_path / "final.xodr")
     assert receipt["files"]["final.xodr"] == expected
@@ -210,15 +234,18 @@ def test_blank_entries_are_not_requested_artifacts(tmp_path):
 
 
 def test_success_txt_is_bound_to_manifest_and_signature(tmp_path):
+    """The generic default-path marker (PACK_COMPLETE.txt, V93-25) is bound
+    to the manifest/signature exactly as the old SUCCESS.txt test asserted."""
     _write(tmp_path / "a.bin", "aaa")
     receipt = finalize_run_pack(tmp_path, ["a.bin"], summary="run_full_domain_gap")
 
-    text = (tmp_path / "SUCCESS.txt").read_text(encoding="utf-8")
-    assert text.startswith("OK ")
+    text = (tmp_path / PACK_COMPLETE_FILENAME).read_text(encoding="utf-8")
+    assert text.startswith("PACK_COMPLETE ")
     assert "run_full_domain_gap" in text
     assert f"manifest_sha256={receipt['manifest_sha256']}" in text
     assert f"signature_sha256={receipt['signature_sha256']}" in text
     assert "status=PASS" in text
+    assert not (tmp_path / "SUCCESS.txt").exists()
 
 
 def test_success_never_precedes_a_complete_manifest(tmp_path):
@@ -278,7 +305,9 @@ def test_verify_detects_manifest_without_success_as_incomplete_evidence(tmp_path
 
 def test_verify_detects_rewritten_success_binding(tmp_path):
     _write(tmp_path / "a.bin", "aaa")
-    finalize_run_pack(tmp_path, ["a.bin"])
+    finalize_run_pack(tmp_path, ["a.bin"], emit_success=False)
+    _write_verdict_and_status_pass(tmp_path)
+    write_success_txt(str(tmp_path))
     success = tmp_path / "SUCCESS.txt"
     text = success.read_text(encoding="utf-8").replace(
         "manifest_sha256=", "manifest_sha256=0000", 1
@@ -327,11 +356,42 @@ def test_write_success_txt_refuses_on_failed_finalization(tmp_path):
 def test_write_success_txt_allowed_after_pass(tmp_path):
     _write(tmp_path / "a.bin", "aaa")
     write_signature_json(str(tmp_path), ["a.bin"])
+    _write_verdict_and_status_pass(tmp_path)
     write_success_txt(str(tmp_path), summary="main_pipeline")
     text = (tmp_path / "SUCCESS.txt").read_text(encoding="utf-8")
     assert text.startswith("OK ")
     assert "summary=main_pipeline" in text
     assert verify_run_pack(tmp_path)["status"] == "PASS"
+
+
+@pytest.mark.parametrize(
+    "verdict_payload,run_status_payload,missing",
+    [
+        (None, {"status": "ok"}, "final_run_verdict"),
+        ({"status": "FAIL"}, {"status": "ok"}, "final_run_verdict"),
+        ({"status": "PASS"}, None, "run_status"),
+        ({"status": "PASS"}, {"status": "running"}, "run_status"),
+    ],
+)
+def test_write_success_txt_refuses_without_verdict_and_run_status_pass(
+    tmp_path, verdict_payload, run_status_payload, missing
+):
+    """V93-25: the SUCCESS_MARKER invariant -- write_success_txt must refuse
+    without a PASS final_run_verdict.json AND an ok run_status.json, even
+    when the file-manifest finalization itself is a clean PASS."""
+    _write(tmp_path / "a.bin", "aaa")
+    write_signature_json(str(tmp_path), ["a.bin"])
+    if verdict_payload is not None:
+        (tmp_path / "final_run_verdict.json").write_text(
+            json.dumps(verdict_payload), encoding="utf-8"
+        )
+    if run_status_payload is not None:
+        (tmp_path / "run_status.json").write_text(
+            json.dumps(run_status_payload), encoding="utf-8"
+        )
+    with pytest.raises(FinalizationError, match=missing):
+        write_success_txt(str(tmp_path))
+    assert not (tmp_path / "SUCCESS.txt").exists()
 
 
 # ---------------------------------------------------------------------------
@@ -357,7 +417,7 @@ def test_release_root_with_spaces(tmp_path):
     _write(root / "a.bin", "aaa")
     receipt = finalize_run_pack(root, ["a.bin"])
     assert receipt["status"] == "PASS"
-    assert (root / "SUCCESS.txt").is_file()
+    assert (root / PACK_COMPLETE_FILENAME).is_file()
 
 
 def test_absolute_path_inside_root_is_accepted(tmp_path):

@@ -380,6 +380,26 @@ def _has_v2_lifecycle_artifact(root: Path) -> bool:
     return False
 
 
+def _resolve_within_root(root: Path, relative: Path, *, what: str) -> Path:
+    """Resolve *relative* against *root* and require the result to stay inside it.
+
+    V93-19: ``Path.resolve()`` follows symlinks (and, on Windows, junctions).
+    The pre-resolve ``..``/absolute-path checks on the *declared* textual path
+    guard against an obviously escaping string, but a symlink planted inside
+    the run directory that points outside it would resolve to a path the
+    pre-resolve check never saw. This re-checks containment AFTER resolving,
+    so a symlink escape is rejected rather than silently followed.
+    """
+    resolved = (root / relative).resolve()
+    try:
+        resolved.relative_to(root)
+    except ValueError as exc:
+        raise FinalArtifactReceiptError(
+            f"Receipt {what} resolves outside the run directory {root}: {resolved}"
+        ) from exc
+    return resolved
+
+
 def resolve_final_artifact_receipt(run_dir: str) -> Path:
     """Resolve a production final XODR from its explicit receipt.
 
@@ -389,7 +409,39 @@ def resolve_final_artifact_receipt(run_dir: str) -> Path:
     filename tiebreaker.  Schema v1 receipts remain readable for historical
     runs, but a v1 receipt cannot be treated as a fresh publication when the
     same run contains v2 lifecycle evidence.
+
+    See :func:`resolve_final_artifact_receipt_provenance` for the
+    immediate_parent / source_manifest rehash-and-compare detail (V93-20);
+    this function's return type is unchanged (a bare ``Path``) so existing
+    callers (``scripts/regen_map_of_record.py`` and tests) are unaffected.
     """
+    final_path, _provenance = _resolve_final_artifact_receipt_impl(run_dir)
+    return final_path
+
+
+def resolve_final_artifact_receipt_provenance(run_dir: str) -> Dict[str, Any]:
+    """Resolve like :func:`resolve_final_artifact_receipt`, and also report
+    immediate_parent / source_manifest provenance verification (V93-20).
+
+    Returns a dict with, for each of ``immediate_parent`` and
+    ``source_manifest``: ``"present"`` (whether the referenced file exists in
+    the run directory), and when present, ``"verified"`` (its bytes were
+    rehashed and matched the receipt's recorded SHA-256). A file that exists
+    with the WRONG bytes still raises :class:`FinalArtifactReceiptError` --
+    exactly as the final XODR and acceptance-receipt checks do. A file that
+    is simply ABSENT (the common archival-read case: the intermediate
+    artifact was cleaned up long after the run) is reported as explicitly
+    ``"present": False`` / not verified, never silently treated as a match
+    and never raised, so historical reads of an otherwise-valid receipt keep
+    working.
+    """
+    _final_path, provenance = _resolve_final_artifact_receipt_impl(run_dir)
+    return provenance
+
+
+def _resolve_final_artifact_receipt_impl(
+    run_dir: str,
+) -> Tuple[Path, Dict[str, Any]]:
     root = Path(run_dir).resolve()
     receipt_path = root / FINAL_ARTIFACT_RECEIPT_FILENAME
     if not receipt_path.is_file():
@@ -431,7 +483,7 @@ def resolve_final_artifact_receipt(run_dir: str) -> Path:
     relative_path = Path(declared_path)
     if relative_path.is_absolute() or ".." in relative_path.parts:
         raise FinalArtifactReceiptError("Receipt final_xodr.path escapes the run directory")
-    final_path = (root / relative_path).resolve()
+    final_path = _resolve_within_root(root, relative_path, what="final_xodr.path")
     if not final_path.is_file():
         raise FinalArtifactReceiptError(f"Receipt final XODR is missing: {final_path}")
     declared_sha = final_xodr.get("sha256")
@@ -448,13 +500,79 @@ def resolve_final_artifact_receipt(run_dir: str) -> Path:
             "Receipt structure fingerprint does not match the final XODR"
         )
 
+    # V93-20: rehash immediate_parent and source_manifest against the bytes
+    # actually on disk, instead of trusting the receipt's self-reported
+    # path/sha256 pair unverified. A referenced file that exists with the
+    # WRONG bytes is a hard failure (the provenance claim is false). A
+    # referenced file that is simply ABSENT (the common archival-read case --
+    # an intermediate artifact cleaned up long after the run) must not be
+    # silently treated as verified; it is recorded as explicitly UNVERIFIED
+    # in the provenance dict this function's companion
+    # (``resolve_final_artifact_receipt_provenance``) returns, and does not
+    # break this function's own Path-only return for existing callers.
+    provenance: Dict[str, Any] = {}
+
     parent = _required_mapping(receipt, "immediate_parent")
-    if not isinstance(parent.get("path"), str) or not isinstance(parent.get("sha256"), str):
+    parent_path_value = parent.get("path")
+    parent_sha_value = parent.get("sha256")
+    if not isinstance(parent_path_value, str) or not isinstance(parent_sha_value, str):
         raise FinalArtifactReceiptError("Receipt immediate_parent must bind path and SHA-256")
+    parent_relative = Path(parent_path_value)
+    if parent_relative.is_absolute() or ".." in parent_relative.parts:
+        raise FinalArtifactReceiptError("Receipt immediate_parent.path escapes the run directory")
+    parent_file = _resolve_within_root(root, parent_relative, what="immediate_parent.path")
+    if parent_file.is_file():
+        actual_parent_sha = sha256_file(str(parent_file))
+        if actual_parent_sha != parent_sha_value:
+            raise FinalArtifactReceiptError(
+                "Receipt immediate_parent SHA-256 does not match bytes on disk"
+            )
+        provenance["immediate_parent"] = {"present": True, "verified": True}
+    else:
+        provenance["immediate_parent"] = {
+            "present": False,
+            "verified": False,
+            "reason": f"immediate_parent file not found on disk: {parent_file}",
+        }
 
     source_manifest = _required_mapping(receipt, "source_manifest")
-    if not isinstance(source_manifest.get("sha256"), str) or not source_manifest.get("sha256"):
+    source_manifest_sha_value = source_manifest.get("sha256")
+    if not isinstance(source_manifest_sha_value, str) or not source_manifest_sha_value:
         raise FinalArtifactReceiptError("Receipt source_manifest.sha256 is required")
+    source_manifest_path_value = source_manifest.get("path")
+    if isinstance(source_manifest_path_value, str) and source_manifest_path_value:
+        # Unlike final_xodr/immediate_parent/acceptance_receipt (always
+        # relativized via ``_receipt_path`` in ``build_receipt``),
+        # ``source_manifest.path`` is recorded as the caller's literal
+        # ``source_manifest_identity["inputs_manifest_path"]``, which is
+        # typically an ABSOLUTE path. ``_resolve_within_root`` still enforces
+        # containment after resolving either form.
+        source_manifest_file = _resolve_within_root(
+            root, Path(source_manifest_path_value), what="source_manifest.path"
+        )
+        if source_manifest_file.is_file():
+            actual_source_manifest_sha = sha256_file(str(source_manifest_file))
+            if actual_source_manifest_sha != source_manifest_sha_value:
+                raise FinalArtifactReceiptError(
+                    "Receipt source_manifest SHA-256 does not match bytes on disk"
+                )
+            provenance["source_manifest"] = {"present": True, "verified": True}
+        else:
+            provenance["source_manifest"] = {
+                "present": False,
+                "verified": False,
+                "reason": f"source_manifest file not found on disk: {source_manifest_file}",
+            }
+    else:
+        # No path recorded at all (older receipts carried only the sha256):
+        # there is nothing on disk to rehash against. Explicitly UNVERIFIED,
+        # never a silent pass.
+        provenance["source_manifest"] = {
+            "present": False,
+            "verified": False,
+            "reason": "receipt source_manifest has no path to rehash",
+        }
+
     if not isinstance(receipt.get("git_commit"), (str, type(None))):
         raise FinalArtifactReceiptError("Receipt git_commit must be a string or null")
     if not isinstance(receipt.get("created_at_utc"), str):
@@ -489,9 +607,50 @@ def resolve_final_artifact_receipt(run_dir: str) -> Path:
     acceptance_relative = Path(acceptance_path)
     if acceptance_relative.is_absolute() or ".." in acceptance_relative.parts:
         raise FinalArtifactReceiptError("Receipt acceptance receipt path escapes the run directory")
-    acceptance_file = (root / acceptance_relative).resolve()
+    acceptance_file = _resolve_within_root(root, acceptance_relative, what="acceptance_receipt.path")
     if not acceptance_file.is_file() or sha256_file(str(acceptance_file)) != acceptance.get("sha256"):
         raise FinalArtifactReceiptError("Receipt acceptance receipt SHA-256 does not match disk")
+
+    # V93-18: the resolver, like the builder, must not trust the receipt's
+    # self-reported ``map_acceptance_status`` alone -- that is a claim ABOUT
+    # the acceptance file, not the file itself. Parse the acceptance file's
+    # own content and require it to independently say the same thing. A
+    # receipt whose acceptance_receipt hash matches disk but whose actual
+    # content says ``valid_for_experiments: false`` (e.g. a receipt forged or
+    # replayed against a since-failed acceptance) must be rejected here, not
+    # just at build time.
+    try:
+        with acceptance_file.open("r", encoding="utf-8") as fh:
+            acceptance_file_payload = json.load(fh)
+    except (OSError, json.JSONDecodeError) as exc:
+        raise FinalArtifactReceiptError(
+            f"Cannot parse acceptance receipt {acceptance_file}: {exc}"
+        ) from exc
+    if not isinstance(acceptance_file_payload, dict):
+        raise FinalArtifactReceiptError("Acceptance receipt root must be a JSON object")
+    if acceptance_file_payload.get("valid_for_experiments") is not True:
+        raise FinalArtifactReceiptError(
+            "Receipt is not published: on-disk acceptance receipt does not "
+            "record valid_for_experiments=True"
+        )
+    file_final_sha = acceptance_file_payload.get("final_xodr_sha256")
+    if isinstance(file_final_sha, str) and file_final_sha and file_final_sha != actual_sha:
+        raise FinalArtifactReceiptError(
+            "Receipt is not published: on-disk acceptance receipt "
+            "final_xodr_sha256 does not match the resolved final XODR"
+        )
+    file_eval_sha = acceptance_file_payload.get("evaluated_xodr_sha256")
+    if isinstance(file_eval_sha, str) and file_eval_sha and file_eval_sha != actual_sha:
+        raise FinalArtifactReceiptError(
+            "Receipt is not published: on-disk acceptance receipt "
+            "evaluated_xodr_sha256 does not match the resolved final XODR"
+        )
+    file_run_id = acceptance_file_payload.get("run_id")
+    if isinstance(file_run_id, str) and file_run_id and file_run_id != root.name:
+        raise FinalArtifactReceiptError(
+            "Receipt is not published: on-disk acceptance receipt run_id "
+            f"{file_run_id!r} does not match run directory {root.name!r}"
+        )
 
     capability_state = _required_mapping(receipt, "capability_state")
     held = capability_state.get("held")
@@ -502,7 +661,7 @@ def resolve_final_artifact_receipt(run_dir: str) -> Path:
         raise FinalArtifactReceiptError(
             "Receipt capability_state does not prove a frozen published artifact"
         )
-    return final_path
+    return final_path, provenance
 
 
 # ---------------------------------------------------------------------------
@@ -788,6 +947,7 @@ class ArtifactAuthorityLedger:
         git_commit: Optional[str] = None,
         extra: Optional[Dict[str, Any]] = None,
         stage: str = "final_artifact_authority",
+        expected_final_sha256: Optional[str] = None,
     ) -> Dict[str, Any]:
         """Build the final acceptance receipt for the published artifact.
 
@@ -795,6 +955,13 @@ class ArtifactAuthorityLedger:
         stale or if ``STRUCTURE_FROZEN`` is not currently held -- i.e. a run
         that mutated structure after producing acceptance evidence cannot
         emit a valid final acceptance packet at all.
+
+        ``expected_final_sha256`` (V93-25/PR #30 "Later mutation earns
+        release receipt"): when given, it is the digest the caller already
+        verified the final artifact against (e.g. the pre-acceptance
+        snapshot). ``final_out`` can in principle be mutated between that
+        earlier verification and this call; this is the LAST re-check before
+        a receipt is allowed to claim ``PUBLISHED``.
         """
         self.require(STRUCTURE_FROZEN, stage)
         self.assert_structure_unchanged(final_artifact_path, where=stage)
@@ -818,12 +985,40 @@ class ArtifactAuthorityLedger:
             raise ArtifactAuthorityError(
                 "Cannot hash final artifact, immediate parent, or acceptance receipt"
             )
+        if expected_final_sha256 is not None and final_sha != expected_final_sha256:
+            raise ArtifactAuthorityError(
+                "Final artifact changed after acceptance was evaluated: expected "
+                f"sha256={expected_final_sha256}, final artifact at {final_path!r} "
+                f"is now {final_sha}"
+            )
         source_identity = source_manifest_identity or {}
         source_manifest_path = source_identity.get("inputs_manifest_path")
         source_manifest_sha = source_identity.get("inputs_manifest_sha256")
         if not isinstance(source_manifest_sha, str) or not source_manifest_sha:
             raise ArtifactAuthorityError(
                 "A final-artifact receipt requires source_manifest_identity.inputs_manifest_sha256"
+            )
+
+        effective_run_id = run_id or os.path.basename(os.path.normpath(root))
+
+        # V93-18: the in-memory ``map_acceptance`` dict a caller passes in is
+        # not, by itself, trustworthy evidence -- it can disagree with what
+        # was actually durably written to ``acceptance_receipt_path`` (the
+        # repro: on-disk file says ``valid_for_experiments: false``, the
+        # in-memory dict says ``True``). Parse the ON-DISK payload and
+        # require it to agree, independently, with every publication-gating
+        # claim below. A caller whose in-memory dict and file genuinely match
+        # (the only correct production shape) is unaffected.
+        try:
+            with open(acceptance_path, "r", encoding="utf-8") as fh:
+                acceptance_file_payload = json.load(fh)
+        except (OSError, json.JSONDecodeError) as exc:
+            raise ArtifactAuthorityError(
+                f"Cannot parse on-disk acceptance receipt {acceptance_path}: {exc}"
+            ) from exc
+        if not isinstance(acceptance_file_payload, dict):
+            raise ArtifactAuthorityError(
+                "On-disk acceptance receipt root must be a JSON object"
             )
 
         # A final receipt may document a failed acceptance, but that document
@@ -834,6 +1029,40 @@ class ArtifactAuthorityLedger:
         publication_reasons: List[str] = []
         if acceptance.get("valid_for_experiments") is not True:
             publication_reasons.append("map acceptance is not valid for experiments")
+        if acceptance_file_payload.get("valid_for_experiments") is not True:
+            publication_reasons.append(
+                "on-disk acceptance receipt does not record valid_for_experiments=True"
+            )
+        file_final_sha = acceptance_file_payload.get("final_xodr_sha256")
+        if (
+            isinstance(file_final_sha, str)
+            and file_final_sha
+            and file_final_sha != final_sha
+        ):
+            publication_reasons.append(
+                "on-disk acceptance receipt final_xodr_sha256 does not match the "
+                "published final artifact"
+            )
+        file_eval_sha = acceptance_file_payload.get("evaluated_xodr_sha256")
+        if (
+            isinstance(file_eval_sha, str)
+            and file_eval_sha
+            and file_eval_sha != final_sha
+        ):
+            publication_reasons.append(
+                "on-disk acceptance receipt evaluated_xodr_sha256 does not match "
+                "the published final artifact"
+            )
+        file_run_id = acceptance_file_payload.get("run_id")
+        if (
+            isinstance(file_run_id, str)
+            and file_run_id
+            and file_run_id != effective_run_id
+        ):
+            publication_reasons.append(
+                f"on-disk acceptance receipt run_id {file_run_id!r} does not match "
+                f"receipt run_id {effective_run_id!r}"
+            )
         certification_reason = _literal_spec_publication_reason(certification)
         if certification_reason:
             publication_reasons.append(certification_reason)
@@ -861,7 +1090,7 @@ class ArtifactAuthorityLedger:
             # trace information only; no resolver may rank by them.
             "schema_version": FINAL_ARTIFACT_RECEIPT_SCHEMA_VERSION,
             "receipt_kind": "final_artifact_receipt",
-            "run_id": run_id or os.path.basename(os.path.normpath(root)),
+            "run_id": effective_run_id,
             "created_at_utc": _utc_now(),
             "producer_stage": stage,
             "final_xodr": {

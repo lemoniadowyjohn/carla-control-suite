@@ -18,6 +18,7 @@ from ultimate_pipeline.contracts.artifact_authority import (
     FinalArtifactReceiptError,
     compute_structure_fingerprint,
     resolve_final_artifact_receipt,
+    resolve_final_artifact_receipt_provenance,
     sha256_file,
 )
 from ultimate_pipeline.contracts.stage_capabilities import (
@@ -196,3 +197,190 @@ def test_resolver_and_normalizer_agree_on_receipt_schema_version(
     else:
         with pytest.raises(FinalArtifactReceiptError, match="schema_version"):
             resolve_final_artifact_receipt(str(run_dir))
+
+
+# ---------------------------------------------------------------------------
+# V93-18 (P0): the resolver must parse the on-disk acceptance file content,
+# not just re-verify its hash.
+# ---------------------------------------------------------------------------
+
+
+def test_resolver_rejects_receipt_whose_acceptance_file_content_disagrees(
+    tmp_path: Path,
+):
+    """THE V93-18 resolver repro: acceptance_receipt hash matches disk, but
+    the file's actual content says valid_for_experiments=false."""
+    run_dir = tmp_path / "pipeline_out"
+    run_dir.mkdir()
+    published = _write_receipt(run_dir, schema_version=2)
+    acceptance = run_dir / "map_acceptance.json"
+    acceptance.write_text(
+        json.dumps({"valid_for_experiments": False, "hard_fail_reasons": ["tampered"]}),
+        encoding="utf-8",
+    )
+    # Re-bind the receipt's acceptance_receipt.sha256 to the NEW (failing)
+    # file content, so the hash check alone would pass -- only parsing the
+    # content can catch this.
+    receipt_path = run_dir / FINAL_ARTIFACT_RECEIPT_FILENAME
+    receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
+    receipt["acceptance_receipt"]["sha256"] = sha256_file(str(acceptance))
+    receipt_path.write_text(json.dumps(receipt), encoding="utf-8")
+
+    with pytest.raises(FinalArtifactReceiptError, match="valid_for_experiments"):
+        resolve_final_artifact_receipt(str(run_dir))
+    assert published.is_file()  # the XODR itself is untouched by this test
+
+
+def test_resolver_rejects_acceptance_file_sha_mismatch(tmp_path: Path):
+    run_dir = tmp_path / "pipeline_out"
+    run_dir.mkdir()
+    _write_receipt(run_dir, schema_version=2)
+    acceptance = run_dir / "map_acceptance.json"
+    payload = json.loads(acceptance.read_text(encoding="utf-8"))
+    payload["final_xodr_sha256"] = "0" * 64
+    acceptance.write_text(json.dumps(payload), encoding="utf-8")
+    receipt_path = run_dir / FINAL_ARTIFACT_RECEIPT_FILENAME
+    receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
+    receipt["acceptance_receipt"]["sha256"] = sha256_file(str(acceptance))
+    receipt_path.write_text(json.dumps(receipt), encoding="utf-8")
+
+    with pytest.raises(FinalArtifactReceiptError, match="final_xodr_sha256"):
+        resolve_final_artifact_receipt(str(run_dir))
+
+
+def test_resolver_rejects_acceptance_file_run_id_mismatch(tmp_path: Path):
+    run_dir = tmp_path / "pipeline_out"
+    run_dir.mkdir()
+    _write_receipt(run_dir, schema_version=2)
+    acceptance = run_dir / "map_acceptance.json"
+    payload = json.loads(acceptance.read_text(encoding="utf-8"))
+    payload["run_id"] = "some-other-run"
+    acceptance.write_text(json.dumps(payload), encoding="utf-8")
+    receipt_path = run_dir / FINAL_ARTIFACT_RECEIPT_FILENAME
+    receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
+    receipt["acceptance_receipt"]["sha256"] = sha256_file(str(acceptance))
+    receipt_path.write_text(json.dumps(receipt), encoding="utf-8")
+
+    with pytest.raises(FinalArtifactReceiptError, match="run_id"):
+        resolve_final_artifact_receipt(str(run_dir))
+
+
+# ---------------------------------------------------------------------------
+# V93-19 (P1): containment after Path.resolve(), not just the pre-resolve
+# textual ".."/absolute check.
+# ---------------------------------------------------------------------------
+
+
+def test_resolver_rejects_final_xodr_path_that_resolves_outside_root_via_monkeypatch(
+    tmp_path: Path, monkeypatch
+):
+    """A fake ``Path.resolve`` simulates a symlink/junction escape that the
+    pre-resolve textual check (no literal "..", not absolute) cannot see."""
+    run_dir = tmp_path / "pipeline_out"
+    run_dir.mkdir()
+    outside = tmp_path / "outside"
+    outside.mkdir()
+    published = _write_receipt(run_dir)
+    escape_target = outside / "escaped.xodr"
+    escape_target.write_text(XODR, encoding="utf-8")
+
+    import ultimate_pipeline.contracts.artifact_authority as aa
+
+    real_resolve = Path.resolve
+
+    def fake_resolve(self, *args, **kwargs):
+        resolved = real_resolve(self, *args, **kwargs)
+        if resolved == real_resolve(published):
+            return real_resolve(escape_target)
+        return resolved
+
+    monkeypatch.setattr(aa.Path, "resolve", fake_resolve, raising=True)
+    with pytest.raises(FinalArtifactReceiptError, match="outside the run directory"):
+        aa.resolve_final_artifact_receipt(str(run_dir))
+
+
+@pytest.mark.skipif(os.name == "nt", reason="symlink creation needs privileges on Windows")
+def test_resolver_rejects_real_symlink_escape_for_acceptance_receipt(tmp_path: Path):
+    """Real-symlink variant (skipped with a clear reason where unprivileged)."""
+    run_dir = tmp_path / "pipeline_out"
+    run_dir.mkdir()
+    outside = tmp_path / "outside"
+    outside.mkdir()
+    _write_receipt(run_dir)
+
+    escaped_acceptance = outside / "escaped_acceptance.json"
+    escaped_acceptance.write_text('{"valid_for_experiments": true}', encoding="utf-8")
+
+    acceptance_link = run_dir / "map_acceptance.json"
+    acceptance_link.unlink()
+    acceptance_link.symlink_to(escaped_acceptance)
+
+    receipt_path = run_dir / FINAL_ARTIFACT_RECEIPT_FILENAME
+    receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
+    receipt["acceptance_receipt"]["sha256"] = sha256_file(str(escaped_acceptance))
+    receipt_path.write_text(json.dumps(receipt), encoding="utf-8")
+
+    with pytest.raises(FinalArtifactReceiptError, match="outside the run directory"):
+        resolve_final_artifact_receipt(str(run_dir))
+
+
+# ---------------------------------------------------------------------------
+# V93-20 (P1): rehash-and-compare immediate_parent / source_manifest, with
+# explicit UNVERIFIED provenance when the referenced file is absent.
+# ---------------------------------------------------------------------------
+
+
+def test_resolver_rejects_immediate_parent_tampered_after_receipt(tmp_path: Path):
+    run_dir = tmp_path / "pipeline_out"
+    run_dir.mkdir()
+    _write_receipt(run_dir)
+    (run_dir / "08h3_parent.xodr").write_text(
+        XODR.replace('name="receipt"', 'name="tampered-parent"'), encoding="utf-8"
+    )
+
+    with pytest.raises(FinalArtifactReceiptError, match="immediate_parent SHA-256"):
+        resolve_final_artifact_receipt(str(run_dir))
+
+
+def test_resolver_rejects_source_manifest_tampered_after_receipt(tmp_path: Path):
+    run_dir = tmp_path / "pipeline_out"
+    run_dir.mkdir()
+    _write_receipt(run_dir)
+    (run_dir / "inputs_manifest.json").write_text(
+        '{"inputs": {"tampered": true}}', encoding="utf-8"
+    )
+
+    with pytest.raises(FinalArtifactReceiptError, match="source_manifest SHA-256"):
+        resolve_final_artifact_receipt(str(run_dir))
+
+
+def test_resolver_provenance_reports_present_and_verified_for_an_intact_run(
+    tmp_path: Path,
+):
+    run_dir = tmp_path / "pipeline_out"
+    run_dir.mkdir()
+    _write_receipt(run_dir)
+
+    provenance = resolve_final_artifact_receipt_provenance(str(run_dir))
+    assert provenance["immediate_parent"] == {"present": True, "verified": True}
+    assert provenance["source_manifest"] == {"present": True, "verified": True}
+
+
+def test_resolver_provenance_is_explicitly_unverified_when_parent_is_absent(
+    tmp_path: Path,
+):
+    """Archival-read case: the intermediate artifact was cleaned up long
+    after the run. Absence must not silently resolve to "verified", but a
+    receipt that is otherwise valid must still resolve (no raise)."""
+    run_dir = tmp_path / "pipeline_out"
+    run_dir.mkdir()
+    published = _write_receipt(run_dir)
+    (run_dir / "08h3_parent.xodr").unlink()
+
+    result = resolve_final_artifact_receipt(str(run_dir))
+    assert result == published
+
+    provenance = resolve_final_artifact_receipt_provenance(str(run_dir))
+    assert provenance["immediate_parent"]["present"] is False
+    assert provenance["immediate_parent"]["verified"] is False
+    assert "reason" in provenance["immediate_parent"]

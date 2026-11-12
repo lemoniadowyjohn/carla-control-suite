@@ -74,7 +74,36 @@ SIGNAL_REGISTRY: dict[str, dict[str, Any]] = {
         "missing_states": ["MISSING"],
         "skip_policy": "NEVER",
         "missing_policy": "FAIL",
-        "fields": ["schema", "valid_for_experiments", "sha256", "num_roads", "num_junctions", "reason"],
+        # V93-26: this list previously named fields
+        # (sha256/num_roads/num_junctions/reason) that
+        # ultimate_pipeline.quality.map_acceptance.build_map_acceptance never
+        # emits. These are the real map_acceptance_v1 keys that are ALWAYS
+        # present (i.e. excluding acceptance_artifact/acceptance_artifact_sha256,
+        # which only appear when the producer is given an out_dir+run_id).
+        # See tests/unit/test_map_acceptance.py::
+        # test_registry_fields_match_a_real_build_map_acceptance_payload.
+        "fields": [
+            "schema",
+            "run_id",
+            "final_xodr_path",
+            "final_xodr_sha256",
+            "valid_for_experiments",
+            "valid",
+            "hard_fail_reasons",
+            "soft_warnings",
+            "failed_gates",
+            "metrics",
+            "linked_artifacts",
+            "linked_artifact_sha256",
+            "mandatory_gates",
+            "mandatory_gate_status",
+            "acceptance_policy",
+            "evaluated_xodr_sha256",
+            "artifact_identity_verified",
+            "release_eligible",
+            "provenance",
+            "payload_sha256",
+        ],
     },
     "FINAL_ARTIFACT_RECEIPT": {
         "signal_id": "FINAL_ARTIFACT_RECEIPT",

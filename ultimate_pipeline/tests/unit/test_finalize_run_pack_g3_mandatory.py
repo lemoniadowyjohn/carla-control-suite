@@ -16,6 +16,7 @@ import pytest
 
 from ultimate_pipeline.utils.finalize_run_pack import (
     CATEGORY_MISSING,
+    PACK_COMPLETE_FILENAME,
     finalize_run_pack,
 )
 
@@ -64,7 +65,9 @@ def test_mandatory_artifact_present_in_key_paths_passes(tmp_path):
         tmp_path, ["required.bin"], mandatory=["required.bin"]
     )
     assert receipt["status"] == "PASS"
-    assert (tmp_path / "SUCCESS.txt").is_file()
+    # V93-25: the generic default path writes PACK_COMPLETE.txt, not SUCCESS.txt.
+    assert (tmp_path / PACK_COMPLETE_FILENAME).is_file()
+    assert not (tmp_path / "SUCCESS.txt").exists()
 
 
 def test_mandatory_artifact_missing_on_disk_fails(tmp_path):
@@ -100,7 +103,9 @@ def test_multiple_mandatory_all_present_passes(tmp_path):
         tmp_path, ["a.bin", "b.bin"], mandatory=["a.bin", "b.bin"]
     )
     assert receipt["status"] == "PASS"
-    assert (tmp_path / "SUCCESS.txt").is_file()
+    # V93-25: the generic default path writes PACK_COMPLETE.txt, not SUCCESS.txt.
+    assert (tmp_path / PACK_COMPLETE_FILENAME).is_file()
+    assert not (tmp_path / "SUCCESS.txt").exists()
 
 
 def test_no_mandatory_all_optional_missing_is_ok(tmp_path):

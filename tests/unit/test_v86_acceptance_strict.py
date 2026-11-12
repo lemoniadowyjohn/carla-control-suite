@@ -296,6 +296,10 @@ def test_diagnostic_or_legacy_acceptance_is_never_release_eligible(tmp_path):
     diag = build_map_acceptance(good, run_id="v86", purpose="diagnostic",
                                 mandatory_gates=fag.RELEASE_MANDATORY_GATES)
     assert diag["valid_for_experiments"] is True and diag["release_eligible"] is False
+    # V93-16/PR #30 ("a release purpose without evaluated_xodr_sha256 or
+    # final_xodr_path identity must not be release_eligible"): a genuine
+    # release-purpose PASS also requires identity evidence binding the
+    # acceptance to the exact bytes the gates evaluated.
     rel = build_map_acceptance(
         good, run_id="v86", purpose="release",
         mandatory_gates=fag.RELEASE_MANDATORY_GATES,
@@ -303,6 +307,29 @@ def test_diagnostic_or_legacy_acceptance_is_never_release_eligible(tmp_path):
     )
     assert rel["release_eligible"] is True
     assert rel["acceptance_policy"]["purpose"] == "release"
+    assert rel["artifact_identity_verified"] is True
+
+
+def test_release_purpose_without_identity_evidence_is_not_release_eligible():
+    """PR #30 review: no final_xodr_path/evaluated_xodr_sha256 => never eligible,
+    even though every mandatory gate PASSes (identity was simply never checked)."""
+    good = {g: {"ok": True} for g in fag.RELEASE_MANDATORY_GATES}
+    rel = build_map_acceptance(good, run_id="v86", purpose="release",
+                               mandatory_gates=fag.RELEASE_MANDATORY_GATES)
+    assert rel["valid_for_experiments"] is True
+    assert rel["artifact_identity_verified"] is False
+    assert rel["release_eligible"] is False
+
+
+def test_release_purpose_requires_the_authoritative_mandatory_gate_set():
+    """PR #30 review ("Enforce the authoritative gate set for release-purpose
+    calls"): a release-purpose call with a narrower mandatory_gates set than
+    RELEASE_MANDATORY_GATES must be rejected outright, not silently accepted
+    with fewer gates blocking release."""
+    narrowed = tuple(fag.RELEASE_MANDATORY_GATES[:-1])
+    assert narrowed != tuple(fag.RELEASE_MANDATORY_GATES)
+    with pytest.raises(ValueError, match="authoritative"):
+        build_map_acceptance({}, run_id="v86", purpose="release", mandatory_gates=narrowed)
 
 
 def _run_cli(tmp_path, purpose):

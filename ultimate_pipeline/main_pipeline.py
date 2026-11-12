@@ -106,9 +106,21 @@ def _require_valid_map_acceptance(out_dir) -> None:
     """Fail closed unless the durable final map acceptance is valid (V85 Phase 2).
 
     SUCCESS is a release-quality claim. It requires ``map_acceptance.json`` in
-    the run root to exist, parse, and record ``valid_for_experiments`` as
-    exactly ``True``.
+    the run root to exist, parse, and prove a genuine RELEASE acceptance --
+    not merely ``valid_for_experiments is True`` (V93-16/PR #30 "Diagnostic
+    verdict passes release checks"): a diagnostic evaluation with no
+    mandatory gates, or one whose ``acceptance_policy.purpose`` is not
+    ``"release"``, can satisfy that bare boolean alone and must never
+    authorize SUCCESS. The actual definition of "valid release acceptance"
+    lives in exactly one place --
+    ``ultimate_pipeline.quality.map_acceptance.validate_release_acceptance_contract``
+    -- shared with the final-artifact receipt builder/resolver so this gate
+    cannot silently drift from that one.
     """
+    from ultimate_pipeline.quality.map_acceptance import (
+        validate_release_acceptance_contract,
+    )
+
     path = Path(out_dir) / "map_acceptance.json"
     try:
         payload = json.loads(path.read_text(encoding="utf-8"))
@@ -116,11 +128,12 @@ def _require_valid_map_acceptance(out_dir) -> None:
         raise RuntimeError(
             f"TERMINAL_FAILED(MAP_ACCEPTANCE): {path} missing or unreadable: {exc}"
         ) from exc
-    if not isinstance(payload, dict) or payload.get("valid_for_experiments") is not True:
+    problems = validate_release_acceptance_contract(payload)
+    if problems:
         failed = payload.get("failed_gates") if isinstance(payload, dict) else None
         raise RuntimeError(
-            "TERMINAL_FAILED(MAP_ACCEPTANCE): final map acceptance is not valid "
-            f"(valid_for_experiments={payload.get('valid_for_experiments') if isinstance(payload, dict) else None!r}, "
+            "TERMINAL_FAILED(MAP_ACCEPTANCE): final map acceptance is not a valid "
+            f"release acceptance: {problems}; "
             f"failed_gates={failed!r}); SUCCESS will not be published"
         )
 
@@ -3640,6 +3653,42 @@ if str(_repo_root) not in sys.path:
             # before the receipt fails the run.
             unchanged, actual_sha = verify_artifact_unchanged(final_out, snapshot["sha256"])
             if not unchanged:
+                # PR #30 review (Sourcery "Failed run leaves passing receipt"):
+                # map_acceptance.json was already durably written above with a
+                # PASSING payload (it had to be, to even reach this identity
+                # check). If we just raise, that passing file remains on disk
+                # describing a run that is about to fail -- a later reader of
+                # this out_dir (a retried run that doesn't start clean, an
+                # external tool, _require_valid_map_acceptance if this run
+                # were ever resumed) could trust it. Atomically replace it
+                # with an explicit, non-eligible failure payload BEFORE
+                # raising, so no passing acceptance artifact survives this
+                # failure.
+                failure_reason = {
+                    "gate": "artifact_identity",
+                    "reason": (
+                        "FAIL: final artifact changed after acceptance evaluation "
+                        f"(evaluated sha256={snapshot['sha256']}, now {actual_sha})"
+                    ),
+                }
+                failure_payload = dict(map_acceptance)
+                failure_payload["valid_for_experiments"] = False
+                failure_payload["valid"] = False
+                failure_payload["release_eligible"] = False
+                failure_payload["artifact_identity_verified"] = False
+                failure_payload["hard_fail_reasons"] = list(
+                    map_acceptance.get("hard_fail_reasons") or []
+                ) + [failure_reason]
+                failure_payload["failed_gates"] = list(
+                    map_acceptance.get("failed_gates") or []
+                ) + ["artifact_identity"]
+                tmp_acc_path = f"{acc_path}.tmp"
+                with open(tmp_acc_path, "w", encoding="utf-8") as fh:
+                    json.dump(failure_payload, fh, indent=2, default=str)
+                    fh.flush()
+                    os.fsync(fh.fileno())
+                os.replace(tmp_acc_path, acc_path)
+                self.map_acceptance = failure_payload
                 raise RuntimeError(
                     "TERMINAL_FAILED(ARTIFACT_IDENTITY): final artifact changed after "
                     f"acceptance (evaluated {snapshot['sha256']}, now {actual_sha})"
@@ -3721,6 +3770,13 @@ if str(_repo_root) not in sys.path:
                 f"{topology_certification['error_type']}: {exc}"
             )
 
+        # PR #30 review (Sourcery "Later mutation earns release receipt"):
+        # final_out can, in principle, be mutated between the identity
+        # verification above and this call (fingerprinting, preflight,
+        # determinism, topology certification all run in between). Bind the
+        # receipt to the exact snapshot sha the acceptance gates evaluated so
+        # build_receipt re-checks it one more time, immediately before
+        # publication.
         receipt = ledger.build_receipt(
             final_artifact_path=final_out,
             map_acceptance=map_acceptance,
@@ -3732,6 +3788,7 @@ if str(_repo_root) not in sys.path:
             immediate_parent_path=immediate_parent_path or final_out,
             acceptance_receipt_path=acc_path,
             stage=stage,
+            expected_final_sha256=snapshot["sha256"],
         )
         receipt_path = write_receipt(self.out_dir, receipt)
         self.final_artifact_authority = receipt
