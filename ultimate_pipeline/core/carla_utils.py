@@ -1,4 +1,5 @@
 from __future__ import annotations
+import ctypes
 import socket
 try:
     import psutil  # type: ignore
@@ -171,30 +172,180 @@ def _cleanup_carla_crash_artifacts() -> None:
 # ============================================================
 # Process + port utilities
 # ============================================================
-def _kill_stuck_carla(proc: subprocess.Popen | None = None) -> bool:
-    """Stop only an exact subprocess.Popen handle created by this launcher.
+
+_IS_WINDOWS = os.name == "nt"
+
+# kernel32 handle used for Job Object creation/teardown. None on non-Windows
+# or whenever ctypes access to it fails -- every call site below treats that
+# as "skip the job-object path, use the psutil-children fallback instead",
+# never as a reason to match processes by name.
+_kernel32 = ctypes.windll.kernel32 if _IS_WINDOWS else None  # type: ignore[attr-defined]
+
+_JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE = 0x00002000
+_JOB_OBJECT_EXTENDED_LIMIT_INFORMATION_CLASS = 9
+_PROCESS_ALL_ACCESS = 0x1F0FFF
+
+
+class _JOBOBJECT_BASIC_LIMIT_INFORMATION(ctypes.Structure):
+    _fields_ = [
+        ("PerProcessUserTimeLimit", ctypes.c_int64),
+        ("PerJobUserTimeLimit", ctypes.c_int64),
+        ("LimitFlags", ctypes.c_uint32),
+        ("MinimumWorkingSetSize", ctypes.c_size_t),
+        ("MaximumWorkingSetSize", ctypes.c_size_t),
+        ("ActiveProcessLimit", ctypes.c_uint32),
+        ("Affinity", ctypes.c_size_t),
+        ("PriorityClass", ctypes.c_uint32),
+        ("SchedulingClass", ctypes.c_uint32),
+    ]
+
+
+class _IO_COUNTERS(ctypes.Structure):
+    _fields_ = [
+        ("ReadOperationCount", ctypes.c_uint64),
+        ("WriteOperationCount", ctypes.c_uint64),
+        ("OtherOperationCount", ctypes.c_uint64),
+        ("ReadTransferCount", ctypes.c_uint64),
+        ("WriteTransferCount", ctypes.c_uint64),
+        ("OtherTransferCount", ctypes.c_uint64),
+    ]
+
+
+class _JOBOBJECT_EXTENDED_LIMIT_INFORMATION(ctypes.Structure):
+    _fields_ = [
+        ("BasicLimitInformation", _JOBOBJECT_BASIC_LIMIT_INFORMATION),
+        ("IoInfo", _IO_COUNTERS),
+        ("ProcessMemoryLimit", ctypes.c_size_t),
+        ("JobMemoryLimit", ctypes.c_size_t),
+        ("PeakProcessMemoryUsed", ctypes.c_size_t),
+        ("PeakJobMemoryUsed", ctypes.c_size_t),
+    ]
+
+
+def _create_job_object_for_pid(pid: int) -> int | None:
+    """Create a Windows Job Object scoped to exactly one launched PID.
+
+    Sets JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE and assigns `pid` to it. When the
+    job is later terminated (`_terminate_job_object`), every process still
+    assigned to it is killed -- this is how CarlaUE4.exe's
+    CarlaUE4-Win64-Shipping.exe child (spawned after launch, so it can never
+    be captured by a one-time `children()` snapshot at Popen time) gets
+    reaped, without ever enumerating processes or matching by name.
+
+    Returns None (never raises) on non-Windows or any ctypes/API failure --
+    callers must fall back to the psutil-children path in that case.
+    """
+    if not _IS_WINDOWS:
+        print("[carla] Job Object path skipped (not Windows); using psutil children() for descendant reaping.")
+        return None
+    if _kernel32 is None:
+        print("[carla] Job Object path skipped (kernel32 unavailable); using psutil children() for descendant reaping.")
+        return None
+    try:
+        job = _kernel32.CreateJobObjectW(None, None)
+        if not job:
+            return None
+
+        info = _JOBOBJECT_EXTENDED_LIMIT_INFORMATION()
+        info.BasicLimitInformation.LimitFlags = _JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE
+        if not _kernel32.SetInformationJobObject(
+            job,
+            _JOB_OBJECT_EXTENDED_LIMIT_INFORMATION_CLASS,
+            ctypes.byref(info),
+            ctypes.sizeof(info),
+        ):
+            _kernel32.CloseHandle(job)
+            return None
+
+        hproc = _kernel32.OpenProcess(_PROCESS_ALL_ACCESS, False, int(pid))
+        if not hproc:
+            _kernel32.CloseHandle(job)
+            return None
+        try:
+            if not _kernel32.AssignProcessToJobObject(job, hproc):
+                _kernel32.CloseHandle(job)
+                return None
+        finally:
+            _kernel32.CloseHandle(hproc)
+        return int(job)
+    except Exception as exc:
+        print(f"[carla] Job Object unavailable ({exc}); will use psutil children() as fallback.")
+        return None
+
+
+def _terminate_job_object(job_handle: int | None) -> bool:
+    """Terminate every process still assigned to `job_handle` and close it.
+
+    Returns False (never raises) if the handle is missing or the API call
+    fails -- callers must then fall back to the psutil-children path.
+    """
+    if not _IS_WINDOWS or _kernel32 is None or not job_handle:
+        return False
+    try:
+        ok = bool(_kernel32.TerminateJobObject(job_handle, 1))
+        _kernel32.CloseHandle(job_handle)
+        return ok
+    except Exception as exc:
+        print(f"[carla] Job Object termination failed ({exc}); falling back to psutil children().")
+        return False
+
+
+def _kill_stuck_carla(proc: subprocess.Popen | None = None, *, job_handle: int | None = None) -> bool:
+    """Stop only an exact subprocess.Popen handle created by this launcher,
+    and reap its descendant tree (e.g. CarlaUE4.exe's Shipping child).
 
     Never enumerate by image name or kill by bare PID: unrelated processes and
     recycled PIDs are not evidence of ownership. A process handle remains
     associated with its original child, even if that child has exited.
+
+    Descendant reaping is scoped strictly to the owned handle:
+    - Preferred: a Windows Job Object assigned at launch time
+      (`job_handle` from `_create_job_object_for_pid`). Terminating it kills
+      every process still assigned to it, including children spawned after
+      launch -- this is the only reliable way to catch a child that did not
+      exist yet when the handle was captured.
+    - Fallback (job object missing or its termination failed -- e.g.
+      non-Windows): `psutil.Process(proc.pid).children(recursive=True)`,
+      snapshotted here while the parent is still alive, then killed by PID.
+      Never falls back further to name matching.
     """
     if proc is None:
         print("[carla] Refusing process-wide kill without a launch-owned handle.")
         return False
+
+    fallback_children: list = []
+    if psutil is not None:
+        try:
+            pid = getattr(proc, "pid", None)
+            if pid is not None and proc.poll() is None:
+                fallback_children = psutil.Process(int(pid)).children(recursive=True)
+        except Exception:
+            fallback_children = []
+
     try:
         if proc.poll() is not None:
-            return True
-        proc.terminate()
-        try:
-            proc.wait(timeout=10)
-        except subprocess.TimeoutExpired:
-            if proc.poll() is None:
-                proc.kill()
+            ok = True
+        else:
+            proc.terminate()
+            try:
                 proc.wait(timeout=10)
-        return proc.poll() is not None
+            except subprocess.TimeoutExpired:
+                if proc.poll() is None:
+                    proc.kill()
+                    proc.wait(timeout=10)
+            ok = proc.poll() is not None
     except (OSError, subprocess.SubprocessError, AttributeError) as exc:
         print(f"[carla] Could not stop launch-owned child: {exc}")
-        return False
+        ok = False
+
+    if not _terminate_job_object(job_handle):
+        for child in fallback_children:
+            try:
+                child.kill()
+            except Exception:
+                pass
+
+    return ok
 
 
 def _port_open(host: str, port: int, timeout: float = 1.0) -> bool:
@@ -351,6 +502,16 @@ def restart_carla(host: str | None = None, port: int | None = None) -> bool:
                 log_file.close()  # type: ignore[union-attr]
         print(f"[carla] server log -> {log_path}")
 
+        # Assign a Job Object to the launched handle immediately: CarlaUE4.exe
+        # spawns a CarlaUE4-Win64-Shipping.exe child that doesn't exist yet at
+        # this point, so only an OS-level job (not a children() snapshot taken
+        # here) can guarantee it gets reaped later. Scoped to this exact PID;
+        # never used to enumerate or match other processes. None on failure
+        # (e.g. non-Windows) -- _kill_stuck_carla() falls back to psutil
+        # children() in that case.
+        launched_pid = getattr(launched_proc, "pid", None)
+        launched_job = _create_job_object_for_pid(launched_pid) if launched_pid is not None else None
+
         try:
             if _wait_for_ports(host, ports, timeout_s=120.0):
                 # C20 Tier 3: the port opening is NOT the same as CARLA being ready
@@ -367,6 +528,10 @@ def restart_carla(host: str | None = None, port: int | None = None) -> bool:
                         print(f"✅ CARLA restarted and RPC-ready on {host}:{port} (streaming disabled)")
                     else:
                         print(f"✅ CARLA restarted and RPC-ready on {host}:{port} (streaming {streaming_port})")
+                    # launched_job (if any) is intentionally left open here: it
+                    # must only be terminated when we decide to kill CARLA, and
+                    # closing/terminating it now (success path) would kill the
+                    # server we just confirmed ready via JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE.
                     return True
                 print(
                     f"⚠ CARLA port {port} opened but RPC never responded within "
@@ -375,10 +540,12 @@ def restart_carla(host: str | None = None, port: int | None = None) -> bool:
         except Exception as exc:
             print(f"[carla] Launch-owned RPC readiness error: {exc}")
 
-        # Reap only the exact child handle from this launch attempt.
-        # A wrapper that spawns detached children is NOT sufficient evidence to
-        # terminate those children: a subsequent bind conflict must fail closed.
-        if not _kill_stuck_carla(launched_proc):
+        # Reap only the exact child handle from this launch attempt (and its
+        # descendant tree, via the job object assigned above). A wrapper that
+        # spawns detached children is NOT sufficient evidence to terminate
+        # those children on its own: a subsequent bind conflict must fail
+        # closed regardless.
+        if not _kill_stuck_carla(launched_proc, job_handle=launched_job):
             print("[carla] Launch-owned cleanup incomplete; refusing another attempt.")
             return False
         time.sleep(2)

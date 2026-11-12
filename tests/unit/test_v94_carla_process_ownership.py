@@ -76,6 +76,142 @@ def test_unresponsive_owned_child_escalates_only_same_handle():
     assert foreign.terminated == foreign.killed == 0
 
 
+# ---------------------------------------------------------------------------
+# V94 round 2, item 3: reap the owned descendant tree (CarlaUE4.exe spawns a
+# Shipping child after launch -- a one-time children() snapshot at Popen time
+# can never see it). Preferred path is a Windows Job Object; fallback is
+# psutil children(), captured while the parent is alive; neither path may
+# ever enumerate or match processes by name.
+# ---------------------------------------------------------------------------
+
+class FakeTreeMember:
+    """A fake process-tree node (owned child or an unrelated same-name proc)."""
+
+    def __init__(self, pid: int, name: str):
+        self.pid = pid
+        self.name = name
+        self.killed = 0
+
+    def kill(self):
+        self.killed += 1
+
+
+def test_psutil_fallback_reaps_owned_child_but_spares_unrelated_same_name_process(monkeypatch):
+    """No job object available -- the psutil-children fallback must kill only
+    the owned PID's own children, never a same-named process that merely
+    happens to exist elsewhere (that would be name-matching in disguise)."""
+    owned = FakeProcess()
+    owned.pid = 4242
+    shipping_child = FakeTreeMember(4243, "CarlaUE4-Win64-Shipping.exe")
+    unrelated_same_name = FakeTreeMember(9999, "CarlaUE4-Win64-Shipping.exe")
+
+    class FakePsutilProcess:
+        def __init__(self, pid):
+            assert pid == owned.pid, "must query the owned PID only, never enumerate"
+
+        def children(self, recursive=False):
+            assert recursive is True
+            return [shipping_child]
+
+    class FakePsutil:
+        Process = FakePsutilProcess
+
+        @staticmethod
+        def process_iter(*_a, **_k):
+            raise AssertionError("must not enumerate all processes")
+
+    monkeypatch.setattr(cu, "psutil", FakePsutil)
+    # Force the job-object path unavailable so the psutil fallback is exercised.
+    monkeypatch.setattr(cu, "_terminate_job_object", lambda job_handle: False)
+
+    assert cu._kill_stuck_carla(owned) is True
+    assert owned.terminated == 1
+    assert shipping_child.killed == 1
+    assert unrelated_same_name.killed == 0
+
+
+def test_job_object_success_takes_precedence_over_psutil_children(monkeypatch):
+    """When the job-object termination succeeds, the psutil-children fallback
+    must not also run (it would be redundant and, if the snapshot were ever
+    stale, unsafe)."""
+    owned = FakeProcess()
+    owned.pid = 5000
+    captured_child = FakeTreeMember(5001, "CarlaUE4-Win64-Shipping.exe")
+
+    class FakePsutilProcess:
+        def __init__(self, pid):
+            self._pid = pid
+
+        def children(self, recursive=False):
+            return [captured_child]
+
+    monkeypatch.setattr(cu, "psutil", SimpleNamespace(Process=FakePsutilProcess))
+    terminated_jobs = []
+    monkeypatch.setattr(
+        cu, "_terminate_job_object",
+        lambda job_handle: terminated_jobs.append(job_handle) or True,
+    )
+
+    assert cu._kill_stuck_carla(owned, job_handle=777) is True
+    assert terminated_jobs == [777]
+    assert captured_child.killed == 0
+
+
+def test_create_and_terminate_job_object_drive_kernel32_api_in_order(monkeypatch):
+    """_create_job_object_for_pid/_terminate_job_object must call the Win32
+    Job Object API (CreateJobObjectW -> SetInformationJobObject ->
+    OpenProcess -> AssignProcessToJobObject, then TerminateJobObject on
+    teardown) scoped to exactly the given PID -- never enumerating."""
+    calls: list[tuple] = []
+
+    class FakeKernel32:
+        def CreateJobObjectW(self, _sec, _name):
+            calls.append(("CreateJobObjectW",))
+            return 111
+
+        def SetInformationJobObject(self, job, info_class, info, size):
+            calls.append(("SetInformationJobObject", job))
+            return 1
+
+        def OpenProcess(self, access, inherit, pid):
+            calls.append(("OpenProcess", pid))
+            return 222
+
+        def AssignProcessToJobObject(self, job, hproc):
+            calls.append(("AssignProcessToJobObject", job, hproc))
+            return 1
+
+        def CloseHandle(self, handle):
+            calls.append(("CloseHandle", handle))
+            return 1
+
+        def TerminateJobObject(self, job, exit_code):
+            calls.append(("TerminateJobObject", job, exit_code))
+            return 1
+
+    monkeypatch.setattr(cu, "_IS_WINDOWS", True)
+    monkeypatch.setattr(cu, "_kernel32", FakeKernel32())
+
+    job = cu._create_job_object_for_pid(1234)
+    assert job == 111
+    assert ("OpenProcess", 1234) in calls
+    assert ("AssignProcessToJobObject", 111, 222) in calls
+
+    assert cu._terminate_job_object(job) is True
+    assert ("TerminateJobObject", 111, 1) in calls
+
+
+def test_job_object_path_skipped_with_a_reason_off_windows(monkeypatch, capsys):
+    """Off Windows, the job-object path must be skipped (never raise, never
+    attempted), with a printed reason, so _kill_stuck_carla silently falls
+    back to psutil children()."""
+    monkeypatch.setattr(cu, "_IS_WINDOWS", False)
+    assert cu._create_job_object_for_pid(1234) is None
+    out = capsys.readouterr().out
+    assert "skipped" in out
+    assert cu._terminate_job_object(999) is False
+
+
 def test_crash_cache_cleanup_never_deletes_shared_directories(monkeypatch, tmp_path: Path):
     saved = tmp_path / "CarlaUE4" / "Saved"
     for name in ("Crashes", "Temp", "DerivedDataCache"):

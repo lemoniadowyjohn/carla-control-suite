@@ -177,7 +177,7 @@ def _patch_restart_common(monkeypatch: pytest.MonkeyPatch, tmp_path: Path, *, cl
     monkeypatch.setattr(cu.SETTINGS, "CARLA_PORT", 2000, raising=False)
     monkeypatch.setattr(cu.SETTINGS, "CARLA_STREAMING_PORT", 2001, raising=False)
     monkeypatch.setattr(cu, "_cleanup_carla_crash_artifacts", lambda: None)
-    monkeypatch.setattr(cu, "_kill_stuck_carla", lambda proc=None: None)
+    monkeypatch.setattr(cu, "_kill_stuck_carla", lambda proc=None, **_kw: None)
     monkeypatch.setattr(cu, "_gpu_tdr_preflight", lambda: {"ok": True, "skipped": True})
     monkeypatch.setattr(cu.time, "sleep", lambda *_: None)
     monkeypatch.setattr(cu, "_vram_preflight", lambda: None)
