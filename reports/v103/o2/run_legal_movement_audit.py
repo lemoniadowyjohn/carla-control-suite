@@ -57,6 +57,32 @@ def sha256_file(path: Path) -> str:
     return h.hexdigest()
 
 
+def render_summary(report, *, per_status: int = 200) -> dict:
+    """A compact, committable view of the report.
+
+    The full movement listing for a real map runs to tens of megabytes
+    (64,860 movements on the pinned Ingolstadt OSM), so the committed
+    artifact carries the complete COUNTS, the complete restriction
+    statistics, and a bounded sample per verdict.  The full listing is
+    written separately and is not committed.
+    """
+    payload = report.to_dict()
+    sample: list[dict] = []
+    for status in sorted({m.status for m in report.movements}):
+        subset = [m for m in report.movements if m.status == status]
+        for movement in subset[:per_status]:
+            sample.append(movement.to_dict())
+    payload["movements"] = sample
+    payload["movements_sampled"] = True
+    payload["movements_total"] = len(report.movements)
+    payload["movements_sample_per_status"] = per_status
+    payload["note"] = (
+        "movements is a bounded sample per verdict; the complete listing is "
+        "written to the full report path and is not committed"
+    )
+    return payload
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--vehicle", default="motor_vehicle")
@@ -154,9 +180,19 @@ def main() -> int:
     out["report"] = report.to_dict()
 
     OUT_DIR.mkdir(parents=True, exist_ok=True)
-    target = OUT_DIR / f"LEGAL_MOVEMENT_{args.vehicle.upper()}.json"
-    target.write_text(render_report(report), encoding="utf-8")
-    out["written"] = str(target.relative_to(REPO))
+    stem = f"LEGAL_MOVEMENT_{args.vehicle.upper()}"
+    full_path = OUT_DIR / f"{stem}_FULL.json"
+    summary_path = OUT_DIR / f"{stem}_SUMMARY.json"
+
+    # The complete listing is written but NOT committed: it is tens of
+    # megabytes on a real map.
+    full_path.write_text(render_report(report), encoding="utf-8")
+    summary_path.write_text(
+        json.dumps(render_summary(report), indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+    out["written_summary"] = str(summary_path.relative_to(REPO))
+    out["written_full_not_committed"] = str(full_path.relative_to(REPO))
 
     counts = report.counts
     print(f"vehicle_class      : {args.vehicle}")
@@ -170,7 +206,8 @@ def main() -> int:
     print(f"restrictions applied / undecidable / malformed : "
           f"{report.restrictions_applied} / {report.undecidable_restrictions} / "
           f"{report.restrictions_ambiguous}")
-    print(f"WROTE {target}")
+    print(f"WROTE {summary_path}")
+    print(f"WROTE {full_path}  (not committed: the full listing is large)")
     return 0
 
 
