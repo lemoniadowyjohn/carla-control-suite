@@ -286,14 +286,21 @@ def test_release_purpose_requires_mandatory_gates():
         build_map_acceptance({}, run_id="v86", purpose="bogus")
 
 
-def test_diagnostic_or_legacy_acceptance_is_never_release_eligible():
+def test_diagnostic_or_legacy_acceptance_is_never_release_eligible(tmp_path):
+    import hashlib
+
     good = {g: {"ok": True} for g in fag.RELEASE_MANDATORY_GATES}
+    final = Path(_write(tmp_path, _xodr(_road(1, 0)), "accepted.xodr"))
+    digest = hashlib.sha256(final.read_bytes()).hexdigest()
     assert build_map_acceptance(good, run_id="v86")["release_eligible"] is False
     diag = build_map_acceptance(good, run_id="v86", purpose="diagnostic",
                                 mandatory_gates=fag.RELEASE_MANDATORY_GATES)
     assert diag["valid_for_experiments"] is True and diag["release_eligible"] is False
-    rel = build_map_acceptance(good, run_id="v86", purpose="release",
-                               mandatory_gates=fag.RELEASE_MANDATORY_GATES)
+    rel = build_map_acceptance(
+        good, run_id="v86", purpose="release",
+        mandatory_gates=fag.RELEASE_MANDATORY_GATES,
+        final_xodr_path=str(final), evaluated_xodr_sha256=digest,
+    )
     assert rel["release_eligible"] is True
     assert rel["acceptance_policy"]["purpose"] == "release"
 

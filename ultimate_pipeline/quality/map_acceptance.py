@@ -644,8 +644,20 @@ def build_map_acceptance(
 ) -> Dict[str, Any]:
     if purpose not in (None, "release", "diagnostic"):
         raise ValueError(f"unknown acceptance purpose {purpose!r}")
-    if purpose == "release" and not mandatory_gates:
-        raise ValueError("release-purpose acceptance requires the authoritative mandatory_gates set")
+    if purpose == "release":
+        # Release callers may not redefine the acceptance policy by supplying
+        # a nonempty subset (or an unrelated gate).  Compare against the
+        # authoritative producer contract, not a caller-supplied count.
+        from ultimate_pipeline.quality.final_artifact_gates import (
+            RELEASE_MANDATORY_GATES,
+        )
+        supplied = tuple(mandatory_gates or ())
+        if (len(supplied) != len(RELEASE_MANDATORY_GATES)
+                or set(supplied) != set(RELEASE_MANDATORY_GATES)):
+            raise ValueError(
+                "release-purpose acceptance requires the exact authoritative "
+                "RELEASE_MANDATORY_GATES set"
+            )
     hard_fail_reasons: List[Dict[str, str]] = []
     soft_warnings: List[Dict[str, str]] = []
     metrics: Dict[str, Any] = {}
@@ -1164,15 +1176,33 @@ def build_map_acceptance(
     # V86 A6: bind the verdict to the exact bytes the gates evaluated. If the
     # published artifact no longer hashes to the evaluated digest, the
     # receipt would describe a different file than the one that was checked.
-    if evaluated_xodr_sha256 is not None:
-        if final_xodr_sha256 != evaluated_xodr_sha256:
-            hard_fail_reasons.append({
-                "gate": "artifact_identity",
-                "reason": (
-                    f"FAIL: published artifact sha256={final_xodr_sha256} != evaluated "
-                    f"snapshot sha256={evaluated_xodr_sha256}"
-                ),
-            })
+    if purpose == "release" and (
+        not isinstance(evaluated_xodr_sha256, str)
+        or len(evaluated_xodr_sha256) != 64
+        or any(c not in "0123456789abcdef" for c in evaluated_xodr_sha256)
+        or not isinstance(final_xodr_sha256, str)
+        or len(final_xodr_sha256) != 64
+        or final_xodr_sha256 != evaluated_xodr_sha256
+    ):
+        hard_fail_reasons.append({
+            "gate": "artifact_identity",
+            "reason": (
+                "BLOCKED_INPUT: release requires a valid evaluated SHA256 "
+                "and the existing published artifact must match it exactly "
+                f"(published={final_xodr_sha256!r}, "
+                f"evaluated={evaluated_xodr_sha256!r})"
+            ),
+        })
+    elif evaluated_xodr_sha256 is not None and (
+        final_xodr_sha256 != evaluated_xodr_sha256
+    ):
+        hard_fail_reasons.append({
+            "gate": "artifact_identity",
+            "reason": (
+                f"FAIL: published artifact sha256={final_xodr_sha256} != evaluated "
+                f"snapshot sha256={evaluated_xodr_sha256}"
+            ),
+        })
 
     valid_for_experiments = len(hard_fail_reasons) == 0
     # V86 A9: only an explicit release-purpose evaluation with the
