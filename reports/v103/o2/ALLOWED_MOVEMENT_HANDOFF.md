@@ -134,27 +134,28 @@ oriented. Where the binding is missing, the comparison is
 
 ## 5. What is NOT modelled (stated, not hidden)
 
-* **Conditional restrictions** need a clock/vehicle context. Without one
+* **Conditional restrictions** need a clock/vehicle context.  Without one
   they are `UNSUPPORTED_CONDITIONAL` and the affected movements are
   `UNSUPPORTED_CONDITIONAL` — never silently ignored and never silently
-  permitted. The pinned real OSM carries **4** `oneway:conditional` ways
+  permitted.  The pinned real OSM carries **4** `oneway:conditional` ways
   and **0** conditional turn restrictions.
+  **A context IS now supported** (see §9): `RestrictionContext(clock=...,
+  day=...)` evaluates the daily-window subset
+  (`no @ (10:00-16:00)`, `yes @ (Mo-Fr 07:00-09:00)`).  A dated range or
+  any other form stays `None` — undecidable, never guessed.
 * **`no_entry` / `no_exit`** are valid OSM but need a from/to semantics
   this module does not model; they are reported `UNSUPPORTED_FORM`, not
   dropped.
 * **A `restriction` tag on a WAY** (rather than on a relation) defines
-  nothing. The pinned real OSM carries exactly **one** such tag; it is
+  nothing.  The pinned real OSM carries exactly **one** such tag; it is
   reported `INCOMPLETE` with the reason, and it is counted in
   `restrictions.ambiguous`.
-* **Via-WAY restriction chains** are parsed and carried in
-  `via_ways`, but the *movement candidate* is still enumerated per shared
-  node. A via-way chain is therefore represented in the restriction
-  record and not yet used to split a candidate movement. This is a
-  **known modelling gap**, stated here rather than hidden.
 * **`turn:lanes` is NOT used to decide legality.** It indicates allowed /
   intended lane turn *directions*; the final lane-to-lane mapping needs
   directed endpoints, actual lanes and junction connector geometry. This
   module deliberately does not infer lane-level connections.
+* **Lane-level enforcement is not implemented** and is out of scope by
+  design (see §4).
 
 ---
 
@@ -227,28 +228,62 @@ Two rules for the gate owner:
   bicycle contraflow, conditional restriction (with and without a clock
   context), conflicting tags, a malformed restriction, a missing member,
   and an ambiguous XODR correspondence.
-* **4 mutation controls, 4 detected, 0 missed** — each control removes one
-  fix and the test that pins it fails:
-  `only_*` forbids its alternatives; the default permission never
-  overrides a decided record; an undecidable oneway never yields a
-  permission; a grade-separated crossing is a physical discontinuity.
+* `tests/unit/test_v106_o2_gap_closure.py` — **9 tests** for the three
+  gap-closure fixes.
+* **9 mutation controls, 9 detected, 0 missed.**  The first pass detected
+  only 4 of the first 4 and **missed** the via-way control; re-examining
+  it showed the control was not meaningful (both code paths carry
+  `via_ways`), so it was reformulated to target the defect that actually
+  matters — that a via-way which does not connect must forbid nothing.
+  A second control was missed because the weekday mutation did not change
+  the outcome for `"Mo"`; the test was strengthened with a mid-week day.
 * The CLI verifies the OSM SHA-256 against the pinned manifest, refuses a
   Git-LFS pointer, admits the source through a bounded entity-free scan,
   and exits non-zero on any missing or stale input.
+* O1 + O2 related suites: **148 passed**.
 
 ---
 
 ## 9. Open items for the next iteration
 
-1. **Via-WAY chains** do not yet split a candidate movement (see §5).
-2. **The U-turn form** is parsed but the `no_u_turn` semantics (from == to
-   through a node) are not yet distinguished from an ordinary turn.
-3. **Conditional restrictions** need a clock/vehicle context parameter on
-   `build_movement_graph` so a caller can decide them; without one they
-   are correctly `UNSUPPORTED_CONDITIONAL`.
+1. ~~**Via-WAY chains** do not yet split a candidate movement.~~ **CLOSED.**
+   A via-way restriction is now evaluated as its own movement class: the
+   via-way must actually connect the from-way and the to-way, and the
+   record carries the entry and exit nodes.  A via-way that does not
+   connect forbids nothing and is reported `UNKNOWN_NO_SOURCE` with the
+   reason `the via-way does not connect the from-way and the to-way`.
+2. ~~**The U-turn form** is parsed but the `no_u_turn` semantics (from ==
+   to through a node) are not yet distinguished from an ordinary turn.~~
+   **CLOSED.** A `no_u_turn` forbids the **self-movement**, which the
+   node-based candidate set never contains; without the explicit handling
+   a parsed `no_u_turn` was reported as applied while changing nothing.
+3. ~~**Conditional restrictions** need a clock/vehicle context parameter.~~
+   **CLOSED.** `RestrictionContext(clock="HH:MM", day="Mo")` is accepted by
+   `parse_restrictions(context=...)` and by
+   `build_movement_graph(restriction_context=...)`.  The daily-window
+   subset is evaluated; a dated range stays undecidable.  A conditional
+   that does **not** hold at the supplied moment is still RECORDED (as
+   `INCOMPLETE` with the reason), not silently dropped.
 4. **No gate integration.** The comparison API is the input; whether a
    denied movement blocks a release is the gate owner's decision, and the
    **enforcement boundary is not implemented**.
 5. **The report does not cover lane-level connections**, by design: the
    dispatch states that `turn:lanes` alone does not specify lane-to-lane
    connections.
+
+### The API after the gap closure
+
+```python
+from ultimate_pipeline.enrichment.osm_restrictions import RestrictionContext
+
+graph = build_movement_graph(
+    document,
+    vehicle_class="motor_vehicle",
+    restriction_context=RestrictionContext(clock="12:00", day="Mo"),
+)
+report = build_allowed_movement_report(graph, default_permission=False)
+```
+
+With a context, a conditional restriction that holds becomes an ordinary
+`DENY_SOURCE_PROVEN`; one that does not hold is recorded as not applying.
+Without a context it stays `UNSUPPORTED_CONDITIONAL`.

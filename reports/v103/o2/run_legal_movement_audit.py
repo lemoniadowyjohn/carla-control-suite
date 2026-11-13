@@ -187,8 +187,19 @@ def main() -> int:
     # The complete listing is written but NOT committed: it is tens of
     # megabytes on a real map.
     full_path.write_text(render_report(report), encoding="utf-8")
+    summary = render_summary(report)
+    if "xodr_join" in out:
+        # The XODR comparison is part of the evidence and must be
+        # persisted, not only printed.
+        summary["xodr_join"] = out["xodr_join"]
+    summary["audit"] = {
+        "osm_source": out.get("osm_source"),
+        "osm_document": out.get("osm_document"),
+        "vehicle_class": args.vehicle,
+        "default_permission": not args.no_default_permission,
+    }
     summary_path.write_text(
-        json.dumps(render_summary(report), indent=2, sort_keys=True) + "\n",
+        json.dumps(summary, indent=2, sort_keys=True) + "\n",
         encoding="utf-8",
     )
     out["written_summary"] = str(summary_path.relative_to(REPO))

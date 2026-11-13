@@ -1,4 +1,27 @@
 {
+  "audit": {
+    "default_permission": true,
+    "osm_document": {
+      "bytes": 11154738,
+      "complete": true,
+      "generator": "Overpass API 0.7.62.8 e802775f",
+      "node_count": 74874,
+      "relation_count": 9,
+      "restriction_relation_count": 0,
+      "sha256": "b9e074656f744c31e6aabb0a16e6b2246824ca74e202ea2c316ff7f22364f24f",
+      "way_count": 17250
+    },
+    "osm_source": {
+      "actual_bytes": 11154738,
+      "actual_sha256": "b9e074656f744c31e6aabb0a16e6b2246824ca74e202ea2c316ff7f22364f24f",
+      "bytes_match": true,
+      "expected_bytes": 11154738,
+      "expected_sha256": "b9e074656f744c31e6aabb0a16e6b2246824ca74e202ea2c316ff7f22364f24f",
+      "path": "campaigns/ingolstadt_cooked_perception_v1/source/ingolstadt_authoritative.osm",
+      "sha256_match": true
+    },
+    "vehicle_class": "motor_vehicle"
+  },
   "counts": {
     "ALLOW_SOURCE_PROVEN": 47346,
     "AMBIGUOUS_MAPPING": 0,

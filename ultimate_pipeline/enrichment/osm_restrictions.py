@@ -560,6 +560,111 @@ _KNOWN_VALUES = frozenset(
 
 
 @dataclass(frozen=True)
+class RestrictionContext:
+    """A clock and actor context for conditional restrictions.
+
+    A conditional restriction is only decidable with a clock context.  This
+    object carries one.  ``clock`` is a local ``HH:MM`` string and
+    ``day`` an optional ISO weekday abbreviation (``Mo``, ``Tu``, ...).
+    """
+
+    clock: Optional[str] = None
+    day: Optional[str] = None
+    vehicle_class: str = ""
+
+
+#: A daily time window, e.g. ``10:00-16:00`` or ``Mo-Fr 07:00-09:00``.
+_DAY_TOKEN = r"(?:Mo|Tu|We|Th|Fr|Sa|Su)"
+_DAY_RANGE = rf"{_DAY_TOKEN}(?:-{_DAY_TOKEN})?"
+_DAY_LIST = rf"{_DAY_RANGE}(?:,{_DAY_RANGE})*"
+_WINDOW_RE = re.compile(
+    rf"(?P<days>{_DAY_LIST})?\s*"
+    r"(?P<from>\d{1,2}:\d{2})-(?P<to>\d{1,2}:\d{2})"
+)
+#: The leading ``yes`` / ``no`` of a conditional restriction value.
+_CONDITIONAL_VALUE_RE = re.compile(
+    r"^\s*(?P<mode>yes|no)\s*@\s*(?P<condition>.+?)\s*$", re.I | re.S
+)
+
+
+def _parse_clock(value: str) -> Optional[int]:
+    try:
+        hour, minute = value.split(":")
+        return int(hour) * 60 + int(minute)
+    except (AttributeError, TypeError, ValueError):
+        return None
+
+
+def evaluate_conditional(
+    condition: str, context: RestrictionContext
+) -> Optional[bool]:
+    """Evaluate an OSM conditional restriction value.
+
+    Returns ``True`` when the restriction APPLIES, ``False`` when it does
+    NOT apply, and ``None`` when it still cannot be decided.
+
+    The supported subset is the daily time window with an optional weekday
+    set::
+
+        no @ (10:00-16:00)
+        yes @ (Mo-Fr 07:00-09:00)
+
+    ``no`` means the restriction applies during the window; ``yes`` means it
+    is lifted during the window.  Any other form (a dated range, a
+    multi-condition value) returns ``None`` -- it is **never** guessed.
+    """
+    if not context.clock:
+        return None
+    match = _CONDITIONAL_VALUE_RE.match(str(condition or ""))
+    if not match:
+        return None
+    mode = match.group("mode").lower()
+    window = _WINDOW_RE.search(match.group("condition"))
+    if not window:
+        return None
+
+    days = window.group("days")
+    if days:
+        # The weekday order is NOT lexical: "Mo" > "Fr" as strings, so the
+        # range must be resolved by INDEX in the weekday sequence.
+        order = ("mo", "tu", "we", "th", "fr", "sa", "su")
+        wanted: set[str] = set()
+        for part in days.split(","):
+            part = part.strip().lower()
+            if "-" in part:
+                first, last = part.split("-", 1)
+                if first not in order or last not in order:
+                    return None
+                lo, hi = order.index(first), order.index(last)
+                if lo > hi:
+                    lo, hi = hi, lo
+                wanted.update(order[lo : hi + 1])
+            elif part:
+                if part not in order:
+                    return None
+                wanted.add(part)
+        if not context.day or context.day.lower() not in wanted:
+            # Outside the named weekdays the restriction does not apply.
+            return False
+
+    now = _parse_clock(context.clock)
+    start = _parse_clock(window.group("from"))
+    end = _parse_clock(window.group("to"))
+    if now is None or start is None or end is None:
+        return None
+    if start <= end:
+        inside = start <= now < end
+    else:
+        # A window that wraps past midnight.
+        inside = now >= start or now < end
+
+    if mode == "no":
+        return inside
+    # "yes" lifts the restriction during the window.
+    return not inside
+
+
+@dataclass(frozen=True)
 class Restriction:
     """One parsed turn restriction.
 
@@ -618,12 +723,22 @@ def _members(relation: OsmRelation, role: str) -> tuple[OsmMember, ...]:
     return relation.members_with_role(role)
 
 
-def parse_restrictions(document: OsmDocument) -> RestrictionSet:
+def parse_restrictions(
+    document: OsmDocument,
+    *,
+    context: Optional[RestrictionContext] = None,
+) -> RestrictionSet:
     """Parse every restriction relation in the document.
 
     Malformed relations, missing members and unsupported forms become
     explicit ``INCOMPLETE`` / ``UNSUPPORTED_FORM`` records -- they are never
     dropped and never silently permitted.
+
+    A conditional restriction is ``UNSUPPORTED_CONDITIONAL`` unless a
+    ``context`` is supplied **and** the conditional value is one this module
+    can evaluate.  With a context, an evaluable conditional becomes
+    ``APPLICABLE`` or is dropped from the applicable set because it does not
+    apply at that moment.
     """
     parsed: list[Restriction] = []
 
@@ -728,16 +843,43 @@ def parse_restrictions(document: OsmDocument) -> RestrictionSet:
             continue
 
         if conditional or conditional_except:
-            parsed.append(
-                _make(
-                    kind, value, from_way, via_nodes, via_ways, to_way,
-                    "UNSUPPORTED_CONDITIONAL",
-                    "the restriction is conditional and no clock/vehicle context "
-                    "was supplied, so it cannot be decided",
-                    True,
+            # A conditional restriction is decidable only with a clock
+            # context, and only for a condition this module can evaluate.
+            decided: Optional[bool] = None
+            if context is not None:
+                decided = evaluate_conditional(
+                    str(relation.tags.get("restriction:conditional", "")),
+                    context,
                 )
-            )
-            continue
+                if decided is None and conditional_except:
+                    decided = evaluate_conditional(
+                        str(relation.tags.get("except:conditional", "")),
+                        context,
+                    )
+            if decided is None:
+                parsed.append(
+                    _make(
+                        kind, value, from_way, via_nodes, via_ways, to_way,
+                        "UNSUPPORTED_CONDITIONAL",
+                        "the restriction is conditional and no clock/vehicle context "
+                        "was supplied, so it cannot be decided",
+                        True,
+                    )
+                )
+                continue
+            if not decided:
+                # The condition does not hold at this moment, so the
+                # restriction does not apply.  It is still RECORDED.
+                parsed.append(
+                    _make(
+                        kind, value, from_way, via_nodes, via_ways, to_way,
+                        "INCOMPLETE",
+                        "the conditional restriction does not apply at the "
+                        "supplied context",
+                        True,
+                    )
+                )
+                continue
 
         parsed.append(
             _make(

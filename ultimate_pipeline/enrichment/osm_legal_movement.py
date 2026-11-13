@@ -108,6 +108,11 @@ RULE_CONDITIONAL = "osm_conditional_restriction"
 RULE_PHYSICAL = "osm_physical_discontinuity"
 RULE_AMBIGUOUS = "osm_ambiguous_correspondence"
 RULE_NO_SOURCE = "osm_no_source_evidence"
+#: A movement that was examined and could NOT be resolved -- for example a
+#: via-way restriction whose members do not connect.  It is distinct from
+#: RULE_NO_SOURCE, which marks a candidate that simply has no restriction
+#: governing it yet and may therefore take the default permission.
+RULE_UNRESOLVED = "osm_unresolved_movement"
 
 
 @dataclass(frozen=True)
@@ -251,6 +256,7 @@ def build_movement_graph(
     *,
     vehicle_class: str = "motor_vehicle",
     restrictions: Optional[RestrictionSet] = None,
+    restriction_context: Optional[Any] = None,
 ) -> MovementGraph:
     """Build the directed movement graph for one actor class.
 
@@ -260,10 +266,18 @@ def build_movement_graph(
     1. physical continuity (grade separation);
     2. the access and one-way facts of both ways;
     3. the turn restrictions that govern the movement.
+
+    ``restriction_context`` supplies the clock/actor context a conditional
+    restriction needs.  Without one, a conditional restriction is
+    ``UNSUPPORTED_CONDITIONAL`` and never a silent permission.
     """
     from ultimate_pipeline.enrichment.osm_restrictions import parse_restrictions
 
-    restriction_set = restrictions if restrictions is not None else parse_restrictions(document)
+    restriction_set = (
+        restrictions
+        if restrictions is not None
+        else parse_restrictions(document, context=restriction_context)
+    )
 
     access: dict[str, AccessDecision] = {}
     oneway: dict[str, Any] = {}
@@ -414,6 +428,15 @@ def _restriction_movements(
     ``only_*`` is the important case: it does not merely permit one
     movement, it **forbids every alternative** from the same from-way via
     the same via-node.
+
+    A ``no_u_turn`` restriction is handled separately: its from-way and
+    to-way are the SAME way, so it forbids a self-movement that the
+    node-based candidate set never contains.  Without this, a parsed
+    ``no_u_turn`` would be reported as applied while changing nothing.
+
+    A via-WAY restriction names a movement that goes from the from-way,
+    along the via-way, to the to-way.  That is a different movement class
+    from a node-based one, so it is evaluated on its own.
     """
     out: list[MovementRecord] = []
     for restriction in restrictions.restrictions:
@@ -455,6 +478,30 @@ def _restriction_movements(
             )
             continue
 
+        if restriction.value in {"u_turn", "u_turns"}:
+            out.append(
+                MovementRecord(
+                    from_way=restriction.from_way,
+                    to_way=restriction.to_way or restriction.from_way,
+                    via_nodes=restriction.via_nodes,
+                    via_ways=restriction.via_ways,
+                    vehicle_class=vehicle_class,
+                    status=MovementStatus.DENY_SOURCE_PROVEN.value,
+                    rule_source=RULE_NO_RESTRICTION,
+                    evidence=(restriction.evidence(),),
+                    reason=(
+                        "a no_u_turn restriction forbids returning along the "
+                        "way the traffic arrived on"
+                    ),
+                )
+            )
+            continue
+
+        if restriction.via_ways:
+            # A via-WAY restriction names a movement that is NOT a shared
+            # node movement.  It is evaluated separately below.
+            continue
+
         if restriction.kind == "no":
             out.append(
                 MovementRecord(
@@ -485,7 +532,96 @@ def _restriction_movements(
                     ),
                 )
             )
+    out.extend(_via_way_movements(document, restrictions, vehicle_class))
     return out
+
+
+def _via_way_movements(
+    document: OsmDocument,
+    restrictions: RestrictionSet,
+    vehicle_class: str,
+) -> list[MovementRecord]:
+    """Evaluate the via-WAY restrictions as their own movement class.
+
+    A via-way restriction says: from ``from_way``, travel along
+    ``via_way``, and do not go to ``to_way``.  The movement is therefore
+    legal only when the via-way is actually reachable from the from-way and
+    the to-way is actually reachable from the via-way.
+    """
+    out: list[MovementRecord] = []
+    for restriction in restrictions.restrictions:
+        if not restriction.applicable or not restriction.via_ways:
+            continue
+        if restriction.kind != "no":
+            continue
+
+        via_way = document.way(restriction.via_ways[0])
+        from_way = document.way(restriction.from_way or "")
+        to_way = document.way(restriction.to_way or "")
+        if via_way is None or from_way is None or to_way is None:
+            out.append(
+                MovementRecord(
+                    from_way=restriction.from_way or "",
+                    to_way=restriction.to_way or "",
+                    via_nodes=restriction.via_nodes,
+                    via_ways=restriction.via_ways,
+                    vehicle_class=vehicle_class,
+                    status=MovementStatus.UNKNOWN_NO_SOURCE.value,
+                    rule_source=RULE_UNRESOLVED,
+                    evidence=(restriction.evidence(),),
+                    reason=(
+                        "a member of the restriction is not present in the "
+                        "source, so the movement cannot be bound"
+                    ),
+                )
+            )
+            continue
+
+        entry = _shared_node_between(from_way, via_way)
+        exit_node = _shared_node_between(via_way, to_way)
+        if entry is None or exit_node is None:
+            out.append(
+                MovementRecord(
+                    from_way=restriction.from_way or "",
+                    to_way=restriction.to_way or "",
+                    via_nodes=restriction.via_nodes,
+                    via_ways=restriction.via_ways,
+                    vehicle_class=vehicle_class,
+                    status=MovementStatus.UNKNOWN_NO_SOURCE.value,
+                    rule_source=RULE_UNRESOLVED,
+                    evidence=(restriction.evidence(),),
+                    reason=(
+                        "the via-way does not connect the from-way and the "
+                        "to-way in the source, so the restricted movement "
+                        "does not exist"
+                    ),
+                )
+            )
+            continue
+
+        out.append(
+            MovementRecord(
+                from_way=restriction.from_way or "",
+                to_way=restriction.to_way or "",
+                via_nodes=(entry, exit_node),
+                via_ways=restriction.via_ways,
+                vehicle_class=vehicle_class,
+                status=MovementStatus.DENY_SOURCE_PROVEN.value,
+                rule_source=RULE_NO_RESTRICTION,
+                evidence=(restriction.evidence(), f"way:{via_way.id}"),
+                reason=(
+                    "a via-way restriction forbids this movement along the "
+                    "named way"
+                ),
+            )
+        )
+    return out
+
+
+def _shared_node_between(way_a: OsmWay, way_b: OsmWay) -> Optional[str]:
+    """The node at which two ways meet, if they meet at all."""
+    shared = [ref for ref in way_a.node_refs if ref in way_b.node_refs]
+    return shared[0] if shared else None
 
 
 # ---------------------------------------------------------------------------
@@ -597,6 +733,7 @@ def build_allowed_movement_report(
             RULE_ACCESS,
             RULE_ONEWAY,
             RULE_AMBIGUOUS,
+            RULE_UNRESOLVED,
         }
     )
 
