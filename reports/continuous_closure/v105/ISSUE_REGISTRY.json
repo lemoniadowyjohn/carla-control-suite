@@ -5,19 +5,19 @@
       "affected_sha": "4d38a1fc1ebdf47bb308fa80c4fc1a0d78a9b86f",
       "area": "XML safety",
       "command": "py reports/v104/v104_xml_scope1_repro.py",
-      "corrected_sha": null,
-      "evidence": "reports/v104/V104_FINAL_REVIEW_REPORT.md",
+      "corrected_sha": "21dce53c1",
+      "evidence": "reports/v104/V108_ITERATION_REPORT.md",
       "expected": "rejected before parsing",
       "id": "V96-XMLBOUND-001",
-      "independent_review": "CONFIRMED by Codex thread 4543949125 (unresolved)",
-      "mutation_result": "n/a - no corrected implementation exists",
-      "observed": "ACCEPTED (utf-16 / >64KiB / fake-token) and PARSED (utf-16 -> live)",
+      "independent_review": "verified independently by OpenCode on PR #30 head 21dce53c: 0 raw-parser bypasses across all 15 mandatory gates; the size limit is checked before allocation (bounded read, MAX_XODR_BYTES=512MiB, MAX_XML_DEPTH/ELEMENTS/ATTRIBUTES); both real pinned maps still pass admission and parse (map-of-record 142.9 MiB / 32,267 roads; manual map 63.4 MiB / 993 roads)",
+      "mutation_result": "the bypasses are rejected by the admission boundary; the legacy raw parsers remain only outside the mandatory gate set",
+      "observed": "REPAIRED on PR #30 head 21dce53c: a dedicated ultimate_pipeline/quality/xml_admission.py now performs whole-document, encoding-aware, comment-aware admission. All three original bypasses (utf-16 DOCTYPE, >64KiB late DOCTYPE, fake <OpenDRIVE> token in a comment) are REJECTED before the parser and never parsed. Independently verified by OpenCode on the PR #30 head.",
       "owner": "Chat 1 / Codex (PR #30)",
       "priority": "P0",
       "reproducer": "reports/v104/v104_xml_scope1_repro.py",
-      "result": "FAIL",
+      "result": "PASS",
       "retry_eligible": false,
-      "status": "REPRODUCED"
+      "status": "VERIFIED"
     },
     {
       "affected_file": "ultimate_pipeline/gui/jobs/governance.py:165",
@@ -303,5 +303,5 @@
     }
   ],
   "schema": "v105_issue_registry/v1",
-  "updated_utc": "2026-11-13T07:25:09.481536+00:00"
+  "updated_utc": "2026-11-13T07:34:59.920435+00:00"
 }

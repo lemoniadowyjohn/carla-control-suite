@@ -304,6 +304,115 @@ than the `F:` worktrees):
 
 ---
 
+## 4a. V106 Priority 0 item 1 — the XML admission P0 is REPAIRED and independently VERIFIED
+
+PR #30's branch advanced during this iteration from `4d38a1fc` to
+`21dce53c1`. Codex has landed a dedicated
+`ultimate_pipeline/quality/xml_admission.py` (190 lines) and rewired the
+active parsers through it. OpenCode verified this **read-only**, on the
+exact PR head, using the original V104 reproduction cases (written before
+the repair existed).
+
+### The three original bypasses are dead
+
+| Case | Pre-repair (head `4d38a1fc`) | Post-repair (head `21dce53c1`) |
+|---|---|---|
+| A — UTF-16 encoded DOCTYPE with an external entity | ACCEPTED **and PARSED** (the attack was live) | **REJECTED before the parser** — `DOCTYPE and entity declarations are forbidden` |
+| B — DOCTYPE beyond a 64 KiB prefix window | ACCEPTED **and PARSED** | **REJECTED before the parser** |
+| C — fake `<OpenDRIVE>` token in a comment before the padding | ACCEPTED | **REJECTED before the parser** |
+
+`parse_xodr_bytes` on all three payloads raises `UnsafeXMLError` — none
+reaches the parser.
+
+### No raw-parser bypass remains in any release-facing path
+
+The mandatory gate sets on PR #30 are `FINAL_ARTIFACT_MANDATORY_GATES` (12)
+and `PIPELINE_SUPPLIED_MANDATORY_GATES` (3). Every gate module that parses
+XML now routes through the admission boundary:
+
+| Mandatory gate module | raw parser | admission |
+|---|---|---|
+| `check_origin_sanity` | 0 | yes |
+| `check_geometric_continuity` | 0 | yes |
+| `check_lane_section_successors` | 0 | yes |
+| `check_elevation_continuity` | 0 | yes |
+| `check_elevation_missing_and_cliffs` | 0 | yes |
+| `check_junction_integrity` | 0 | yes |
+| `check_lane_geometry_continuity` | 0 | yes |
+| `check_lane_link_targets_exist` | 0 | yes |
+| `check_lane_width_continuity` | 0 | yes |
+| `check_post_tiling_integrity` | 0 | yes |
+| `check_carla_import_s`, `check_carla_opendrive_compat`, `check_elevation_smoothness`, `check_physics_feasibility` | no XML parse | n/a |
+
+**0 mandatory-gate modules with a raw-parser bypass.** (214 non-mandatory
+modules elsewhere in the tree still use a raw parser; none is on the
+release-facing path.)
+
+### Size is checked before bytes are allocated
+
+`MAX_XODR_BYTES = 512 MiB` is enforced on `len(data)` **and** on
+`st_size`, and the file reader performs a **bounded** read
+(`stream.read(MAX_XODR_BYTES + 1)`) so it never allocates beyond the limit
+before the check. Complexity limits are also present: `MAX_XML_DEPTH = 256`,
+`MAX_XML_ELEMENTS = 5,000,000`, `MAX_XML_ATTRIBUTES_PER_ELEMENT = 512`,
+and an explicit `_SUPPORTED_ENCODINGS` allowlist.
+
+### The real pinned maps still pass
+
+| Map | Size | `check_xml_boundary` | `parse_xodr_file` |
+|---|---|---|---|
+| map-of-record `370abbbb…` | 142.9 MiB | ACCEPTED (5.4 s) | PARSED, 32,267 roads (11.2 s) |
+| manual `Grid0828.xodr` | 63.4 MiB | ACCEPTED (2.0 s) | PARSED, 993 roads (5.0 s) |
+
+### One correction to my own earlier evidence
+
+My V104 reproduction classified `<!DOCTYPE OpenDRIVE><OpenDRIVE/>` as a
+**control that must be accepted**. That classification was wrong: OpenDRIVE
+has no DTD, and a real DOCTYPE declaration is not a legitimate OpenDRIVE
+document. Verified over the whole repository: the pinned map-of-record
+(149,799,632 B) and the manual map (66,530,869 B) contain **no**
+`<!DOCTYPE` anywhere, **no** `<!ENTITY` anywhere, and **none of the 49
+tracked `.xodr` files** contains a DOCTYPE in its first 64 KiB. Rejecting a
+DOCTYPE is therefore correct and breaks no real input.
+
+**Disposition: `V96-XMLBOUND-001` moves from `REPRODUCED` to `VERIFIED`.**
+This removes one of the two P0 release-path blockers.
+
+---
+
+## 4b. V108 Phase 4 — PR #32's release-gate logic verified
+
+PR #32 (`fix/v94-ci-needs-20261112` @ `6b2c348b5`, base production) adds
+`if: ${{ always() }}` to the `offline-release-gate` job and a
+`tools/ci_needs_gate.py` validator that is run as the first step after
+checkout.
+
+**Verified by execution on the PR head: 8 tests passed** (the 8th test
+reads the repository's own `tests.yml`, so it can only pass on the PR
+branch; on the base it fails for exactly that reason).
+
+The validator:
+
+* binds the run to an exact 40-character SHA and requires the checked-out
+  `HEAD` to equal the workflow SHA;
+* requires the `needs` set to be **exactly** the seven required predecessor
+  job ids — missing **and** extra are both rejected;
+* requires every predecessor's `result` to be the literal `success`;
+  skipped, cancelled, failed, absent and unknown values all fail closed;
+* emits a receipt labelled `PASS_OFFLINE_PREDECESSORS_ONLY` with
+  `runtime_certification: NOT_RUN`, so it cannot be read as live-CARLA
+  proof.
+
+**One important distinction verified, which a naive reviewer would
+conflate:** the `needs` context is keyed by **job id**
+(`offline-tests`, `package-wheel-smoke`, …), while the branch-protection
+`required_status_checks` contexts are keyed by the **job display name**
+(`offline tests`, `package / wheel smoke`, …). PR #32 uses job ids in the
+`needs` context — correct. PR #41/#47 use display names for branch
+protection — also correct. Both are right in their own context.
+
+---
+
 ## 5. CI conclusions and release impact
 
 The CI probe (`reports/v103/o5/collect_test_execution.py`) now reports
@@ -365,13 +474,19 @@ V108 Phase 6 asks for an immutable integrated candidate built from the
 production lineage. **It is deliberately not built in this iteration**, for
 three evidence-backed reasons:
 
-1. **Two P0 release-path defects are open and unowned by OpenCode.**
+1. **Two P0 release-path defects were open and unowned by OpenCode.**
    `V96-XMLBOUND-001` (whole-document, encoding-aware XML admission) has no
    corrected implementation — the file is Chat 1/Codex-owned — and the six
    GUI false-success defects are now reproduced and visible but the GUI
    source is Codex-owned. A candidate that merges OpenCode's branches onto
    production while both of those remain open would be a candidate whose
    release path is known-unsound.
+
+   **Update (this iteration):** the XML admission defect is now **repaired
+   and independently verified** on PR #30 head `21dce53c1` (§4a), so only
+   the GUI verdict authority remains as an open P0 release-path blocker.
+   The candidate is still deliberately not built, for the reasons in (2)
+   and (3).
 2. **The GUI lineage is divergent.** PR #43's base is
    `integration/carla-gui-integration-20261015`, not the production
    lineage. Merging it blindly is explicitly prohibited by the brief.
@@ -395,7 +510,7 @@ Required conditions and their status:
 |---|---|
 | One immutable integrated candidate, independently validated | **NOT MET** — no candidate built (§8) |
 | Enforced branch policy | **NOT MET** — no protection, zero rulesets; owner action |
-| No unverified P0 release-path defects | **NOT MET** — XML admission and 6 GUI false-success defects open |
+| No unverified P0 release-path defects | **PARTIALLY MET** — the XML admission P0 is now **VERIFIED** (§4a); the six GUI false-success defects remain open on a Codex-owned file |
 | All required CI workflows green on the candidate | **NOT MET** — production CI is red |
 | Terminal/acceptance receipt authority verified | **NOT MET** — Codex-owned, unverified here |
 
@@ -415,8 +530,10 @@ capacity.** They are enumerated in
 
 1. **The production branch has no protection and no rulesets.** Every
    merge is unguarded, including one that would break the release gate.
-2. **The XML admission defect has no corrected implementation.** A crafted
-   UTF-16 document is accepted and parsed by the release-facing path.
+2. ~~**The XML admission defect has no corrected implementation.**~~ —
+   **RESOLVED this iteration**: repaired on PR #30 head `21dce53c1` and
+   independently verified (§4a). The remaining release-path blocker is
+   the GUI verdict authority.
 3. **Six GUI false-success defects are live.** They are now visible to CI
    for the first time, which is progress, but they are not fixed.
 4. **CI is red on the production lineage** and the cause has not been
