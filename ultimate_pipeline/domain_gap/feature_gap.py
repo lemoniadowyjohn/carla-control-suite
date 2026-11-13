@@ -65,19 +65,33 @@ class FeatureDomainGap:
             arr = arr.reshape(-1, 1)
         return arr
 
-    @staticmethod
-    def _safe_mean(arr: np.ndarray) -> np.ndarray:
-        if arr.size == 0:
-            return np.zeros((arr.shape[1],))
-        return arr.mean(axis=0)
+    @classmethod
+    def _validated_pair(cls, source: Any, target: Any) -> tuple[np.ndarray, np.ndarray]:
+        """Validate measured feature populations before computing a distance.
+
+        An empty or malformed population is not evidence of zero domain gap.
+        The historical one-dimensional input convention (one scalar feature per
+        observation) is preserved by _ensure_array.
+        """
+        X = cls._ensure_array(source)
+        Y = cls._ensure_array(target)
+        if X.ndim != 2 or Y.ndim != 2:
+            raise ValueError("feature populations must be one- or two-dimensional")
+        if X.shape[0] == 0 or Y.shape[0] == 0:
+            raise ValueError("empty feature population: cannot measure domain gap")
+        if X.shape[1] == 0 or Y.shape[1] == 0:
+            raise ValueError("empty feature dimension: cannot measure domain gap")
+        if X.shape[1] != Y.shape[1]:
+            raise ValueError("feature dimension mismatch between populations")
+        if not np.isfinite(X).all() or not np.isfinite(Y).all():
+            raise ValueError("feature populations must contain only finite values")
+        return X, Y
 
     def mmd(self, X: Any, Y: Any) -> float:
-        X = self._ensure_array(X)
-        Y = self._ensure_array(Y)
-        if len(X) == 0 or len(Y) == 0:
-            return 0.0
-
-        gamma = self.mmd_gamma if self.mmd_gamma is not None else (1.0 / max(X.shape[1], 1))
+        X, Y = self._validated_pair(X, Y)
+        gamma = self.mmd_gamma if self.mmd_gamma is not None else (1.0 / X.shape[1])
+        if not np.isfinite(gamma) or gamma <= 0.0:
+            raise ValueError("mmd_gamma must be finite and positive")
 
         K_xx = rbf_kernel(X, X, gamma=gamma)
         K_yy = rbf_kernel(Y, Y, gamma=gamma)
@@ -87,17 +101,15 @@ class FeatureDomainGap:
         return float(max(0.0, mmd2))
 
     def wasserstein(self, X: Any, Y: Any) -> float:
-        X = self._ensure_array(X).ravel()
-        Y = self._ensure_array(Y).ravel()
-        if len(X) == 0 or len(Y) == 0:
-            return 0.0
-        return float(stats.wasserstein_distance(X, Y))
+        X, Y = self._validated_pair(X, Y)
+        # Legacy estimator: pooled one-dimensional feature values. Do not
+        # interpret this as a multivariate Wasserstein distance.
+        return float(stats.wasserstein_distance(X.ravel(), Y.ravel()))
 
     def mean_gap(self, X: Any, Y: Any) -> float:
-        X = self._ensure_array(X)
-        Y = self._ensure_array(Y)
-        mu_x = self._safe_mean(X)
-        mu_y = self._safe_mean(Y)
+        X, Y = self._validated_pair(X, Y)
+        mu_x = X.mean(axis=0)
+        mu_y = Y.mean(axis=0)
         return float(np.linalg.norm(mu_x - mu_y))
 
     def compute(self, source: Any, target: Any) -> Dict[str, float]:
