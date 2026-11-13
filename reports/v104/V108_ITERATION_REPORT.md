@@ -413,6 +413,101 @@ protection — also correct. Both are right in their own context.
 
 ---
 
+## 4c. V106 Priority 0 item 6 — the two locking PRs: verified, and they **cannot both land**
+
+Both locking PRs were re-fetched and examined. Neither is OpenCode's to
+change (`worktree_lock.py` is a Codex single-writer file), so this is a
+read-only verification plus a merge-safety measurement.
+
+### PR #37 merges cleanly onto production
+
+```
+git merge-tree --write-tree 225ed15d refs/remotes/pr/37
+  resulting tree : dd8269e13ec8
+  conflict entries: 0
+```
+
+### PR #28 also merges cleanly on its own — and does NOT delete the release gate
+
+PR #28's branch (`fix/gap052b-f1-claim-serialized-mutations-20261111` @
+`b8a93e720`) has a merge base of `31bb6c7a5`, **4 commits behind**
+production, and its tree **lacks** `ultimate_pipeline/quality/final_artifact_gates.py`
+and `tests/unit/test_v85_acceptance_fail_closed.py` — both added by the
+already-merged PR #29.
+
+That looked like it would delete the release-authority gate module on
+merge. **It does not**, and this was measured rather than assumed:
+
+```
+git merge-tree --write-tree 225ed15d b8a93e720   -> exit 0, no conflicts
+  ultimate_pipeline/quality/final_artifact_gates.py   prod=715acb13b  merged=715acb13b  KEPT (unchanged)
+  tests/unit/test_v85_acceptance_fail_closed.py        prod=f83922d2f  merged=f83922d2f  KEPT (unchanged)
+  ultimate_pipeline/main_pipeline.py                   prod=11c492ef2  merged=11c492ef2  KEPT (unchanged)
+  ultimate_pipeline/contracts/artifact_authority.py    prod=a68216aef  merged=a68216aef  KEPT (unchanged)
+```
+
+Git's three-way merge keeps a file that exists only on our side; a
+"deletion" in a raw tree diff is not a deletion in a merge. **The
+concern was unfounded and is withdrawn.**
+
+### The two PRs are genuine competing implementations and CONFLICT
+
+```
+git merge-tree --write-tree b8a93e720 refs/remotes/pr/37
+  conflict entries: 6
+     CONFLICT (add/add):   tests/unit/test_worktree_lock_f1_claim.py
+     CONFLICT (content):   ultimate_pipeline/governance/single_writer/worktree_lock.py
+```
+
+Exactly 2 files are rewritten by both PRs — the lease implementation and
+its test. Over the union of the files each PR touches, **0 blobs are
+identical**: PR #37 does **not** contain PR #28's work.
+
+So PR #37's body claim that it *"supersedes the source and test diff of
+PR #28"* is **not proved**. PR #28 additionally modifies
+`main_pipeline.py`, `map_acceptance.py`, `final_artifact_gates.py`,
+`e2_map_quality_repair.py`, `test_terminal_authority.py`,
+`test_v85_acceptance_fail_closed.py` and `test_final_evidence_ordering.py`
+— release-authority and terminal-authority files that PR #37 does not
+touch at all.
+
+### PR #37's own suite has one FAILING test on its head
+
+```
+py -m pytest tests/unit/test_worktree_lock_f1_claim.py \
+                tests/unit/test_common_git_lock.py \
+                tests/unit/test_single_writer_authority.py -q
+  1 failed, 134 passed, 2 skipped in 215.38s
+  FAILED test_common_git_lock.py::test_failed_tombstone_restore_blocks_acquisition_and_preserves_evidence
+    AssertionError: assert 'active_expired_owner_alive' == 'active'
+```
+
+**This is a stale test assertion, not a behavioural regression.** The
+implementation's newest commits added the finer-grained state
+`active_expired_owner_alive` — *"Owned, but renewal may be unhealthy:
+surfaced, never auto-stolen"* (`common_git_lock.py:1149`) — and the test
+at `test_common_git_lock.py:744` still asserts the old coarse `"active"`.
+Every behavioural assertion in that test still passes: the recovery
+reports `recovered is True` and `intent_status == "COMPLETE"`, the
+recovery record is written, the original bytes are restored, the tombstone
+is consumed, and a successor lock can be acquired and released.
+
+**Owner disposition (OpenCode does not write these files):**
+
+* land **PR #37** — it merges cleanly, it is the V94 Chat-2 canonical
+  implementation, and it covers the nine locking findings;
+* **fix its one stale assertion** before merge, so the branch is not
+  red;
+* **do not merge PR #28 alongside PR #37** — they conflict on the same
+  two files. If the owner wants PR #28's *release-path* changes
+  (`main_pipeline.py`, `map_acceptance.py`, `final_artifact_gates.py`,
+  `e2_map_quality_repair.py` and their tests), those must be **re-derived
+  onto the current production head separately from the lease work**, and
+  they land on Codex-owned files. Per the dispatch rule, PR #28 must not
+  be auto-retired until that is proved.
+
+---
+
 ## 5. CI conclusions and release impact
 
 The CI probe (`reports/v103/o5/collect_test_execution.py`) now reports
@@ -547,12 +642,17 @@ capacity.** They are enumerated in
 7. **Two O3 Phase-2 classes are open**: OSM shared nodes unrelated to the
    XODR endpoints being repaired, and duplicate / contradictory /
    nonreciprocal road-lane links.
-8. **The `V103-O1-001` OSM-correspondence issue is `INTEGRATED_UNVERIFIED`** —
+8. **PR #37's head has one failing test** (§4c) — a stale assertion
+   against a state the implementation legitimately refined. It must be
+   fixed before the branch can be merged green.
+9. **PR #28 and PR #37 conflict** on the same two files, and PR #28's
+   release-path changes are not contained in PR #37 (§4c).
+10. **The `V103-O1-001` OSM-correspondence issue is `INTEGRATED_UNVERIFIED`** —
    no independent reviewer has signed the O1 head.
-9. **The coverage shortfall is real and material**: OSM directional
-   enrichment reaches **0.23% of the governed map's roads** (41 of 32,267
-   authoritative). Any thesis or RQ claim leaning on OSM directional
-   enrichment as a significant input should be re-examined.
+11. **The coverage shortfall is real and material**: OSM directional
+    enrichment reaches **0.23% of the governed map's roads** (41 of 32,267
+    authoritative). Any thesis or RQ claim leaning on OSM directional
+    enrichment as a significant input should be re-examined.
 
 ---
 
