@@ -1,0 +1,7 @@
+xodr_road_id,status,reason,source_way_id,neighbour_way_id,shared_node_id,neighbour_xodr_road_id,gap_m,dz_m,evidence
+42367,ABSENT_FROM_CURRENT_MAP,road id does not exist in the current map-of-record candidate,,,,,,,candidate=campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_perception_map_of_record_20260916_232831.xodr
+43405,ABSENT_FROM_CURRENT_MAP,road id does not exist in the current map-of-record candidate,,,,,,,candidate=campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_perception_map_of_record_20260916_232831.xodr
+46369,ABSENT_FROM_CURRENT_MAP,road id does not exist in the current map-of-record candidate,,,,,,,candidate=campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_perception_map_of_record_20260916_232831.xodr
+46698,ABSENT_FROM_CURRENT_MAP,road id does not exist in the current map-of-record candidate,,,,,,,candidate=campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_perception_map_of_record_20260916_232831.xodr
+48129,ABSENT_FROM_CURRENT_MAP,road id does not exist in the current map-of-record candidate,,,,,,,candidate=campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_perception_map_of_record_20260916_232831.xodr
+51657,NOT_AN_ORPHAN,road declares a road-level link,,,,,,,is_orphan=false

@@ -50,6 +50,45 @@ def _step3_topology_repair(
     # repair defect in the default (THESIS_STRICT=True) configuration.
     thesis_strict_raw = getattr(s, "THESIS_STRICT", True)
     orphan_strict = (orphan_strict_raw is True) or (thesis_strict_raw is True)
+
+    # V103-O3 (registry T03): an orphan repair requires positive OSM graph
+    # evidence.  The OSM source and the road correspondence are resolved here
+    # so the repair can be *proven* by a shared OSM node instead of by
+    # geometry alone.
+    #
+    # When the OSM source is not available the legacy geometry-only repair
+    # is still performed (the pipeline must not abort a run because the OSM
+    # extract is missing), but the report records
+    # ``source_authority.enabled = false`` and the reason, so the gap is
+    # explicit and auditable instead of silent.
+    osm_ways = None
+    associations = None
+    source_note = ""
+    try:
+        import os as _os
+
+        from ultimate_pipeline.enrichment.osm_meta_index import (
+            project_positioned_osm_metadata_ways,
+        )
+        from ultimate_pipeline.enrichment.osm_xodr_correspondence import (
+            build_metadata_associations,
+        )
+        from ultimate_pipeline.quality.osm_road_link_topology import (
+            extract_osm_highway_ways,
+        )
+
+        osm_file = str(getattr(s, "OSM_FILE", "") or "")
+        if osm_file and _os.path.isfile(osm_file):
+            extracted = extract_osm_highway_ways(osm_file)
+            projected = project_positioned_osm_metadata_ways(extracted, root)
+            associations, _corr_report = build_metadata_associations(projected, root)
+            osm_ways = extracted
+            source_note = "osm_correspondence_available"
+        else:
+            source_note = "osm_source_unavailable"
+    except Exception as exc:  # pragma: no cover - provenance only
+        source_note = f"osm_source_error:{type(exc).__name__}"
+
     try:
         from ultimate_pipeline.topology.orphan_road_repair import repair_orphan_roads
         orphan_report = repair_orphan_roads(
@@ -58,7 +97,15 @@ def _step3_topology_repair(
             max_heading_diff_deg=orphan_heading_deg,
             max_height_diff_m=orphan_height_m,
             strict=orphan_strict,
+            osm_ways=osm_ways,
+            associations=associations,
+            # No OSM source -> keep the legacy geometry-only behaviour so the
+            # run cannot abort on a missing extract.  The report records that
+            # the repair was NOT source-proven.
+            require_source_authority=osm_ways is not None and associations is not None,
         )
+        if source_note:
+            orphan_report.setdefault("source_authority", {})["note"] = source_note
     except Exception as e:  # pragma: no cover - provenance for a repair defect
         orphan_report = {
             "ok": False,
