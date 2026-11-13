@@ -508,6 +508,136 @@ is consumed, and a successor lock can be acquired and released.
 
 ---
 
+## 4d. The O2 legal-movement graph — delivered (PR #57)
+
+The next highest-priority unit named in §11 was the O2 legal-movement
+graph. It is now implemented, on a **new branch** `fix/v103-o2-legal-movement`
+@ `c4d3f2ac`, stacked on the O1 branch. Per the V103-O2 dispatch, **only
+new source files were written** — no O1 lane-generator file and no Codex
+link or release file was edited.
+
+### The property it exists to protect
+
+> **A missing relation does NOT mean every movement is legal.**
+
+Three things are kept distinct and never collapsed:
+
+| | verdict | `rule_source` |
+|---|---|---|
+| explicit denial | `DENY_SOURCE_PROVEN` | `osm_no_restriction`, `osm_oneway`, `osm_access`, `osm_only_restriction` |
+| known default permission | `ALLOW_SOURCE_PROVEN` | `osm_default_permission`, `osm_only_restriction` |
+| no source evidence | `UNKNOWN_NO_SOURCE` | `osm_no_source_evidence` |
+
+Plus `AMBIGUOUS_MAPPING`, `UNSUPPORTED_CONDITIONAL` and
+`PHYSICAL_DISCONTINUITY` for what the source cannot answer at all.
+
+**Topology existence is not legal eligibility** — a shared node proves two
+ways are *connected*, not that the movement is legal for the actor.
+
+### What was implemented
+
+* **Safe source reading** — a bounded, entity-free admission scan (expat
+  with DOCTYPE / ENTITY / external-reference handlers that refuse), a size
+  limit, an element-count limit and a depth limit. A missing, oversized,
+  unparseable or unsafe source is `BLOCKED_INPUT`, never a pass.
+* **Access precedence** — `<class>:<mode>` > `<class>` > `vehicle` >
+  `access`. An unresolvable value yields `allowed=None` (explicitly not
+  decidable), never a permission.
+* **One-way resolution** per actor, including the motorway implicit
+  default, the roundabout default, and `oneway:conditional` / `reversible`
+  which are **not decidable** without a clock context.
+* **Restriction relations** — `no_*`, `only_*`, via-node and via-way chains,
+  the `except=` mode list and the conditional forms. Malformed relations,
+  missing members, unsupported forms and a `restriction` tag on a **way**
+  all become explicit records — none is dropped, none is silently permitted.
+* **The directed movement graph**, keyed per actor, with grade separation,
+  one-way and access decided *before* the turn restrictions.
+* **`only_*` forbids every ALTERNATIVE** from the same way through the same
+  node, not merely the one it names.
+* **The versioned `AllowedMovementReport`** and a **non-destructive**
+  comparison API mapping each generated XODR junction connection to its OSM
+  movement, bound only through O1's EXACT/HIGH oriented correspondence.
+
+### The interpretation switch is a policy, not a fact
+
+`build_allowed_movement_report(graph, default_permission=True)` reports an
+ungoverned movement as `ALLOW_SOURCE_PROVEN` with
+`rule_source="osm_default_permission"`. That is the OSM **data model's**
+default, not evidence about this map. `default_permission=False` reports
+`UNKNOWN_NO_SOURCE` instead. **The switch in force is recorded in
+`notes[0]`**, so a reader can always see which reading produced the
+verdicts. This is the single most important thing the gate owner must
+understand, and it is why the handoff states: *never read
+`ALLOW_SOURCE_PROVEN` as "release-eligible"*.
+
+### Measured on the pinned real OSM (`b9e07465…`, 11,154,738 B, 17,250 ways)
+
+| fact | value |
+|---|---|
+| **restriction relations** | **0** — all 9 relations are `multipolygon` |
+| `restriction` tag on a **way** | 1 (a malformed form, reported `INCOMPLETE`) |
+| `oneway:conditional` ways | 4 |
+
+| verdict | movements |
+|---|---|
+| `ALLOW_SOURCE_PROVEN` (default permission) | 47,346 |
+| `DENY_SOURCE_PROVEN` (oneway / access) | 15,616 |
+| `PHYSICAL_DISCONTINUITY` (grade separated) | 1,866 |
+| `UNSUPPORTED_CONDITIONAL` | 32 |
+
+**Stated plainly: the pinned source contains no turn restriction at all.**
+On the real map no movement can be denied by a turn restriction; every
+turn-level question falls back to the default permission, and the 15,616
+real denials come only from `oneway` and `access`. This is registered as
+`V106-O2-REALMAP-FINDING`.
+
+### Verification
+
+* `tests/unit/test_v103_o2_legal_movement.py` — **32 tests**, all passing,
+  with synthetic fixtures covering the dispatch's adversarial list.
+* **4 mutation controls, 4 detected, 0 missed.** The first pass detected
+  only 3: the control for "an undecidable oneway never yields a permission"
+  was **MISSED**, which exposed a genuine coverage gap — the
+  `oneway:conditional` *way-tag* path was not exercised by any adjacency
+  test, even though the real map carries 4 such ways. A test was added
+  (`test_o2_a_conditional_oneway_tag_makes_the_movement_undecidable`) and
+  the control now detects it.
+* O1 + O2 related suites: **139 passed**.
+* The emitted report validates against
+  `reports/v103/o2/ALLOWED_MOVEMENT_SCHEMA.json`.
+
+### Artifact discipline
+
+The complete listing is 64,860 movements and 29 MB. It is **not
+committed**: the CLI writes a `_SUMMARY.json` (complete counts, complete
+restriction statistics, source identity, and a bounded sample of 200
+movements **per verdict**, with `movements_sampled` and `movements_total`
+recorded) and a `_FULL.json` that is gitignored.
+
+### Handoff
+
+`reports/v103/o2/ALLOWED_MOVEMENT_HANDOFF.md` is the contract for the
+release-authority owner (Codex C1/C2): the API, the enforcement boundary,
+what is **not** modelled, and the two rules a gate owner must not break.
+**No gate was integrated and no enforcement was implemented** — the module
+says what the source permits, denies and leaves undecided, and never
+rewrites OpenDRIVE.
+
+### Known modelling gaps, stated not hidden
+
+* via-WAY chains are parsed and carried but do not yet split a candidate
+  movement;
+* `no_u_turn` is parsed but its `from == to` semantics are not yet
+  distinguished from an ordinary turn;
+* conditional restrictions need a clock/vehicle context parameter on
+  `build_movement_graph`; without one they are correctly
+  `UNSUPPORTED_CONDITIONAL`;
+* lane-level connections are deliberately not inferred from `turn:lanes` —
+  the dispatch states that `turn:lanes` alone does not specify lane-to-lane
+  connections.
+
+---
+
 ## 5. CI conclusions and release impact
 
 The CI probe (`reports/v103/o5/collect_test_execution.py`) now reports
@@ -658,19 +788,16 @@ capacity.** They are enumerated in
 
 ## 11. Single next highest-priority work unit
 
-**V108-O3-DIRECTION-AUTHORITY is closed. The next unit is the O2 legal-movement
-graph** — because it is the largest remaining gap inside OpenCode's own
-file ownership, it blocks the O3 topology conclusions from being complete,
-and it does not require any Codex-owned file.
+**V108-O3-DIRECTION-AUTHORITY is closed and the O2 legal-movement graph is
+delivered. The next unit is the O2 remainder: the via-WAY chain split, the
+`no_u_turn` semantics, and the conditional-restriction context parameter** —
+because they are inside OpenCode's own file ownership, they are the
+documented gaps of the contract just handed over, and they need no
+Codex-owned file.
 
-Concretely: `only_*` / `no_*` turn restrictions, via-node and via-way
-restriction relations, conditional access windows and vehicle-specific
-exceptions, with `unknown` modelled as a **first-class not-assessable
-status** that can never be silently permitted as authoritative. Each
-accepted movement must carry a traceable source-authority receipt.
-
-In parallel, and **not** by OpenCode: the XML admission repair (Chat 1 /
-Codex, PR #30) and the six GUI release-authority defects (GUI source owner).
+In parallel, and **not** by OpenCode: the six GUI release-authority defects
+(GUI source owner) and the one stale assertion in PR #37's own suite
+(locking owner).
 
 ---
 
