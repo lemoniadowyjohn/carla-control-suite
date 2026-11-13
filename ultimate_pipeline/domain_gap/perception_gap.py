@@ -114,15 +114,56 @@ class PerceptionGap:
         auto: PerceptionMetrics,
     ) -> Dict[str, Any]:
 
-        # CD-2: refuse to fabricate a gap from non-measured metrics.
+        # Feature-only evidence is a diagnostic distribution comparison, not
+        # measured detection or segmentation accuracy. Both arms must provide
+        # valid sample populations; a single stored mean is insufficient for
+        # the distributional MMD/Wasserstein estimators.
+        features_present = any(
+            m.feature_samples is not None or m.feature_mean is not None
+            for m in (manual, auto)
+        )
+        if not manual.miou and not auto.miou and features_present:
+            X = manual.feature_samples if manual.feature_samples is not None else (
+                [manual.feature_mean] if manual.feature_mean is not None else None
+            )
+            Y = auto.feature_samples if auto.feature_samples is not None else (
+                [auto.feature_mean] if auto.feature_mean is not None else None
+            )
+            if X is None or Y is None:
+                return {
+                    "status": "MISSING_EVIDENCE",
+                    "reason": "feature samples absent from one comparison arm",
+                }
+            try:
+                if len(X) < 2 or len(Y) < 2:
+                    return {
+                        "status": "INSUFFICIENT_SUPPORT",
+                        "reason": "at least two feature observations per arm are required",
+                    }
+                feature_gap = FeatureDomainGap(output_dir=".").compute(X, Y)
+            except (TypeError, ValueError, OverflowError) as exc:
+                return {
+                    "status": "INVALID_MEASUREMENT",
+                    "reason": f"invalid feature distributions: {exc}",
+                }
+            return {
+                "status": "DIAGNOSTIC_ONLY",
+                "mode": "feature_proxy",
+                "feature_gap": feature_gap,
+                "method_manual": manual.method,
+                "method_auto": auto.method,
+                "manual_feature_count": len(X),
+                "auto_feature_count": len(Y),
+            }
+
+        # CD-2: refuse to fabricate a measured-accuracy gap from inputs that
+        # were never evaluated. Do not treat invalid feature proxy data as a
+        # measured accuracy substitute.
         not_measured = [
             m for m in (manual, auto)
-            if (getattr(m, "status", "measured") != "measured")
+            if getattr(m, "status", "measured") != "measured"
         ]
-        if not_measured and not (
-            (manual.feature_samples or manual.feature_mean)
-            and (auto.feature_samples or auto.feature_mean)
-        ):
+        if not_measured:
             return {
                 "status": "MISSING_EVIDENCE" if all(
                     getattr(m, "status", "measured") in ("NOT_RUN", "MISSING_EVIDENCE")
@@ -136,20 +177,6 @@ class PerceptionGap:
                     "manual": getattr(manual, "status", "measured"),
                     "auto": getattr(auto, "status", "measured"),
                 },
-            }
-
-        # Feature-proxy mode: if no class IoUs are provided, compute distributional gaps
-        # using the stored feature samples (or means as fallback).
-        if (not manual.miou) and (not auto.miou) and (manual.feature_samples or manual.feature_mean) and (auto.feature_samples or auto.feature_mean):
-            fdg = FeatureDomainGap(output_dir=".")
-            X = manual.feature_samples if manual.feature_samples else [manual.feature_mean]  # type: ignore[list-item]
-            Y = auto.feature_samples if auto.feature_samples else [auto.feature_mean]  # type: ignore[list-item]
-            feature_gap = fdg.compute(X, Y)
-            return {
-                "mode": "feature_proxy",
-                "feature_gap": feature_gap,
-                "method_manual": manual.method,
-                "method_auto": auto.method,
             }
 
         classes = sorted(set(manual.miou) | set(auto.miou))
