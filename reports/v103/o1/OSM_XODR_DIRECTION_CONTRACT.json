@@ -1,0 +1,53 @@
+{
+  "contract_version": "osm_xodr_direction/v1",
+  "coverage": {
+    "contract_version": "osm_xodr_direction/v1",
+    "counts": {
+      "ambiguous": 0,
+      "authoritative": 0,
+      "conflicting": 0,
+      "fallback": 0,
+      "forward": 0,
+      "matched": 0,
+      "not_assessable": 0,
+      "reversed": 0
+    },
+    "reason": "no_osm_source_in_offline_verification",
+    "release_required": true,
+    "schema": "osm_directional_coverage/v1",
+    "source_sha256": "",
+    "status": "BLOCKED_INPUT"
+  },
+  "directional_states": [
+    "ok",
+    "conflicting",
+    "unsupported",
+    "incomplete"
+  ],
+  "oneway_states": [
+    "forward",
+    "backward",
+    "bidirectional",
+    "reversible",
+    "unknown"
+  ],
+  "orientation_mapping": {
+    "forward": "osm forward == xodr forward (increasing s)",
+    "reverse": "osm forward == xodr backward (decreasing s)",
+    "unknown": "no swap; recorded as not-assessable"
+  },
+  "reserved_metadata_keys": {
+    "direction": "_osm_direction",
+    "match_class": "_osm_match_class",
+    "match_confidence": "_osm_match_confidence",
+    "osm_way_id": "_osm_way_id"
+  },
+  "resolution_order": [
+    "lanes:forward/lanes:backward (authoritative, directional)",
+    "oneway decidable + lanes total (all lanes in the legal direction)",
+    "oneway bidirectional + lanes total (deterministic split)",
+    "oneway undecidable + lanes total (split retained, flagged unsupported)",
+    "no lane tags (one-per-side fallback, flagged incomplete)"
+  ],
+  "schema": "osm_xodr_direction_contract/v1"
+}

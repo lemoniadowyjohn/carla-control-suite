@@ -6,6 +6,14 @@ import xml.etree.ElementTree as ET
 from dataclasses import dataclass
 from typing import Any, Dict, Mapping, Optional
 
+from ultimate_pipeline.enrichment.osm_direction import (
+    DIRECTION_KEY,
+    MATCH_CLASS_KEY,
+    MATCH_CONFIDENCE_KEY,
+    OSM_WAY_ID_KEY,
+    resolve_directional_lane_counts,
+)
+
 
 DEFAULT_DRIVING_WIDTH_M = 3.5
 MIN_DRIVING_WIDTH_M = 2.75
@@ -158,6 +166,21 @@ def road_lane_width_metadata(
                 meta[_clean_key(str(key))] = _clean_value(value)
     meta.update(_metadata_from_attrs(road))
     meta.update(_metadata_from_vectors(road))
+    # V103-O1: re-apply the reserved directional keys last.  Direct XODR
+    # provenance stays authoritative over the external indexes for real OSM
+    # tags, but a reserved key must never be shadowed by an XODR attribute or
+    # vector that happens to share its cleaned name.
+    if structural_osm_meta and road_id and road_id in structural_osm_meta:
+        resolved = structural_osm_meta[road_id]
+        for reserved in (
+            DIRECTION_KEY,
+            OSM_WAY_ID_KEY,
+            MATCH_CLASS_KEY,
+            MATCH_CONFIDENCE_KEY,
+        ):
+            value = resolved.get(reserved)
+            if value is not None:
+                meta[_clean_key(str(reserved))] = _clean_value(value)
     return meta
 
 
@@ -180,7 +203,14 @@ def driving_lane_counts(
     """Return ``(left/backward, right/forward, source, confidence)``.
 
     Direction-specific OSM tags are authoritative.  A total ``lanes`` tag is
-    split deterministically because it does not identify carriageway sides.
+    split deterministically **only when the source cannot say otherwise**: a
+    one-way road keeps every lane in its legal direction and therefore never
+    gains a phantom counterflow lane (registry issue T01).
+
+    The counts are mapped onto the XODR reference line using the OSM way
+    orientation carried in ``structural_osm_meta`` (registry issue T02); a
+    reversed XODR road swaps the two carriageways.
+
     No metadata falls back to the historical one-lane-per-side behavior.
     """
     meta = road_lane_width_metadata(
@@ -188,13 +218,11 @@ def driving_lane_counts(
         osm_meta=osm_meta,
         structural_osm_meta=structural_osm_meta,
     )
-    forward=parse_lane_count(meta.get("lanes:forward")); backward=parse_lane_count(meta.get("lanes:backward"))
-    if forward is not None or backward is not None:
-        return backward or 0, forward or 0, "osm:lanes:forward+backward", 1.0
-    total=parse_lane_count(meta.get("lanes"))
-    if total is not None:
-        return total // 2, total - total // 2, "osm:lanes", 0.9
-    return 1, 1, "fallback", 0.0
+    resolved = resolve_directional_lane_counts(
+        meta,
+        osm_direction=meta.get(DIRECTION_KEY),
+    )
+    return resolved.backward, resolved.forward, resolved.source, resolved.confidence
 
 
 def target_driving_width_m(

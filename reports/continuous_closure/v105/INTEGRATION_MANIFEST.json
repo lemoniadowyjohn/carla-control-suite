@@ -1,0 +1,45 @@
+{
+  "branches": {
+    "fix/v103-o1-osm-direction-lane-counts": {
+      "base": "integration/production-large-map-20260918",
+      "pr": 39,
+      "sha": "102a588cf3336c9b28a3260298f240bd328d513d",
+      "state": "open"
+    },
+    "fix/v103-o3-osm-road-graph-orphans": {
+      "base": "integration/production-large-map-20260918",
+      "pr": 40,
+      "sha": "ee94abca8f4c94972329306ecabbd4530886dc71",
+      "state": "open"
+    },
+    "fix/v103-o5-ci-audit": {
+      "base": "integration/production-large-map-20260918",
+      "pr": 41,
+      "sha": "6f0b02a227872ae3dfc056f4e6ab97c586c4c6e3",
+      "state": "open"
+    },
+    "fix/v103-opencode-coordination": {
+      "base": "integration/production-large-map-20260918",
+      "pr": 42,
+      "sha": "6b0894b605dc36b0681a8d6b25450f7fbc6e684d",
+      "state": "open"
+    },
+    "fix/v104-gui-authority-adversarial": {
+      "base": "integration/carla-gui-integration-20261015",
+      "pr": 43,
+      "sha": "bf9ba23f4366652d8959d9a9f81583a1614ffa5b",
+      "state": "open"
+    }
+  },
+  "candidate_status": "NOT_BUILT - no single integration commit exists",
+  "codex_branches_awaiting_convergence": {
+    "PR #28": "b8a93e7205182d0b92d1ed730f43f214497d3a19 (7 open findings)",
+    "PR #30": "4d38a1fc1ebdf47bb308fa80c4fc1a0d78a9b86f (19 open findings; XML P2 open)",
+    "PR #34": "aea4aea5cd4d4c00ece00ba75dc99a5a9fbcd1aa (0 review comments; 6 defects reproduced by PR #43)",
+    "PR #37": "a72700bb1 (2 open findings)"
+  },
+  "integrated_candidate_sha": null,
+  "schema": "v105_integration_manifest/v1",
+  "uncommitted_required_changes": "none in the OpenCode worktrees",
+  "updated_utc": "2026-11-13T08:37:33.520555+00:00"
+}
