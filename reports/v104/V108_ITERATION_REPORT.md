@@ -625,16 +625,53 @@ rewrites OpenDRIVE.
 
 ### Known modelling gaps, stated not hidden
 
-* via-WAY chains are parsed and carried but do not yet split a candidate
-  movement;
-* `no_u_turn` is parsed but its `from == to` semantics are not yet
-  distinguished from an ordinary turn;
-* conditional restrictions need a clock/vehicle context parameter on
-  `build_movement_graph`; without one they are correctly
-  `UNSUPPORTED_CONDITIONAL`;
+All three gaps the handoff stated as open are now **CLOSED**:
+
+* ~~via-WAY chains are parsed and carried but do not yet split a candidate
+  movement~~ — a via-way restriction is now evaluated as its **own**
+  movement class: the via-way must actually connect the from-way and the
+  to-way, the record carries the entry and exit nodes, and a via-way that
+  does not connect **forbids nothing**.
+* ~~`no_u_turn` is parsed but its `from == to` semantics are not yet
+  distinguished from an ordinary turn~~ — a `no_u_turn` forbids the
+  **self-movement**, which the node-based candidate set never contains;
+  without the explicit handling a parsed `no_u_turn` was reported as
+  applied while changing nothing.
+* ~~conditional restrictions need a clock/vehicle context parameter on
+  `build_movement_graph`~~ — `RestrictionContext(clock="HH:MM",
+  day="Mo")` is accepted by `parse_restrictions(context=...)` and by
+  `build_movement_graph(restriction_context=...)`. A dated range stays
+  undecidable and is never guessed.
+
+Still open, and stated rather than hidden:
+
+* **no gate integration and NO enforcement** — the module says what the
+  source permits, denies and leaves undecided, and never rewrites
+  OpenDRIVE.
 * lane-level connections are deliberately not inferred from `turn:lanes` —
   the dispatch states that `turn:lanes` alone does not specify lane-to-lane
   connections.
+
+**Two real bugs found while closing those gaps**, both now fixed:
+
+1. The weekday range was resolved with a **lexical** comparison, and the
+   weekday order is not lexical (`"Mo" > "Fr"` as strings), so `Mo-Fr`
+   resolved to `{Fr}` only. It is now resolved by **index** in the weekday
+   sequence.
+2. A movement that had been **examined and could not be resolved** was
+   upgraded to the default permission by the report layer, because it
+   carried the same `rule_source` as a candidate that simply has no
+   restriction governing it yet. The two are now distinct
+   (`osm_unresolved_movement` vs `osm_no_source_evidence`), and only the
+   latter may take the default permission.
+
+**Mutation controls: 9 run, 9 detected, 0 missed.** Two controls were
+**missed** on the first pass and both misses were informative: the via-way
+control was not *meaningful* (both code paths carry `via_ways`, so removing
+one changed nothing observable) and was reformulated to target the defect
+that does matter — that a via-way which does not connect must forbid
+nothing; and the weekday control did not change the outcome for `"Mo"`, so
+the test was strengthened with a mid-week day.
 
 ---
 
