@@ -265,6 +265,43 @@
       "status": "REPRODUCED"
     },
     {
+      "affected_file": "ultimate_pipeline/enrichment/osm_legal_movement.py (NEW), ultimate_pipeline/enrichment/osm_restrictions.py (NEW)",
+      "affected_sha": "c9d351f0d5f2a6b0ad5cec5f75a0fd0d27aa9556",
+      "area": "OSM legal movement",
+      "command": "py -m pytest tests/unit/test_v103_o2_legal_movement.py -q",
+      "corrected_sha": "c9d351f0d5f2a6b0ad5cec5f75a0fd0d27aa9556",
+      "evidence": "reports/v103/o2/ALLOWED_MOVEMENT_HANDOFF.md",
+      "expected": "a missing OSM relation is never read as a permission; explicit denial, known default permission and no source evidence are distinct verdicts",
+      "id": "V106-O2-LEGAL-MOVEMENT",
+      "independent_review": "pending - the report interpretation (default permission vs unknown) is a policy decision for the release-authority owner",
+      "mutation_result": "4 mutation controls run, 4 DETECTED, 0 missed (only_* forbids its alternatives; the default permission never overrides a decided record; an undecidable oneway never yields a permission; a grade-separated crossing is a physical discontinuity)",
+      "observed": "the capability did not exist: no OSM restriction relation was parsed, no access or one-way precedence was resolved per actor, and no movement had a source-grounded verdict. Implemented as a NEW source layer with a versioned AllowedMovementReport and a non-destructive junction-connection comparison API.",
+      "owner": "OpenCode (PR #57)",
+      "priority": "P1",
+      "reproducer": "tests/unit/test_v103_o2_legal_movement.py (32 tests)",
+      "result": "PASS",
+      "retry_eligible": false,
+      "status": "TEST_PASSED"
+    },
+    {
+      "affected_file": "campaigns/ingolstadt_cooked_perception_v1/source/ingolstadt_authoritative.osm",
+      "affected_sha": "b9e074656f744c31e6aabb0a16e6b2246824ca74e202ea2c316ff7f22364f24f",
+      "area": "OSM source coverage",
+      "corrected_sha": null,
+      "evidence": "reports/v103/o2/LEGAL_MOVEMENT_MOTOR_VEHICLE.json",
+      "expected": "the pinned OSM carries turn restrictions so a denied movement can be proven",
+      "id": "V106-O2-REALMAP-FINDING",
+      "independent_review": "measured on the pinned bytes with the digest verified against INPUTS_MANIFEST.json",
+      "mutation_result": "n/a - a source coverage finding, not a code defect",
+      "observed": "the pinned OSM contains ZERO restriction relations: all 9 relations are multipolygon. 1 way carries a malformed 'restriction' tag (reported INCOMPLETE). 4 ways carry oneway:conditional. Consequently no movement on the real map can be DENY_SOURCE_PROVEN by a turn restriction; every turn-level question falls back to the default permission, and the 15616 real denials come only from oneway and access.",
+      "owner": "OpenCode (PR #57)",
+      "priority": "P1",
+      "reproducer": "py reports/v103/o2/run_legal_movement_audit.py",
+      "result": "FAIL - the source carries no turn restrictions",
+      "retry_eligible": false,
+      "status": "REPRODUCED"
+    },
+    {
       "affected_file": "GitHub branch protection / rulesets (not a source file)",
       "affected_sha": "225ed15d0da6444cc257835ca777aba281553f3c",
       "area": "Branch governance",
@@ -303,5 +340,5 @@
     }
   ],
   "schema": "v105_issue_registry/v1",
-  "updated_utc": "2026-11-13T07:43:53.024468+00:00"
+  "updated_utc": "2026-11-13T08:37:33.520555+00:00"
 }
