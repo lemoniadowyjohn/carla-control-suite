@@ -195,9 +195,44 @@ Measured on the real map, `motor_vehicle`, `default_permission=True`:
 | `UNSUPPORTED_CONDITIONAL` | 32 |
 | `UNKNOWN_NO_SOURCE` | 0 |
 
----
+### The XODR join on the real map: 0 of 22,589 connections are comparable
 
-## 7. How to integrate it (for the gate owner)
+The comparison API was run against the **registry-pinned map-of-record**
+(`370abbbb…`, 32,267 roads, 22,589 junction connections). The result is
+decisive and it is a **coverage** result, not a binding-rule result:
+
+| population | count |
+|---|---|
+| XODR roads | 32,267 |
+| roads with an EXACT/HIGH oriented OSM binding | **75** (0.23%) |
+| junction connections | 22,589 |
+| — both ends bound (would be comparable) | **0** |
+| — exactly one end bound | 115 |
+| — neither end bound | 22,474 |
+| **comparison verdicts** | **22,589 × `UNKNOWN_NO_SOURCE`** |
+
+All 75 bound roads do appear in some connection, but **not one connection
+has both ends bound**, so the comparison API cannot bind a single OSM legal
+movement to a generated junction connection.
+
+**The honest consequence: the OSM directional correspondence cannot
+currently adjudicate ANY of the map's 22,589 junction connections.** This
+is the same coverage shortfall the P2 self-check measured on the direction
+side (0.23% of roads authoritative), now shown on the movement side. A
+gate built on this comparison API would adjudicate nothing today.
+
+Two readings are possible and this report does not choose between them:
+
+* the OSM source is too sparse / too poorly matched to adjudicate this
+  map's junctions; or
+* the map's junctions are largely generated from OSM2ODR geometry rather
+  than from a per-connection OSM correspondence, so a road-level
+  correspondence cannot express a per-connection movement at all.
+
+That question belongs to the release-authority owner and needs the
+junction-construction path, which is not OpenCode's file.
+
+---
 
 ```python
 report = build_allowed_movement_report(graph, default_permission=False)
@@ -216,6 +251,15 @@ Two rules for the gate owner:
    about the map.
 2. **Never let `UNKNOWN_NO_SOURCE` pass as a permission.** It means the
    source says nothing, which is different from saying yes.
+
+And, on the real map today, a third rule follows from §6:
+
+3. **The comparison API currently adjudicates nothing.** All 22,589
+   junction connections of the map-of-record come back
+   `UNKNOWN_NO_SOURCE`, because only 75 of 32,267 roads carry an OSM
+   binding and **no connection has both ends bound**. A gate must not
+   read "0 denials" as "no denials" here — the correct reading is "no
+   evidence at all".
 
 ---
 

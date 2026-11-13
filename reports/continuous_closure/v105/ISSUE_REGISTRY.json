@@ -302,6 +302,25 @@
       "status": "REPRODUCED"
     },
     {
+      "affected_file": "campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_perception_map_of_record_20260916_232831.xodr",
+      "affected_sha": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+      "area": "Movement coverage",
+      "command": "py reports/v103/o2/run_legal_movement_audit.py --xodr <map-of-record>",
+      "corrected_sha": null,
+      "evidence": "reports/v103/o2/LEGAL_MOVEMENT_MOTOR_VEHICLE_SUMMARY.json",
+      "expected": "the OSM source can adjudicate the generated junction connections",
+      "id": "V106-O2-JUNCTION-COVERAGE",
+      "independent_review": "measured on the registry-pinned map-of-record; the two candidate readings (source too sparse, or the junctions are generated from OSM2ODR geometry rather than a per-connection OSM correspondence) are not distinguished here because the junction-construction path is not OpenCode's file",
+      "mutation_result": "n/a - a coverage finding, not a code defect",
+      "observed": "it cannot adjudicate ANY of them: of 32267 XODR roads only 75 carry an EXACT/HIGH oriented OSM binding, and of 22589 junction connections 0 have BOTH ends bound (115 have exactly one, 22474 neither). All 22589 comparison verdicts are UNKNOWN_NO_SOURCE. Verified as a COVERAGE result, not a binding-rule defect: all 75 bound roads do appear in some connection.",
+      "owner": "OpenCode (PR #57) + release-authority owner",
+      "priority": "P1",
+      "reproducer": "py reports/v103/o2/run_legal_movement_audit.py --xodr campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_perception_map_of_record_20260916_232831.xodr",
+      "result": "FAIL - the movement comparison adjudicates nothing on the real map",
+      "retry_eligible": false,
+      "status": "REPRODUCED"
+    },
+    {
       "affected_file": "GitHub branch protection / rulesets (not a source file)",
       "affected_sha": "225ed15d0da6444cc257835ca777aba281553f3c",
       "area": "Branch governance",
@@ -340,5 +359,5 @@
     }
   ],
   "schema": "v105_issue_registry/v1",
-  "updated_utc": "2026-11-13T09:00:19.093718+00:00"
+  "updated_utc": "2026-11-13T09:03:12.832915+00:00"
 }
