@@ -1,0 +1,159 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/lemoniadowyjohn/carla-control-suite/schemas/osm_allowed_movement/v1.json",
+  "title": "OSM allowed movement report",
+  "description": "Versioned report schema for the V103-O2 source-grounded legal movement graph. Every verdict is derived from executed OSM source facts. A missing relation is never read as a permission; explicit denial, known default permission and no source evidence are distinct verdicts.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "status",
+    "reason",
+    "vehicle_class",
+    "source",
+    "counts",
+    "restrictions",
+    "movements",
+    "notes"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "osm_allowed_movement/v1"
+    },
+    "status": {
+      "enum": ["PASS", "INCOMPLETE", "BLOCKED_INPUT", "NOT_RUN"],
+      "description": "PASS means the source was admitted and every candidate movement received a verdict. It does NOT mean the map is release-eligible."
+    },
+    "reason": {
+      "type": "string",
+      "description": "Empty on PASS. Otherwise the reason the report is not a completed measurement."
+    },
+    "vehicle_class": {
+      "type": "string",
+      "description": "The actor class the graph was built for. Every verdict is actor-specific."
+    },
+    "source": {
+      "type": "object",
+      "required": ["sha256", "bytes", "complete"],
+      "additionalProperties": false,
+      "properties": {
+        "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "bytes": {"type": "integer", "minimum": 0},
+        "complete": {
+          "type": "boolean",
+          "description": "False when the document is a crop or ends mid-element."
+        }
+      }
+    },
+    "counts": {
+      "type": "object",
+      "description": "Count of movements per verdict.",
+      "additionalProperties": {"type": "integer", "minimum": 0}
+    },
+    "restrictions": {
+      "type": "object",
+      "required": [
+        "parsed",
+        "applied",
+        "contradicted",
+        "missing",
+        "ambiguous",
+        "undecidable"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "parsed": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Every restriction relation parsed, including the malformed ones."
+        },
+        "applied": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Restrictions that were well formed and decidable, and were applied."
+        },
+        "contradicted": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Movements a restriction forbids."
+        },
+        "missing": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Movements for which the source says nothing either way."
+        },
+        "ambiguous": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Malformed or unsupported restriction forms that were NOT dropped."
+        },
+        "undecidable": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Conditional restrictions for which no clock/vehicle context was supplied."
+        }
+      }
+    },
+    "movements": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "from_way",
+          "to_way",
+          "via_nodes",
+          "via_ways",
+          "vehicle_class",
+          "status",
+          "rule_source",
+          "evidence",
+          "reason"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "from_way": {"type": "string"},
+          "to_way": {"type": "string"},
+          "via_nodes": {"type": "array", "items": {"type": "string"}},
+          "via_ways": {"type": "array", "items": {"type": "string"}},
+          "vehicle_class": {"type": "string"},
+          "status": {
+            "enum": [
+              "ALLOW_SOURCE_PROVEN",
+              "DENY_SOURCE_PROVEN",
+              "UNKNOWN_NO_SOURCE",
+              "AMBIGUOUS_MAPPING",
+              "UNSUPPORTED_CONDITIONAL",
+              "PHYSICAL_DISCONTINUITY"
+            ]
+          },
+          "rule_source": {
+            "enum": [
+              "osm_only_restriction",
+              "osm_no_restriction",
+              "osm_default_permission",
+              "osm_oneway",
+              "osm_access",
+              "osm_restriction_excepted",
+              "osm_conditional_restriction",
+              "osm_physical_discontinuity",
+              "osm_ambiguous_correspondence",
+              "osm_no_source_evidence"
+            ],
+            "description": "HOW the verdict was reached. A default permission and an explicit only_* permission are distinguishable here even though both are ALLOW_SOURCE_PROVEN."
+          },
+          "evidence": {
+            "type": "array",
+            "items": {"type": "string"},
+            "description": "Precise evidence ids: way:<id>, node:<id>, relation:<id>."
+          },
+          "reason": {"type": "string"}
+        }
+      }
+    },
+    "notes": {
+      "type": "array",
+      "items": {"type": "string"},
+      "description": "The interpretation switches that were in force, so a reader can see which reading produced the verdicts."
+    }
+  }
+}
