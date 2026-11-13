@@ -190,8 +190,14 @@ def main() -> int:
     summary = render_summary(report)
     if "xodr_join" in out:
         # The XODR comparison is part of the evidence and must be
-        # persisted, not only printed.
-        summary["xodr_join"] = out["xodr_join"]
+        # persisted, not only printed.  On the real map it is 22,589
+        # connections, so it is sampled like the movements.
+        join = dict(out["xodr_join"])
+        comparisons = join.pop("comparisons", [])
+        join["comparison_count"] = len(comparisons)
+        join["comparison_sample"] = comparisons[:200]
+        join["comparison_sampled"] = True
+        summary["xodr_join"] = join
     summary["audit"] = {
         "osm_source": out.get("osm_source"),
         "osm_document": out.get("osm_document"),
