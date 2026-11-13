@@ -113,10 +113,18 @@ class FeatureDomainGap:
         return float(np.linalg.norm(mu_x - mu_y))
 
     def compute(self, source: Any, target: Any) -> Dict[str, float]:
+        X, Y = self._validated_pair(source, target)
+        # Distributional comparison needs replicated observations. Two stored
+        # feature means are not two feature populations; callers must keep
+        # that path diagnostic rather than publishing a measured zero.
+        if X.shape[0] < 2 or Y.shape[0] < 2:
+            raise ValueError(
+                "insufficient feature observations: at least two samples per arm required"
+            )
         return {
-            "mmd": self.mmd(source, target),
-            "wasserstein": self.wasserstein(source, target),
-            "mean_gap": self.mean_gap(source, target),
+            "mmd": self.mmd(X, Y),
+            "wasserstein": self.wasserstein(X, Y),
+            "mean_gap": self.mean_gap(X, Y),
         }
 
     def visualize(
