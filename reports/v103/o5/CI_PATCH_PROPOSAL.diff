@@ -1,0 +1,102 @@
+V103-O5 CI PATCH PROPOSAL — NOT APPLIED
+========================================
+
+STATUS: DOC_ONLY_NO_WRITE. This file is a PROPOSAL. It is deliberately stored
+outside `.github/workflows/` and is NOT applied by the V103-O5 pull request.
+Applying it requires lifting the C08 `DOC_ONLY_NO_WRITE` constraint for
+exactly these paths:
+
+    .github/workflows/tests.yml
+    .github/workflows/carla-runtime.yml
+
+The 23 torch-dependent test modules listed in section 5 of
+`V103_O5_CI_AUDIT.md` would additionally need a marker/ignore change, which
+is a TEST-file change and is therefore not blocked by C08.
+
+
+--- a/.github/workflows/tests.yml
++++ b/.github/workflows/tests.yml
+@@ R28: action pinning -- NO CHANGE REQUIRED
++      # Every action ref in both workflows is ALREADY a full 40-character
++      # commit SHA (verified: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5,
++      # actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065,
++      # actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02).
++      # The earlier audit claim that these were 36-character prefixes was
++      # FALSE and is withdrawn; replacing an already-correct SHA with a
++      # placeholder would make the workflow worse.  Nothing to do here.
+
+@@ R25: exercise the declared Python range instead of a single hardcoded version
+     strategy:
+       fail-fast: false
+       matrix:
+-        python-version: ["3.12"]
++        python-version: ["3.12", "3.14"]
++        include:
++          - python-version: "3.14"
++            requirements-profile: offline   # torch-free: no 3.14 wheel is pinned yet
+
+@@ R25: every setup-python step must consume the matrix, or the new leg is a lie
+-          python-version: "3.12"
++          python-version: ${{ matrix.python-version }}
+
+@@ R29: the torch install must be gated on the profile, or the 3.14 leg
+@@        fails on a missing torch wheel before the torch-free tests run
+-        pip install torch==2.9.1 torchvision==0.24.1
++        if [ "${{ matrix.requirements-profile }}" != "offline" ]; then
++          pip install torch==2.9.1 torchvision==0.24.1
++        fi
++
+@@ R25/R28: verify dependency metadata integrity in every job, not just one
+     - name: Install package (editable, offline profile)
+       run: |
+         python -m pip install --upgrade pip
+         python -m pip install -e .
++        # NOT a blanket check: the headless profile installs ultralytics with
++        # --no-deps on purpose, so pip check would report the intentionally
++        # absent opencv-python and fail by design.
++        if [ "${{ matrix.requirements-profile }}" != "ultralytics-no-deps" ]; then
++          python -m pip check
++        fi
+
+@@ R26: make the predecessor requirement explicit (the job is already fail-closed)
+     needs:
+       - offline-tests
+       - package-wheel-smoke
+       - governance-integrity
+       - thesis-rq-contract
+       - research-provenance
+       - offline-evidence-graph
+       - windows-single-writer
++    steps:
++      - name: Assert every release predecessor succeeded
++        env:
++          PREDECESSOR_RESULTS: ${{ join(needs.*.result, ',') }}
++        run: |
++          python - <<'PY'
++          import os, sys
++          results = [r for r in os.environ.get("PREDECESSOR_RESULTS", "").split(",") if r]
++          bad = [r for r in results if r != "success"]
++          if not results:
++              sys.exit("no predecessor results were reported - refusing to release")
++          if bad:
++              sys.exit("release predecessors did not all succeed: %s" % bad)
++          PY
+
+@@ R28: download AND validate the pytest artifact
++    - name: Download the pytest log artifact
++      if: always()
++      uses: actions/download-artifact@<owner-resolved-sha> # v4.3.0
++      with:
++        name: pytest-log
++        path: ci-artifacts
++    - name: Validate the downloaded pytest log
++      if: always()
++      run: |
++        test -s ci-artifacts/pytest.log || {
++          echo "pytest log missing or empty"; exit 1; }
++
++NOTE: the pytest log is produced by the SEPARATE offline-tests job; the
++release-gate job neither creates it nor downloads it.  A local `test -s`
++check alone would fail on a fresh runner even when every test passed, so
++the artifact must be downloaded first.  The owner resolves the
++download-artifact SHA; this agent does not invent SHAs.
