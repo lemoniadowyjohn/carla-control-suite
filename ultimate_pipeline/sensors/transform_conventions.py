@@ -204,7 +204,9 @@ def camera_attachment_pose_from_cTv(
     # but CARLA spawn_actor(attach_to=ego) requires camera->vehicle.
     # The canonical converter includes both left/right-handed basis changes.
     if flip_vehicle_y:
-        raise ValueError("camera mounting already converts vehicle FLU to CARLA; double flip forbidden")
+        # Historical DominikSensorSetup callers set this flag True. It is
+        # now a compatibility no-op: canonical basis conversion occurs once.
+        log.warning("flip_vehicle_y deprecated for CARLA camera mounting; canonical FLU->FRD conversion applied")
     if opencv_camera_axes is False:
         raise ValueError("cTv camera optical basis cannot be disabled for thesis mounting")
     if ctv_invert:
@@ -237,6 +239,6 @@ def camera_attachment_pose_from_cTv(
 def lidar_attachment_pose_from_vTl(vTl: np.ndarray, *, flip_vehicle_y: bool) -> Dict[str, float]:
     """Build CARLA-ready LiDAR pose fields from vTl."""
     if flip_vehicle_y:
-        raise ValueError("lidar mounting already converts vehicle FLU to CARLA; double flip forbidden")
+        log.warning("flip_vehicle_y deprecated for CARLA lidar mounting; canonical FLU->FRD conversion applied")
     T_vehicle_lidar = lidar_attachment_matrix_from_vTl(vTl)
     return matrix_to_unreal_pose(T_vehicle_lidar)
