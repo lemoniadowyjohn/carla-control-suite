@@ -7,6 +7,9 @@ from __future__ import annotations
 
 import json
 import hashlib
+import os
+import threading
+import time
 from pathlib import Path
 
 import pytest
@@ -28,6 +31,60 @@ def repo(tmp_path: Path) -> Path:
 
 def _lease_path(repo: Path) -> Path:
     return wl._worktree_lease_path(repo)
+
+
+def test_generation_marker_and_ledger_co_deletion_does_not_reuse_generation(repo: Path):
+    first = wl.acquire_worktree_lease(repo, purpose="first")
+    assert wl.release_worktree_lease(repo, first.owner_token, first.lease_id) is True
+
+    ledger = wl._ledger_path(repo)
+    marker = wl._generation_marker_path(repo)
+    anchor = wl._generation_anchor_path(repo)
+    assert ledger.exists() and marker.exists() and anchor.exists()
+    ledger.unlink()
+    marker.unlink()
+
+    second = wl.acquire_worktree_lease(repo, purpose="second")
+    try:
+        assert second.generation > first.generation
+    finally:
+        wl.release_worktree_lease(repo, second.owner_token, second.lease_id)
+
+
+def test_fallback_publisher_never_exposes_zero_byte_destination(repo: Path, monkeypatch):
+    path = repo / "fallback.json"
+    payload = b'{"schema":"test","generation":1}\n'
+    real_fdopen = os.fdopen
+
+    def delayed_fdopen(fd, mode, *args, **kwargs):
+        time.sleep(0.15)
+        return real_fdopen(fd, mode, *args, **kwargs)
+
+    monkeypatch.setattr(os, "fdopen", delayed_fdopen)
+    result = {}
+
+    def publish():
+        try:
+            result["ok"] = wl._publish_exclusive_fallback_bytes(path, payload)
+        except Exception as exc:
+            result["error"] = exc
+
+    thread = threading.Thread(target=publish)
+    thread.start()
+    observed_zero_byte = False
+    while thread.is_alive():
+        if path.exists():
+            try:
+                observed_zero_byte |= path.stat().st_size == 0
+            except OSError:
+                pass
+        time.sleep(0.002)
+    thread.join()
+
+    assert "error" not in result, repr(result.get("error"))
+    assert result.get("ok") is True
+    assert observed_zero_byte is False
+    assert path.read_bytes() == payload
 
 
 def test_v95_08_generation_claim_release_refuses_to_unlink_foreign_claim(repo: Path):

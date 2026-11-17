@@ -529,26 +529,34 @@ def _publish_exclusive_fallback(path: Path, payload: dict | bytes) -> bool:
 
 
 def _publish_exclusive_fallback_bytes(path: Path, data: bytes) -> bool:
-    """O_EXCL reservation fallback for filesystems without hard links."""
+    """Publish complete bytes without exposing an empty destination.
+
+    Windows provides an atomic no-replace rename. On other platforms a hard
+    link is required for exclusive publication; if unavailable, fail closed
+    instead of reserving the destination as an empty file.
+    """
+    tmp = path.with_name(f"{path.name}.{os.getpid()}.{uuid.uuid4().hex}.pub")
     try:
-        fd = os.open(str(path), os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o644)
-    except FileExistsError:
-        return False
-    except PermissionError:
-        if path.exists():
-            return False
-        raise
-    try:
+        fd = os.open(str(tmp), os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o644)
         with os.fdopen(fd, "wb") as fh:
             fh.write(data)
             fh.flush()
             os.fsync(fh.fileno())
-    except BaseException:
+        if os.name == "nt":
+            os.rename(tmp, path)
+        else:
+            os.link(str(tmp), str(path))
+    except FileExistsError:
+        return False
+    except (OSError, NotImplementedError) as exc:
+        raise RuntimeError(
+            f"LOCKED_UNKNOWN: filesystem cannot atomically publish {path} without replacement"
+        ) from exc
+    finally:
         try:
-            path.unlink()
+            tmp.unlink(missing_ok=True)
         except OSError:
             pass
-        raise
     _fsync_dir(path.parent)
     return True
 
@@ -768,10 +776,39 @@ def _generation_marker_path(worktree_root: Path) -> Path:
     return ledger.with_name(f"{ledger.name}.initialized")
 
 
+def _generation_anchor_path(worktree_root: Path) -> Path:
+    """Independent durable high-water record surviving ledger/marker loss."""
+    ledger = _ledger_path(worktree_root)
+    return ledger.with_name(f"{ledger.name}.high-water")
+
+
 def _generation_high_water(worktree_root: Path) -> int:
-    """Read an intact monotonic ledger; missing initialized ledgers fail closed."""
+    """Read the monotonic ledger and its independent durable high-water anchor."""
     path = _ledger_path(worktree_root)
     marker = _generation_marker_path(worktree_root)
+    anchor_path = _generation_anchor_path(worktree_root)
+    try:
+        anchor_raw = anchor_path.read_bytes()
+    except FileNotFoundError:
+        anchor_raw = None
+    except OSError as exc:
+        raise RuntimeError(f"LOCKED_UNKNOWN: generation high-water anchor unreadable: {exc}") from exc
+    anchor = None
+    if anchor_raw is not None:
+        try:
+            anchor_record = json.loads(anchor_raw.decode("utf-8"))
+            anchor_value = anchor_record.get("generation") if isinstance(anchor_record, dict) else None
+            if (
+                not isinstance(anchor_record, dict)
+                or anchor_record.get("schema") != "worktree-generation-anchor/v1"
+                or isinstance(anchor_value, bool)
+                or not isinstance(anchor_value, int)
+                or anchor_value < 1
+            ):
+                raise ValueError("invalid high-water anchor record")
+            anchor = anchor_value
+        except (UnicodeError, json.JSONDecodeError, ValueError) as exc:
+            raise RuntimeError("LOCKED_UNKNOWN: malformed generation high-water anchor") from exc
     try:
         marker_data = marker.read_bytes()
     except FileNotFoundError:
@@ -785,7 +822,7 @@ def _generation_high_water(worktree_root: Path) -> int:
     except FileNotFoundError:
         if marker_data is not None:
             raise RuntimeError("LOCKED_UNKNOWN: initialized generation ledger is missing")
-        return 0
+        return anchor or 0
     except OSError as exc:
         raise RuntimeError(f"LOCKED_UNKNOWN: generation ledger unreadable: {exc}") from exc
     if not raw or not raw.endswith(b"\n"):
@@ -799,7 +836,9 @@ def _generation_high_water(worktree_root: Path) -> int:
         if not line.isdigit() or int(line) <= previous:
             raise RuntimeError("LOCKED_UNKNOWN: corrupt or nonmonotonic generation ledger")
         previous = int(line)
-    return previous
+    if anchor is not None and anchor < previous:
+        raise RuntimeError("LOCKED_UNKNOWN: generation high-water anchor is behind the ledger")
+    return max(previous, anchor or 0)
 
 
 def _issue_generation(worktree_root: Path, floor: int = 0) -> int:
@@ -808,10 +847,15 @@ def _issue_generation(worktree_root: Path, floor: int = 0) -> int:
     path.parent.mkdir(parents=True, exist_ok=True)
     high = _generation_high_water(worktree_root)
     marker = _generation_marker_path(worktree_root)
+    nxt = max(0, high, int(floor)) + 1
+    _write_payload(
+        _generation_anchor_path(worktree_root),
+        {"schema": "worktree-generation-anchor/v1", "generation": nxt},
+        durable=True,
+    )
     if not marker.exists():
         if not _publish_exclusive_bytes(marker, b"worktree-generation-ledger/v1\n"):
             raise RuntimeError("LOCKED_UNKNOWN: generation marker publication raced")
-    nxt = max(0, high, int(floor)) + 1
     fd = os.open(str(path), os.O_CREAT | os.O_WRONLY | os.O_APPEND, 0o644)
     try:
         payload = f"{nxt}\n".encode("ascii")
