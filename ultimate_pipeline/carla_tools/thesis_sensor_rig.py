@@ -290,7 +290,7 @@ def _guard_thesis_inversion_env() -> None:
 
     THESIS INVARIANT:
     - cTv (Vehicle->Camera) MUST NOT be inverted
-    - vTl (LiDAR->Vehicle) MUST be inverted to Vehicle->LiDAR for attachment
+    - vTl (LiDAR->Vehicle) is used for mounting after source/CARLA basis conversion
 
     If UP_THESIS_STRICT=1:
     - Canonical env values are PERMITTED (pass-through, no warning)
@@ -408,8 +408,8 @@ class RigVerification:
     to be auditable and explicit about the thesis sensor contract:
 
       - Cameras: use K_undistortion only (ignore K and D); cTv is vehicle->camera.
-      - LiDARs: vTl is lidar->vehicle; invert to vehicle->lidar for attachment.
-      - Inversions: cTv_inverted=false; vTl_inverted=true (required for attachment).
+      - LiDARs: vTl is lidar->vehicle; use vTl for mounting after two basis changes.
+      - Legacy v1 inversion flags describe projection/backprojection only; v2 mounting reports actual sensor->vehicle CARLA matrices.
 
     Additionally, it records the applied CARLA transforms (relative and world)
     that were used at spawn time.
@@ -486,9 +486,9 @@ class ThesisSensorRig:
 
     THESIS INVARIANT (enforced, not configurable):
     - Cameras: use K_undistortion (pinhole), image_size, and cTv as Vehicle→Camera.
-      cTv is used DIRECTLY for CARLA attachment. Inversion is FORBIDDEN.
+      Legacy cTv direct usage applies to projection ONLY. CARLA mounting requires inverse(cTv) and two basis conversions.
     - LiDARs: vTl is LiDAR→Vehicle.
-      vTl is inverted to Vehicle→LiDAR for CARLA attachment. Inversion is REQUIRED.
+      Legacy inverse(vTl) applies to vehicle-to-LiDAR backprojection ONLY. CARLA mounting uses vTl and two basis conversions.
 
     If UP_THESIS_STRICT=1 and any manual override env var is set, RuntimeError is raised.
     """
@@ -942,7 +942,7 @@ class ThesisSensorRig:
                         },
                         "raw_matrix": _to_list(cam_data.get("cTv")),
                         "raw_direction_label": "vehicle_to_camera",
-                        "used_direction_label": "vehicle_to_camera",
+                        "used_direction_label": "sensor_to_vehicle_carla",
                         "used_matrix_vehicle_to_sensor": _to_list(T_used),
                         "mounting_ctv_inverted": True,
                         "mounting_matrix_sensor_to_vehicle_carla": _to_list(T_used),
@@ -953,7 +953,7 @@ class ThesisSensorRig:
                         "t_used": _to_list(t_used),
                         "carla_transform": cam_tf_dict,
                         "forward_alignment": cam_forward_alignment,
-                        "transform_convention": "Used cTv (vehicle->camera) directly for attachment.",
+                        "transform_convention": "Used cTv directly for projection; CARLA mounting uses inverse(cTv) and basis conversion.",
                         "low_memory_profile_active": bool(low_memory_profile_active),
                         "front_only_strict_active": bool(front_only_strict),
                     },
@@ -1082,14 +1082,14 @@ class ThesisSensorRig:
                         },
                         "raw_matrix": _to_list(lidar_data.get("vTl")),
                         "raw_direction_label": "lidar_to_vehicle",
-                        "used_direction_label": "vehicle_to_lidar",
+                        "used_direction_label": "sensor_to_vehicle_carla",
                         "used_matrix_vehicle_to_sensor": _to_list(T_used),
                         "mounting_vtl_inverted": False,
                         "mounting_matrix_sensor_to_vehicle_carla": _to_list(T_used),
                         "inversion_applied": vtl_inverted,
                         "vtl_inverted": vtl_inverted,
                         "carla_transform": lidar_tf_dict,
-                        "transform_convention": "Used inverse(vTl) (vehicle->lidar) for attachment.",
+                        "transform_convention": "Used inverse(vTl) for backprojection; CARLA mounting uses vTl and basis conversion.",
                         "front_only_strict_active": bool(front_only_strict),
                     },
                 )
@@ -1183,8 +1183,8 @@ class ThesisSensorRig:
                 "raw_direction_label": "vehicle_to_camera",
                 "inversion_applied": False,
                 "ctv_inverted": False,
-                "used_direction_label": "vehicle_to_camera",
-                "transform_convention": "Used cTv (vehicle->camera) directly for attachment.",
+                "used_direction_label": "sensor_to_vehicle_carla",
+                "transform_convention": "Used cTv directly for projection; CARLA mounting uses inverse(cTv) and basis conversion.",
             }
         for lidar_name, lidar_data in lids.items():
             reports[lidar_name] = {
@@ -1193,10 +1193,10 @@ class ThesisSensorRig:
                     "vTl": lidar_data.get("vTl"),
                 },
                 "raw_direction_label": "lidar_to_vehicle",
-                "used_direction_label": "vehicle_to_lidar",
+                "used_direction_label": "sensor_to_vehicle_carla",
                 "inversion_applied": True,
                 "vtl_inverted": True,
-                "transform_convention": "Used inverse(vTl) (vehicle->lidar) for attachment.",
+                "transform_convention": "Used inverse(vTl) for backprojection; CARLA mounting uses vTl and basis conversion.",
             }
         return reports
 
@@ -1376,15 +1376,15 @@ class ThesisSensorRig:
                 "OK: All cameras use K_undistortion only (pinhole model)"
             )
         if not any_ctv_inverted:
-            compliance_notes.append("OK: No camera cTv transforms were inverted")
+            compliance_notes.append("OK: Legacy cTv projection policy uses direct source transform; mounting independently uses inverse(cTv)")
         if lidars_count > 0:
             if all_vtl_inverted:
                 compliance_notes.append(
-                    "OK: All LiDAR vTl transforms were inverted for attachment"
+                    "OK: Legacy LiDAR backprojection uses inverse(vTl); mounting independently uses vTl"
                 )
             else:
                 compliance_notes.append(
-                    "WARN: One or more LiDAR vTl transforms were not inverted for attachment"
+                    "WARN: Legacy vTl backprojection evidence incomplete"
                 )
 
         return RigVerification(
@@ -1576,7 +1576,7 @@ class ThesisSensorRig:
                     "type": "camera",
                     "ctv_inverted": False,
                     "inversion_applied": False,
-                    "transform_convention": "Used cTv (vehicle->camera) via canonical transform_conventions path.",
+                    "transform_convention": "Used cTv directly for projection; CARLA mounting uses inverse(cTv) and basis conversion.",
                     "raw": raw_camera,
                     "front_only_strict_active": bool(front_only_strict),
                 }
@@ -1588,7 +1588,7 @@ class ThesisSensorRig:
                     "type": "lidar",
                     "vtl_inverted": True,
                     "inversion_applied": True,
-                    "transform_convention": "Used inverse(vTl) (vehicle->lidar) via canonical transform_conventions path.",
+                    "transform_convention": "Used inverse(vTl) for backprojection; CARLA mounting uses vTl and basis conversion.",
                     "raw": {"vTl": lidar_data.get("vTl")},
                     "front_only_strict_active": bool(front_only_strict),
                 }
