@@ -155,11 +155,14 @@ def _release_acceptance_payload(xodr_path: str, run_id: str) -> dict:
     return {
         "valid_for_experiments": True,
         "release_eligible": True,
+        "artifact_identity_verified": True,
         "acceptance_policy": {"purpose": "release"},
         "mandatory_gates": list(RELEASE_MANDATORY_GATES),
+        "mandatory_gate_status": {gate: "PASS" for gate in RELEASE_MANDATORY_GATES},
         "final_xodr_sha256": sha,
         "evaluated_xodr_sha256": sha,
         "run_id": run_id,
+        "hard_fail_reasons": [],
         "failed_gates": [],
     }
 
@@ -561,11 +564,14 @@ class TestSourceManifestIsAnExternalInput:
         acceptance_payload = {
             "valid_for_experiments": True,
             "release_eligible": True,
+            "artifact_identity_verified": True,
             "acceptance_policy": {"purpose": "release"},
             "mandatory_gates": list(RELEASE_MANDATORY_GATES),
+            "mandatory_gate_status": {gate: "PASS" for gate in RELEASE_MANDATORY_GATES},
             "final_xodr_sha256": sha,
             "evaluated_xodr_sha256": sha,
             "run_id": run_dir.name,
+            "hard_fail_reasons": [],
             "failed_gates": [],
         }
         acceptance_path = run_dir / "map_acceptance.json"
@@ -637,11 +643,14 @@ class TestSourceManifestIsAnExternalInput:
         acceptance_payload = {
             "valid_for_experiments": True,
             "release_eligible": True,
+            "artifact_identity_verified": True,
             "acceptance_policy": {"purpose": "release"},
             "mandatory_gates": list(RELEASE_MANDATORY_GATES),
+            "mandatory_gate_status": {gate: "PASS" for gate in RELEASE_MANDATORY_GATES},
             "final_xodr_sha256": sha,
             "evaluated_xodr_sha256": sha,
             "run_id": run_dir.name,
+            "hard_fail_reasons": [],
             "failed_gates": [],
         }
         acceptance_path = run_dir / "map_acceptance.json"

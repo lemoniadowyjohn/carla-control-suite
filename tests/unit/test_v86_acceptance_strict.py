@@ -377,10 +377,15 @@ def test_standalone_cli_diagnostic_is_never_a_release_certificate(tmp_path):
 _FULL_RELEASE_PAYLOAD = {
     "valid_for_experiments": True,
     "release_eligible": True,
+    "artifact_identity_verified": True,
     "acceptance_policy": {"purpose": "release"},
     "mandatory_gates": list(fag.RELEASE_MANDATORY_GATES),
+    "mandatory_gate_status": {gate: "PASS" for gate in fag.RELEASE_MANDATORY_GATES},
+    "hard_fail_reasons": [],
+    "failed_gates": [],
     "final_xodr_sha256": "a" * 64,
     "evaluated_xodr_sha256": "a" * 64,
+    "run_id": "v86",
 }
 
 

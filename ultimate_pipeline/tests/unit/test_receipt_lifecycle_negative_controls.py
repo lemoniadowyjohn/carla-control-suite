@@ -42,11 +42,14 @@ def _release_payload(xodr_path: str, run_id: str, **overrides) -> dict:
     payload = {
         "valid_for_experiments": True,
         "release_eligible": True,
+        "artifact_identity_verified": True,
         "acceptance_policy": {"purpose": "release"},
         "mandatory_gates": list(RELEASE_MANDATORY_GATES),
+        "mandatory_gate_status": {gate: "PASS" for gate in RELEASE_MANDATORY_GATES},
         "final_xodr_sha256": sha,
         "evaluated_xodr_sha256": sha,
         "run_id": run_id,
+        "hard_fail_reasons": [],
         "failed_gates": [],
     }
     payload.update(overrides)

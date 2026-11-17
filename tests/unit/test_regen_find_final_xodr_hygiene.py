@@ -78,11 +78,14 @@ def _write_valid_receipt(run_dir: Path, final_name: str = "08h3_zseams_repaired.
             {
                 "valid_for_experiments": True,
                 "release_eligible": True,
+                "artifact_identity_verified": True,
                 "acceptance_policy": {"purpose": "release"},
                 "mandatory_gates": list(RELEASE_MANDATORY_GATES),
+                "mandatory_gate_status": {gate: "PASS" for gate in RELEASE_MANDATORY_GATES},
                 "final_xodr_sha256": final_sha,
                 "evaluated_xodr_sha256": final_sha,
                 "run_id": run_dir.name,
+                "hard_fail_reasons": [],
                 "failed_gates": [],
             }
         ),

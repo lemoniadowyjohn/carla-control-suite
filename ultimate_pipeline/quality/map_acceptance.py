@@ -14,6 +14,7 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+import re
 import sys
 import xml.etree.ElementTree as ET
 from typing import Any, Dict, List, Optional, Sequence
@@ -1236,13 +1237,16 @@ def build_map_acceptance(
     valid_for_experiments = len(hard_fail_reasons) == 0
     # PR #30 review (Sourcery "~1183: a release purpose without
     # evaluated_xodr_sha256 or final_xodr_path identity must not be
-    # release_eligible"): when the caller never supplied evaluated_xodr_sha256
-    # (or never supplied/resolved final_xodr_path), the artifact_identity hard
-    # fail above is never even evaluated -- byte identity between what the
-    # gates checked and the published final artifact was never verified at
-    # all. That must not pass vacuously as release_eligible; identity
-    # evidence is a precondition for the claim, not just one more
-    # hard_fail_reasons entry that happens not to have fired.
+    # release_eligible"), UPDATED for #48 (4bf6b29d): for a release-purpose
+    # call the artifact_identity hard fail above is now ALWAYS evaluated
+    # (missing/invalid evaluated_xodr_sha256 or final_xodr_sha256 is itself a
+    # BLOCKED_INPUT hard_fail_reason, not merely skipped) -- so a missing
+    # identity already drives valid_for_experiments to False too, not just
+    # release_eligible. ``has_identity_evidence``/``artifact_identity_verified``
+    # remain their own explicit, independently-checkable field: byte identity
+    # between what the gates checked and the published final artifact is a
+    # precondition for the release_eligible claim in its own right, not just
+    # one more hard_fail_reasons entry that happens to have fired.
     has_identity_evidence = bool(
         final_xodr_path
         and final_xodr_sha256
@@ -1335,6 +1339,9 @@ def build_map_acceptance(
     return payload
 
 
+_SHA256_HEX_RE = re.compile(r"^[0-9a-f]{64}$")
+
+
 def validate_release_acceptance_contract(
     payload: Any,
     *,
@@ -1359,12 +1366,39 @@ def validate_release_acceptance_contract(
       consistent with this, even though it also has to handle payloads this
       function was never meant to validate release-eligibility for).
 
+    Round-2 review (reproduced): this must match the producer
+    (``build_map_acceptance``) EXACTLY, not merely be "close enough" --
+    * ``mandatory_gates`` must be the authoritative ``RELEASE_MANDATORY_GATES``
+      set exactly (string items only, no duplicates, no extras, no omissions)
+      -- the same exact-set rule ``build_map_acceptance`` enforces at
+      construction time (#48/4bf6b29d), not the looser superset check this
+      function used to apply.
+    * ``artifact_identity_verified`` must be exactly ``True`` -- previously
+      unchecked here entirely, so a forged/hand-written payload with
+      ``artifact_identity_verified: False`` (identity never actually bound)
+      could still pass.
+    * ``mandatory_gate_status[gate]`` must be ``"PASS"`` for every
+      authoritative gate -- previously unchecked, so a payload with every
+      gate FAIL (and a non-empty ``hard_fail_reasons``) could still pass as
+      long as the summary booleans were forged to ``True``.
+    * ``hard_fail_reasons`` and ``failed_gates`` must both be empty -- same
+      reason.
+    * ``final_xodr_sha256``/``evaluated_xodr_sha256`` must each be a genuine
+      64-character lowercase hex SHA-256 digest (not merely "equal to each
+      other" -- two equal non-hex strings such as ``"x"``/``"x"`` used to
+      pass).
+    * ``run_id`` is REQUIRED (not merely checked when present) -- #48's real
+      producer call site (``main_pipeline.py``'s ``build_map_acceptance(...,
+      run_id=os.path.basename(os.path.normpath(self.out_dir)), ...)``)
+      always supplies one for a release-purpose evaluation; a release
+      payload with no run_id at all is not a genuine production receipt.
+
     ``expected_xodr_sha256``, when given, additionally requires the payload's
     ``final_xodr_sha256`` to equal the caller's independently-known final
     artifact digest -- the acceptance payload must describe the file the
     caller is about to publish, not merely be internally self-consistent.
-    ``expected_run_id``, when given, requires the payload's ``run_id`` (if it
-    records one) to match.
+    ``expected_run_id``, when given, requires the payload's ``run_id`` to
+    match.
     """
     problems: List[str] = []
     if not isinstance(payload, dict):
@@ -1381,6 +1415,12 @@ def validate_release_acceptance_contract(
             f"release_eligible is not exactly True (got {payload.get('release_eligible')!r})"
         )
 
+    if payload.get("artifact_identity_verified") is not True:
+        problems.append(
+            "artifact_identity_verified is not exactly True "
+            f"(got {payload.get('artifact_identity_verified')!r})"
+        )
+
     policy = payload.get("acceptance_policy")
     purpose = policy.get("purpose") if isinstance(policy, dict) else None
     if purpose != "release":
@@ -1390,29 +1430,58 @@ def validate_release_acceptance_contract(
         )
 
     mandatory_gates = payload.get("mandatory_gates")
-    if not isinstance(mandatory_gates, list) or not mandatory_gates:
-        problems.append("mandatory_gates is missing or empty")
+    if not isinstance(mandatory_gates, list) or not all(
+        isinstance(gate, str) for gate in mandatory_gates
+    ):
+        problems.append("mandatory_gates must be a list of gate-name strings")
+    elif (
+        len(mandatory_gates) != len(RELEASE_MANDATORY_GATES)
+        or set(mandatory_gates) != set(RELEASE_MANDATORY_GATES)
+    ):
+        problems.append(
+            "mandatory_gates must be exactly the authoritative "
+            f"RELEASE_MANDATORY_GATES set, no duplicates/extras/omissions "
+            f"(got {mandatory_gates!r})"
+        )
+
+    gate_status = payload.get("mandatory_gate_status")
+    if not isinstance(gate_status, dict):
+        problems.append("mandatory_gate_status is missing or not an object")
     else:
-        missing_authoritative = set(RELEASE_MANDATORY_GATES) - set(mandatory_gates)
-        if missing_authoritative:
-            problems.append(
-                "mandatory_gates does not cover the authoritative "
-                f"RELEASE_MANDATORY_GATES set; missing: {sorted(missing_authoritative)}"
-            )
+        for gate in RELEASE_MANDATORY_GATES:
+            if gate_status.get(gate) != "PASS":
+                problems.append(
+                    f"mandatory_gate_status[{gate!r}] is not PASS "
+                    f"(got {gate_status.get(gate)!r})"
+                )
+
+    hard_fail_reasons = payload.get("hard_fail_reasons")
+    if hard_fail_reasons:
+        problems.append(
+            f"hard_fail_reasons is not empty (got {hard_fail_reasons!r})"
+        )
+
+    failed_gates = payload.get("failed_gates")
+    if failed_gates:
+        problems.append(f"failed_gates is not empty (got {failed_gates!r})")
 
     final_sha = payload.get("final_xodr_sha256")
     evaluated_sha = payload.get("evaluated_xodr_sha256")
-    if not isinstance(final_sha, str) or not final_sha:
-        problems.append("final_xodr_sha256 is missing")
-    if not isinstance(evaluated_sha, str) or not evaluated_sha:
-        problems.append("evaluated_xodr_sha256 is missing")
-    if (
-        isinstance(final_sha, str)
-        and isinstance(evaluated_sha, str)
-        and final_sha
-        and evaluated_sha
-        and final_sha != evaluated_sha
-    ):
+    final_sha_valid = isinstance(final_sha, str) and bool(_SHA256_HEX_RE.match(final_sha))
+    evaluated_sha_valid = isinstance(evaluated_sha, str) and bool(
+        _SHA256_HEX_RE.match(evaluated_sha)
+    )
+    if not final_sha_valid:
+        problems.append(
+            "final_xodr_sha256 is missing or not a 64-character lowercase "
+            f"hex SHA-256 digest (got {final_sha!r})"
+        )
+    if not evaluated_sha_valid:
+        problems.append(
+            "evaluated_xodr_sha256 is missing or not a 64-character "
+            f"lowercase hex SHA-256 digest (got {evaluated_sha!r})"
+        )
+    if final_sha_valid and evaluated_sha_valid and final_sha != evaluated_sha:
         problems.append("final_xodr_sha256 does not match evaluated_xodr_sha256")
 
     if expected_xodr_sha256 is not None and final_sha != expected_xodr_sha256:
@@ -1421,11 +1490,12 @@ def validate_release_acceptance_contract(
             f"published artifact sha256 {expected_xodr_sha256!r}"
         )
 
-    if expected_run_id is not None:
-        run_id_value = payload.get("run_id")
-        if run_id_value is not None and run_id_value != expected_run_id:
-            problems.append(
-                f"run_id {run_id_value!r} does not match expected {expected_run_id!r}"
-            )
+    run_id_value = payload.get("run_id")
+    if not isinstance(run_id_value, str) or not run_id_value:
+        problems.append(f"run_id is required for a release payload (got {run_id_value!r})")
+    elif expected_run_id is not None and run_id_value != expected_run_id:
+        problems.append(
+            f"run_id {run_id_value!r} does not match expected {expected_run_id!r}"
+        )
 
     return problems

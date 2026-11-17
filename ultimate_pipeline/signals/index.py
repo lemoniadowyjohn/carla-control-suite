@@ -188,8 +188,10 @@ def release_acceptance_status(payload: Any) -> str:
     arbitrary payload is the same class of bug as build_receipt/the resolver
     trusting a bare ``valid_for_experiments: True`` -- a forged or
     hand-written payload could set that flag directly without satisfying the
-    gate-superset or identity conditions it is supposed to summarize. This
-    now independently re-derives the same verdict via
+    exact-gate-set or identity conditions it is supposed to summarize (#48/
+    4bf6b29d tightened the real gate-set requirement from a superset to an
+    exact match; the shared contract below enforces that same exact match,
+    not a superset). This now independently re-derives the same verdict via
     ``map_acceptance.validate_release_acceptance_contract``, the one shared
     definition of "valid release acceptance" also used by
     ``main_pipeline._require_valid_map_acceptance`` and
