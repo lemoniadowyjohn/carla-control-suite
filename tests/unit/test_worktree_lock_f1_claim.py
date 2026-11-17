@@ -177,7 +177,7 @@ def test_t3_successor_bytes_survive_renewal_at_publication_boundary(
     )
     monkeypatch.setattr(wl, "reclaim_decision", lambda _lease: (True, "injected dead owner"))
 
-    def replace_during_renewal(target: Path, payload: dict):
+    def replace_during_renewal(target: Path, payload: dict, *, durable: bool = False):
         nonlocal entered
         if target == path and not entered:
             entered = True
@@ -188,7 +188,7 @@ def test_t3_successor_bytes_survive_renewal_at_publication_boundary(
                 nested["bytes"] = path.read_bytes()
             except RuntimeError as exc:
                 nested["error"] = exc
-        return original_write(target, payload)
+        return original_write(target, payload, durable=durable)
 
     monkeypatch.setattr(wl, "_write_payload", replace_during_renewal)
     renewed = wl.renew_worktree_lease(
@@ -306,7 +306,11 @@ def test_t5_existing_destination_permission_error_means_not_published(
     monkeypatch.setattr(wl.os, "link", lambda *_args: (_ for _ in ()).throw(PermissionError()))
     monkeypatch.setattr(wl.os, "open", deny_existing_destination)
 
-    assert wl._publish_exclusive(path, {"payload": "new lease bytes"}) is False
+    if os.name == "nt":
+        assert wl._publish_exclusive(path, {"payload": "new lease bytes"}) is False
+    else:
+        with pytest.raises(RuntimeError, match="LOCKED_UNKNOWN: filesystem cannot atomically publish"):
+            wl._publish_exclusive(path, {"payload": "new lease bytes"})
     assert path.read_bytes() == original
 
 
