@@ -406,7 +406,8 @@ def test_restart_rejects_foreign_port_and_names_the_holder(monkeypatch, tmp_path
     assert cu.restart_carla(host="127.0.0.1", port=2000) is False
     out = capsys.readouterr().out
     assert "8675" in out
-    assert "taskkill" in out
+    expected_command = "taskkill" if cu._IS_WINDOWS else "kill 8675"
+    assert expected_command in out
 
 
 def test_crash_cache_cleanup_never_deletes_shared_directories(monkeypatch, tmp_path: Path):

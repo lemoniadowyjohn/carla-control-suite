@@ -57,6 +57,7 @@ def _pin_monotonic_near_zero(monkeypatch: pytest.MonkeyPatch) -> None:
 
 
 def test_synchronous_world_passes_rpc_readiness_without_frames(monkeypatch):
+    _pin_monotonic_near_zero(monkeypatch)
     Client.instances.clear()
     monkeypatch.setattr(capture, "_try_import_carla", lambda: (SimpleNamespace(Client=Client), None))
     result = capture._ready_probe("127.0.0.1", 2000, timeout_s=0.2, sleep_s=0.0)
