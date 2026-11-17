@@ -257,6 +257,18 @@ def _generation_claim_at_path(
     payload = json.dumps({
         "pid": pid, "start_identity": start_identity or "", "token": claim_token,
     }, sort_keys=True).encode("utf-8")
+
+    def _claim_owned_by_us() -> bool:
+        try:
+            current = path.read_bytes()
+        except FileNotFoundError:
+            return False
+        except OSError as exc:
+            raise RuntimeError(
+                f"LOCKED_UNKNOWN: could not verify generation claim ownership at {path}: {exc}"
+            ) from exc
+        return hmac.compare_digest(current, payload)
+
     permission_denials = 0
     while True:
         _remaining_s()
@@ -350,7 +362,10 @@ def _generation_claim_at_path(
         except BaseException:
             os.close(fd)
             try:
-                path.unlink(missing_ok=True)
+                if _claim_owned_by_us():
+                    path.unlink(missing_ok=True)
+            except RuntimeError:
+                raise
             except OSError:
                 pass
             raise
@@ -362,12 +377,26 @@ def _generation_claim_at_path(
     finally:
         for _cleanup_attempt in range(_GENERATION_CLAIM_CLEANUP_RETRIES):
             try:
+                try:
+                    current = path.read_bytes()
+                except FileNotFoundError:
+                    break
+                except PermissionError as exc:
+                    raise
+                except OSError as exc:
+                    raise RuntimeError(
+                        f"LOCKED_UNKNOWN: could not verify generation claim ownership at {path}: {exc}"
+                    ) from exc
+                if not hmac.compare_digest(current, payload):
+                    raise RuntimeError(
+                        f"LOCKED_UNKNOWN: generation claim at {path} is no longer owned by this process; refusing to unlink"
+                    )
                 path.unlink(missing_ok=True)
                 break
             except PermissionError as exc:
-                # Windows may briefly deny deletion while a contender has the
-                # claim open for its liveness check. Retry, then fail visibly
-                # instead of reporting success with a leaked live-owner claim.
+                # Windows may briefly deny read/delete while a contender has the
+                # claim open for inspection. Retry, then fail visibly instead of
+                # reporting success with a leaked or foreign live-owner claim.
                 if _cleanup_attempt + 1 == _GENERATION_CLAIM_CLEANUP_RETRIES:
                     raise RuntimeError(
                         f"LOCKED_UNKNOWN: could not release generation claim at {path}"

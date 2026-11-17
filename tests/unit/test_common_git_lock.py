@@ -677,7 +677,9 @@ def test_failed_tombstone_restore_blocks_acquisition_and_preserves_evidence(
     """An un-restorable displaced generation must block fresh publication."""
     from ultimate_pipeline.governance.single_writer import common_git_lock as cgl
 
-    original_lock = cgl.acquire_common_git_lock(repo, "git test", timeout_seconds=2)
+    # Keep the lease comfortably unexpired during slow/full-suite runs; the
+    # assertions below are about recovery/ownership state, not TTL expiry.
+    original_lock = cgl.acquire_common_git_lock(repo, "git test", timeout_seconds=30)
     path = cgl._get_common_git_lock_path(repo)
     original = path.read_bytes()
     # Make the audited bytes fail the predicate, then deny only the restore.

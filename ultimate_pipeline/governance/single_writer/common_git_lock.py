@@ -343,27 +343,36 @@ def _read_regular_file_bounded(path: Path, max_bytes: int) -> tuple[bytes, tuple
         raise RuntimeError(f"recovery source exceeds {max_bytes} bytes: {path}")
     identity = (before.st_dev, before.st_ino)
     flags = os.O_RDONLY | getattr(os, "O_BINARY", 0) | getattr(os, "O_NOFOLLOW", 0)
-    fd = os.open(str(path), flags)
-    with os.fdopen(fd, "rb") as stream:
-        opened = os.fstat(stream.fileno())
-        if (
-            not stat.S_ISREG(opened.st_mode)
-            or not opened.st_ino
-            or (opened.st_dev, opened.st_ino) != identity
-            or opened.st_size > max_bytes
-        ):
-            raise RuntimeError(f"recovery source changed while opening: {path}")
-        chunks = []
-        remaining = max_bytes + 1
-        while remaining:
-            chunk = stream.read(min(64 * 1024, remaining))
-            if not chunk:
-                break
-            chunks.append(chunk)
-            remaining -= len(chunk)
-        raw = b"".join(chunks)
-        after_open = os.fstat(stream.fileno())
-    after_path = path.lstat()
+    try:
+        fd = os.open(str(path), flags)
+    except OSError as exc:
+        raise RuntimeError(f"recovery source changed while opening: {path}") from exc
+    try:
+        with os.fdopen(fd, "rb") as stream:
+            opened = os.fstat(stream.fileno())
+            if (
+                not stat.S_ISREG(opened.st_mode)
+                or not opened.st_ino
+                or (opened.st_dev, opened.st_ino) != identity
+                or opened.st_size > max_bytes
+            ):
+                raise RuntimeError(f"recovery source changed while opening: {path}")
+            chunks = []
+            remaining = max_bytes + 1
+            while remaining:
+                chunk = stream.read(min(64 * 1024, remaining))
+                if not chunk:
+                    break
+                chunks.append(chunk)
+                remaining -= len(chunk)
+            raw = b"".join(chunks)
+            after_open = os.fstat(stream.fileno())
+    except OSError as exc:
+        raise RuntimeError(f"recovery source changed while opening: {path}") from exc
+    try:
+        after_path = path.lstat()
+    except OSError as exc:
+        raise RuntimeError(f"recovery source changed during read: {path}") from exc
     if (
         len(raw) > max_bytes
         or stat.S_ISLNK(after_path.st_mode)
