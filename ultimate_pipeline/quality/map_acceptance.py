@@ -1455,21 +1455,23 @@ def validate_release_acceptance_contract(
                     f"(got {gate_status.get(gate)!r})"
                 )
 
+    # Both are always emitted as lists by build_map_acceptance; a missing key
+    # or a falsy non-list ({} / 0 / "") must not read as "empty".
     hard_fail_reasons = payload.get("hard_fail_reasons")
-    if hard_fail_reasons:
+    if not isinstance(hard_fail_reasons, list) or hard_fail_reasons:
         problems.append(
-            f"hard_fail_reasons is not empty (got {hard_fail_reasons!r})"
+            f"hard_fail_reasons must be an empty list (got {hard_fail_reasons!r})"
         )
 
     failed_gates = payload.get("failed_gates")
-    if failed_gates:
-        problems.append(f"failed_gates is not empty (got {failed_gates!r})")
+    if not isinstance(failed_gates, list) or failed_gates:
+        problems.append(f"failed_gates must be an empty list (got {failed_gates!r})")
 
     final_sha = payload.get("final_xodr_sha256")
     evaluated_sha = payload.get("evaluated_xodr_sha256")
-    final_sha_valid = isinstance(final_sha, str) and bool(_SHA256_HEX_RE.match(final_sha))
+    final_sha_valid = isinstance(final_sha, str) and bool(_SHA256_HEX_RE.fullmatch(final_sha))
     evaluated_sha_valid = isinstance(evaluated_sha, str) and bool(
-        _SHA256_HEX_RE.match(evaluated_sha)
+        _SHA256_HEX_RE.fullmatch(evaluated_sha)
     )
     if not final_sha_valid:
         problems.append(

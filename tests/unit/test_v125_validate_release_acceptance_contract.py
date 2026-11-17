@@ -324,3 +324,31 @@ def test_empty_string_run_id_is_rejected():
     payload["run_id"] = ""
     problems = validate_release_acceptance_contract(payload)
     assert any("run_id" in p for p in problems)
+
+
+# --- review P3 follow-ups (1e902cfd re-review) -------------------------------
+
+
+def test_digest_with_trailing_newline_is_rejected():
+    """``$`` matches before a trailing newline; the digest check must use
+    a full match so ``"<64 hex>\n"`` is not accepted as a digest."""
+    payload = _genuine_full_payload("a" * 64)
+    payload["final_xodr_sha256"] = "a" * 64 + "\n"
+    payload["evaluated_xodr_sha256"] = "a" * 64 + "\n"
+    problems = validate_release_acceptance_contract(payload)
+    assert problems
+    joined = " ".join(problems)
+    assert "final_xodr_sha256" in joined or "evaluated_xodr_sha256" in joined
+
+
+@pytest.mark.parametrize("key", ["hard_fail_reasons", "failed_gates"])
+@pytest.mark.parametrize("bad", ["__missing__", {}, 0, "", None])
+def test_fail_lists_must_be_present_empty_lists(key, bad):
+    """A missing key or a falsy non-list must not read as an empty list."""
+    payload = _genuine_full_payload("a" * 64)
+    if bad == "__missing__":
+        payload.pop(key, None)
+    else:
+        payload[key] = bad
+    problems = validate_release_acceptance_contract(payload)
+    assert any(key in p for p in problems)
