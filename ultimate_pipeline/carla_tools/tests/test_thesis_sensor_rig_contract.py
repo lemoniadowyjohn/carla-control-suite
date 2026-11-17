@@ -58,7 +58,7 @@ def test_thesis_sensor_rig_no_inversion(tmp_path: Path) -> None:
     assert lidar["vtl_inverted"] is True
     assert lidar["inversion_applied"] is True
     assert lidar["raw_direction_label"] == "lidar_to_vehicle"
-    assert lidar["used_direction_label"] == "vehicle_to_lidar"
+    assert lidar["used_direction_label"] == "sensor_to_vehicle_carla"
 
 
 def test_rig_verification_to_dict() -> None:
@@ -428,7 +428,7 @@ def test_thesis_invariant_ctv_vtl_never_inverted(tmp_path: Path) -> None:
     assert reports["top_lidar"]["vtl_inverted"] is True
     assert reports["top_lidar"]["inversion_applied"] is True
     assert reports["top_lidar"]["raw_direction_label"] == "lidar_to_vehicle"
-    assert reports["top_lidar"]["used_direction_label"] == "vehicle_to_lidar"
+    assert reports["top_lidar"]["used_direction_label"] == "sensor_to_vehicle_carla"
 
 
 def test_healthcheck_stops_temporary_listeners() -> None:

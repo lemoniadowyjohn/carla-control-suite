@@ -260,8 +260,8 @@ class DominikSensorSetup:
 
     Thesis contracts implemented here:
     - Use K_undistortion only (ignore K and D).
-    - Camera extrinsics: cTv is vehicle->camera; do not invert cTv.
-    - LiDAR extrinsics: vTl is lidar->vehicle; invert for CARLA attachment.
+    - Camera projection: cTv is vehicle->camera; CARLA attachment uses inverse(cTv) plus basis conversion.
+    - LiDAR backprojection: inverse(vTl); CARLA attachment uses vTl plus basis conversion.
     - Axis convention mismatch: legacy behavior flips translation Y only (kept by default).
     """
 
@@ -321,14 +321,15 @@ class DominikSensorSetup:
     def _parse_camera_transform(self, cam_data: Dict) -> Dict[str, float]:
         """Parse cTv matrix for CARLA attachment using canonical conventions.
 
-        Thesis contract: cTv is vehicle->camera and MUST NOT be inverted.
+        cTv is used directly for projection; CARLA mounting inverts cTv and
+        converts both the vehicle and optical coordinate bases.
         """
         cTv = np.array(cam_data["cTv"], dtype=np.float64)
         pose = camera_attachment_pose_from_cTv(
             cTv,
             flip_vehicle_y=self.flip_vehicle_y,
             opencv_camera_axes=self.opencv_camera_axes,
-            ctv_invert=False,  # Enforce thesis invariant: no inversion
+            ctv_invert=False,  # no manual override; canonical mounting inverts as needed
         )
         # Return flat dict for _sanitize_transform_dict consumption
         return {
@@ -344,7 +345,8 @@ class DominikSensorSetup:
         """Parse LiDAR transform using canonical conventions.
 
         vTl transforms points from LiDAR frame to Vehicle frame (LiDAR -> Vehicle).
-        Standard CARLA attachment requires vehicle -> LiDAR (inverse(vTl)).
+        CARLA attachment requires the LiDAR->vehicle mounting pose (vTl)
+        converted from source FLU to the CARLA handedness.
         """
         vTl = np.array(lidar_data["vTl"], dtype=np.float64)
         pose = lidar_attachment_pose_from_vTl(vTl, flip_vehicle_y=self.flip_vehicle_y)
@@ -450,9 +452,11 @@ class DominikSensorSetup:
             "sensor_spawn_tick": int(sensor_spawn_tick),
             "rig_contract": {
                 "camera_intrinsics": "K_undistortion_only",
-                "camera_extrinsics": "cTv_direct_not_inverted",
-                "lidar_extrinsics": "vTl_inverted_for_attachment",
-                "axis_handling": "legacy_translation_y_flip" if self.flip_vehicle_y else "none",
+                "camera_extrinsics": "cTv_direct_projection;inverse_cTv_CARLA_mounting",
+                "lidar_extrinsics": "inverse_vTl_backprojection;vTl_CARLA_mounting",
+                "axis_handling": "canonical_FLU_to_CARLA_FRD_once",
+                "legacy_flip_vehicle_y_flag": bool(self.flip_vehicle_y),
+                "carla_attachment_semantics": "v2",
                 "resolution_override": list(self.resolution_override) if self.resolution_override else None,
             },
             "env": {

@@ -16,6 +16,11 @@ import math
 from dataclasses import dataclass
 from typing import Any, Dict, List, Optional, Tuple
 
+from ultimate_pipeline.sensors.transform_conventions import (
+    camera_attachment_matrix_from_cTv,
+    lidar_attachment_matrix_from_vTl,
+    matrix_to_unreal_pose,
+)
 from ultimate_pipeline.sensors.canonical_lidar_spec import (
     resolve_active_lidars,
     all_lidar_specs,
@@ -117,6 +122,19 @@ def _carla_transform_from_vehicle_to_sensor(
     return carla.Transform(loc, rot)
 
 
+def _carla_transform_from_canonical_mount(matrix):
+    """Mounting matrix is sensor->vehicle in CARLA's parent-relative axes."""
+    try:
+        import carla  # type: ignore
+    except ImportError as exc:
+        raise RuntimeError("carla not available") from exc
+    pose = matrix_to_unreal_pose(matrix)
+    return carla.Transform(
+        carla.Location(x=pose["x"], y=pose["y"], z=pose["z"]),
+        carla.Rotation(roll=pose["roll"], pitch=pose["pitch"], yaw=pose["yaw"]),
+    )
+
+
 @dataclass(frozen=True)
 class CameraCalib:
     name: str
@@ -171,8 +189,9 @@ def _build_rig_contract_report(calib_path: str) -> Dict[str, Any]:
         "calib_path": str(calib_path),
         "calib_sha256": _sha256_of_file(calib_path),
         "camera_intrinsics_source": "K_undistortion",
-        "camera_extrinsics_mode": "cTv_direct",
-        "lidar_extrinsics_mode": "invert_vTl",
+        "camera_extrinsics_mode": "cTv_direct_for_projection;inverse_cTv_for_CARLA_mounting",
+        "lidar_extrinsics_mode": "inverse_vTl_for_backprojection;vTl_for_CARLA_mounting",
+        "carla_attachment_semantics": "v2",
         "active_camera_count": 0,
         "active_lidar_count": 0,
         "active_sensor_count": 0,
@@ -204,6 +223,10 @@ def attach_sensors_safe(
     contract: Dict[str, Any] = _build_rig_contract_report(calib_path)
     active_camera_count = 0
     active_lidar_count = 0
+    if not camera_optical_frame:
+        report["warnings"].append(
+            "camera_optical_frame=False is deprecated; canonical OpenCV->CARLA mounting is always applied"
+        )
 
     try:
         cams, lids = load_calib(calib_path)
@@ -251,7 +274,7 @@ def attach_sensors_safe(
             bp.set_attribute("fov", str(_fov_from_K(cam.K_undist, cam.width)))
             bp.set_attribute("sensor_tick", "0.0")
 
-            tf = _carla_transform_from_vehicle_to_sensor(cam.cTv, camera_optical_frame=camera_optical_frame)
+            tf = _carla_transform_from_canonical_mount(camera_attachment_matrix_from_cTv(cam.cTv))
             actor = world.spawn_actor(bp, tf, attach_to=ego)
             sensors[name] = actor
             report["attached"][name] = {"type": "camera", "ok": True}
@@ -289,10 +312,7 @@ def attach_sensors_safe(
                 bp.set_attribute("lower_fov", str(lidar_spec.lower_fov))
                 bp.set_attribute("sensor_tick", str(lidar_spec.sensor_tick))
 
-                vTl_inv = invert_rigid_transform(lid.vTl)
-                tf = _carla_transform_from_vehicle_to_sensor(
-                    vTl_inv, camera_optical_frame=False
-                )
+                tf = _carla_transform_from_canonical_mount(lidar_attachment_matrix_from_vTl(lid.vTl))
                 actor = world.spawn_actor(bp, tf, attach_to=ego)
                 sensors[name] = actor
                 report["attached"][name] = {"type": "lidar", "ok": True}
