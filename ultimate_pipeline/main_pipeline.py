@@ -134,12 +134,11 @@ def _assert_terminal_publication_lease(lease, scope_root: Path, stage: str) -> N
 
 
 def _require_valid_map_acceptance(out_dir) -> None:
-    """Fail closed unless the durable final map acceptance is valid (V85 Phase 2).
+    """Require the shared, strict release acceptance contract before SUCCESS."""
+    from ultimate_pipeline.quality.map_acceptance import (
+        validate_release_acceptance_contract,
+    )
 
-    SUCCESS is a release-quality claim. It requires ``map_acceptance.json`` in
-    the run root to exist, parse, and record ``valid_for_experiments`` as
-    exactly ``True``.
-    """
     path = Path(out_dir) / "map_acceptance.json"
     try:
         payload = json.loads(path.read_text(encoding="utf-8"))
@@ -147,14 +146,14 @@ def _require_valid_map_acceptance(out_dir) -> None:
         raise RuntimeError(
             f"TERMINAL_FAILED(MAP_ACCEPTANCE): {path} missing or unreadable: {exc}"
         ) from exc
-    if not isinstance(payload, dict) or payload.get("valid_for_experiments") is not True:
+    problems = validate_release_acceptance_contract(payload)
+    if problems:
         failed = payload.get("failed_gates") if isinstance(payload, dict) else None
         raise RuntimeError(
-            "TERMINAL_FAILED(MAP_ACCEPTANCE): final map acceptance is not valid "
-            f"(valid_for_experiments={payload.get('valid_for_experiments') if isinstance(payload, dict) else None!r}, "
-            f"failed_gates={failed!r}); SUCCESS will not be published"
+            "TERMINAL_FAILED(MAP_ACCEPTANCE): final map acceptance is not a valid "
+            f"release acceptance: {problems}; failed_gates={failed!r}); "
+            "SUCCESS will not be published"
         )
-
 from ultimate_pipeline.quality.lane_width_invariants import (
     enforce_lane_width_invariants_on_root,
     write_lane_width_invariants_report,
@@ -3663,39 +3662,59 @@ if str(_repo_root) not in sys.path:
             )
             self.map_acceptance = map_acceptance
             acc_path = os.path.join(self.out_dir, "map_acceptance.json")
+            _atomic_write_json(acc_path, map_acceptance)
+            print(f"[AUTHORITY] map_acceptance.json -> {acc_path}")
             # V86 A6: the published artifact must still be byte-identical to the
             # snapshot the gates evaluated. Tampering after evaluation and
             # before the receipt fails the run.
             unchanged, actual_sha = verify_artifact_unchanged(final_out, snapshot["sha256"])
             if not unchanged:
-                map_acceptance.update(
-                    valid=False,
-                    valid_for_experiments=False,
-                    release_eligible=False,
-                    artifact_identity_after_write={"evaluated": snapshot["sha256"], "now": actual_sha},
-                )
-                map_acceptance.setdefault("failed_gates", []).append("artifact_identity")
-                map_acceptance.setdefault("hard_fail_reasons", []).append({
+                failure_reason = {
                     "gate": "artifact_identity",
-                    "reason": "published artifact changed after acceptance evaluation",
-                })
-                from ultimate_pipeline.quality.map_acceptance import _sha256_dict
-
-                artifact_path = map_acceptance.get("acceptance_artifact")
-                if artifact_path:
-                    artifact_payload = {
-                        key: value for key, value in map_acceptance.items()
-                        if key not in ("acceptance_artifact", "acceptance_artifact_sha256", "payload_sha256")
-                    }
-                    _atomic_write_json(artifact_path, artifact_payload)
-                    map_acceptance["acceptance_artifact_sha256"] = hashlib.sha256(
-                        Path(artifact_path).read_bytes()
-                    ).hexdigest()
-                map_acceptance["payload_sha256"] = _sha256_dict({
+                    "reason": (
+                        "FAIL: final artifact changed after acceptance evaluation "
+                        f"(evaluated sha256={snapshot['sha256']}, now {actual_sha})"
+                    ),
+                }
+                failure_payload = {
                     key: value for key, value in map_acceptance.items()
                     if key not in ("acceptance_artifact_sha256", "payload_sha256")
-                })
-                _atomic_write_json(acc_path, map_acceptance)
+                }
+                failure_payload["valid"] = False
+                failure_payload["valid_for_experiments"] = False
+                failure_payload["release_eligible"] = False
+                failure_payload["artifact_identity_verified"] = False
+                failure_payload["artifact_identity_after_write"] = {
+                    "evaluated": snapshot["sha256"], "now": actual_sha
+                }
+                failure_payload["hard_fail_reasons"] = list(
+                    map_acceptance.get("hard_fail_reasons") or []
+                ) + [failure_reason]
+                failure_payload["failed_gates"] = list(
+                    map_acceptance.get("failed_gates") or []
+                ) + ["artifact_identity"]
+                self.map_acceptance = failure_payload
+
+                nested_acc_path = map_acceptance.get("acceptance_artifact")
+                rewrite_errors: List[Tuple[str, Exception]] = []
+                for target_path in (acc_path, nested_acc_path):
+                    if not target_path:
+                        continue
+                    try:
+                        _atomic_write_json(target_path, failure_payload)
+                    except OSError as rewrite_exc:
+                        try:
+                            Path(target_path).unlink(missing_ok=True)
+                        except OSError:
+                            pass
+                        rewrite_errors.append((str(target_path), rewrite_exc))
+                if rewrite_errors:
+                    detail = "; ".join(f"{target}: {error}" for target, error in rewrite_errors)
+                    raise RuntimeError(
+                        "TERMINAL_FAILED(ARTIFACT_IDENTITY): acceptance changed after "
+                        "artifact mutation and could not be durably invalidated; "
+                        f"stale success receipts were removed when possible: {detail}"
+                    ) from rewrite_errors[0][1]
                 raise RuntimeError(
                     "TERMINAL_FAILED(ARTIFACT_IDENTITY): final artifact changed after "
                     f"acceptance (evaluated {snapshot['sha256']}, now {actual_sha})"
