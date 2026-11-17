@@ -73,6 +73,36 @@ class TerminalPublicationLeaseLost(RuntimeError):
     """Raised when terminal publication no longer owns its fencing generation."""
 
 
+def _atomic_write_json(path: str | os.PathLike[str], payload: Dict[str, Any]) -> None:
+    """Durably replace one JSON receipt without exposing a partial file."""
+    target = Path(path)
+    target.parent.mkdir(parents=True, exist_ok=True)
+    temp_path = target.with_name(f".{target.name}.{os.getpid()}.{uuid.uuid4().hex}.tmp")
+    fd = os.open(str(temp_path), os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o600)
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8", newline="\n") as stream:
+            json.dump(payload, stream, indent=2, ensure_ascii=True, default=str)
+            stream.write("\n")
+            stream.flush()
+            os.fsync(stream.fileno())
+        os.replace(temp_path, target)
+        if os.name != "nt":
+            try:
+                directory_fd = os.open(str(target.parent), os.O_RDONLY)
+            except OSError:
+                directory_fd = None
+            if directory_fd is not None:
+                try:
+                    os.fsync(directory_fd)
+                finally:
+                    os.close(directory_fd)
+    finally:
+        try:
+            temp_path.unlink(missing_ok=True)
+        except OSError:
+            pass
+
+
 def _directory_setting_path(settings, name: str) -> str:
     """Resolve a settings directory without creating it when supported.
 
@@ -3633,14 +3663,39 @@ if str(_repo_root) not in sys.path:
             )
             self.map_acceptance = map_acceptance
             acc_path = os.path.join(self.out_dir, "map_acceptance.json")
-            with open(acc_path, "w", encoding="utf-8") as f:
-                json.dump(map_acceptance, f, indent=2, default=str)
-            print(f"[AUTHORITY] map_acceptance.json -> {acc_path}")
             # V86 A6: the published artifact must still be byte-identical to the
             # snapshot the gates evaluated. Tampering after evaluation and
             # before the receipt fails the run.
             unchanged, actual_sha = verify_artifact_unchanged(final_out, snapshot["sha256"])
             if not unchanged:
+                map_acceptance.update(
+                    valid=False,
+                    valid_for_experiments=False,
+                    release_eligible=False,
+                    artifact_identity_after_write={"evaluated": snapshot["sha256"], "now": actual_sha},
+                )
+                map_acceptance.setdefault("failed_gates", []).append("artifact_identity")
+                map_acceptance.setdefault("hard_fail_reasons", []).append({
+                    "gate": "artifact_identity",
+                    "reason": "published artifact changed after acceptance evaluation",
+                })
+                from ultimate_pipeline.quality.map_acceptance import _sha256_dict
+
+                artifact_path = map_acceptance.get("acceptance_artifact")
+                if artifact_path:
+                    artifact_payload = {
+                        key: value for key, value in map_acceptance.items()
+                        if key not in ("acceptance_artifact", "acceptance_artifact_sha256", "payload_sha256")
+                    }
+                    _atomic_write_json(artifact_path, artifact_payload)
+                    map_acceptance["acceptance_artifact_sha256"] = hashlib.sha256(
+                        Path(artifact_path).read_bytes()
+                    ).hexdigest()
+                map_acceptance["payload_sha256"] = _sha256_dict({
+                    key: value for key, value in map_acceptance.items()
+                    if key not in ("acceptance_artifact_sha256", "payload_sha256")
+                })
+                _atomic_write_json(acc_path, map_acceptance)
                 raise RuntimeError(
                     "TERMINAL_FAILED(ARTIFACT_IDENTITY): final artifact changed after "
                     f"acceptance (evaluated {snapshot['sha256']}, now {actual_sha})"
@@ -3651,7 +3706,8 @@ if str(_repo_root) not in sys.path:
                 f"published artifact {final_out}: {exc}"
             ) from exc
         ledger.record_evidence(
-            "map_acceptance", final_out, stage=stage, depends_on=(STRUCTURE_FROZEN,)
+            "map_acceptance", final_out, stage=stage, depends_on=(STRUCTURE_FROZEN,),
+            expected_sha256=snapshot["sha256"],
         )
 
         from ultimate_pipeline.utils.map_fingerprint import (

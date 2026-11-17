@@ -13,8 +13,11 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
+import os
 import sys
+import tempfile
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, Optional
@@ -50,7 +53,7 @@ from ultimate_pipeline.quality.map_acceptance import (
     build_map_acceptance,
     component_reachability_summary,
 )
-from ultimate_pipeline.quality.xml_admission import parse_xodr_file
+from ultimate_pipeline.quality.xml_admission import parse_xodr_file, read_xodr_bytes
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_DEM = REPO_ROOT / "cities" / "ingolstadt" / "dem" / "dem_ing.tif"
@@ -58,7 +61,21 @@ DEFAULT_DEM = REPO_ROOT / "cities" / "ingolstadt" / "dem" / "dem_ing.tif"
 
 def _write_json(path: Path, data: Dict[str, Any]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(data, indent=2, sort_keys=True, default=str), encoding="utf-8")
+    payload = json.dumps(data, indent=2, sort_keys=True, default=str)
+    temp_path = None
+    try:
+        with tempfile.NamedTemporaryFile(
+            mode="w", encoding="utf-8", dir=path.parent,
+            prefix=f".{path.name}.", suffix=".tmp", delete=False,
+        ) as stream:
+            temp_path = Path(stream.name)
+            stream.write(payload)
+            stream.flush()
+            os.fsync(stream.fileno())
+        os.replace(temp_path, path)
+    finally:
+        if temp_path is not None:
+            temp_path.unlink(missing_ok=True)
 
 
 def evaluate_candidate(
@@ -121,10 +138,40 @@ def evaluate_candidate(
     _write_json(out_dir / "map_acceptance.json", acceptance)
     unchanged, actual = verify_artifact_unchanged(str(xodr), evaluated_sha)
     if not unchanged:
-        # The written acceptance described the snapshot. The candidate path no
-        # longer matches it, so the caller must not treat it as release-eligible.
-        acceptance = dict(acceptance, release_eligible=False,
-                          artifact_identity_after_write={"evaluated": evaluated_sha, "now": actual})
+        # Invalidate the canonical receipt before returning or raising; a stale
+        # PASS must never remain at the authoritative map_acceptance.json path.
+        acceptance = dict(
+            acceptance,
+            valid=False,
+            valid_for_experiments=False,
+            release_eligible=False,
+            artifact_identity_after_write={"evaluated": evaluated_sha, "now": actual},
+        )
+        failures = list(acceptance.get("hard_fail_reasons", []))
+        failures.append({"gate": "artifact_identity", "reason": "published candidate changed after evaluation"})
+        acceptance["hard_fail_reasons"] = failures
+        acceptance["failed_gates"] = list(dict.fromkeys([*acceptance.get("failed_gates", []), "artifact_identity"]))
+        artifact_path = acceptance.get("acceptance_artifact")
+        if artifact_path:
+            artifact_payload = {
+                key: value for key, value in acceptance.items()
+                if key not in ("acceptance_artifact", "acceptance_artifact_sha256", "payload_sha256")
+            }
+            _write_json(Path(artifact_path), artifact_payload)
+            acceptance["acceptance_artifact_sha256"] = hashlib.sha256(
+                Path(artifact_path).read_bytes()
+            ).hexdigest()
+        acceptance["payload_sha256"] = hashlib.sha256(
+            json.dumps(
+                {
+                    key: value for key, value in acceptance.items()
+                    if key not in ("acceptance_artifact_sha256", "payload_sha256")
+                },
+                sort_keys=True,
+                ensure_ascii=True,
+            ).encode("utf-8")
+        ).hexdigest()
+        _write_json(out_dir / "map_acceptance.json", acceptance)
         _write_json(out_dir / "map_acceptance.identity_failure.json", acceptance)
     if sha256_bytes(read_xodr_bytes(snapshot["path"])) != evaluated_sha:
         raise RuntimeError(f"acceptance snapshot {snapshot['path']} changed during evaluation")

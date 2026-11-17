@@ -169,7 +169,10 @@ def test_snapshot_is_content_addressed_and_read_only(tmp_path):
     snap = fag.snapshot_final_artifact(src, str(tmp_path / "snap"))
     assert Path(snap["path"]).name == snap["sha256"] + ".xodr"
     assert Path(snap["path"]).read_bytes() == Path(src).read_bytes()
-    assert not os.access(snap["path"], os.W_OK)
+    if os.name == "posix":
+        assert Path(snap["path"]).stat().st_mode & 0o222 == 0
+    else:
+        assert not os.access(snap["path"], os.W_OK)
 
 
 def test_expected_digest_mismatch_blocks_every_gate(tmp_path):
@@ -286,16 +289,40 @@ def test_release_purpose_requires_mandatory_gates():
         build_map_acceptance({}, run_id="v86", purpose="bogus")
 
 
-def test_diagnostic_or_legacy_acceptance_is_never_release_eligible():
+def test_diagnostic_or_legacy_acceptance_is_never_release_eligible(tmp_path):
     good = {g: {"ok": True} for g in fag.RELEASE_MANDATORY_GATES}
     assert build_map_acceptance(good, run_id="v86")["release_eligible"] is False
     diag = build_map_acceptance(good, run_id="v86", purpose="diagnostic",
                                 mandatory_gates=fag.RELEASE_MANDATORY_GATES)
     assert diag["valid_for_experiments"] is True and diag["release_eligible"] is False
-    rel = build_map_acceptance(good, run_id="v86", purpose="release",
-                               mandatory_gates=fag.RELEASE_MANDATORY_GATES)
+    artifact = tmp_path / "candidate.xodr"
+    artifact.write_bytes(b"candidate bytes")
+    digest = fag.sha256_bytes(artifact.read_bytes())
+    rel = build_map_acceptance(
+        good, run_id="v86", final_xodr_path=str(artifact), purpose="release",
+        mandatory_gates=fag.RELEASE_MANDATORY_GATES, evaluated_xodr_sha256=digest,
+    )
     assert rel["release_eligible"] is True
     assert rel["acceptance_policy"]["purpose"] == "release"
+
+
+def test_release_acceptance_rejects_incomplete_gate_set():
+    with pytest.raises(ValueError, match="complete authoritative"):
+        build_map_acceptance(
+            {"artifact_structure": {"ok": True}}, purpose="release",
+            mandatory_gates=("artifact_structure",),
+        )
+
+
+def test_release_acceptance_requires_bound_artifact_identity():
+    good = {gate: {"ok": True} for gate in fag.RELEASE_MANDATORY_GATES}
+    acceptance = build_map_acceptance(
+        good, run_id="no-identity", purpose="release",
+        mandatory_gates=fag.RELEASE_MANDATORY_GATES,
+    )
+    assert acceptance["valid_for_experiments"] is False
+    assert acceptance["release_eligible"] is False
+    assert "artifact_identity" in acceptance["failed_gates"]
 
 
 def _run_cli(tmp_path, purpose):
@@ -440,7 +467,16 @@ def test_promotion_candidate_replaced_after_write_is_not_release_eligible(tmp_pa
     monkeypatch.setattr(mca, "_write_json", write_then_tamper)
     acc = mca.evaluate_candidate(cand, tmp_path / "out", None)
     assert acc["release_eligible"] is False
+    assert acc["valid_for_experiments"] is False
     assert "artifact_identity_after_write" in acc
+    canonical = json.loads((tmp_path / "out" / "map_acceptance.json").read_text(encoding="utf-8"))
+    assert canonical["release_eligible"] is False
+    assert canonical["valid_for_experiments"] is False
+    assert "artifact_identity" in canonical["failed_gates"]
+    artifact = Path(canonical["acceptance_artifact"])
+    artifact_receipt = json.loads(artifact.read_text(encoding="utf-8"))
+    assert artifact_receipt["release_eligible"] is False
+    assert artifact_receipt["valid_for_experiments"] is False
 
 
 def test_regen_map_of_record_uses_the_shared_guarded_evaluation():
