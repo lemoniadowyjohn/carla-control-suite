@@ -5474,7 +5474,10 @@ def run_full_domain_gap(
             smoke_tile_bbox_debug_path = os.path.join(output_dir, "tile_bbox_debug.json")
             _safe_dump_json(smoke_tile_bbox_debug_path, {"rows": debug_rows})
             # NOTE: do NOT return here. Continue so the truthfulness gate enriches tile_pairing_report.json
-            # and the unified SMOKE fast-path writes SUCCESS.txt.
+            # and the unified SMOKE fast-path writes PACK_COMPLETE.txt (V93-25:
+            # this standalone sweep tool never has a final_run_verdict.json, so
+            # it gets the narrower file-manifest-complete marker, not the
+            # governed main-pipeline SUCCESS.txt).
 
         if not corr_rows:
             min_iou = tile_min_iou
@@ -5900,10 +5903,13 @@ def run_full_domain_gap(
         log.info("SMOKE mode: exiting after tile pairing artifacts (skipping whole-map/per-tile gap metrics).")
         try:
             # V5/NEW-202 (D16): the smoke path must finalize a real manifest
-            # before it may publish SUCCESS.txt. Previously it wrote the success
-            # marker on its own, which is exactly the unbound-success defect this
-            # closure removes. Only the artifacts a smoke run is required to
-            # produce are mandatory here.
+            # before it may publish a completion marker. Previously it wrote
+            # the success marker on its own, which is exactly the
+            # unbound-success defect this closure removes. Only the
+            # artifacts a smoke run is required to produce are mandatory
+            # here. V93-25: this writes PACK_COMPLETE.txt (not SUCCESS.txt --
+            # this tool never has a final_run_verdict.json/run_status.json;
+            # see ultimate_pipeline/utils/finalize_run_pack.py).
             _smoke_mandatory = ["run_metadata.json"]
             _smoke_conditional = ["tile_pairing_report.json", "tile_correspondence.csv"]
             _smoke_receipt = finalize_run_pack(
@@ -6736,7 +6742,8 @@ def run_full_domain_gap(
     # MUST exist for a successful run, and conditional artifacts that are only
     # produced when the corresponding stage ran (e.g. per-tile gap summaries or
     # aligned tile metadata are absent for short/degenerate inputs). Mandatory
-    # artifacts are fail-closed: a missing one blocks SUCCESS.txt. Conditional
+    # artifacts are fail-closed: a missing one blocks the completion marker
+    # (V93-25: PACK_COMPLETE.txt here, not SUCCESS.txt). Conditional
     # artifacts are still hashed into the manifest when present, so the receipt
     # records whatever evidence the run actually produced.
     _mandatory_signature_artifacts = [

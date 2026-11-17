@@ -296,6 +296,10 @@ def test_diagnostic_or_legacy_acceptance_is_never_release_eligible(tmp_path):
     diag = build_map_acceptance(good, run_id="v86", purpose="diagnostic",
                                 mandatory_gates=fag.RELEASE_MANDATORY_GATES)
     assert diag["valid_for_experiments"] is True and diag["release_eligible"] is False
+    # V93-16/PR #30 ("a release purpose without evaluated_xodr_sha256 or
+    # final_xodr_path identity must not be release_eligible"): a genuine
+    # release-purpose PASS also requires identity evidence binding the
+    # acceptance to the exact bytes the gates evaluated.
     rel = build_map_acceptance(
         good, run_id="v86", purpose="release",
         mandatory_gates=fag.RELEASE_MANDATORY_GATES,
@@ -303,6 +307,38 @@ def test_diagnostic_or_legacy_acceptance_is_never_release_eligible(tmp_path):
     )
     assert rel["release_eligible"] is True
     assert rel["acceptance_policy"]["purpose"] == "release"
+    assert rel["artifact_identity_verified"] is True
+
+
+def test_release_purpose_without_identity_evidence_is_not_release_eligible():
+    """PR #30 review: no final_xodr_path/evaluated_xodr_sha256 => never eligible,
+    even though every mandatory gate PASSes (identity was simply never checked).
+
+    #48 (4bf6b29d) made this stricter than the original PR #30 fix: for a
+    release-purpose call, missing/invalid identity evidence is now itself an
+    "artifact_identity" hard_fail_reason (BLOCKED_INPUT), so
+    valid_for_experiments also goes False here, not just release_eligible --
+    see test_v109_release_mandatory_identity.py::
+    test_release_cannot_be_certified_without_artifact_identity for the
+    equivalent #48 coverage of the "missing" case. This test additionally
+    checks artifact_identity_verified, which #48's test does not."""
+    good = {g: {"ok": True} for g in fag.RELEASE_MANDATORY_GATES}
+    rel = build_map_acceptance(good, run_id="v86", purpose="release",
+                               mandatory_gates=fag.RELEASE_MANDATORY_GATES)
+    assert rel["valid_for_experiments"] is False
+    assert rel["artifact_identity_verified"] is False
+    assert rel["release_eligible"] is False
+
+
+def test_release_purpose_requires_the_authoritative_mandatory_gate_set():
+    """PR #30 review ("Enforce the authoritative gate set for release-purpose
+    calls"): a release-purpose call with a narrower mandatory_gates set than
+    RELEASE_MANDATORY_GATES must be rejected outright, not silently accepted
+    with fewer gates blocking release."""
+    narrowed = tuple(fag.RELEASE_MANDATORY_GATES[:-1])
+    assert narrowed != tuple(fag.RELEASE_MANDATORY_GATES)
+    with pytest.raises(ValueError, match="authoritative"):
+        build_map_acceptance({}, run_id="v86", purpose="release", mandatory_gates=narrowed)
 
 
 def _run_cli(tmp_path, purpose):
@@ -332,6 +368,27 @@ def test_standalone_cli_diagnostic_is_never_a_release_certificate(tmp_path):
     assert acc["mandatory_gates"] == []
 
 
+# V93 round 2 (F2 "make signals.index.release_acceptance_status
+# consistent"): release_acceptance_status now independently re-derives the
+# verdict via validate_release_acceptance_contract, so a payload must
+# genuinely carry mandatory_gates + identity, not just the three
+# self-reported fields (valid_for_experiments/release_eligible/purpose) --
+# those alone are exactly the "forged flag" shape this closes.
+_FULL_RELEASE_PAYLOAD = {
+    "valid_for_experiments": True,
+    "release_eligible": True,
+    "artifact_identity_verified": True,
+    "acceptance_policy": {"purpose": "release"},
+    "mandatory_gates": list(fag.RELEASE_MANDATORY_GATES),
+    "mandatory_gate_status": {gate: "PASS" for gate in fag.RELEASE_MANDATORY_GATES},
+    "hard_fail_reasons": [],
+    "failed_gates": [],
+    "final_xodr_sha256": "a" * 64,
+    "evaluated_xodr_sha256": "a" * 64,
+    "run_id": "v86",
+}
+
+
 # ---- Review round 1: signal consumer, promotion-path snapshot + boundary ----------------
 @pytest.mark.parametrize(
     "payload, expected",
@@ -345,8 +402,13 @@ def test_standalone_cli_diagnostic_is_never_a_release_certificate(tmp_path):
           "acceptance_policy": {"purpose": "release"}}, "FAIL"),
         ({"valid_for_experiments": True, "release_eligible": True,
           "acceptance_policy": {"purpose": "diagnostic"}}, "INCOMPLETE"),  # forged flag, wrong purpose
+        (_FULL_RELEASE_PAYLOAD, "PASS"),
+        # V93 round 2 (F2): the three self-reported fields alone -- no
+        # mandatory_gates, no identity -- must NOT be enough, even though
+        # release_eligible/purpose look correct. This is the forged-flag
+        # shape the pre-round-2 test wrongly asserted PASS for.
         ({"valid_for_experiments": True, "release_eligible": True,
-          "acceptance_policy": {"purpose": "release"}}, "PASS"),
+          "acceptance_policy": {"purpose": "release"}}, "INCOMPLETE"),
     ],
 )
 def test_map_acceptance_signal_requires_release_eligibility(payload, expected):
@@ -367,7 +429,7 @@ def test_release_profiles_apply_release_acceptance_policy(profile):
     base = normalize_signal_status("MAP_ACCEPTANCE", legacy)
     assert base == "PASS"  # experiment semantics unchanged
     assert apply_release_acceptance_policy("MAP_ACCEPTANCE", base, legacy, profile) == "INCOMPLETE"
-    good = {"valid_for_experiments": True, "release_eligible": True, "acceptance_policy": {"purpose": "release"}}
+    good = _FULL_RELEASE_PAYLOAD
     assert apply_release_acceptance_policy("MAP_ACCEPTANCE", "PASS", good, profile) == "PASS"
 
 

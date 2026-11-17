@@ -32,6 +32,7 @@ import pytest
 
 from ultimate_pipeline.signals.verdict import compute_final_run_verdict
 from ultimate_pipeline.utils.finalize_run_pack import (
+    PACK_COMPLETE_FILENAME,
     finalize_run_pack,
     verify_run_pack,
 )
@@ -102,8 +103,21 @@ def run_internal():
     if not (root / "loser-locked.flag").exists():
         raise TimeoutError("losing pipeline did not fail at the lease gate")
     (root / "final.xodr").write_text("<OpenDRIVE/>", encoding="utf-8")
-    # A real _run_internal publishes a valid final map acceptance (V85).
-    (root / "map_acceptance.json").write_text('{"valid_for_experiments": true}', encoding="utf-8")
+    # A real _run_internal publishes a valid final map acceptance (V85/V93-16):
+    # a genuine release-purpose, mandatory-gated, identity-bound acceptance,
+    # not a bare {"valid_for_experiments": true}.
+    import hashlib
+    from ultimate_pipeline.quality.final_artifact_gates import RELEASE_MANDATORY_GATES
+    from ultimate_pipeline.quality.map_acceptance import build_map_acceptance
+    xodr_path = str(root / "final.xodr")
+    xodr_sha256 = hashlib.sha256((root / "final.xodr").read_bytes()).hexdigest()
+    good_reports = {g: {"ok": True} for g in RELEASE_MANDATORY_GATES}
+    acceptance_payload = build_map_acceptance(
+        good_reports, run_id=root.name, purpose="release",
+        mandatory_gates=RELEASE_MANDATORY_GATES,
+        final_xodr_path=xodr_path, evaluated_xodr_sha256=xodr_sha256,
+    )
+    (root / "map_acceptance.json").write_text(json.dumps(acceptance_payload), encoding="utf-8")
 pipeline._run_internal = run_internal
 pipeline._find_final_xodr = lambda: str(root / "final.xodr")
 def write_health(out_dir, expected_gates=None, **kwargs):
@@ -111,7 +125,10 @@ def write_health(out_dir, expected_gates=None, **kwargs):
 health_module.write_pipeline_health_summary = write_health
 registry_module.expected_health_gates = lambda: []
 def write_verdict(out_dir, **kwargs):
-    Path(out_dir, "final_run_verdict.json").write_text("{}\\n", encoding="utf-8")
+    # V93-25: write_success_txt now requires final_run_verdict.status == PASS.
+    Path(out_dir, "final_run_verdict.json").write_text(
+        '{"status": "PASS"}\\n', encoding="utf-8"
+    )
 verdict_module.write_final_run_verdict = write_verdict
 registry_module.mandatory_pack_artifacts = lambda profile, final_xodr, settings=None: [
     final_xodr,
@@ -742,7 +759,16 @@ class TestNoLateWritesAfterSuccess:
     """After SUCCESS.txt is published, no authority artifact may be modified."""
 
     def test_success_is_last_write(self, tmp_path: Path):
-        """Verify the terminal chain ordering: SUCCESS is the final authority event."""
+        """Verify the terminal chain ordering: the completion marker is the
+        final authority event.
+
+        V93-25: ``finalize_run_pack(..., emit_success=True)`` now writes the
+        narrower ``PACK_COMPLETE.txt`` (a file-manifest PASS claim), not the
+        literal governed ``SUCCESS.txt`` (which requires an additional
+        final_run_verdict.json/run_status.json PASS/ok -- see
+        ``write_success_txt``, exercised directly by
+        ``TestMainPipelineRunTerminalChain`` below with the real pipeline).
+        """
         new_run_id = "new-run-456"
         _make_minimal_current_artifacts(tmp_path, new_run_id)
 
@@ -752,20 +778,21 @@ class TestNoLateWritesAfterSuccess:
         receipt = finalize_run_pack(str(tmp_path), mandatory, emit_success=True)
         assert receipt["status"] == "PASS"
 
-        # SUCCESS.txt exists
-        success_path = tmp_path / "SUCCESS.txt"
-        assert success_path.exists()
+        # PACK_COMPLETE.txt exists; the literal governed SUCCESS.txt does not.
+        complete_path = tmp_path / PACK_COMPLETE_FILENAME
+        assert complete_path.exists()
+        assert not (tmp_path / "SUCCESS.txt").exists()
 
-        # Get the mtime of SUCCESS
-        success_mtime = success_path.stat().st_mtime
+        # Get the mtime of the marker
+        complete_mtime = complete_path.stat().st_mtime
 
         # Wait a bit
         time.sleep(0.01)
 
         # Try to write another artifact (should not happen in real chain,
         # but we verify no code in this test suite does it)
-        # The test just verifies SUCCESS exists and was the last write
-        assert success_path.exists()
+        # The test just verifies the marker exists and was the last write
+        assert complete_path.exists()
 
 
 if __name__ == "__main__":
@@ -816,9 +843,23 @@ class TestMainPipelineRunTerminalChain:
             terminal_calls.append("_run_internal")
             # Create minimal artifacts that the terminal chain expects
             (tmp_path / "final.xodr").write_text("<OpenDRIVE/>", encoding="utf-8")
-            # A real _run_internal publishes a valid final map acceptance (V85).
+            # A real _run_internal publishes a valid final map acceptance
+            # (V85/V93-16): a genuine release-purpose, mandatory-gated,
+            # identity-bound acceptance, not a bare
+            # {"valid_for_experiments": true}.
+            import hashlib
+            from ultimate_pipeline.quality.final_artifact_gates import RELEASE_MANDATORY_GATES
+            from ultimate_pipeline.quality.map_acceptance import build_map_acceptance
+            xodr_path = str(tmp_path / "final.xodr")
+            xodr_sha256 = hashlib.sha256(Path(xodr_path).read_bytes()).hexdigest()
+            good_reports = {g: {"ok": True} for g in RELEASE_MANDATORY_GATES}
+            acceptance_payload = build_map_acceptance(
+                good_reports, run_id=tmp_path.name, purpose="release",
+                mandatory_gates=RELEASE_MANDATORY_GATES,
+                final_xodr_path=xodr_path, evaluated_xodr_sha256=xodr_sha256,
+            )
             (tmp_path / "map_acceptance.json").write_text(
-                '{"valid_for_experiments": true}', encoding="utf-8"
+                json.dumps(acceptance_payload), encoding="utf-8"
             )
         pipeline._run_internal = mock_run_internal
         pipeline._find_final_xodr = lambda: str(tmp_path / "final.xodr")

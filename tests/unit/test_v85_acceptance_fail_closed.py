@@ -78,6 +78,15 @@ def test_release_acceptance_rejects_elevation_step_at_road_join(tmp_path):
         ({"ok": "true"}, "FAIL"),                                   # non-boolean is not PASS
         ({"ok": 1}, "FAIL"),
         ({"ok": False, "issues": [{"x": 1}]}, "FAIL"),
+        # PR #30 review (Sourcery "Malformed issue evidence passes"): ok=True
+        # with an issue-count field that is present but not a genuine
+        # non-bool int/float, or an "issues" field that is present but not a
+        # list, must FAIL -- never fall through to PASS unchecked.
+        ({"ok": True, "issue_count": "3"}, "FAIL"),                 # numeric string
+        ({"ok": True, "num_issues": "many"}, "FAIL"),               # non-numeric string
+        ({"ok": True, "broken_count": [1, 2]}, "FAIL"),             # list, not a count
+        ({"ok": True, "issues": "oops"}, "FAIL"),                   # issues not a list
+        ({"ok": True, "fail_count": True}, "FAIL"),                 # bool must not count as int
     ],
 )
 def test_non_passing_mandatory_reports_are_hard_failures(report, expected):
@@ -202,7 +211,16 @@ def test_lane_connectivity_is_mandatory_and_computed(tmp_path):
 @pytest.mark.parametrize(
     "payload",
     [None, "not json", {"valid_for_experiments": False, "failed_gates": ["elevation_continuity"]},
-     {"valid_for_experiments": "true"}, {}],
+     {"valid_for_experiments": "true"}, {},
+     # V93-16/PR #30 ("Diagnostic verdict passes release checks"): a bare
+     # valid_for_experiments=True with no mandatory_gates and no
+     # acceptance_policy.purpose=="release" must NOT be sufficient for
+     # SUCCESS -- it cannot prove release eligibility, only that *some*
+     # (possibly diagnostic, possibly empty) evaluation passed.
+     {"valid_for_experiments": True},
+     {"valid_for_experiments": True, "release_eligible": False,
+      "acceptance_policy": {"purpose": "release"}, "mandatory_gates": ["x"]},
+     ],
 )
 def test_success_requires_valid_durable_map_acceptance(tmp_path, payload):
     import json as _json
@@ -217,12 +235,28 @@ def test_success_requires_valid_durable_map_acceptance(tmp_path, payload):
 
 
 def test_success_allowed_when_map_acceptance_valid(tmp_path):
+    import hashlib
     import json as _json
 
     from ultimate_pipeline.main_pipeline import _require_valid_map_acceptance
 
+    # V93-16/PR #30 ("Diagnostic verdict passes release checks"): a bare
+    # ``{"valid_for_experiments": true}`` is no longer a sufficient SUCCESS
+    # fixture -- ``_require_valid_map_acceptance`` now requires a genuine
+    # release-purpose, mandatory-gated, identity-bound acceptance. Build one
+    # with the real production function so this positive control tracks the
+    # real contract instead of a hand-rolled approximation of it.
+    xodr = _write(tmp_path, STEP_XODR, name="candidate.xodr")
+    xodr_sha256 = hashlib.sha256(Path(xodr).read_bytes()).hexdigest()
+    good = {g: {"ok": True} for g in fag.RELEASE_MANDATORY_GATES}
+    acceptance = build_map_acceptance(
+        good, run_id="v85", purpose="release",
+        mandatory_gates=fag.RELEASE_MANDATORY_GATES,
+        final_xodr_path=xodr, evaluated_xodr_sha256=xodr_sha256,
+    )
+    assert acceptance["release_eligible"] is True  # sanity: the fixture itself is valid
     (tmp_path / "map_acceptance.json").write_text(
-        _json.dumps({"valid_for_experiments": True}), encoding="utf-8"
+        _json.dumps(acceptance), encoding="utf-8"
     )
     _require_valid_map_acceptance(tmp_path)  # does not raise
 

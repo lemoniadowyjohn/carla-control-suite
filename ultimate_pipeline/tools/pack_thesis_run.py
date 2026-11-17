@@ -3,9 +3,23 @@
 """
 Thesis Run Packer (Audit-Ready).
 
-Post-hoc tool to convert existing run directories into contract-compliant 
-folders (run_manifest.json, signature.json, SUCCESS.txt).
+Post-hoc tool to convert existing run directories into contract-compliant
+folders (run_manifest.json, signature.json, AUDIT_PACK_VERIFIED.txt).
 Supports Scenario B multi-source pack.
+
+V93 round 2 (F5): this tool's own completion marker is named
+``AUDIT_PACK_VERIFIED.txt``, NOT ``SUCCESS.txt``. It has no live
+programmatic consumers (grepped the whole repo: nothing imports this
+module or invokes it as a subprocess; it is a standalone, hand-run CLI --
+see ``tests/unit/test_pack_thesis_run.py``, which tests the DIFFERENT,
+unrelated top-level ``tools/pack_thesis_run.py``, not this module). Its
+claim is also a different, narrower thing than the governed pipeline
+SUCCESS_MARKER (signals/registry.py: "SUCCESS.txt present IFF
+final_run_verdict.status == PASS AND run_status == ok AND pack verifies")
+-- this tool post-hoc audits an ALREADY-EXISTING run directory's artifact
+completeness/signature integrity, with no final_run_verdict.json or
+run_status.json concept at all. A literal ``SUCCESS.txt`` here was
+confusable with that governed claim; this name is not.
 """
 
 from __future__ import annotations
@@ -22,6 +36,10 @@ from typing import Any, Dict, List, Optional
 
 from ultimate_pipeline.contracts.agent_sync import load_agent_sync
 from ultimate_pipeline.utils.file_hashing import sha256_file
+
+#: V93 round 2 (F5): renamed from the historical "SUCCESS.txt" -- see the
+#: module docstring for why.
+AUDIT_PACK_VERIFIED_FILENAME = "AUDIT_PACK_VERIFIED.txt"
 
 
 def _get_git_info() -> Dict[str, str]:
@@ -129,13 +147,13 @@ def pack_run(src: Path, out: Path, run_type: str) -> int:
         (out / "FAIL.txt").write_text(
             f"SIGNATURE INTEGRITY FAILURE: {', '.join(signature_missing)}", encoding="utf-8"
         )
-        if (out / "SUCCESS.txt").exists():
-            (out / "SUCCESS.txt").unlink()
+        if (out / AUDIT_PACK_VERIFIED_FILENAME).exists():
+            (out / AUDIT_PACK_VERIFIED_FILENAME).unlink()
         return 1
 
     # 9. Final Verdict
     if not missing:
-        (out / "SUCCESS.txt").write_text("CORE ARTIFACTS VERIFIED", encoding="utf-8")
+        (out / AUDIT_PACK_VERIFIED_FILENAME).write_text("CORE ARTIFACTS VERIFIED", encoding="utf-8")
         if (out / "FAIL.txt").exists():
             (out / "FAIL.txt").unlink()
         print(f"[OK] Run packed successfully: {out}")
@@ -143,8 +161,8 @@ def pack_run(src: Path, out: Path, run_type: str) -> int:
         return 0
     else:
         (out / "FAIL.txt").write_text(f"MISSING: {', '.join(missing)}", encoding="utf-8")
-        if (out / "SUCCESS.txt").exists():
-            (out / "SUCCESS.txt").unlink()
+        if (out / AUDIT_PACK_VERIFIED_FILENAME).exists():
+            (out / AUDIT_PACK_VERIFIED_FILENAME).unlink()
         print(f"[!] Run packed with MISSING artifacts: {missing}")
         return 1
 
@@ -269,13 +287,15 @@ def pack_scenario_b(out: Path) -> int:
         (out / "FAIL.txt").write_text(
             f"SIGNATURE INTEGRITY FAILURE: {', '.join(signature_missing)}", encoding="utf-8"
         )
-        if (out / "SUCCESS.txt").exists():
-            (out / "SUCCESS.txt").unlink()
+        if (out / AUDIT_PACK_VERIFIED_FILENAME).exists():
+            (out / AUDIT_PACK_VERIFIED_FILENAME).unlink()
         return 1
 
     # 6. Final verdict
     if not missing_all:
-        (out / "SUCCESS.txt").write_text("SCENARIO B AUDIT PACK VERIFIED", encoding="utf-8")
+        (out / AUDIT_PACK_VERIFIED_FILENAME).write_text(
+            "SCENARIO B AUDIT PACK VERIFIED", encoding="utf-8"
+        )
         if (out / "FAIL.txt").exists():
             (out / "FAIL.txt").unlink()
         print(f"[OK] Scenario B pack complete: {out}")
@@ -284,8 +304,8 @@ def pack_scenario_b(out: Path) -> int:
         return 0
     else:
         (out / "FAIL.txt").write_text(f"INCOMPLETE: {', '.join(missing_all)}", encoding="utf-8")
-        if (out / "SUCCESS.txt").exists():
-            (out / "SUCCESS.txt").unlink()
+        if (out / AUDIT_PACK_VERIFIED_FILENAME).exists():
+            (out / AUDIT_PACK_VERIFIED_FILENAME).unlink()
         print(f"[!] Scenario B pack INCOMPLETE. Missing: {missing_all}")
         return 1
 

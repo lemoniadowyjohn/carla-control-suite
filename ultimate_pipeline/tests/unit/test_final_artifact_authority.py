@@ -36,6 +36,7 @@ from __future__ import annotations
 
 import json
 import xml.etree.ElementTree as ET
+from pathlib import Path
 
 import pytest
 
@@ -138,6 +139,32 @@ def _write_xodr(tmp_path, text=BASE_XODR, name="final.xodr"):
     path = tmp_path / name
     path.write_text(text, encoding="utf-8")
     return str(path)
+
+
+def _release_acceptance_payload(xodr_path: str, run_id: str) -> dict:
+    """A minimal acceptance payload that genuinely satisfies
+    ``validate_release_acceptance_contract`` (V93 round 2, F2): release
+    purpose, the authoritative mandatory-gate set, and identity bound to
+    the real final artifact's bytes and this receipt's run_id. Round 1's
+    bare ``{"valid_for_experiments": True}`` fixtures no longer authorize
+    PUBLISHED -- build_receipt/the resolver now require the full contract.
+    """
+    from ultimate_pipeline.quality.final_artifact_gates import RELEASE_MANDATORY_GATES
+
+    sha = sha256_file(xodr_path)
+    return {
+        "valid_for_experiments": True,
+        "release_eligible": True,
+        "artifact_identity_verified": True,
+        "acceptance_policy": {"purpose": "release"},
+        "mandatory_gates": list(RELEASE_MANDATORY_GATES),
+        "mandatory_gate_status": {gate: "PASS" for gate in RELEASE_MANDATORY_GATES},
+        "final_xodr_sha256": sha,
+        "evaluated_xodr_sha256": sha,
+        "run_id": run_id,
+        "hard_fail_reasons": [],
+        "failed_gates": [],
+    }
 
 
 class TestStructureFingerprint:
@@ -349,7 +376,16 @@ class TestLateMutationInvalidatesAcceptance:
     def test_clean_run_produces_a_complete_receipt(self, tmp_path):
         ledger, path = self._frozen_ledger_with_acceptance(tmp_path)
         acceptance_path = tmp_path / "map_acceptance.json"
-        acceptance_path.write_text("{}", encoding="utf-8")
+        # V93-18/round-2 F2: build_receipt now independently parses the
+        # ON-DISK acceptance file AND requires it (and the in-memory dict
+        # passed below) to satisfy the full release contract
+        # (validate_release_acceptance_contract) -- a bare
+        # {"valid_for_experiments": True} is no longer sufficient; release
+        # purpose, the authoritative mandatory-gate set and identity bound
+        # to this run are all required.
+        run_id = tmp_path.name
+        acceptance_payload = _release_acceptance_payload(path, run_id)
+        acceptance_path.write_text(json.dumps(acceptance_payload), encoding="utf-8")
         source_manifest = tmp_path / "inputs_manifest.json"
         source_manifest.write_text('{"inputs": {}}', encoding="utf-8")
         source_manifest_identity = {
@@ -358,11 +394,12 @@ class TestLateMutationInvalidatesAcceptance:
         }
         receipt = ledger.build_receipt(
             final_artifact_path=path,
-            map_acceptance={"valid_for_experiments": True, "failed_gates": []},
+            map_acceptance=acceptance_payload,
             topology_certification={"SPEC_TOPOLOGY": QualityStatus.PASS.value},
             semantic_authority_profile={"release_profile": "structural_release"},
             source_manifest_identity=source_manifest_identity,
             receipt_root=str(tmp_path),
+            run_id=run_id,
             acceptance_receipt_path=str(acceptance_path),
         )
 
@@ -384,7 +421,7 @@ class TestLateMutationInvalidatesAcceptance:
         assert receipt["source_manifest"]["sha256"] == source_manifest_identity["inputs_manifest_sha256"]
         assert receipt["schema_version"] == 2
         assert receipt["schema"] == "final_artifact_authority/v2"
-        assert receipt["publication_status"] == "PUBLISHED"
+        assert receipt["publication_status"] == "PUBLISHED", receipt["publication_reasons"]
         assert receipt["final_xodr"]["path"] == "final.xodr"
         assert receipt["acceptance_receipt"]["path"] == "map_acceptance.json"
         assert FINAL_ARTIFACT_PUBLISHED in receipt["capabilities_held"]
@@ -482,3 +519,178 @@ class TestLateMutationInvalidatesAcceptance:
         with pytest.raises(ArtifactAuthorityError) as exc:
             ledger.build_receipt(final_artifact_path=path)
         assert "content changed after the evidence was produced" in str(exc.value)
+
+
+class TestSourceManifestIsAnExternalInput:
+    """V93 round 2, F1 (P1 regression): ``source_manifest`` is the pinned
+    GENERATION INPUT this artifact came from (``main_pipeline.
+    _source_manifest_identity`` records the absolute
+    ``<repo>/campaigns/.../INPUTS_MANIFEST.json``), which is never under
+    ``out_dir``/``run_dir`` in any real production run. A containment check
+    on this field rejected every production receipt; it must instead be
+    treated as an external input: rehashed when present, UNVERIFIED when
+    absent, never containment-checked.
+    """
+
+    def test_production_shaped_receipt_with_manifest_outside_run_dir_resolves(
+        self, tmp_path
+    ):
+        """Mirrors production exactly: the run directory and the inputs
+        manifest are siblings under a common parent, NOT the manifest nested
+        inside the run directory. Also uses a genuinely complete release
+        acceptance payload (F2), so this test isolates the F1 containment
+        fix specifically."""
+        from ultimate_pipeline.quality.final_artifact_gates import (
+            RELEASE_MANDATORY_GATES,
+        )
+
+        campaign_root = tmp_path / "campaigns" / "some_campaign"
+        campaign_root.mkdir(parents=True)
+        run_dir = tmp_path / "ultimate_pipeline_out" / "run_x"
+        run_dir.mkdir(parents=True)
+
+        path = _write_xodr(run_dir)
+        ledger = ArtifactAuthorityLedger()
+        ledger.provide(GEOMETRY_FROZEN, "geometry")
+        ledger.provide(LANES_FINAL, "map_hygiene")
+        ledger.provide(HYGIENE_COMPLETE, "map_hygiene")
+        ledger.freeze_structure(path, stage="final_artifact_authority")
+        ledger.record_evidence(
+            "map_acceptance", path, stage="final_artifact_authority",
+            depends_on=(STRUCTURE_FROZEN,),
+        )
+
+        sha = sha256_file(path)
+        acceptance_payload = {
+            "valid_for_experiments": True,
+            "release_eligible": True,
+            "artifact_identity_verified": True,
+            "acceptance_policy": {"purpose": "release"},
+            "mandatory_gates": list(RELEASE_MANDATORY_GATES),
+            "mandatory_gate_status": {gate: "PASS" for gate in RELEASE_MANDATORY_GATES},
+            "final_xodr_sha256": sha,
+            "evaluated_xodr_sha256": sha,
+            "run_id": run_dir.name,
+            "hard_fail_reasons": [],
+            "failed_gates": [],
+        }
+        acceptance_path = run_dir / "map_acceptance.json"
+        acceptance_path.write_text(json.dumps(acceptance_payload), encoding="utf-8")
+
+        # THE external-input shape: INPUTS_MANIFEST.json lives under
+        # <repo>/campaigns/..., a SIBLING of the run directory, not nested
+        # inside it.
+        source_manifest = campaign_root / "INPUTS_MANIFEST.json"
+        source_manifest.write_text('{"inputs": {}}', encoding="utf-8")
+        source_manifest_identity = {
+            "inputs_manifest_path": str(source_manifest),
+            "inputs_manifest_sha256": sha256_file(str(source_manifest)),
+        }
+
+        receipt = ledger.build_receipt(
+            final_artifact_path=path,
+            map_acceptance=acceptance_payload,
+            topology_certification={"SPEC_TOPOLOGY": QualityStatus.PASS.value},
+            source_manifest_identity=source_manifest_identity,
+            receipt_root=str(run_dir),
+            run_id=run_dir.name,
+            acceptance_receipt_path=str(acceptance_path),
+        )
+        assert receipt["publication_status"] == "PUBLISHED", receipt["publication_reasons"]
+
+        from ultimate_pipeline.contracts.artifact_authority import (
+            resolve_final_artifact_receipt,
+            resolve_final_artifact_receipt_provenance,
+            write_receipt,
+        )
+
+        write_receipt(str(run_dir), receipt)
+        resolved = resolve_final_artifact_receipt(str(run_dir))
+        assert resolved == Path(path)
+
+        provenance = resolve_final_artifact_receipt_provenance(str(run_dir))
+        assert provenance["source_manifest"] == {"present": True, "verified": True}
+
+    def test_source_manifest_outside_run_dir_but_tampered_is_still_rejected(
+        self, tmp_path
+    ):
+        """External-input status does not mean unverified -- a mismatch must
+        still be a hard failure when the file is present."""
+        from ultimate_pipeline.contracts.artifact_authority import (
+            resolve_final_artifact_receipt_provenance,
+            write_receipt,
+        )
+        from ultimate_pipeline.quality.final_artifact_gates import (
+            RELEASE_MANDATORY_GATES,
+        )
+
+        campaign_root = tmp_path / "campaigns"
+        campaign_root.mkdir()
+        run_dir = tmp_path / "run_x"
+        run_dir.mkdir()
+
+        path = _write_xodr(run_dir)
+        ledger = ArtifactAuthorityLedger()
+        ledger.provide(GEOMETRY_FROZEN, "geometry")
+        ledger.provide(LANES_FINAL, "map_hygiene")
+        ledger.provide(HYGIENE_COMPLETE, "map_hygiene")
+        ledger.freeze_structure(path, stage="final_artifact_authority")
+        ledger.record_evidence(
+            "map_acceptance", path, stage="final_artifact_authority",
+            depends_on=(STRUCTURE_FROZEN,),
+        )
+        sha = sha256_file(path)
+        acceptance_payload = {
+            "valid_for_experiments": True,
+            "release_eligible": True,
+            "artifact_identity_verified": True,
+            "acceptance_policy": {"purpose": "release"},
+            "mandatory_gates": list(RELEASE_MANDATORY_GATES),
+            "mandatory_gate_status": {gate: "PASS" for gate in RELEASE_MANDATORY_GATES},
+            "final_xodr_sha256": sha,
+            "evaluated_xodr_sha256": sha,
+            "run_id": run_dir.name,
+            "hard_fail_reasons": [],
+            "failed_gates": [],
+        }
+        acceptance_path = run_dir / "map_acceptance.json"
+        acceptance_path.write_text(json.dumps(acceptance_payload), encoding="utf-8")
+
+        source_manifest = campaign_root / "INPUTS_MANIFEST.json"
+        source_manifest.write_text('{"inputs": {}}', encoding="utf-8")
+        source_manifest_identity = {
+            "inputs_manifest_path": str(source_manifest),
+            "inputs_manifest_sha256": sha256_file(str(source_manifest)),
+        }
+
+        receipt = ledger.build_receipt(
+            final_artifact_path=path,
+            map_acceptance=acceptance_payload,
+            topology_certification={"SPEC_TOPOLOGY": QualityStatus.PASS.value},
+            source_manifest_identity=source_manifest_identity,
+            receipt_root=str(run_dir),
+            run_id=run_dir.name,
+            acceptance_receipt_path=str(acceptance_path),
+        )
+        write_receipt(str(run_dir), receipt)
+
+        # Tamper the EXTERNAL manifest after the receipt was written.
+        source_manifest.write_text('{"inputs": {"tampered": true}}', encoding="utf-8")
+
+        from ultimate_pipeline.contracts.artifact_authority import (
+            FinalArtifactReceiptError,
+            resolve_final_artifact_receipt,
+        )
+
+        with pytest.raises(FinalArtifactReceiptError, match="source_manifest SHA-256"):
+            resolve_final_artifact_receipt(str(run_dir))
+
+        # And removing it entirely (archival case) must NOT raise -- it is
+        # UNVERIFIED, not a mismatch.
+        source_manifest.unlink()
+        resolved = resolve_final_artifact_receipt(str(run_dir))
+        assert resolved == Path(path)
+        provenance = resolve_final_artifact_receipt_provenance(str(run_dir))
+        assert provenance["source_manifest"]["present"] is False
+        assert provenance["source_manifest"]["verified"] is False
+

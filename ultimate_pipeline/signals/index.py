@@ -119,6 +119,15 @@ def _status_from_payload(payload: Any) -> str | None:
             if text in {"incomplete", "partial", "unknown", "not_run"}:
                 return STATUS_INCOMPLETE
 
+    # V93-15 residual (reviewed, left as-is): this generic "ok" fallback is
+    # the shared path for every signal WITHOUT a signal_id-specific branch
+    # above/below -- an unknown and open-ended set of producers across the
+    # pipeline, several of which are not under this review's scope to audit
+    # one-by-one. Unlike MAP_ACCEPTANCE/EXPERIMENT_READINESS/PIPELINE_HEALTH/
+    # G6_HYGIENE/DOMAIN_GAP (tightened above, each verified to have exactly
+    # one real bool-only producer), tightening this generic fallback to
+    # exact-bool could silently flip an as-yet-unaudited producer's existing
+    # PASS to FAIL. Reported, not changed, in this pass.
     if "ok" in payload:
         return STATUS_PASS if _truthy(payload["ok"]) else STATUS_FAIL
 
@@ -168,25 +177,37 @@ def release_acceptance_status(payload: Any) -> str:
 
     Release-quality acceptance is ``release_eligible``. It must come from an
     explicit ``purpose == "release"`` evaluation with the authoritative
-    mandatory gate set. ``valid_for_experiments`` alone (a diagnostic, legacy
+    mandatory gate set AND identity evidence binding it to the actual
+    published artifact. ``valid_for_experiments`` alone (a diagnostic, legacy
     or thesis evaluation) never satisfies a release profile. A pre-V86
     payload cannot prove release eligibility: an explicit failure is FAIL,
     anything else INCOMPLETE, never a fresh release certificate.
+
+    V93 round 2 (F2 "make signals.index.release_acceptance_status
+    consistent"): trusting a self-reported ``release_eligible: True`` on an
+    arbitrary payload is the same class of bug as build_receipt/the resolver
+    trusting a bare ``valid_for_experiments: True`` -- a forged or
+    hand-written payload could set that flag directly without satisfying the
+    exact-gate-set or identity conditions it is supposed to summarize (#48/
+    4bf6b29d tightened the real gate-set requirement from a superset to an
+    exact match; the shared contract below enforces that same exact match,
+    not a superset). This now independently re-derives the same verdict via
+    ``map_acceptance.validate_release_acceptance_contract``, the one shared
+    definition of "valid release acceptance" also used by
+    ``main_pipeline._require_valid_map_acceptance`` and
+    ``ArtifactAuthorityLedger.build_receipt``/``resolve_final_artifact_receipt``.
     """
     if not isinstance(payload, dict):
         return STATUS_FAIL
     valid = payload.get("valid_for_experiments", payload.get("valid"))
     if valid is False:
         return STATUS_FAIL
-    policy = payload.get("acceptance_policy")
-    if (
-        isinstance(policy, dict)
-        and policy.get("purpose") == "release"
-        and payload.get("release_eligible") is True
-        and valid is True
-    ):
-        return STATUS_PASS
-    return STATUS_INCOMPLETE
+    from ultimate_pipeline.quality.map_acceptance import (
+        validate_release_acceptance_contract,
+    )
+
+    problems = validate_release_acceptance_contract(payload)
+    return STATUS_PASS if not problems else STATUS_INCOMPLETE
 
 
 #: Profiles whose verdict is a release claim (V86 A9). Mirrors settings.py
@@ -259,13 +280,28 @@ def normalize_signal_status(
     if signal_id in {"MAP_ACCEPTANCE", "EXPERIMENT_READINESS"}:
         # Experiment semantics. Release profiles additionally apply
         # release_acceptance_status() (V86 A9) in verdict.py and the index.
+        #
+        # V93-15 residual: these two signals PASS ONLY on the exact boolean
+        # True. ``_truthy`` (below) accepts "1"/"true"/"pass" as truthy,
+        # which is appropriate for free-form status strings elsewhere, but
+        # map_acceptance's real producer (build_map_acceptance) always emits
+        # a genuine Python bool for valid_for_experiments/valid. A non-bool
+        # value here is therefore either a malformed/hand-written payload or
+        # a forged one -- either way it must not be trusted as a pass. A
+        # non-bool, non-False value is treated as FAIL (not INCOMPLETE): like
+        # map_acceptance._mandatory_gate_status's own "non-boolean ok" rule,
+        # an affirmative-looking but untyped claim is a worse signal than a
+        # merely-missing one, so it must not be softer than an explicit
+        # False.
         if isinstance(payload, dict):
             valid = payload.get("valid_for_experiments")
             if valid is None:
                 valid = payload.get("valid")
             if valid is None:
                 return STATUS_INCOMPLETE
-            return STATUS_PASS if _truthy(valid) else STATUS_FAIL
+            if valid is True:
+                return STATUS_PASS
+            return STATUS_FAIL
         return STATUS_FAIL
 
     if signal_id == "FINAL_ARTIFACT_RECEIPT":
@@ -300,8 +336,13 @@ def normalize_signal_status(
         return STATUS_INCOMPLETE
 
     if signal_id == "PIPELINE_HEALTH":
+        # V93-15 residual: both real producers (pipeline_health_summary.
+        # write_pipeline_health_summary and ost_run_protocol_adapter's
+        # lightweight aggregator) always emit a genuine bool or None for
+        # overall_ok, never a truthy-but-non-bool value, so this can be
+        # tightened to exact bool without any producer needing a change.
         if isinstance(payload, dict):
-            return STATUS_PASS if _truthy(payload.get("overall_ok")) else STATUS_FAIL
+            return STATUS_PASS if payload.get("overall_ok") is True else STATUS_FAIL
         return STATUS_FAIL
 
     if signal_id == "RUN_SUMMARY":
@@ -325,11 +366,15 @@ def normalize_signal_status(
         return STATUS_INCOMPLETE
 
     if signal_id == "G6_HYGIENE":
+        # V93-15 residual: the single real producer (stage_08_hygiene's
+        # 08h5_g6_lane_coverage_repair_report.json) always computes "ok" via
+        # ``all(bool(...) for ...)``, a genuine bool -- tightened to exact
+        # bool without a producer change.
         if isinstance(payload, dict):
             if str(payload.get("status", "")).strip().upper() == "INCOMPLETE":
                 return STATUS_INCOMPLETE
             if "ok" in payload:
-                return STATUS_PASS if _truthy(payload.get("ok")) else STATUS_FAIL
+                return STATUS_PASS if payload.get("ok") is True else STATUS_FAIL
         return STATUS_INCOMPLETE
 
     if signal_id == "DOMAIN_GAP":
@@ -337,8 +382,12 @@ def normalize_signal_status(
             raw = str(payload.get("status", "")).strip().lower()
             if raw in _BLOCKED:
                 return STATUS_BLOCKED_EXTERNAL
+            # V93-15 residual: the single real producer (_step12_domain_gap)
+            # always sets both "ok" (via bool(...)) and "status" together, so
+            # this branch is not currently reached by production payloads;
+            # tightened to exact bool anyway, for defense in depth.
             if "ok" in payload and "status" not in payload:
-                return STATUS_PASS if _truthy(payload.get("ok")) else STATUS_FAIL
+                return STATUS_PASS if payload.get("ok") is True else STATUS_FAIL
         normalized = _status_from_payload(payload)
         if normalized:
             return normalized
