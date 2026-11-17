@@ -89,10 +89,12 @@ def test_reflection_or_nonrigid_calibration_rejected():
         camera_attachment_matrix_from_cTv(bad)
 
 
-def test_no_manual_second_basis_flip_or_disabled_optical_frame():
+def test_legacy_flip_flag_is_noop_and_optical_basis_is_mandatory():
     ctv = np.asarray(_calib()["cameras"]["left_camera"]["cTv"])
-    with pytest.raises(ValueError, match="double flip"):
-        camera_attachment_pose_from_cTv(ctv, flip_vehicle_y=True)
+    canonical = camera_attachment_pose_from_cTv(ctv, flip_vehicle_y=False)
+    compat = camera_attachment_pose_from_cTv(ctv, flip_vehicle_y=True)
+    for field in ("x", "y", "z", "roll", "pitch", "yaw"):
+        assert compat[field] == pytest.approx(canonical[field])
     with pytest.raises(ValueError, match="cannot be disabled"):
         camera_attachment_pose_from_cTv(
             ctv, flip_vehicle_y=False, opencv_camera_axes=False
