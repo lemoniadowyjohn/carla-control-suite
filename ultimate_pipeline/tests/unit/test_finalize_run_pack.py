@@ -476,6 +476,23 @@ def test_absolute_path_inside_root_is_accepted(tmp_path):
     assert receipt["files"]["a.bin"] == hashlib.sha256(b"aaa").hexdigest()
 
 
+def test_emit_success_false_suppresses_pack_complete_even_on_pass(tmp_path):
+    """V93-25 mutation coverage: every other ``emit_success=False`` call in
+    this file produces a FAIL manifest (where PACK_COMPLETE.txt is withheld
+    for an unrelated reason -- ``receipt["status"] != STATUS_PASS``) or
+    simply never checks for ``PACK_COMPLETE.txt``'s absence. None of them
+    kill the ``if receipt["status"] == STATUS_PASS and emit_success:`` ~538
+    mutant that drops ``and emit_success`` (live-verified: with that
+    condition removed, this exact PASS-manifest + ``emit_success=False`` call
+    wrote a real PACK_COMPLETE.txt, and the rest of this module's suite still
+    passed). This isolates ``emit_success`` on a genuinely PASSing manifest."""
+    _write(tmp_path / "a.bin", "aaa")
+    receipt = finalize_run_pack(tmp_path, ["a.bin"], emit_success=False)
+    assert receipt["status"] == "PASS"
+    assert not (tmp_path / PACK_COMPLETE_FILENAME).exists()
+    assert not (tmp_path / "SUCCESS.txt").exists()
+
+
 def test_no_temp_files_left_behind(tmp_path):
     _write(tmp_path / "a.bin", "aaa")
     finalize_run_pack(tmp_path, ["a.bin"])
