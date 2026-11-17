@@ -30,7 +30,7 @@ def _expanded_name(name: str) -> str:
     return "{" + name if "}" in name and not name.startswith("{") else name
 
 
-def _parse(data: bytes, *, build_tree: bool) -> ET.Element | None:
+def _parse(data: bytes, *, build_tree: bool, expected_root: str | None = "OpenDRIVE") -> ET.Element | None:
     if not isinstance(data, bytes):
         raise TypeError("OpenDRIVE input must be immutable bytes")
     if not data:
@@ -104,8 +104,8 @@ def _parse(data: bytes, *, build_tree: bool) -> ET.Element | None:
     except (expat.ExpatError, LookupError, UnicodeError, ValueError) as exc:
         raise UnsafeXMLError(f"XML admission failed: {exc}") from exc
 
-    if root_name != "OpenDRIVE":
-        raise UnsafeXMLError(f"expected OpenDRIVE root, found {root_name!r}")
+    if expected_root is not None and root_name != expected_root:
+        raise UnsafeXMLError(f"expected {expected_root} root, found {root_name!r}")
     if builder is None:
         return None
     try:
@@ -125,6 +125,13 @@ def check_xml_boundary(data: bytes) -> None:
 def parse_xodr_bytes(data: bytes) -> ET.Element:
     """Return a tree built by the same hardened parser that enforces policy."""
     root = _parse(data, build_tree=True)
+    assert root is not None
+    return root
+
+
+def parse_xml_file(path: str | os.PathLike[str]) -> ET.Element:
+    """Parse bounded, DTD-free XML without imposing the OpenDRIVE root name."""
+    root = _parse(read_xodr_bytes(path), build_tree=True, expected_root=None)
     assert root is not None
     return root
 
