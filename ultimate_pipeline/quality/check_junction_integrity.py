@@ -20,6 +20,7 @@ from __future__ import annotations
 
 import os
 import xml.etree.ElementTree as ET
+from ultimate_pipeline.quality.xml_admission import parse_xodr_file
 from typing import Any, Dict, Iterable, List, Optional, Set, Tuple, Union
 
 
@@ -29,7 +30,7 @@ XodrInput = Union[str, os.PathLike, ET.Element]
 def _load_root(xodr_path_or_root: XodrInput) -> ET.Element:
     if isinstance(xodr_path_or_root, ET.Element):
         return xodr_path_or_root
-    tree = ET.parse(str(xodr_path_or_root))
+    tree = ET.ElementTree(parse_xodr_file(str(xodr_path_or_root)))
     return tree.getroot()
 
 

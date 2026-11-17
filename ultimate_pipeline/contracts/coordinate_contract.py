@@ -3,6 +3,7 @@ from __future__ import annotations
 import hashlib
 import json
 import xml.etree.ElementTree as ET
+from ultimate_pipeline.quality.xml_admission import parse_xodr_file
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -218,7 +219,7 @@ def osmbounds_present(source_osm: dict[str, Any]) -> bool:
 
 
 def _parse_xodr_header(path: Path) -> dict[str, Any]:
-    tree = ET.parse(path)
+    tree = ET.ElementTree(parse_xodr_file(path))
     root = tree.getroot()
     header = root.find("header")
     if header is None:
@@ -242,7 +243,7 @@ def _parse_xodr_header(path: Path) -> dict[str, Any]:
 
 def _extract_control_points(path: Path, limit: int = DEFAULT_CONTROL_POINT_LIMIT) -> list[dict[str, Any]]:
     try:
-        tree = ET.parse(path)
+        tree = ET.ElementTree(parse_xodr_file(path))
     except Exception:
         return []
     root = tree.getroot()

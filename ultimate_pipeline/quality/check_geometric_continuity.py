@@ -28,6 +28,7 @@ from __future__ import annotations
 
 import math
 import xml.etree.ElementTree as ET
+from ultimate_pipeline.quality.xml_admission import parse_xodr_file
 from dataclasses import dataclass, replace
 from typing import Any, Dict, List, Optional, Tuple
 
@@ -588,7 +589,7 @@ def auto_repair_tiny_planview_seams_in_file(
             "max_repair_seam_m": float(max_repair_seam_m),
         }
 
-    tree = ET.parse(xodr_path)
+    tree = ET.ElementTree(parse_xodr_file(xodr_path))
     root = tree.getroot()
     updated = recompute_geometry_starts_chained_inplace(root)
     tree.write(xodr_path, encoding="utf-8", xml_declaration=True)
@@ -671,7 +672,7 @@ def check_geometric_continuity(
     }
 
     try:
-        tree = ET.parse(xodr_path)
+        tree = ET.ElementTree(parse_xodr_file(xodr_path))
         root = tree.getroot()
     except Exception as e:
         report["ok"] = False
@@ -875,7 +876,7 @@ def check_planview_internal_seams(
     }
 
     try:
-        tree = ET.parse(xodr_path)
+        tree = ET.ElementTree(parse_xodr_file(xodr_path))
         root = tree.getroot()
     except Exception as e:
         report["ok"] = False

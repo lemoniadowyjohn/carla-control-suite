@@ -202,6 +202,7 @@ GATE_CLASS_REGISTRY: Dict[str, GateClass] = {
     "package_identity": GateClass.IDENTITY_INTEGRITY,
     "deterministic_provenance": GateClass.IDENTITY_INTEGRITY,
     "xodr_sha": GateClass.IDENTITY_INTEGRITY,
+    "xodr_identity_changed": GateClass.IDENTITY_INTEGRITY,
     # Structural integrity (non-waivable)
     "xodr_xml_integrity": GateClass.STRUCTURAL_INTEGRITY,
     "junction_integrity": GateClass.STRUCTURAL_INTEGRITY,

@@ -16,13 +16,29 @@ silently absent, and never ``ok: True`` by default.
 """
 from __future__ import annotations
 
+import hashlib
+import math
+import os
 import xml.etree.ElementTree as ET
-from typing import Any, Callable, Dict, Tuple
+from pathlib import Path
+from typing import Any, Callable, Dict, Optional, Tuple
+
+from ultimate_pipeline.quality import xml_admission as _xml_admission
 
 STATUS_PASS = "PASS"
 STATUS_FAIL = "FAIL"
 STATUS_NOT_RUN = "NOT_RUN"
 STATUS_BLOCKED_INPUT = "BLOCKED_INPUT"
+
+#: Version of the release acceptance policy. Bump it when the mandatory gate
+#: set or the strict-status semantics change.
+ACCEPTANCE_POLICY_VERSION = "v86.1"
+
+#: The largest final artifact accepted at the XML boundary. The map of record
+#: is about 150 MB; this bounds memory if the input is hostile.
+MAX_XODR_BYTES = _xml_admission.MAX_XODR_BYTES
+UnsafeXMLError = _xml_admission.UnsafeXMLError
+
 
 #: Gates the production release path must have evaluated, and passed, on the
 #: final artifact. They are hard-fail classes in ``build_map_acceptance``.
@@ -30,6 +46,7 @@ STATUS_BLOCKED_INPUT = "BLOCKED_INPUT"
 #: are computed separately by ``main_pipeline``, which already did so before
 #: this module existed.
 FINAL_ARTIFACT_MANDATORY_GATES: Tuple[str, ...] = (
+    "artifact_structure",
     "lane_connectivity",
     "elevation_continuity",
     "junction_integrity",
@@ -56,11 +73,160 @@ RELEASE_MANDATORY_GATES: Tuple[str, ...] = (
 
 
 def _issues_report(issues: Any) -> Dict[str, Any]:
-    issues = list(issues or [])
+    """Wrap a checker's issue list. It never treats "no result" as zero issues (V86 A7).
+
+    A checker must return a list or tuple whose items are dicts or strings.
+    ``None``, a falsey non-collection, a string, a mapping or invalid items
+    raise ``TypeError``. ``compute_final_artifact_reports`` turns that into a
+    NOT_RUN report, never a pass.
+    """
+    if not isinstance(issues, (list, tuple)):
+        raise TypeError(
+            f"checker returned {type(issues).__name__}, expected a list of issues"
+        )
+    bad = [type(item).__name__ for item in issues if not isinstance(item, (dict, str))]
+    if bad:
+        raise TypeError(f"checker returned invalid issue entries: {sorted(set(bad))}")
+    issues = list(issues)
     return {"ok": len(issues) == 0, "issue_count": len(issues), "issues": issues}
 
 
-def _gate_table() -> Dict[str, Callable[[str, Any], Dict[str, Any]]]:
+def normalize_lane_section_report(report: Any) -> Dict[str, Any]:
+    """Give a lane-section-successor report an EXPLICIT boolean ``ok`` (V86 A4).
+
+    The two producers emit different schemas. The pipeline's
+    ``write_lane_connectivity_report`` gives ``broken_count``; the promotion
+    path's ``repair_and_assert_lane_section_successors`` gives a ``failures``
+    list. Neither sets ``ok``, and acceptance used to *infer* success. Here
+    ``ok`` is derived only from explicit integer or list evidence. Without
+    evidence the report is NOT_RUN.
+    """
+    if not isinstance(report, dict):
+        return not_run_report("lane_section_successors", f"report is {type(report).__name__}")
+    out = dict(report)
+    if isinstance(out.get("ok"), bool):
+        return out
+    broken = out.get("broken_count")
+    failures = out.get("failures")
+    if isinstance(broken, int) and not isinstance(broken, bool) and broken >= 0:
+        out["ok"] = broken == 0
+        out["issue_count"] = broken
+    elif isinstance(failures, list):
+        out["ok"] = len(failures) == 0
+        out["issue_count"] = len(failures)
+    else:
+        out.update({"ok": None, "status": STATUS_NOT_RUN,
+                    "reason": "no explicit broken_count/failures evidence"})
+    return out
+
+
+# --- V104: parser-level XML admission -----------------------------------------
+def check_xml_boundary(data: bytes) -> None:
+    """Validate the full XML document with the encoding-aware Expat policy."""
+    if len(data) > MAX_XODR_BYTES:
+        raise UnsafeXMLError(
+            f"artifact is {len(data)} bytes > limit {MAX_XODR_BYTES}"
+        )
+    _xml_admission.check_xml_boundary(data)
+
+
+def parse_xodr_bytes(data: bytes) -> ET.Element:
+    """Parse OpenDRIVE with DTD/entity rejection and bounded complexity."""
+    if len(data) > MAX_XODR_BYTES:
+        raise UnsafeXMLError(
+            f"artifact is {len(data)} bytes > limit {MAX_XODR_BYTES}"
+        )
+    return _xml_admission.parse_xodr_bytes(data)
+
+
+def parse_xodr_file(path: str | os.PathLike[str]) -> ET.Element:
+    """Bounded one-snapshot file read followed by strict OpenDRIVE parsing."""
+    data = _xml_admission.read_xodr_bytes(path)
+    return parse_xodr_bytes(data)
+
+
+# --- V86 A6: immutable content-addressed snapshot ------------------------------
+def sha256_bytes(data: bytes) -> str:
+    return hashlib.sha256(data).hexdigest()
+
+
+def snapshot_final_artifact(final_out: str, snapshot_dir: str) -> Dict[str, Any]:
+    """Freeze the exact bytes every release validator will evaluate.
+
+    The artifact is read once and written to ``<snapshot_dir>/<sha256>.xodr``,
+    which is made read-only. Every gate runs on that path. ``verify_artifact_unchanged``
+    later proves the published ``final_out`` still has the same digest.
+    """
+    data = _xml_admission.read_xodr_bytes(final_out)
+    digest = sha256_bytes(data)
+    snap_dir = Path(snapshot_dir)
+    snap_dir.mkdir(parents=True, exist_ok=True)
+    snap = snap_dir / f"{digest}.xodr"
+    if snap.exists():
+        if sha256_bytes(snap.read_bytes()) != digest:
+            raise RuntimeError(f"existing snapshot {snap} does not match its content address")
+    else:
+        tmp = snap_dir / f".{digest}.{os.getpid()}.tmp"
+        with open(tmp, "wb") as fh:
+            fh.write(data)
+            fh.flush()
+            os.fsync(fh.fileno())
+        os.replace(tmp, snap)
+        os.chmod(snap, 0o444)
+    return {"path": str(snap), "sha256": digest, "bytes": len(data), "source_path": str(final_out)}
+
+
+def verify_artifact_unchanged(path: str, expected_sha256: str) -> Tuple[bool, str]:
+    try:
+        actual = sha256_bytes(Path(path).read_bytes())
+    except OSError as exc:
+        return False, f"unreadable: {exc}"
+    return actual == expected_sha256, actual
+
+
+# --- V86 A2: structural scope -------------------------------------------------
+def check_artifact_structure(root: ET.Element, expected_scope: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+    """Threshold-independent structural validity of a release OpenDRIVE map.
+
+    It requires an ``OpenDRIVE`` root with a ``header``, at least one road,
+    and for every road a positive, finite length and at least one planView
+    geometry. ``expected_scope`` (from the candidate manifest or release
+    profile) may add ``min_roads`` and ``expected_road_ids``. No historical
+    road count is hardcoded.
+    """
+    issues = []
+    if root.tag != "OpenDRIVE":
+        issues.append({"kind": "root_not_opendrive", "tag": root.tag})
+    if root.find("header") is None:
+        issues.append({"kind": "missing_header"})
+    roads = root.findall("road")
+    if not roads:
+        issues.append({"kind": "no_roads"})
+    for road in roads:
+        rid = road.get("id")
+        try:
+            length = float(road.get("length", "nan"))
+        except ValueError:
+            length = float("nan")
+        if not (math.isfinite(length) and length > 0):
+            issues.append({"kind": "invalid_road_length", "road": rid, "length": road.get("length")})
+        pv = road.find("planView")
+        if pv is None or not pv.findall("geometry"):
+            issues.append({"kind": "missing_planview_geometry", "road": rid})
+    scope = dict(expected_scope or {})
+    min_roads = scope.get("min_roads")
+    if isinstance(min_roads, int) and len(roads) < min_roads:
+        issues.append({"kind": "below_expected_scope", "road_count": len(roads), "min_roads": min_roads})
+    expected_ids = scope.get("expected_road_ids")
+    if expected_ids:
+        missing = sorted(set(map(str, expected_ids)) - {r.get("id") for r in roads})
+        if missing:
+            issues.append({"kind": "expected_roads_missing", "count": len(missing), "examples": missing[:20]})
+    return {"ok": not issues, "issue_count": len(issues), "issues": issues,
+            "road_count": len(roads), "expected_scope": scope or None}
+
+
+def _gate_table(expected_scope: Optional[Dict[str, Any]] = None) -> Dict[str, Callable[[str, Any], Dict[str, Any]]]:
     # Imports are local so that importing this module stays cheap and does not
     # create import cycles with quality_gate_manager.
     from ultimate_pipeline.quality.check_carla_import_s import CarlaImportSChecker
@@ -83,6 +249,7 @@ def _gate_table() -> Dict[str, Callable[[str, Any], Dict[str, Any]]]:
 
     # Definitions identical to scripts/measure_candidate_acceptance.run_gates.
     return {
+        "artifact_structure": lambda p, r: check_artifact_structure(r, expected_scope),
         "lane_connectivity": lambda p, r: check_lane_link_targets_exist(p, allow_dead_ends=True),
         "elevation_continuity": lambda p, r: check_elevation_continuity(p, eps_z=0.5),
         "junction_integrity": lambda p, r: JunctionIntegrityGate.validate(p),
@@ -102,37 +269,70 @@ def not_run_report(gate: str, reason: str, *, status: str = STATUS_NOT_RUN) -> D
     return {"ok": None, "status": status, "gate": gate, "reason": reason}
 
 
-def compute_final_artifact_reports(xodr_path: str) -> Dict[str, Dict[str, Any]]:
+def compute_final_artifact_reports(
+    xodr_path: str,
+    *,
+    expected_sha256: Optional[str] = None,
+    expected_scope: Optional[Dict[str, Any]] = None,
+) -> Dict[str, Dict[str, Any]]:
     """Evaluate every FINAL_ARTIFACT_MANDATORY_GATES gate on ``xodr_path``.
 
     The result always contains one dict per gate. If the artifact cannot be
-    parsed, every root-based gate is ``BLOCKED_INPUT``. An exception inside a
+    read, fails the XML boundary, does not match ``expected_sha256`` (V86 A6),
+    or cannot be parsed, every gate is ``BLOCKED_INPUT``. An exception inside a
     gate becomes ``NOT_RUN`` with the exception recorded. Nothing is skipped.
     """
     reports: Dict[str, Dict[str, Any]] = {}
     root = None
     parse_error = None
     try:
-        root = ET.parse(str(xodr_path)).getroot()
+        data = _xml_admission.read_xodr_bytes(xodr_path)
+        if expected_sha256 is not None and sha256_bytes(data) != expected_sha256:
+            raise RuntimeError(
+                f"artifact digest {sha256_bytes(data)} != expected {expected_sha256}"
+            )
+        root = parse_xodr_bytes(data)
     except Exception as exc:  # noqa: BLE001 - recorded, fail-closed
         parse_error = f"{type(exc).__name__}: {exc}"
 
-    for gate, fn in _gate_table().items():
-        if root is None:
+    gate_table = _gate_table(expected_scope)
+    if root is None:
+        for gate in gate_table:
             reports[gate] = not_run_report(
                 gate, f"final artifact could not be parsed: {parse_error}",
                 status=STATUS_BLOCKED_INPUT,
             )
-            continue
-        try:
-            rep = fn(str(xodr_path), root)
-        except Exception as exc:  # noqa: BLE001 - recorded, fail-closed
-            reports[gate] = not_run_report(gate, f"{type(exc).__name__}: {exc}")
-            continue
-        if not isinstance(rep, dict):
+        return reports
+
+    # Path-based legacy gates must see the exact bytes that passed admission,
+    # even if the caller's candidate path changes while this pass is running.
+    # Root-based gates receive the tree built from those same admitted bytes.
+    with _xml_admission.admitted_xodr_snapshot(
+        data, parent=Path(xodr_path).resolve().parent
+    ) as snapshot:
+        for gate, fn in gate_table.items():
+            try:
+                rep = fn(str(snapshot), root)
+            except Exception as exc:  # noqa: BLE001 - recorded, fail-closed
+                reports[gate] = not_run_report(gate, f"{type(exc).__name__}: {exc}")
+                continue
+            if not isinstance(rep, dict):
+                reports[gate] = not_run_report(
+                    gate, f"gate returned {type(rep).__name__}, not a report dict"
+                )
+                continue
+            reports[gate] = rep
+
+    # The candidate must still be the admitted artifact when report production
+    # completes. A concurrent replacement invalidates every computed result.
+    try:
+        if sha256_bytes(_xml_admission.read_xodr_bytes(xodr_path)) != sha256_bytes(data):
+            raise RuntimeError("final artifact changed during mandatory gate evaluation")
+    except Exception as exc:  # noqa: BLE001 - fail closed on late mutation
+        for gate in gate_table:
             reports[gate] = not_run_report(
-                gate, f"gate returned {type(rep).__name__}, not a report dict"
+                gate,
+                f"final artifact identity changed during gate evaluation: {type(exc).__name__}: {exc}",
+                status=STATUS_BLOCKED_INPUT,
             )
-            continue
-        reports[gate] = rep
     return reports

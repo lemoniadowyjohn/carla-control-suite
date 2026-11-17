@@ -56,7 +56,7 @@ import json
 import os
 from pathlib import Path
 import subprocess
-import xml.etree.ElementTree as ET
+from ultimate_pipeline.quality.xml_admission import parse_xodr_file
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from typing import Any, Dict, Iterable, List, Optional, Sequence, Tuple
@@ -264,7 +264,7 @@ def compute_structure_fingerprint(source: Any) -> Dict[str, Any]:
     aspect listed in :data:`STRUCTURAL_ASPECTS`.
     """
     if isinstance(source, (str, os.PathLike)):
-        root = ET.parse(os.fspath(source)).getroot()
+        root = parse_xodr_file(os.fspath(source))
     else:
         root = source
 
@@ -686,6 +686,7 @@ class ArtifactAuthorityLedger:
         *,
         stage: str,
         depends_on: Sequence[str] = (),
+        expected_sha256: str | None = None,
     ) -> EvidenceRecord:
         """Record that evidence *name* was computed against *artifact_path*.
 
@@ -695,6 +696,12 @@ class ArtifactAuthorityLedger:
         """
         for capability in depends_on:
             self.require(capability, f"{stage}:{name}")
+        artifact_sha = sha256_file(artifact_path)
+        if expected_sha256 is not None and artifact_sha != expected_sha256:
+            raise ArtifactAuthorityError(
+                f"evidence {name!r} artifact identity changed: expected "
+                f"{expected_sha256}, found {artifact_sha}"
+            )
         try:
             structure_sha = compute_structure_fingerprint(artifact_path)["sha256"]
         except Exception:
@@ -702,7 +709,7 @@ class ArtifactAuthorityLedger:
         record = EvidenceRecord(
             name=name,
             artifact_path=artifact_path,
-            artifact_sha256=sha256_file(artifact_path),
+            artifact_sha256=artifact_sha,
             structure_sha256=structure_sha,
             stage=stage,
             depends_on=tuple(depends_on),

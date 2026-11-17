@@ -100,8 +100,8 @@ def test_only_exact_true_passes_a_mandatory_gate():
 def test_gate_exception_becomes_not_run_never_skipped(tmp_path, monkeypatch):
     real_table = fag._gate_table
 
-    def table_with_crashing_gate():
-        table = real_table()
+    def table_with_crashing_gate(expected_scope=None):
+        table = real_table(expected_scope)
 
         def boom(_p, _r):
             raise RuntimeError("checker crashed")
@@ -139,7 +139,8 @@ def test_production_final_acceptance_uses_fail_closed_wiring():
     collect = inspect.getsource(MainPipeline._collect_final_acceptance_reports)
     assert "self._collect_final_acceptance_reports(" in publish
     assert "mandatory_gates=RELEASE_MANDATORY_GATES" in publish
-    assert "compute_final_artifact_reports(final_out)" in collect
+    # V86: the gates evaluate the snapshot path and verify its digest.
+    assert "compute_final_artifact_reports(\n            final_out, expected_sha256=expected_sha256" in collect
     for src in (publish, collect):
         assert "getattr(self.qgate, gate_method)" not in src
         assert "recompute skipped" not in src

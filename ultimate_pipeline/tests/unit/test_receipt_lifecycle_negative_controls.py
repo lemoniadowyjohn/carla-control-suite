@@ -49,6 +49,18 @@ def _frozen_ledger(tmp_path: Path) -> tuple[ArtifactAuthorityLedger, str, dict[s
     }
 
 
+def test_record_evidence_rejects_bytes_that_differ_from_evaluated_digest(tmp_path: Path):
+    ledger, final, _ = _frozen_ledger(tmp_path)
+    expected = sha256_file(final)
+    Path(final).write_text(_XODR.replace('length="1"', 'length="2"'), encoding="utf-8")
+
+    with pytest.raises(ArtifactAuthorityError, match="artifact identity changed"):
+        ledger.record_evidence(
+            "post_acceptance", final, stage="final_artifact_authority",
+            expected_sha256=expected,
+        )
+
+
 def test_receipt_rejects_failed_map_acceptance(tmp_path: Path):
     """C3: a failed acceptance is documented but never published."""
     ledger, final, kwargs = _frozen_ledger(tmp_path)
