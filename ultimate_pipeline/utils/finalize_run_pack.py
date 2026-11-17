@@ -817,7 +817,74 @@ def _require_verdict_and_run_status_pass(root: Path) -> None:
         )
 
 
-def write_success_txt(out_dir: str, summary: str = "") -> None:
+def _require_map_acceptance_matches_manifest(root: Path, manifest: Dict[str, Any]) -> None:
+    """Require the packed XODR bytes to be the bytes accepted for release."""
+    acceptance_path = root / "map_acceptance.json"
+    try:
+        payload = json.loads(acceptance_path.read_text(encoding="utf-8"))
+    except (OSError, ValueError) as exc:
+        raise FinalizationError(
+            f"refusing to write SUCCESS.txt: map_acceptance.json is missing or unreadable ({exc})"
+        ) from exc
+    if not isinstance(payload, dict):
+        raise FinalizationError(
+            "refusing to write SUCCESS.txt: map_acceptance.json is not an object"
+        )
+
+    final_xodr = payload.get("final_xodr_path")
+    if not isinstance(final_xodr, str) or not final_xodr:
+        raise FinalizationError(
+            "refusing to write SUCCESS.txt: acceptance has no final_xodr_path"
+        )
+    final_path = Path(final_xodr).expanduser().resolve()
+    if not _is_within(root, final_path):
+        raise FinalizationError(
+            "refusing to write SUCCESS.txt: accepted final XODR is outside release root"
+        )
+    key = _relative_key(root, final_path)
+    files = manifest.get("files")
+    if not isinstance(files, dict):
+        raise FinalizationError(
+            "refusing to write SUCCESS.txt: signature has no file digest mapping"
+        )
+    packed_sha256 = files.get(key)
+    accepted_sha256 = payload.get("final_xodr_sha256")
+    if not isinstance(packed_sha256, str) or packed_sha256 != accepted_sha256:
+        raise FinalizationError(
+            "refusing to write SUCCESS.txt: packed final XODR digest does not match "
+            "the accepted final_xodr_sha256"
+        )
+    try:
+        current_sha256 = hash_file_sha256(final_path)
+    except OSError as exc:
+        raise FinalizationError(
+            f"refusing to write SUCCESS.txt: accepted final XODR is unreadable ({exc})"
+        ) from exc
+    if current_sha256 != packed_sha256:
+        raise FinalizationError(
+            "refusing to write SUCCESS.txt: final XODR changed after pack finalization"
+        )
+
+    from ultimate_pipeline.quality.map_acceptance import (
+        validate_release_acceptance_contract,
+    )
+
+    problems = validate_release_acceptance_contract(
+        payload, expected_xodr_sha256=packed_sha256
+    )
+    if problems:
+        raise FinalizationError(
+            "refusing to write SUCCESS.txt: release acceptance is invalid for the "
+            f"packed XODR: {problems}"
+        )
+
+
+def write_success_txt(
+    out_dir: str,
+    summary: str = "",
+    *,
+    require_map_acceptance: bool = False,
+) -> None:
     """Write SUCCESS.txt, but only for a recorded PASS finalization AND a
     PASS/ok final_run_verdict.json + run_status.json in the same out_dir.
 
@@ -854,6 +921,8 @@ def write_success_txt(out_dir: str, summary: str = "") -> None:
             "refusing to write SUCCESS.txt: no recorded PASS finalization state"
         )
     _require_verdict_and_run_status_pass(root)
+    if require_map_acceptance:
+        _require_map_acceptance_matches_manifest(root, manifest)
     # Re-read the manifest from disk and recompute its digest rather than trusting
     # the in-memory receipt: the digest is a property of the emitted bytes.
     # (The manifest cannot embed its own digest, so the on-disk value is the

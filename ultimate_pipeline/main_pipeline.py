@@ -133,7 +133,7 @@ def _assert_terminal_publication_lease(lease, scope_root: Path, stage: str) -> N
         )
 
 
-def _require_valid_map_acceptance(out_dir) -> None:
+def _require_valid_map_acceptance(out_dir, *, expected_xodr_path=None) -> None:
     """Require the shared, strict release acceptance contract before SUCCESS."""
     from ultimate_pipeline.quality.map_acceptance import (
         validate_release_acceptance_contract,
@@ -146,7 +146,19 @@ def _require_valid_map_acceptance(out_dir) -> None:
         raise RuntimeError(
             f"TERMINAL_FAILED(MAP_ACCEPTANCE): {path} missing or unreadable: {exc}"
         ) from exc
-    problems = validate_release_acceptance_contract(payload)
+    expected_sha256 = None
+    if expected_xodr_path is not None:
+        try:
+            expected_sha256 = hashlib.sha256(
+                Path(expected_xodr_path).read_bytes()
+            ).hexdigest()
+        except OSError as exc:
+            raise RuntimeError(
+                f"TERMINAL_FAILED(MAP_ACCEPTANCE): final XODR is unreadable: {exc}"
+            ) from exc
+    problems = validate_release_acceptance_contract(
+        payload, expected_xodr_sha256=expected_sha256
+    )
     if problems:
         failed = payload.get("failed_gates") if isinstance(payload, dict) else None
         raise RuntimeError(
@@ -1986,7 +1998,9 @@ if str(_repo_root) not in sys.path:
             # still publish run_status=ok and SUCCESS.txt, because only the
             # receipt capability (artifact_authority) checked
             # valid_for_experiments.
-            _require_valid_map_acceptance(self.out_dir)
+            _require_valid_map_acceptance(
+                self.out_dir, expected_xodr_path=final_xodr_path
+            )
 
             # Persist terminal status before publishing SUCCESS. Re-read it
             # afterwards because _write_run_status is intentionally best-effort.
@@ -2005,7 +2019,11 @@ if str(_repo_root) not in sys.path:
                 terminal_lease, terminal_root, "SUCCESS promotion"
             )
             from ultimate_pipeline.utils.finalize_run_pack import write_success_txt
-            write_success_txt(self.out_dir, summary="main_pipeline")
+            write_success_txt(
+                self.out_dir,
+                summary="main_pipeline",
+                require_map_acceptance=True,
+            )
             terminal_success_published = True
             verify_result = verify_run_pack(self.out_dir)
             if verify_result.get("status") != "PASS":

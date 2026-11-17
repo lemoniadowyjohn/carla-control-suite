@@ -154,9 +154,11 @@ def test_production_final_acceptance_uses_fail_closed_wiring():
         assert "getattr(self.qgate, gate_method)" not in src
         assert "recompute skipped" not in src
     run_src = inspect.getsource(MainPipeline.run)
-    guard = run_src.index("_require_valid_map_acceptance(self.out_dir)")
+    guard = run_src.index("_require_valid_map_acceptance(")
+    assert "expected_xodr_path=final_xodr_path" in run_src[guard:guard + 180]
     assert guard < run_src.index('self._write_run_status(status="ok", stage="done")')
-    assert guard < run_src.index("write_success_txt(self.out_dir")
+    success_call = run_src.index("write_success_txt(", guard)
+    assert "require_map_acceptance=True" in run_src[success_call:success_call + 180]
 
 
 class _StubGate:

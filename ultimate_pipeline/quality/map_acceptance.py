@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import math
 import os
 import re
 import sys
@@ -158,13 +159,32 @@ def _mandatory_gate_status(gate: str, report: Any) -> tuple[str, str]:
         return "FAIL", f"declared status {declared!r} (ok={ok})"
     if not ok:
         return "FAIL", _reason_from_report(report)
-    nonzero = {
-        key: report[key] for key in _ISSUE_COUNT_KEYS
-        if isinstance(report.get(key), (int, float)) and not isinstance(report.get(key), bool)
-        and report[key] != 0
-    }
-    if isinstance(report.get("issues"), list) and report["issues"]:
-        nonzero["len(issues)"] = len(report["issues"])
+    nonzero = {}
+    for key in _ISSUE_COUNT_KEYS:
+        if key not in report:
+            continue
+        value = report[key]
+        if (
+            isinstance(value, bool)
+            or not isinstance(value, (int, float))
+            or (isinstance(value, float) and not math.isfinite(value))
+            or value < 0
+        ):
+            return "FAIL", f"malformed report: {key} must be a finite non-negative number"
+        if value != 0:
+            nonzero[key] = value
+    if "issues" in report:
+        issues = report["issues"]
+        if not isinstance(issues, list):
+            return "FAIL", "malformed report: issues must be a list"
+        if issues:
+            nonzero["len(issues)"] = len(issues)
+    if "failures" in report:
+        failures = report["failures"]
+        if not isinstance(failures, list):
+            return "FAIL", "malformed report: failures must be a list"
+        if failures:
+            nonzero["len(failures)"] = len(failures)
     if nonzero:
         return "FAIL", f"contradictory report: ok=True with {nonzero}"
     return "PASS", ""

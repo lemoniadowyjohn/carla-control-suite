@@ -949,3 +949,81 @@ class TestMainPipelineRunTerminalChain:
         run_status = json.loads((tmp_path / "run_status.json").read_text(encoding="utf-8"))
         assert run_status["status"] == "ok"
         assert run_status["stage"] == "done"
+
+    def test_run_rejects_xodr_mutated_after_verdict_before_pack(self, tmp_path: Path, monkeypatch):
+        from ultimate_pipeline.main_pipeline import MainPipeline
+
+        class MockSettings:
+            RELEASE_PROFILE = "structural_release"
+            ENABLE_CARLA = False
+            DETERMINISTIC_MODE = False
+            KEEP_LAST_RUNS = 10
+            INPUT_XODR = str(tmp_path / "input.xodr")
+            OSM_FILE = str(tmp_path / "input.osm")
+            DEM_TIF = str(tmp_path / "dem.tif")
+            GPS_BOUNDS = {"lat_min": 0, "lat_max": 1, "lon_min": 0, "lon_max": 1}
+            BASE_OUTPUT_DIR = str(tmp_path)
+            LOG_DIR = str(tmp_path / "logs")
+            STAGE_DIRS = {}
+            def output_dir(self): return str(tmp_path)
+            def logs_dir(self): return str(tmp_path / "logs")
+            def stage_path(self, name): return str(tmp_path / f"{name}.xodr")
+            def load_gps_bounds(self): return self.GPS_BOUNDS
+            def to_dict(self): return {}
+
+        (tmp_path / "input.xodr").write_text("<OpenDRIVE/>", encoding="utf-8")
+        (tmp_path / "input.osm").write_text("<osm/>", encoding="utf-8")
+        (tmp_path / "dem.tif").write_text("dummy", encoding="utf-8")
+        pipeline = MainPipeline(settings=MockSettings())
+        pipeline._validate_stage_capability_contract = lambda: None
+        final_xodr = tmp_path / "final.xodr"
+
+        def run_internal():
+            import hashlib
+            from ultimate_pipeline.quality.final_artifact_gates import RELEASE_MANDATORY_GATES
+            from ultimate_pipeline.quality.map_acceptance import build_map_acceptance
+
+            final_xodr.write_text("<OpenDRIVE/>", encoding="utf-8")
+            digest = hashlib.sha256(final_xodr.read_bytes()).hexdigest()
+            acceptance = build_map_acceptance(
+                {gate: {"ok": True} for gate in RELEASE_MANDATORY_GATES},
+                run_id=tmp_path.name,
+                purpose="release",
+                mandatory_gates=RELEASE_MANDATORY_GATES,
+                final_xodr_path=str(final_xodr),
+                evaluated_xodr_sha256=digest,
+            )
+            (tmp_path / "map_acceptance.json").write_text(
+                json.dumps(acceptance), encoding="utf-8"
+            )
+
+        pipeline._run_internal = run_internal
+        pipeline._find_final_xodr = lambda: str(final_xodr)
+
+        from ultimate_pipeline.quality import pipeline_health_summary as health_module
+        monkeypatch.setattr(health_module, "write_pipeline_health_summary", lambda out_dir, **_kw: (
+            Path(out_dir, "pipeline_health_summary.json").write_text("{}", encoding="utf-8")
+        ))
+        from ultimate_pipeline.signals import registry as registry_module, verdict as verdict_module
+        monkeypatch.setattr(registry_module, "expected_health_gates", lambda: [])
+        monkeypatch.setattr(registry_module, "mandatory_pack_artifacts", lambda profile, path, settings=None: [
+            path, str(tmp_path / "pipeline_health_summary.json")
+        ])
+        monkeypatch.setattr(verdict_module, "write_final_run_verdict", lambda out_dir, **_kw: (
+            Path(out_dir, "final_run_verdict.json").write_text(
+                json.dumps({"status": "PASS"}), encoding="utf-8"
+            )
+        ))
+
+        from ultimate_pipeline.utils import finalize_run_pack as pack_module
+        real_finalize = pack_module.finalize_run_pack
+        def mutate_then_pack(out_dir, artifacts, **kwargs):
+            final_xodr.write_text(
+                "<OpenDRIVE><road id='mutated'/></OpenDRIVE>", encoding="utf-8"
+            )
+            return real_finalize(out_dir, artifacts, **kwargs)
+        monkeypatch.setattr(pack_module, "finalize_run_pack", mutate_then_pack)
+
+        with pytest.raises(RuntimeError, match="TERMINAL_FAILED\\(MAP_ACCEPTANCE\\)"):
+            pipeline.run()
+        assert not (tmp_path / "SUCCESS.txt").exists()

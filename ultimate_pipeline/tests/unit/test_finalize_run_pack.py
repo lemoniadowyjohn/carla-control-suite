@@ -413,6 +413,35 @@ def test_write_success_txt_allowed_after_pass(tmp_path):
     assert verify_run_pack(tmp_path)["status"] == "PASS"
 
 
+def test_success_requires_acceptance_digest_to_match_packed_xodr(tmp_path):
+    from ultimate_pipeline.quality.final_artifact_gates import RELEASE_MANDATORY_GATES
+    from ultimate_pipeline.quality.map_acceptance import build_map_acceptance
+
+    final_xodr = _write(tmp_path / "final.xodr", "<OpenDRIVE/>")
+    accepted_sha = hash_file_sha256(final_xodr)
+    acceptance = build_map_acceptance(
+        {gate: {"ok": True} for gate in RELEASE_MANDATORY_GATES},
+        run_id="v126-terminal-binding",
+        purpose="release",
+        mandatory_gates=RELEASE_MANDATORY_GATES,
+        final_xodr_path=str(final_xodr),
+        evaluated_xodr_sha256=accepted_sha,
+    )
+    (tmp_path / "map_acceptance.json").write_text(
+        json.dumps(acceptance), encoding="utf-8"
+    )
+    _write_verdict_and_status_pass(tmp_path)
+
+    # Model a mutation after the PASS verdict and before finalization. The
+    # pack is internally consistent but must not promote the changed bytes.
+    _write(final_xodr, "<OpenDRIVE><road id='mutated'/></OpenDRIVE>")
+    receipt = finalize_run_pack(tmp_path, ["final.xodr"], emit_success=False)
+    assert receipt["status"] == "PASS"
+    with pytest.raises(FinalizationError, match="packed final XODR digest"):
+        write_success_txt(str(tmp_path), require_map_acceptance=True)
+    assert not (tmp_path / "SUCCESS.txt").exists()
+
+
 @pytest.mark.parametrize(
     "verdict_payload,run_status_payload,missing",
     [
