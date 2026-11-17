@@ -13,11 +13,13 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import errno
 import hashlib
 import json
 import os
 import sys
 import tempfile
+import threading
 import time
 from contextlib import contextmanager
 from datetime import datetime
@@ -59,6 +61,9 @@ from ultimate_pipeline.quality.xml_admission import parse_xodr_file, read_xodr_b
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_DEM = REPO_ROOT / "cities" / "ingolstadt" / "dem" / "dem_ing.tif"
+_ACCEPTANCE_LOCKS_GUARD = threading.Lock()
+_ACCEPTANCE_LOCKS: Dict[str, Any] = {}
+_ACCEPTANCE_LOCK_DEPTH = threading.local()
 
 
 def _write_json(path: Path, data: Dict[str, Any]) -> None:
@@ -88,9 +93,28 @@ def _exclusive_acceptance_output(out_dir: Path):
     itself is intentionally retained and is never used as a stale-owner marker.
     """
     out_dir.mkdir(parents=True, exist_ok=True)
-    lock_path = out_dir / ".acceptance-output.lock"
-    fd = os.open(str(lock_path), os.O_CREAT | os.O_RDWR, 0o600)
+    lock_key = os.path.normcase(str(out_dir.resolve()))
+    with _ACCEPTANCE_LOCKS_GUARD:
+        thread_lock = _ACCEPTANCE_LOCKS.setdefault(lock_key, threading.RLock())
+    thread_lock.acquire()
+    depths = getattr(_ACCEPTANCE_LOCK_DEPTH, "by_path", None)
+    if depths is None:
+        depths = {}
+        _ACCEPTANCE_LOCK_DEPTH.by_path = depths
+    if depths.get(lock_key, 0):
+        depths[lock_key] += 1
+        try:
+            yield
+        finally:
+            depths[lock_key] -= 1
+            thread_lock.release()
+        return
+
+    depths[lock_key] = 1
+    lock_path = Path(lock_key) / ".acceptance-output.lock"
+    fd = None
     try:
+        fd = os.open(str(lock_path), os.O_CREAT | os.O_RDWR, 0o600)
         if os.name == "nt":
             import msvcrt
 
@@ -101,7 +125,9 @@ def _exclusive_acceptance_output(out_dir: Path):
                     os.lseek(fd, 0, os.SEEK_SET)
                     msvcrt.locking(fd, msvcrt.LK_NBLCK, 1)
                     break
-                except OSError:
+                except OSError as exc:
+                    if exc.errno not in (errno.EACCES, errno.EDEADLK):
+                        raise
                     time.sleep(0.05)
             try:
                 yield
@@ -117,7 +143,10 @@ def _exclusive_acceptance_output(out_dir: Path):
             finally:
                 fcntl.flock(fd, fcntl.LOCK_UN)
     finally:
-        os.close(fd)
+        depths.pop(lock_key, None)
+        if fd is not None:
+            os.close(fd)
+        thread_lock.release()
 
 
 def _evaluate_candidate_unlocked(
