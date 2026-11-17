@@ -19,6 +19,7 @@ or writes the developer's real ``.agent_locks`` namespace.
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import os
 import subprocess
@@ -540,7 +541,64 @@ def test_operator_recovery_is_explicit_and_audited(repo):
     assert len(record["removed_sha256"]) == 64
     assert record["operator"] == "operator@example.invalid"
     assert record["recovered_at"]
+    intent = path.parent / record["recovery_intent_path"]
+    assert intent.is_file(), "durable intent must remain before/after recovery"
+    intent_bytes = intent.read_bytes()
+    assert hashlib.sha256(intent_bytes).hexdigest() == record["recovery_intent_sha256"]
+    assert json.loads(intent_bytes)["removed_sha256"] == record["removed_sha256"]
+    assert json.loads(intent_bytes)["recovered"] is True
+    assert json.loads(intent_bytes)["intent_status"] == "COMPLETE"
+    assert record["recovery_intent_sha256"] == hashlib.sha256(intent_bytes).hexdigest()
+    assert (path.parent / record["recovered_evidence_path"]).is_file()
     assert not path.exists()
+
+
+def test_recovery_crash_after_intent_preserves_malformed_lock(repo, monkeypatch):
+    path = _lock_path(repo)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    original = b"{ truncated"
+    path.write_bytes(original)
+
+    def crash_before_claim(*_args, **_kwargs):
+        intents = list(path.parent.glob(f"{path.name}.recovery.*.json"))
+        assert len(intents) == 1
+        intent = json.loads(intents[0].read_text(encoding="utf-8"))
+        assert intent["removed_sha256"] == hashlib.sha256(original).hexdigest()
+        assert intent["recovered"] is False
+        raise RuntimeError("simulated crash after durable recovery intent")
+
+    monkeypatch.setattr(cgl, "_claim_by_rename", crash_before_claim)
+    with pytest.raises(RuntimeError, match="simulated crash"):
+        cgl.recover_malformed_lock(repo, "operator@example.invalid", "verified")
+    assert path.read_bytes() == original
+    assert len(list(path.parent.glob(f"{path.name}.recovery.*.json"))) == 1
+
+
+def test_malformed_recovery_changed_lock_stays_unrecovered(repo, monkeypatch):
+    path = _lock_path(repo)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_bytes(b"{ original malformed")
+
+    def replace_before_claim(_repo_root, _tag, _expect):
+        path.write_bytes(b"{ successor malformed")
+        return False, None
+
+    monkeypatch.setattr(cgl, "_claim_by_rename", replace_before_claim)
+    result = cgl.recover_malformed_lock(repo, "operator@example.invalid", "changed lock test")
+    assert result["recovered"] is False
+    intent_path = path.parent / result["recovery_intent_path"]
+    intent = json.loads(intent_path.read_text(encoding="utf-8"))
+    assert intent["recovered"] is False
+    assert intent["intent_status"] == "NOT_RECOVERED"
+    assert path.read_bytes() == b"{ successor malformed"
+
+
+def test_generation_ledger_corruption_fails_closed(repo):
+    ledger = cgl._ledger_path(repo)
+    ledger.parent.mkdir(parents=True, exist_ok=True)
+    ledger.write_text("1\nnot-a-generation\n", encoding="ascii")
+    with pytest.raises(RuntimeError, match="generation ledger is malformed"):
+        cgl._issue_generation(repo)
 
 
 def test_malformed_worktree_lease_blocks_and_is_not_deleted(repo):
@@ -775,3 +833,72 @@ def test_multiprocess_stress_bounded(tmp_path):
     assert depth == 0
     assert entered == len(generations)
     assert len(set(generations)) == len(generations), "a fencing generation was reused"
+
+
+def test_common_git_renewal_serializes_recheck_and_publication(repo, monkeypatch):
+    """A release waits for renewal's checked write; it cannot be overwritten."""
+    import threading
+
+    original = cgl.acquire_common_git_lock(repo, "renew-race", timeout_seconds=5)
+    entered_write = threading.Event()
+    allow_write = threading.Event()
+    release_finished = threading.Event()
+    failures = []
+    real_write_payload = cgl._write_payload
+    lock_path = cgl._get_common_git_lock_path(repo)
+
+    def delayed_write(path, payload):
+        if Path(path) == lock_path and payload.get("lock_id") == original.lock_id:
+            entered_write.set()
+            if not allow_write.wait(5):
+                raise TimeoutError("test did not release the controlled write")
+        return real_write_payload(path, payload)
+
+    monkeypatch.setattr(cgl, "_write_payload", delayed_write)
+
+    def renew():
+        try:
+            cgl.renew_common_git_lock(
+                repo, original.owner_token, original.lock_id, ttl_seconds=30
+            )
+        except Exception as exc:  # surfaced to the test thread
+            failures.append(exc)
+
+    def release():
+        try:
+            cgl.release_common_git_lock(repo, original.owner_token, original.lock_id)
+        except Exception as exc:
+            failures.append(exc)
+        finally:
+            release_finished.set()
+
+    renewal = threading.Thread(target=renew, daemon=True)
+    renewal.start()
+    assert entered_write.wait(5), "renewal did not reach its actual publication"
+    releaser = threading.Thread(target=release, daemon=True)
+    releaser.start()
+    assert not release_finished.wait(0.1), "release bypassed the renewal serialization claim"
+    allow_write.set()
+    renewal.join(5)
+    releaser.join(5)
+    assert not renewal.is_alive() and not releaser.is_alive()
+    assert failures == []
+    assert release_finished.is_set()
+    assert not lock_path.exists()
+
+    successor = cgl.acquire_common_git_lock(repo, "successor", timeout_seconds=5)
+    assert cgl._read_lock(repo).lock_id == successor.lock_id
+    assert successor.generation > original.generation
+    cgl.release_common_git_lock(repo, successor.owner_token, successor.lock_id)
+
+
+def test_common_git_context_surfaces_release_failure(repo, monkeypatch):
+    """A caller cannot receive success when repository-lock release failed."""
+    monkeypatch.setattr(
+        cgl,
+        "release_common_git_lock",
+        lambda *_args, **_kwargs: (_ for _ in ()).throw(RuntimeError("release failed")),
+    )
+    with pytest.raises(RuntimeError, match="release failed"):
+        with cgl.common_git_lock(repo, "release-failure", timeout_seconds=5):
+            pass
