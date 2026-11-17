@@ -20,6 +20,8 @@ from ultimate_pipeline.perception.environment.camera_response import (
 from ultimate_pipeline.sensors.transform_conventions import (
     camera_attachment_pose_from_cTv,
     lidar_attachment_pose_from_vTl,
+    camera_attachment_matrix_from_cTv,
+    lidar_attachment_matrix_from_vTl,
     rotation_matrix_to_unreal_rpy_deg,
     vehicle_to_camera_from_cTv,
     vehicle_to_lidar_from_vTl,
@@ -182,8 +184,8 @@ def _carla_transform_to_pose_dict(tf: Any) -> Dict[str, Any]:
 
 
 CONVENTIONS = {
-    "cameras": "cTv is Vehicle→Camera. THESIS INVARIANT: cTv used directly, inversion FORBIDDEN.",
-    "lidars": "vTl is LiDAR→Vehicle. THESIS INVARIANT: vTl inverted to Vehicle→LiDAR for attachment.",
+    "cameras": "cTv vehicle FLU->camera optical for projection; inverse(cTv) + basis change for CARLA mounting.",
+    "lidars": "vTl lidar FLU->vehicle FLU; vTl + basis change for CARLA mounting.",
 }
 
 
@@ -778,15 +780,10 @@ class ThesisSensorRig:
                     ) + (width_px * height_px)
 
                 T_raw = _ensure_homogeneous(cam_data["cTv"])
-                T_vehicle_camera = vehicle_to_camera_from_cTv(
-                    cam_data["cTv"],
-                    flip_vehicle_y=False,
-                    opencv_camera_axes=True,
-                    ctv_invert=False,
-                )
+                T_vehicle_camera = camera_attachment_matrix_from_cTv(cam_data["cTv"])
                 t_raw = T_raw[:3, 3]
 
-                # Thesis contract: cTv is vehicle→camera and MUST NOT be inverted.
+                # Legacy v1 ctv_inverted denotes projection policy, NOT CARLA mounting.
                 ctv_inverted = False
                 T_used = T_vehicle_camera
                 t_used = T_used[:3, 3]
@@ -947,6 +944,8 @@ class ThesisSensorRig:
                         "raw_direction_label": "vehicle_to_camera",
                         "used_direction_label": "vehicle_to_camera",
                         "used_matrix_vehicle_to_sensor": _to_list(T_used),
+                        "mounting_ctv_inverted": True,
+                        "mounting_matrix_sensor_to_vehicle_carla": _to_list(T_used),
                         "inversion_applied": ctv_inverted,
                         "ctv_inverted": ctv_inverted,
                         "ctv_source": "calib_data.json",
@@ -982,9 +981,9 @@ class ThesisSensorRig:
                 if lidar_spec is None:
                     raise RuntimeError(f"LiDAR '{lidar_name}' not in canonical active spec")
 
-                # Thesis contract: vTl is LiDAR→Vehicle and MUST be inverted for attachment.
+                # Legacy v1 vtl_inverted denotes backprojection policy, NOT CARLA mounting.
                 vtl_inverted = True
-                T_used = vehicle_to_lidar_from_vTl(lidar_data["vTl"], flip_vehicle_y=False)
+                T_used = lidar_attachment_matrix_from_vTl(lidar_data["vTl"])
                 lidar_pose = lidar_attachment_pose_from_vTl(
                     lidar_data["vTl"], flip_vehicle_y=False
                 )
@@ -1085,6 +1084,8 @@ class ThesisSensorRig:
                         "raw_direction_label": "lidar_to_vehicle",
                         "used_direction_label": "vehicle_to_lidar",
                         "used_matrix_vehicle_to_sensor": _to_list(T_used),
+                        "mounting_vtl_inverted": False,
+                        "mounting_matrix_sensor_to_vehicle_carla": _to_list(T_used),
                         "inversion_applied": vtl_inverted,
                         "vtl_inverted": vtl_inverted,
                         "carla_transform": lidar_tf_dict,
@@ -1407,6 +1408,11 @@ class ThesisSensorRig:
                 "vTl_inverted": bool(all_vtl_inverted),
                 "cTv_inversion_forbidden": True,
                 "vTl_inversion_required": True,
+                "legacy_v1_flags_scope": "projection/backprojection_ONLY",
+                "carla_attachment_semantics": "v2",
+                "camera_mounting": "S_vehicle @ inverse(cTv) @ C_CARLA_camera_to_OpenCV",
+                "lidar_mounting": "S_vehicle @ vTl @ S_lidar",
+                "live_reprojection_verified": False,
             },
             applied_carla_transforms=self._build_applied_transforms_for_report(spawned),
             sensors_attached="unknown",
