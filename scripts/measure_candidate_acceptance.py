@@ -18,6 +18,8 @@ import json
 import os
 import sys
 import tempfile
+import time
+from contextlib import contextmanager
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, Optional
@@ -78,7 +80,47 @@ def _write_json(path: Path, data: Dict[str, Any]) -> None:
             temp_path.unlink(missing_ok=True)
 
 
-def evaluate_candidate(
+@contextmanager
+def _exclusive_acceptance_output(out_dir: Path):
+    """Serialize complete acceptance bundles that target the same directory.
+
+    The OS lock is released on process exit, including crashes; the lock file
+    itself is intentionally retained and is never used as a stale-owner marker.
+    """
+    out_dir.mkdir(parents=True, exist_ok=True)
+    lock_path = out_dir / ".acceptance-output.lock"
+    fd = os.open(str(lock_path), os.O_CREAT | os.O_RDWR, 0o600)
+    try:
+        if os.name == "nt":
+            import msvcrt
+
+            if os.fstat(fd).st_size == 0:
+                os.write(fd, b"\0")
+            while True:
+                try:
+                    os.lseek(fd, 0, os.SEEK_SET)
+                    msvcrt.locking(fd, msvcrt.LK_NBLCK, 1)
+                    break
+                except OSError:
+                    time.sleep(0.05)
+            try:
+                yield
+            finally:
+                os.lseek(fd, 0, os.SEEK_SET)
+                msvcrt.locking(fd, msvcrt.LK_UNLCK, 1)
+        else:
+            import fcntl
+
+            fcntl.flock(fd, fcntl.LOCK_EX)
+            try:
+                yield
+            finally:
+                fcntl.flock(fd, fcntl.LOCK_UN)
+    finally:
+        os.close(fd)
+
+
+def _evaluate_candidate_unlocked(
     xodr: Path,
     out_dir: Path,
     dem: Optional[Path],
@@ -176,6 +218,27 @@ def evaluate_candidate(
     if sha256_bytes(read_xodr_bytes(snapshot["path"])) != evaluated_sha:
         raise RuntimeError(f"acceptance snapshot {snapshot['path']} changed during evaluation")
     return acceptance
+
+
+def evaluate_candidate(
+    xodr: Path,
+    out_dir: Path,
+    dem: Optional[Path],
+    *,
+    purpose: str = "release",
+    require_enrichment: bool = False,
+    require_component_reachability: bool = False,
+) -> Dict[str, Any]:
+    """Publish one complete acceptance bundle at a time per output directory."""
+    with _exclusive_acceptance_output(out_dir):
+        return _evaluate_candidate_unlocked(
+            xodr,
+            out_dir,
+            dem,
+            purpose=purpose,
+            require_enrichment=require_enrichment,
+            require_component_reachability=require_component_reachability,
+        )
 
 
 def run_gates(xodr: Path, out_dir: Path, dem: Optional[Path]) -> Dict[str, Any]:
