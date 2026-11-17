@@ -312,11 +312,20 @@ def test_diagnostic_or_legacy_acceptance_is_never_release_eligible(tmp_path):
 
 def test_release_purpose_without_identity_evidence_is_not_release_eligible():
     """PR #30 review: no final_xodr_path/evaluated_xodr_sha256 => never eligible,
-    even though every mandatory gate PASSes (identity was simply never checked)."""
+    even though every mandatory gate PASSes (identity was simply never checked).
+
+    #48 (4bf6b29d) made this stricter than the original PR #30 fix: for a
+    release-purpose call, missing/invalid identity evidence is now itself an
+    "artifact_identity" hard_fail_reason (BLOCKED_INPUT), so
+    valid_for_experiments also goes False here, not just release_eligible --
+    see test_v109_release_mandatory_identity.py::
+    test_release_cannot_be_certified_without_artifact_identity for the
+    equivalent #48 coverage of the "missing" case. This test additionally
+    checks artifact_identity_verified, which #48's test does not."""
     good = {g: {"ok": True} for g in fag.RELEASE_MANDATORY_GATES}
     rel = build_map_acceptance(good, run_id="v86", purpose="release",
                                mandatory_gates=fag.RELEASE_MANDATORY_GATES)
-    assert rel["valid_for_experiments"] is True
+    assert rel["valid_for_experiments"] is False
     assert rel["artifact_identity_verified"] is False
     assert rel["release_eligible"] is False
 
