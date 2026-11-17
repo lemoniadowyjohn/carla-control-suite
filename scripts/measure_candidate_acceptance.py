@@ -118,8 +118,6 @@ def _exclusive_acceptance_output(out_dir: Path):
         if os.name == "nt":
             import msvcrt
 
-            if os.fstat(fd).st_size == 0:
-                os.write(fd, b"\0")
             while True:
                 try:
                     os.lseek(fd, 0, os.SEEK_SET)
