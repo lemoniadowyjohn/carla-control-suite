@@ -70,20 +70,30 @@ def _is_bounded_scenario_b_layout(run_root: Path) -> bool:
 def _trusted_calibration_sha_from_status(
     status: dict, *, repo_root: Path | None = None
 ) -> tuple[str | None, str | None]:
-    """Resolve the run's declared calibration source and verify its bytes."""
+    """Compare status claims against repository-owned calibration bytes.
+
+    The path and digest in perception_status.json are untrusted claims. The
+    expected bytes come only from the canonical calibration under repo_root.
+    """
+    root = repo_root or Path(__file__).resolve().parents[2]
+    path = root / "ultimate_pipeline" / "sensors" / "calib_data.json"
     declared = status.get("calib_sha256")
     source_path = status.get("calib_path_resolved")
     if not isinstance(declared, str) or len(declared) != 64:
         return None, "perception_status calibration digest missing or malformed"
+    try:
+        canonical_path = path.resolve(strict=True)
+        actual = hashlib.sha256(canonical_path.read_bytes()).hexdigest()
+    except OSError:
+        return None, "repository calibration source is unavailable"
     if not isinstance(source_path, str) or not source_path.strip():
         return None, "perception_status calibration source path missing"
-    path = Path(source_path).expanduser()
-    if not path.is_absolute():
-        path = (repo_root or Path(__file__).resolve().parents[2]) / path
     try:
-        actual = hashlib.sha256(path.read_bytes()).hexdigest()
+        declared_path = Path(source_path).expanduser().resolve(strict=True)
     except OSError:
         return None, "perception_status calibration source is unavailable"
+    if declared_path != canonical_path:
+        return None, "perception_status calibration path is not the repository authority"
     if actual != declared.lower():
         return None, "perception_status calibration source digest mismatch"
     return actual, None

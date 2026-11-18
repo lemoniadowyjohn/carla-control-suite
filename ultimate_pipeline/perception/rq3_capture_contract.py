@@ -338,7 +338,8 @@ def sensor_rig_identity(
         result["applied_sensor_rig_v2_errors"] = errors or ["applied_sensor_rig_v2_missing"]
         result["source_only_sensor_rig_sha256"] = result["sensor_rig_sha256"]
     else:
-        result["applied_sensor_rig_v2_status"] = "VERIFIED"
+        result["applied_sensor_rig_v2_status"] = "CONSISTENCY_VALID_UNATTESTED"
+        result["applied_sensor_rig_v2_attestation_status"] = "UNATTESTED_SELF_REPORTED"
         result["applied_sensor_rig_v2_errors"] = []
         result["applied_sensor_rig_v2_sha256"] = sha256_text(canonical_dumps(receipt))
         result["sensor_rig_sha256"] = str(receipt["applied_configuration_sha256"])

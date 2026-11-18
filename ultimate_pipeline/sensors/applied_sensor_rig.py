@@ -106,6 +106,8 @@ def _identity_binding_payload(receipt: Mapping[str, Any]) -> dict[str, Any]:
 def seal_applied_sensor_rig_v2(receipt: Mapping[str, Any]) -> dict[str, Any]:
     """Recompute all v2 receipt digests after capture evidence is attached."""
     sealed = dict(receipt)
+    # Self-hashes detect accidental mutation only; no runtime trust root exists here.
+    sealed["attestation_status"] = "UNATTESTED_SELF_REPORTED"
     if isinstance(sealed.get("applied_parent_relative_matrices"), dict):
         sealed["applied_configuration_sha256"] = canonical_sha256(
             _actual_config_digest_payload(sealed)
@@ -123,8 +125,8 @@ def seal_applied_sensor_rig_v2(receipt: Mapping[str, Any]) -> dict[str, Any]:
         and set(measurements) == set(requested)
     )
     sealed["verification_status"] = (
-        "online_frame_observed" if complete else
-        "online_transform_observed_frames_missing"
+        "online_observation_claim_consistent_unattested" if complete else
+        "online_observation_claim_incomplete_unattested"
         if sealed.get("verification_mode") == "online" else "offline_source_only"
     )
     sealed["receipt_sha256"] = None
@@ -258,11 +260,14 @@ def build_applied_sensor_rig_v2(
     runtime_measurements: Mapping[str, Mapping[str, Any]] | None = None,
     verification_mode: str = "offline_source_only",
 ) -> dict[str, Any]:
-    """Build a receipt; online measurements must come from actual CARLA frames.
+    """Build a self-reported consistency receipt, not an authenticity proof.
 
-    For an offline report, applied matrices remain ``None`` and the actual
-    configuration digest remains empty. Such a report is readable but cannot
-    pass the live validator.
+    The producer reads online observations from CARLA actor transforms and frame
+    records, but JSON self-hashes cannot prove that to an independent consumer.
+    The receipt therefore remains UNATTESTED_SELF_REPORTED. RQ3 authority still
+    requires the existing independently signed review-receipt gate.
+
+    Offline reports are readable but cannot pass the live consistency validator.
     """
     if verification_mode not in ("offline_source_only", "online"):
         raise ValueError("verification_mode must be offline_source_only or online")
@@ -290,11 +295,12 @@ def build_applied_sensor_rig_v2(
         "calibration_contract_version": CONTRACT_VERSION,
         "source_calibration_sha256": source_calibration_sha256,
         "code_commit": code_commit,
+        "attestation_status": "UNATTESTED_SELF_REPORTED",
         "verification_mode": verification_mode,
         "verification_status": (
             "online_transform_observed_frames_missing"
             if verification_mode == "online" and not runtime_measurements
-            else "online_frame_observed" if verification_mode == "online"
+            else "online_observation_claim_consistent_unattested" if verification_mode == "online"
             else "offline_source_only"
         ),
         "ego_identity": dict(ego_identity or {}),
@@ -328,12 +334,16 @@ def validate_applied_sensor_rig_v2(
     require_live: bool = True,
     expected_source_calibration_sha256: str | None = None,
 ) -> list[str]:
+    """Validate internal consistency; this does not authenticate runtime claims.
+
+    Independent scientific admission must also pass the signed RQ3 review gate.
+    """
     errors: list[str] = []
     if not isinstance(receipt, dict) or receipt.get("schema") != SCHEMA:
         return ["applied_sensor_rig_v2_missing_or_wrong_schema"]
     expected_fields = {
         "schema", "calibration_contract_version", "source_calibration_sha256", "code_commit",
-        "verification_mode", "verification_status", "ego_identity", "sensor_identities",
+        "attestation_status", "verification_mode", "verification_status", "ego_identity", "sensor_identities",
         "requested_parent_relative_matrices", "applied_parent_relative_matrices",
         "blueprint_configuration", "effective_camera_configuration", "runtime_measurements",
         "residuals", "residual_limits", "applied_configuration_sha256",
@@ -345,6 +355,8 @@ def validate_applied_sensor_rig_v2(
         errors.append(f"receipt_field_missing:{field}")
     if receipt.get("calibration_contract_version") != CONTRACT_VERSION:
         errors.append("calibration_contract_version_mismatch")
+    if receipt.get("attestation_status") != "UNATTESTED_SELF_REPORTED":
+        errors.append("runtime_observation_not_independently_attested")
     limits = receipt.get("residual_limits")
     if limits != {"position_m": POSITION_RESIDUAL_LIMIT_M, "angle_deg": ANGULAR_RESIDUAL_LIMIT_DEG}:
         errors.append("sensor_mount_residual_limits_mismatch")
@@ -456,8 +468,8 @@ def validate_applied_sensor_rig_v2(
                 errors.append("runtime_sensor_timestamps_not_common")
             if len(dataset_ids) > 1 or len(dataset_hashes) > 1:
                 errors.append("runtime_dataset_identity_not_shared")
-        if receipt.get("verification_status") != "online_frame_observed":
-            errors.append("online_frame_observation_not_verified")
+        if receipt.get("verification_status") != "online_observation_claim_consistent_unattested":
+            errors.append("online_observation_claim_not_consistent")
     if isinstance(requested, dict):
         for name, matrix in requested.items():
             try:

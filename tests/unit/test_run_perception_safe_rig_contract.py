@@ -53,21 +53,25 @@ def test_resealed_receipt_cannot_choose_its_own_calibration_digest():
     assert "source_calibration_sha256_mismatch" in errors
 
 
-def test_thesis_validator_uses_run_calibration_bytes_as_trusted_digest(tmp_path):
+def test_thesis_validator_uses_repository_calibration_not_status_path(tmp_path):
     import hashlib
     from ultimate_pipeline.tools.validate_thesis_run import (
         _trusted_calibration_sha_from_status,
     )
 
-    calibration = tmp_path / "calib.json"
-    calibration.write_bytes(b'{"frozen":"source"}')
-    digest = hashlib.sha256(calibration.read_bytes()).hexdigest()
-    status = {"calib_path_resolved": str(calibration), "calib_sha256": digest}
-    assert _trusted_calibration_sha_from_status(status) == (digest, None)
-    status["calib_sha256"] = "0" * 64
-    expected, error = _trusted_calibration_sha_from_status(status)
+    canonical = tmp_path / "ultimate_pipeline" / "sensors" / "calib_data.json"
+    canonical.parent.mkdir(parents=True)
+    canonical.write_bytes(b'{"frozen":"source"}')
+    digest = hashlib.sha256(canonical.read_bytes()).hexdigest()
+    status = {"calib_path_resolved": str(canonical), "calib_sha256": digest}
+    assert _trusted_calibration_sha_from_status(status, repo_root=tmp_path) == (digest, None)
+
+    forged = tmp_path / "forged-calibration.json"
+    forged.write_bytes(b'{"attacker":"source"}')
+    status["calib_path_resolved"] = str(forged)
+    expected, error = _trusted_calibration_sha_from_status(status, repo_root=tmp_path)
     assert expected is None
-    assert error == "perception_status calibration source digest mismatch"
+    assert error == "perception_status calibration path is not the repository authority"
 
 
 def test_v1_receipt_cannot_be_promoted_by_legacy_flags():

@@ -62,7 +62,8 @@ def _valid_receipt():
 def test_observed_parent_mount_is_reconstructed_from_world_transforms():
     receipt = _valid_receipt()
     assert receipt["applied_parent_relative_matrices"] is not None
-    assert receipt["verification_status"] == "online_frame_observed"
+    assert receipt["verification_status"] == "online_observation_claim_consistent_unattested"
+    assert receipt["attestation_status"] == "UNATTESTED_SELF_REPORTED"
     assert validate_applied_sensor_rig_v2(receipt, require_live=True, expected_source_calibration_sha256="a" * 64) == []
 
 
@@ -207,3 +208,16 @@ def test_resealed_receipt_with_untrusted_calibration_digest_is_rejected():
 
 def test_live_receipt_requires_trusted_calibration_digest():
     assert "trusted_source_calibration_sha256_required" in validate_applied_sensor_rig_v2(_valid_receipt(), require_live=True)
+
+
+def test_self_hashes_never_claim_independent_runtime_attestation():
+    from ultimate_pipeline.sensors.applied_sensor_rig import seal_applied_sensor_rig_v2
+
+    receipt = _valid_receipt()
+    receipt["attestation_status"] = "INDEPENDENTLY_ATTESTED"
+    resealed = seal_applied_sensor_rig_v2(receipt)
+    assert resealed["attestation_status"] == "UNATTESTED_SELF_REPORTED"
+    assert resealed["verification_status"] == "online_observation_claim_consistent_unattested"
+    assert validate_applied_sensor_rig_v2(
+        resealed, require_live=True, expected_source_calibration_sha256="a" * 64
+    ) == []
