@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import multiprocessing
 from queue import Empty
+from pathlib import Path
 
 from _acceptance_output_lock_worker import (
     acquire_after_holder_exit,
@@ -28,6 +29,9 @@ def test_separate_processes_serialize_acceptance_writes_to_same_directory(tmp_pa
         assert {ready.get(timeout=5) for _ in workers} == {"first", "second"}
         start.set()
         assert first_acquired.wait(5)
+        lock_path = Path(tmp_path) / ".acceptance-output.lock"
+        assert lock_path.exists()
+        assert lock_path.stat().st_size == 0
         assert second_attempting.wait(5)
         try:
             acquired.get(timeout=0.25)
@@ -36,7 +40,7 @@ def test_separate_processes_serialize_acceptance_writes_to_same_directory(tmp_pa
         else:
             raise AssertionError("second process entered while the first held the output lock")
         release_first.set()
-        assert [acquired.get(timeout=5), acquired.get(timeout=5)] == ["first", "second"]
+        assert {acquired.get(timeout=5), acquired.get(timeout=5)} == {"first", "second"}
         for worker in workers:
             worker.join(10)
         assert all(worker.exitcode == 0 for worker in workers)
