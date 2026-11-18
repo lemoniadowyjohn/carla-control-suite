@@ -71,8 +71,9 @@ def _trusted_map_profile(repo_root: Path) -> tuple[dict[str, Any], Path]:
 
 
 def _map_scope(path: Path, profile: dict[str, Any]) -> dict[str, Any]:
-    """Derive exact road membership and geometry-anchor bounds from authority bytes."""
+    """Derive road membership, per-road anchors and footprint from authority bytes."""
     road_ids: set[str] = set()
+    road_anchors: dict[str, list[list[float]]] = {}
     xs: list[float] = []
     ys: list[float] = []
     try:
@@ -82,13 +83,18 @@ def _map_scope(path: Path, profile: dict[str, Any]) -> dict[str, Any]:
                 if not rid or rid in road_ids:
                     raise MapScopeAuthorityError("trusted map has missing or duplicate road IDs")
                 road_ids.add(rid)
+                anchors: list[list[float]] = []
                 for geometry in element.findall("./planView/geometry"):
                     x, y = float(geometry.attrib["x"]), float(geometry.attrib["y"])
                     length, heading = float(geometry.attrib["length"]), float(geometry.attrib["hdg"])
                     if not all(math.isfinite(v) for v in (x, y, length, heading)) or length < 0:
                         raise MapScopeAuthorityError("trusted map has invalid geometry anchor")
+                    anchors.append([x, y])
                     xs.extend((x, x + length * math.cos(heading)))
                     ys.extend((y, y + length * math.sin(heading)))
+                if not anchors:
+                    raise MapScopeAuthorityError(f"trusted map road {rid} has no plan-view anchors")
+                road_anchors[rid] = anchors
                 element.clear()
     except MapScopeAuthorityError:
         raise
@@ -99,6 +105,7 @@ def _map_scope(path: Path, profile: dict[str, Any]) -> dict[str, Any]:
     profile.update({
         "road_count": len(road_ids),
         "expected_road_ids": sorted(road_ids),
+        "expected_road_anchors": road_anchors,
         "anchor_bounds_xy": [min(xs), min(ys), max(xs), max(ys)],
     })
     return profile
@@ -128,11 +135,44 @@ def validate_candidate_scope(root: ET.Element, expected_scope: dict[str, Any]) -
         issues.append({"kind": "frame_identity_mismatch"})
 
     roads = root.findall("road")
-    actual_ids = {road.get("id") for road in roads}
-    expected_ids = set(expected_scope.get("expected_road_ids", []))
+    actual_id_list = [road.get("id") for road in roads]
+    actual_ids = set(actual_id_list)
+    expected_id_list = expected_scope.get("expected_road_ids", [])
+    expected_ids = set(expected_id_list)
+    if len(actual_id_list) != len(actual_ids):
+        issues.append({"kind": "duplicate_candidate_road_ids"})
+    if len(expected_id_list) != len(expected_ids) or len(roads) != expected_scope.get("road_count"):
+        issues.append({"kind": "road_count_mismatch", "expected": expected_scope.get("road_count"),
+                       "actual": len(roads)})
     if actual_ids != expected_ids:
         issues.append({"kind": "road_membership_mismatch", "missing": sorted(expected_ids - actual_ids)[:20],
                        "unexpected": sorted(actual_ids - expected_ids)[:20]})
+    expected_anchors = expected_scope.get("expected_road_anchors")
+    if not isinstance(expected_anchors, dict) or set(expected_anchors) != expected_ids:
+        issues.append({"kind": "trusted_road_anchor_authority_invalid"})
+    else:
+        tolerance = float(expected_scope.get("anchor_tolerance_m", 1.0))
+        for road in roads:
+            rid = road.get("id")
+            if rid not in expected_anchors:
+                continue
+            observed = []
+            try:
+                for geometry in road.findall("./planView/geometry"):
+                    observed.append([float(geometry.attrib["x"]), float(geometry.attrib["y"])])
+                expected = expected_anchors[rid]
+                if len(observed) != len(expected) or any(
+                    abs(float(a[axis]) - float(e[axis])) > tolerance
+                    for a, e in zip(observed, expected)
+                    for axis in (0, 1)
+                ):
+                    issues.append({"kind": "road_geometry_anchor_mismatch", "road_id": rid,
+                                   "expected_anchor_count": len(expected),
+                                   "actual_anchor_count": len(observed),
+                                   "tolerance_m": tolerance})
+            except Exception as exc:
+                issues.append({"kind": "invalid_road_geometry_anchor", "road_id": rid,
+                               "reason": f"{type(exc).__name__}: {exc}"})
     try:
         coords = []
         for geometry in root.findall("./road/planView/geometry"):

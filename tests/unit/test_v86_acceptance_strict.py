@@ -143,7 +143,7 @@ def test_incomplete_structures_fail(tmp_path, xml, kind):
     assert kind in {i["kind"] for i in rep["issues"]} and rep["ok"] is False
 
 
-def _scope(ids=("1",), bounds=(0.0, 0.0, 10.0, 0.0)):
+def _scope(ids=("1",), bounds=(0.0, 0.0, 10.0, 0.0), anchors=None):
     from ultimate_pipeline.quality.map_scope_authority import (
         EXPECTED_MAP_SHA256, EXPECTED_OSM_SHA256, SCOPE_SCHEMA,
     )
@@ -152,6 +152,9 @@ def _scope(ids=("1",), bounds=(0.0, 0.0, 10.0, 0.0)):
         "map_sha256": EXPECTED_MAP_SHA256, "source_osm_sha256": EXPECTED_OSM_SHA256,
         "frame_id": "ingolstadt_local_rebased", "expected_road_ids": list(ids),
         "road_count": len(ids), "anchor_bounds_xy": list(bounds),
+        "expected_road_anchors": anchors or {
+            str(rid): [[10.0 * index, 0.0]] for index, rid in enumerate(ids)
+        },
     }
 
 
@@ -174,6 +177,21 @@ def test_trusted_scope_rejects_wrong_geographic_footprint(tmp_path):
     xodr = _write(tmp_path, _xodr(_road(1, 50_000)))
     rep = fag.compute_final_artifact_reports(xodr, expected_scope=_scope())["artifact_structure"]
     assert "geographic_footprint_mismatch" in {item["kind"] for item in rep["issues"]}
+
+
+def test_trusted_scope_rejects_interior_road_shift_with_unchanged_outer_bounds(tmp_path):
+    roads = _xodr(_road(1, 0), _road(2, 12), _road(3, 20))
+    profile = _scope(
+        ("1", "2", "3"), bounds=(0.0, 0.0, 30.0, 0.0),
+        anchors={"1": [[0.0, 0.0]], "2": [[10.0, 0.0]], "3": [[20.0, 0.0]]},
+    )
+    rep = fag.compute_final_artifact_reports(
+        _write(tmp_path, roads), expected_scope=profile
+    )["artifact_structure"]
+    kinds = {item["kind"] for item in rep["issues"]}
+    assert "road_geometry_anchor_mismatch" in kinds
+    assert "geographic_footprint_mismatch" not in kinds
+    assert rep["ok"] is False
 
 
 @pytest.mark.parametrize("field,value,kind", [
