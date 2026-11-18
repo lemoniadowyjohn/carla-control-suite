@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import hashlib
 import math
 import os
 import threading
@@ -11,8 +12,20 @@ from typing import Any, Dict, List, Optional, Tuple, Union
 import numpy as np
 
 from ultimate_pipeline.sensors.transform_conventions import (
-    camera_attachment_pose_from_cTv,
-    lidar_attachment_pose_from_vTl,
+    CALIBRATION_CONTRACT_VERSION,
+    carla_attachment_pose_from_matrix,
+    carla_ego_from_camera_from_cTv,
+    carla_ego_from_lidar_from_vTl,
+)
+from ultimate_pipeline.sensors.canonical_lidar_spec import (
+    resolve_active_lidars,
+    canonical_lidar_hash,
+)
+from ultimate_pipeline.sensors.applied_sensor_rig import (
+    build_applied_sensor_rig_v2,
+    current_clean_code_commit,
+    observed_parent_relative_mount,
+    validate_applied_sensor_rig_v2,
 )
 
 # Import-safe: carla is only imported inside spawn functions
@@ -82,22 +95,24 @@ def compute_lidar_attributes(*, low_mem: bool, env: Optional[Dict[str, str]] = N
 
 
 def _sanitize_transform_dict(raw: Dict[str, float]) -> Tuple[Dict[str, float], List[str]]:
-    defaults = {"x": 0.0, "y": 0.0, "z": 1.8, "roll": 0.0, "pitch": 0.0, "yaw": 0.0}
-    clamped: List[str] = []
+    """Validate generated CARLA pose values without replacing bad values.
+
+    ``50`` is a translation limit in metres only. Euler angles are finite CARLA
+    degrees and are never constrained by a position bound.
+    """
+    required = ("x", "y", "z", "roll", "pitch", "yaw")
+    missing = [key for key in required if key not in raw]
+    if missing:
+        raise ValueError(f"sensor transform missing fields: {missing}")
     sanitized: Dict[str, float] = {}
-    for k, default in defaults.items():
-        v = raw.get(k, default)
-        try:
-            v = float(v)
-        except Exception:
-            v = default
-            clamped.append(k)
-        else:
-            if not math.isfinite(v):
-                v = default
-                clamped.append(k)
-        sanitized[k] = v
-    return sanitized, clamped
+    for key in required:
+        value = float(raw[key])
+        if not math.isfinite(value):
+            raise ValueError(f"sensor transform has non-finite {key}")
+        if key in ("x", "y", "z") and abs(value) > 50.0:
+            raise ValueError(f"sensor translation {key} exceeds 50 metres")
+        sanitized[key] = value
+    return sanitized, []
 
 
 def _bounded_sensor_spawn_ticks() -> int:
@@ -185,36 +200,8 @@ def _tick_between_spawns(world, *, n: int) -> None:
 
 
 def _matrix_to_transform(mat: np.ndarray) -> Dict[str, float]:
-    """Convert 4x4 homogeneous transform to CARLA-style dict {x,y,z,roll,pitch,yaw}.
-
-    Rotation: uses ZYX Euler convention (yaw-pitch-roll) to match CARLA.
-    """
-    # Extract translation
-    x, y, z = float(mat[0, 3]), float(mat[1, 3]), float(mat[2, 3])
-
-    # Extract rotation matrix (3x3 upper-left)
-    R = mat[:3, :3]
-
-    # ZYX Euler angles (yaw, pitch, roll) extraction
-    # R = Rz(yaw) * Ry(pitch) * Rx(roll)
-    sy = math.sqrt(R[0, 0] ** 2 + R[1, 0] ** 2)
-    singular = sy < 1e-6
-
-    if not singular:
-        roll = math.atan2(R[2, 1], R[2, 2])
-        pitch = math.atan2(-R[2, 0], sy)
-        yaw = math.atan2(R[1, 0], R[0, 0])
-    else:
-        roll = math.atan2(-R[1, 2], R[1, 1])
-        pitch = math.atan2(-R[2, 0], sy)
-        yaw = 0.0
-
-    # Convert radians to degrees for CARLA
-    roll_deg = math.degrees(roll)
-    pitch_deg = math.degrees(pitch)
-    yaw_deg = math.degrees(yaw)
-
-    return {"x": x, "y": y, "z": z, "roll": roll_deg, "pitch": pitch_deg, "yaw": yaw_deg}
+    """Extract a CARLA pose from an explicit CARLA parent-from-child matrix."""
+    return carla_attachment_pose_from_matrix(mat)
 
 
 def _invert_transform(mat: np.ndarray) -> np.ndarray:
@@ -256,9 +243,10 @@ class DominikSensorSetup:
 
     Thesis contracts implemented here:
     - Use K_undistortion only (ignore K and D).
-    - Camera extrinsics: cTv is vehicle->camera; for CARLA attachment use inverse(cTv).
-    - LiDAR extrinsics: vTl is lidar->vehicle; invert for CARLA attachment.
-    - Axis convention mismatch: legacy behavior flips translation Y only (kept by default).
+    - Camera extrinsics: cTv is camera-optical-from-vehicle-FLU; invert rigidly
+      for the vehicle-relative child mount and convert both frame bases.
+    - LiDAR extrinsics: vTl is vehicle-FLU-from-LiDAR; convert both bases.
+    - All mounts use CARLA_SENSOR_MOUNTING/v2 and translations in metres.
     """
 
     def __init__(
@@ -270,8 +258,11 @@ class DominikSensorSetup:
         lidar_axes_mode: str = "auto",
         verbose: bool = False,
         resolution_override: Optional[Tuple[int, int]] = None,
+        camera_response_profile: Optional[str] = None,
     ):
         self.calib_path = Path(calib_json_path)
+        # NEW-333: governed photometric response profile.
+        self.camera_response_profile = camera_response_profile
         if not self.calib_path.exists():
             raise FileNotFoundError(f"Calibration JSON not found: {self.calib_path}")
 
@@ -281,30 +272,46 @@ class DominikSensorSetup:
         self.verbose = bool(verbose)
         self.resolution_override = resolution_override
 
-        self._calib = json.loads(self.calib_path.read_text(encoding="utf-8"))
+        calibration_bytes = self.calib_path.read_bytes()
+        self._source_calibration_bytes = calibration_bytes
+        self._source_calibration_sha256 = hashlib.sha256(calibration_bytes).hexdigest()
+        self._calib = json.loads(calibration_bytes.decode("utf-8"))
 
     def _camera_attributes(self, *, fov: float, image_width: int, image_height: int) -> Dict[str, str]:
         w, h = image_width, image_height
         if self.resolution_override is not None:
             w, h = self.resolution_override
-        return {
+        attrs: Dict[str, str] = {
             "fov": str(round(float(fov), 2)),
             "image_size_x": str(int(w)),
             "image_size_y": str(int(h)),
         }
+        # NEW-333: pin the camera photometric response explicitly.  Previously
+        # only fov/size were set, so gamma, exposure, ISO, shutter, bloom, lens
+        # flare, chromatic aberration and motion blur were all left at implicit
+        # CARLA defaults -- which is exactly what is forbidden for an RQ3
+        # image-appearance claim.
+        from ultimate_pipeline.perception.environment.camera_response import (
+            profile_attributes,
+            PROFILE_PINHOLE_POSTPROCESS_DISABLED,
+        )
+
+        response = profile_attributes(
+            self.camera_response_profile or PROFILE_PINHOLE_POSTPROCESS_DISABLED
+        )
+        # Geometry stays owned by this method; the profile owns everything that
+        # affects photometric response.
+        for key, value in response.items():
+            attrs.setdefault(key, value)
+        return attrs
 
     def _parse_camera_transform(self, cam_data: Dict) -> Dict[str, float]:
-        """Parse cTv matrix for CARLA attachment using canonical conventions.
-
-        Thesis contract: cTv is vehicle->camera and MUST NOT be inverted.
-        """
+        """Convert source ``cTv`` to the explicit CARLA parent<-camera mount."""
         cTv = np.array(cam_data["cTv"], dtype=np.float64)
-        pose = camera_attachment_pose_from_cTv(
-            cTv,
-            flip_vehicle_y=self.flip_vehicle_y,
-            opencv_camera_axes=self.opencv_camera_axes,
-            ctv_invert=False,  # Enforce thesis invariant: no inversion
-        )
+        if not self.opencv_camera_axes:
+            raise ValueError("CARLA_SENSOR_MOUNTING/v2 requires the OpenCV optical source frame")
+        matrix = carla_ego_from_camera_from_cTv(cTv)
+        pose = carla_attachment_pose_from_matrix(matrix)
         # Return flat dict for _sanitize_transform_dict consumption
         return {
             "x": float(pose["x"]),
@@ -316,13 +323,10 @@ class DominikSensorSetup:
         }
 
     def _parse_lidar_transform(self, lidar_data: Dict) -> Dict[str, float]:
-        """Parse LiDAR transform using canonical conventions.
-
-        vTl transforms points from LiDAR frame to Vehicle frame (LiDAR -> Vehicle).
-        Standard CARLA attachment requires vehicle -> LiDAR (inverse(vTl)).
-        """
+        """Convert source ``vTl`` to the explicit CARLA parent<-LiDAR mount."""
         vTl = np.array(lidar_data["vTl"], dtype=np.float64)
-        pose = lidar_attachment_pose_from_vTl(vTl, flip_vehicle_y=self.flip_vehicle_y)
+        matrix = carla_ego_from_lidar_from_vTl(vTl)
+        pose = carla_attachment_pose_from_matrix(matrix)
         return {
             "x": float(pose["x"]),
             "y": float(pose["y"]),
@@ -378,14 +382,20 @@ class DominikSensorSetup:
                 )
 
         lidars_data = self._calib.get("lidars", {})
-        lidar_key = "middle_lidar"
-        if lidar_key in lidars_data:
+        # NEW-300/301: Use canonical active LiDAR set only
+        active_lidars = resolve_active_lidars(
+            self._calib, low_memory_profile=bool(low_mem)
+        )
+        for lidar_spec in active_lidars:
+            lidar_key = lidar_spec.name
+            if lidar_key not in lidars_data:
+                continue
             lidar_data = lidars_data[lidar_key]
             lidar_transform = self._parse_lidar_transform(lidar_data)
 
             specs.append(
                 SensorSpec(
-                    name="lidar",
+                    name=("lidar" if len(active_lidars) == 1 else f"lidar_{lidar_key}"),
                     type="sensor.lidar.ray_cast",
                     transform=lidar_transform,
                     attributes={"range": "80", **compute_lidar_attributes(low_mem=bool(low_mem))},
@@ -421,10 +431,11 @@ class DominikSensorSetup:
             "min_sensors": int(min_sensors),
             "sensor_spawn_tick": int(sensor_spawn_tick),
             "rig_contract": {
+                "calibration_contract_version": "CARLA_SENSOR_MOUNTING/v2",
                 "camera_intrinsics": "K_undistortion_only",
-                "camera_extrinsics": "cTv_inverted_for_attachment",
-                "lidar_extrinsics": "vTl_inverted_for_attachment",
-                "axis_handling": "legacy_translation_y_flip" if self.flip_vehicle_y else "none",
+                "camera_extrinsics": "inverse(cTv) with explicit FLU/FRU and optical basis changes",
+                "lidar_extrinsics": "vTl with explicit FLU/FRU basis changes",
+                "translation_unit": "metre",
                 "resolution_override": list(self.resolution_override) if self.resolution_override else None,
             },
             "env": {
@@ -534,6 +545,87 @@ class DominikSensorSetup:
         min_violation = bool(min_req) and (len(actors) < min_req)
         report["summary"]["min_sensors_ok"] = (not min_violation)
         report["summary"]["min_sensors_required"] = int(min_req)
+
+        # Bind observed parent-relative actor transforms. This adapter does not
+        # own frame recording, so its transform-only receipt cannot satisfy
+        # live dataset admission until the recorder binds common frames/files.
+        cameras = self._calib.get("cameras", {}) or {}
+        active_lidars = resolve_active_lidars(self._calib, low_memory_profile=low_mem_resolved)
+        requested = {}
+        lidar_specs_by_spawn_name = {
+            ("lidar" if len(active_lidars) == 1 else f"lidar_{spec.name}"): spec
+            for spec in active_lidars
+        }
+        for spec in specs:
+            if spec.type.startswith("sensor.camera"):
+                prefix = "rgb_" if spec.name.startswith("rgb_") else "seg_"
+                camera_name = spec.name[len(prefix):]
+                camera = cameras.get(camera_name)
+                if camera is None:
+                    raise ValueError(f"spawned camera has no calibration source: {spec.name}")
+                requested[spec.name] = carla_ego_from_camera_from_cTv(camera["cTv"]).tolist()
+            elif spec.type.startswith("sensor.lidar"):
+                lidar_spec = lidar_specs_by_spawn_name.get(spec.name)
+                lidar = (self._calib.get("lidars", {}) or {}).get(lidar_spec.name) if lidar_spec else None
+                if lidar is None:
+                    raise ValueError(f"spawned LiDAR has no calibration source: {spec.name}")
+                requested[spec.name] = carla_ego_from_lidar_from_vTl(lidar["vTl"]).tolist()
+        sensor_ids = {}
+        observed = {}
+        blueprints = {}
+        effective_cameras = {}
+        specs_by_name = {spec.name: spec for spec in specs}
+        for name, actor in sorted(actors.items()):
+            spec = specs_by_name.get(name)
+            if name not in requested or spec is None:
+                continue
+            sensor_ids[name] = {"actor_id": getattr(actor, "id", None), "type_id": getattr(actor, "type_id", spec.type)}
+            try:
+                observed[name] = observed_parent_relative_mount(
+                    vehicle.get_transform(), actor.get_transform()
+                ).tolist()
+            except Exception as exc:
+                entry = next((item for item in report["sensors"] if item.get("name") == name), None)
+                if isinstance(entry, dict):
+                    entry["observed_transform_error"] = f"{type(exc).__name__}:{exc}"
+            blueprints[name] = {
+                "blueprint_id": spec.type,
+                "attributes": dict(spec.attributes),
+            }
+            camera_name = name[4:] if name.startswith("rgb_") else name[4:] if name.startswith("seg_") else name
+            camera = cameras.get(camera_name)
+            if camera is not None:
+                width = int(spec.attributes.get("image_size_x", camera["image_size"][0]))
+                height = int(spec.attributes.get("image_size_y", camera["image_size"][1]))
+                fov = float(spec.attributes.get("fov", 90.0))
+                fx = width / (2.0 * math.tan(math.radians(fov) / 2.0))
+                effective_cameras[name] = {
+                    "width_px": width,
+                    "height_px": height,
+                    "requested_K_undistortion": camera.get("K_undistortion"),
+                    "carla_nominal_K": [[fx, 0.0, width / 2.0], [0.0, fx, height / 2.0], [0.0, 0.0, 1.0]],
+                    "horizontal_fov_deg": fov,
+                    "intrinsic_status": "nominal_from_applied_size_and_fov_rendered_frame_unverified",
+                }
+        receipt = build_applied_sensor_rig_v2(
+            source_calibration_sha256=self._source_calibration_sha256,
+            code_commit=current_clean_code_commit(Path(__file__).resolve().parents[2]),
+            requested_parent_relative_matrices=requested,
+            ego_identity={"actor_id": getattr(vehicle, "id", None), "type_id": getattr(vehicle, "type_id", None)},
+            sensor_identities=sensor_ids,
+            blueprint_configuration=blueprints,
+            effective_camera_configuration=effective_cameras,
+            applied_parent_relative_matrices=observed if observed else None,
+            verification_mode="online",
+        )
+        report["applied_sensor_rig_v2"] = receipt
+        report["applied_sensor_rig_v2_errors"] = validate_applied_sensor_rig_v2(
+            receipt,
+            require_live=True,
+            expected_source_calibration_sha256=self._source_calibration_sha256,
+            expected_calibration_bytes=self._source_calibration_bytes,
+        )
+        report["applied_sensor_rig_v2_live_accepted"] = not report["applied_sensor_rig_v2_errors"]
 
         if out_dir is not None:
             out_path = Path(out_dir)

@@ -41,7 +41,7 @@ def _make_test_calib() -> dict:
     }
 
 
-def test_thesis_sensor_rig_no_inversion(tmp_path: Path) -> None:
+def test_thesis_sensor_rig_reports_explicit_v2_mounts(tmp_path: Path) -> None:
     calib = _make_test_calib()
     calib_path = tmp_path / "calib.json"
     calib_path.write_text(json.dumps(calib), encoding="utf-8")
@@ -50,15 +50,14 @@ def test_thesis_sensor_rig_no_inversion(tmp_path: Path) -> None:
     reports = rig.reports_from_calib_only()
 
     cam = reports["cam0"]
-    assert cam["ctv_inverted"] is False
-    assert cam["inversion_applied"] is False
-    assert cam["raw_direction_label"] == "vehicle_to_camera"
+    assert cam["raw_direction_label"] == "camera_optical_from_vehicle_flu"
+    assert cam["contract_version"] == "CARLA_SENSOR_MOUNTING/v2"
+    assert len(cam["mount_matrix"]) == 4
 
     lidar = reports["lidar0"]
-    assert lidar["vtl_inverted"] is True
-    assert lidar["inversion_applied"] is True
-    assert lidar["raw_direction_label"] == "lidar_to_vehicle"
-    assert lidar["used_direction_label"] == "vehicle_to_lidar"
+    assert lidar["raw_direction_label"] == "vehicle_flu_from_lidar"
+    assert len(lidar["mount_matrix"]) == 4
+    assert lidar["contract_version"] == "CARLA_SENSOR_MOUNTING/v2"
 
 
 def test_rig_verification_to_dict() -> None:
@@ -82,8 +81,10 @@ def test_rig_verification_to_dict() -> None:
             "vTl_definition": "lidar->vehicle",
             "cTv_inverted": False,
             "vTl_inverted": True,
-            "cTv_inversion_forbidden": True,
-            "vTl_inversion_required": True,
+            "calibration_contract_version": "CARLA_SENSOR_MOUNTING/v2",
+            "camera_attachment_derivation": "inverse_cTv_with_explicit_flu_fru_and_optical_basis_changes",
+            "lidar_attachment_derivation": "vTl_with_explicit_flu_fru_basis_changes",
+            "legacy_v1_boolean_semantics": "historical_only_not_authoritative_for_v2_mounting",
         },
         applied_carla_transforms={"ego_vehicle_world": None, "sensors": {}},
     )
@@ -91,7 +92,7 @@ def test_rig_verification_to_dict() -> None:
     data = verification.to_dict()
 
     # Check schema version
-    assert data["schema_version"] == 1
+    assert data["schema_version"] == 2
 
     # Check thesis_compliance block
     assert "thesis_compliance" in data
@@ -159,11 +160,13 @@ def test_write_rig_verification_creates_file(tmp_path: Path) -> None:
 
     # Verify file content
     data = json.loads(result_path.read_text(encoding="utf-8"))
-    assert data["schema_version"] == 1
+    assert data["schema_version"] == 2
+    assert data["legacy_v1_boolean_semantics"] == "historical_only_not_authoritative_for_v2_mounting"
     assert "thesis_compliance" in data
     assert data["thesis_compliance"]["use_K_undistortion_only"] is True
     assert data["thesis_compliance"]["ctv_inverted"] is False
     assert data["thesis_compliance"]["vtl_inverted"] is True
+    assert data["sensor_contract"]["source_matrix_inverse_applied"] == {"camera": True, "lidar": False}
 
 
 def test_write_rig_verification_with_extra(tmp_path: Path) -> None:
@@ -292,7 +295,7 @@ def test_thesis_strict_raises_on_non_canonical_env_vars(monkeypatch) -> None:
         with pytest.raises(RuntimeError) as exc_info:
             _guard_thesis_inversion_env()
 
-        assert "non-canonical inversion override" in str(exc_info.value)
+        assert "Unsupported legacy sensor-transform override" in str(exc_info.value)
         assert var in str(exc_info.value)
 
         monkeypatch.delenv(var)
@@ -301,7 +304,7 @@ def test_thesis_strict_raises_on_non_canonical_env_vars(monkeypatch) -> None:
     monkeypatch.setenv("UP_CAMERA_CTV_ATTACH", "invert")  # non-canonical
     with pytest.raises(RuntimeError) as exc_info:
         _guard_thesis_inversion_env()
-    assert "non-canonical inversion override" in str(exc_info.value)
+    assert "Unsupported legacy sensor-transform override" in str(exc_info.value)
     assert "UP_CAMERA_CTV_ATTACH" in str(exc_info.value)
     monkeypatch.delenv("UP_CAMERA_CTV_ATTACH")
 
@@ -309,7 +312,7 @@ def test_thesis_strict_raises_on_non_canonical_env_vars(monkeypatch) -> None:
     monkeypatch.setenv("UP_LIDAR_VTL_ATTACH", "direct")  # non-canonical
     with pytest.raises(RuntimeError) as exc_info:
         _guard_thesis_inversion_env()
-    assert "non-canonical inversion override" in str(exc_info.value)
+    assert "Unsupported legacy sensor-transform override" in str(exc_info.value)
     assert "UP_LIDAR_VTL_ATTACH" in str(exc_info.value)
     monkeypatch.delenv("UP_LIDAR_VTL_ATTACH")
 
@@ -330,45 +333,39 @@ def test_thesis_strict_passes_without_inversion_vars(monkeypatch) -> None:
     _guard_thesis_inversion_env()
 
 
-def test_thesis_strict_permits_canonical_camera_ctv_direct(monkeypatch) -> None:
-    """UP_THESIS_STRICT=1 permits canonical UP_CAMERA_CTV_ATTACH=direct (T-036)."""
+def test_thesis_strict_permits_only_versioned_camera_contract(monkeypatch) -> None:
+    """Only the explicit v2 marker is accepted by legacy environment names."""
     monkeypatch.setenv("UP_THESIS_STRICT", "1")
     # Ensure no other override vars are set
     for var in ["UP_CAMERA_CTV_INVERT", "UP_LIDAR_VTL_ATTACH", "UP_CAMERA_CTV_CONVENTION"]:
         monkeypatch.delenv(var, raising=False)
 
-    # All canonical synonyms for "direct" should pass
-    canonical_values = ["direct", "ctv_direct", "vehicle_to_camera", "no_invert", "0", "false", "off"]
-    for val in canonical_values:
+    monkeypatch.setenv("UP_CAMERA_CTV_ATTACH", "CARLA_SENSOR_MOUNTING/v2")
+    _guard_thesis_inversion_env()
+    for val in ["direct", "ctv_direct", "vehicle_to_camera", "no_invert", "0", "false", "off"]:
         monkeypatch.setenv("UP_CAMERA_CTV_ATTACH", val)
-        _guard_thesis_inversion_env()  # Should not raise
+        with pytest.raises(RuntimeError):
+            _guard_thesis_inversion_env()
 
 
-def test_thesis_strict_permits_canonical_lidar_vtl_invert(monkeypatch) -> None:
-    """UP_THESIS_STRICT=1 permits canonical UP_LIDAR_VTL_ATTACH=invert (T-036)."""
+def test_thesis_strict_rejects_legacy_lidar_inversion_aliases(monkeypatch) -> None:
     monkeypatch.setenv("UP_THESIS_STRICT", "1")
     # Ensure no other override vars are set
     for var in ["UP_CAMERA_CTV_ATTACH", "UP_CAMERA_CTV_INVERT", "UP_CAMERA_CTV_CONVENTION"]:
         monkeypatch.delenv(var, raising=False)
 
-    # All canonical synonyms for "invert" should pass
-    canonical_values = ["invert", "inverse", "vehicle_to_lidar", "vtl_invert", "auto", "1", "true", "yes", "on"]
-    for val in canonical_values:
+    monkeypatch.setenv("UP_LIDAR_VTL_ATTACH", "CARLA_SENSOR_MOUNTING/v2")
+    _guard_thesis_inversion_env()
+    for val in ["invert", "inverse", "vehicle_to_lidar", "vtl_invert", "auto", "1", "true", "yes", "on"]:
         monkeypatch.setenv("UP_LIDAR_VTL_ATTACH", val)
-        _guard_thesis_inversion_env()  # Should not raise
+        with pytest.raises(RuntimeError):
+            _guard_thesis_inversion_env()
 
 
-def test_thesis_strict_permits_both_canonical_env_vars(monkeypatch) -> None:
-    """UP_THESIS_STRICT=1 permits both canonical env vars set simultaneously (T-036).
-
-    This is the canonical handoff command:
-    $env:UP_THESIS_STRICT = "1"
-    $env:UP_CAMERA_CTV_ATTACH = "direct"
-    $env:UP_LIDAR_VTL_ATTACH = "invert"
-    """
+def test_thesis_strict_permits_both_versioned_env_markers(monkeypatch) -> None:
     monkeypatch.setenv("UP_THESIS_STRICT", "1")
-    monkeypatch.setenv("UP_CAMERA_CTV_ATTACH", "direct")
-    monkeypatch.setenv("UP_LIDAR_VTL_ATTACH", "invert")
+    monkeypatch.setenv("UP_CAMERA_CTV_ATTACH", "CARLA_SENSOR_MOUNTING/v2")
+    monkeypatch.setenv("UP_LIDAR_VTL_ATTACH", "CARLA_SENSOR_MOUNTING/v2")
     # Ensure forbidden vars are not set
     for var in ["UP_CAMERA_CTV_INVERT", "UP_CAMERA_CTV_CONVENTION"]:
         monkeypatch.delenv(var, raising=False)
@@ -377,8 +374,8 @@ def test_thesis_strict_permits_both_canonical_env_vars(monkeypatch) -> None:
     _guard_thesis_inversion_env()
 
 
-def test_thesis_invariant_ctv_vtl_never_inverted(tmp_path: Path) -> None:
-    """Verify thesis invariant: ctv_inverted=false and vtl_inverted=true always."""
+def test_v2_report_distinguishes_actual_matrix_operation_from_v1_aliases(tmp_path: Path) -> None:
+    """V2 reports actual operations while preserving old booleans as non-authoritative aliases."""
     calib = {
         "cameras": {
             "front_camera": {
@@ -412,23 +409,24 @@ def test_thesis_invariant_ctv_vtl_never_inverted(tmp_path: Path) -> None:
     rig = ThesisSensorRig(calib_path)
     reports = rig.reports_from_calib_only()
 
-    # All cameras must have ctv_inverted=False and inversion_applied=False
+    # V2 records source direction explicitly and applies the rigid inverse.
     for cam_name in ["front_camera", "rear_camera"]:
         assert cam_name in reports
-        assert reports[cam_name]["ctv_inverted"] is False
-        assert reports[cam_name]["inversion_applied"] is False
-        assert reports[cam_name]["raw_direction_label"] == "vehicle_to_camera"
+        assert reports[cam_name]["raw_direction_label"] == "camera_optical_from_vehicle_flu"
+        assert reports[cam_name]["source_matrix_inverse_applied"] is True
+        assert reports[cam_name]["attachment_derivation"] == "inverse_cTv_with_explicit_flu_fru_and_optical_basis_changes"
+        assert reports[cam_name]["legacy_v1_boolean_semantics"] == "historical_only_not_authoritative_for_v2_mounting"
         assert (
-            "FORBIDDEN" in reports[cam_name]["transform_convention"]
-            or "directly" in reports[cam_name]["transform_convention"]
+            reports[cam_name]["contract_version"] == "CARLA_SENSOR_MOUNTING/v2"
+            and reports[cam_name]["mount_rotation_valid"] is True
         )
 
-    # All lidars must have vtl_inverted=True and inversion_applied=True
+    # LiDAR reports the declared source frame and the resulting child pose.
     assert "top_lidar" in reports
-    assert reports["top_lidar"]["vtl_inverted"] is True
-    assert reports["top_lidar"]["inversion_applied"] is True
-    assert reports["top_lidar"]["raw_direction_label"] == "lidar_to_vehicle"
-    assert reports["top_lidar"]["used_direction_label"] == "vehicle_to_lidar"
+    assert reports["top_lidar"]["raw_direction_label"] == "vehicle_flu_from_lidar"
+    assert reports["top_lidar"]["contract_version"] == "CARLA_SENSOR_MOUNTING/v2"
+    assert reports["top_lidar"]["source_matrix_inverse_applied"] is False
+    assert reports["top_lidar"]["attachment_derivation"] == "vTl_with_explicit_flu_fru_basis_changes"
 
 
 def test_healthcheck_stops_temporary_listeners() -> None:
@@ -475,3 +473,17 @@ def test_healthcheck_stops_temporary_listeners() -> None:
     assert a1.stop_calls >= 1
     assert sensors["cam0"].report["healthcheck"]["first_measurement_ok"] is True
     assert sensors["cam1"].report["healthcheck"]["first_measurement_ok"] is True
+
+
+def test_legacy_sensor_rig_cannot_spawn_ambiguous_mounts() -> None:
+    from ultimate_pipeline.carla_tools.sensor_rig import SensorRig
+
+    class _ForbiddenClient:
+        def get_world(self):
+            raise AssertionError("legacy path must fail before CARLA access")
+
+    legacy = object.__new__(SensorRig)
+    with pytest.raises(RuntimeError, match="disabled under CARLA_SENSOR_MOUNTING/v2"):
+        legacy.spawn_rig(_ForbiddenClient(), object())
+    with pytest.raises(RuntimeError, match="anonymous matrix conversion is disabled"):
+        SensorRig._numpy_to_carla_transform([[1.0]])

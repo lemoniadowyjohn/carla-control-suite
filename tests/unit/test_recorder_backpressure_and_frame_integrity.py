@@ -59,8 +59,9 @@ class _Recorder(SensorRecorder):
 class _RgbData:
     """Duck-typed carla.Image for the plain camera writer."""
 
-    def __init__(self, frame: int):
+    def __init__(self, frame: int, timestamp: float | None = None):
         self.frame = frame
+        self.timestamp = timestamp if timestamp is not None else frame * 0.05
         self.width = 2
         self.height = 2
 
@@ -149,6 +150,28 @@ def test_backpressure_report_exposes_required_fields(tmp_path):
         assert field in report, field
     assert report["callback_frame_ids"]["semseg_front"] == [1, 2, 3]
     rec.join_writer_threads(timeout_s=5.0)
+
+
+def test_recorder_manifest_binds_callback_timestamp_and_written_bytes(tmp_path):
+    sensor = _FakeSensor(actor_id=41, type_id="sensor.camera.rgb")
+    rec = _Recorder(
+        world=_FakeWorld(),
+        sensors={"rgb_front": sensor},
+        output_dir=str(tmp_path),
+        config=RecorderConfig(strict=True, required_sensors=("rgb_front",)),
+    )
+    rec.start()
+    sensor.emit(_RgbData(17, timestamp=0.85))
+    rec.stop()
+    rec.close()
+
+    manifest = json.loads((tmp_path / "recorder_manifest.json").read_text(encoding="utf-8"))
+    binding = manifest["artifact_bindings"]["rgb_front"]["17"]
+    assert binding["callback_frame_id"] == 17
+    assert binding["sim_timestamp"] == pytest.approx(0.85)
+    assert binding["write_status"] == "WRITTEN"
+    assert binding["output_sha256"]
+    assert manifest["frame_correspondence"]["common_frame_ids"] == [17]
 
 
 def test_writer_saturation_records_drop_and_fails_strict_capture(tmp_path):
