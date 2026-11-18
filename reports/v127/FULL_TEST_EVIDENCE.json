@@ -137,15 +137,19 @@
   },
   "mirror_policy": "Changed submission mirrors were synchronized byte-for-byte to canonical sources",
   "independent_review": {
-    "status": "PENDING_REVIEW_OF_EXACT_FINAL_BRANCH_HEAD",
-    "reviewed_commit": "bb8c18ded235250ed42e84b32f879e6fe61d56c0",
-    "prior_review": {
-      "commit": "d1c35b6ca3daa4b3e3da26515ef521dc581019de",
-      "verdict": "CONDITIONAL_ACCEPT",
-      "new_gap_found_after_review": "wrong-but-self-consistent requested/applied matrices were not compared with source-derived expected transforms",
-      "fix_commit": "f317d2445f8fe9752e75fbe52a8f361990ee6a85"
+    "status": "CONDITIONAL_ACCEPT_SOURCE_CORRECTNESS",
+    "reviewed_branch_head": "a5192a66fb7553e7534fab213214e685d3f7bbc4",
+    "reviewed_source_commit": "dafafe3613f7ce5acd2222a7cbe18c8eb000e61c",
+    "reviewer_id": "01a1edfc-69ef-7e23-8edb-3bd96612802d",
+    "findings": "No remaining source blocker for resealed wrong-mount bypass; canonical-only validate_thesis_run is deliberate; runtime and scientific gates remain open.",
+    "reviewer_tests": {
+      "passed": 152,
+      "warnings": 5,
+      "custom_calibration_probe": "valid source admitted; fully resealed 25cm wrong mount rejected by direct and paired RQ3 validators",
+      "submission_mirror_hashes": "5/5 identical",
+      "carla_server_started": false
     },
-    "requested_exact_final_head_review": true
+    "scope": "source correctness only; not production acceptance"
   },
   "runtime_status": "BLOCKED_EXTERNAL",
   "production_status": "NO_GO",
@@ -205,7 +209,9 @@
     "number": 66,
     "url": "https://github.com/lemoniadowyjohn/carla-control-suite/pull/66",
     "state": "open_draft",
-    "current_head_at_last_check": "bb8c18ded235250ed42e84b32f879e6fe61d56c0",
-    "will_update_after_review_package_commit": false
+    "will_update_after_review_package_commit": false,
+    "reviewed_branch_head": "a5192a66fb7553e7534fab213214e685d3f7bbc4",
+    "source_code_commit": "dafafe3613f7ce5acd2222a7cbe18c8eb000e61c",
+    "report_only_commits_after_review": "explicitly identified by branch ancestry; no source changed"
   }
 }
