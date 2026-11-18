@@ -2,7 +2,7 @@
 
 ## Production and release
 
-1. **Independent exact-source-SHA review — PENDING.** The reviewer conditionally accepted `d1c35b6ca3daa4b3e3da26515ef521dc581019de`; subsequent adversarial inspection found and fixed a wrong-but-self-consistent applied-mount bypass in `f317d2445f8fe9752e75fbe52a8f361990ee6a85`. Fresh review of the corrected final source and PR head is required. Signed-review tests also need a dependency-complete run because `cryptography` is absent locally.
+1. **Independent exact-source-SHA review — PENDING.** Prior conditional review covered d1c35b6; the source-mount bypass was fixed in f317d244, and selected calibration bytes were propagated in dafafe3613f7ce5acd2222a7cbe18c8eb000e61c. Independent review of the final branch head bb8c18ded235250ed42e84b32f879e6fe61d56c is pending.
 2. **Candidate publication — COMPLETE.** The isolated branch is pushed and draft PR #66 targets the pinned production SHA. The PR remains draft; no merge is authorized.
 3. **Full offline production CI — INCOMPLETE.** The prescribed whole-tree pytest command stopped at collection: 3,261 discovered items, 292 collection errors, 1 skipped (pytest exit 2). The sparse checkout lacks numerous source paths/modules; this Python install also lacks `torchvision` and `cryptography`. Baseline source-path attribution: all 292 failing test files exist at the exact baseline; 137 imports point to baseline-tracked files omitted by sparse checkout, 116 import modules do not exist in the baseline tree, 33 are dependency/import-environment errors, and 6 are unrelated import API errors in unchanged test/source paths. The full test suite was not replayed on baseline; this is not a baseline JUnit receipt.
 
@@ -15,11 +15,13 @@
 
 ## Executed offline test evidence
 
-Independent reviewer conditionally accepted the prior source SHA `d1c35b6…` and ran 100 focused checks. Afterward, an adversarial fully resealed 25 cm wrong-mount case exposed a validator gap; `f317d2445f8fe9752e75fbe52a8f361990ee6a85` now rejects it. Exact-SHA review of the corrected final candidate is pending. Signed review-receipt tests remain unexecuted locally because `cryptography` is missing.
+The independent reviewer conditionally accepted prior source SHA d1c35b6. Adversarial inspection later found that a fully resealed wrong mount could pass; f317d244 added source-derived matrix comparison and rejected the 25 cm case. Commit dafafe3613f7ce5acd2222a7cbe18c8eb000e61c propagates exact selected calibration bytes through runtime and paired capture. Exact-head review is pending. Signed reviewer-receipt tests remain unexecuted locally because cryptography is unavailable.
 
-- Focused calibration/RQ3/adapter suite: 471 passed, 6 warnings, exit 0 on source commit `f317d2445f8fe9752e75fbe52a8f361990ee6a85`.
-- Wider collectable RQ3 suite: 161 passed, 5 warnings, exit 0. Four modules remain NOT_RUN because `cryptography` or repository-level `tools` imports are absent.
-- `compileall`: exit 0. CRLF-aware committed diff check: exit 0.
+- Focused calibration/RQ3/adapter suite: 474 passed, 6 warnings, exit 0 on source commit dafafe3613f7ce5acd2222a7cbe18c8eb000e61c.
+- Wider collectable RQ3 suite: 162 passed, 5 warnings, exit 0. Four modules remain NOT_RUN because cryptography or repository-level tools imports are absent.
+- Full offline pytest: 3,261 collected/discovered, 292 collection errors, 1 skipped, exit 2. The baseline suite was not replayed.
+- compileall over ultimate_pipeline, tests and submission/infrastructure: exit 0.
+- CRLF-aware git diff --check: exit 0; the plain check flags pre-existing Windows CRLF lines in tracked report/source paths.
 
 ## Other independent QA findings
 

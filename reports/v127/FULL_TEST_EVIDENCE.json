@@ -137,8 +137,8 @@
   },
   "mirror_policy": "Changed submission mirrors were synchronized byte-for-byte to canonical sources",
   "independent_review": {
-    "status": "PENDING_REVIEW_OF_EXACT_SOURCE_COMMIT",
-    "reviewed_commit": "dafafe3613f7ce5acd2222a7cbe18c8eb000e61c",
+    "status": "PENDING_REVIEW_OF_EXACT_FINAL_BRANCH_HEAD",
+    "reviewed_commit": "bb8c18ded235250ed42e84b32f879e6fe61d56c0",
     "prior_review": {
       "commit": "d1c35b6ca3daa4b3e3da26515ef521dc581019de",
       "verdict": "CONDITIONAL_ACCEPT",
@@ -184,7 +184,8 @@
     "1f6ac6bbaa3c54be10508b451497f11595c7e113",
     "df9f48305a8c9dcc7ed5145109901bbe01d31377",
     "d1c35b6ca3daa4b3e3da26515ef521dc581019de",
-    "f317d2445f8fe9752e75fbe52a8f361990ee6a85"
+    "f317d2445f8fe9752e75fbe52a8f361990ee6a85",
+    "dafafe3613f7ce5acd2222a7cbe18c8eb000e61c"
   ],
   "independent_qa_package": {
     "checksums": "PASS",
@@ -204,7 +205,7 @@
     "number": 66,
     "url": "https://github.com/lemoniadowyjohn/carla-control-suite/pull/66",
     "state": "open_draft",
-    "current_head_at_last_check": "dafafe3613f7ce5acd2222a7cbe18c8eb000e61c",
-    "will_update_after_review_package_commit": true
+    "current_head_at_last_check": "bb8c18ded235250ed42e84b32f879e6fe61d56c0",
+    "will_update_after_review_package_commit": false
   }
 }
