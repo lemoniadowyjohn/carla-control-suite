@@ -14,6 +14,7 @@ from ultimate_pipeline.sensors.transform_conventions import (
     lidar_attachment_matrix_from_vTl,
     matrix_to_unreal_pose,
 )
+from ultimate_pipeline.carla_tools.thesis_sensor_rig import ThesisSensorRig
 from ultimate_pipeline.tools.run_perception_safe import _rig_verification_contract_errors
 
 
@@ -75,3 +76,19 @@ def test_self_consistent_forged_mount_cannot_pass(
     errors = _rig_verification_contract_errors(evidence)
 
     assert any("disagrees with digest-bound calibration" in error for error in errors)
+
+
+def test_producer_digest_uses_the_loaded_calibration_snapshot(tmp_path: Path) -> None:
+    source_bytes = _CALIB_PATH.read_bytes()
+    selected_path = tmp_path / "calib.json"
+    selected_path.write_bytes(source_bytes)
+    rig = ThesisSensorRig(selected_path)
+    loaded_digest = hashlib.sha256(source_bytes).hexdigest()
+
+    selected_path.write_bytes(source_bytes + b"\n")
+    spawned = rig.build_spawned_from_calib_defaults()
+    receipt = rig.build_rig_verification(spawned).to_dict()
+
+    assert receipt["sensor_contract"]["calib_sha256"] == loaded_digest
+    errors = _rig_verification_contract_errors(receipt)
+    assert "v2 calibration source digest does not match source file" in errors

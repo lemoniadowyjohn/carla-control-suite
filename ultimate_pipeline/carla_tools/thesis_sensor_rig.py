@@ -513,8 +513,12 @@ class ThesisSensorRig:
         self.calib_path = Path(calib_path)
         if not self.calib_path.exists():
             raise FileNotFoundError(f"Calibration file not found: {self.calib_path}")
-        with self.calib_path.open("r", encoding="utf-8") as f:
-            self.calib_data = json.load(f)
+        # Parse and hash the same immutable byte snapshot. Re-reading the path
+        # when a receipt is emitted could attest bytes different from those
+        # used to calculate the sensor mounts.
+        self.calib_source_bytes = self.calib_path.read_bytes()
+        self.calib_sha256 = hashlib.sha256(self.calib_source_bytes).hexdigest()
+        self.calib_data = json.loads(self.calib_source_bytes.decode("utf-8"))
         _guard_thesis_inversion_env()
         cams = self.calib_data.get("cameras", {}) or {}
         lids = self.calib_data.get("lidars", {}) or {}
@@ -1420,7 +1424,7 @@ class ThesisSensorRig:
                 "carla_attachment_semantics": "v2",
                 "camera_mounting": "S_vehicle @ inverse(cTv) @ C_CARLA_camera_to_OpenCV",
                 "lidar_mounting": "S_vehicle @ vTl @ S_lidar",
-                "calib_sha256": hashlib.sha256(self.calib_path.read_bytes()).hexdigest(),
+                "calib_sha256": self.calib_sha256,
                 "calib_path": str(self.calib_path.resolve()),
                 "live_reprojection_verified": False,
             },

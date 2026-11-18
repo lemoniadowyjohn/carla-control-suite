@@ -16,6 +16,7 @@ from pathlib import Path
 import numpy as np
 
 from ultimate_pipeline.tools.run_perception_safe import _rig_verification_contract_errors
+from ultimate_pipeline.carla_tools.thesis_sensor_rig import ThesisSensorRig
 from ultimate_pipeline.sensors.transform_conventions import (
     camera_attachment_matrix_from_cTv,
     lidar_attachment_matrix_from_vTl,
@@ -93,6 +94,24 @@ def test_self_consistent_forged_lidar_mount_is_rejected():
     errors = _rig_verification_contract_errors(v)
 
     assert any("disagrees with digest-bound calibration" in error for error in errors)
+
+
+def test_producer_digest_is_bound_to_bytes_used_to_load_mounts(tmp_path):
+    source_bytes = _CALIB_PATH.read_bytes()
+    selected_path = tmp_path / "calib.json"
+    selected_path.write_bytes(source_bytes)
+    rig = ThesisSensorRig(selected_path)
+    loaded_digest = hashlib.sha256(source_bytes).hexdigest()
+
+    # A formatting-only edit changes the file identity without changing the
+    # sensor matrices already held by the rig instance.
+    selected_path.write_bytes(source_bytes + b"\n")
+    spawned = rig.build_spawned_from_calib_defaults()
+    receipt = rig.build_rig_verification(spawned).to_dict()
+
+    assert receipt["sensor_contract"]["calib_sha256"] == loaded_digest
+    errors = _rig_verification_contract_errors(receipt)
+    assert "v2 calibration source digest does not match source file" in errors
 
 
 def test_calibration_digest_must_match_source_file():

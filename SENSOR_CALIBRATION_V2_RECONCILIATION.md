@@ -60,7 +60,7 @@ for the v2 conversion.
 |---|---|
 | `ultimate_pipeline/sensors/transform_conventions.py` | PR #62 canonical camera/LiDAR mount matrices selected; v1 projection helpers retained. Both output rotations require determinant +1 and round-trip checks. |
 | `ultimate_pipeline/sensors/calibration_contract.py` | v1 validation unchanged; separate v2 mount validation added with calibration SHA binding and no live-reprojection claim. |
-| `ultimate_pipeline/carla_tools/thesis_sensor_rig.py` | Production spawning uses canonical v2 mounts; v1 flags remain false/true; sensor and report payloads carry v2 matrix and convention metadata. Sensor-report ingestion rejects incompatible flags, missing raw transforms, or a serialized pose inconsistent with v2. |
+| `ultimate_pipeline/carla_tools/thesis_sensor_rig.py` | Production spawning uses canonical v2 mounts; calibration is parsed and SHA-256 hashed from the same byte snapshot; v1 flags remain false/true; sensor and report payloads carry v2 matrix and convention metadata. Sensor-report ingestion rejects incompatible flags, missing raw transforms, or a serialized pose inconsistent with v2. |
 | `ultimate_pipeline/sensors/dominik_sensor_setup.py` | Canonical pose wrappers retained; compatibility `flip_vehicle_y` is not applied as a second basis flip; report labels identify v2 mounting. |
 | `ultimate_pipeline/sensors/attach_sensors_safe.py` | Replaced inverse/relabel sequence with canonical camera and LiDAR matrices; output contract carries v2 label and keeps v1 flags separately. |
 | `ultimate_pipeline/tools/run_perception_safe.py` | Strict output validation checks the nested v2 convention, rehashes and parses the calibration source, derives each sensor's canonical mount from its named calibration entry, and requires the receipt matrix and applied pose to match; legacy receipt flags remain v1. |
@@ -72,7 +72,7 @@ for the v2 conversion.
 | `ultimate_pipeline/tools/validate_thesis_run.py` | Restored to production-base version; no silent reinterpretation of v1 terminal evidence. |
 | `ultimate_pipeline/sensors/calib_data.json` | Unmodified; baseline and candidate SHA-256 `d3ff2660b11ca56d16c6185e82d1b4c7fa94c5db27bb3469558442d79f4e97d9`. |
 | `submission/infrastructure/ultimate_pipeline/sensors/transform_conventions.py` | Reconciled to canonical primary transform implementation; legacy helper names remain available. |
-| `submission/infrastructure/ultimate_pipeline/carla_tools/thesis_sensor_rig.py` and mirror test | Corrected WP-A's direct LiDAR matrix use, fixed uninitialized verification state, enforced v1 flags, added v2 matrix and source-digest reporting, updated stale direction assertions, and added proper-rotation checks. Mirror suite run separately. |
+| `submission/infrastructure/ultimate_pipeline/carla_tools/thesis_sensor_rig.py` and mirror test | Corrected WP-A's direct LiDAR matrix use, fixed uninitialized verification state, enforced v1 flags, added v2 matrix and source-digest reporting from the same loaded byte snapshot, updated stale direction assertions, and added proper-rotation checks. Mirror suite run separately. |
 | `submission/infrastructure/ultimate_pipeline/tools/run_perception_safe.py` | Validator checks v1 flags, explicit v2 semantics, selected calibration digest, derives expected mounts from the digest-bound calibration, and checks rigid matrix and applied-pose agreement. |
 | Submission mirrors of `attach_sensors_safe.py`, `dominik_sensor_setup.py`, and `experiments/thesis/run_perception_capture_pair.py` | Canonical mount conversion, v2 labels and explicit-path refusal reconciled without replacing the divergent mirror modules wholesale. |
 | Submission mirrors of `agent_sync.yaml`, `agent_sync.py`, `record_route_fixed.py`, and `validate_thesis_run.py` | Preserved at production-base semantics; not involved in the v2 mount conversion. |
@@ -86,7 +86,7 @@ for the v2 conversion.
 - `python -m compileall -q ultimate_pipeline submission/infrastructure/ultimate_pipeline tests`: **PASS**, exit `0` after the final mirror source edits.
 - Submission mirror rig, safe-runner, and explicit-calibration selection: **35 passed**, using a temporary pytest config from `submission/infrastructure` to ensure imports resolve to the mirror.
 - Direct mirror report/validator smoke: **PASS**, both camera and LiDAR v2 matrices validate and v1 booleans remain false/true.
-- Full offline suite is **BLOCKED/INCOMPLETE** in the sparse worktree: collection reported 245 import errors because source directories outside the authorized sparse set are absent. Two RQ3 evidence suites also require missing `cryptography`. No result from that collection is classified as a candidate failure or as passing CI.
+- Full offline suite is **BLOCKED/INCOMPLETE** in the sparse worktree: the latest candidate run collected 3,585 items, then stopped at collection with 244 import errors and 1 skip because source directories outside the materialized sparse set are absent. Two RQ3 evidence suites also require missing `cryptography`. No result from that collection is classified as a candidate failure or as passing CI.
 - `git diff --check` on the candidate source/test paths: **PASS**, exit `0`. Whole-tree diff was avoided after the sparse expansion exposed unrelated LFS map payloads; those frozen artifacts are not staged or intentionally changed.
 
 ## Release gates
@@ -102,7 +102,7 @@ for the v2 conversion.
 | Full offline production CI | INCOMPLETE | Sparse checkout yielded 245 collection errors from unmaterialized source directories; independent of changed paths. Required `cryptography` is also absent for two evidence suites. |
 | `git diff --check` | PASS_SCOPED | Source/test paths only, exit 0; unrelated LFS payloads were excluded. |
 | CARLA spawn and reprojection | PENDING_RUNTIME | No CARLA runtime was started and no physical sensor reprojection was measured. |
-| Independent review | REQUEST_CHANGES; FIXED_PENDING_REREVIEW | Final review reproduced a self-consistent forged camera mount accepted by both validators. Follow-up derives expected matrices from the digest-bound calibration and rejects receipt mismatches; camera and LiDAR positive/negative regressions pass. Final re-review remains required. |
+| Independent review | REQUEST_CHANGES; FIXED_PENDING_REREVIEW | Review reproduced a self-consistent forged mount and identified producer-side digest TOCTOU. Validators now derive expected matrices from verified source bytes; both rig producers hash the same byte snapshot used to parse calibration. Camera, LiDAR, and changed-source regressions pass. Final re-review remains required. |
 | Production integration | NOT_INTEGRATED | No merge or production ref change. A reviewable PR remains conditional on finishing the candidate gates. |
 
 ## Offline verification recorded so far
@@ -111,9 +111,13 @@ for the v2 conversion.
 
 - Reviewed commit `6b757c47467af442fece0544c233120773b31282` was rejected because a forged rigid mount plus matching applied pose could pass while claiming the genuine calibration path and digest.
 - Primary and submission validators now load the calibration only after digest verification, resolve each sensor name to its calibration entry, derive the canonical CARLA mount, and reject any receipt matrix mismatch. The same check is covered for cameras and LiDAR in both code trees.
-- Exact focused primary command (strict receipt validator, conversion, selection, completeness and failure classification suites): **133 passed**, exit `0`, five existing configuration-path warnings.
-- Mirror command for rig, new forged-mount regressions and calibration-path selection: **16 passed, 1 failed**, exit `1`. Both new mirror adversarial tests passed; the remaining failure is `test_default_calib_exists`, which expects relative `calib_data.json` at the runner working directory. It is outside the validator change and is not claimed as a pass.
-- The reviewer reproduction is confirmed as a real defect; this correction still requires fresh independent review against the follow-up commit.
+- The reviewer then identified producer-side digest TOCTOU: the rig parsed calibration from one read and hashed a later path read. Both rig producers now parse and hash the same byte snapshot, so any later file change produces a receipt for the bytes actually used and strict validation rejects the changed file.
+- Exact focused primary command (strict receipt validator, conversion, selection, completeness and failure classification suites): **134 passed**, exit `0`, five existing configuration-path warnings.
+- Mirror rig, forged-mount regressions, and calibration-path selection attempt: **16 passed, 1 failed**, exit `1`. The remaining failure is `test_default_calib_exists`, which expects relative `calib_data.json` at the runner working directory. The failure is unchanged in the production-base source and is not claimed as a pass.
+- Mirror rig suite plus forged-mount/source-snapshot regressions, excluding the working-directory-dependent calibration-path test: **17 passed**, exit `0`, four existing configuration-path warnings.
+- `compileall` over `ultimate_pipeline`, the submission mirror, and `tests`: **PASS**, exit `0`. `git diff --check` against the production base: **PASS**, exit `0`.
+- Latest full offline command: `python -m pytest -q -p no:cacheprovider -rfEsx tests/unit ultimate_pipeline/tests/unit ultimate_pipeline/carla_tools/tests`; **INCOMPLETE**, exit `1`, 3,585 collected, 244 collection errors, 1 skipped. Missing sparse-checkout modules include `ultimate_pipeline.enrichment` and `ultimate_pipeline.lanes`.
+- Regression tests in both code trees mutate the calibration file after `ThesisSensorRig` construction and verify that the receipt retains the digest of the bytes used to build mounts, while strict validation rejects the now-changed source. These latest fixes still require fresh independent review against the follow-up commit.
 
 Command:
 
