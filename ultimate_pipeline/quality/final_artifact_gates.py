@@ -190,9 +190,8 @@ def check_artifact_structure(root: ET.Element, expected_scope: Optional[Dict[str
 
     It requires an ``OpenDRIVE`` root with a ``header``, at least one road,
     and for every road a positive, finite length and at least one planView
-    geometry. ``expected_scope`` (from the candidate manifest or release
-    profile) may add ``min_roads`` and ``expected_road_ids``. No historical
-    road count is hardcoded.
+    geometry. Any supplied scope is validated as a trusted source-derived
+    profile; candidate-provided scope is not authoritative.
     """
     issues = []
     if root.tag != "OpenDRIVE":
@@ -214,16 +213,14 @@ def check_artifact_structure(root: ET.Element, expected_scope: Optional[Dict[str
         if pv is None or not pv.findall("geometry"):
             issues.append({"kind": "missing_planview_geometry", "road": rid})
     scope = dict(expected_scope or {})
-    min_roads = scope.get("min_roads")
-    if isinstance(min_roads, int) and len(roads) < min_roads:
-        issues.append({"kind": "below_expected_scope", "road_count": len(roads), "min_roads": min_roads})
-    expected_ids = scope.get("expected_road_ids")
-    if expected_ids:
-        missing = sorted(set(map(str, expected_ids)) - {r.get("id") for r in roads})
-        if missing:
-            issues.append({"kind": "expected_roads_missing", "count": len(missing), "examples": missing[:20]})
+    scope_summary = None
+    if expected_scope is not None:
+        from ultimate_pipeline.quality.map_scope_authority import validate_candidate_scope
+        scope_result = validate_candidate_scope(root, scope)
+        issues.extend(scope_result["issues"])
+        scope_summary = scope_result["scope_identity"]
     return {"ok": not issues, "issue_count": len(issues), "issues": issues,
-            "road_count": len(roads), "expected_scope": scope or None}
+            "road_count": len(roads), "trusted_scope": scope_summary}
 
 
 def _gate_table(expected_scope: Optional[Dict[str, Any]] = None) -> Dict[str, Callable[[str, Any], Dict[str, Any]]]:
@@ -274,6 +271,7 @@ def compute_final_artifact_reports(
     *,
     expected_sha256: Optional[str] = None,
     expected_scope: Optional[Dict[str, Any]] = None,
+    require_trusted_scope: bool = False,
 ) -> Dict[str, Dict[str, Any]]:
     """Evaluate every FINAL_ARTIFACT_MANDATORY_GATES gate on ``xodr_path``.
 
@@ -335,4 +333,11 @@ def compute_final_artifact_reports(
                 f"final artifact identity changed during gate evaluation: {type(exc).__name__}: {exc}",
                 status=STATUS_BLOCKED_INPUT,
             )
+    if require_trusted_scope and expected_scope is None:
+        reports["artifact_structure"] = {
+            "ok": False, "status": STATUS_BLOCKED_INPUT,
+            "gate": "artifact_structure",
+            "reason": "trusted release scope is required but unavailable",
+            "issues": [{"kind": "missing_trusted_scope"}],
+        }
     return reports

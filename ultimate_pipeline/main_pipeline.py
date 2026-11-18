@@ -3556,8 +3556,15 @@ if str(_repo_root) not in sys.path:
             compute_final_artifact_reports,
         )
 
+        try:
+            from ultimate_pipeline.quality.map_scope_authority import resolve_trusted_release_scope
+            trusted_scope = resolve_trusted_release_scope()
+        except Exception as exc:
+            print(f"[AUTHORITY] trusted map scope unavailable (BLOCKED_INPUT): {exc}")
+            trusted_scope = None
         for gate_key, gate_report in compute_final_artifact_reports(
-            final_out, expected_sha256=expected_sha256
+            final_out, expected_sha256=expected_sha256,
+            expected_scope=trusted_scope, require_trusted_scope=True,
         ).items():
             acceptance_reports[gate_key] = gate_report
             print(

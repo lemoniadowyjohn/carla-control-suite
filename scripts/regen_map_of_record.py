@@ -376,7 +376,33 @@ def _settings_snapshot() -> Dict[str, Any]:
 def _emit_candidate(final_xodr: Path, out_dir: Path, name: str, acceptance: Dict[str, Any], manifest_verification: Dict[str, Any] | None = None) -> Path:
     target = CANDIDATE_DIR / name
     target.parent.mkdir(parents=True, exist_ok=True)
-    shutil.copy2(final_xodr, target)
+    expected_sha = acceptance.get("evaluated_xodr_sha256")
+    if not isinstance(expected_sha, str) or len(expected_sha) != 64:
+        raise RuntimeError("release acceptance has no evaluated artifact digest")
+    if acceptance.get("final_xodr_sha256") != expected_sha:
+        raise RuntimeError("release acceptance final/evaluated artifact digests differ")
+
+    # Publish only the exact bytes accepted above.  The temporary file is in
+    # the destination directory so hard-link publication is same-filesystem,
+    # atomic, and refuses to overwrite an existing candidate.
+    temp_target = target.with_name(f".{target.name}.{os.getpid()}.candidate.tmp")
+    try:
+        with final_xodr.open("rb") as source, temp_target.open("xb") as dest:
+            shutil.copyfileobj(source, dest, length=1024 * 1024)
+            dest.flush()
+            os.fsync(dest.fileno())
+        if _sha256_file(temp_target) != expected_sha:
+            raise RuntimeError("source bytes changed after acceptance; refusing candidate publication")
+        try:
+            os.link(temp_target, target)
+        except FileExistsError as exc:
+            raise RuntimeError(f"candidate already exists; refusing overwrite: {target}") from exc
+        except OSError as exc:
+            raise RuntimeError(f"atomic no-overwrite candidate publication unavailable: {exc}") from exc
+        if _sha256_file(target) != expected_sha:
+            raise RuntimeError("published candidate digest differs from accepted artifact")
+    finally:
+        temp_target.unlink(missing_ok=True)
     if manifest_verification:
         _write_json(out_dir / "manifest_verification.json", manifest_verification)
     provenance = {

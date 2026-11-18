@@ -87,6 +87,21 @@ def test_strict_status_truth_table(report, expected):
     assert valid is (expected == "PASS")
 
 
+@pytest.mark.parametrize("report", [
+    {"ok": True, "issue_count": "zero"},
+    {"ok": True, "issues": "none"},
+    {"ok": True, "failures": "none"},
+])
+def test_malformed_mandatory_issue_evidence_cannot_pass(report):
+    assert _status(report) == ("FAIL", False)
+
+
+def test_lane_normalizer_and_acceptance_reject_ok_with_failures():
+    report = fag.normalize_lane_section_report({"ok": True, "broken_count": 0, "failures": [{"road": "x"}]})
+    assert report["ok"] is True  # normalizer preserves producer field; consumer must reconcile it
+    assert _status(report) == ("FAIL", False)
+
+
 # ---- A7: issue-list results ---------------------------------------------------
 @pytest.mark.parametrize("bad", [None, "", 0, {"a": 1}, "issues", [1, 2], [None]])
 def test_issues_report_rejects_non_results(bad):
@@ -128,13 +143,99 @@ def test_incomplete_structures_fail(tmp_path, xml, kind):
     assert kind in {i["kind"] for i in rep["issues"]} and rep["ok"] is False
 
 
-def test_wrong_release_footprint_via_expected_scope(tmp_path):
-    xodr = _write(tmp_path, _xodr(_road(1, 0)))
+def _scope(ids=("1",), bounds=(0.0, 0.0, 10.0, 0.0)):
+    from ultimate_pipeline.quality.map_scope_authority import (
+        EXPECTED_MAP_SHA256, EXPECTED_OSM_SHA256, SCOPE_SCHEMA,
+    )
+    return {
+        "schema": SCOPE_SCHEMA, "authority": "verified_map_registry",
+        "map_sha256": EXPECTED_MAP_SHA256, "source_osm_sha256": EXPECTED_OSM_SHA256,
+        "frame_id": "ingolstadt_local_rebased", "expected_road_ids": list(ids),
+        "road_count": len(ids), "anchor_bounds_xy": list(bounds),
+    }
+
+
+def test_trusted_scope_accepts_exact_membership_and_footprint(tmp_path):
     rep = fag.compute_final_artifact_reports(
-        xodr, expected_scope={"min_roads": 5, "expected_road_ids": ["1", "2", "3"]}
+        _write(tmp_path, _xodr(_road(1, 0))), expected_scope=_scope()
     )["artifact_structure"]
-    kinds = {i["kind"] for i in rep["issues"]}
-    assert {"below_expected_scope", "expected_roads_missing"} <= kinds
+    assert rep["ok"] is True
+    assert rep["trusted_scope"]["road_count"] == 1
+
+
+def test_trusted_scope_rejects_omitted_roads_and_same_count_substitution(tmp_path):
+    xodr = _write(tmp_path, _xodr(_road(2, 0)))
+    rep = fag.compute_final_artifact_reports(xodr, expected_scope=_scope(("1",)))["artifact_structure"]
+    assert "road_membership_mismatch" in {item["kind"] for item in rep["issues"]}
+    assert rep["ok"] is False
+
+
+def test_trusted_scope_rejects_wrong_geographic_footprint(tmp_path):
+    xodr = _write(tmp_path, _xodr(_road(1, 50_000)))
+    rep = fag.compute_final_artifact_reports(xodr, expected_scope=_scope())["artifact_structure"]
+    assert "geographic_footprint_mismatch" in {item["kind"] for item in rep["issues"]}
+
+
+@pytest.mark.parametrize("field,value,kind", [
+    ("source_osm_sha256", "0" * 64, "source_identity_mismatch"),
+    ("map_sha256", "1" * 64, "map_identity_mismatch"),
+    ("frame_id", "wrong_frame", "frame_identity_mismatch"),
+])
+def test_trusted_scope_rejects_altered_identity(tmp_path, field, value, kind):
+    scope = _scope()
+    scope[field] = value
+    rep = fag.compute_final_artifact_reports(
+        _write(tmp_path, _xodr(_road(1, 0))), expected_scope=scope
+    )["artifact_structure"]
+    assert kind in {item["kind"] for item in rep["issues"]}
+    assert rep["ok"] is False
+
+
+def test_release_report_blocks_when_trusted_scope_is_missing(tmp_path):
+    reps = fag.compute_final_artifact_reports(
+        _write(tmp_path, _xodr(_road(1, 0))), require_trusted_scope=True
+    )
+    assert reps["artifact_structure"]["status"] == "BLOCKED_INPUT"
+    assert reps["artifact_structure"]["ok"] is False
+
+
+def test_regen_emission_is_bound_to_accepted_digest_and_never_overwrites(tmp_path, monkeypatch):
+    import hashlib
+    import scripts.regen_map_of_record as regen
+
+    source = Path(_write(tmp_path, _xodr(_road(1, 0))))
+    destination = tmp_path / "candidate"
+    monkeypatch.setattr(regen, "CANDIDATE_DIR", destination)
+    monkeypatch.setattr(regen, "compute_structural_signature", lambda path: {"num_roads": 1})
+    monkeypatch.setattr(regen, "_git_dirty", lambda: [])
+    monkeypatch.setattr(regen.subprocess, "check_output", lambda *a, **k: "test-commit")
+    monkeypatch.setattr(regen, "_settings_snapshot", lambda: {})
+    osm = tmp_path / "roads.osm"
+    osm.write_text("<osm/>", encoding="utf-8")
+    monkeypatch.setattr(regen, "_resolve_osm_from_manifest", lambda: osm)
+    monkeypatch.setattr(regen, "_write_json", lambda *a, **k: None)
+    digest = hashlib.sha256(source.read_bytes()).hexdigest()
+    acceptance = {"evaluated_xodr_sha256": digest, "final_xodr_sha256": digest}
+
+    published = regen._emit_candidate(source, tmp_path, "accepted.xodr", acceptance)
+    assert hashlib.sha256(published.read_bytes()).hexdigest() == digest
+    with pytest.raises(RuntimeError, match="refusing overwrite"):
+        regen._emit_candidate(source, tmp_path, "accepted.xodr", acceptance)
+
+
+def test_regen_emission_rejects_bytes_changed_after_acceptance(tmp_path, monkeypatch):
+    import scripts.regen_map_of_record as regen
+
+    accepted_source = Path(_write(tmp_path, _xodr(_road(1, 0))))
+    accepted_digest = __import__("hashlib").sha256(accepted_source.read_bytes()).hexdigest()
+    accepted_source.write_text(_xodr(_road(2, 0)), encoding="utf-8")
+    monkeypatch.setattr(regen, "CANDIDATE_DIR", tmp_path / "candidate")
+    with pytest.raises(RuntimeError, match="source bytes changed after acceptance"):
+        regen._emit_candidate(
+            accepted_source, tmp_path, "mutated.xodr",
+            {"evaluated_xodr_sha256": accepted_digest, "final_xodr_sha256": accepted_digest},
+        )
+    assert not (tmp_path / "candidate" / "mutated.xodr").exists()
 
 
 # ---- A8: XML boundary ---------------------------------------------------------
