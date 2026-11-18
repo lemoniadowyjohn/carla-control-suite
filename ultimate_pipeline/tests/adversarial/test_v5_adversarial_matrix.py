@@ -35,6 +35,7 @@ from ultimate_pipeline.tools.repo_health import (
 )
 from ultimate_pipeline.utils import run_provenance as rpv
 from ultimate_pipeline.utils.finalize_run_pack import (
+    PACK_COMPLETE_FILENAME,
     FinalizationError,
     finalize_run_pack,
     verify_run_pack,
@@ -158,6 +159,9 @@ def test_a08_manifest_without_success_is_not_promotable(tmp_path):
     _w(tmp_path / "a.bin", "aaa")
     finalize_run_pack(tmp_path, ["missing.bin"])
     assert not (tmp_path / "SUCCESS.txt").exists()
+    # F4 (V93 round 2): this assertion was vacuous -- a mutant that wrote
+    # PACK_COMPLETE.txt on a FAIL manifest was never caught by it.
+    assert not (tmp_path / PACK_COMPLETE_FILENAME).exists()
     assert json.loads((tmp_path / "signature.json").read_text())["status"] == STATUS_FAIL
 
 

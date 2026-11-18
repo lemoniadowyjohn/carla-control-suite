@@ -1,6 +1,7 @@
 # ultimate_pipeline/quality/check_lane_section_successors.py
 from __future__ import annotations
 import xml.etree.ElementTree as ET
+from ultimate_pipeline.quality.xml_admission import parse_xodr_file
 from typing import Dict, List, Optional, Tuple
 
 def _lane_id_int(lane_el: ET.Element) -> Optional[int]:
@@ -175,7 +176,7 @@ def repair_and_assert_lane_section_successors(
     - Repairs missing/broken successor/predecessor IDs by mapping to best matching lane in next section.
     - If strict=True, raises RuntimeError if any lane in lane_types cannot be repaired.
     """
-    tree = ET.parse(xodr_path)
+    tree = ET.ElementTree(parse_xodr_file(xodr_path))
     root = tree.getroot()
 
     failures = []

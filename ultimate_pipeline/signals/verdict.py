@@ -37,6 +37,7 @@ from ultimate_pipeline.signals.index import (
     STATUS_NOT_APPLICABLE,
     STATUS_PASS,
     STATUS_SKIP,
+    apply_release_acceptance_policy,
     build_signal_index,
     normalize_signal_status,
     run_has_v2_lifecycle_artifact,
@@ -231,6 +232,8 @@ def compute_final_run_verdict(
                 run_id=current_run_id,
                 legacy_receipt_in_v2_run=legacy_receipt_in_v2_run,
             )
+            # V86 A9: release profiles need release_eligible map acceptance.
+            status = apply_release_acceptance_policy(sid, status, payload, resolved_profile)
 
         record = {
             "signal_id": sid,

@@ -13,9 +13,15 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import errno
+import hashlib
 import json
 import os
 import sys
+import tempfile
+import threading
+import time
+from contextlib import contextmanager
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, Optional
@@ -51,19 +57,234 @@ from ultimate_pipeline.quality.map_acceptance import (
     build_map_acceptance,
     component_reachability_summary,
 )
-import xml.etree.ElementTree as ET
+from ultimate_pipeline.quality.xml_admission import parse_xodr_file, read_xodr_bytes
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_DEM = REPO_ROOT / "cities" / "ingolstadt" / "dem" / "dem_ing.tif"
+_ACCEPTANCE_LOCKS_GUARD = threading.Lock()
+_ACCEPTANCE_LOCKS: Dict[str, Any] = {}
+_ACCEPTANCE_LOCK_DEPTH = threading.local()
 
 
 def _write_json(path: Path, data: Dict[str, Any]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(data, indent=2, sort_keys=True, default=str), encoding="utf-8")
+    payload = json.dumps(data, indent=2, sort_keys=True, default=str)
+    temp_path = None
+    try:
+        with tempfile.NamedTemporaryFile(
+            mode="w", encoding="utf-8", dir=path.parent,
+            prefix=f".{path.name}.", suffix=".tmp", delete=False,
+        ) as stream:
+            temp_path = Path(stream.name)
+            stream.write(payload)
+            stream.flush()
+            os.fsync(stream.fileno())
+        os.replace(temp_path, path)
+    finally:
+        if temp_path is not None:
+            temp_path.unlink(missing_ok=True)
+
+
+@contextmanager
+def _exclusive_acceptance_output(out_dir: Path):
+    """Serialize complete acceptance bundles that target the same directory.
+
+    The OS lock is released on process exit, including crashes; the lock file
+    itself is intentionally retained and is never used as a stale-owner marker.
+    """
+    out_dir.mkdir(parents=True, exist_ok=True)
+    lock_key = os.path.normcase(str(out_dir.resolve()))
+    with _ACCEPTANCE_LOCKS_GUARD:
+        thread_lock = _ACCEPTANCE_LOCKS.setdefault(lock_key, threading.RLock())
+    thread_lock.acquire()
+    depths = getattr(_ACCEPTANCE_LOCK_DEPTH, "by_path", None)
+    if depths is None:
+        depths = {}
+        _ACCEPTANCE_LOCK_DEPTH.by_path = depths
+    if depths.get(lock_key, 0):
+        depths[lock_key] += 1
+        try:
+            yield
+        finally:
+            depths[lock_key] -= 1
+            thread_lock.release()
+        return
+
+    depths[lock_key] = 1
+    lock_path = Path(lock_key) / ".acceptance-output.lock"
+    fd = None
+    try:
+        fd = os.open(str(lock_path), os.O_CREAT | os.O_RDWR, 0o600)
+        if os.name == "nt":
+            import msvcrt
+
+            while True:
+                try:
+                    os.lseek(fd, 0, os.SEEK_SET)
+                    msvcrt.locking(fd, msvcrt.LK_NBLCK, 1)
+                    break
+                except OSError as exc:
+                    if exc.errno not in (errno.EACCES, errno.EDEADLK):
+                        raise
+                    time.sleep(0.05)
+            try:
+                yield
+            finally:
+                os.lseek(fd, 0, os.SEEK_SET)
+                msvcrt.locking(fd, msvcrt.LK_UNLCK, 1)
+        else:
+            import fcntl
+
+            fcntl.flock(fd, fcntl.LOCK_EX)
+            try:
+                yield
+            finally:
+                fcntl.flock(fd, fcntl.LOCK_UN)
+    finally:
+        depths.pop(lock_key, None)
+        if fd is not None:
+            os.close(fd)
+        thread_lock.release()
+
+
+def _evaluate_candidate_unlocked(
+    xodr: Path,
+    out_dir: Path,
+    dem: Optional[Path],
+    *,
+    purpose: str = "release",
+    require_enrichment: bool = False,
+    require_component_reachability: bool = False,
+) -> Dict[str, Any]:
+    """Guarded candidate acceptance shared by the CLI and regen_map_of_record (V86 A6/A8/A9).
+
+    1. XML boundary first. On a DOCTYPE/ENTITY or oversize input, NO checker
+       touches the bytes, and every mandatory gate is BLOCKED_INPUT.
+    2. One immutable content-addressed snapshot. Every checker reads it.
+    3. The verdict is bound to the snapshot digest (``evaluated_xodr_sha256``)
+       and compared with the published candidate path.
+    4. After the durable write, the candidate must still match the digest.
+       Otherwise ``artifact_identity_after_write`` is recorded and the
+       result is not release-eligible.
+    """
+    from ultimate_pipeline.quality.final_artifact_gates import (
+        ACCEPTANCE_POLICY_VERSION,
+        RELEASE_MANDATORY_GATES,
+        STATUS_BLOCKED_INPUT,
+        UnsafeXMLError,
+        check_xml_boundary,
+        not_run_report,
+        sha256_bytes,
+        snapshot_final_artifact,
+        verify_artifact_unchanged,
+    )
+
+    snapshot = snapshot_final_artifact(str(xodr), str(out_dir / ".acceptance_snapshot"))
+    evaluated_sha = snapshot["sha256"]
+    try:
+        check_xml_boundary(read_xodr_bytes(snapshot["path"]))
+    except UnsafeXMLError as exc:
+        print(f"[gate] XML boundary REJECTED input: {exc}")
+        reports: Dict[str, Any] = {
+            gate: not_run_report(gate, f"XML boundary: {exc}", status=STATUS_BLOCKED_INPUT)
+            for gate in RELEASE_MANDATORY_GATES
+        }
+    else:
+        reports = run_gates(Path(snapshot["path"]), out_dir, dem)
+
+    acceptance = build_map_acceptance(
+        reports,
+        run_id=xodr.stem,
+        final_xodr_path=str(xodr),
+        out_dir=str(out_dir),
+        require_enrichment=require_enrichment,
+        require_component_reachability=require_component_reachability,
+        mandatory_gates=RELEASE_MANDATORY_GATES if purpose == "release" else None,
+        purpose=purpose,
+        policy_version=ACCEPTANCE_POLICY_VERSION,
+        evaluated_xodr_sha256=evaluated_sha,
+    )
+    _write_json(out_dir / "map_acceptance.json", acceptance)
+    unchanged, actual = verify_artifact_unchanged(str(xodr), evaluated_sha)
+    if not unchanged:
+        # Invalidate the canonical receipt before returning or raising; a stale
+        # PASS must never remain at the authoritative map_acceptance.json path.
+        acceptance = dict(
+            acceptance,
+            valid=False,
+            valid_for_experiments=False,
+            release_eligible=False,
+            artifact_identity_after_write={"evaluated": evaluated_sha, "now": actual},
+        )
+        failures = list(acceptance.get("hard_fail_reasons", []))
+        failures.append({"gate": "artifact_identity", "reason": "published candidate changed after evaluation"})
+        acceptance["hard_fail_reasons"] = failures
+        acceptance["failed_gates"] = list(dict.fromkeys([*acceptance.get("failed_gates", []), "artifact_identity"]))
+        artifact_path = acceptance.get("acceptance_artifact")
+        if artifact_path:
+            artifact_payload = {
+                key: value for key, value in acceptance.items()
+                if key not in ("acceptance_artifact", "acceptance_artifact_sha256", "payload_sha256")
+            }
+            _write_json(Path(artifact_path), artifact_payload)
+            acceptance["acceptance_artifact_sha256"] = hashlib.sha256(
+                Path(artifact_path).read_bytes()
+            ).hexdigest()
+        acceptance["payload_sha256"] = hashlib.sha256(
+            json.dumps(
+                {
+                    key: value for key, value in acceptance.items()
+                    if key not in ("acceptance_artifact_sha256", "payload_sha256")
+                },
+                sort_keys=True,
+                ensure_ascii=True,
+            ).encode("utf-8")
+        ).hexdigest()
+        _write_json(out_dir / "map_acceptance.json", acceptance)
+        _write_json(out_dir / "map_acceptance.identity_failure.json", acceptance)
+    if sha256_bytes(read_xodr_bytes(snapshot["path"])) != evaluated_sha:
+        raise RuntimeError(f"acceptance snapshot {snapshot['path']} changed during evaluation")
+    return acceptance
+
+
+def evaluate_candidate(
+    xodr: Path,
+    out_dir: Path,
+    dem: Optional[Path],
+    *,
+    purpose: str = "release",
+    require_enrichment: bool = False,
+    require_component_reachability: bool = False,
+) -> Dict[str, Any]:
+    """Publish one complete acceptance bundle at a time per output directory."""
+    with _exclusive_acceptance_output(out_dir):
+        return _evaluate_candidate_unlocked(
+            xodr,
+            out_dir,
+            dem,
+            purpose=purpose,
+            require_enrichment=require_enrichment,
+            require_component_reachability=require_component_reachability,
+        )
 
 
 def run_gates(xodr: Path, out_dir: Path, dem: Optional[Path]) -> Dict[str, Any]:
     reports: Dict[str, Any] = {}
+
+    # V86 A2/A8: structural scope, evaluated through the hardened XML
+    # boundary (no DOCTYPE/ENTITY; size-capped). The definition is shared
+    # with the production pipeline.
+    from ultimate_pipeline.quality.final_artifact_gates import (
+        check_artifact_structure,
+        parse_xodr_bytes,
+    )
+    try:
+        rep = check_artifact_structure(parse_xodr_bytes(read_xodr_bytes(xodr)))
+    except Exception as exc:  # noqa: BLE001 - recorded, fail-closed
+        rep = {"ok": None, "status": "BLOCKED_INPUT", "reason": f"{type(exc).__name__}: {exc}"}
+    reports["artifact_structure"] = rep
+    _write_json(out_dir / "artifact_structure.json", rep)
+    print(f"[gate] artifact_structure: ok={rep.get('ok')} roads={rep.get('road_count')}")
 
     rep = check_geometric_continuity(str(xodr), eps_xy=0.05, eps_hdg=0.01)
     reports["geometric_continuity"] = rep
@@ -75,7 +296,12 @@ def run_gates(xodr: Path, out_dir: Path, dem: Optional[Path]) -> Dict[str, Any]:
     _write_json(out_dir / "lane_link_target_report.json", rep)
     print(f"[gate] lane_connectivity: ok={rep.get('ok')} broken={rep.get('still_broken_count', rep.get('num_issues', '?'))}")
 
-    rep = repair_and_assert_lane_section_successors(str(xodr), out_path=None, strict=True)
+    from ultimate_pipeline.quality.final_artifact_gates import normalize_lane_section_report
+
+    # V86 A4: explicit 'ok' from the failures list (no inferred success).
+    rep = normalize_lane_section_report(
+        repair_and_assert_lane_section_successors(str(xodr), out_path=None, strict=True)
+    )
     reports["lane_section_successors"] = rep
     _write_json(out_dir / "lane_section_successors.json", rep)
     print(f"[gate] lane_section_successors: ok={rep.get('ok')} broken={rep.get('still_broken_count', rep.get('num_issues', '?'))}")
@@ -130,7 +356,7 @@ def run_gates(xodr: Path, out_dir: Path, dem: Optional[Path]) -> Dict[str, Any]:
         f"zero_ratio={rep.get('zero_ratio')} max_link_dz={rep.get('max_link_dz')}"
     )
 
-    physics_root = ET.parse(str(xodr)).getroot()
+    physics_root = parse_xodr_file(str(xodr))
 
     elev_issues = ElevationSmoothnessGate.validate(physics_root)
     rep = {"ok": len(elev_issues) == 0, "issue_count": len(elev_issues), "issues": elev_issues}
@@ -207,7 +433,7 @@ def run_gates(xodr: Path, out_dir: Path, dem: Optional[Path]) -> Dict[str, Any]:
         print(f"[info] elevation_summary failed: {exc}")
 
     try:
-        comp_root = ET.parse(str(xodr)).getroot()
+        comp_root = parse_xodr_file(str(xodr))
         comp_rep = component_reachability_summary(comp_root)
         if comp_rep is not None:
             reports["component_reachability"] = comp_rep
@@ -230,6 +456,16 @@ def main() -> int:
         action="store_true",
         help="Hard-fail acceptance if >5% of lanes are off the main drivable component",
     )
+    ap.add_argument(
+        "--purpose",
+        choices=("release", "diagnostic"),
+        default="release",
+        help=(
+            "release (default): enforce the authoritative mandatory gate set; the only "
+            "result that can be release-eligible. diagnostic: informational only, never "
+            "release-eligible."
+        ),
+    )
     args = ap.parse_args()
 
     xodr = args.xodr.expanduser().resolve()
@@ -242,17 +478,12 @@ def main() -> int:
     out_dir.mkdir(parents=True, exist_ok=True)
 
     print(f"candidate: {xodr} ({xodr.stat().st_size / 1e6:.1f} MB)")
-    reports = run_gates(xodr, out_dir, args.dem)
-
-    acceptance = build_map_acceptance(
-        reports,
-        run_id=xodr.stem,
-        final_xodr_path=str(xodr),
-        out_dir=str(out_dir),
+    acceptance = evaluate_candidate(
+        xodr, out_dir, args.dem,
+        purpose=args.purpose,
         require_enrichment=args.require_enrichment,
         require_component_reachability=args.require_component_reachability,
     )
-    _write_json(out_dir / "map_acceptance.json", acceptance)
 
     print("\n=== MAP ACCEPTANCE ===")
     print(f"valid_for_experiments: {acceptance['valid_for_experiments']}")
@@ -264,6 +495,9 @@ def main() -> int:
         print(f"  metric {key}: {value}")
     print(f"sha256: {acceptance.get('final_xodr_sha256')}")
     print(f"reports written to: {out_dir}")
+    print(f"purpose: {args.purpose} release_eligible: {acceptance['release_eligible']}")
+    if args.purpose == "release":
+        return 0 if acceptance["release_eligible"] else 1
     return 0 if acceptance["valid_for_experiments"] else 1
 
 

@@ -48,6 +48,7 @@ from ultimate_pipeline.contracts.stage_capabilities import (
     FINAL_ARTIFACT_PUBLISHED,
     STRUCTURE_FROZEN,
 )
+from ultimate_pipeline.quality.final_artifact_gates import RELEASE_MANDATORY_GATES
 
 
 _XODR = """<?xml version="1.0" encoding="UTF-8"?>
@@ -67,8 +68,29 @@ def _write_valid_receipt(run_dir: Path, final_name: str = "08h3_zseams_repaired.
     parent = run_dir / "08h2_degenerate_lanes_repaired.xodr"
     parent.write_text(_XODR, encoding="utf-8")
 
+    # V93 round 2 (F2): a bare valid_for_experiments=True no longer
+    # authorizes publication -- the acceptance file must satisfy the full
+    # release contract (validate_release_acceptance_contract).
+    final_sha = sha256_file(str(final))
     acceptance = run_dir / "map_acceptance.json"
-    acceptance.write_text('{"valid_for_experiments": true}', encoding="utf-8")
+    acceptance.write_text(
+        json.dumps(
+            {
+                "valid_for_experiments": True,
+                "release_eligible": True,
+                "artifact_identity_verified": True,
+                "acceptance_policy": {"purpose": "release"},
+                "mandatory_gates": list(RELEASE_MANDATORY_GATES),
+                "mandatory_gate_status": {gate: "PASS" for gate in RELEASE_MANDATORY_GATES},
+                "final_xodr_sha256": final_sha,
+                "evaluated_xodr_sha256": final_sha,
+                "run_id": run_dir.name,
+                "hard_fail_reasons": [],
+                "failed_gates": [],
+            }
+        ),
+        encoding="utf-8",
+    )
 
     source_manifest = run_dir / "inputs_manifest.json"
     source_manifest.write_text('{"inputs": {}}', encoding="utf-8")
