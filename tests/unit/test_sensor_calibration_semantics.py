@@ -9,6 +9,7 @@ from ultimate_pipeline.sensors.calibration_contract import (
     canonical_calib_path,
     effective_camera_intrinsics,
     rig_round_trip_check,
+    validate_carla_mounting_v2,
     validate_calibration_contract,
 )
 
@@ -98,3 +99,30 @@ def test_canonical_calib_file_exists_and_validates():
     assert report["calibration_semantics"] == CALIBRATION_SEMANTICS
     assert report["camera_count"] >= 1
     assert report["lidar_count"] >= 1
+
+
+def test_v1_semantics_are_preserved_and_v2_mounting_is_separate():
+    assert CALIBRATION_SEMANTICS["cTv"] == "vehicle_to_camera_used_directly_not_inverted"
+    assert CALIBRATION_SEMANTICS["vTl"] == "lidar_to_vehicle_inverted_to_vehicle_to_lidar"
+
+    report = validate_carla_mounting_v2(canonical_calib_path())
+    assert report["schema"] == "CARLA_SENSOR_MOUNTING/v2"
+    assert report["status"] == "PASS_OFFLINE_GEOMETRY"
+    assert report["live_reprojection_verified"] is False
+    assert report["calib_sha256"] == "D3FF2660B11CA56D16C6185E82D1B4C7FA94C5DB27BB3469558442D79F4E97D9".lower()
+    assert report["cameras"]
+    assert report["lidars"]
+    for sensors in (report["cameras"], report["lidars"]):
+        for name, sensor in sensors.items():
+            assert sensor["orthonormal"] is True, name
+            assert sensor["rotation_determinant"] == pytest.approx(1.0, abs=1e-6), name
+
+
+def test_v2_mounting_rejects_reflected_source_transform(tmp_path):
+    invalid = _tiny_calib()
+    invalid["cameras"]["front"]["cTv"][0][0] = -1.0
+    path = tmp_path / "invalid_calib.json"
+    path.write_text(json.dumps(invalid), encoding="utf-8")
+    report = validate_carla_mounting_v2(path)
+    assert report["status"] == "FAIL_CLOSED"
+    assert any("improper rotation" in error for error in report["errors"])

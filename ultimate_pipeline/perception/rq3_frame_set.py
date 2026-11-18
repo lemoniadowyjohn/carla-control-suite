@@ -174,6 +174,33 @@ def validate_arm_frame_set(
     accepted: List[int] = []
     rejected: List[Dict[str, Any]] = []
 
+    # A zero-frame capture cannot prove successful synchronized capture.
+    # Likewise, asking for zero modalities would make every member set
+    # vacuously complete. Neither is admissible as governed RQ3 evidence.
+    if not grouped or not required_modalities:
+        reason = (
+            REASON_EMPTY_FRAME_INDEX if not grouped
+            else REASON_MISSING_MODALITY
+        )
+        return {
+            "arm_name": arm.arm_name,
+            "valid": False,
+            "accepted_frame_indices": [],
+            "accepted_count": 0,
+            "rejected": [{
+                "frame_index": None,
+                "reasons": [{
+                    "reason": reason,
+                    "frame_index": None,
+                    "detail": (
+                        "no captured frames" if not grouped
+                        else "required_modalities must not be empty"
+                    ),
+                }],
+            }],
+            "total_frame_indices": len(grouped),
+        }
+
     for frame_index in sorted(grouped.keys()):
         frame_reasons: List[Dict[str, Any]] = []
         members = grouped[frame_index]

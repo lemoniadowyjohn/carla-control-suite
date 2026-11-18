@@ -58,7 +58,15 @@ def test_thesis_sensor_rig_no_inversion(tmp_path: Path) -> None:
     assert lidar["vtl_inverted"] is True
     assert lidar["inversion_applied"] is True
     assert lidar["raw_direction_label"] == "lidar_to_vehicle"
-    assert lidar["used_direction_label"] == "vehicle_to_lidar"
+    assert lidar["used_direction_label"] == "sensor_to_vehicle_carla"
+    assert cam["mounting_ctv_inverted"] is True
+    assert lidar["mounting_vtl_inverted"] is False
+    for sensor in (cam, lidar):
+        matrix = sensor["mounting_matrix_sensor_to_vehicle_carla"]
+        rotation = [row[:3] for row in matrix[:3]]
+        assert len(matrix) == 4
+        assert all(abs(sum(rotation[r][k] * rotation[c][k] for k in range(3)) - (1.0 if r == c else 0.0)) < 1e-6
+                   for r in range(3) for c in range(3))
 
 
 def test_rig_verification_to_dict() -> None:
@@ -418,17 +426,14 @@ def test_thesis_invariant_ctv_vtl_never_inverted(tmp_path: Path) -> None:
         assert reports[cam_name]["ctv_inverted"] is False
         assert reports[cam_name]["inversion_applied"] is False
         assert reports[cam_name]["raw_direction_label"] == "vehicle_to_camera"
-        assert (
-            "FORBIDDEN" in reports[cam_name]["transform_convention"]
-            or "directly" in reports[cam_name]["transform_convention"]
-        )
+        assert reports[cam_name]["transform_convention"].startswith("CARLA_SENSOR_MOUNTING/v2")
 
     # All lidars must have vtl_inverted=True and inversion_applied=True
     assert "top_lidar" in reports
     assert reports["top_lidar"]["vtl_inverted"] is True
     assert reports["top_lidar"]["inversion_applied"] is True
     assert reports["top_lidar"]["raw_direction_label"] == "lidar_to_vehicle"
-    assert reports["top_lidar"]["used_direction_label"] == "vehicle_to_lidar"
+    assert reports["top_lidar"]["used_direction_label"] == "sensor_to_vehicle_carla"
 
 
 def test_healthcheck_stops_temporary_listeners() -> None:

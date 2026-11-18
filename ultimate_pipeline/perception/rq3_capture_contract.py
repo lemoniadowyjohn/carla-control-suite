@@ -465,9 +465,44 @@ def evaluate_frame_completeness(
     with partial frames is INCOMPLETE (never PASS). Missing required sensors
     or zero frames is FAIL.
     """
-    expected = dict(expected_cameras)
-    for name, count in (expected_lidars or {}).items():
-        expected[name] = int(count)
+    # Fail closed before evaluating any counts: a vacuous sensor requirement
+    # previously returned PASS, as did negative expected counts (0 >= -1).
+    # Require integral, positive requirements and nonnegative observed counts.
+    invalid_requirements: List[str] = []
+    if not isinstance(expected_cameras, Mapping):
+        invalid_requirements.append("expected_cameras must be a mapping")
+    if expected_lidars is not None and not isinstance(expected_lidars, Mapping):
+        invalid_requirements.append("expected_lidars must be a mapping")
+    if not isinstance(actual_counts, Mapping):
+        invalid_requirements.append("actual_counts must be a mapping")
+    cameras = dict(expected_cameras) if isinstance(expected_cameras, Mapping) else {}
+    lidars = dict(expected_lidars) if isinstance(expected_lidars, Mapping) else {}
+    if cameras.keys() & lidars.keys():
+        invalid_requirements.append("duplicate sensor names across cameras and lidars")
+    expected = dict(cameras)
+    expected.update(lidars)
+    if not expected:
+        invalid_requirements.append("at least one required sensor is mandatory")
+    for name, count in expected.items():
+        if not isinstance(name, str) or not name.strip():
+            invalid_requirements.append("required sensor name must be nonempty text")
+        if type(count) is not int or count <= 0:
+            invalid_requirements.append(f"invalid expected frame count for {name!r}")
+        if isinstance(actual_counts, Mapping) and name in actual_counts:
+            actual = actual_counts[name]
+            if type(actual) is not int or actual < 0:
+                invalid_requirements.append(f"invalid observed frame count for {name!r}")
+    if invalid_requirements:
+        return {
+            "status": COMPLETION_FAIL,
+            "complete": False,
+            "timed_out": bool(timed_out),
+            "save_error_count": len(save_errors or []),
+            "missing_sensors": [],
+            "per_sensor": [],
+            "closure": COMPLETION_FAIL,
+            "invalid_requirements": invalid_requirements,
+        }
 
     per_sensor: List[Dict[str, Any]] = []
     missing: List[str] = []

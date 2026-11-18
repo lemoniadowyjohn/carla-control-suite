@@ -9,17 +9,44 @@ test_run_perception_safe*.py variants existed at some point, none currently on t
 """
 from __future__ import annotations
 
+import hashlib
+from pathlib import Path
+
 from ultimate_pipeline.tools.run_perception_safe import _rig_verification_contract_errors
+
+_CALIB_PATH = Path(__file__).resolve().parents[2] / "ultimate_pipeline" / "sensors" / "calib_data.json"
+_CALIB_SHA256 = hashlib.sha256(_CALIB_PATH.read_bytes()).hexdigest()
 
 
 def _valid_verification(sensor_names=("rgb_front",)):
-    sensors = {name: {} for name in sensor_names}
-    applied_sensors = {name: {"relative_to_vehicle": {"x": 1.5, "y": 0.0, "z": 2.4}} for name in sensor_names}
+    identity = [[1.0, 0.0, 0.0, 0.0], [0.0, 1.0, 0.0, 0.0], [0.0, 0.0, 1.0, 0.0], [0.0, 0.0, 0.0, 1.0]]
+    sensors = {
+        name: {
+            "type": "lidar" if "lidar" in name else "camera",
+            "mounting_ctv_inverted": "lidar" not in name,
+            "mounting_vtl_inverted": False,
+            "mounting_matrix_sensor_to_vehicle_carla": identity,
+        }
+        for name in sensor_names
+    }
+    applied_sensors = {
+        name: {"relative_to_vehicle": {"x": 0.0, "y": 0.0, "z": 0.0, "roll": 0.0, "pitch": 0.0, "yaw": 0.0}}
+        for name in sensor_names
+    }
     return {
         "cTv_inverted": False,
         "vTl_inverted": True,
         "use_K_undistortion_only": True,
         "sensors": sensors,
+        "sensor_contract": {
+            "legacy_v1_flags_scope": "projection_backprojection_only",
+            "carla_attachment_semantics": "v2",
+            "camera_mounting": "S_vehicle @ inverse(cTv) @ C_CARLA_camera_to_OpenCV",
+            "lidar_mounting": "S_vehicle @ vTl @ S_lidar",
+            "calib_sha256": _CALIB_SHA256,
+            "calib_path": str(_CALIB_PATH.resolve()),
+            "live_reprojection_verified": False,
+        },
         "applied_carla_transforms": {"sensors": applied_sensors},
     }
 
@@ -28,18 +55,32 @@ def test_fully_valid_contract_has_no_errors():
     assert _rig_verification_contract_errors(_valid_verification()) == []
 
 
+def test_calibration_digest_must_match_source_file():
+    v = _valid_verification()
+    v["sensor_contract"]["calib_sha256"] = "0" * 64
+    errors = _rig_verification_contract_errors(v)
+    assert "v2 calibration source digest does not match source file" in errors
+
+
+def test_calibration_source_path_is_required():
+    v = _valid_verification()
+    del v["sensor_contract"]["calib_path"]
+    errors = _rig_verification_contract_errors(v)
+    assert "v2 calibration source path is missing or invalid" in errors
+
+
 def test_ctv_inverted_true_is_an_error():
     v = _valid_verification()
     v["cTv_inverted"] = True
     errors = _rig_verification_contract_errors(v)
-    assert "cTv_inverted must be false" in errors
+    assert "legacy v1 cTv_inverted must be explicitly false" in errors
 
 
 def test_ctv_inverted_missing_is_an_error():
     v = _valid_verification()
     del v["cTv_inverted"]
     errors = _rig_verification_contract_errors(v)
-    assert "cTv_inverted must be false" in errors
+    assert "legacy v1 cTv_inverted must be explicitly false" in errors
 
 
 def test_ctv_inverted_accepts_lowercase_key_fallback():
@@ -47,14 +88,14 @@ def test_ctv_inverted_accepts_lowercase_key_fallback():
     del v["cTv_inverted"]
     v["ctv_inverted"] = False  # lowercase fallback key
     errors = _rig_verification_contract_errors(v)
-    assert "cTv_inverted must be false" not in errors
+    assert "legacy v1 cTv_inverted must be explicitly false" not in errors
 
 
 def test_vtl_inverted_false_is_an_error():
     v = _valid_verification()
     v["vTl_inverted"] = False
     errors = _rig_verification_contract_errors(v)
-    assert "vTl_inverted must be true" in errors
+    assert "legacy v1 vTl_inverted must be explicitly true" in errors
 
 
 def test_vtl_inverted_accepts_lowercase_key_fallback():
@@ -62,7 +103,7 @@ def test_vtl_inverted_accepts_lowercase_key_fallback():
     del v["vTl_inverted"]
     v["vtl_inverted"] = True
     errors = _rig_verification_contract_errors(v)
-    assert "vTl_inverted must be true" not in errors
+    assert "legacy v1 vTl_inverted must be explicitly true" not in errors
 
 
 def test_use_k_undistortion_only_not_true_is_an_error():
@@ -124,4 +165,16 @@ def test_multiple_independent_errors_all_accumulate():
     # cTv, vTl, use_K, sensors, applied_carla_transforms, and (since resetting
     # applied_carla_transforms to {} still lacks a "sensors" key) applied_carla_transforms.
     # sensors -- 6 independent violations, none short-circuits the rest.
-    assert len(errors) == 6
+    assert any("cTv_inverted" in error for error in errors)
+    assert any("vTl_inverted" in error for error in errors)
+    assert any("sensors must be a non-empty object" in error for error in errors)
+    assert any("applied_carla_transforms" in error for error in errors)
+
+
+def test_missing_v2_semantics_and_improper_mounting_are_rejected():
+    v = _valid_verification()
+    v["sensor_contract"].pop("carla_attachment_semantics")
+    v["sensors"]["rgb_front"]["mounting_matrix_sensor_to_vehicle_carla"][0][0] = -1.0
+    errors = _rig_verification_contract_errors(v)
+    assert any("versioned v2" in error for error in errors)
+    assert any("mounting matrix" in error for error in errors)

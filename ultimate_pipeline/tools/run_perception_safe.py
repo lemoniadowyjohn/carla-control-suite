@@ -31,6 +31,7 @@ import sys
 import time
 import traceback
 import shutil
+import numpy as np
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
@@ -57,6 +58,7 @@ from ultimate_pipeline.quality.check_elevation_missing_and_cliffs import (
 )
 from ultimate_pipeline.sensors.transform_conventions import (
     camera_attachment_pose_from_cTv,
+    matrix_to_unreal_pose,
 )
 from ultimate_pipeline.tools.perception_artifacts import render_lidar_bev
 from ultimate_pipeline.carla_tools.runtime_enrichments import (
@@ -1886,11 +1888,40 @@ def _rig_verification_contract_errors(rig_verification: Dict[str, Any]) -> List[
         rig_verification.get("vtl_inverted"),
     )
     if ctv_inverted is not False:
-        errors.append("cTv_inverted must be false")
+        errors.append("legacy v1 cTv_inverted must be explicitly false")
     if vtl_inverted is not True:
-        errors.append("vTl_inverted must be true")
+        errors.append("legacy v1 vTl_inverted must be explicitly true")
     if rig_verification.get("use_K_undistortion_only") is not True:
         errors.append("use_K_undistortion_only must be true")
+
+    sensor_contract = rig_verification.get("sensor_contract")
+    if not isinstance(sensor_contract, dict):
+        errors.append("sensor_contract missing or invalid")
+        sensor_contract = {}
+    if sensor_contract.get("carla_attachment_semantics") != "v2":
+        errors.append("CARLA attachment semantics must be explicitly versioned v2")
+    if sensor_contract.get("legacy_v1_flags_scope") != "projection_backprojection_only":
+        errors.append("legacy v1 inversion-flag scope is missing or invalid")
+    if sensor_contract.get("camera_mounting") != "S_vehicle @ inverse(cTv) @ C_CARLA_camera_to_OpenCV":
+        errors.append("v2 camera mounting convention is missing or invalid")
+    if sensor_contract.get("lidar_mounting") != "S_vehicle @ vTl @ S_lidar":
+        errors.append("v2 LiDAR mounting convention is missing or invalid")
+    calib_sha256 = sensor_contract.get("calib_sha256")
+    if not isinstance(calib_sha256, str) or not re.fullmatch(r"[0-9a-fA-F]{64}", calib_sha256):
+        errors.append("v2 calibration source SHA-256 is missing or invalid")
+    calib_path_text = sensor_contract.get("calib_path")
+    if not isinstance(calib_path_text, str) or not calib_path_text.strip():
+        errors.append("v2 calibration source path is missing or invalid")
+    else:
+        calib_path = Path(calib_path_text).expanduser()
+        if not calib_path.is_file():
+            errors.append("v2 calibration source file is missing")
+        elif isinstance(calib_sha256, str) and re.fullmatch(r"[0-9a-fA-F]{64}", calib_sha256):
+            actual_digest = safe_sha256_file(str(calib_path))
+            if str(actual_digest).lower() != calib_sha256.lower():
+                errors.append("v2 calibration source digest does not match source file")
+    if sensor_contract.get("live_reprojection_verified") is not False:
+        errors.append("offline rig contract cannot claim live reprojection")
 
     sensors = rig_verification.get("sensors")
     if not isinstance(sensors, dict) or not sensors:
@@ -1907,6 +1938,28 @@ def _rig_verification_contract_errors(rig_verification: Dict[str, Any]) -> List[
         applied_sensors = {}
 
     for sensor_name in sensors.keys():
+        sensor = sensors.get(sensor_name)
+        if not isinstance(sensor, dict):
+            errors.append(f"invalid sensor contract for '{sensor_name}'")
+            continue
+        if sensor.get("type") == "camera" and sensor.get("mounting_ctv_inverted") is not True:
+            errors.append(f"camera '{sensor_name}' lacks v2 mounting direction")
+        if sensor.get("type") == "lidar" and sensor.get("mounting_vtl_inverted") is not False:
+            errors.append(f"LiDAR '{sensor_name}' lacks v2 mounting direction")
+        matrix = sensor.get("mounting_matrix_sensor_to_vehicle_carla")
+        try:
+            matrix_array = np.asarray(matrix, dtype=float)
+            valid_matrix = (
+                matrix_array.shape == (4, 4)
+                and bool(np.all(np.isfinite(matrix_array)))
+                and bool(np.allclose(matrix_array[3], [0.0, 0.0, 0.0, 1.0], atol=1e-7))
+                and bool(np.allclose(matrix_array[:3, :3].T @ matrix_array[:3, :3], np.eye(3), atol=1e-6))
+                and bool(np.isclose(np.linalg.det(matrix_array[:3, :3]), 1.0, atol=1e-6))
+            )
+        except (TypeError, ValueError):
+            valid_matrix = False
+        if not valid_matrix:
+            errors.append(f"sensor '{sensor_name}' lacks a 4x4 v2 mounting matrix")
         sensor_entry = applied_sensors.get(str(sensor_name))
         if not isinstance(sensor_entry, dict):
             errors.append(f"missing applied transform for sensor '{sensor_name}'")
@@ -1916,6 +1969,20 @@ def _rig_verification_contract_errors(rig_verification: Dict[str, Any]) -> List[
             errors.append(
                 f"missing relative_to_vehicle transform for sensor '{sensor_name}'"
             )
+        elif valid_matrix:
+            expected_pose = matrix_to_unreal_pose(matrix_array)
+            for field in ("x", "y", "z", "roll", "pitch", "yaw"):
+                try:
+                    if not math.isclose(
+                        float(relative_tf[field]), float(expected_pose[field]), abs_tol=1e-4
+                    ):
+                        errors.append(
+                            f"relative_to_vehicle {field} disagrees with v2 matrix for '{sensor_name}'"
+                        )
+                except (KeyError, TypeError, ValueError):
+                    errors.append(
+                        f"relative_to_vehicle {field} missing or invalid for '{sensor_name}'"
+                    )
 
     return errors
 
@@ -2219,7 +2286,7 @@ def _build_rig_verification_from_report(
         use_K_undistortion_only=False,
         ignored_K_and_D=False,
         ctv_inverted=False,
-        vtl_inverted=False,
+        vtl_inverted=True,
     )
 
     if not rig_report_path.exists():
@@ -2459,8 +2526,10 @@ def _build_rig_verification_from_report(
     verification["ok"] = True
     cameras_count = 0
     lidars_count = 0
-    any_ctv_inverted = False
-    all_vtl_inverted = True
+    all_ctv_v1_direct = True
+    all_vtl_v1_inverted = True
+    all_camera_mounts_v2 = True
+    all_lidar_mounts_v2 = True
     all_use_k_undistortion = True
     ignored_k_and_d = False
     spawned_camera_names: List[str] = []
@@ -2490,7 +2559,10 @@ def _build_rig_verification_from_report(
                 "inversion_applied", False
             )
             if ctv_inv:
-                any_ctv_inverted = True
+                all_ctv_v1_direct = False
+            mounting_ctv_inverted = sensor_data.get("mounting_ctv_inverted") is True
+            if not mounting_ctv_inverted:
+                all_camera_mounts_v2 = False
 
             k_undist = raw.get("K_undistortion")
             if k_undist is None:
@@ -2648,6 +2720,10 @@ def _build_rig_verification_from_report(
                 "type": "camera",
                 "ctv_inverted": ctv_inv,
                 "cTv_inverted": ctv_inv,
+                "mounting_ctv_inverted": mounting_ctv_inverted,
+                "mounting_matrix_sensor_to_vehicle_carla": sensor_data.get(
+                    "mounting_matrix_sensor_to_vehicle_carla"
+                ),
                 "K_undistortion": k_undist,
                 "image_size": {"width": width_px, "height": height_px},
                 "derived_fov_deg": derived_fov,
@@ -2675,27 +2751,34 @@ def _build_rig_verification_from_report(
 
         elif sensor_type == "lidar":
             lidars_count += 1
-            vtl_inv = sensor_data.get("vtl_inverted", False) or sensor_data.get(
-                "inversion_applied", False
+            vtl_inv = sensor_data.get("vtl_inverted", True) or sensor_data.get(
+                "inversion_applied", True
             )
             if not vtl_inv:
-                all_vtl_inverted = False
+                all_vtl_v1_inverted = False
+            mounting_vtl_inverted = sensor_data.get("mounting_vtl_inverted") is True
+            if mounting_vtl_inverted:
+                all_lidar_mounts_v2 = False
 
             verification["sensors"][sensor_name] = {
                 "type": "lidar",
                 "vtl_inverted": vtl_inv,
                 "vTl_inverted": vtl_inv,
+                "mounting_vtl_inverted": mounting_vtl_inverted,
+                "mounting_matrix_sensor_to_vehicle_carla": sensor_data.get(
+                    "mounting_matrix_sensor_to_vehicle_carla"
+                ),
                 "transform_convention": sensor_data.get("transform_convention", ""),
             }
     if lidars_count == 0:
-        all_vtl_inverted = False
+        all_vtl_v1_inverted = False
 
     _set_rig_compliance_flags(
         verification,
         use_K_undistortion_only=all_use_k_undistortion and cameras_count > 0,
         ignored_K_and_D=ignored_k_and_d,
-        ctv_inverted=any_ctv_inverted,
-        vtl_inverted=all_vtl_inverted,
+        ctv_inverted=not all_ctv_v1_direct,
+        vtl_inverted=all_vtl_v1_inverted,
     )
 
     # v2-compatible contract view for validators
@@ -2707,9 +2790,24 @@ def _build_rig_verification_from_report(
         "transforms": {
             "cTv_direction": "vehicle_to_camera",
             "vTl_direction": "lidar_to_vehicle",
-            "cTv_inversion_forbidden": True,
-            "vTl_inversion_required": True,
+            "cTv_inversion_required": True,
+            "vTl_inversion_forbidden": True,
         },
+        "legacy_v1_flags_scope": "projection_backprojection_only",
+        "carla_attachment_semantics": "v2",
+        "camera_mounting": "S_vehicle @ inverse(cTv) @ C_CARLA_camera_to_OpenCV",
+        "lidar_mounting": "S_vehicle @ vTl @ S_lidar",
+        "calib_sha256": str(
+            (rig_data.get("sensor_contract") or {}).get("calib_sha256", "")
+            if isinstance(rig_data.get("sensor_contract"), dict)
+            else ""
+        ),
+        "calib_path": str(
+            (rig_data.get("sensor_contract") or {}).get("calib_path", "")
+            if isinstance(rig_data.get("sensor_contract"), dict)
+            else ""
+        ),
+        "live_reprojection_verified": False,
     }
     verification["ok"] = bool(
         verification["thesis_compliance"].get(
@@ -2729,18 +2827,22 @@ def _build_rig_verification_from_report(
         verification["compliance_notes"].append(
             "OK: K/D present in calib but ignored (thesis mode)"
         )
-    if not any_ctv_inverted:
+    if not all_camera_mounts_v2:
         verification["compliance_notes"].append(
-            "OK: No camera cTv transforms were inverted"
+            "ERROR: One or more camera v2 mounting transforms are missing"
+        )
+    else:
+        verification["compliance_notes"].append(
+            "OK: Camera mounting transforms verified under v2 semantics"
         )
     if lidars_count > 0:
-        if all_vtl_inverted:
+        if all_lidar_mounts_v2:
             verification["compliance_notes"].append(
-                "OK: All LiDAR vTl transforms were inverted for attachment"
+                "OK: LiDAR mounting transforms verified under v2 semantics"
             )
         else:
             verification["compliance_notes"].append(
-                "WARN: One or more LiDAR vTl transforms were not inverted for attachment"
+                "ERROR: One or more LiDAR v2 mounting transforms are missing"
             )
 
     verification["sensors_summary"] = {

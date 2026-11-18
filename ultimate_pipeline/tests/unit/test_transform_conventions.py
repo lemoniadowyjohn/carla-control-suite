@@ -156,12 +156,12 @@ def test_matrix_to_unreal_pose_reports_translation_and_rotation():
 
 def test_camera_attachment_pose_reports_forward_alignment():
     cTv = np.eye(4)
-    pose = camera_attachment_pose_from_cTv(cTv, flip_vehicle_y=False, opencv_camera_axes=False)
+    pose = camera_attachment_pose_from_cTv(cTv, flip_vehicle_y=False, opencv_camera_axes=True)
     assert "forward_alignment_to_vehicle_x" in pose
     assert "forward_alignment_ok" in pose
-    # Identity, no axis conversion: forward vector is exactly vehicle +x.
-    assert pose["forward_alignment_to_vehicle_x"] == pytest.approx(1.0)
-    assert pose["forward_alignment_ok"] is True
+    # Identity cTv points OpenCV +z along vehicle +z after basis conversion.
+    assert pose["forward_alignment_to_vehicle_x"] == pytest.approx(0.0)
+    assert pose["forward_alignment_ok"] is False
 
 
 def test_lidar_attachment_pose_returns_full_pose_dict():
@@ -169,4 +169,4 @@ def test_lidar_attachment_pose_returns_full_pose_dict():
     vTl[:3, 3] = [0.0, 0.0, 1.8]  # lidar mounted 1.8m up, in lidar->vehicle terms
     pose = lidar_attachment_pose_from_vTl(vTl, flip_vehicle_y=False)
     assert set(pose.keys()) == {"x", "y", "z", "roll", "pitch", "yaw"}
-    assert pose["z"] == pytest.approx(-1.8)  # inverted
+    assert pose["z"] == pytest.approx(1.8)  # sensor pose preserves source height

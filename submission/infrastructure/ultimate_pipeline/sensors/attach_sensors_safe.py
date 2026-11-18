@@ -13,8 +13,15 @@ import math
 from dataclasses import dataclass
 from typing import Any, Dict, List, Optional, Tuple
 
+from ultimate_pipeline.sensors.transform_conventions import (
+    camera_attachment_matrix_from_cTv,
+    lidar_attachment_matrix_from_vTl,
+)
+
 
 def _ensure_mat4(m: Any, name: str) -> List[List[float]]:
+    if hasattr(m, "tolist"):
+        m = m.tolist()
     if not isinstance(m, (list, tuple)) or len(m) != 4:
         raise ValueError(f"{name} must be 4x4")
     out: List[List[float]] = []
@@ -108,6 +115,20 @@ def _carla_transform_from_vehicle_to_sensor(
     return carla.Transform(loc, rot)
 
 
+def _carla_transform_from_canonical_mount(T_v_sensor_carla: Any):
+    """Convert the canonical v2 CARLA sensor-to-vehicle mount to CARLA pose."""
+    try:
+        import carla  # type: ignore
+    except Exception as exc:
+        raise RuntimeError(f"carla not available: {exc}") from exc
+    T = _ensure_mat4(T_v_sensor_carla, "T_vehicle_sensor_carla")
+    R = [row[:3] for row in T[:3]]
+    roll, pitch, yaw = _rotmat_to_euler_zyx_deg(R)
+    loc = carla.Location(x=T[0][3], y=T[1][3], z=T[2][3])
+    rot = carla.Rotation(roll=roll, pitch=pitch, yaw=yaw)
+    return carla.Transform(loc, rot)
+
+
 @dataclass(frozen=True)
 class CameraCalib:
     name: str
@@ -157,13 +178,15 @@ def _sha256_of_file(path: str) -> str:
 
 def _build_rig_contract_report(calib_path: str) -> Dict[str, Any]:
     return {
-        "schema_version": 1,
+        "schema_version": 2,
+        "calibration_semantics": "CARLA_SENSOR_MOUNTING/v2",
         "ok": False,
         "calib_path": str(calib_path),
         "calib_sha256": _sha256_of_file(calib_path),
         "camera_intrinsics_source": "K_undistortion",
-        "camera_extrinsics_mode": "cTv_direct",
-        "lidar_extrinsics_mode": "invert_vTl",
+        "camera_extrinsics_mode": "canonical_cTv_to_carla_mount",
+        "lidar_extrinsics_mode": "canonical_vTl_to_carla_mount",
+        "live_reprojection_verified": False,
         "active_camera_count": 0,
         "active_lidar_count": 0,
         "active_sensor_count": 0,
@@ -233,10 +256,18 @@ def attach_sensors_safe(
             bp.set_attribute("fov", str(_fov_from_K(cam.K_undist, cam.width)))
             bp.set_attribute("sensor_tick", "0.0")
 
-            tf = _carla_transform_from_vehicle_to_sensor(cam.cTv, camera_optical_frame=camera_optical_frame)
+            T_mount = camera_attachment_matrix_from_cTv(
+                cam.cTv, flip_vehicle_y=False, opencv_camera_axes=True
+            )
+            tf = _carla_transform_from_canonical_mount(T_mount)
             actor = world.spawn_actor(bp, tf, attach_to=ego)
             sensors[name] = actor
-            report["attached"][name] = {"type": "camera", "ok": True}
+            report["attached"][name] = {
+                "type": "camera", "ok": True,
+                "mounting_matrix_sensor_to_vehicle_carla": T_mount,
+                "mounting_ctv_inverted": True,
+                "legacy_v1_ctv_inverted": False,
+            }
             active_camera_count += 1
         except Exception as exc:
             report["attached"][name] = {"type": "camera", "ok": False, "error": str(exc)}
@@ -256,11 +287,18 @@ def attach_sensors_safe(
                 bp.set_attribute("lower_fov", "-30")
                 bp.set_attribute("sensor_tick", "0.0")
 
-                vTl_inv = invert_rigid_transform(lid.vTl)
-                tf = _carla_transform_from_vehicle_to_sensor(vTl_inv, camera_optical_frame=False)
+                T_mount = lidar_attachment_matrix_from_vTl(
+                    lid.vTl, flip_vehicle_y=False
+                )
+                tf = _carla_transform_from_canonical_mount(T_mount)
                 actor = world.spawn_actor(bp, tf, attach_to=ego)
                 sensors[name] = actor
-                report["attached"][name] = {"type": "lidar", "ok": True}
+                report["attached"][name] = {
+                    "type": "lidar", "ok": True,
+                    "mounting_matrix_sensor_to_vehicle_carla": T_mount,
+                    "mounting_vtl_inverted": False,
+                    "legacy_v1_vtl_inverted": True,
+                }
                 active_lidar_count += 1
             except Exception as exc:
                 report["attached"][name] = {"type": "lidar", "ok": False, "error": str(exc)}

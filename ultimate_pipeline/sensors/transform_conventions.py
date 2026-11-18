@@ -66,7 +66,7 @@ def vehicle_to_camera_from_cTv(
     opencv_camera_axes: bool | None = None,
     ctv_invert: bool | None = None,
 ) -> np.ndarray:
-    """Return vehicle->camera attachment transform with canonical axis handling."""
+    """Legacy vehicle->optical-camera projection helper; not for CARLA attachment."""
     T_vehicle_camera = _ensure_homogeneous(cTv)
 
     # Thesis default: do NOT invert cTv. Explicit opt-in only.
@@ -92,12 +92,69 @@ def vehicle_to_camera_from_cTv(
 
 
 def vehicle_to_lidar_from_vTl(vTl: np.ndarray, *, flip_vehicle_y: bool) -> np.ndarray:
-    """Return vehicle->lidar for CARLA attachment (vTl is lidar->vehicle)."""
+    """Legacy vehicle->lidar coordinate conversion; not for CARLA attachment."""
     T_lidar_vehicle = _ensure_homogeneous(vTl)
     T_vehicle_lidar = np.linalg.inv(T_lidar_vehicle)
     if flip_vehicle_y:
         T_vehicle_lidar = _flip_vehicle_y_basis(T_vehicle_lidar)
     return T_vehicle_lidar
+
+
+
+# Source calibration is expressed in a right-handed vehicle FLU basis
+# (x forward, y left, z up). CARLA/Unreal uses x forward, y right, z up.
+# Both the vehicle and sensor bases must be converted; applying a single
+# reflection to a rotation yields an improper matrix (determinant -1).
+_CALIB_VEHICLE_TO_CARLA = np.diag([1.0, -1.0, 1.0, 1.0])
+_CARLA_LIDAR_TO_CALIB_LIDAR = np.diag([1.0, -1.0, 1.0, 1.0])
+_CARLA_CAMERA_TO_OPENCV = np.eye(4, dtype=float)
+_CARLA_CAMERA_TO_OPENCV[:3, :3] = OPENCV_CAM_TO_CARLA.T
+
+
+def _checked_rigid_transform(matrix: Any, *, label: str) -> np.ndarray:
+    """Reject nonrigid, reflected, malformed, or nonfinite source extrinsics."""
+    t = _ensure_homogeneous(matrix)
+    r = t[:3, :3]
+    if not np.all(np.isfinite(t)):
+        raise ValueError(f"{label}: nonfinite transform")
+    if not np.allclose(t[3], [0.0, 0.0, 0.0, 1.0], atol=1e-7):
+        raise ValueError(f"{label}: invalid homogeneous last row")
+    if not np.allclose(r.T @ r, np.eye(3), atol=1e-3):
+        raise ValueError(f"{label}: nonorthogonal rotation")
+    if not np.isclose(np.linalg.det(r), 1.0, atol=1e-3):
+        raise ValueError(f"{label}: improper rotation")
+    return t
+
+
+def camera_attachment_matrix_from_cTv(cTv: Any) -> np.ndarray:
+    """CARLA camera->vehicle mounting pose from vehicle->OpenCV optical cTv.
+
+    Source vehicle: right-handed FLU. Source camera: OpenCV optical
+    (x right, y down, z forward). CARLA vehicle/sensor: Unreal
+    (x forward, y right, z up). This is NOT the vehicle->camera
+    projection transform used by calibration/reprojection code.
+    """
+    c_from_v = _checked_rigid_transform(cTv, label="cTv")
+    v_from_c = np.linalg.inv(c_from_v)
+    mount = _CALIB_VEHICLE_TO_CARLA @ v_from_c @ _CARLA_CAMERA_TO_OPENCV
+    _checked_rigid_transform(mount, label="CARLA camera mounting")
+    if not np.allclose(c_from_v @ _CALIB_VEHICLE_TO_CARLA @ mount
+                       @ np.linalg.inv(_CARLA_CAMERA_TO_OPENCV),
+                       np.eye(4), atol=1e-6):
+        raise ValueError("cTv: projection/attachment round-trip failed")
+    return mount
+
+
+def lidar_attachment_matrix_from_vTl(vTl: Any) -> np.ndarray:
+    """CARLA lidar->vehicle mounting pose from lidar->vehicle source vTl."""
+    v_from_l = _checked_rigid_transform(vTl, label="vTl")
+    mount = _CALIB_VEHICLE_TO_CARLA @ v_from_l @ _CARLA_LIDAR_TO_CALIB_LIDAR
+    _checked_rigid_transform(mount, label="CARLA lidar mounting")
+    if not np.allclose(_CALIB_VEHICLE_TO_CARLA @ mount
+                       @ _CARLA_LIDAR_TO_CALIB_LIDAR,
+                       v_from_l, atol=1e-6):
+        raise ValueError("vTl: source/attachment round-trip failed")
+    return mount
 
 
 def rotation_matrix_to_unreal_rpy_deg(rotation: np.ndarray) -> Tuple[float, float, float]:
@@ -143,12 +200,18 @@ def camera_attachment_pose_from_cTv(
     """
     Build CARLA-ready camera pose fields + forward-vector alignment diagnostics.
     """
-    T_vehicle_camera = vehicle_to_camera_from_cTv(
-        cTv,
-        flip_vehicle_y=flip_vehicle_y,
-        opencv_camera_axes=opencv_camera_axes,
-        ctv_invert=ctv_invert,
-    )
+    # cTv is correct for projecting vehicle points into optical pixels,
+    # but CARLA spawn_actor(attach_to=ego) requires camera->vehicle.
+    # The canonical converter includes both left/right-handed basis changes.
+    if flip_vehicle_y:
+        # Historical DominikSensorSetup callers set this flag True. It is
+        # now a compatibility no-op: canonical basis conversion occurs once.
+        log.warning("flip_vehicle_y deprecated for CARLA camera mounting; canonical FLU->FRD conversion applied")
+    if opencv_camera_axes is False:
+        raise ValueError("cTv camera optical basis cannot be disabled for thesis mounting")
+    if ctv_invert:
+        raise ValueError("manual cTv inversion override is forbidden; mounting inversion is canonical")
+    T_vehicle_camera = camera_attachment_matrix_from_cTv(cTv)
     pose = matrix_to_unreal_pose(T_vehicle_camera)
 
     forward_vehicle = np.asarray(T_vehicle_camera[:3, 0], dtype=float)
@@ -175,5 +238,7 @@ def camera_attachment_pose_from_cTv(
 
 def lidar_attachment_pose_from_vTl(vTl: np.ndarray, *, flip_vehicle_y: bool) -> Dict[str, float]:
     """Build CARLA-ready LiDAR pose fields from vTl."""
-    T_vehicle_lidar = vehicle_to_lidar_from_vTl(vTl, flip_vehicle_y=flip_vehicle_y)
+    if flip_vehicle_y:
+        log.warning("flip_vehicle_y deprecated for CARLA lidar mounting; canonical FLU->FRD conversion applied")
+    T_vehicle_lidar = lidar_attachment_matrix_from_vTl(vTl)
     return matrix_to_unreal_pose(T_vehicle_lidar)

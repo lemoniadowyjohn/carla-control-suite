@@ -10,6 +10,8 @@ import numpy as np
 
 from ultimate_pipeline.contracts.agent_sync import load_agent_sync
 from ultimate_pipeline.sensors.transform_conventions import (
+    camera_attachment_matrix_from_cTv,
+    lidar_attachment_matrix_from_vTl,
     vehicle_to_camera_from_cTv,
     vehicle_to_lidar_from_vTl,
 )
@@ -151,10 +153,12 @@ def validate_calibration_contract(
     rig = sync.sensor_rig
     if not rig.use_K_undistortion or not rig.ignore_K or not rig.ignore_D:
         errors.append("agent_sync must declare use_K_undistortion=true and ignore_K/D=true")
+    # agent_sync v1 flags retain their original projection/backprojection
+    # meaning. CARLA attachment semantics are emitted separately as v2.
     if rig.ctv_inverted:
-        errors.append("agent_sync must declare ctv_inverted=false")
+        errors.append("agent_sync v1 must declare ctv_inverted=false")
     if not rig.vtl_inverted:
-        errors.append("agent_sync must declare vtl_inverted=true")
+        errors.append("agent_sync v1 must declare vtl_inverted=true")
 
     camera_intrinsics = {}
     for name, camera in (data.get("cameras") or {}).items():
@@ -184,5 +188,67 @@ def validate_calibration_contract(
         "calibration_semantics": CALIBRATION_SEMANTICS,
         "camera_intrinsics": camera_intrinsics,
         "round_trip": round_trip,
+        "errors": errors,
+    }
+
+
+def validate_carla_mounting_v2(calib_path: Path | None = None) -> Dict[str, Any]:
+    """Validate offline rigid mounting transforms without claiming live calibration.
+
+    v1 calibration receipts keep their historical projection/backprojection
+    semantics. This v2 report separately records sensor-to-vehicle CARLA
+    mounting matrices and source-file identity.
+    """
+    path = canonical_calib_path() if calib_path is None else Path(calib_path)
+    data = load_calibration(path)
+    cameras: Dict[str, Any] = {}
+    lidars: Dict[str, Any] = {}
+    errors: list[str] = []
+
+    for name, camera in (data.get("cameras") or {}).items():
+        try:
+            matrix = camera_attachment_matrix_from_cTv(camera["cTv"])
+            cameras[str(name)] = {
+                "mounting_matrix_sensor_to_vehicle_carla": matrix.tolist(),
+                "rotation_determinant": float(np.linalg.det(matrix[:3, :3])),
+                "orthonormal": bool(
+                    np.allclose(matrix[:3, :3].T @ matrix[:3, :3], np.eye(3), atol=1e-6)
+                ),
+                "position_m": matrix[:3, 3].tolist(),
+            }
+        except Exception as exc:
+            errors.append(f"camera {name}: {exc}")
+
+    for name, lidar in (data.get("lidars") or {}).items():
+        try:
+            matrix = lidar_attachment_matrix_from_vTl(lidar["vTl"])
+            lidars[str(name)] = {
+                "mounting_matrix_sensor_to_vehicle_carla": matrix.tolist(),
+                "rotation_determinant": float(np.linalg.det(matrix[:3, :3])),
+                "orthonormal": bool(
+                    np.allclose(matrix[:3, :3].T @ matrix[:3, :3], np.eye(3), atol=1e-6)
+                ),
+                "position_m": matrix[:3, 3].tolist(),
+            }
+        except Exception as exc:
+            errors.append(f"lidar {name}: {exc}")
+
+    if not cameras:
+        errors.append("no camera mounting matrices were validated")
+    if not lidars:
+        errors.append("no LiDAR mounting matrices were validated")
+
+    return {
+        "schema": "CARLA_SENSOR_MOUNTING/v2",
+        "status": "PASS_OFFLINE_GEOMETRY" if not errors else "FAIL_CLOSED",
+        "calib_path": str(path),
+        "calib_sha256": sha256_file(path),
+        "camera_source_transform": "cTv: vehicle_FLU_to_camera_OpenCV_optical",
+        "lidar_source_transform": "vTl: lidar_FLU_to_vehicle_FLU",
+        "camera_mounting": "S_vehicle @ inverse(cTv) @ C_CARLA_camera_to_OpenCV",
+        "lidar_mounting": "S_vehicle @ vTl @ S_lidar",
+        "live_reprojection_verified": False,
+        "cameras": cameras,
+        "lidars": lidars,
         "errors": errors,
     }

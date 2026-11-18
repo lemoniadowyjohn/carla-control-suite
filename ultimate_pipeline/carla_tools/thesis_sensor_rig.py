@@ -20,6 +20,8 @@ from ultimate_pipeline.perception.environment.camera_response import (
 from ultimate_pipeline.sensors.transform_conventions import (
     camera_attachment_pose_from_cTv,
     lidar_attachment_pose_from_vTl,
+    camera_attachment_matrix_from_cTv,
+    lidar_attachment_matrix_from_vTl,
     rotation_matrix_to_unreal_rpy_deg,
     vehicle_to_camera_from_cTv,
     vehicle_to_lidar_from_vTl,
@@ -182,8 +184,8 @@ def _carla_transform_to_pose_dict(tf: Any) -> Dict[str, Any]:
 
 
 CONVENTIONS = {
-    "cameras": "cTv is Vehicle→Camera. THESIS INVARIANT: cTv used directly, inversion FORBIDDEN.",
-    "lidars": "vTl is LiDAR→Vehicle. THESIS INVARIANT: vTl inverted to Vehicle→LiDAR for attachment.",
+    "cameras": "cTv vehicle FLU->camera optical for projection; inverse(cTv) + basis change for CARLA mounting.",
+    "lidars": "vTl lidar FLU->vehicle FLU; vTl + basis change for CARLA mounting.",
 }
 
 
@@ -288,7 +290,7 @@ def _guard_thesis_inversion_env() -> None:
 
     THESIS INVARIANT:
     - cTv (Vehicle->Camera) MUST NOT be inverted
-    - vTl (LiDAR->Vehicle) MUST be inverted to Vehicle->LiDAR for attachment
+    - vTl (LiDAR->Vehicle) is used for mounting after source/CARLA basis conversion
 
     If UP_THESIS_STRICT=1:
     - Canonical env values are PERMITTED (pass-through, no warning)
@@ -406,8 +408,8 @@ class RigVerification:
     to be auditable and explicit about the thesis sensor contract:
 
       - Cameras: use K_undistortion only (ignore K and D); cTv is vehicle->camera.
-      - LiDARs: vTl is lidar->vehicle; invert to vehicle->lidar for attachment.
-      - Inversions: cTv_inverted=false; vTl_inverted=true (required for attachment).
+      - LiDARs: vTl is lidar->vehicle; use vTl for mounting after two basis changes.
+      - Legacy v1 inversion flags describe projection/backprojection only; v2 mounting reports actual sensor->vehicle CARLA matrices.
 
     Additionally, it records the applied CARLA transforms (relative and world)
     that were used at spawn time.
@@ -484,9 +486,9 @@ class ThesisSensorRig:
 
     THESIS INVARIANT (enforced, not configurable):
     - Cameras: use K_undistortion (pinhole), image_size, and cTv as Vehicle→Camera.
-      cTv is used DIRECTLY for CARLA attachment. Inversion is FORBIDDEN.
+      Legacy cTv direct usage applies to projection ONLY. CARLA mounting requires inverse(cTv) and two basis conversions.
     - LiDARs: vTl is LiDAR→Vehicle.
-      vTl is inverted to Vehicle→LiDAR for CARLA attachment. Inversion is REQUIRED.
+      Legacy inverse(vTl) applies to vehicle-to-LiDAR backprojection ONLY. CARLA mounting uses vTl and two basis conversions.
 
     If UP_THESIS_STRICT=1 and any manual override env var is set, RuntimeError is raised.
     """
@@ -778,15 +780,10 @@ class ThesisSensorRig:
                     ) + (width_px * height_px)
 
                 T_raw = _ensure_homogeneous(cam_data["cTv"])
-                T_vehicle_camera = vehicle_to_camera_from_cTv(
-                    cam_data["cTv"],
-                    flip_vehicle_y=False,
-                    opencv_camera_axes=True,
-                    ctv_invert=False,
-                )
+                T_vehicle_camera = camera_attachment_matrix_from_cTv(cam_data["cTv"])
                 t_raw = T_raw[:3, 3]
 
-                # Thesis contract: cTv is vehicle→camera and MUST NOT be inverted.
+                # Legacy v1 ctv_inverted denotes projection policy, NOT CARLA mounting.
                 ctv_inverted = False
                 T_used = T_vehicle_camera
                 t_used = T_used[:3, 3]
@@ -945,8 +942,10 @@ class ThesisSensorRig:
                         },
                         "raw_matrix": _to_list(cam_data.get("cTv")),
                         "raw_direction_label": "vehicle_to_camera",
-                        "used_direction_label": "vehicle_to_camera",
+                        "used_direction_label": "sensor_to_vehicle_carla",
                         "used_matrix_vehicle_to_sensor": _to_list(T_used),
+                        "mounting_ctv_inverted": True,
+                        "mounting_matrix_sensor_to_vehicle_carla": _to_list(T_used),
                         "inversion_applied": ctv_inverted,
                         "ctv_inverted": ctv_inverted,
                         "ctv_source": "calib_data.json",
@@ -954,7 +953,7 @@ class ThesisSensorRig:
                         "t_used": _to_list(t_used),
                         "carla_transform": cam_tf_dict,
                         "forward_alignment": cam_forward_alignment,
-                        "transform_convention": "Used cTv (vehicle->camera) directly for attachment.",
+                        "transform_convention": "Used cTv directly for projection; CARLA mounting uses inverse(cTv) and basis conversion.",
                         "low_memory_profile_active": bool(low_memory_profile_active),
                         "front_only_strict_active": bool(front_only_strict),
                     },
@@ -982,9 +981,9 @@ class ThesisSensorRig:
                 if lidar_spec is None:
                     raise RuntimeError(f"LiDAR '{lidar_name}' not in canonical active spec")
 
-                # Thesis contract: vTl is LiDAR→Vehicle and MUST be inverted for attachment.
+                # Legacy v1 vtl_inverted denotes backprojection policy, NOT CARLA mounting.
                 vtl_inverted = True
-                T_used = vehicle_to_lidar_from_vTl(lidar_data["vTl"], flip_vehicle_y=False)
+                T_used = lidar_attachment_matrix_from_vTl(lidar_data["vTl"])
                 lidar_pose = lidar_attachment_pose_from_vTl(
                     lidar_data["vTl"], flip_vehicle_y=False
                 )
@@ -1083,12 +1082,14 @@ class ThesisSensorRig:
                         },
                         "raw_matrix": _to_list(lidar_data.get("vTl")),
                         "raw_direction_label": "lidar_to_vehicle",
-                        "used_direction_label": "vehicle_to_lidar",
+                        "used_direction_label": "sensor_to_vehicle_carla",
                         "used_matrix_vehicle_to_sensor": _to_list(T_used),
+                        "mounting_vtl_inverted": False,
+                        "mounting_matrix_sensor_to_vehicle_carla": _to_list(T_used),
                         "inversion_applied": vtl_inverted,
                         "vtl_inverted": vtl_inverted,
                         "carla_transform": lidar_tf_dict,
-                        "transform_convention": "Used inverse(vTl) (vehicle->lidar) for attachment.",
+                        "transform_convention": "Used inverse(vTl) for backprojection; CARLA mounting uses vTl and basis conversion.",
                         "front_only_strict_active": bool(front_only_strict),
                     },
                 )
@@ -1182,8 +1183,8 @@ class ThesisSensorRig:
                 "raw_direction_label": "vehicle_to_camera",
                 "inversion_applied": False,
                 "ctv_inverted": False,
-                "used_direction_label": "vehicle_to_camera",
-                "transform_convention": "Used cTv (vehicle->camera) directly for attachment.",
+                "used_direction_label": "sensor_to_vehicle_carla",
+                "transform_convention": "Used cTv directly for projection; CARLA mounting uses inverse(cTv) and basis conversion.",
             }
         for lidar_name, lidar_data in lids.items():
             reports[lidar_name] = {
@@ -1192,10 +1193,10 @@ class ThesisSensorRig:
                     "vTl": lidar_data.get("vTl"),
                 },
                 "raw_direction_label": "lidar_to_vehicle",
-                "used_direction_label": "vehicle_to_lidar",
+                "used_direction_label": "sensor_to_vehicle_carla",
                 "inversion_applied": True,
                 "vtl_inverted": True,
-                "transform_convention": "Used inverse(vTl) (vehicle->lidar) for attachment.",
+                "transform_convention": "Used inverse(vTl) for backprojection; CARLA mounting uses vTl and basis conversion.",
             }
         return reports
 
@@ -1336,6 +1337,10 @@ class ThesisSensorRig:
                 sensors_info[name] = {
                     "type": "camera",
                     "ctv_inverted": ctv_inv,
+                    "mounting_ctv_inverted": report.get("mounting_ctv_inverted") is True,
+                    "mounting_matrix_sensor_to_vehicle_carla": report.get(
+                        "mounting_matrix_sensor_to_vehicle_carla"
+                    ),
                     "transform_convention": report.get("transform_convention", ""),
                     "attributes": report.get("attributes", {}),
                 }
@@ -1349,6 +1354,10 @@ class ThesisSensorRig:
                 sensors_info[name] = {
                     "type": "lidar",
                     "vtl_inverted": vtl_inv,
+                    "mounting_vtl_inverted": report.get("mounting_vtl_inverted") is True,
+                    "mounting_matrix_sensor_to_vehicle_carla": report.get(
+                        "mounting_matrix_sensor_to_vehicle_carla"
+                    ),
                     "transform_convention": report.get("transform_convention", ""),
                 }
         if lidars_count == 0:
@@ -1375,15 +1384,15 @@ class ThesisSensorRig:
                 "OK: All cameras use K_undistortion only (pinhole model)"
             )
         if not any_ctv_inverted:
-            compliance_notes.append("OK: No camera cTv transforms were inverted")
+            compliance_notes.append("OK: Legacy cTv projection policy uses direct source transform; mounting independently uses inverse(cTv)")
         if lidars_count > 0:
             if all_vtl_inverted:
                 compliance_notes.append(
-                    "OK: All LiDAR vTl transforms were inverted for attachment"
+                    "OK: Legacy LiDAR backprojection uses inverse(vTl); mounting independently uses vTl"
                 )
             else:
                 compliance_notes.append(
-                    "WARN: One or more LiDAR vTl transforms were not inverted for attachment"
+                    "WARN: Legacy vTl backprojection evidence incomplete"
                 )
 
         return RigVerification(
@@ -1407,6 +1416,13 @@ class ThesisSensorRig:
                 "vTl_inverted": bool(all_vtl_inverted),
                 "cTv_inversion_forbidden": True,
                 "vTl_inversion_required": True,
+                "legacy_v1_flags_scope": "projection_backprojection_only",
+                "carla_attachment_semantics": "v2",
+                "camera_mounting": "S_vehicle @ inverse(cTv) @ C_CARLA_camera_to_OpenCV",
+                "lidar_mounting": "S_vehicle @ vTl @ S_lidar",
+                "calib_sha256": hashlib.sha256(self.calib_path.read_bytes()).hexdigest(),
+                "calib_path": str(self.calib_path.resolve()),
+                "live_reprojection_verified": False,
             },
             applied_carla_transforms=self._build_applied_transforms_for_report(spawned),
             sensors_attached="unknown",
@@ -1502,41 +1518,79 @@ class ThesisSensorRig:
                 report["raw"] = raw
 
             if sensor_type == "camera":
-                ctv_inverted = bool(
-                    report.get("ctv_inverted", False)
-                    or report.get("inversion_applied", False)
-                )
-                report["ctv_inverted"] = bool(ctv_inverted)
-                report["inversion_applied"] = bool(ctv_inverted)
+                # These two v1 values describe projection compatibility, not
+                # CARLA mounting. Reject historical WP-A reports that silently
+                # reinterpreted the booleans as mounting direction.
+                if report.get("ctv_inverted") is True or report.get("inversion_applied") is True:
+                    raise ValueError(f"{name}: v1 ctv_inverted must remain false")
+                report["ctv_inverted"] = False
+                report["inversion_applied"] = False
                 ctv = raw.get("cTv")
-                if ctv is not None and not isinstance(report.get("carla_transform"), dict):
-                    try:
-                        pose = camera_attachment_pose_from_cTv(
-                            ctv,
-                            flip_vehicle_y=bool(flip_vehicle_y),
-                            opencv_camera_axes=bool(opencv_camera_axes),
-                            ctv_invert=bool(ctv_inverted),
-                        )
-                        report["carla_transform"] = _pose_to_flat_dict(pose)
-                    except Exception:
-                        pass
-            elif sensor_type == "lidar":
-                vtl_inverted = bool(
-                    report.get("vtl_inverted", False)
-                    or report.get("inversion_applied", False)
+                if ctv is None:
+                    raise ValueError(f"{name}: missing raw cTv for v2 mounting")
+                camera_name = str(name)
+                for prefix in ("rgb_", "seg_"):
+                    if camera_name.startswith(prefix):
+                        camera_name = camera_name[len(prefix):]
+                        break
+                source_camera = (self.calib_data.get("cameras") or {}).get(camera_name)
+                if not isinstance(source_camera, dict) or not np.allclose(
+                    _ensure_homogeneous(ctv),
+                    _ensure_homogeneous(source_camera.get("cTv")),
+                    rtol=0.0,
+                    atol=1e-9,
+                ):
+                    raise ValueError(f"{name}: raw cTv is not bound to the selected calibration source")
+                mount = camera_attachment_matrix_from_cTv(ctv)
+                pose = camera_attachment_pose_from_cTv(
+                    ctv,
+                    flip_vehicle_y=bool(flip_vehicle_y),
+                    opencv_camera_axes=bool(opencv_camera_axes),
+                    ctv_invert=False,
                 )
-                report["vtl_inverted"] = bool(vtl_inverted)
-                report["inversion_applied"] = bool(vtl_inverted)
+                expected_pose = _pose_to_flat_dict(pose)
+                reported_pose = report.get("carla_transform")
+                if isinstance(reported_pose, dict) and any(
+                    key in reported_pose
+                    and not np.isclose(float(reported_pose[key]), float(expected_pose[key]), atol=1e-4)
+                    for key in ("x", "y", "z", "roll", "pitch", "yaw")
+                ):
+                    raise ValueError(f"{name}: reported CARLA pose disagrees with v2 mounting")
+                report["carla_transform"] = expected_pose
+                report["mounting_ctv_inverted"] = True
+                report["mounting_matrix_sensor_to_vehicle_carla"] = mount.tolist()
+            elif sensor_type == "lidar":
+                if report.get("vtl_inverted") is False or report.get("inversion_applied") is False:
+                    raise ValueError(f"{name}: v1 vtl_inverted must remain true")
+                report["vtl_inverted"] = True
+                report["inversion_applied"] = True
                 vtl = raw.get("vTl")
-                if vtl is not None and not isinstance(report.get("carla_transform"), dict):
-                    try:
-                        pose = lidar_attachment_pose_from_vTl(
-                            vtl,
-                            flip_vehicle_y=bool(flip_vehicle_y),
-                        )
-                        report["carla_transform"] = _pose_to_flat_dict(pose)
-                    except Exception:
-                        pass
+                if vtl is None:
+                    raise ValueError(f"{name}: missing raw vTl for v2 mounting")
+                lidar_name = str(name)
+                if lidar_name.startswith("lidar_"):
+                    lidar_name = lidar_name[len("lidar_"):]
+                source_lidar = (self.calib_data.get("lidars") or {}).get(lidar_name)
+                if not isinstance(source_lidar, dict) or not np.allclose(
+                    _ensure_homogeneous(vtl),
+                    _ensure_homogeneous(source_lidar.get("vTl")),
+                    rtol=0.0,
+                    atol=1e-9,
+                ):
+                    raise ValueError(f"{name}: raw vTl is not bound to the selected calibration source")
+                mount = lidar_attachment_matrix_from_vTl(vtl)
+                pose = lidar_attachment_pose_from_vTl(vtl, flip_vehicle_y=bool(flip_vehicle_y))
+                expected_pose = _pose_to_flat_dict(pose)
+                reported_pose = report.get("carla_transform")
+                if isinstance(reported_pose, dict) and any(
+                    key in reported_pose
+                    and not np.isclose(float(reported_pose[key]), float(expected_pose[key]), atol=1e-4)
+                    for key in ("x", "y", "z", "roll", "pitch", "yaw")
+                ):
+                    raise ValueError(f"{name}: reported CARLA pose disagrees with v2 mounting")
+                report["carla_transform"] = expected_pose
+                report["mounting_vtl_inverted"] = False
+                report["mounting_matrix_sensor_to_vehicle_carla"] = mount.tolist()
 
             if "world_transform" not in report:
                 report["world_transform"] = None
@@ -1570,7 +1624,7 @@ class ThesisSensorRig:
                     "type": "camera",
                     "ctv_inverted": False,
                     "inversion_applied": False,
-                    "transform_convention": "Used cTv (vehicle->camera) via canonical transform_conventions path.",
+                    "transform_convention": "Used cTv directly for projection; CARLA mounting uses inverse(cTv) and basis conversion.",
                     "raw": raw_camera,
                     "front_only_strict_active": bool(front_only_strict),
                 }
@@ -1582,7 +1636,7 @@ class ThesisSensorRig:
                     "type": "lidar",
                     "vtl_inverted": True,
                     "inversion_applied": True,
-                    "transform_convention": "Used inverse(vTl) (vehicle->lidar) via canonical transform_conventions path.",
+                    "transform_convention": "Used inverse(vTl) for backprojection; CARLA mounting uses vTl and basis conversion.",
                     "raw": {"vTl": lidar_data.get("vTl")},
                     "front_only_strict_active": bool(front_only_strict),
                 }

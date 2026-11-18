@@ -422,8 +422,10 @@ class DominikSensorSetup:
             "sensor_spawn_tick": int(sensor_spawn_tick),
             "rig_contract": {
                 "camera_intrinsics": "K_undistortion_only",
-                "camera_extrinsics": "cTv_inverted_for_attachment",
-                "lidar_extrinsics": "vTl_inverted_for_attachment",
+                "camera_extrinsics": "CARLA_SENSOR_MOUNTING/v2 canonical optical-frame conversion",
+                "lidar_extrinsics": "CARLA_SENSOR_MOUNTING/v2 canonical lidar-frame conversion",
+                "legacy_v1_flags_scope": "projection_backprojection_only",
+                "live_reprojection_verified": False,
                 "axis_handling": "legacy_translation_y_flip" if self.flip_vehicle_y else "none",
                 "resolution_override": list(self.resolution_override) if self.resolution_override else None,
             },
