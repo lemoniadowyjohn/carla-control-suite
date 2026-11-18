@@ -179,6 +179,14 @@ def _evaluate_candidate_unlocked(
         verify_artifact_unchanged,
     )
 
+    trusted_scope = None
+    scope_error = None
+    if purpose == "release":
+        try:
+            from ultimate_pipeline.quality.map_scope_authority import resolve_trusted_release_scope
+            trusted_scope = resolve_trusted_release_scope(REPO_ROOT)
+        except Exception as exc:  # fail closed; retain diagnostic reports
+            scope_error = f"{type(exc).__name__}: {exc}"
     snapshot = snapshot_final_artifact(str(xodr), str(out_dir / ".acceptance_snapshot"))
     evaluated_sha = snapshot["sha256"]
     try:
@@ -190,7 +198,14 @@ def _evaluate_candidate_unlocked(
             for gate in RELEASE_MANDATORY_GATES
         }
     else:
-        reports = run_gates(Path(snapshot["path"]), out_dir, dem)
+        reports = run_gates(Path(snapshot["path"]), out_dir, dem, expected_scope=trusted_scope)
+        if scope_error:
+            reports["artifact_structure"] = {
+                "ok": False, "status": "BLOCKED_INPUT",
+                "reason": f"trusted release scope unavailable: {scope_error}",
+                "issues": [{"kind": "trusted_scope_unavailable"}],
+            }
+            _write_json(out_dir / "artifact_structure.json", reports["artifact_structure"])
 
     acceptance = build_map_acceptance(
         reports,
@@ -268,7 +283,9 @@ def evaluate_candidate(
         )
 
 
-def run_gates(xodr: Path, out_dir: Path, dem: Optional[Path]) -> Dict[str, Any]:
+def run_gates(
+    xodr: Path, out_dir: Path, dem: Optional[Path], *, expected_scope: Optional[Dict[str, Any]] = None
+) -> Dict[str, Any]:
     reports: Dict[str, Any] = {}
 
     # V86 A2/A8: structural scope, evaluated through the hardened XML
@@ -279,7 +296,7 @@ def run_gates(xodr: Path, out_dir: Path, dem: Optional[Path]) -> Dict[str, Any]:
         parse_xodr_bytes,
     )
     try:
-        rep = check_artifact_structure(parse_xodr_bytes(read_xodr_bytes(xodr)))
+        rep = check_artifact_structure(parse_xodr_bytes(read_xodr_bytes(xodr)), expected_scope)
     except Exception as exc:  # noqa: BLE001 - recorded, fail-closed
         rep = {"ok": None, "status": "BLOCKED_INPUT", "reason": f"{type(exc).__name__}: {exc}"}
     reports["artifact_structure"] = rep

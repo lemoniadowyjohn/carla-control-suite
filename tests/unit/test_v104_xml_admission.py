@@ -64,6 +64,39 @@ def test_declaration_text_in_cdata_is_not_an_active_doctype() -> None:
     assert parse_xodr_bytes(payload).tag == "OpenDRIVE"
 
 
+def test_oversized_file_is_rejected_before_payload_read(tmp_path, monkeypatch) -> None:
+    from ultimate_pipeline.quality import xml_admission
+
+    target = tmp_path / "oversized.xodr"
+    target.write_bytes(b"x" * 65)
+    monkeypatch.setattr(xml_admission, "MAX_XODR_BYTES", 64)
+    original_open = Path.open
+    payload_reads = []
+
+    class ReadSpy:
+        def __init__(self, stream):
+            self.stream = stream
+        def __enter__(self):
+            self.stream.__enter__()
+            return self
+        def __exit__(self, *args):
+            return self.stream.__exit__(*args)
+        def fileno(self):
+            return self.stream.fileno()
+        def read(self, size=-1):
+            payload_reads.append(size)
+            return self.stream.read(size)
+
+    def observed_open(path, *args, **kwargs):
+        stream = original_open(path, *args, **kwargs)
+        return ReadSpy(stream) if Path(path) == target else stream
+
+    monkeypatch.setattr(Path, "open", observed_open)
+    with pytest.raises(UnsafeXMLError, match="limit is 64"):
+        xml_admission.read_xodr_bytes(target)
+    assert payload_reads == []
+
+
 def test_production_hygiene_stage_rejects_dtd_before_any_repair_parser(
     tmp_path, monkeypatch
 ) -> None:
