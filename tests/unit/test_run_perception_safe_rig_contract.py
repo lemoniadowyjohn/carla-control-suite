@@ -10,29 +10,43 @@ test_run_perception_safe*.py variants existed at some point, none currently on t
 from __future__ import annotations
 
 import hashlib
+import json
 from pathlib import Path
 
+import numpy as np
+
 from ultimate_pipeline.tools.run_perception_safe import _rig_verification_contract_errors
+from ultimate_pipeline.sensors.transform_conventions import (
+    camera_attachment_matrix_from_cTv,
+    lidar_attachment_matrix_from_vTl,
+    matrix_to_unreal_pose,
+)
 
 _CALIB_PATH = Path(__file__).resolve().parents[2] / "ultimate_pipeline" / "sensors" / "calib_data.json"
 _CALIB_SHA256 = hashlib.sha256(_CALIB_PATH.read_bytes()).hexdigest()
 
 
-def _valid_verification(sensor_names=("rgb_front",)):
-    identity = [[1.0, 0.0, 0.0, 0.0], [0.0, 1.0, 0.0, 0.0], [0.0, 0.0, 1.0, 0.0], [0.0, 0.0, 0.0, 1.0]]
-    sensors = {
-        name: {
-            "type": "lidar" if "lidar" in name else "camera",
-            "mounting_ctv_inverted": "lidar" not in name,
+def _valid_verification(sensor_names=("rgb_front_left_camera",)):
+    calibration = json.loads(_CALIB_PATH.read_text(encoding="utf-8"))
+    sensors = {}
+    applied_sensors = {}
+    for name in sensor_names:
+        is_lidar = "lidar" in name
+        sensor_type = "lidar" if is_lidar else "camera"
+        source_name = name.removeprefix("lidar_").removeprefix("rgb_").removeprefix("seg_")
+        source = calibration["lidars" if is_lidar else "cameras"][source_name]
+        matrix = (
+            lidar_attachment_matrix_from_vTl(source["vTl"])
+            if is_lidar
+            else camera_attachment_matrix_from_cTv(source["cTv"])
+        )
+        sensors[name] = {
+            "type": sensor_type,
+            "mounting_ctv_inverted": not is_lidar,
             "mounting_vtl_inverted": False,
-            "mounting_matrix_sensor_to_vehicle_carla": identity,
+            "mounting_matrix_sensor_to_vehicle_carla": matrix.tolist(),
         }
-        for name in sensor_names
-    }
-    applied_sensors = {
-        name: {"relative_to_vehicle": {"x": 0.0, "y": 0.0, "z": 0.0, "roll": 0.0, "pitch": 0.0, "yaw": 0.0}}
-        for name in sensor_names
-    }
+        applied_sensors[name] = {"relative_to_vehicle": matrix_to_unreal_pose(matrix)}
     return {
         "cTv_inverted": False,
         "vTl_inverted": True,
@@ -53,6 +67,32 @@ def _valid_verification(sensor_names=("rgb_front",)):
 
 def test_fully_valid_contract_has_no_errors():
     assert _rig_verification_contract_errors(_valid_verification()) == []
+
+
+def test_self_consistent_forged_camera_mount_is_rejected():
+    v = _valid_verification()
+    forged = np.eye(4).tolist()
+    v["sensors"]["rgb_front_left_camera"]["mounting_matrix_sensor_to_vehicle_carla"] = forged
+    v["applied_carla_transforms"]["sensors"]["rgb_front_left_camera"]["relative_to_vehicle"] = (
+        matrix_to_unreal_pose(np.eye(4))
+    )
+
+    errors = _rig_verification_contract_errors(v)
+
+    assert any("disagrees with digest-bound calibration" in error for error in errors)
+
+
+def test_self_consistent_forged_lidar_mount_is_rejected():
+    v = _valid_verification(sensor_names=("lidar_middle_lidar",))
+    forged = np.eye(4).tolist()
+    v["sensors"]["lidar_middle_lidar"]["mounting_matrix_sensor_to_vehicle_carla"] = forged
+    v["applied_carla_transforms"]["sensors"]["lidar_middle_lidar"]["relative_to_vehicle"] = (
+        matrix_to_unreal_pose(np.eye(4))
+    )
+
+    errors = _rig_verification_contract_errors(v)
+
+    assert any("disagrees with digest-bound calibration" in error for error in errors)
 
 
 def test_calibration_digest_must_match_source_file():
@@ -151,18 +191,18 @@ def test_applied_transforms_sensors_missing_is_an_error():
 
 
 def test_sensor_missing_from_applied_transforms_names_it_in_the_error():
-    v = _valid_verification(sensor_names=("rgb_front", "lidar_top"))
-    del v["applied_carla_transforms"]["sensors"]["lidar_top"]
+    v = _valid_verification(sensor_names=("rgb_front_left_camera", "lidar_middle_lidar"))
+    del v["applied_carla_transforms"]["sensors"]["lidar_middle_lidar"]
     errors = _rig_verification_contract_errors(v)
-    assert any("lidar_top" in e for e in errors)
-    assert not any("rgb_front" in e for e in errors)
+    assert any("lidar_middle_lidar" in e for e in errors)
+    assert not any("rgb_front_left_camera" in e for e in errors)
 
 
 def test_sensor_missing_relative_to_vehicle_is_an_error():
     v = _valid_verification()
-    del v["applied_carla_transforms"]["sensors"]["rgb_front"]["relative_to_vehicle"]
+    del v["applied_carla_transforms"]["sensors"]["rgb_front_left_camera"]["relative_to_vehicle"]
     errors = _rig_verification_contract_errors(v)
-    assert any("relative_to_vehicle" in e and "rgb_front" in e for e in errors)
+    assert any("relative_to_vehicle" in e and "rgb_front_left_camera" in e for e in errors)
 
 
 def test_multiple_independent_errors_all_accumulate():
@@ -183,7 +223,7 @@ def test_multiple_independent_errors_all_accumulate():
 def test_missing_v2_semantics_and_improper_mounting_are_rejected():
     v = _valid_verification()
     v["sensor_contract"].pop("carla_attachment_semantics")
-    v["sensors"]["rgb_front"]["mounting_matrix_sensor_to_vehicle_carla"][0][0] = -1.0
+    v["sensors"]["rgb_front_left_camera"]["mounting_matrix_sensor_to_vehicle_carla"][0][0] = -1.0
     errors = _rig_verification_contract_errors(v)
     assert any("versioned v2" in error for error in errors)
     assert any("mounting matrix" in error for error in errors)

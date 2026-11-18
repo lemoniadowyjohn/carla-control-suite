@@ -21,6 +21,7 @@ Env toggles:
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import math
 import os
@@ -31,6 +32,7 @@ import sys
 import time
 import traceback
 import shutil
+import numpy as np
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
@@ -1834,6 +1836,7 @@ def _rig_verification_contract_errors(rig_verification: Dict[str, Any]) -> List[
     if contract.get("live_reprojection_verified") is not False:
         errors.append("offline contract cannot claim live reprojection")
     digest = contract.get("calib_sha256")
+    source_calibration: Optional[Dict[str, Any]] = None
     if not isinstance(digest, str) or not re.fullmatch(r"[0-9a-fA-F]{64}", digest):
         errors.append("calibration source digest missing or invalid")
     source_path_text = contract.get("calib_path")
@@ -1844,8 +1847,27 @@ def _rig_verification_contract_errors(rig_verification: Dict[str, Any]) -> List[
         if not source_path.is_file():
             errors.append("calibration source file is missing")
         elif isinstance(digest, str) and re.fullmatch(r"[0-9a-fA-F]{64}", digest):
-            if str(safe_sha256_file(str(source_path))).lower() != digest.lower():
+            try:
+                calibration_bytes = source_path.read_bytes()
+            except OSError as exc:
+                errors.append(f"v2 calibration source cannot be read: {exc}")
+                calibration_bytes = None
+            actual_digest = (
+                hashlib.sha256(calibration_bytes).hexdigest()
+                if calibration_bytes is not None
+                else ""
+            )
+            if actual_digest.lower() != digest.lower():
                 errors.append("v2 calibration source digest does not match source file")
+            elif calibration_bytes is not None:
+                try:
+                    loaded = json.loads(calibration_bytes)
+                    if isinstance(loaded, dict):
+                        source_calibration = loaded
+                    else:
+                        errors.append("v2 calibration source is not a JSON object")
+                except (OSError, UnicodeError, json.JSONDecodeError) as exc:
+                    errors.append(f"v2 calibration source cannot be parsed: {exc}")
 
     sensors = rig_verification.get("sensors")
     if not isinstance(sensors, dict) or not sensors:
@@ -1870,8 +1892,30 @@ def _rig_verification_contract_errors(rig_verification: Dict[str, Any]) -> List[
             errors.append(f"camera '{sensor_name}' lacks v2 mounting direction")
         if sensor.get("type") == "lidar" and sensor.get("mounting_vtl_inverted") is not False:
             errors.append(f"LiDAR '{sensor_name}' lacks v2 mounting direction")
+        expected_matrix = None
+        if source_calibration is not None:
+            source_name = str(sensor_name)
+            prefixes = ("rgb_", "seg_") if sensor.get("type") == "camera" else ("lidar_",)
+            for prefix in prefixes:
+                if source_name.startswith(prefix):
+                    source_name = source_name[len(prefix):]
+                    break
+            source_group = "cameras" if sensor.get("type") == "camera" else "lidars"
+            source_field = "cTv" if sensor.get("type") == "camera" else "vTl"
+            rows = source_calibration.get(source_group)
+            source_entry = rows.get(source_name) if isinstance(rows, dict) else None
+            if isinstance(source_entry, dict) and source_field in source_entry:
+                try:
+                    expected_matrix = (
+                        camera_attachment_matrix_from_cTv(source_entry[source_field])
+                        if sensor.get("type") == "camera"
+                        else lidar_attachment_matrix_from_vTl(source_entry[source_field])
+                    )
+                except (TypeError, ValueError, np.linalg.LinAlgError) as exc:
+                    errors.append(f"sensor '{sensor_name}' calibration cannot produce a valid mount: {exc}")
+            else:
+                errors.append(f"sensor '{sensor_name}' is not bound to an entry in the digest-bound calibration")
         try:
-            import numpy as np
             matrix = np.asarray(sensor.get("mounting_matrix_sensor_to_vehicle_carla"), dtype=float)
             valid = (matrix.shape == (4, 4) and np.all(np.isfinite(matrix))
                      and np.allclose(matrix[3], [0, 0, 0, 1], atol=1e-7)
@@ -1881,6 +1925,10 @@ def _rig_verification_contract_errors(rig_verification: Dict[str, Any]) -> List[
             valid = False
         if not valid:
             errors.append(f"sensor '{sensor_name}' lacks a proper v2 mounting matrix")
+        elif expected_matrix is not None and not np.allclose(
+            matrix, expected_matrix, rtol=0.0, atol=1e-8
+        ):
+            errors.append(f"sensor '{sensor_name}' v2 mounting matrix disagrees with digest-bound calibration")
         sensor_entry = applied_sensors.get(str(sensor_name))
         if not isinstance(sensor_entry, dict):
             errors.append(f"missing applied transform for sensor '{sensor_name}'")

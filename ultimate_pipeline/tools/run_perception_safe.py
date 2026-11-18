@@ -21,6 +21,7 @@ Env toggles:
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import math
 import os
@@ -57,7 +58,9 @@ from ultimate_pipeline.quality.check_elevation_missing_and_cliffs import (
     check_elevation_missing_and_cliffs,
 )
 from ultimate_pipeline.sensors.transform_conventions import (
+    camera_attachment_matrix_from_cTv,
     camera_attachment_pose_from_cTv,
+    lidar_attachment_matrix_from_vTl,
     matrix_to_unreal_pose,
 )
 from ultimate_pipeline.tools.perception_artifacts import render_lidar_bev
@@ -1907,6 +1910,7 @@ def _rig_verification_contract_errors(rig_verification: Dict[str, Any]) -> List[
     if sensor_contract.get("lidar_mounting") != "S_vehicle @ vTl @ S_lidar":
         errors.append("v2 LiDAR mounting convention is missing or invalid")
     calib_sha256 = sensor_contract.get("calib_sha256")
+    source_calibration: Optional[Dict[str, Any]] = None
     if not isinstance(calib_sha256, str) or not re.fullmatch(r"[0-9a-fA-F]{64}", calib_sha256):
         errors.append("v2 calibration source SHA-256 is missing or invalid")
     calib_path_text = sensor_contract.get("calib_path")
@@ -1917,9 +1921,27 @@ def _rig_verification_contract_errors(rig_verification: Dict[str, Any]) -> List[
         if not calib_path.is_file():
             errors.append("v2 calibration source file is missing")
         elif isinstance(calib_sha256, str) and re.fullmatch(r"[0-9a-fA-F]{64}", calib_sha256):
-            actual_digest = safe_sha256_file(str(calib_path))
+            try:
+                calibration_bytes = calib_path.read_bytes()
+            except OSError as exc:
+                errors.append(f"v2 calibration source cannot be read: {exc}")
+                calibration_bytes = None
+            actual_digest = (
+                hashlib.sha256(calibration_bytes).hexdigest()
+                if calibration_bytes is not None
+                else ""
+            )
             if str(actual_digest).lower() != calib_sha256.lower():
                 errors.append("v2 calibration source digest does not match source file")
+            elif calibration_bytes is not None:
+                try:
+                    loaded = json.loads(calibration_bytes)
+                    if isinstance(loaded, dict):
+                        source_calibration = loaded
+                    else:
+                        errors.append("v2 calibration source is not a JSON object")
+                except (OSError, UnicodeError, json.JSONDecodeError) as exc:
+                    errors.append(f"v2 calibration source cannot be parsed: {exc}")
     if sensor_contract.get("live_reprojection_verified") is not False:
         errors.append("offline rig contract cannot claim live reprojection")
 
@@ -1946,6 +1968,28 @@ def _rig_verification_contract_errors(rig_verification: Dict[str, Any]) -> List[
             errors.append(f"camera '{sensor_name}' lacks v2 mounting direction")
         if sensor.get("type") == "lidar" and sensor.get("mounting_vtl_inverted") is not False:
             errors.append(f"LiDAR '{sensor_name}' lacks v2 mounting direction")
+        expected_matrix = None
+        if source_calibration is not None:
+            source_name = str(sensor_name)
+            for prefix in (("rgb_", "seg_") if sensor.get("type") == "camera" else ("lidar_",)):
+                if source_name.startswith(prefix):
+                    source_name = source_name[len(prefix):]
+                    break
+            source_group = "cameras" if sensor.get("type") == "camera" else "lidars"
+            source_field = "cTv" if sensor.get("type") == "camera" else "vTl"
+            rows = source_calibration.get(source_group)
+            source_entry = rows.get(source_name) if isinstance(rows, dict) else None
+            if isinstance(source_entry, dict) and source_field in source_entry:
+                try:
+                    expected_matrix = (
+                        camera_attachment_matrix_from_cTv(source_entry[source_field])
+                        if sensor.get("type") == "camera"
+                        else lidar_attachment_matrix_from_vTl(source_entry[source_field])
+                    )
+                except (TypeError, ValueError, np.linalg.LinAlgError) as exc:
+                    errors.append(f"sensor '{sensor_name}' calibration cannot produce a valid mount: {exc}")
+            else:
+                errors.append(f"sensor '{sensor_name}' is not bound to an entry in the digest-bound calibration")
         matrix = sensor.get("mounting_matrix_sensor_to_vehicle_carla")
         try:
             matrix_array = np.asarray(matrix, dtype=float)
@@ -1960,6 +2004,10 @@ def _rig_verification_contract_errors(rig_verification: Dict[str, Any]) -> List[
             valid_matrix = False
         if not valid_matrix:
             errors.append(f"sensor '{sensor_name}' lacks a 4x4 v2 mounting matrix")
+        elif expected_matrix is not None and not np.allclose(
+            matrix_array, expected_matrix, rtol=0.0, atol=1e-8
+        ):
+            errors.append(f"sensor '{sensor_name}' v2 mounting matrix disagrees with digest-bound calibration")
         sensor_entry = applied_sensors.get(str(sensor_name))
         if not isinstance(sensor_entry, dict):
             errors.append(f"missing applied transform for sensor '{sensor_name}'")
