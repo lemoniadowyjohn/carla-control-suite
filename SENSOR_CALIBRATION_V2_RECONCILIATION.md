@@ -79,12 +79,12 @@ for the v2 conversion.
 
 ## Expanded test status
 
-- Focused calibration and RQ3/perception selection after source-binding regression additions: **324 passed, 2 deselected**. The two deselected dataset-training cases require `torchvision`, which is unavailable in this environment. Five configuration-path warnings are from the sparse checkout.
+- Focused calibration and RQ3/perception selection after source-binding and mirror-validator regression additions: **325 passed, 2 deselected**. The two deselected dataset-training cases require `torchvision`, which is unavailable in this environment. Five configuration-path warnings are from the sparse checkout.
 - Primary strict receipt smoke: **PASS**, canonical calibration defaults -> v2 rig report -> `_rig_verification_contract_errors` returned zero errors. Adversarial tests prove altered raw camera/LiDAR transforms and mismatched calibration file digests are rejected.
 - Dedicated RQ3 pair/map-dependent selection after materializing the exact pinned map: **94 passed**.
 - Submission mirror rig, safe-runner rig, and explicit-calibration selection: **32 passed** when run with `submission/infrastructure` as the import root.
 - `python -m compileall -q ultimate_pipeline submission/infrastructure/ultimate_pipeline tests`: **PASS**, exit `0` after the final mirror source edits.
-- Submission mirror rig, safe-runner, and explicit-calibration selection: **34 passed**, using a temporary pytest config from `submission/infrastructure` to ensure imports resolve to the mirror.
+- Submission mirror rig, safe-runner, and explicit-calibration selection: **35 passed**, using a temporary pytest config from `submission/infrastructure` to ensure imports resolve to the mirror.
 - Direct mirror report/validator smoke: **PASS**, both camera and LiDAR v2 matrices validate and v1 booleans remain false/true.
 - Full offline suite is **BLOCKED/INCOMPLETE** in the sparse worktree: collection reported 245 import errors because source directories outside the authorized sparse set are absent. Two RQ3 evidence suites also require missing `cryptography`. No result from that collection is classified as a candidate failure or as passing CI.
 - `git diff --check` on the candidate source/test paths: **PASS**, exit `0`. Whole-tree diff was avoided after the sparse expansion exposed unrelated LFS map payloads; those frozen artifacts are not staged or intentionally changed.
@@ -98,11 +98,11 @@ for the v2 conversion.
 | PR #62 conversion | PASS_OFFLINE_SOURCE | Corrected two-basis v2 mounts and positive determinant checks retained; no standalone reflection is treated as a rotation. |
 | PR #51 explicit calibration | PASS_OFFLINE_TESTS | Missing explicit selected file fails rather than falling back; selected-source test passes. |
 | PR #53 completeness | PASS_OFFLINE_TESTS | Empty/invalid completeness remains rejected; dedicated tests pass. |
-| Focused calibration/RQ3 tests | PASS | 324 passed, 2 deselected because required `torchvision` is unavailable. |
+| Focused calibration/RQ3 tests | PASS | 325 passed, 2 deselected because required `torchvision` is unavailable. |
 | Full offline production CI | INCOMPLETE | Sparse checkout yielded 245 collection errors from unmaterialized source directories; independent of changed paths. Required `cryptography` is also absent for two evidence suites. |
 | `git diff --check` | PASS_SCOPED | Source/test paths only, exit 0; unrelated LFS payloads were excluded. |
 | CARLA spawn and reprojection | PENDING_RUNTIME | No CARLA runtime was started and no physical sensor reprojection was measured. |
-| Independent review | PENDING | First review defects were fixed; a second read-only review is auditing the corrected candidate. |
+| Independent review | PENDING | Review also found missing mirror convention-string checks; those checks and a negative control are now in the follow-up commit. Final re-review remains required. |
 | Production integration | NOT_INTEGRATED | No merge or production ref change. A reviewable PR remains conditional on finishing the candidate gates. |
 
 ## Offline verification recorded so far

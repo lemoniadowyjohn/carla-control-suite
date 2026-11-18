@@ -1827,6 +1827,10 @@ def _rig_verification_contract_errors(rig_verification: Dict[str, Any]) -> List[
         errors.append("CARLA mounting semantics must be versioned v2")
     if contract.get("legacy_v1_flags_scope") != "projection_backprojection_only":
         errors.append("legacy v1 flag scope missing or invalid")
+    if contract.get("camera_mounting") != "S_vehicle @ inverse(cTv) @ C_CARLA_camera_to_OpenCV":
+        errors.append("v2 camera mounting convention is missing or invalid")
+    if contract.get("lidar_mounting") != "S_vehicle @ vTl @ S_lidar":
+        errors.append("v2 LiDAR mounting convention is missing or invalid")
     if contract.get("live_reprojection_verified") is not False:
         errors.append("offline contract cannot claim live reprojection")
     digest = contract.get("calib_sha256")

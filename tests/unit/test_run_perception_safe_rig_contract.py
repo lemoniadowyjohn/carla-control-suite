@@ -69,6 +69,15 @@ def test_calibration_source_path_is_required():
     assert "v2 calibration source path is missing or invalid" in errors
 
 
+def test_mounting_convention_strings_are_authoritative():
+    v = _valid_verification()
+    v["sensor_contract"]["camera_mounting"] = "wrong camera convention"
+    v["sensor_contract"]["lidar_mounting"] = "wrong lidar convention"
+    errors = _rig_verification_contract_errors(v)
+    assert "v2 camera mounting convention is missing or invalid" in errors
+    assert "v2 LiDAR mounting convention is missing or invalid" in errors
+
+
 def test_ctv_inverted_true_is_an_error():
     v = _valid_verification()
     v["cTv_inverted"] = True
