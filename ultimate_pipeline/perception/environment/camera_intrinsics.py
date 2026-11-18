@@ -137,11 +137,109 @@ def parse_image_size(value: Any) -> Tuple[int, int]:
     raise ValueError(f"unsupported_image_size:{value!r}")
 
 
+def transform_intrinsics_for_image_ops(
+    k_matrix: Any,
+    source_size: Sequence[int],
+    *,
+    resize_size: Optional[Sequence[int]] = None,
+    crop_xyxy: Optional[Sequence[int]] = None,
+) -> Dict[str, Any]:
+    """Transport K through resize and crop using pixel-centre geometry.
+
+    Resize follows the common half-pixel sampling convention:
+    ``u' = sx * (u + 0.5) - 0.5`` (and likewise for ``v``).  Cropping is then
+    applied in resized-image coordinates.  The returned matrix is the K that
+    belongs to the final pixels; callers must not reuse the original K after
+    either operation.
+    """
+    k = as_k_matrix(k_matrix, "K")
+    if not np.isfinite(k).all() or abs(float(np.linalg.det(k))) < 1e-12:
+        raise ValueError("K_must_be_finite_and_invertible")
+    src_w, src_h = (int(source_size[0]), int(source_size[1]))
+    if src_w <= 0 or src_h <= 0:
+        raise ValueError(f"invalid_source_size:{src_w}x{src_h}")
+    if resize_size is None:
+        resized_w, resized_h = src_w, src_h
+    else:
+        resized_w, resized_h = int(resize_size[0]), int(resize_size[1])
+    if resized_w <= 0 or resized_h <= 0:
+        raise ValueError(f"invalid_resize_size:{resized_w}x{resized_h}")
+
+    sx = resized_w / float(src_w)
+    sy = resized_h / float(src_h)
+    resize_transform = np.asarray(
+        [[sx, 0.0, 0.5 * sx - 0.5],
+         [0.0, sy, 0.5 * sy - 0.5],
+         [0.0, 0.0, 1.0]], dtype=float
+    )
+    pixel_transform = resize_transform
+    transformed = pixel_transform @ k
+    crop = None
+    final_w, final_h = resized_w, resized_h
+    if crop_xyxy is not None:
+        if len(crop_xyxy) != 4:
+            raise ValueError("crop_xyxy_must_have_four_values")
+        x0, y0, x1, y1 = (int(v) for v in crop_xyxy)
+        if not (0 <= x0 < x1 <= resized_w and 0 <= y0 < y1 <= resized_h):
+            raise ValueError(
+                f"crop_out_of_bounds:{x0},{y0},{x1},{y1}:{resized_w}x{resized_h}"
+            )
+        crop_transform = np.asarray(
+            [[1.0, 0.0, -float(x0)],
+             [0.0, 1.0, -float(y0)],
+             [0.0, 0.0, 1.0]], dtype=float
+        )
+        pixel_transform = crop_transform @ pixel_transform
+        transformed = pixel_transform @ k
+        crop = [x0, y0, x1, y1]
+        final_w, final_h = x1 - x0, y1 - y0
+
+    return {
+        "K": [[float(v) for v in row] for row in transformed],
+        "source_size": [src_w, src_h],
+        "resized_size": [resized_w, resized_h],
+        "crop_xyxy": crop,
+        "output_size": [final_w, final_h],
+        "pixel_coordinate_convention": "half_pixel_resize_then_integer_origin_crop",
+        "pixel_transform": [
+            [float(v) for v in row] for row in pixel_transform
+        ],
+    }
+
+
 def as_k_matrix(value: Any, name: str = "K") -> np.ndarray:
     mat = np.asarray(value, dtype=float)
     if mat.shape != (3, 3):
         raise ValueError(f"{name}_must_be_3x3:{mat.shape}")
     return mat
+
+
+def project_camera_point(k_matrix: Any, point_camera: Sequence[float]) -> Tuple[float, float]:
+    """Project a camera-frame 3D point through the full 3x3 intrinsic matrix."""
+    k = as_k_matrix(k_matrix)
+    point = np.asarray([float(v) for v in point_camera[:3]], dtype=float)
+    if point.shape != (3,) or not np.isfinite(point).all() or point[2] <= 1e-9:
+        raise ValueError("point_must_be_finite_and_in_front_of_camera")
+    pixel = k @ point
+    if not np.isfinite(pixel).all() or abs(float(pixel[2])) <= 1e-12:
+        raise ValueError("projected_pixel_invalid")
+    return float(pixel[0] / pixel[2]), float(pixel[1] / pixel[2])
+
+
+def unproject_camera_pixel(
+    k_matrix: Any, pixel_uv: Sequence[float], *, optical_axis_depth: float
+) -> Tuple[float, float, float]:
+    """Unproject a pixel to a point whose camera-z equals the supplied depth."""
+    k = as_k_matrix(k_matrix)
+    u, v = float(pixel_uv[0]), float(pixel_uv[1])
+    depth = float(optical_axis_depth)
+    if not np.isfinite([u, v, depth]).all() or depth <= 0:
+        raise ValueError("pixel_and_depth_must_be_finite_with_positive_depth")
+    ray = np.linalg.inv(k) @ np.asarray([u, v, 1.0], dtype=float)
+    if abs(float(ray[2])) <= 1e-12:
+        raise ValueError("unprojected_ray_parallel_to_image_plane")
+    point = ray * (depth / float(ray[2]))
+    return tuple(float(v) for v in point)
 
 
 # ---------------------------------------------------------------------------
@@ -178,10 +276,15 @@ def camera_intrinsic_realization(
     fov = float(fov_deg) if fov_deg is not None else horizontal_fov_from_fx(fx_t, w)
     native = native_carla_intrinsics(w, h, fov)
 
-    fx_n = native["fx"]
-    fy_n = native["fy"]
-    cx_n = native["cx"]
-    cy_n = native["cy"]
+    k_native = (
+        as_k_matrix(k_override, f"{camera_name}.K_native_carla")
+        if k_override is not None
+        else np.asarray(native["K"], dtype=float)
+    )
+    fx_n = float(k_native[0, 0])
+    fy_n = float(k_native[1, 1])
+    cx_n = float(k_native[0, 2])
+    cy_n = float(k_native[1, 2])
 
     def _rel(a: float, b: float) -> Optional[float]:
         denom = float(b)
@@ -201,12 +304,6 @@ def camera_intrinsic_realization(
         "cx_relative_error_pct": _rel(cx_n, cx_t),
         "cy_relative_error_pct": _rel(cy_n, cy_t),
     }
-
-    k_native = (
-        as_k_matrix(k_override, f"{camera_name}.K_native_carla")
-        if k_override is not None
-        else np.asarray(native["K"], dtype=float)
-    )
 
     homography, _ = target_to_native_mapping(k_target, k_native)
     mapping = build_mapping_meta(k_target, k_native, w, h)
@@ -279,7 +376,9 @@ def camera_intrinsic_realization(
         "mapping": mapping,
         "residual": residual,
         "remap_policies": dict(REMAP_POLICIES),
-        "exact_calibration_claim": strategy == STRATEGY_DETERMINISTIC_REMAP,
+        "geometric_realization_exact": strategy == STRATEGY_DETERMINISTIC_REMAP,
+        "exact_calibration_claim": False,
+        "claim_scope": "NUMERICAL_MAPPING_ONLY_LIVE_RENDERED_FRAMES_NOT_INDEPENDENTLY_VERIFIED",
     }
 
 
@@ -487,13 +586,17 @@ def apply_remap(
 
     if policy == "NEAREST_NEIGHBOR_ONLY" or policy == "NEAREST_NEIGHBOR_RANGE_PRESERVING":
         out = _nearest(source, grid)
-        if policy == "NEAREST_NEIGHBOR_RANGE_PRESERVING":
-            valid = np.asarray(grid["valid"], dtype=bool)
-            fill = np.zeros((), dtype=out.dtype)
-            fill[...] = invalid_value
-            out = np.where(valid, out, fill)
-        return out
-    return _bilinear(source, grid)
+    else:
+        out = _bilinear(source, grid)
+    # The validity mask is authoritative.  Fill out-of-domain samples as well
+    # as returning the mask so a consumer that accidentally drops the mask
+    # cannot mistake clipped edge pixels for observations.
+    valid = np.asarray(grid["valid"], dtype=bool)
+    fill = np.asarray(invalid_value, dtype=out.dtype)
+    if out.ndim == 3:
+        fill = np.full((out.shape[2],), invalid_value, dtype=out.dtype)
+        valid = valid[..., None]
+    return np.where(valid, out, fill)
 
 
 def remap_labels(source: np.ndarray, grid: Mapping[str, Any], modality: str,
@@ -612,7 +715,7 @@ def realization_report(
         elif fov_policy == "force_square_pixel":
             fov = horizontal_fov_from_fx(float(kt[1, 1]), width)
         else:
-            fov = None
+            raise ValueError(f"unknown_fov_policy:{fov_policy}")
 
         entry = camera_intrinsic_realization(
             str(name), kt, width, height,
@@ -639,6 +742,9 @@ def realization_report(
         "cameras": entries,
         "strategy_counts": strategies,
         "exact_realization": bool(exact),
+        "geometric_realization_exact": bool(exact),
+        "exact_intrinsic_compliance": False,
+        "live_acceptance": "PENDING_INDEPENDENT_RENDERED_FRAME_VERIFICATION",
         "requires_deterministic_remap": any(
             e.get("strategy") == STRATEGY_DETERMINISTIC_REMAP for e in entries
         ),
@@ -651,3 +757,140 @@ def realization_report(
             "delta_fy / delta_cx / delta_cy"
         ),
     }
+
+
+def realization_report_for_sizes(
+    calib_data: Mapping[str, Any],
+    image_sizes: Optional[Mapping[str, Sequence[int]]] = None,
+    *,
+    fov_policy: str = "derive_from_target_fx",
+    min_coverage: float = DEFAULT_MIN_REMAP_COVERAGE,
+) -> Dict[str, Any]:
+    """Report all cameras at their actual selected output resolutions.
+
+    Overrides are interpreted as resize operations from the calibration's
+    declared image size, so K is transported with the same half-pixel rule as
+    an actual image resize.  This prevents runtime resolution clamps from
+    silently retaining a full-resolution K.
+    """
+    overrides = dict(image_sizes or {})
+    cameras: Dict[str, Any] = {}
+    original_cameras = dict(calib_data.get("cameras") or {})
+    unknown = set(overrides) - set(original_cameras)
+    if unknown:
+        raise ValueError(f"image_size_override_unknown_cameras:{sorted(unknown)}")
+    for name, source in original_cameras.items():
+        cam = dict(source)
+        source_w, source_h = parse_image_size(cam.get("image_size", [1920, 1080]))
+        chosen = overrides.get(str(name), (source_w, source_h))
+        out_w, out_h = int(chosen[0]), int(chosen[1])
+        if out_w <= 0 or out_h <= 0:
+            raise ValueError(f"invalid_image_size_override:{name}:{out_w}x{out_h}")
+        if cam.get("K_undistortion") is None:
+            cam["image_size"] = [out_w, out_h]
+            cam["source_image_size"] = [source_w, source_h]
+            cam["image_operation_contract"] = None
+            cameras[str(name)] = cam
+            continue
+        transformed = transform_intrinsics_for_image_ops(
+            cam["K_undistortion"], (source_w, source_h), resize_size=(out_w, out_h)
+        )
+        cam["K_undistortion"] = transformed["K"]
+        cam["image_size"] = [out_w, out_h]
+        cam["source_image_size"] = [source_w, source_h]
+        cam["image_operation_contract"] = transformed
+        cameras[str(name)] = cam
+
+    report = realization_report(
+        {"cameras": cameras}, fov_policy=fov_policy, min_coverage=min_coverage
+    )
+    for entry in report["cameras"]:
+        cam = cameras[entry["camera"]]
+        entry["source_image_size"] = cam["source_image_size"]
+        entry["image_operation_contract"] = cam["image_operation_contract"]
+        if entry.get("strategy") is None:
+            continue
+        entry["effective_K_if_native_output"] = entry["K_native_carla"]
+        entry["effective_K_if_deterministically_remapped"] = entry["K_target"]
+        entry["valid_image_mask_required_for_remap"] = bool(entry["remap_required"])
+    report["image_size_overrides"] = {
+        name: [int(size[0]), int(size[1])] for name, size in sorted(overrides.items())
+    }
+    report["override_scaling_contract"] = "half_pixel_resize_then_integer_origin_crop"
+    return report
+
+
+def write_effective_intrinsics_artifacts(
+    output_dir: str,
+    realization: Mapping[str, Any],
+    *,
+    remap_applied: bool,
+) -> Dict[str, Any]:
+    """Export the effective K and the exact valid-pixel mask for one camera.
+
+    The exported K describes the pixels in the output artifact: native K when
+    no remap was applied, requested K when the deterministic remap was applied.
+    The mask is always written, including an all-valid mask for native output.
+    """
+    import hashlib
+    import io
+    import json
+    from pathlib import Path
+
+    camera = str(realization.get("camera") or "")
+    if not camera or any(c not in "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-" for c in camera):
+        raise ValueError("invalid_camera_name_for_artifact")
+    width, height = int(realization["width_px"]), int(realization["height_px"])
+    if remap_applied:
+        if realization.get("strategy") == STRATEGY_NATIVE_IDENTITY:
+            valid = np.ones((height, width), dtype=bool)
+        else:
+            grid = compute_remap_grid(
+                realization["K_target"], realization["K_native_carla"], width, height
+            )
+            valid = np.asarray(grid["valid"], dtype=bool)
+        effective_k = realization["K_target"]
+        stage = "DETERMINISTIC_REMAP_APPLIED"
+    else:
+        valid = np.ones((height, width), dtype=bool)
+        effective_k = realization["K_native_carla"]
+        stage = "NATIVE_CARLA_RENDER"
+
+    buffer = io.BytesIO()
+    np.save(buffer, valid.astype(np.uint8), allow_pickle=False)
+    mask_bytes = buffer.getvalue()
+    root = Path(output_dir)
+    root.mkdir(parents=True, exist_ok=True)
+    mask_path = root / f"{camera}_valid_mask.npy"
+    mask_path.write_bytes(mask_bytes)
+    payload = {
+        "schema": "EFFECTIVE_CAMERA_INTRINSICS/v1",
+        "camera": camera,
+        "width_px": width,
+        "height_px": height,
+        "K_effective": [[float(v) for v in row] for row in effective_k],
+        "effective_stage": stage,
+        "requested_K_target": realization["K_target"],
+        "K_native_carla": realization["K_native_carla"],
+        "strategy": realization.get("strategy"),
+        "geometric_full_frame_match": bool(
+            realization.get("strategy") == STRATEGY_NATIVE_IDENTITY
+            or (remap_applied and realization.get("mapping", {}).get("coverage_fraction") == 1.0)
+        ),
+        "exact_intrinsic_compliance": False,
+        "independent_rendered_frame_verification": "PENDING",
+        "valid_image_mask": {
+            "path": mask_path.name,
+            "encoding": "NumPy uint8, 1=observed and 0=invalid",
+            "size_bytes": len(mask_bytes),
+            "sha256": hashlib.sha256(mask_bytes).hexdigest(),
+            "valid_pixel_count": int(np.count_nonzero(valid)),
+            "invalid_pixel_count": int(valid.size - np.count_nonzero(valid)),
+        },
+    }
+    payload["effective_intrinsics_sha256"] = hashlib.sha256(
+        json.dumps(payload, sort_keys=True, separators=(",", ":"), allow_nan=False).encode("utf-8")
+    ).hexdigest()
+    meta_path = root / f"{camera}_effective_intrinsics.json"
+    meta_path.write_text(json.dumps(payload, indent=2, sort_keys=True), encoding="utf-8")
+    return payload
