@@ -61,19 +61,25 @@ def test_six_camera_native_k_and_resolution_override_are_explicit():
             intr.STRATEGY_BOUNDED_APPROXIMATION,
         }
 
-    resized = intr.realization_report_for_sizes(
-        calib, {name: (960, 540) for name in calib["cameras"]}
-    )
-    assert resized["image_size_overrides"]
-    for entry in resized["cameras"]:
-        assert (entry["width_px"], entry["height_px"]) == (960, 540)
-        assert entry["source_image_size"] == [1920, 1080]
-        assert entry["K_target"][0][0] == pytest.approx(
-            calib["cameras"][entry["camera"]]["K_undistortion"][0][0] / 2
-        )
-        assert entry["K_target"][0][2] == pytest.approx(
-            (calib["cameras"][entry["camera"]]["K_undistortion"][0][2] + 0.5) / 2 - 0.5
-        )
+    # Cover native size, uniform downscales and the active low-memory clamp.
+    for width, height in ((1920, 1080), (1280, 720), (960, 540), (640, 480), (320, 180)):
+        overrides = {name: (width, height) for name in calib["cameras"]}
+        resized = intr.realization_report_for_sizes(calib, overrides)
+        assert resized["image_size_overrides"] == {
+            name: [width, height] for name in calib["cameras"]
+        }
+        for entry in resized["cameras"]:
+            assert (entry["width_px"], entry["height_px"]) == (width, height)
+            assert entry["source_image_size"] == [1920, 1080]
+            sx, sy = width / 1920, height / 1080
+            source_k = calib["cameras"][entry["camera"]]["K_undistortion"]
+            assert entry["K_target"][0][0] == pytest.approx(source_k[0][0] * sx)
+            assert entry["K_target"][1][1] == pytest.approx(source_k[1][1] * sy)
+            assert entry["K_target"][0][2] == pytest.approx((source_k[0][2] + 0.5) * sx - 0.5)
+            assert entry["K_target"][1][2] == pytest.approx((source_k[1][2] + 0.5) * sy - 0.5)
+            assert entry["native"]["fx"] == pytest.approx(
+                (width / 2) / math.tan(math.radians(entry["configured_horizontal_fov_deg"]) / 2)
+            )
 
 
 def test_runtime_rig_derives_k_after_resolution_clamp_and_labels_native_approximation():
