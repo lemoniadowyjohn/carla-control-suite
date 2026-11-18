@@ -4,7 +4,7 @@ rootdir: G:\CARLA_RECOVERY\worktrees\v127-calibration-p0-20261118
 configfile: pytest.ini
 testpaths: ultimate_pipeline/tests, tests, tests/unit, tests/phase_q, tests/carla_tools, tests/domain_gap, tests/opendrive_geometry, tests/quality, tests/roadrunner, tests/topology, ultimate_pipeline/domain_gap/tests, ultimate_pipeline/carla_tools/tests, ultimate_pipeline/tools/tests
 plugins: anyio-4.2.0
-collected 3260 items / 292 errors / 1 skipped
+collected 3264 items / 292 errors / 1 skipped
 
 =================================== ERRORS ====================================
 ___ ERROR collecting ultimate_pipeline/tests/test_coordinate_control_fix.py ___
@@ -3167,4 +3167,4 @@ ERROR tests/unit/test_visual_mesh_elevation_warp.py
 ERROR tests/unit/test_zero_length_connector_repair.py
 SKIPPED [1] tests\unit\test_t6_owner_identity_authority.py:65: scripts/control_plane.py not present
 !!!!!!!!!!!!!!!!!! Interrupted: 292 errors during collection !!!!!!!!!!!!!!!!!!
-================= 1 skipped, 7 warnings, 292 errors in 10.55s =================
+================= 1 skipped, 7 warnings, 292 errors in 23.83s =================

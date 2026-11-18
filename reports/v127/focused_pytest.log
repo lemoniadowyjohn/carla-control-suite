@@ -3,14 +3,15 @@ platform win32 -- Python 3.12.2, pytest-8.0.1, pluggy-1.4.0
 rootdir: G:\CARLA_RECOVERY\worktrees\v127-calibration-p0-20261118
 configfile: pytest.ini
 plugins: anyio-4.2.0
-collected 470 items
+collected 474 items
 
 ultimate_pipeline\tests\unit\test_transform_conventions.py ............. [  2%]
 ............................................                             [ 12%]
-ultimate_pipeline\tests\unit\test_applied_sensor_rig_v2.py ..........    [ 14%]
+ultimate_pipeline\tests\unit\test_applied_sensor_rig_v2.py ............. [ 14%]
+                                                                         [ 14%]
 ultimate_pipeline\carla_tools\tests\test_thesis_sensor_rig_contract.py . [ 14%]
 ..............                                                           [ 17%]
-ultimate_pipeline\tests\test_contracts.py .............................. [ 23%]
+ultimate_pipeline\tests\test_contracts.py .............................. [ 24%]
 ........................................................................ [ 39%]
 ..................................                                       [ 46%]
 tests\unit\test_agent_sync_contract.py ......                            [ 47%]
@@ -28,8 +29,8 @@ tests\unit\test_recorder_backpressure_and_frame_integrity.py ........... [ 80%]
 ultimate_pipeline\tests\unit\test_rq3_frame_set.py ..................... [ 87%]
 ..                                                                       [ 88%]
 tests\unit\test_sensor_calibration_semantics.py ....                     [ 89%]
-tests\unit\test_rq3_batch9_pair_contract.py ............................ [ 95%]
-......................                                                   [ 99%]
+tests\unit\test_rq3_batch9_pair_contract.py ............................ [ 94%]
+.......................                                                  [ 99%]
 tests\unit\test_submission_applied_sensor_rig_mirror.py .                [100%]
 
 ============================== warnings summary ===============================
@@ -58,4 +59,4 @@ ultimate_pipeline/carla_tools/tests/test_thesis_sensor_rig_contract.py::test_leg
     from ultimate_pipeline.carla_tools.sensor_rig import SensorRig
 
 -- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
-======================= 470 passed, 6 warnings in 7.57s =======================
+====================== 474 passed, 6 warnings in 15.38s =======================

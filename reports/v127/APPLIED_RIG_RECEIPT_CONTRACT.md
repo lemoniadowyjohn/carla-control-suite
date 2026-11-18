@@ -16,6 +16,10 @@ The validator accepts exactly the v2 top-level field set and rejects missing or 
 - Per-sensor residuals and immutable limits: position `0.01 m`, angle `0.1°`.
 - `applied_configuration_sha256`, `identity_binding_sha256`, and `receipt_sha256`.
 
+## Trusted mount validation
+
+For live validation, the consumer reads the exact trusted calibration bytes (the repository canonical file by default), verifies their SHA-256 against the independently supplied expected digest, and derives every expected camera and active LiDAR mount from raw `cTv`/`vTl` using the v2 frame contract. It compares both requested and observed matrices against those derived mounts with a 2e-6 absolute matrix tolerance. Missing bytes, digest mismatch, unknown sensor names, or any matrix mismatch fail closed. Receipt self-hashes are not used as the transform oracle.
+
 ## Measurement and digest rules
 
 1. Requested mounts are derived from the cached raw calibration bytes; the SHA is taken from those same bytes.
@@ -24,7 +28,7 @@ The validator accepts exactly the v2 top-level field set and rejects missing or 
 4. The identity digest binds ego and sensor actor IDs/types. The receipt digest binds every field, including runtime frame/timestamp and dataset digest.
 5. Recorder manifest sensor actor ID/type must equal the receipt actor ID/type. Same-name artifacts from a replacement actor fail.
 6. The binder rehashes every written file, checks callback and filename frame IDs, checks timestamps, rejects duplicate callbacks, and requires a nonempty intersection across all sensors. A dataset SHA is made from the verified sensor/frame/file-hash records.
-7. Live validation requires an expected calibration SHA supplied outside the receipt by the run context. A caller cannot choose and self-seal its own expected digest.
+7. Live validation requires the expected calibration SHA supplied outside the receipt by the run context, plus the exact bytes selected by the run. A caller cannot choose and self-seal its own expected digest; a custom calibration is admitted only when the caller supplies bytes whose digest matches that external expected SHA.
 8. Residual limits are constants in code. A receipt cannot raise them. The validator recomputes recorded residuals and checks camera K matrices, image dimensions, common frames, common timestamps, and shared dataset identity/digest.
 9. `offline_source_only` receipts remain inspectable but cannot pass `require_live=True`. V1 receipts remain readable by historical readers and are refused for v2 live admission.
 

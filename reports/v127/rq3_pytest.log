@@ -3,20 +3,20 @@ platform win32 -- Python 3.12.2, pytest-8.0.1, pluggy-1.4.0
 rootdir: G:\CARLA_RECOVERY\worktrees\v127-calibration-p0-20261118
 configfile: pytest.ini
 plugins: anyio-4.2.0
-collected 161 items
+collected 162 items
 
 ultimate_pipeline\tests\unit\test_rq3_builder_false_pass_regression.py . [  0%]
 ...........                                                              [  7%]
 ultimate_pipeline\tests\unit\test_rq3_frame_set.py ..................... [ 20%]
 ..                                                                       [ 21%]
-ultimate_pipeline\tests\unit\test_rq3_paired_capture_contract.py ....... [ 26%]
+ultimate_pipeline\tests\unit\test_rq3_paired_capture_contract.py ....... [ 25%]
 .........................                                                [ 41%]
 ultimate_pipeline\tests\unit\test_rq3_route_rig_hardening.py ........... [ 48%]
 ..                                                                       [ 49%]
-ultimate_pipeline\tests\unit\test_rq3_terminal_adversarial_tests.py .... [ 52%]
+ultimate_pipeline\tests\unit\test_rq3_terminal_adversarial_tests.py .... [ 51%]
 ......                                                                   [ 55%]
-tests\unit\test_rq3_batch9_pair_contract.py ............................ [ 73%]
-......................                                                   [ 86%]
+tests\unit\test_rq3_batch9_pair_contract.py ............................ [ 72%]
+.......................                                                  [ 87%]
 tests\unit\test_v112_rq3_explicit_calibration.py ...                     [ 88%]
 tests\unit\test_v119_rq3_completeness_nonvacuous.py ..................   [100%]
 
@@ -42,4 +42,4 @@ ultimate_pipeline\config\settings.py:2060
     _warn_missing_setting_path(
 
 -- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
-======================= 161 passed, 5 warnings in 2.11s =======================
+======================= 162 passed, 5 warnings in 7.03s =======================

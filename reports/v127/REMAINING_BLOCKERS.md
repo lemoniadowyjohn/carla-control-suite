@@ -2,9 +2,9 @@
 
 ## Production and release
 
-1. **Independent exact-source-SHA review — CONDITIONAL ACCEPT.** Review of exact candidate SHA `d1c35b6ca3daa4b3e3da26515ef521dc581019de` found no confirmed code blocker and confirmed that prior receipt-authority, canonical calibration-path trust, and submission-mirror findings are closed. Signed-review tests still need a dependency-complete run because `cryptography` is absent locally.
-2. **Candidate publication — PENDING.** Remote production was refreshed and confirmed at the exact base SHA. The isolated branch and reviewable report commit must be pushed, then a PR opened; no merge is authorized.
-3. **Full offline production CI — INCOMPLETE.** The prescribed whole-tree pytest command stopped at collection: 3,260 discovered items, 292 collection errors, 1 skipped (pytest exit 2). The sparse checkout lacks numerous source paths/modules; this Python install also lacks `torchvision` and `cryptography`. Failures were not exhaustively replayed against exact baseline, so baseline-versus-candidate attribution remains incomplete.
+1. **Independent exact-source-SHA review — PENDING.** The reviewer conditionally accepted `d1c35b6ca3daa4b3e3da26515ef521dc581019de`; subsequent adversarial inspection found and fixed a wrong-but-self-consistent applied-mount bypass in `f317d2445f8fe9752e75fbe52a8f361990ee6a85`. Fresh review of the corrected final source and PR head is required. Signed-review tests also need a dependency-complete run because `cryptography` is absent locally.
+2. **Candidate publication — COMPLETE.** The isolated branch is pushed and draft PR #66 targets the pinned production SHA. The PR remains draft; no merge is authorized.
+3. **Full offline production CI — INCOMPLETE.** The prescribed whole-tree pytest command stopped at collection: 3,261 discovered items, 292 collection errors, 1 skipped (pytest exit 2). The sparse checkout lacks numerous source paths/modules; this Python install also lacks `torchvision` and `cryptography`. Baseline source-path attribution: all 292 failing test files exist at the exact baseline; 137 imports point to baseline-tracked files omitted by sparse checkout, 116 import modules do not exist in the baseline tree, 33 are dependency/import-environment errors, and 6 are unrelated import API errors in unchanged test/source paths. The full test suite was not replayed on baseline; this is not a baseline JUnit receipt.
 
 ## Runtime and camera science
 
@@ -15,9 +15,9 @@
 
 ## Executed offline test evidence
 
-Independent reviewer exact-SHA disposition: conditional accept, no confirmed source blocker; reviewer independently ran 100 focused checks. The signed review-receipt tests remain unexecuted locally because `cryptography` is missing.
+Independent reviewer conditionally accepted the prior source SHA `d1c35b6…` and ran 100 focused checks. Afterward, an adversarial fully resealed 25 cm wrong-mount case exposed a validator gap; `f317d2445f8fe9752e75fbe52a8f361990ee6a85` now rejects it. Exact-SHA review of the corrected final candidate is pending. Signed review-receipt tests remain unexecuted locally because `cryptography` is missing.
 
-- Focused calibration/RQ3/adapter suite: 470 passed, 6 warnings, exit 0 on source commit `d1c35b6ca3daa4b3e3da26515ef521dc581019de`.
+- Focused calibration/RQ3/adapter suite: 471 passed, 6 warnings, exit 0 on source commit `f317d2445f8fe9752e75fbe52a8f361990ee6a85`.
 - Wider collectable RQ3 suite: 161 passed, 5 warnings, exit 0. Four modules remain NOT_RUN because `cryptography` or repository-level `tools` imports are absent.
 - `compileall`: exit 0. CRLF-aware committed diff check: exit 0.
 
@@ -29,7 +29,7 @@ The full QA report's 12 findings are retained here with scope disposition:
 |---|---|---|
 | 1. Incorrect transform inversion/handedness | **ADDRESSED_OFFLINE** | Source-frame oracle formulas, all-six-camera/active-LiDAR tests, mutation controls, exact expected source positions. |
 | 2. Candidate acceptance missed wrong transforms | **ADDRESSED_OFFLINE** | Complete matrix and basis-vector checks with CARLA 0.9.16 client matrices; reflected/nonorthogonal candidates fail. |
-| 3. RQ3 rig digest omitted applied convention/identity | **CONSISTENCY_ONLY; UNATTESTED** | V2 records the observed-data claim and hashes for accidental-change detection. It is explicitly `UNATTESTED_SELF_REPORTED`; only the existing signed independent RQ3 review gate can authorize scientific admission. No live receipt exists. |
+| 3. RQ3 rig digest omitted applied convention/identity | **SOURCE_MATRIX_BOUND; UNATTESTED** | V2 validates requested and observed matrices against transforms independently derived from SHA-bound trusted calibration bytes; the re-sealed wrong-mount negative control fails. It remains `UNATTESTED_SELF_REPORTED`; signed independent RQ3 review is still required for scientific admission. No live receipt exists. |
 | 4. Production XML admission | **SEPARATE_RELEASE_WORK_PACKAGE** | PR #30 is not merged here; XML/DOCTYPE verification and K2 review remain separate. |
 | 5. Stale v1 receipt promotion | **ADDRESSED_IN_SOURCE** | V1 stays readable historically but is rejected by live v2 validators. |
 | 6. Reachable legacy SensorRig | **ADDRESSED_IN_SOURCE** | Legacy `SensorRig.spawn_rig` and anonymous matrix converter fail closed; regression test added. |
