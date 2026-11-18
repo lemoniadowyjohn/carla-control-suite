@@ -1,0 +1,28 @@
+RIG        back_left_camera     loc=(-0.5389,-0.2632,+1.0719) p/y/r=(  +0.015,-162.225,  +0.630) dpos=0.0000m dang=  0.000deg dfwd=  0.000deg | world dpos=0.0000 dang=0.000
+RIG        left_camera          loc=(-0.5000,-0.6973,+0.9008) p/y/r=(  +0.067, -91.700,  +0.178) dpos=0.0000m dang=  0.000deg dfwd=  0.000deg | world dpos=0.0000 dang=0.000
+RIG        front_left_camera    loc=(-0.2366,-0.0273,+1.0096) p/y/r=(  +1.503, -20.885,  +0.176) dpos=0.0000m dang=  0.000deg dfwd=  0.000deg | world dpos=0.0000 dang=0.000
+RIG        front_right_camera   loc=(-0.4289,-0.0229,+1.1020) p/y/r=(  +0.203, +18.957,  +0.248) dpos=0.0000m dang=  0.000deg dfwd=  0.000deg | world dpos=0.0000 dang=0.000
+RIG        right_camera         loc=(-0.6220,+0.6429,+0.8680) p/y/r=(  -0.422, +89.797,  +0.175) dpos=0.0000m dang=  0.000deg dfwd=  0.000deg | world dpos=0.0000 dang=0.000
+RIG        back_right_camera    loc=(+0.2945,-0.2206,+1.0065) p/y/r=(  +0.622,+159.563,  -0.683) dpos=0.0000m dang=  0.000deg dfwd=  0.000deg | world dpos=0.0000 dang=0.000
+RIG        middle_lidar         loc=(-0.4921,+0.0043,+1.2407) p/y/r=(  +0.171, +90.668,  -0.284) dpos=0.0000m dang=  0.001deg dfwd=  0.004deg | world dpos=0.0000 dang=0.001
+  attrs back_left_camera 1920 1080 60.374822
+  attrs left_camera 1920 1080 93.933822
+  attrs front_left_camera 1920 1080 61.248097
+  attrs front_right_camera 1920 1080 60.055464
+  attrs right_camera 1920 1080 93.498128
+  attrs back_right_camera 960 540 57.334493
+  attrs middle_lidar None None None
+DOMINIK    back_left_camera     loc=(-0.5389,-0.2632,+1.0719) p/y/r=(  +0.015,-162.225,  +0.630) dpos=0.0000m dang=  0.000deg dfwd=  0.000deg
+DOMINIK    left_camera          loc=(-0.5000,-0.6973,+0.9008) p/y/r=(  +0.067, -91.700,  +0.178) dpos=0.0000m dang=  0.000deg dfwd=  0.000deg
+DOMINIK    front_left_camera    loc=(-0.2366,-0.0273,+1.0096) p/y/r=(  +1.503, -20.885,  +0.176) dpos=0.0000m dang=  0.000deg dfwd=  0.000deg
+DOMINIK    front_right_camera   loc=(-0.4289,-0.0229,+1.1020) p/y/r=(  +0.203, +18.957,  +0.248) dpos=0.0000m dang=  0.000deg dfwd=  0.000deg
+DOMINIK    right_camera         loc=(-0.6220,+0.6429,+0.8680) p/y/r=(  -0.422, +89.797,  +0.175) dpos=0.0000m dang=  0.000deg dfwd=  0.000deg
+DOMINIK    back_right_camera    loc=(+0.2945,-0.2206,+1.0065) p/y/r=(  +0.622,+159.563,  -0.683) dpos=0.0000m dang=  0.000deg dfwd=  0.000deg
+DOMINIK    middle_lidar         loc=(-0.4921,+0.0043,+1.2407) p/y/r=(  +0.171, +90.668,  -0.284) dpos=0.0000m dang=  0.001deg dfwd=  0.004deg
+ATTACH     back_left_camera     loc=(-0.5389,-0.2632,+1.0719) p/y/r=(  +0.015,-162.225,  +0.630) dpos=0.0000m dang=  0.000deg dfwd=  0.000deg | world dpos=0.0000 dang=0.000
+ATTACH     left_camera          loc=(-0.5000,-0.6973,+0.9008) p/y/r=(  +0.067, -91.700,  +0.178) dpos=0.0000m dang=  0.000deg dfwd=  0.000deg | world dpos=0.0000 dang=0.000
+ATTACH     front_left_camera    loc=(-0.2366,-0.0273,+1.0096) p/y/r=(  +1.503, -20.885,  +0.176) dpos=0.0000m dang=  0.000deg dfwd=  0.000deg | world dpos=0.0000 dang=0.000
+ATTACH     front_right_camera   loc=(-0.4289,-0.0229,+1.1020) p/y/r=(  +0.203, +18.957,  +0.248) dpos=0.0000m dang=  0.000deg dfwd=  0.000deg | world dpos=0.0000 dang=0.000
+ATTACH     right_camera         loc=(-0.6220,+0.6429,+0.8680) p/y/r=(  -0.422, +89.797,  +0.175) dpos=0.0000m dang=  0.000deg dfwd=  0.000deg | world dpos=0.0000 dang=0.000
+ATTACH     back_right_camera    loc=(+0.2945,-0.2206,+1.0065) p/y/r=(  +0.622,+159.563,  -0.683) dpos=0.0000m dang=  0.000deg dfwd=  0.000deg | world dpos=0.0000 dang=0.000
+ATTACH     middle_lidar         loc=(-0.4921,+0.0043,+1.2407) p/y/r=(  +0.171, +90.668,  -0.284) dpos=0.0000m dang=  0.001deg dfwd=  0.004deg | world dpos=0.0000 dang=0.001

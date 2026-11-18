@@ -1,0 +1,45 @@
+============================= test session starts =============================
+platform win32 -- Python 3.12.2, pytest-8.0.1, pluggy-1.4.0
+rootdir: G:\CARLA_RECOVERY\worktrees\v127-calibration-p0-20261118
+configfile: pytest.ini
+plugins: anyio-4.2.0
+collected 161 items
+
+ultimate_pipeline\tests\unit\test_rq3_builder_false_pass_regression.py . [  0%]
+...........                                                              [  7%]
+ultimate_pipeline\tests\unit\test_rq3_frame_set.py ..................... [ 20%]
+..                                                                       [ 21%]
+ultimate_pipeline\tests\unit\test_rq3_paired_capture_contract.py ....... [ 26%]
+.........................                                                [ 41%]
+ultimate_pipeline\tests\unit\test_rq3_route_rig_hardening.py ........... [ 48%]
+..                                                                       [ 49%]
+ultimate_pipeline\tests\unit\test_rq3_terminal_adversarial_tests.py .... [ 52%]
+......                                                                   [ 55%]
+tests\unit\test_rq3_batch9_pair_contract.py ............................ [ 73%]
+......................                                                   [ 86%]
+tests\unit\test_v112_rq3_explicit_calibration.py ...                     [ 88%]
+tests\unit\test_v119_rq3_completeness_nonvacuous.py ..................   [100%]
+
+============================== warnings summary ===============================
+ultimate_pipeline\config\settings.py:2036
+  G:\CARLA_RECOVERY\worktrees\v127-calibration-p0-20261118\ultimate_pipeline\config\settings.py:2036: RuntimeWarning: MANUAL_TILES_DIR resolved to missing dir: 'G:\CARLA_RECOVERY\worktrees\v127-calibration-p0-20261118\domain_gap_results\manual_tiles'. Set UP_MANUAL_TILES_DIR to a valid dir.
+    _warn_missing_setting_path(
+
+ultimate_pipeline\config\settings.py:2042
+  G:\CARLA_RECOVERY\worktrees\v127-calibration-p0-20261118\ultimate_pipeline\config\settings.py:2042: RuntimeWarning: BASE_OUTPUT_DIR resolved to missing dir: 'G:\CARLA_RECOVERY\worktrees\v127-calibration-p0-20261118\ultimate_pipeline_out'. Set UP_BASE_OUTPUT_DIR to a valid dir.
+    _warn_missing_setting_path(
+
+ultimate_pipeline\config\settings.py:2048
+  G:\CARLA_RECOVERY\worktrees\v127-calibration-p0-20261118\ultimate_pipeline\config\settings.py:2048: RuntimeWarning: COORDINATES_JSON resolved to missing file: 'G:\CARLA_RECOVERY\worktrees\v127-calibration-p0-20261118\ultimate_pipeline\config\coordinates.json'. Set UP_COORDINATES_JSON to a valid file.
+    _warn_missing_setting_path(
+
+ultimate_pipeline\config\settings.py:2054
+  G:\CARLA_RECOVERY\worktrees\v127-calibration-p0-20261118\ultimate_pipeline\config\settings.py:2054: RuntimeWarning: HPC_DIR resolved to missing dir: 'G:\CARLA_RECOVERY\worktrees\v127-calibration-p0-20261118\hpc'. Set UP_HPC_DIR to a valid dir.
+    _warn_missing_setting_path(
+
+ultimate_pipeline\config\settings.py:2060
+  G:\CARLA_RECOVERY\worktrees\v127-calibration-p0-20261118\ultimate_pipeline\config\settings.py:2060: RuntimeWarning: PIPELINE_OUT_DIR resolved to missing dir: 'G:\CARLA_RECOVERY\worktrees\v127-calibration-p0-20261118\ultimate_pipeline_out'. Set UP_PIPELINE_OUT_DIR to a valid dir.
+    _warn_missing_setting_path(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+======================= 161 passed, 5 warnings in 2.11s =======================
