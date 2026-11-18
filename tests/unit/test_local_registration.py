@@ -423,6 +423,12 @@ def test_compute_local_registration_recovers_and_crops_buildings(tmp_path):
     auto_path = tmp_path / "auto.xodr"
     _write_xodr(auto_path, roads_xml=auto_road_xml.format(buildings=""))
     probe = compute_local_registration(str(auto_path), str(manual_path), building_frame_shift=(0.0, 0.0))
+    assert probe.provenance["comparison_scope"] == "local_shape_and_in_footprint_structure_only"
+    assert probe.provenance["absolute_geographic_accuracy_claim"] == (
+        "NOT_ESTABLISHED_BY_RQ2_LOCAL_REGISTRATION"
+    )
+    assert len(probe.provenance["map_content_identity"]["auto_xodr_sha256"]) == 64
+    assert len(probe.provenance["map_content_identity"]["manual_xodr_sha256"]) == 64
     minx, miny, maxx, maxy = probe.footprint_local_bounds
     cx, cy = (minx + maxx) / 2.0, (miny + maxy) / 2.0
 

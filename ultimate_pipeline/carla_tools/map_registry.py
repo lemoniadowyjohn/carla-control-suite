@@ -412,6 +412,8 @@ FRAME_STRUCTURED_FIELDS: Tuple[str, ...] = (
     "crs_authority",
     "rebase_dx",
     "rebase_dy",
+    "frame_source_sha256",
+    "frame_transform_id",
 )
 
 LEGACY_TEXT_ONLY = "LEGACY_TEXT_ONLY"
@@ -560,6 +562,15 @@ def validate_registry_entry(key: Any, entry: Any) -> Dict[str, Any]:
         for field in ("rebase_dx", "rebase_dy"):
             if entry.get(field) is not None:
                 norm[field] = entry[field]
+    if entry.get("frame_source_sha256") is not None:
+        norm["frame_source_sha256"] = _normalize_sha256(entry["frame_source_sha256"])
+    if entry.get("frame_transform_id") is not None:
+        value = entry["frame_transform_id"]
+        if not isinstance(value, str) or not value.strip():
+            raise MapRegistryValidationError(
+                f"registry entry {key!r}: 'frame_transform_id' must be nonempty text"
+            )
+        norm["frame_transform_id"] = value.strip()
     norm["frame_status"] = STRUCTURED_FRAME if frame_structured else LEGACY_TEXT_ONLY
     return norm
 
@@ -741,12 +752,14 @@ PINNED_MAP_REGISTRY: Dict[str, Dict[str, Any]] = {
         "sha256": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
         "bytes": 149799632,
         "role": "auto",
-        "frame": "rebased-to-local (dx=832671.676 dy=5458671.104)",
+        "frame": "OSM2ODR native tmerc(0,0) coordinates rebased by the XODR header offset; local XY is native XY minus that offset",
         "frame_id": "ingolstadt_local_rebased",
         "frame_kind": "rebased_local",
-        "crs_authority": "local Cartesian via fixed offset from UTM-32N (EPSG:32632)",
+        "crs_authority": "OSM2ODR native tmerc: +proj=tmerc +lat_0=0 +lon_0=0 +k=1 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs",
         "rebase_dx": 832671.676,
         "rebase_dy": 5458671.104,
+        "frame_source_sha256": "b9e074656f744c31e6aabb0a16e6b2246824ca74e202ea2c316ff7f22364f24f",
+        "frame_transform_id": "osm2odr-native-tmerc0-header-offset-v1",
         "aliases": ["auto", "auto_map_of_record", "map_of_record", "ingolstadt_auto"],
         # Historical claims (e.g. C14_RQ1_STRUCTURAL_GAP.json) that cite an earlier
         # pin by sha are still valid for what they measured -- resolved against this
@@ -913,10 +926,11 @@ PINNED_MAP_REGISTRY: Dict[str, Dict[str, Any]] = {
         "sha256": "5eaece230e02f6c1b2075db851894870790e86ac64710abb3465bcfc533e9b0c",
         "bytes": 66530869,
         "role": "manual",
-        "frame": "UTM-32N (+proj=tmerc +lon_0=9 +k=0.9996 +x_0=500000)",
+        "frame": "EPSG:32632 / UTM zone 32N, easting-northing metres",
         "frame_id": "UTM-32N",
         "frame_kind": "projected_crs",
         "crs_authority": "EPSG:32632 (+proj=tmerc +lon_0=9 +k=0.9996 +x_0=500000)",
+        "frame_transform_id": "epsg32632-axis-order-xy-v1",
         # Grid0821 is byte-identical to Grid0828 on this machine (verified
         # sha256 match) -- both names resolve to this ONE pinned entry.
         # OC-58 §13: same-content/same-role sharing must be EXPLICIT, never
