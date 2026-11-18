@@ -682,8 +682,8 @@ def main() -> int:
         "defect_before": "calibrate_sensors_in_carla.py chose the extrinsic convention heuristically from marker visibility, contradicting the authoritative cTv/vTl thesis rule",
         "tool_status": _ca.STATUS_DIAGNOSTIC,
         "canonical_rule": (
-            "cTv = vehicle->camera used DIRECTLY (not inverted); "
-            "vTl = lidar->vehicle INVERTED"
+            "CARLA_SENSOR_MOUNTING/v2: camera mount derives inverse(cTv) with explicit FLU/FRU and optical/CARLA basis changes; "
+            "LiDAR mount uses vTl with explicit FLU/FRU basis changes"
         ),
         "canonical_authority_module": "ultimate_pipeline.sensors.calibration_contract",
         "export_schema_renamed": stamped["schema"],

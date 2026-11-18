@@ -1,127 +1,98 @@
-"""ultimate_pipeline/tools/run_perception_safe.py::_rig_verification_contract_errors --
-validates the sensor-rig calibration contract (cTv/vTl inversion conventions, per-sensor
-applied-transform completeness) that gates whether captured perception evidence is trustworthy.
-The thesis itself cites this as a contribution ("sensor-rig capability proofs under a unified,
-mathematically verified calibration contract"). run_perception_safe.py is 6,576 lines and mostly
-CARLA-dependent -- this pass targets only this one pure, safety-critical function rather than
-attempting broad coverage of the whole file (found via the orphaned-.pyc sweep: 8 different
-test_run_perception_safe*.py variants existed at some point, none currently on this branch).
-"""
+"""V2 applied-mount admission gate tests for the safe recorder."""
 from __future__ import annotations
 
+import numpy as np
+
+from ultimate_pipeline.sensors.applied_sensor_rig import build_applied_sensor_rig_v2
 from ultimate_pipeline.tools.run_perception_safe import _rig_verification_contract_errors
 
 
-def _valid_verification(sensor_names=("rgb_front",)):
-    sensors = {name: {} for name in sensor_names}
-    applied_sensors = {name: {"relative_to_vehicle": {"x": 1.5, "y": 0.0, "z": 2.4}} for name in sensor_names}
+def _valid_verification():
+    mount = np.eye(4)
+    receipt = build_applied_sensor_rig_v2(
+        source_calibration_sha256="a" * 64,
+        code_commit="b" * 40,
+        requested_parent_relative_matrices={"rgb_front": mount},
+        ego_identity={"actor_id": 11, "type_id": "vehicle.test"},
+        sensor_identities={"rgb_front": {"actor_id": 12, "type_id": "sensor.camera.rgb"}},
+        blueprint_configuration={"rgb_front": {"blueprint_id": "sensor.camera.rgb", "attributes": {}}},
+        effective_camera_configuration={"rgb_front": {
+            "width_px": 640, "height_px": 480,
+            "requested_K_undistortion": [[320, 0, 320], [0, 320, 240], [0, 0, 1]],
+            "carla_nominal_K": [[320, 0, 320], [0, 320, 240], [0, 0, 1]],
+        }},
+        applied_parent_relative_matrices={"rgb_front": mount},
+        runtime_measurements={"rgb_front": {"frame_id": 7, "timestamp_s": 0.35, "dataset_identity": "run:hash", "dataset_artifact_sha256": "c" * 64}},
+        verification_mode="online",
+    )
     return {
-        "cTv_inverted": False,
-        "vTl_inverted": True,
+        "schema_version": 2,
+        "calibration_contract_version": "CARLA_SENSOR_MOUNTING/v2",
+        "sensor_contract": {"calibration_contract_version": "CARLA_SENSOR_MOUNTING/v2"},
         "use_K_undistortion_only": True,
-        "sensors": sensors,
-        "applied_carla_transforms": {"sensors": applied_sensors},
+        "sensors": {"rgb_front": {}},
+        "applied_carla_transforms": {"sensors": {"rgb_front": {"relative_to_vehicle": {"x": 0, "y": 0, "z": 0}}}},
+        "applied_sensor_rig_v2": receipt,
     }
 
 
-def test_fully_valid_contract_has_no_errors():
-    assert _rig_verification_contract_errors(_valid_verification()) == []
+def test_valid_live_v2_receipt_passes():
+    assert _rig_verification_contract_errors(
+        _valid_verification(), expected_source_calibration_sha256="a" * 64
+    ) == []
 
 
-def test_ctv_inverted_true_is_an_error():
-    v = _valid_verification()
-    v["cTv_inverted"] = True
-    errors = _rig_verification_contract_errors(v)
-    assert "cTv_inverted must be false" in errors
+def test_resealed_receipt_cannot_choose_its_own_calibration_digest():
+    value = _valid_verification()
+    value["applied_sensor_rig_v2"]["source_calibration_sha256"] = "d" * 64
+    from ultimate_pipeline.sensors.applied_sensor_rig import seal_applied_sensor_rig_v2
+    value["applied_sensor_rig_v2"] = seal_applied_sensor_rig_v2(value["applied_sensor_rig_v2"])
+    errors = _rig_verification_contract_errors(
+        value, expected_source_calibration_sha256="a" * 64
+    )
+    assert "source_calibration_sha256_mismatch" in errors
 
 
-def test_ctv_inverted_missing_is_an_error():
-    v = _valid_verification()
-    del v["cTv_inverted"]
-    errors = _rig_verification_contract_errors(v)
-    assert "cTv_inverted must be false" in errors
+def test_thesis_validator_uses_run_calibration_bytes_as_trusted_digest(tmp_path):
+    import hashlib
+    from ultimate_pipeline.tools.validate_thesis_run import (
+        _trusted_calibration_sha_from_status,
+    )
+
+    calibration = tmp_path / "calib.json"
+    calibration.write_bytes(b'{"frozen":"source"}')
+    digest = hashlib.sha256(calibration.read_bytes()).hexdigest()
+    status = {"calib_path_resolved": str(calibration), "calib_sha256": digest}
+    assert _trusted_calibration_sha_from_status(status) == (digest, None)
+    status["calib_sha256"] = "0" * 64
+    expected, error = _trusted_calibration_sha_from_status(status)
+    assert expected is None
+    assert error == "perception_status calibration source digest mismatch"
 
 
-def test_ctv_inverted_accepts_lowercase_key_fallback():
-    v = _valid_verification()
-    del v["cTv_inverted"]
-    v["ctv_inverted"] = False  # lowercase fallback key
-    errors = _rig_verification_contract_errors(v)
-    assert "cTv_inverted must be false" not in errors
+def test_v1_receipt_cannot_be_promoted_by_legacy_flags():
+    value = _valid_verification()
+    value["schema_version"] = 1
+    value["cTv_inverted"] = False
+    value["vTl_inverted"] = True
+    assert "legacy_v1_rig_receipt_not_admissible" in _rig_verification_contract_errors(value)
 
 
-def test_vtl_inverted_false_is_an_error():
-    v = _valid_verification()
-    v["vTl_inverted"] = False
-    errors = _rig_verification_contract_errors(v)
-    assert "vTl_inverted must be true" in errors
+def test_source_only_receipt_fails_live_acceptance():
+    value = _valid_verification()
+    value["applied_sensor_rig_v2"]["verification_mode"] = "offline_source_only"
+    errors = _rig_verification_contract_errors(value)
+    assert "live_verification_required" in errors
+    assert "receipt_digest_mismatch" in errors
 
 
-def test_vtl_inverted_accepts_lowercase_key_fallback():
-    v = _valid_verification()
-    del v["vTl_inverted"]
-    v["vtl_inverted"] = True
-    errors = _rig_verification_contract_errors(v)
-    assert "vTl_inverted must be true" not in errors
+def test_missing_applied_sensor_is_named():
+    value = _valid_verification()
+    del value["applied_carla_transforms"]["sensors"]["rgb_front"]
+    assert any("rgb_front" in error for error in _rig_verification_contract_errors(value))
 
 
-def test_use_k_undistortion_only_not_true_is_an_error():
-    v = _valid_verification()
-    v["use_K_undistortion_only"] = False
-    errors = _rig_verification_contract_errors(v)
-    assert "use_K_undistortion_only must be true" in errors
-
-
-def test_sensors_missing_is_an_error():
-    v = _valid_verification()
-    del v["sensors"]
-    errors = _rig_verification_contract_errors(v)
-    assert "sensors must be a non-empty object" in errors
-
-
-def test_sensors_empty_dict_is_an_error():
-    v = _valid_verification()
-    v["sensors"] = {}
-    errors = _rig_verification_contract_errors(v)
-    assert "sensors must be a non-empty object" in errors
-
-
-def test_applied_carla_transforms_missing_is_an_error():
-    v = _valid_verification()
-    del v["applied_carla_transforms"]
-    errors = _rig_verification_contract_errors(v)
-    assert "applied_carla_transforms missing or invalid" in errors
-
-
-def test_applied_transforms_sensors_missing_is_an_error():
-    v = _valid_verification()
-    v["applied_carla_transforms"] = {}
-    errors = _rig_verification_contract_errors(v)
-    assert "applied_carla_transforms.sensors missing or invalid" in errors
-
-
-def test_sensor_missing_from_applied_transforms_names_it_in_the_error():
-    v = _valid_verification(sensor_names=("rgb_front", "lidar_top"))
-    del v["applied_carla_transforms"]["sensors"]["lidar_top"]
-    errors = _rig_verification_contract_errors(v)
-    assert any("lidar_top" in e for e in errors)
-    assert not any("rgb_front" in e for e in errors)
-
-
-def test_sensor_missing_relative_to_vehicle_is_an_error():
-    v = _valid_verification()
-    del v["applied_carla_transforms"]["sensors"]["rgb_front"]["relative_to_vehicle"]
-    errors = _rig_verification_contract_errors(v)
-    assert any("relative_to_vehicle" in e and "rgb_front" in e for e in errors)
-
-
-def test_multiple_independent_errors_all_accumulate():
-    v = {
-        "cTv_inverted": True, "vTl_inverted": False, "use_K_undistortion_only": False,
-        "sensors": {}, "applied_carla_transforms": None,
-    }
-    errors = _rig_verification_contract_errors(v)
-    # cTv, vTl, use_K, sensors, applied_carla_transforms, and (since resetting
-    # applied_carla_transforms to {} still lacks a "sensors" key) applied_carla_transforms.
-    # sensors -- 6 independent violations, none short-circuits the rest.
-    assert len(errors) == 6
+def test_missing_v2_receipt_fails_closed():
+    value = _valid_verification()
+    del value["applied_sensor_rig_v2"]
+    assert "applied_sensor_rig_v2_missing_or_wrong_schema" in _rig_verification_contract_errors(value)

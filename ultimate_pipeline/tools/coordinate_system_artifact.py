@@ -259,7 +259,7 @@ def write_coordinate_system_json(
         "offset_policy": str(offset_policy),
         "mixed_offset_incomplete_crs": bool(mixed_offset_incomplete),
         "coordinate_system_hash": _coordinate_system_hash(hash_payload),
-        "notes": "Structural metrics computed in local XODR planView meters with explicit alignment; sensor transforms follow AGENT_SYNC (cTv direct, vTl inverted).",
+        "notes": "Structural metrics computed in local XODR planView meters with explicit alignment; sensor transforms follow CARLA_SENSOR_MOUNTING/v2 (inverse(cTv) and basis changes; vTl with basis changes).",
     }
 
     out.write_text(json.dumps(payload, indent=2, sort_keys=True), encoding="utf-8")

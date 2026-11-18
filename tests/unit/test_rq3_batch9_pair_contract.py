@@ -19,6 +19,9 @@ sys.path.insert(0, str(WORKTREE))
 import pytest
 
 from ultimate_pipeline.perception import rq3_capture_contract as rq3
+from ultimate_pipeline.sensors.applied_sensor_rig import (
+    build_applied_sensor_rig_v2, canonical_sha256,
+)
 
 BATCH9_REQUIRED = (
     "calibration_sha256",
@@ -35,22 +38,60 @@ BATCH9_REQUIRED = (
 )
 
 
+def _valid_applied_receipt(code_commit, calibration_sha, dataset_identity, dataset_sha, actor_id):
+    identity = [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]]
+    return build_applied_sensor_rig_v2(
+        source_calibration_sha256=calibration_sha,
+        code_commit=code_commit,
+        requested_parent_relative_matrices={"front_camera": identity},
+        ego_identity={"actor_id": actor_id + 100, "type_id": "vehicle.test"},
+        sensor_identities={"front_camera": {"actor_id": actor_id, "type_id": "sensor.camera.rgb"}},
+        blueprint_configuration={"front_camera": {"image_size_x": "1280", "fov": "90"}},
+        effective_camera_configuration={"front_camera": {"width_px": 1280, "height_px": 720, "requested_K_undistortion": [[640, 0, 640], [0, 640, 360], [0, 0, 1]], "carla_nominal_K": [[640, 0, 640], [0, 640, 360], [0, 0, 1]]}},
+        applied_parent_relative_matrices={"front_camera": identity},
+        runtime_measurements={"front_camera": {"frame_id": actor_id, "timestamp_s": 1.0, "dataset_identity": dataset_identity, "dataset_artifact_sha256": dataset_sha}},
+        verification_mode="online",
+    )
+
+
 def _base_manifest(**overrides):
+    calibration_sha = "a" * 64
+    code_commit = "b" * 40
+    manual_dataset_sha = "c" * 64
+    auto_dataset_sha = "d" * 64
+    manual_receipt = _valid_applied_receipt(
+        code_commit, calibration_sha, "manual-dataset", manual_dataset_sha, 101
+    )
+    auto_receipt = _valid_applied_receipt(
+        code_commit, calibration_sha, "auto-dataset", auto_dataset_sha, 201
+    )
+    rig_sha = manual_receipt["applied_configuration_sha256"]
     arms = {k: "v" for k in BATCH9_REQUIRED}
+    arms["calibration_sha256"] = calibration_sha
+    arms["sensor_rig_sha256"] = rig_sha
     manifest = {
         "schema_version": rq3.MANIFEST_SCHEMA_VERSION,
         "pair_id": "p-batch9",
         "claim_level": rq3.CLAIM_PAIRED_PROTOCOL_VALID,
         "pair_frame_index": [0, 1, 2],
+        "software_git_sha": code_commit,
         "manual_map_identity": rq3.cooked_arm_map_identity(
             requested_map_name="Grid0828", resolved_carla_map_name="Grid0828"),
         "auto_map_identity": rq3.xodr_arm_map_identity(
             xodr_path="campaigns/ingolstadt_auto.xodr", xodr_sha256="x"),
         "pair_valid": True,
         "invalid_reasons": [],
-        "manual_arm": dict(arms, completion_status=rq3.COMPLETION_PASS),
-        "auto_arm": dict(arms, completion_status=rq3.COMPLETION_PASS),
+        "manual_arm": dict(arms, completion_status=rq3.COMPLETION_PASS,
+                            dataset_identity="manual-dataset", dataset_artifact_sha256=manual_dataset_sha,
+                            applied_sensor_rig_v2=manual_receipt,
+                            applied_sensor_rig_v2_sha256=canonical_sha256(manual_receipt)),
+        "auto_arm": dict(arms, completion_status=rq3.COMPLETION_PASS,
+                         dataset_identity="auto-dataset", dataset_artifact_sha256=auto_dataset_sha,
+                         applied_sensor_rig_v2=auto_receipt,
+                         applied_sensor_rig_v2_sha256=canonical_sha256(auto_receipt)),
         **{k: "v" for k in BATCH9_REQUIRED},
+        "calibration_sha256": calibration_sha,
+        "sensor_rig_sha256": rig_sha,
     }
     manifest.update(overrides)
     return manifest

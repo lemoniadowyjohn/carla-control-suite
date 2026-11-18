@@ -11,6 +11,13 @@ sensor_rig:
   ignore_D: true
   ctv_inverted: false
   vtl_inverted: true
+  legacy_v1_boolean_semantics: historical_only_not_authoritative_for_v2_mounting
+  calibration_contract_version: CARLA_SENSOR_MOUNTING/v2
+  camera_source_transform: camera_optical_from_vehicle_flu
+  camera_attachment_derivation: inverse_cTv_with_explicit_flu_fru_and_optical_basis_changes
+  lidar_source_transform: vehicle_flu_from_lidar
+  lidar_attachment_derivation: vTl_with_explicit_flu_fru_basis_changes
+  translation_unit: metre
   rig_verification_required: true
   screenshot_required: true
 determinism:

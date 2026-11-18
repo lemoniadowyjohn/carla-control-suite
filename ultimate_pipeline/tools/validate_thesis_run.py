@@ -1,5 +1,6 @@
 import argparse
 import csv
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -64,6 +65,28 @@ def fail_validation(message, path=None):
 
 def _is_bounded_scenario_b_layout(run_root: Path) -> bool:
     return all((run_root / required).is_dir() for required in BOUNDED_SCENARIO_B_REQUIRED_DIRS)
+
+
+def _trusted_calibration_sha_from_status(
+    status: dict, *, repo_root: Path | None = None
+) -> tuple[str | None, str | None]:
+    """Resolve the run's declared calibration source and verify its bytes."""
+    declared = status.get("calib_sha256")
+    source_path = status.get("calib_path_resolved")
+    if not isinstance(declared, str) or len(declared) != 64:
+        return None, "perception_status calibration digest missing or malformed"
+    if not isinstance(source_path, str) or not source_path.strip():
+        return None, "perception_status calibration source path missing"
+    path = Path(source_path).expanduser()
+    if not path.is_absolute():
+        path = (repo_root or Path(__file__).resolve().parents[2]) / path
+    try:
+        actual = hashlib.sha256(path.read_bytes()).hexdigest()
+    except OSError:
+        return None, "perception_status calibration source is unavailable"
+    if actual != declared.lower():
+        return None, "perception_status calibration source digest mismatch"
+    return actual, None
 
 
 def _contract_determinism_artifacts() -> list[str]:
@@ -180,14 +203,21 @@ def _extract_bbox_values(payload: dict) -> dict | None:
     return None
 
 
-def _validate_rig_contract_schema(rig_data: dict, rig_verification_path: Path) -> bool:
+def _validate_rig_contract_schema(
+    rig_data: dict,
+    rig_verification_path: Path,
+    *,
+    expected_source_calibration_sha256: str | None,
+) -> bool:
     ok = True
-    required = [
-        "use_K_undistortion_only",
-        "ignored_K_and_D",
-        "ctv_inverted",
-        "vtl_inverted",
-    ]
+    required = ["use_K_undistortion_only", "ignored_K_and_D"]
+    if rig_data.get("schema_version") == 1:
+        required.extend(("ctv_inverted", "vtl_inverted"))
+        fail_validation("Legacy v1 rig receipts are historical and cannot satisfy live v2 acceptance", rig_verification_path)
+        ok = False
+    elif rig_data.get("schema_version") != 2:
+        fail_validation("Unsupported rig verification schema; expected v2", rig_verification_path)
+        ok = False
     for key in required:
         if key not in rig_data:
             fail_validation(f"Missing top-level '{key}' in {RIG_VERIFICATION_JSON}", rig_verification_path)
@@ -200,6 +230,21 @@ def _validate_rig_contract_schema(rig_data: dict, rig_verification_path: Path) -
         if key not in compliance:
             fail_validation(f"Missing thesis_compliance '{key}' in {RIG_VERIFICATION_JSON}", rig_verification_path)
             ok = False
+    if rig_data.get("calibration_contract_version") != "CARLA_SENSOR_MOUNTING/v2":
+        fail_validation(
+            "Live rig evidence requires CARLA_SENSOR_MOUNTING/v2; legacy v1 remains historical only",
+            rig_verification_path,
+        )
+        ok = False
+    from ultimate_pipeline.sensors.applied_sensor_rig import validate_applied_sensor_rig_v2
+    receipt_errors = validate_applied_sensor_rig_v2(
+        rig_data.get("applied_sensor_rig_v2"),
+        require_live=True,
+        expected_source_calibration_sha256=expected_source_calibration_sha256,
+    )
+    for error in receipt_errors:
+        fail_validation(f"Invalid APPLIED_SENSOR_RIG/v2: {error}", rig_verification_path)
+        ok = False
     return ok
 
 
@@ -605,10 +650,20 @@ def _validate_perception_pack(
     require_objects = bool(strict_mode)
     require_evidence_pack = bool(strict_mode)
     perception_status_path = pack_path / PERCEPTION_STATUS_JSON
+    trusted_calibration_sha256 = None
     if perception_status_path.is_file():
         try:
             with open(perception_status_path, "r", encoding="utf-8") as f:
                 ps = json.load(f)
+            if isinstance(ps, dict):
+                trusted_calibration_sha256, calibration_error = _trusted_calibration_sha_from_status(ps)
+            else:
+                calibration_error = "perception_status calibration authority is invalid"
+            if calibration_error:
+                fail_validation(
+                    calibration_error,
+                    perception_status_path,
+                )
             required = ps.get("required_artifacts", {}) if isinstance(ps, dict) else {}
             if isinstance(required, dict):
                 require_overlay = bool(require_overlay or required.get("require_overlay"))
@@ -639,14 +694,19 @@ def _validate_perception_pack(
     try:
         with open(rig_verification_path, "r", encoding="utf-8") as f:
             rig_data = json.load(f)
-        if not _validate_rig_contract_schema(rig_data, rig_verification_path):
+        if not _validate_rig_contract_schema(
+            rig_data,
+            rig_verification_path,
+            expected_source_calibration_sha256=trusted_calibration_sha256,
+        ):
             return
         use_k_undist = _rig_bool(rig_data, "use_K_undistortion_only")
         ignored_kd = _rig_bool(rig_data, "ignored_K_and_D")
-        ctv_inverted = _rig_bool(rig_data, "ctv_inverted")
-        vtl_inverted = _rig_bool(rig_data, "vtl_inverted")
+        schema_version = rig_data.get("schema_version")
+        ctv_inverted = _rig_bool(rig_data, "ctv_inverted") if schema_version == 1 else None
+        vtl_inverted = _rig_bool(rig_data, "vtl_inverted") if schema_version == 1 else None
         compliance = rig_data.get("thesis_compliance", {})
-        if isinstance(compliance, dict):
+        if schema_version == 1 and isinstance(compliance, dict):
             if (
                 compliance.get("use_K_undistortion_only") != use_k_undist
                 or compliance.get("ignored_K_and_D") != ignored_kd
@@ -668,9 +728,9 @@ def _validate_perception_pack(
                 f"Expected 'ignored_K_and_D' to be True in {RIG_VERIFICATION_JSON}, but got {ignored_kd}",
                 rig_verification_path,
             )
-        if ctv_inverted is not False:
+        if schema_version == 1 and ctv_inverted is not False:
             fail_validation(f"Expected 'ctv_inverted' to be False in {RIG_VERIFICATION_JSON}, but got {ctv_inverted}", rig_verification_path)
-        if vtl_inverted is not True:
+        if schema_version == 1 and vtl_inverted is not True:
             fail_validation(f"Expected 'vtl_inverted' to be True in {RIG_VERIFICATION_JSON}, but got {vtl_inverted}", rig_verification_path)
     except json.JSONDecodeError:
         fail_validation(f"Invalid JSON in {RIG_VERIFICATION_JSON}", rig_verification_path)

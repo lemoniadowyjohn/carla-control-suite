@@ -21,6 +21,7 @@ Env toggles:
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import math
 import os
@@ -137,6 +138,13 @@ def _repo_root_dir() -> Path:
         if (parent / "AGENT_SYNC.md").is_file():
             return parent
     return here.parents[2]
+
+
+def _sha256_path_or_empty(path: Path) -> str:
+    try:
+        return hashlib.sha256(path.read_bytes()).hexdigest()
+    except OSError:
+        return ""
 
 
 def _portable_path_for_metadata(
@@ -1875,22 +1883,20 @@ def _rig_verification_strict_mode(args: argparse.Namespace) -> bool:
     )
 
 
-def _rig_verification_contract_errors(rig_verification: Dict[str, Any]) -> List[str]:
+def _rig_verification_contract_errors(
+    rig_verification: Dict[str, Any], *, expected_source_calibration_sha256: str | None = None
+) -> List[str]:
     errors: List[str] = []
-    ctv_inverted = rig_verification.get(
-        "cTv_inverted",
-        rig_verification.get("ctv_inverted"),
-    )
-    vtl_inverted = rig_verification.get(
-        "vTl_inverted",
-        rig_verification.get("vtl_inverted"),
-    )
-    if ctv_inverted is not False:
-        errors.append("cTv_inverted must be false")
-    if vtl_inverted is not True:
-        errors.append("vTl_inverted must be true")
     if rig_verification.get("use_K_undistortion_only") is not True:
         errors.append("use_K_undistortion_only must be true")
+    contract = rig_verification.get("sensor_contract")
+    if not isinstance(contract, dict) or contract.get("calibration_contract_version") != "CARLA_SENSOR_MOUNTING/v2":
+        errors.append("CARLA_SENSOR_MOUNTING/v2 contract missing")
+    schema_version = rig_verification.get("schema_version")
+    if schema_version == 1:
+        errors.append("legacy_v1_rig_receipt_not_admissible")
+    elif schema_version != 2:
+        errors.append("unsupported_rig_verification_schema")
 
     sensors = rig_verification.get("sensors")
     if not isinstance(sensors, dict) or not sensors:
@@ -1917,6 +1923,21 @@ def _rig_verification_contract_errors(rig_verification: Dict[str, Any]) -> List[
                 f"missing relative_to_vehicle transform for sensor '{sensor_name}'"
             )
 
+    # v1 booleans and source-calibration hashes remain readable for historical
+    # runs, but only an applied v2 receipt can authorize live calibration use.
+    from ultimate_pipeline.sensors.applied_sensor_rig import (
+        validate_applied_sensor_rig_v2,
+    )
+
+    v2_receipt = rig_verification.get("applied_sensor_rig_v2")
+    errors.extend(
+        validate_applied_sensor_rig_v2(
+            v2_receipt,
+            require_live=True,
+            expected_source_calibration_sha256=expected_source_calibration_sha256,
+        )
+    )
+
     return errors
 
 
@@ -1928,6 +1949,7 @@ def _write_canonical_rig_verification(
     existing_verification: Optional[Dict[str, Any]] = None,
     note: str = "",
 ) -> Tuple[Dict[str, Any], List[str]]:
+    expected_calibration_sha256 = hashlib.sha256(calib_path.read_bytes()).hexdigest()
     rig = ThesisSensorRig(calib_path)
     report_payload: Dict[str, Any] = (
         rig_report_payload if isinstance(rig_report_payload, dict) else {}
@@ -1944,6 +1966,23 @@ def _write_canonical_rig_verification(
         extra["note"] = str(note)
     rig_path = rig.write_rig_verification(out_dir, spawned, extra=extra)
     canonical = json.loads(rig_path.read_text(encoding="utf-8", errors="replace"))
+
+    # A recorder-produced v2 receipt contains observed ego/sensor world poses.
+    # Keep it authoritative instead of replacing it with a reconstruction from
+    # calibration defaults. Missing producer evidence remains fail-closed.
+    producer_receipt = report_payload.get("applied_sensor_rig_v2")
+    if isinstance(producer_receipt, dict):
+        canonical["applied_sensor_rig_v2"] = producer_receipt
+        from ultimate_pipeline.sensors.applied_sensor_rig import (
+            validate_applied_sensor_rig_v2,
+        )
+        producer_errors = validate_applied_sensor_rig_v2(
+            producer_receipt,
+            require_live=True,
+            expected_source_calibration_sha256=expected_calibration_sha256,
+        )
+        canonical["applied_sensor_rig_v2_errors"] = producer_errors
+        canonical["applied_sensor_rig_v2_live_accepted"] = not producer_errors
 
     merged: Dict[str, Any] = {}
     if isinstance(existing_verification, dict):
@@ -1965,7 +2004,10 @@ def _write_canonical_rig_verification(
                     merged_notes.append(note_value)
     merged["compliance_notes"] = merged_notes
 
-    errors = _rig_verification_contract_errors(merged)
+    errors = _rig_verification_contract_errors(
+        merged,
+        expected_source_calibration_sha256=expected_calibration_sha256,
+    )
     merged["rig_verification_contract_ok"] = not bool(errors)
     if errors:
         merged["ok"] = False
@@ -2648,6 +2690,9 @@ def _build_rig_verification_from_report(
                 "type": "camera",
                 "ctv_inverted": ctv_inv,
                 "cTv_inverted": ctv_inv,
+                "source_matrix_inverse_applied": True,
+                "attachment_derivation": "inverse_cTv_with_explicit_flu_fru_and_optical_basis_changes",
+                "legacy_v1_boolean_semantics": "historical_only_not_authoritative_for_v2_mounting",
                 "K_undistortion": k_undist,
                 "image_size": {"width": width_px, "height": height_px},
                 "derived_fov_deg": derived_fov,
@@ -2685,6 +2730,9 @@ def _build_rig_verification_from_report(
                 "type": "lidar",
                 "vtl_inverted": vtl_inv,
                 "vTl_inverted": vtl_inv,
+                "source_matrix_inverse_applied": False,
+                "attachment_derivation": "vTl_with_explicit_flu_fru_basis_changes",
+                "legacy_v1_boolean_semantics": "historical_only_not_authoritative_for_v2_mounting",
                 "transform_convention": sensor_data.get("transform_convention", ""),
             }
     if lidars_count == 0:
@@ -2700,16 +2748,20 @@ def _build_rig_verification_from_report(
 
     # v2-compatible contract view for validators
     verification["sensor_contract"] = {
+        "calibration_contract_version": "CARLA_SENSOR_MOUNTING/v2",
         "cameras": {
             "intrinsics_rule": "K_undistortion_only",
             "ignore_K_and_D": True,
+            "source_transform": "camera_optical_from_vehicle_flu",
+            "attachment_derivation": "inverse_cTv_with_explicit_flu_fru_and_optical_basis_changes",
+            "source_matrix_inverse_applied": True,
         },
-        "transforms": {
-            "cTv_direction": "vehicle_to_camera",
-            "vTl_direction": "lidar_to_vehicle",
-            "cTv_inversion_forbidden": True,
-            "vTl_inversion_required": True,
+        "lidars": {
+            "source_transform": "vehicle_flu_from_lidar",
+            "attachment_derivation": "vTl_with_explicit_flu_fru_basis_changes",
+            "source_matrix_inverse_applied": False,
         },
+        "legacy_v1_boolean_semantics": "historical_only_not_authoritative_for_v2_mounting",
     }
     verification["ok"] = bool(
         verification["thesis_compliance"].get(
@@ -2731,16 +2783,16 @@ def _build_rig_verification_from_report(
         )
     if not any_ctv_inverted:
         verification["compliance_notes"].append(
-            "OK: No camera cTv transforms were inverted"
+            "Legacy v1 camera direction alias retained; v2 mounting derives inverse(cTv) with explicit basis changes"
         )
     if lidars_count > 0:
         if all_vtl_inverted:
             verification["compliance_notes"].append(
-                "OK: All LiDAR vTl transforms were inverted for attachment"
+                "Legacy v1 LiDAR direction alias retained; v2 mounting applies vTl with explicit basis changes"
             )
         else:
             verification["compliance_notes"].append(
-                "WARN: One or more LiDAR vTl transforms were not inverted for attachment"
+                "Legacy v1 LiDAR direction alias differs from the frozen v1 value"
             )
 
     verification["sensors_summary"] = {
@@ -4273,6 +4325,7 @@ def main() -> int:
         "visual_qa_gate": dict(upstream_visual_qa_gate),
         "rig": str(args.rig),
         "calib_path_resolved": str(calib_path_metadata),
+        "calib_sha256": _sha256_path_or_empty(calib_path),
         "calib_source": str(calib_source),
         "calib_exists": bool(calib_path.exists()),
         "thesis_capture_gate": dict(thesis_gate),
@@ -4365,6 +4418,7 @@ def main() -> int:
         "calib_override_applied": False,
         "calib_override_applied_to": [],
         "calib_path_resolved": str(calib_path_metadata),
+        "calib_sha256": _sha256_path_or_empty(calib_path),
         "calib_source": str(calib_source),
         "calib_exists": bool(calib_path.exists()),
         "thesis_capture_gate": dict(thesis_gate),
@@ -5770,6 +5824,18 @@ def main() -> int:
             perception_status["listener_callbacks_registered"] = int(
                 listener_callbacks_registered
             )
+            if isinstance(rig_data_loaded, dict) and isinstance(
+                rig_data_loaded.get("applied_sensor_rig_v2"), dict
+            ):
+                from ultimate_pipeline.sensors.applied_sensor_rig import (
+                    bind_recorder_dataset_v2,
+                )
+                bound_receipt, binding_errors = bind_recorder_dataset_v2(
+                    rig_data_loaded["applied_sensor_rig_v2"],
+                    recording_dir / "recorder_manifest.json",
+                )
+                rig_data_loaded["applied_sensor_rig_v2"] = bound_receipt
+                rig_data_loaded["applied_sensor_rig_v2_binding_errors"] = binding_errors
             # Build thesis-compliant rig_verification.json with explicit compliance booleans
             rig_verification = _build_rig_verification_from_report(
                 rig_src,

@@ -1,172 +1,387 @@
-# -*- coding: utf-8 -*-
-"""Tests for ultimate_pipeline/sensors/transform_conventions.py.
-
-Live: used by carla_tools/thesis_sensor_rig.py, sensors/dominik_sensor_setup.py,
-sensors/calibration_contract.py, tools/run_perception_safe.py,
-tools/audit_thesis_topic_contract.py, perception/record_route_fixed.py --
-the canonical sensor-calibration transform convention (documented elsewhere
-as "cTv direct, vTl inverted"). Zero prior test coverage despite directly
-affecting perception dataset sensor placement correctness.
-"""
+"""Regression tests for explicit CARLA_SENSOR_MOUNTING/v2 frame semantics."""
 from __future__ import annotations
 
+import json
 import math
+from pathlib import Path
 
 import numpy as np
 import pytest
 
 from ultimate_pipeline.sensors.transform_conventions import (
-    _ensure_homogeneous,
-    _flip_vehicle_y_basis,
+    CALIBRATION_CONTRACT_VERSION,
+    carla_attachment_pose_from_matrix,
+    carla_ego_from_camera_from_cTv,
+    carla_ego_from_lidar_from_vTl,
+    carla_rotation_matrix_to_rpy_deg,
     camera_attachment_pose_from_cTv,
-    lidar_attachment_pose_from_vTl,
-    matrix_to_unreal_pose,
-    rotation_matrix_to_unreal_rpy_deg,
     vehicle_to_camera_from_cTv,
-    vehicle_to_lidar_from_vTl,
 )
 
 
-# ---------------------------------------------------------------------------
-# _ensure_homogeneous
-# ---------------------------------------------------------------------------
-
-def test_ensure_homogeneous_passes_through_4x4():
-    m = np.eye(4)
-    assert np.array_equal(_ensure_homogeneous(m), m)
-
-
-def test_ensure_homogeneous_pads_3x4_to_4x4():
-    m = np.eye(4)[:3, :]  # 3x4
-    out = _ensure_homogeneous(m)
-    assert out.shape == (4, 4)
-    assert np.array_equal(out[3], [0.0, 0.0, 0.0, 1.0])
+ROOT = Path(__file__).resolve().parents[2]
+CALIB = json.loads((ROOT / "sensors" / "calib_data.json").read_text(encoding="utf-8"))
+ORACLE = json.loads(
+    (ROOT / "tests" / "fixtures" / "v127" / "sensor_frame_oracle.json").read_text(
+        encoding="utf-8"
+    )
+)
+S4 = np.diag([1.0, -1.0, 1.0, 1.0])
+CARLA_CAMERA_TO_OPENCV = np.eye(4)
+CARLA_CAMERA_TO_OPENCV[:3, :3] = np.array(
+    [[0.0, 1.0, 0.0], [0.0, 0.0, -1.0], [1.0, 0.0, 0.0]]
+)
 
 
-def test_ensure_homogeneous_rejects_wrong_shape():
-    with pytest.raises(ValueError):
-        _ensure_homogeneous(np.eye(3))
+def _oracle_mount(name: str, modality: str) -> np.ndarray:
+    row = ORACLE[name]
+    source_from_sensor = np.eye(4)
+    source_from_sensor[:3, :3] = np.asarray(row["R"], dtype=float)
+    source_from_sensor[:3, 3] = np.asarray(row["pos"], dtype=float)
+    if modality == "camera":
+        return S4 @ source_from_sensor @ CARLA_CAMERA_TO_OPENCV
+    return S4 @ source_from_sensor @ S4
 
 
-# ---------------------------------------------------------------------------
-# _flip_vehicle_y_basis
-# ---------------------------------------------------------------------------
-
-def test_flip_vehicle_y_negates_only_y_translation():
-    m = np.eye(4)
-    m[:3, 3] = [1.0, 2.0, 3.0]
-    flipped = _flip_vehicle_y_basis(m)
-    assert flipped[:3, 3].tolist() == [1.0, -2.0, 3.0]
+@pytest.mark.parametrize("name", sorted(CALIB["cameras"]))
+def test_all_camera_mounts_match_independent_full_matrix_oracle(name):
+    actual = carla_ego_from_camera_from_cTv(CALIB["cameras"][name]["cTv"])
+    expected = _oracle_mount(name, "camera")
+    assert np.allclose(actual, expected, atol=2e-5, rtol=0), name
+    assert np.linalg.det(actual[:3, :3]) == pytest.approx(1.0, abs=1e-7)
+    assert np.allclose(actual[:3, :3].T @ actual[:3, :3], np.eye(3), atol=1e-7)
 
 
-def test_flip_vehicle_y_is_its_own_inverse():
-    m = np.eye(4)
-    m[:3, 3] = [1.0, 2.0, 3.0]
-    twice = _flip_vehicle_y_basis(_flip_vehicle_y_basis(m))
-    assert np.allclose(twice, m)
+@pytest.mark.parametrize("name", sorted(CALIB["lidars"]))
+def test_all_declared_lidar_mounts_match_independent_full_matrix_oracle(name):
+    actual = carla_ego_from_lidar_from_vTl(CALIB["lidars"][name]["vTl"])
+    expected = _oracle_mount(name, "lidar")
+    assert np.allclose(actual, expected, atol=2e-5, rtol=0), name
+    assert np.linalg.det(actual[:3, :3]) == pytest.approx(1.0, abs=1e-7)
 
 
-# ---------------------------------------------------------------------------
-# vehicle_to_lidar_from_vTl -- documented convention: vTl is inverted
-# ---------------------------------------------------------------------------
-
-def test_lidar_pure_translation_is_inverted_without_flip():
-    vTl = np.eye(4)
-    vTl[:3, 3] = [1.0, 0.5, 2.0]
-    out = vehicle_to_lidar_from_vTl(vTl, flip_vehicle_y=False)
-    assert np.allclose(out[:3, 3], [-1.0, -0.5, -2.0])
-
-
-def test_lidar_translation_inverted_then_y_flipped():
-    vTl = np.eye(4)
-    vTl[:3, 3] = [1.0, 0.5, 2.0]
-    out = vehicle_to_lidar_from_vTl(vTl, flip_vehicle_y=True)
-    # inverse translation is [-1, -0.5, -2]; y-flip then negates y again -> +0.5
-    assert np.allclose(out[:3, 3], [-1.0, 0.5, -2.0])
+def test_independently_reconstructed_wrong_candidates_are_rejected_by_oracle():
+    ctv = np.asarray(CALIB["cameras"]["front_left_camera"]["cTv"], dtype=float)
+    vtl = np.asarray(CALIB["lidars"]["middle_lidar"]["vTl"], dtype=float)
+    expected_camera = _oracle_mount("front_left_camera", "camera")
+    expected_lidar = _oracle_mount("middle_lidar", "lidar")
+    wrong_camera_direct = S4 @ ctv @ CARLA_CAMERA_TO_OPENCV
+    wrong_camera_single_handedness = ctv.copy()
+    wrong_lidar_inverse = S4 @ np.linalg.inv(vtl) @ S4
+    assert np.max(np.abs(wrong_camera_direct - expected_camera)) > 1e-2
+    assert np.max(np.abs(wrong_camera_single_handedness - expected_camera)) > 1e-2
+    assert np.max(np.abs(wrong_lidar_inverse - expected_lidar)) > 1e-2
 
 
-# ---------------------------------------------------------------------------
-# vehicle_to_camera_from_cTv -- documented convention: cTv is NOT inverted by default
-# ---------------------------------------------------------------------------
-
-def test_camera_cTv_not_inverted_by_default():
-    cTv = np.eye(4)
-    cTv[:3, 3] = [1.0, 2.0, 3.0]
-    out = vehicle_to_camera_from_cTv(cTv, flip_vehicle_y=False, opencv_camera_axes=False)
-    # No inversion, no flip, no axis conversion -> translation passes through unchanged.
-    assert np.allclose(out[:3, 3], [1.0, 2.0, 3.0])
-
-
-def test_camera_ctv_manual_inversion_raises_under_strict_mode(monkeypatch):
-    monkeypatch.setenv("UP_THESIS_STRICT", "1")
-    cTv = np.eye(4)
-    with pytest.raises(RuntimeError, match="Non-canonical"):
-        vehicle_to_camera_from_cTv(cTv, flip_vehicle_y=False, ctv_invert=True)
+def test_required_source_position_oracles_and_explicit_carla_basis_conversion():
+    camera_source = np.asarray(ORACLE["front_left_camera"]["pos"])
+    lidar_source = np.asarray(ORACLE["middle_lidar"]["pos"])
+    assert camera_source == pytest.approx(
+        [-0.23655050256222285, +0.027298066529018734, 1.0096191828547874], abs=1e-9
+    )
+    assert lidar_source == pytest.approx(
+        [-0.4920734, -0.00429731, 1.24068573], abs=1e-8
+    )
+    camera = carla_ego_from_camera_from_cTv(CALIB["cameras"]["front_left_camera"]["cTv"])
+    lidar = carla_ego_from_lidar_from_vTl(CALIB["lidars"]["middle_lidar"]["vTl"])
+    assert camera[:3, 3] == pytest.approx([-0.236550502562, -0.027298066529, 1.009619182855], abs=1e-9)
+    assert lidar[:3, 3] == pytest.approx([-0.4920734, +0.00429731, 1.24068573], abs=1e-8)
 
 
-def test_camera_ctv_manual_inversion_only_warns_when_not_strict(monkeypatch, caplog):
-    monkeypatch.delenv("UP_THESIS_STRICT", raising=False)
-    cTv = np.eye(4)
-    # Must not raise.
-    vehicle_to_camera_from_cTv(cTv, flip_vehicle_y=False, ctv_invert=True)
+def test_reflected_nonorthogonal_nonfinite_and_malformed_source_transforms_fail_closed():
+    valid = np.eye(4)
+    reflected = valid.copy()
+    reflected[1, 1] = -1
+    scaled = valid.copy()
+    scaled[0, 0] = 1.01
+    nonfinite = valid.copy()
+    nonfinite[0, 3] = np.nan
+    for invalid in (reflected, scaled, nonfinite, np.eye(3)):
+        with pytest.raises(ValueError):
+            carla_ego_from_camera_from_cTv(invalid)
+        with pytest.raises(ValueError):
+            carla_ego_from_lidar_from_vTl(invalid)
 
 
-def test_camera_opencv_axes_conversion_applied_by_default():
-    # OpenCV: x right, y down, z forward. With opencv axes on, the camera's
-    # local +z (forward in OpenCV) should map into the vehicle-frame +x
-    # column-of-rotation (CARLA forward), given an otherwise-identity cTv.
-    cTv = np.eye(4)
-    out = vehicle_to_camera_from_cTv(cTv, flip_vehicle_y=False, opencv_camera_axes=True)
-    assert not np.allclose(out[:3, :3], np.eye(3))  # axes were actually converted
+def test_unsupported_legacy_convention_switches_are_rejected():
+    with pytest.raises(ValueError, match="inverse"):
+        vehicle_to_camera_from_cTv(np.eye(4), ctv_invert=True)
+    with pytest.raises(ValueError, match="OpenCV"):
+        vehicle_to_camera_from_cTv(np.eye(4), opencv_camera_axes=False)
 
 
-# ---------------------------------------------------------------------------
-# rotation_matrix_to_unreal_rpy_deg / matrix_to_unreal_pose
-# ---------------------------------------------------------------------------
+def test_rotation_extraction_uses_carla_positive_pitch_and_roll_signs():
+    import carla
 
-def test_identity_rotation_gives_zero_rpy():
-    roll, pitch, yaw = rotation_matrix_to_unreal_rpy_deg(np.eye(3))
-    assert roll == pytest.approx(0.0, abs=1e-9)
-    assert pitch == pytest.approx(0.0, abs=1e-9)
-    assert yaw == pytest.approx(0.0, abs=1e-9)
+    for roll, pitch, yaw in ((0, 51, 0), (51, 0, 0), (120, -35, 87), (180, 20, -90)):
+        source = carla.Transform(carla.Location(), carla.Rotation(roll=roll, pitch=pitch, yaw=yaw))
+        matrix = np.asarray(source.get_matrix(), dtype=float)[:3, :3]
+        extracted = carla_rotation_matrix_to_rpy_deg(matrix)
+        reconstructed = carla.Transform(
+            carla.Location(), carla.Rotation(roll=extracted[0], pitch=extracted[1], yaw=extracted[2])
+        )
+        assert np.allclose(
+            np.asarray(reconstructed.get_matrix(), dtype=float)[:3, :3],
+            matrix,
+            atol=2e-6,
+            rtol=0,
+        ), (roll, pitch, yaw, extracted)
 
-
-def test_90deg_yaw_rotation_extracted_correctly():
-    c, s = math.cos(math.radians(90)), math.sin(math.radians(90))
-    rot = np.array([[c, -s, 0], [s, c, 0], [0, 0, 1]])
-    roll, pitch, yaw = rotation_matrix_to_unreal_rpy_deg(rot)
-    assert yaw == pytest.approx(90.0, abs=1e-6)
-    assert roll == pytest.approx(0.0, abs=1e-9)
-    assert pitch == pytest.approx(0.0, abs=1e-9)
-
-
-def test_matrix_to_unreal_pose_reports_translation_and_rotation():
-    m = np.eye(4)
-    m[:3, 3] = [10.0, -5.0, 2.5]
-    pose = matrix_to_unreal_pose(m)
-    assert pose["x"] == pytest.approx(10.0)
-    assert pose["y"] == pytest.approx(-5.0)
-    assert pose["z"] == pytest.approx(2.5)
-    assert pose["roll"] == pytest.approx(0.0, abs=1e-9)
+    positive_pitch = carla.Rotation(pitch=51).get_forward_vector()
+    positive_roll = carla.Rotation(roll=51).get_right_vector()
+    assert positive_pitch.z > 0
+    assert positive_roll.z < 0
 
 
-# ---------------------------------------------------------------------------
-# camera_attachment_pose_from_cTv / lidar_attachment_pose_from_vTl
-# ---------------------------------------------------------------------------
+def test_carla_0916_rotation_matrix_reconstruction_randomized_client_only():
+    import carla
 
-def test_camera_attachment_pose_reports_forward_alignment():
-    cTv = np.eye(4)
-    pose = camera_attachment_pose_from_cTv(cTv, flip_vehicle_y=False, opencv_camera_axes=False)
-    assert "forward_alignment_to_vehicle_x" in pose
-    assert "forward_alignment_ok" in pose
-    # Identity, no axis conversion: forward vector is exactly vehicle +x.
-    assert pose["forward_alignment_to_vehicle_x"] == pytest.approx(1.0)
-    assert pose["forward_alignment_ok"] is True
+    rng = np.random.default_rng(127)
+    worst = 0.0
+    for _ in range(200):
+        roll = float(rng.uniform(-180.0, 180.0))
+        pitch = float(rng.uniform(-89.0, 89.0))
+        yaw = float(rng.uniform(-180.0, 180.0))
+        source = carla.Transform(
+            carla.Location(),
+            carla.Rotation(roll=roll, pitch=pitch, yaw=yaw),
+        )
+        source_matrix = np.asarray(source.get_matrix(), dtype=float)[:3, :3]
+        rr, rp, ry = carla_rotation_matrix_to_rpy_deg(source_matrix)
+        reconstructed = carla.Transform(
+            carla.Location(), carla.Rotation(roll=rr, pitch=rp, yaw=ry)
+        )
+        error = float(
+            np.max(
+                np.abs(
+                    np.asarray(reconstructed.get_matrix(), dtype=float)[:3, :3]
+                    - source_matrix
+                )
+            )
+        )
+        worst = max(worst, error)
+        assert error < 2e-6, (roll, pitch, yaw, error)
+    assert worst < 2e-6
 
 
-def test_lidar_attachment_pose_returns_full_pose_dict():
-    vTl = np.eye(4)
-    vTl[:3, 3] = [0.0, 0.0, 1.8]  # lidar mounted 1.8m up, in lidar->vehicle terms
-    pose = lidar_attachment_pose_from_vTl(vTl, flip_vehicle_y=False)
-    assert set(pose.keys()) == {"x", "y", "z", "roll", "pitch", "yaw"}
-    assert pose["z"] == pytest.approx(-1.8)  # inverted
+def test_carla_0916_matrix_reconstruction_matches_all_mounts_and_basis_vectors():
+    import carla
+
+    names = [(n, "camera", carla_ego_from_camera_from_cTv(row["cTv"])) for n, row in CALIB["cameras"].items()]
+    names += [(n, "lidar", carla_ego_from_lidar_from_vTl(row["vTl"])) for n, row in CALIB["lidars"].items()]
+    max_matrix_error = 0.0
+    max_axis_angle_deg = 0.0
+    for name, modality, expected in names:
+        pose = carla_attachment_pose_from_matrix(expected)
+        transform = carla.Transform(
+            carla.Location(x=pose["x"], y=pose["y"], z=pose["z"]),
+            carla.Rotation(roll=pose["roll"], pitch=pose["pitch"], yaw=pose["yaw"]),
+        )
+        reconstructed = np.asarray(transform.get_matrix(), dtype=float)
+        matrix_error = float(np.max(np.abs(reconstructed - expected)))
+        max_matrix_error = max(max_matrix_error, matrix_error)
+        assert matrix_error < 2e-6, (name, modality, matrix_error)
+        basis = (transform.rotation.get_forward_vector(), transform.rotation.get_right_vector(), transform.rotation.get_up_vector())
+        for col, vector in enumerate(basis):
+            observed_axis = np.array([vector.x, vector.y, vector.z], dtype=float)
+            expected_axis = expected[:3, col]
+            cross_norm = float(np.linalg.norm(np.cross(observed_axis, expected_axis)))
+            dot = float(np.clip(observed_axis @ expected_axis, -1.0, 1.0))
+            angle = math.degrees(math.atan2(cross_norm, dot))
+            max_axis_angle_deg = max(max_axis_angle_deg, angle)
+            assert angle < 0.01, (name, modality, col, angle)
+    assert max_matrix_error < 2e-6
+    assert max_axis_angle_deg < 0.01
+
+
+@pytest.mark.parametrize("angle", [51, 90, 120, 180])
+@pytest.mark.parametrize("axis", ["roll", "pitch", "yaw"])
+def test_position_sanitizers_never_clamp_valid_sensor_rotation(axis, angle):
+    import carla
+    from ultimate_pipeline.carla_tools.thesis_sensor_rig import _sanitize_transform
+    from ultimate_pipeline.sensors.dominik_sensor_setup import _sanitize_transform_dict
+
+    values = {"x": 0.2, "y": -0.3, "z": 1.1, "roll": 0.0, "pitch": 0.0, "yaw": 0.0}
+    values[axis] = float(angle)
+    pose, changed = _sanitize_transform_dict(values)
+    assert changed == []
+    assert pose[axis] == pytest.approx(float(angle))
+    sanitized = _sanitize_transform(
+        carla.Transform(
+            carla.Location(x=values["x"], y=values["y"], z=values["z"]),
+            carla.Rotation(roll=values["roll"], pitch=values["pitch"], yaw=values["yaw"]),
+        )
+    )
+    assert getattr(sanitized.rotation, axis) == pytest.approx(float(angle))
+
+
+def test_position_sanitizers_reject_invalid_values_instead_of_substituting_zero():
+    import carla
+    from ultimate_pipeline.carla_tools.thesis_sensor_rig import _sanitize_transform
+    from ultimate_pipeline.sensors.dominik_sensor_setup import _sanitize_transform_dict
+
+    with pytest.raises(ValueError, match="missing"):
+        _sanitize_transform_dict({"x": 1.0})
+    bad = {"x": 0.0, "y": 0.0, "z": 1.0, "roll": float("nan"), "pitch": 0.0, "yaw": 0.0}
+    with pytest.raises(ValueError, match="non-finite"):
+        _sanitize_transform_dict(bad)
+    with pytest.raises(ValueError, match="exceeds 50"):
+        _sanitize_transform_dict({**bad, "roll": 0, "x": 51})
+    with pytest.raises(ValueError, match="non-finite"):
+        _sanitize_transform(carla.Transform(carla.Location(), carla.Rotation(pitch=float("nan"))))
+    with pytest.raises(ValueError, match="exceeds"):
+        _sanitize_transform(carla.Transform(carla.Location(x=51), carla.Rotation(pitch=180)))
+
+
+def test_deprecated_pose_adapter_reports_explicit_v2_mount():
+    pose = camera_attachment_pose_from_cTv(CALIB["cameras"]["front_left_camera"]["cTv"])
+    assert pose["contract_version"] == CALIBRATION_CONTRACT_VERSION
+    assert np.allclose(
+        pose["mount_matrix"],
+        carla_ego_from_camera_from_cTv(CALIB["cameras"]["front_left_camera"]["cTv"]),
+        atol=1e-10,
+        rtol=0,
+    )
+
+
+@pytest.mark.parametrize(
+    "name,modality",
+    [(name, "camera") for name in sorted(CALIB["cameras"])]
+    + [("middle_lidar", "lidar")],
+)
+def test_three_sensor_spawn_adapters_emit_identical_carla_mounts(tmp_path, name, modality):
+    import carla
+    from ultimate_pipeline.carla_tools.thesis_sensor_rig import _pose_to_carla_transform
+    from ultimate_pipeline.sensors.attach_sensors_safe import _carla_transform_from_vehicle_to_sensor
+    from ultimate_pipeline.sensors.dominik_sensor_setup import DominikSensorSetup
+
+    calib_path = ROOT / "sensors" / "calib_data.json"
+    setup = DominikSensorSetup(str(calib_path))
+    if modality == "camera":
+        source = CALIB["cameras"][name]["cTv"]
+        expected = carla_ego_from_camera_from_cTv(source)
+        dom_pose = setup._parse_camera_transform(CALIB["cameras"][name])
+        attach_tf = _carla_transform_from_vehicle_to_sensor(source, camera_optical_frame=True)
+    else:
+        source = CALIB["lidars"][name]["vTl"]
+        expected = carla_ego_from_lidar_from_vTl(source)
+        dom_pose = setup._parse_lidar_transform(CALIB["lidars"][name])
+        attach_tf = _carla_transform_from_vehicle_to_sensor(source, camera_optical_frame=False)
+    dom_tf = carla.Transform(
+        carla.Location(x=dom_pose["x"], y=dom_pose["y"], z=dom_pose["z"]),
+        carla.Rotation(roll=dom_pose["roll"], pitch=dom_pose["pitch"], yaw=dom_pose["yaw"]),
+    )
+    thesis_tf, _ = _pose_to_carla_transform(carla_attachment_pose_from_matrix(expected))
+    for actual in (dom_tf, thesis_tf, attach_tf):
+        assert np.allclose(np.asarray(actual.get_matrix()), expected, atol=2e-6, rtol=0)
+
+
+@pytest.mark.parametrize(
+    "name,modality",
+    [(name, "camera") for name in sorted(CALIB["cameras"])]
+    + [(name, "lidar") for name in sorted(CALIB["lidars"])],
+)
+def test_generated_map_sensor_spawns_use_authoritative_v2_mount(name, modality):
+    import carla
+    from ultimate_pipeline.carla_tools.evaluate_generated_map import (
+        camera_transform_from_cTv,
+        lidar_transform_from_vTl,
+    )
+
+    if modality == "camera":
+        source = CALIB["cameras"][name]["cTv"]
+        expected = carla_ego_from_camera_from_cTv(source)
+        actual = camera_transform_from_cTv(source)
+    else:
+        source = CALIB["lidars"][name]["vTl"]
+        expected = carla_ego_from_lidar_from_vTl(source)
+        actual = lidar_transform_from_vTl(source)
+    assert isinstance(actual, carla.Transform)
+    assert np.allclose(np.asarray(actual.get_matrix()), expected, atol=2e-6, rtol=0)
+
+
+def test_generated_map_sensor_spawns_reject_unsupported_frame_overrides():
+    from ultimate_pipeline.carla_tools.evaluate_generated_map import (
+        camera_transform_from_cTv,
+        lidar_transform_from_vTl,
+    )
+
+    with pytest.raises(ValueError, match="only CARLA_SENSOR_MOUNTING/v2"):
+        camera_transform_from_cTv(CALIB["cameras"]["front_left_camera"]["cTv"], flip_vehicle_y=False)
+    with pytest.raises(ValueError, match="only CARLA_SENSOR_MOUNTING/v2"):
+        camera_transform_from_cTv(
+            CALIB["cameras"]["front_left_camera"]["cTv"], opencv_camera_axes=False
+        )
+    with pytest.raises(ValueError, match="only CARLA_SENSOR_MOUNTING/v2"):
+        lidar_transform_from_vTl(CALIB["lidars"]["middle_lidar"]["vTl"], flip_vehicle_y=False)
+
+
+@pytest.mark.parametrize(
+    "module_name",
+    ["ultimate_pipeline.sensors.sweep_calib_setups", "ultimate_pipeline.tools.sweep_calib_setups"],
+)
+def test_calibration_sweep_matrix_conversion_preserves_carla_rotation(module_name):
+    import importlib
+    import carla
+
+    module = importlib.import_module(module_name)
+    source = carla.Transform(
+        carla.Location(x=1.25, y=-0.75, z=2.0),
+        carla.Rotation(roll=51.0, pitch=-37.0, yaw=120.0),
+    )
+    actual = module.mat4_to_carla_transform(source.get_matrix())
+    assert np.allclose(actual.get_matrix(), source.get_matrix(), atol=2e-6, rtol=0)
+
+
+@pytest.mark.parametrize(
+    "module_name",
+    ["ultimate_pipeline.sensors.sweep_calib_setups", "ultimate_pipeline.tools.sweep_calib_setups"],
+)
+def test_calibration_sweep_matrix_conversion_rejects_reflections(module_name):
+    import importlib
+
+    module = importlib.import_module(module_name)
+    reflected = np.eye(4)
+    reflected[1, 1] = -1.0
+    with pytest.raises(ValueError, match="reflected or nonrigid"):
+        module.mat4_to_carla_transform(reflected.tolist())
+
+
+@pytest.mark.parametrize(
+    "name,modality",
+    [(name, "camera") for name in sorted(CALIB["cameras"])]
+    + [("middle_lidar", "lidar")],
+)
+def test_visual_calibration_spawn_adapter_matches_authoritative_mount(name, modality):
+    import carla
+    from ultimate_pipeline.tools.visual_check_calib_setup import (
+        camera_transform_from_cTv,
+        lidar_transform_from_vTl,
+    )
+
+    if modality == "camera":
+        source = CALIB["cameras"][name]["cTv"]
+        expected = carla_ego_from_camera_from_cTv(source)
+        actual = camera_transform_from_cTv(source)
+    else:
+        source = CALIB["lidars"][name]["vTl"]
+        expected = carla_ego_from_lidar_from_vTl(source)
+        actual = lidar_transform_from_vTl(source)
+    assert isinstance(actual, carla.Transform)
+    assert np.allclose(actual.get_matrix(), expected, atol=2e-6, rtol=0)
+
+
+def test_dominik_matrix_pose_adapter_uses_carla_0916_rotation_extraction():
+    import carla
+    from ultimate_pipeline.sensors.dominik_sensor_setup import _matrix_to_transform
+
+    source = carla.Transform(
+        carla.Location(x=-0.4, y=0.3, z=1.2),
+        carla.Rotation(roll=120.0, pitch=51.0, yaw=-90.0),
+    )
+    pose = _matrix_to_transform(np.asarray(source.get_matrix(), dtype=float))
+    rebuilt = carla.Transform(
+        carla.Location(x=pose["x"], y=pose["y"], z=pose["z"]),
+        carla.Rotation(roll=pose["roll"], pitch=pose["pitch"], yaw=pose["yaw"]),
+    )
+    assert np.allclose(rebuilt.get_matrix(), source.get_matrix(), atol=2e-6, rtol=0)

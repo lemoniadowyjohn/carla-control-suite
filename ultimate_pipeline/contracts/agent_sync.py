@@ -63,10 +63,20 @@ class SensorRigContract(BaseModel):
     use_K_undistortion: bool = True
     ignore_K: bool = True
     ignore_D: bool = True
-    ctv_inverted: bool = False  # cTv used directly, NOT inverted
+    # v1 aliases only; the v2 derivation fields below are authoritative.
+    ctv_inverted: bool = False
 
     # LiDAR configuration
-    vtl_inverted: bool = True  # vTl MUST be inverted for CARLA attachment
+    vtl_inverted: bool = True
+    legacy_v1_boolean_semantics: str = "historical_only_not_authoritative_for_v2_mounting"
+
+    # Frozen v2 semantics name both source and attachment frames explicitly.
+    calibration_contract_version: str = "CARLA_SENSOR_MOUNTING/v2"
+    camera_source_transform: str = "camera_optical_from_vehicle_flu"
+    camera_attachment_derivation: str = "inverse_cTv_with_explicit_flu_fru_and_optical_basis_changes"
+    lidar_source_transform: str = "vehicle_flu_from_lidar"
+    lidar_attachment_derivation: str = "vTl_with_explicit_flu_fru_basis_changes"
+    translation_unit: str = "metre"
 
     # Required evidence
     rig_verification_required: bool = True
@@ -301,10 +311,22 @@ def validate_agent_sync(
         # Sensor rig validation
         if not contract.sensor_rig.use_K_undistortion:
             result["errors"].append("Sensor rig must use K_undistortion")
-        if not contract.sensor_rig.vtl_inverted:
-            result["errors"].append("vTl must be inverted for CARLA attachment")
-        if contract.sensor_rig.ctv_inverted:
-            result["errors"].append("cTv should NOT be inverted")
+        if contract.sensor_rig.vtl_inverted is not True or contract.sensor_rig.ctv_inverted is not False:
+            result["errors"].append("legacy v1 sensor aliases (cTv=false/vTl=true) do not match the frozen historical contract")
+        if contract.sensor_rig.legacy_v1_boolean_semantics != "historical_only_not_authoritative_for_v2_mounting":
+            result["errors"].append("legacy sensor booleans must be explicitly marked non-authoritative for v2")
+        if contract.sensor_rig.calibration_contract_version != "CARLA_SENSOR_MOUNTING/v2":
+            result["errors"].append("sensor rig requires CARLA_SENSOR_MOUNTING/v2")
+        if contract.sensor_rig.camera_source_transform != "camera_optical_from_vehicle_flu":
+            result["errors"].append("camera source frame contract mismatch")
+        if contract.sensor_rig.camera_attachment_derivation != "inverse_cTv_with_explicit_flu_fru_and_optical_basis_changes":
+            result["errors"].append("camera attachment derivation mismatch")
+        if contract.sensor_rig.lidar_source_transform != "vehicle_flu_from_lidar":
+            result["errors"].append("LiDAR source frame contract mismatch")
+        if contract.sensor_rig.lidar_attachment_derivation != "vTl_with_explicit_flu_fru_basis_changes":
+            result["errors"].append("LiDAR attachment derivation mismatch")
+        if contract.sensor_rig.translation_unit != "metre":
+            result["errors"].append("sensor translation unit must be metre")
 
         # Determinism validation
         if contract.determinism.min_runs < 2:
