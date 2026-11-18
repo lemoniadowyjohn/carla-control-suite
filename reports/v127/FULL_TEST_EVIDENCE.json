@@ -1,0 +1,171 @@
+{
+  "schema_version": "V127_FULL_TEST_EVIDENCE/v1",
+  "candidate_branch": "integration/v127-calibration-p0-20261118",
+  "source_commit": "d1c35b6ca3daa4b3e3da26515ef521dc581019de",
+  "production_base": "225ed15d0da6444cc257835ca777aba281553f3c",
+  "source_tree": "cd2496410d60e526ac4c1334ffe8b0a0788bf6c3",
+  "python": "3.12",
+  "platform": "Windows",
+  "source_calibration_sha256": "d3ff2660b11ca56d16c6185e82d1b4c7fa94c5db27bb3469558442d79f4e97d9",
+  "test_source_sha256": {
+    "ultimate_pipeline/carla_tools/tests/test_thesis_sensor_rig_contract.py": "022c9aea6304972b1f726bb191c02af88c8f41c57680ff458062503ec2a31e52",
+    "ultimate_pipeline/tests/unit/test_applied_sensor_rig_v2.py": "ffd06441fe07e8d6488d4ac410d05042d11909cdc5faed51833eb4f6dce664af",
+    "tests/unit/test_rq3_batch9_pair_contract.py": "ec5680610098794b8cbdcc73efd28fc7b7b4f2d759b13fadaa5474e71860f812",
+    "tests/unit/test_run_perception_safe_rig_contract.py": "2dc6051e5a4f321931a507239aa65d4fca97a71b472c066aaa3c18cc0d27594d",
+    "ultimate_pipeline/tests/unit/test_rq3_paired_capture_contract.py": "8d19396bd922cce28448fef24d6d0ee6c5f46ca07477728ab93f993436337ca2",
+    "tests/unit/test_v112_rq3_explicit_calibration.py": "a5cf3d4404a2d2acc9679c53befb2ea326c0f36ad7302d411040257fa71f322c",
+    "tests/unit/test_recorder_backpressure_and_frame_integrity.py": "1f0b9a7df18966b08c0818fb523ccc83acb7ac7429b7817f2f8d23a68bf65143",
+    "ultimate_pipeline/tests/unit/test_transform_conventions.py": "5e0e7132f8908f09aa205cd5aea65b043b554292a99f57d0661ab49d667c0c17",
+    "tests/unit/test_sensor_calibration_semantics.py": "6ec8590ac8f90e4cc7650e90c832cecf0313027c8d873a34d78abb4572069a36",
+    "tests/unit/test_v119_rq3_completeness_nonvacuous.py": "e08289a34bd0851ac2466629332de7490770690fda7440a628a650e35234fbcb",
+    "tests/unit/test_submission_applied_sensor_rig_mirror.py": "9092e275ed9d64ec2897a73c2695d30844389d146f128edde9635b848db2d647"
+  },
+  "test_runs": [
+    {
+      "name": "focused_calibration_rq3_adapter",
+      "status": "PASS",
+      "command": "py -3.12 -m pytest ultimate_pipeline/tests/unit/test_transform_conventions.py ultimate_pipeline/tests/unit/test_applied_sensor_rig_v2.py ultimate_pipeline/carla_tools/tests/test_thesis_sensor_rig_contract.py ultimate_pipeline/tests/test_contracts.py tests/unit/test_agent_sync_contract.py tests/unit/test_v112_rq3_explicit_calibration.py tests/unit/test_v119_rq3_completeness_nonvacuous.py ultimate_pipeline/tests/unit/test_integration_runtime_rig_environment_negative_controls.py ultimate_pipeline/tests/unit/test_rq3_paired_capture_contract.py tests/unit/test_run_perception_safe_rig_contract.py tests/unit/test_run_perception_safe_failure_classification.py tests/unit/test_recorder_backpressure_and_frame_integrity.py ultimate_pipeline/tests/unit/test_rq3_frame_set.py tests/unit/test_sensor_calibration_semantics.py tests/unit/test_rq3_batch9_pair_contract.py tests/unit/test_submission_applied_sensor_rig_mirror.py -q --tb=short -p no:cacheprovider",
+      "exit_code": 0,
+      "collected": 470,
+      "passed": 470,
+      "failed": 0,
+      "skipped": 0,
+      "warnings": 6,
+      "log_sha256": "09de50c3a8dc6834dc9c9bd1b7d815f8930dda5d981f9cdf65d0df4e0cf95c54"
+    },
+    {
+      "name": "wider_rq3_regressions",
+      "status": "PASS_WITH_UNCOLLECTABLE_MODULES",
+      "command": "py -3.12 -m pytest G:\\CARLA_RECOVERY\\worktrees\\v127-calibration-p0-20261118\\ultimate_pipeline\\tests\\unit\\test_rq3_builder_false_pass_regression.py G:\\CARLA_RECOVERY\\worktrees\\v127-calibration-p0-20261118\\ultimate_pipeline\\tests\\unit\\test_rq3_frame_set.py G:\\CARLA_RECOVERY\\worktrees\\v127-calibration-p0-20261118\\ultimate_pipeline\\tests\\unit\\test_rq3_paired_capture_contract.py G:\\CARLA_RECOVERY\\worktrees\\v127-calibration-p0-20261118\\ultimate_pipeline\\tests\\unit\\test_rq3_route_rig_hardening.py G:\\CARLA_RECOVERY\\worktrees\\v127-calibration-p0-20261118\\ultimate_pipeline\\tests\\unit\\test_rq3_terminal_adversarial_tests.py G:\\CARLA_RECOVERY\\worktrees\\v127-calibration-p0-20261118\\tests\\unit\\test_rq3_batch9_pair_contract.py G:\\CARLA_RECOVERY\\worktrees\\v127-calibration-p0-20261118\\tests\\unit\\test_v112_rq3_explicit_calibration.py G:\\CARLA_RECOVERY\\worktrees\\v127-calibration-p0-20261118\\tests\\unit\\test_v119_rq3_completeness_nonvacuous.py -q --tb=short -p no:cacheprovider",
+      "exit_code": 0,
+      "collected": 161,
+      "passed": 161,
+      "failed": 0,
+      "skipped": 0,
+      "warnings": 5,
+      "excluded": [
+        {
+          "reason": "cryptography not installed",
+          "path": "ultimate_pipeline/tests/unit/test_rq3_artifact_content_verification.py"
+        },
+        {
+          "reason": "cryptography not installed",
+          "path": "ultimate_pipeline/tests/unit/test_rq3_review_receipt_binding.py"
+        },
+        {
+          "reason": "repository-level tools module absent",
+          "path": "tests/unit/test_o16_rq3_pairing_preflight.py"
+        },
+        {
+          "reason": "repository-level tools module absent",
+          "path": "tests/unit/test_o17_rq3_dataset_manifest_verifier.py"
+        }
+      ],
+      "log_sha256": "7cc6e1bd8b2fe5e6af9cb88c53bb1221f6470c1ab6bbe0137933b49505e702cb"
+    },
+    {
+      "name": "full_offline_pytest",
+      "status": "INCOMPLETE",
+      "command": "py -3.12 -m pytest -q -p no:cacheprovider -rfEsx",
+      "exit_code": 2,
+      "discovered": 3260,
+      "collection_errors": 292,
+      "skipped": 1,
+      "reason": "Sparse checkout omits source modules/files; cryptography and torchvision are unavailable",
+      "log_sha256": "a5da651080848f3da28917f1f04d88fa99fb33f4fe811cc9c1a1f9078ca9d41a"
+    },
+    {
+      "name": "compileall",
+      "status": "PASS",
+      "command": "py -3.12 -m compileall -q ultimate_pipeline tests submission",
+      "exit_code": 0
+    },
+    {
+      "name": "committed_diff_check",
+      "status": "PASS",
+      "command": "git -c core.whitespace=cr-at-eol diff HEAD^ HEAD --check",
+      "exit_code": 0
+    },
+    {
+      "name": "claude_independent_fake_carla_harness",
+      "status": "PASS_OFFLINE_MOCK_ONLY",
+      "command": "py -3.12 'G:\\CARLA_RECOVERY\\handoff\\CLAUDE_QA_V127\\oracle_scripts\\calib\\harness.py' 'G:\\CARLA_RECOVERY\\worktrees\\v127-calibration-p0-20261118' 'G:\\CARLA_RECOVERY\\worktrees\\v127-calibration-p0-20261118\\ultimate_pipeline\\sensors\\calib_data.json' all --dumpattrs",
+      "exit_code": 0,
+      "server_started": false,
+      "sensor_count": 7,
+      "observed": [
+        "six cameras",
+        "middle_lidar"
+      ],
+      "log_sha256": "e502b4a758abc021bbf84e684d899d04db4bffa5fdd3f13abff84526294fe510"
+    }
+  ],
+  "geometry": {
+    "verification_mode": "installed CARLA 0.9.16 client API only; no server",
+    "max_matrix_abs_error": 1.1734273941410578e-07,
+    "max_position_error_m": 6.107162755749038e-08,
+    "max_rotation_error_deg": 7.118443536508981e-06,
+    "randomized_rotation_cases": 200,
+    "rotation_matrix_max_abs_error": 1.4901161193847656e-07,
+    "rotation_geodesic_max_error_deg": 9.862456732282016e-06,
+    "three_adapter_max_matrix_abs_error": 1.1734273941410578e-07,
+    "source_position_oracles": {
+      "front_left_camera": [
+        -0.23655050256222285,
+        0.027298066529018734,
+        1.0096191828547874
+      ],
+      "middle_lidar": [
+        -0.4920734,
+        -0.00429731,
+        1.24068573
+      ]
+    },
+    "carla_server_started": false,
+    "max_basis_axis_error_deg": 7.761331092373184e-06
+  },
+  "mirror_policy": "Changed submission mirrors were synchronized byte-for-byte to canonical sources",
+  "independent_review": {
+    "status": "CONDITIONAL_ACCEPT_NO_CONFIRMED_CODE_BLOCKER",
+    "reviewed_commit": "d1c35b6ca3daa4b3e3da26515ef521dc581019de",
+    "review_summary": "Prior receipt-authenticity false-claim, canonical calibration-path authority, and submission mirror findings closed. Reviewer confirms transform math and fail-closed scientific gate.",
+    "remaining_evidence_blocker": "Signed-review tests did not collect locally because cryptography is absent; declared in requirements.txt. Run those tests in a dependency-complete environment before release-wide approval.",
+    "reviewer_notes": "Offline focused reviewer run: 100 passed. No CARLA server started."
+  },
+  "runtime_status": "BLOCKED_EXTERNAL",
+  "production_status": "NO_GO",
+  "scientific_claims": {
+    "rq3": "NOT_RUN",
+    "rq5": "NOT_RUN",
+    "native_intrinsics": "NOT_VERIFIED"
+  },
+  "remote_production_sha": "225ed15d0da6444cc257835ca777aba281553f3c",
+  "remote_verified_at": "2026-11-18",
+  "candidate_remote_branch_present": false,
+  "carla_client": {
+    "distribution_version": "0.9.16",
+    "module": "C:\\Users\\admin\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\carla\\__init__.py",
+    "client_only_tests": true,
+    "server_process_found": false,
+    "CarlaUE4_command_found": false
+  },
+  "oracle_artifact_sha256": {
+    "carla_rotation_metrics.py": "bedea3e697417febd6810d4c0e8b12451a7b63639dba055287a9e6be0c38a3d4",
+    "RIG_SPAWN_PATH_PARITY.json": "26cf7c5a67d1288fa91416ffb604b3177487d3ee27a5c8f4fc82be4ee558c9f5",
+    "QA_FAKE_CARLA_HARNESS.log": "e502b4a758abc021bbf84e684d899d04db4bffa5fdd3f13abff84526294fe510",
+    "oracle_metrics.py": "e4bff8b4ad2b98629fc6e57834a8281a8d69fcbff79d73b261e9a646b3149bfd",
+    "parity_metrics.py": "87bc870e7b267631145a91a4a0d8dedfe83d149b9b6f6d3d17b877081446b731",
+    "SENSOR_FRAME_ORACLE_RESULTS.json": "81496ce98155979e31bf94499743d5f9e8ca6fb0073203317e6baa91acaf4893",
+    "CARLA_ROTATION_COMPATIBILITY.json": "d5c052813429a8d930aab2e14b15b4320596783f8c0c7867a7dc084d713d3798"
+  },
+  "source_commits": [
+    "1f6ac6bbaa3c54be10508b451497f11595c7e113",
+    "df9f48305a8c9dcc7ed5145109901bbe01d31377",
+    "d1c35b6ca3daa4b3e3da26515ef521dc581019de"
+  ],
+  "independent_qa_package": {
+    "checksums": "PASS",
+    "files_checked": 37,
+    "path": "G:/CARLA_RECOVERY/handoff/CLAUDE_QA_V127/oracle_scripts/SHA256SUMS"
+  }
+}
