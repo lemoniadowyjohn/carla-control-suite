@@ -1884,7 +1884,8 @@ def _rig_verification_strict_mode(args: argparse.Namespace) -> bool:
 
 
 def _rig_verification_contract_errors(
-    rig_verification: Dict[str, Any], *, expected_source_calibration_sha256: str | None = None
+    rig_verification: Dict[str, Any], *, expected_source_calibration_sha256: str | None = None,
+    expected_calibration_bytes: bytes | None = None,
 ) -> List[str]:
     errors: List[str] = []
     if rig_verification.get("use_K_undistortion_only") is not True:
@@ -1935,6 +1936,7 @@ def _rig_verification_contract_errors(
             v2_receipt,
             require_live=True,
             expected_source_calibration_sha256=expected_source_calibration_sha256,
+            expected_calibration_bytes=expected_calibration_bytes,
         )
     )
 
@@ -1949,7 +1951,8 @@ def _write_canonical_rig_verification(
     existing_verification: Optional[Dict[str, Any]] = None,
     note: str = "",
 ) -> Tuple[Dict[str, Any], List[str]]:
-    expected_calibration_sha256 = hashlib.sha256(calib_path.read_bytes()).hexdigest()
+    calibration_bytes = calib_path.read_bytes()
+    expected_calibration_sha256 = hashlib.sha256(calibration_bytes).hexdigest()
     rig = ThesisSensorRig(calib_path)
     report_payload: Dict[str, Any] = (
         rig_report_payload if isinstance(rig_report_payload, dict) else {}
@@ -1980,6 +1983,7 @@ def _write_canonical_rig_verification(
             producer_receipt,
             require_live=True,
             expected_source_calibration_sha256=expected_calibration_sha256,
+            expected_calibration_bytes=calibration_bytes,
         )
         canonical["applied_sensor_rig_v2_errors"] = producer_errors
         canonical["applied_sensor_rig_v2_live_accepted"] = not producer_errors
@@ -2007,6 +2011,7 @@ def _write_canonical_rig_verification(
     errors = _rig_verification_contract_errors(
         merged,
         expected_source_calibration_sha256=expected_calibration_sha256,
+        expected_calibration_bytes=calibration_bytes,
     )
     merged["rig_verification_contract_ok"] = not bool(errors)
     if errors:

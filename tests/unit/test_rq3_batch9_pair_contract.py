@@ -65,7 +65,9 @@ def _valid_applied_receipt(code_commit, calibration_sha, dataset_identity, datas
 
 
 def _base_manifest(**overrides):
-    calibration_sha = _CALIBRATION_SHA256
+    selected_bytes = overrides.pop("selected_calibration_bytes", _CALIBRATION_BYTES)
+    calibration_path = overrides.pop("calibration_path", "")
+    calibration_sha = hashlib.sha256(selected_bytes).hexdigest()
     code_commit = "b" * 40
     manual_dataset_sha = "c" * 64
     auto_dataset_sha = "d" * 64
@@ -101,6 +103,7 @@ def _base_manifest(**overrides):
                          applied_sensor_rig_v2_sha256=canonical_sha256(auto_receipt)),
         **{k: "v" for k in BATCH9_REQUIRED},
         "calibration_sha256": calibration_sha,
+        "calibration_path": calibration_path,
         "sensor_rig_sha256": rig_sha,
     }
     manifest.update(overrides)
@@ -149,6 +152,18 @@ def test_arm_to_pair_mismatch_invalidates_the_pair(key):
 def test_fully_matching_manifest_validates():
     r = rq3.validate_pair_manifest(_base_manifest())
     assert r["valid"] is True, r.get("invalid_reasons")
+
+
+def test_pair_admits_byte_distinct_selected_calibration_when_path_and_sha_match(tmp_path):
+    selected_bytes = _CALIBRATION_BYTES + b"\n"
+    selected_path = tmp_path / "selected-calib.json"
+    selected_path.write_bytes(selected_bytes)
+    manifest = _base_manifest(
+        selected_calibration_bytes=selected_bytes,
+        calibration_path=str(selected_path),
+    )
+    result = rq3.validate_pair_manifest(manifest)
+    assert result["valid"] is True, result.get("invalid_reasons")
 
 
 # --- 2. pair_valid=False can never surface as valid=True -------------------

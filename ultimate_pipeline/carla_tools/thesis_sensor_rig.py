@@ -467,6 +467,7 @@ class ThesisSensorRig:
         if not self.calib_path.exists():
             raise FileNotFoundError(f"Calibration file not found: {self.calib_path}")
         calibration_bytes = self.calib_path.read_bytes()
+        self._source_calibration_bytes = calibration_bytes
         self._source_calibration_sha256 = hashlib.sha256(calibration_bytes).hexdigest()
         self.calib_data = json.loads(calibration_bytes.decode("utf-8"))
         _guard_thesis_inversion_env()
@@ -1529,6 +1530,7 @@ class ThesisSensorRig:
             applied_receipt,
             require_live=True,
             expected_source_calibration_sha256=self._source_calibration_sha256,
+            expected_calibration_bytes=self._source_calibration_bytes,
         )
         data["applied_sensor_rig_v2_live_accepted"] = not bool(
             data["applied_sensor_rig_v2_errors"]

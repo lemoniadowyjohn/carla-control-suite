@@ -102,6 +102,39 @@ def test_resealed_self_consistent_wrong_mount_is_rejected_against_raw_calibratio
     assert f"{_FRONT_CAMERA_NAME}:observed_mount_does_not_match_source_calibration" in errors
 
 
+def test_byte_distinct_selected_calibration_is_accepted_only_when_its_exact_bytes_are_supplied():
+    from ultimate_pipeline.sensors.applied_sensor_rig import seal_applied_sensor_rig_v2
+
+    selected_bytes = _CALIBRATION_BYTES + b"\n"
+    selected_sha256 = hashlib.sha256(selected_bytes).hexdigest()
+    receipt = _valid_receipt()
+    receipt["source_calibration_sha256"] = selected_sha256
+    receipt = seal_applied_sensor_rig_v2(receipt)
+
+    assert validate_applied_sensor_rig_v2(
+        receipt,
+        require_live=True,
+        expected_source_calibration_sha256=selected_sha256,
+        expected_calibration_bytes=selected_bytes,
+    ) == []
+    assert "trusted_calibration_bytes_sha256_mismatch" in validate_applied_sensor_rig_v2(
+        receipt,
+        require_live=True,
+        expected_source_calibration_sha256=selected_sha256,
+    )
+
+
+def test_selected_calibration_bytes_must_match_the_trusted_digest():
+    receipt = _valid_receipt()
+    errors = validate_applied_sensor_rig_v2(
+        receipt,
+        require_live=True,
+        expected_source_calibration_sha256=_CALIBRATION_SHA256,
+        expected_calibration_bytes=b"{}",
+    )
+    assert "trusted_calibration_bytes_sha256_mismatch" in errors
+
+
 def test_source_only_or_missing_runtime_observation_cannot_pass_live_acceptance():
     receipt = build_applied_sensor_rig_v2(
         source_calibration_sha256=_CALIBRATION_SHA256,

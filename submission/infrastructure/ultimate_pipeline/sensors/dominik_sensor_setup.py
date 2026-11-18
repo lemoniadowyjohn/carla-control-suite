@@ -273,6 +273,7 @@ class DominikSensorSetup:
         self.resolution_override = resolution_override
 
         calibration_bytes = self.calib_path.read_bytes()
+        self._source_calibration_bytes = calibration_bytes
         self._source_calibration_sha256 = hashlib.sha256(calibration_bytes).hexdigest()
         self._calib = json.loads(calibration_bytes.decode("utf-8"))
 
@@ -622,6 +623,7 @@ class DominikSensorSetup:
             receipt,
             require_live=True,
             expected_source_calibration_sha256=self._source_calibration_sha256,
+            expected_calibration_bytes=self._source_calibration_bytes,
         )
         report["applied_sensor_rig_v2_live_accepted"] = not report["applied_sensor_rig_v2_errors"]
 

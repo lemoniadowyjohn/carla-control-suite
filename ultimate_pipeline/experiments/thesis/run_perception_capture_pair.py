@@ -533,6 +533,7 @@ def main(argv: Optional[List[str]] = None) -> int:
         route_manifest_path=route_manifest_path,
         route_manifest_sha256=route_manifest_sha256,
         calibration_sha256=manual_calib["calib_sha256"],
+        calibration_path=str(Path(calib_path).resolve()),
         sensor_rig_sha256=manual_rig["sensor_rig_sha256"],
         weather_sha256=manual_weather_sha,
         capture_config_sha256=capture_config_id["capture_config_sha256"],

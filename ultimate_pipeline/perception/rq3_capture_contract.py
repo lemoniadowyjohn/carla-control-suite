@@ -288,6 +288,7 @@ def sensor_rig_identity(
     *,
     calibration_sha256: str = "",
     applied_sensor_rig_v2: Mapping[str, Any] | None = None,
+    calibration_bytes: bytes | None = None,
 ) -> Dict[str, Any]:
     """Digest the exact effective sensor rig (post filtering / degraded mode).
 
@@ -332,6 +333,7 @@ def sensor_rig_identity(
         receipt,
         require_live=True,
         expected_source_calibration_sha256=calibration_sha256,
+        expected_calibration_bytes=calibration_bytes,
     )
     if not receipt or receipt.get("schema") != APPLIED_RIG_SCHEMA or errors:
         result["applied_sensor_rig_v2_status"] = "NOT_ADMITTED"
@@ -354,7 +356,8 @@ def sensor_rig_from_calib(
 ) -> Dict[str, Any]:
     """Build the effective-rig identity directly from a calib JSON file."""
     try:
-        data = json.loads(Path(calib_path).read_text(encoding="utf-8"))
+        calibration_bytes = Path(calib_path).read_bytes()
+        data = json.loads(calibration_bytes.decode("utf-8"))
     except Exception as exc:
         return {
             "effective_sensors": [],
@@ -367,6 +370,7 @@ def sensor_rig_from_calib(
         _calib_effective_sensors(data, front_only=front_only),
         calibration_sha256=calib_sha,
         applied_sensor_rig_v2=applied_sensor_rig_v2,
+        calibration_bytes=calibration_bytes,
     )
 
 
@@ -785,6 +789,7 @@ def build_pair_manifest(
     pair_valid: bool,
     invalid_reasons: Sequence[str],
     claim_level: str,
+    calibration_path: str = "",
     route_mode: str = MODE_THESIS_PAIRED_STRICT,
     pair_route_closure: str = "PAIR_ROUTE_VALID",
     camera_response_sha256: str = "",
@@ -807,6 +812,7 @@ def build_pair_manifest(
         "route_manifest_path": str(route_manifest_path),
         "route_manifest_sha256": str(route_manifest_sha256),
         "calibration_sha256": str(calibration_sha256),
+        "calibration_path": str(calibration_path),
         "sensor_rig_sha256": str(sensor_rig_sha256),
         "weather_sha256": str(weather_sha256),
         "weather_schema_version": str(weather_schema_version),
@@ -913,10 +919,20 @@ def validate_pair_manifest(
     )
     for arm_name, arm in (("manual", manual), ("auto", auto)):
         receipt = arm.get("applied_sensor_rig_v2")
+        calibration_path = arm.get("calibration_path") or manifest.get("calibration_path")
+        if not calibration_path:
+            from ultimate_pipeline.sensors.calibration_contract import canonical_calib_path
+            calibration_path = canonical_calib_path()
+        try:
+            calibration_bytes = Path(calibration_path).read_bytes()
+        except OSError:
+            calibration_bytes = None
+            reasons.append(f"{arm_name}:trusted_calibration_source_unavailable")
         receipt_errors = _validate_applied_rig(
             receipt,
             require_live=True,
             expected_source_calibration_sha256=str(arm.get("calibration_sha256", "")),
+            expected_calibration_bytes=calibration_bytes,
         )
         reasons.extend(
             f"{arm_name}:applied_sensor_rig_v2:{error}" for error in receipt_errors

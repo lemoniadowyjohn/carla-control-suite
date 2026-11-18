@@ -218,6 +218,7 @@ def _validate_rig_contract_schema(
     rig_verification_path: Path,
     *,
     expected_source_calibration_sha256: str | None,
+    expected_calibration_bytes: bytes | None = None,
 ) -> bool:
     ok = True
     required = ["use_K_undistortion_only", "ignored_K_and_D"]
@@ -251,6 +252,7 @@ def _validate_rig_contract_schema(
         rig_data.get("applied_sensor_rig_v2"),
         require_live=True,
         expected_source_calibration_sha256=expected_source_calibration_sha256,
+        expected_calibration_bytes=expected_calibration_bytes,
     )
     for error in receipt_errors:
         fail_validation(f"Invalid APPLIED_SENSOR_RIG/v2: {error}", rig_verification_path)
@@ -708,6 +710,11 @@ def _validate_perception_pack(
             rig_data,
             rig_verification_path,
             expected_source_calibration_sha256=trusted_calibration_sha256,
+            expected_calibration_bytes=(
+                Path(__file__).resolve().parents[2]
+                .joinpath("ultimate_pipeline", "sensors", "calib_data.json")
+                .read_bytes()
+            ),
         ):
             return
         use_k_undist = _rig_bool(rig_data, "use_K_undistortion_only")

@@ -348,6 +348,7 @@ def attach_sensors_safe(
         receipt,
         require_live=True,
         expected_source_calibration_sha256=source_calibration_sha256,
+        expected_calibration_bytes=calibration_bytes,
     )
     report["applied_sensor_rig_v2_live_accepted"] = not report["applied_sensor_rig_v2_errors"]
     contract["applied_sensor_rig_v2"] = receipt
