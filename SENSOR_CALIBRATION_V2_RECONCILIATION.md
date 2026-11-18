@@ -86,7 +86,7 @@ for the v2 conversion.
 - `python -m compileall -q ultimate_pipeline submission/infrastructure/ultimate_pipeline tests`: **PASS**, exit `0` after the final mirror source edits.
 - Submission mirror rig, safe-runner, and explicit-calibration selection: **35 passed**, using a temporary pytest config from `submission/infrastructure` to ensure imports resolve to the mirror.
 - Direct mirror report/validator smoke: **PASS**, both camera and LiDAR v2 matrices validate and v1 booleans remain false/true.
-- Full offline suite is **BLOCKED/INCOMPLETE** in the sparse worktree: the latest candidate run collected 3,585 items, then stopped at collection with 244 import errors and 1 skip because source directories outside the materialized sparse set are absent. Two RQ3 evidence suites also require missing `cryptography`. No result from that collection is classified as a candidate failure or as passing CI.
+- Full offline suite is **BLOCKED/INCOMPLETE** in the sparse worktree: the latest candidate run collected 3,586 items, then stopped at collection with 244 import errors and 1 skip because source directories outside the materialized sparse set are absent. Two RQ3 evidence suites also require missing `cryptography`. No result from that collection is classified as a candidate failure or as passing CI.
 - `git diff --check` on the candidate source/test paths: **PASS**, exit `0`. Whole-tree diff was avoided after the sparse expansion exposed unrelated LFS map payloads; those frozen artifacts are not staged or intentionally changed.
 
 ## Release gates
@@ -116,7 +116,7 @@ for the v2 conversion.
 - Mirror rig, forged-mount regressions, and calibration-path selection attempt: **16 passed, 1 failed**, exit `1`. The remaining failure is `test_default_calib_exists`, which expects relative `calib_data.json` at the runner working directory. The failure is unchanged in the production-base source and is not claimed as a pass.
 - Mirror rig suite plus forged-mount/source-snapshot regressions, excluding the working-directory-dependent calibration-path test: **17 passed**, exit `0`, four existing configuration-path warnings.
 - `compileall` over `ultimate_pipeline`, the submission mirror, and `tests`: **PASS**, exit `0`. `git diff --check` against the production base: **PASS**, exit `0`.
-- Latest full offline command: `python -m pytest -q -p no:cacheprovider -rfEsx tests/unit ultimate_pipeline/tests/unit ultimate_pipeline/carla_tools/tests`; **INCOMPLETE**, exit `1`, 3,585 collected, 244 collection errors, 1 skipped. Missing sparse-checkout modules include `ultimate_pipeline.enrichment` and `ultimate_pipeline.lanes`.
+- Latest full offline command: `python -m pytest -q -p no:cacheprovider -rfEsx tests/unit ultimate_pipeline/tests/unit ultimate_pipeline/carla_tools/tests`; **INCOMPLETE**, exit `1`, 3,586 collected, 244 collection errors, 1 skipped. Missing sparse-checkout modules include `ultimate_pipeline.enrichment` and `ultimate_pipeline.lanes`.
 - Regression tests in both code trees mutate the calibration file after `ThesisSensorRig` construction and verify that the receipt retains the digest of the bytes used to build mounts, while strict validation rejects the now-changed source. These latest fixes still require fresh independent review against the follow-up commit.
 
 Command:
