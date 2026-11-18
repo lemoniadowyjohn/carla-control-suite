@@ -138,7 +138,7 @@
   "mirror_policy": "Changed submission mirrors were synchronized byte-for-byte to canonical sources",
   "independent_review": {
     "status": "CONDITIONAL_ACCEPT_SOURCE_CORRECTNESS",
-    "reviewed_branch_head": "a5192a66fb7553e7534fab213214e685d3f7bbc4",
+    "reviewed_branch_head": "e111ecd485ff88c12a0766559433b345158a32f8",
     "reviewed_source_commit": "dafafe3613f7ce5acd2222a7cbe18c8eb000e61c",
     "reviewer_id": "01a1edfc-69ef-7e23-8edb-3bd96612802d",
     "findings": "No remaining source blocker for resealed wrong-mount bypass; canonical-only validate_thesis_run is deliberate; runtime and scientific gates remain open.",
@@ -149,7 +149,8 @@
       "submission_mirror_hashes": "5/5 identical",
       "carla_server_started": false
     },
-    "scope": "source correctness only; not production acceptance"
+    "scope": "source correctness only; not production acceptance",
+    "extension_confirmation": "Reviewer confirmed only three report files changed after a5192a66; no source changes versus reviewed source dafafe3613f7ce5acd2222a7cbe18c8eb000e61c; same conditional source-accept verdict extended to e111ecd485ff88c12a0766559433b345158a32f8."
   },
   "runtime_status": "BLOCKED_EXTERNAL",
   "production_status": "NO_GO",

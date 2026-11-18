@@ -2,7 +2,7 @@
 
 ## Production and release
 
-1. **Independent source review — CONDITIONAL_ACCEPT.** Reviewer independently reviewed branch head a5192a66fb7553e7534fab213214e685d3f7bbc4, which contains source commit dafafe3613f7ce5acd2222a7cbe18c8eb000e61c plus report-only descendants. No remaining code blocker was found for the resealed wrong-mount bypass. Review does not close live CARLA, full offline CI, signed receipt dependency, or scientific admission gates. The canonical-only validate_thesis_run submission policy remains deliberate; custom calibration submission is not supported by that verifier.
+1. **Independent source review — CONDITIONAL_ACCEPT.** Reviewer independently reviewed branch head e111ecd485ff88c12a0766559433b345158a32f8, which contains source commit dafafe3613f7ce5acd2222a7cbe18c8eb000e61c plus report-only descendants. No remaining code blocker was found for the resealed wrong-mount bypass. Review does not close live CARLA, full offline CI, signed receipt dependency, or scientific admission gates. The canonical-only validate_thesis_run submission policy remains deliberate; custom calibration submission is not supported by that verifier.
 2. **Candidate publication — COMPLETE.** The isolated branch is pushed and draft PR #66 targets the pinned production SHA. The PR remains draft; no merge is authorized.
 3. **Full offline production CI — INCOMPLETE.** The prescribed whole-tree pytest command stopped at collection: 3,261 discovered items, 292 collection errors, 1 skipped (pytest exit 2). The sparse checkout lacks numerous source paths/modules; this Python install also lacks `torchvision` and `cryptography`. Baseline source-path attribution: all 292 failing test files exist at the exact baseline; 137 imports point to baseline-tracked files omitted by sparse checkout, 116 import modules do not exist in the baseline tree, 33 are dependency/import-environment errors, and 6 are unrelated import API errors in unchanged test/source paths. The full test suite was not replayed on baseline; this is not a baseline JUnit receipt.
 
@@ -15,7 +15,7 @@
 
 ## Executed offline test evidence
 
-Independent source review conditionally accepted exact reviewed branch head a5192a66fb7553e7534fab213214e685d3f7bbc4. The reviewer verified source-derived expected mounts, exact selected-byte propagation, and a custom calibration probe where the correct receipt passed while a fully resealed 25 cm wrong mount failed in direct and paired RQ3 validation. Reviewer-run test subset: 152 passed; 5 environment-path warnings. Mirror hashes: 5/5 identical. No CARLA was started.
+Independent source review conditionally accepted exact reviewed branch head e111ecd485ff88c12a0766559433b345158a32f8. The reviewer verified source-derived expected mounts, exact selected-byte propagation, and a custom calibration probe where the correct receipt passed while a fully resealed 25 cm wrong mount failed in direct and paired RQ3 validation. Reviewer-run test subset: 152 passed; 5 environment-path warnings. Mirror hashes: 5/5 identical. No CARLA was started.
 
 - Focused calibration/RQ3/adapter suite: 474 passed, 6 warnings, exit 0 on source commit dafafe3613f7ce5acd2222a7cbe18c8eb000e61c.
 - Wider collectable RQ3 suite: 162 passed, 5 warnings, exit 0. Four modules remain NOT_RUN because cryptography or repository-level tools imports are absent.
