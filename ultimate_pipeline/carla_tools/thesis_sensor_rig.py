@@ -17,6 +17,11 @@ from ultimate_pipeline.carla_tools.map_identity_guard import validate_world_map
 from ultimate_pipeline.perception.environment.camera_response import (
     PROFILE_PINHOLE_POSTPROCESS_DISABLED,
 )
+from ultimate_pipeline.perception.environment.camera_intrinsics import (
+    camera_intrinsic_realization,
+    horizontal_fov_from_fx,
+    transform_intrinsics_for_image_ops,
+)
 from ultimate_pipeline.sensors.transform_conventions import (
     camera_attachment_pose_from_cTv,
     lidar_attachment_pose_from_vTl,
@@ -383,6 +388,37 @@ def _parse_image_size(image_size: Any) -> Tuple[int, int]:
 def _compute_fov_deg(K_undist: np.ndarray, width_px: int) -> float:
     fx = float(K_undist[0, 0])
     return 2.0 * math.degrees(math.atan(width_px / (2.0 * fx)))
+
+
+def derive_camera_runtime_intrinsics(
+    camera_name: str,
+    camera_data: Dict[str, Any],
+    width_px: int,
+    height_px: int,
+) -> Dict[str, Any]:
+    """Return the K/FOV realization for the actual selected CARLA size."""
+    source_width, source_height = _parse_image_size(camera_data["image_size"])
+    image_ops = transform_intrinsics_for_image_ops(
+        camera_data["K_undistortion"],
+        (source_width, source_height),
+        resize_size=(int(width_px), int(height_px)),
+    )
+    target_k = np.asarray(image_ops["K"], dtype=float)
+    fov = horizontal_fov_from_fx(float(target_k[0, 0]), int(width_px))
+    fov = round(max(10.0, min(170.0, float(fov))), 6)
+    realization = camera_intrinsic_realization(
+        camera_name, target_k, int(width_px), int(height_px), fov_deg=fov
+    )
+    realization["source_image_size"] = [source_width, source_height]
+    realization["image_operation_contract"] = image_ops
+    realization["runtime_postprocess"] = {
+        "applied_by_rig": False,
+        "rendered_intrinsics": "K_native_carla",
+        "requested_intrinsics": "K_target",
+        "remap_required": realization["strategy"] != "NATIVE_IDENTITY",
+        "claim": "NATIVE_APPROXIMATION_UNLESS_DOWNSTREAM_REMAP_RECEIPT_EXISTS",
+    }
+    return realization
 
 
 def _to_list(obj: Any) -> Any:
@@ -753,17 +789,14 @@ class ThesisSensorRig:
         for cam_name, cam_data in camera_items:
             try:
                 K_undist = np.asarray(cam_data["K_undistortion"], dtype=float)
-                width_px, height_px = _parse_image_size(cam_data["image_size"])
-                fov_deg = _compute_fov_deg(K_undist, width_px)
+                source_width_px, source_height_px = _parse_image_size(
+                    cam_data["image_size"]
+                )
+                width_px, height_px = source_width_px, source_height_px
 
                 # Clamp camera resolution and ensure fov is in a sane range.
                 width_px = max(16, min(int(width_px), max_cam_w))
                 height_px = max(16, min(int(height_px), max_cam_h))
-                try:
-                    fov_deg = float(fov_deg)
-                except Exception:
-                    fov_deg = 90.0
-                fov_deg = max(10.0, min(170.0, fov_deg))
 
                 # Pixel budget gate: downscale uniformly if needed.
                 total_pixels += width_px * height_px
@@ -776,6 +809,14 @@ class ThesisSensorRig:
                         * (s.report.get("attributes", {}).get("height", 0) or 0)
                         for s in spawned.values()
                     ) + (width_px * height_px)
+
+                # Resolution limits are real image operations, not metadata
+                # changes.  Transport K by the declared half-pixel resize rule.
+                intrinsic_realization = derive_camera_runtime_intrinsics(
+                    cam_name, cam_data, width_px, height_px
+                )
+                K_effective = np.asarray(intrinsic_realization["K_target"], dtype=float)
+                fov_deg = float(intrinsic_realization["configured_horizontal_fov_deg"])
 
                 T_raw = _ensure_homogeneous(cam_data["cTv"])
                 T_vehicle_camera = vehicle_to_camera_from_cTv(
@@ -833,25 +874,49 @@ class ThesisSensorRig:
                 )
 
                 bp = bp_lib.find("sensor.camera.rgb")
-                # Attribute-setting is version-tolerant.
-                try:
-                    if hasattr(bp, "has_attribute") and bp.has_attribute("image_size_x"):
-                        bp.set_attribute("image_size_x", str(width_px))
-                    if hasattr(bp, "has_attribute") and bp.has_attribute("image_size_y"):
-                        bp.set_attribute("image_size_y", str(height_px))
-                    if hasattr(bp, "has_attribute") and bp.has_attribute("fov"):
-                        bp.set_attribute("fov", f"{fov_deg:.6f}")
-                    if hasattr(bp, "has_attribute") and bp.has_attribute("sensor_tick"):
-                        # Optional global sensor tick in calib (seconds). Default 0.0 means every frame.
-                        tick = 0.0
-                        if isinstance(self.calib_data, dict):
-                            try:
-                                tick = float(self.calib_data.get("sensor_tick", 0.0) or 0.0)
-                            except Exception:
-                                tick = 0.0
-                        bp.set_attribute("sensor_tick", str(tick))
-                except Exception:
-                    pass
+                # These four values define the rendered camera geometry and
+                # sampling cadence.  A missing or rejected attribute is a
+                # spawn failure; silently retaining CARLA defaults would make
+                # the reported K and frame schedule fictitious.
+                sensor_tick = float(
+                    (self.calib_data or {}).get("sensor_tick", 0.0) or 0.0
+                )
+                camera_attributes = {
+                    "image_size_x": str(width_px),
+                    "image_size_y": str(height_px),
+                    "fov": f"{fov_deg:.6f}",
+                    "sensor_tick": str(sensor_tick),
+                }
+                blueprint_effective_attributes: Dict[str, str] = {}
+                for key, value in camera_attributes.items():
+                    supports = False
+                    try:
+                        supports = bool(bp.has_attribute(key))
+                    except Exception:
+                        supports = key in (getattr(bp, "attributes", {}) or {})
+                    if not supports:
+                        raise RuntimeError(
+                            f"camera_blueprint_attribute_unavailable:{cam_name}:{key}"
+                        )
+                    bp.set_attribute(key, value)
+                    try:
+                        effective_value = str(bp.get_attribute(key))
+                    except Exception as exc:
+                        raise RuntimeError(
+                            f"camera_blueprint_attribute_unreadable:{cam_name}:{key}"
+                        ) from exc
+                    if key in ("image_size_x", "image_size_y"):
+                        if int(float(effective_value)) != int(float(value)):
+                            raise RuntimeError(
+                                f"camera_blueprint_attribute_mismatch:{cam_name}:{key}"
+                                f":requested={value}:effective={effective_value}"
+                            )
+                    elif abs(float(effective_value) - float(value)) > 1e-6:
+                        raise RuntimeError(
+                            f"camera_blueprint_attribute_mismatch:{cam_name}:{key}"
+                            f":requested={value}:effective={effective_value}"
+                        )
+                    blueprint_effective_attributes[key] = effective_value
 
                 # NEW-333: pin the governed camera photometric response profile.
                 # Previously only image_size_x/y, fov and sensor_tick were set, so
@@ -859,26 +924,23 @@ class ThesisSensorRig:
                 # lens flare, lens distortion, chromatic aberration and motion
                 # blur were all left at implicit CARLA defaults.  Capability
                 # detection is per attribute; nothing unsupported is set blindly.
-                try:
-                    from ultimate_pipeline.perception.environment.camera_response import (
-                        apply_response_profile,
-                    )
+                from ultimate_pipeline.perception.environment.camera_response import (
+                    apply_response_profile,
+                )
 
-                    response_report = apply_response_profile(
-                        bp, profile=self.camera_response_profile
+                response_report = apply_response_profile(
+                    bp, profile=self.camera_response_profile
+                )
+                if not response_report.get("profile_complete") or response_report.get("failed"):
+                    raise RuntimeError(
+                        f"camera_response_profile_not_effective:{cam_name}:"
+                        f"unsupported={response_report.get('unsupported')}:"
+                        f"failed={response_report.get('failed')}"
                     )
-                    self._camera_response_reports = getattr(
-                        self, "_camera_response_reports", {}
-                    )
-                    self._camera_response_reports[cam_name] = response_report
-                except Exception as exc:  # pragma: no cover - defensive
-                    self._camera_response_reports = getattr(
-                        self, "_camera_response_reports", {}
-                    )
-                    self._camera_response_reports[cam_name] = {
-                        "schema": "CAMERA_RESPONSE_PROFILE/v1",
-                        "error": f"{type(exc).__name__}:{exc}",
-                    }
+                self._camera_response_reports = getattr(
+                    self, "_camera_response_reports", {}
+                )
+                self._camera_response_reports[cam_name] = response_report
 
                 # In CARLA 0.9.x synchronous mode, world.spawn_actor() for streaming
                 # sensors (cameras, LiDAR) blocks until the world ticks because the
@@ -937,7 +999,15 @@ class ThesisSensorRig:
                             "width": int(width_px),
                             "height": int(height_px),
                             "fov": float(fov_deg),
+                            "sensor_tick": sensor_tick,
+                            "blueprint_effective": blueprint_effective_attributes,
                         },
+                        "intrinsic_realization": intrinsic_realization,
+                        "camera_response": dict(
+                            getattr(self, "_camera_response_reports", {}).get(
+                                cam_name, {}
+                            )
+                        ),
                         "raw": {
                             "K_undistortion": cam_data.get("K_undistortion"),
                             "image_size": cam_data.get("image_size"),
@@ -1144,6 +1214,12 @@ class ThesisSensorRig:
                     "attributes": {
                         str(k): str(v) for k, v in sorted((attributes or {}).items())
                     },
+                    "intrinsic_realization": report.get("intrinsic_realization"),
+                    "camera_response_sha256": (
+                        (report.get("camera_response") or {}).get(
+                            "effective_camera_attributes_sha256"
+                        )
+                    ),
                 }
             )
 
@@ -1338,6 +1414,8 @@ class ThesisSensorRig:
                     "ctv_inverted": ctv_inv,
                     "transform_convention": report.get("transform_convention", ""),
                     "attributes": report.get("attributes", {}),
+                    "intrinsic_realization": report.get("intrinsic_realization"),
+                    "camera_response": report.get("camera_response"),
                 }
             elif sensor_type == "lidar":
                 lidars_count += 1
