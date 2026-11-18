@@ -328,11 +328,60 @@ def build_applied_sensor_rig_v2(
     return seal_applied_sensor_rig_v2(receipt)
 
 
+def _source_calibration_mounts(
+    expected_source_calibration_sha256: str | None,
+    calibration_bytes: bytes | None = None,
+) -> tuple[dict[str, np.ndarray], list[str]]:
+    """Derive trusted mounts from exact, SHA-bound calibration bytes.
+
+    The repository calibration is the default trust source. A caller using an
+    explicitly selected calibration must provide the exact bytes and digest
+    it loaded. Matrices copied from the receipt are never used as their own
+    oracle.
+    """
+    errors: list[str] = []
+    if calibration_bytes is None:
+        source_path = Path(__file__).resolve().with_name("calib_data.json")
+        try:
+            calibration_bytes = source_path.read_bytes()
+        except OSError as exc:
+            return {}, [f"trusted_calibration_source_unavailable:{type(exc).__name__}"]
+    actual_sha256 = hashlib.sha256(calibration_bytes).hexdigest()
+    if not re.fullmatch(r"[0-9a-f]{64}", str(expected_source_calibration_sha256 or "")):
+        return {}, ["trusted_source_calibration_sha256_required"]
+    if actual_sha256 != expected_source_calibration_sha256:
+        return {}, ["trusted_calibration_bytes_sha256_mismatch"]
+    try:
+        calibration = json.loads(calibration_bytes.decode("utf-8"))
+        if not isinstance(calibration, dict):
+            raise ValueError("calibration root must be an object")
+        from ultimate_pipeline.sensors.canonical_lidar_spec import resolve_active_lidars
+        from ultimate_pipeline.sensors.transform_conventions import (
+            carla_ego_from_camera_from_cTv,
+            carla_ego_from_lidar_from_vTl,
+        )
+
+        mounts: dict[str, np.ndarray] = {}
+        for name, camera in (calibration.get("cameras") or {}).items():
+            mounts[str(name)] = carla_ego_from_camera_from_cTv(camera["cTv"])
+        for spec in resolve_active_lidars(calibration, low_memory_profile=False):
+            lidar = (calibration.get("lidars") or {}).get(spec.name)
+            if not isinstance(lidar, dict) or "vTl" not in lidar:
+                raise ValueError(f"active lidar calibration is incomplete: {spec.name}")
+            mounts[spec.name] = carla_ego_from_lidar_from_vTl(lidar["vTl"])
+        if not mounts:
+            raise ValueError("calibration contains no expected mounts")
+        return mounts, errors
+    except Exception as exc:
+        return {}, [f"trusted_calibration_mount_derivation_failed:{type(exc).__name__}:{exc}"]
+
+
 def validate_applied_sensor_rig_v2(
     receipt: Any,
     *,
     require_live: bool = True,
     expected_source_calibration_sha256: str | None = None,
+    expected_calibration_bytes: bytes | None = None,
 ) -> list[str]:
     """Validate internal consistency; this does not authenticate runtime claims.
 
@@ -367,6 +416,32 @@ def validate_applied_sensor_rig_v2(
             errors.append("trusted_source_calibration_sha256_required")
         elif receipt.get("source_calibration_sha256") != expected_source_calibration_sha256:
             errors.append("source_calibration_sha256_mismatch")
+        trusted_mounts, trust_errors = _source_calibration_mounts(
+            expected_source_calibration_sha256, expected_calibration_bytes
+        )
+        errors.extend(trust_errors)
+        if trusted_mounts and isinstance(receipt, dict):
+            requested_mounts = receipt.get("requested_parent_relative_matrices")
+            applied_mounts = receipt.get("applied_parent_relative_matrices")
+            if isinstance(requested_mounts, dict):
+                if set(requested_mounts) - set(trusted_mounts):
+                    errors.append("receipt_contains_sensor_without_trusted_calibration_mount")
+                for name, requested_matrix in requested_mounts.items():
+                    if name not in trusted_mounts:
+                        continue
+                    try:
+                        requested_array = _rigid_matrix(requested_matrix, label=f"requested {name}")
+                        if not np.allclose(requested_array, trusted_mounts[name], rtol=0.0, atol=2e-6):
+                            errors.append(f"{name}:requested_mount_does_not_match_source_calibration")
+                    except (TypeError, ValueError) as exc:
+                        errors.append(str(exc))
+                    if isinstance(applied_mounts, dict) and name in applied_mounts:
+                        try:
+                            applied_array = _rigid_matrix(applied_mounts[name], label=f"applied {name}")
+                            if not np.allclose(applied_array, trusted_mounts[name], rtol=0.0, atol=2e-6):
+                                errors.append(f"{name}:observed_mount_does_not_match_source_calibration")
+                        except (TypeError, ValueError) as exc:
+                            errors.append(str(exc))
     if not re.fullmatch(r"[0-9a-f]{40}", str(receipt.get("code_commit", ""))):
         errors.append("code_commit_missing_or_invalid")
     requested = receipt.get("requested_parent_relative_matrices")

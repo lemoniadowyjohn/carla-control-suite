@@ -10,6 +10,8 @@ Two properties are asserted:
 """
 from __future__ import annotations
 
+import hashlib
+import json
 import sys
 from pathlib import Path
 
@@ -19,6 +21,14 @@ sys.path.insert(0, str(WORKTREE))
 import pytest
 
 from ultimate_pipeline.perception import rq3_capture_contract as rq3
+from ultimate_pipeline.sensors.transform_conventions import carla_ego_from_camera_from_cTv
+
+_CALIBRATION_PATH = Path(__file__).resolve().parents[2] / "ultimate_pipeline" / "sensors" / "calib_data.json"
+_CALIBRATION_BYTES = _CALIBRATION_PATH.read_bytes()
+_CALIBRATION_SHA256 = hashlib.sha256(_CALIBRATION_BYTES).hexdigest()
+_CALIBRATION = json.loads(_CALIBRATION_BYTES.decode("utf-8"))
+_CAMERA_NAME = "front_left_camera"
+_CAMERA_MOUNT = carla_ego_from_camera_from_cTv(_CALIBRATION["cameras"][_CAMERA_NAME]["cTv"])
 from ultimate_pipeline.sensors.applied_sensor_rig import (
     build_applied_sensor_rig_v2, canonical_sha256,
 )
@@ -39,23 +49,23 @@ BATCH9_REQUIRED = (
 
 
 def _valid_applied_receipt(code_commit, calibration_sha, dataset_identity, dataset_sha, actor_id):
-    identity = [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]]
+    mount = _CAMERA_MOUNT.tolist()
     return build_applied_sensor_rig_v2(
         source_calibration_sha256=calibration_sha,
         code_commit=code_commit,
-        requested_parent_relative_matrices={"front_camera": identity},
+        requested_parent_relative_matrices={_CAMERA_NAME: mount},
         ego_identity={"actor_id": actor_id + 100, "type_id": "vehicle.test"},
-        sensor_identities={"front_camera": {"actor_id": actor_id, "type_id": "sensor.camera.rgb"}},
-        blueprint_configuration={"front_camera": {"image_size_x": "1280", "fov": "90"}},
-        effective_camera_configuration={"front_camera": {"width_px": 1280, "height_px": 720, "requested_K_undistortion": [[640, 0, 640], [0, 640, 360], [0, 0, 1]], "carla_nominal_K": [[640, 0, 640], [0, 640, 360], [0, 0, 1]]}},
-        applied_parent_relative_matrices={"front_camera": identity},
-        runtime_measurements={"front_camera": {"frame_id": actor_id, "timestamp_s": 1.0, "dataset_identity": dataset_identity, "dataset_artifact_sha256": dataset_sha}},
+        sensor_identities={_CAMERA_NAME: {"actor_id": actor_id, "type_id": "sensor.camera.rgb"}},
+        blueprint_configuration={_CAMERA_NAME: {"image_size_x": "1280", "fov": "90"}},
+        effective_camera_configuration={_CAMERA_NAME: {"width_px": 1280, "height_px": 720, "requested_K_undistortion": [[640, 0, 640], [0, 640, 360], [0, 0, 1]], "carla_nominal_K": [[640, 0, 640], [0, 640, 360], [0, 0, 1]]}},
+        applied_parent_relative_matrices={_CAMERA_NAME: mount},
+        runtime_measurements={_CAMERA_NAME: {"frame_id": actor_id, "timestamp_s": 1.0, "dataset_identity": dataset_identity, "dataset_artifact_sha256": dataset_sha}},
         verification_mode="online",
     )
 
 
 def _base_manifest(**overrides):
-    calibration_sha = "a" * 64
+    calibration_sha = _CALIBRATION_SHA256
     code_commit = "b" * 40
     manual_dataset_sha = "c" * 64
     auto_dataset_sha = "d" * 64
