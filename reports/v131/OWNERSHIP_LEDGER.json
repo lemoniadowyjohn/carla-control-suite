@@ -6,14 +6,17 @@
   "writer": "Codex integration owner",
   "report_owner": "Codex/CD-00 equivalent integration lane",
   "owned_paths": [
+    "reports/v131/BLOCKERS.md",
     "reports/v131/BLOCKERS_FOR_CLAUDE.md",
     "reports/v131/CANDIDATE_SHA.txt",
     "reports/v131/COMBINED_FOCUSED_TESTS.log",
     "reports/v131/DEPENDENCY_DAG.md",
+    "reports/v131/LANE_STATUS.json",
     "reports/v131/LIFECYCLE_PURGE_FIX_TESTS.log",
     "reports/v131/MERGE_COLLISION_MATRIX.md",
     "reports/v131/OPEN_PR_SNAPSHOT.json",
     "reports/v131/OWNERSHIP_LEDGER.json",
+    "reports/v131/PATCH_NOTES.md",
     "reports/v131/PR30_REVIEW_THREADS.json",
     "reports/v131/REVIEW_MATRIX.md",
     "reports/v131/RQ3_CROSS_ARM_REVIEW_TESTS.log",
@@ -25,5 +28,6 @@
     "reports/v131/WORKTREE_ANCESTRY.csv"
   ],
   "last_source_fix_commit": "7b0194caf6dfac4bbcbc63e0ab5b9397b95ae1f2",
-  "task_status": "candidate source branch; independent QA pending"
+  "task_status": "candidate source branch; independent QA pending",
+  "task_id": "V131 integration candidate closure"
 }

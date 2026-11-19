@@ -126,5 +126,17 @@
     "exit_code": 0,
     "checked_source_commit": "8d7e5912f981253826e1fb87d78422bf135621e7",
     "note": "The report-only commits after this source commit do not alter source whitespace."
+  },
+  "lifecycle_compileall": {
+    "command": "python -m compileall -q ultimate_pipeline/carla_tools/carla_recovery.py ultimate_pipeline/carla_tools/tests/test_carla_recovery_helpers.py",
+    "tested_commit": "185825704c00b82f41c2462ce15b9df36bcabe35",
+    "exit_code": 0,
+    "output": "no output"
+  },
+  "latest_ci_at_snapshot": {
+    "pr": 71,
+    "head": "185825704c00b82f41c2462ce15b9df36bcabe35",
+    "latest_job_state": "6 success, offline tests in_progress",
+    "workflow_run": "https://github.com/lemoniadowyjohn/carla-control-suite/actions/runs/44558576328"
   }
 }
