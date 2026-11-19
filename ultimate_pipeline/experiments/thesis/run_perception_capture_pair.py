@@ -619,22 +619,62 @@ def main(argv: Optional[List[str]] = None) -> int:
     )
     from ultimate_pipeline.perception.rq3_capture_contract import sim_timing_identity, sha256_file
 
+    def _artifact_identity(arm_dir: Path, arm_manifest: Dict[str, Any], *keys: str) -> str:
+        """Read a genuinely produced identity from arm artifacts/manifests (no invention)."""
+        candidates = [arm_manifest]
+        for name in (
+            "run_info.json",
+            "TRAFFIC_MANAGER_EFFECTIVE_CONFIG.json",
+            "vehicle_calibration_binding.json",
+            "sim_timing_effective.json",
+            "timing_effective.json",
+        ):
+            payload = _safe_read_json(arm_dir / name)
+            if payload:
+                candidates.append(payload)
+        applied = arm_manifest.get("applied_sensor_rig_v2")
+        if isinstance(applied, dict):
+            candidates.append(applied)
+        for payload in candidates:
+            for key in keys:
+                value = payload.get(key)
+                if isinstance(value, str) and value.strip():
+                    return value.strip()
+        return ""
+
     _cam_response = profile_report()
     camera_response_sha = _cam_response["camera_response_sha256"]
     _capture_fps = int(getattr(SETTINGS, "CAPTURE_FPS", 20))
     _physics = build_physics_profile(_capture_fps)
     simulation_physics_sha = _physics[PHYSICS_DIGEST_FIELD]
-    # Configured capture timing identity (genuine capture config evidence). TM sync
-    # is not observed here; do not fabricate verified TM/session evidence.
+    # Configured capture timing identity (capture configuration evidence). This is
+    # distinct from actually observed simulation timing; do not fabricate observed
+    # TM/session/runtime timing evidence when unavailable.
     _fixed_delta = (1.0 / float(_capture_fps)) if _capture_fps > 0 else 0.0
-    _timing = sim_timing_identity(
+    _configured_timing = sim_timing_identity(
         synchronous_mode=True,
         fixed_delta_seconds=_fixed_delta,
         traffic_manager_sync=False,
         fps_target=float(_capture_fps),
         capture_ticks=int(args.frames),
     )
-    sim_timing_sha = _timing["sim_timing_sha256"]
+    configured_sim_timing_sha = _configured_timing["sim_timing_sha256"]
+    manual_tm_sha = _artifact_identity(manual_dir, manual_arm, TM_DIGEST_FIELD, "traffic_manager_sha256")
+    auto_tm_sha = _artifact_identity(auto_dir, auto_arm, TM_DIGEST_FIELD, "traffic_manager_sha256")
+    manual_vcb_sha = _artifact_identity(
+        manual_dir, manual_arm, "vehicle_calibration_binding_sha256", "binding_sha256"
+    )
+    auto_vcb_sha = _artifact_identity(
+        auto_dir, auto_arm, "vehicle_calibration_binding_sha256", "binding_sha256"
+    )
+    manual_observed_timing_sha = _artifact_identity(
+        manual_dir, manual_arm, "observed_sim_timing_sha256", "sim_timing_sha256"
+    )
+    auto_observed_timing_sha = _artifact_identity(
+        auto_dir, auto_arm, "observed_sim_timing_sha256", "sim_timing_sha256"
+    )
+    manual_sim_timing_sha = manual_observed_timing_sha or configured_sim_timing_sha
+    auto_sim_timing_sha = auto_observed_timing_sha or configured_sim_timing_sha
 
     # Derive per-arm identities independently from each arm's verified artifacts.
     # Shared calibration/config identities may legitimately be identical when the
@@ -658,12 +698,54 @@ def main(argv: Optional[List[str]] = None) -> int:
         capture_config_sha256=capture_config_id["capture_config_sha256"],
         traffic_manager_sha256="",
         vehicle_calibration_binding_sha256="",
-        sim_timing_sha256=sim_timing_sha,
+        sim_timing_sha256="",
         route_manifest_sha256=route_manifest_sha256,
     )
+    # Apply per-arm runtime evidence identities independently when genuinely
+    # available; missing observations must remain absent (pair stays invalid).
+    if manual_tm_sha:
+        manual_arm["traffic_manager_sha256"] = manual_tm_sha
+    if auto_tm_sha:
+        auto_arm["traffic_manager_sha256"] = auto_tm_sha
+    if manual_vcb_sha:
+        manual_arm["vehicle_calibration_binding_sha256"] = manual_vcb_sha
+    if auto_vcb_sha:
+        auto_arm["vehicle_calibration_binding_sha256"] = auto_vcb_sha
+    if manual_sim_timing_sha:
+        manual_arm["sim_timing_sha256"] = manual_sim_timing_sha
+    if auto_sim_timing_sha:
+        auto_arm["sim_timing_sha256"] = auto_sim_timing_sha
+    # Runtime sensor-rig digest must reflect the final per-arm governed identities.
+    from ultimate_pipeline.perception.rq3_capture_contract import runtime_sensor_rig_identity as _runtime_rig_id
+    manual_arm["runtime_sensor_rig_sha256"] = _runtime_rig_id(
+        sensor_rig_sha256=str(manual_arm.get("sensor_rig_sha256", "")),
+        camera_response_sha256=str(manual_arm.get("camera_response_sha256", "")),
+        simulation_physics_sha256=str(manual_arm.get("simulation_physics_sha256", "")),
+    )["runtime_sensor_rig_sha256"]
+    auto_arm["runtime_sensor_rig_sha256"] = _runtime_rig_id(
+        sensor_rig_sha256=str(auto_arm.get("sensor_rig_sha256", "")),
+        camera_response_sha256=str(auto_arm.get("camera_response_sha256", "")),
+        simulation_physics_sha256=str(auto_arm.get("simulation_physics_sha256", "")),
+    )["runtime_sensor_rig_sha256"]
 
     # Build manifest
     raw_pair_valid = bool(ok) and bool(manual_status.get("ok", ok)) and bool(auto_status.get("ok", ok))
+    pair_tm_sha = (
+        str(manual_arm.get("traffic_manager_sha256", ""))
+        if str(manual_arm.get("traffic_manager_sha256", "")) == str(auto_arm.get("traffic_manager_sha256", ""))
+        else ""
+    )
+    pair_vcb_sha = (
+        str(manual_arm.get("vehicle_calibration_binding_sha256", ""))
+        if str(manual_arm.get("vehicle_calibration_binding_sha256", "")) == str(auto_arm.get("vehicle_calibration_binding_sha256", ""))
+        else ""
+    )
+    pair_sim_timing_sha = (
+        str(manual_arm.get("sim_timing_sha256", ""))
+        if str(manual_arm.get("sim_timing_sha256", "")) == str(auto_arm.get("sim_timing_sha256", ""))
+        and str(manual_arm.get("sim_timing_sha256", ""))
+        else ""
+    )
     manifest = build_pair_manifest(
         pair_id=pair_id,
         software_git_sha=software_sha,
@@ -679,28 +761,48 @@ def main(argv: Optional[List[str]] = None) -> int:
         weather_sha256=manual_weather_sha if manual_weather_sha == auto_weather_sha else "",
         capture_config_sha256=capture_config_id["capture_config_sha256"],
         camera_response_sha256=camera_response_sha,
-        traffic_manager_sha256="",
+        traffic_manager_sha256=pair_tm_sha,
         simulation_physics_sha256=simulation_physics_sha,
         runtime_sensor_rig_sha256=str(manual_arm.get("runtime_sensor_rig_sha256", "")) if str(manual_arm.get("runtime_sensor_rig_sha256", "")) == str(auto_arm.get("runtime_sensor_rig_sha256", "")) else "",
-        vehicle_calibration_binding_sha256="",
+        vehicle_calibration_binding_sha256=pair_vcb_sha,
         weather_schema_version=WEATHER_SCHEMA_VERSION,
-        sim_timing_sha256=sim_timing_sha if str(manual_arm.get("sim_timing_sha256", "")) == str(auto_arm.get("sim_timing_sha256", "")) and str(manual_arm.get("sim_timing_sha256", "")) else "",
+        sim_timing_sha256=pair_sim_timing_sha,
         manual_arm=manual_arm,
         auto_arm=auto_arm,
         pair_valid=raw_pair_valid,
         invalid_reasons=[],
         claim_level=CLAIM_UNPAIRED_CAPTURE,
     )
+    manifest["configured_sim_timing_sha256"] = configured_sim_timing_sha
+    manifest["configured_sim_timing"] = _configured_timing.get("timing", {})
+    manifest["manual_observed_sim_timing_sha256"] = manual_observed_timing_sha
+    manifest["auto_observed_sim_timing_sha256"] = auto_observed_timing_sha
+    manifest["manual_traffic_manager_sha256_source"] = "artifact" if manual_tm_sha else "unavailable"
+    manifest["auto_traffic_manager_sha256_source"] = "artifact" if auto_tm_sha else "unavailable"
+    manifest["manual_vehicle_calibration_binding_sha256_source"] = "artifact" if manual_vcb_sha else "unavailable"
+    manifest["auto_vehicle_calibration_binding_sha256_source"] = "artifact" if auto_vcb_sha else "unavailable"
 
-    # Validate the manifest through the authoritative contract
-    validation = validate_pair_manifest(manifest)
-    manifest["pair_valid"] = validation["valid"]
-    manifest["invalid_reasons"] = validation["invalid_reasons"]
-    manifest["validation"] = validation
-    # NEW-317: the arm-level weather binding is recorded as first-class evidence.
+    # NEW-317: the arm-level weather binding is authoritative evidence; a missing
+    # arm weather artifact (even with live-world fallback) or invalid binding must
+    # refuse the pair before final success classification.
     manifest["arm_weather_binding"] = arm_weather_binding
     manifest["manual_weather_identity"] = manual_weather
     manifest["auto_weather_identity"] = auto_weather
+
+    # Validate the manifest through the authoritative contract
+    validation = validate_pair_manifest(manifest)
+    invalid_reasons = list(validation.get("invalid_reasons") or [])
+    pair_valid = bool(validation.get("valid"))
+    if not bool((arm_weather_binding or {}).get("valid", False)):
+        for reason in (arm_weather_binding or {}).get("invalid_reasons") or []:
+            if reason not in invalid_reasons:
+                invalid_reasons.append(str(reason))
+        pair_valid = False
+    manifest["pair_valid"] = pair_valid
+    manifest["invalid_reasons"] = sorted(set(str(r) for r in invalid_reasons))
+    validation["valid"] = pair_valid
+    validation["invalid_reasons"] = list(manifest["invalid_reasons"])
+    manifest["validation"] = validation
 
     # Reclassify claim level
     both_arms_ingolstadt = (
@@ -709,7 +811,7 @@ def main(argv: Optional[List[str]] = None) -> int:
     )
     claim = classify_claim_level(
         is_pair=True,
-        pair_valid=validation["valid"],
+        pair_valid=pair_valid,
         route_valid=validation.get("pair_route_closure") == "PAIR_ROUTE_VALID",
         both_arms_ingolstadt=both_arms_ingolstadt,
         manual_arm=manual_arm,

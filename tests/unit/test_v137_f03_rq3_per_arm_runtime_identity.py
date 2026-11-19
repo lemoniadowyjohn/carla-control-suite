@@ -83,6 +83,11 @@ def _valid_pair_manifest(*, manual_dataset="manual-dataset", auto_dataset="auto-
     base = {k: "v" for k in BATCH9_REQUIRED}
     base["calibration_sha256"] = CALIBRATION_SHA256
     base["sensor_rig_sha256"] = rig_sha
+    base["runtime_sensor_rig_sha256"] = rq3.runtime_sensor_rig_identity(
+        sensor_rig_sha256=rig_sha,
+        camera_response_sha256=base["camera_response_sha256"],
+        simulation_physics_sha256=base["simulation_physics_sha256"],
+    )["runtime_sensor_rig_sha256"]
     manifest = {
         "schema_version": rq3.MANIFEST_SCHEMA_VERSION,
         "pair_id": "p-v137-f03",
@@ -116,6 +121,7 @@ def _valid_pair_manifest(*, manual_dataset="manual-dataset", auto_dataset="auto-
         "calibration_path": str(CALIBRATION_PATH),
         "sensor_rig_sha256": rig_sha,
     }
+    manifest["runtime_sensor_rig_sha256"] = base["runtime_sensor_rig_sha256"]
     return manifest, manual, auto
 
 

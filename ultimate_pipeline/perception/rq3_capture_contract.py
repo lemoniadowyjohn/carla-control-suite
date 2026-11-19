@@ -934,6 +934,20 @@ def validate_pair_manifest(
             else:
                 reasons.append(f"{key}_mismatch_auto_vs_top:{al}!={top}")
 
+    # Runtime sensor-rig digest must be canonical over governed applied/observed
+    # rig identity, camera response, and simulation physics identities. An
+    # arbitrary but matching digest is not sufficient evidence.
+    for arm_name, arm in (("manual", manual), ("auto", auto)):
+        expected_runtime = runtime_sensor_rig_identity(
+            sensor_rig_sha256=str(arm.get("sensor_rig_sha256", "")),
+            camera_response_sha256=str(arm.get("camera_response_sha256", "")),
+            simulation_physics_sha256=str(arm.get("simulation_physics_sha256", "")),
+        )["runtime_sensor_rig_sha256"]
+        if str(arm.get("runtime_sensor_rig_sha256", "")) != expected_runtime:
+            reasons.append(f"{arm_name}:runtime_sensor_rig_sha256_not_canonical")
+        if str(manifest.get("runtime_sensor_rig_sha256", "")) and str(manifest.get("runtime_sensor_rig_sha256", "")) != expected_runtime:
+            reasons.append(f"{arm_name}:runtime_sensor_rig_sha256_pair_mismatch_canonical")
+
     ml = manual.get("pair_frame_index")
     al = auto.get("pair_frame_index")
     if ml is not None and al is not None and ml != al:
