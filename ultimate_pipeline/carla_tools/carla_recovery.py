@@ -35,7 +35,6 @@ import time
 import socket
 import subprocess
 import sys
-import shutil
 try:
     import psutil  # type: ignore
     _PSUTIL_AVAILABLE = True
@@ -174,25 +173,13 @@ def dump_carla_crash(context: dict):
 
 
 def _purge_temp_dirs():
-    """Delete directories that often corrupt CARLA loads."""
-    paths = [
-        os.path.join(os.getenv("LOCALAPPDATA", ""), "CarlaUE4"),
-        os.path.join(os.getenv("APPDATA", ""), "CarlaUE4"),
-    ]
+    """Legacy compatibility stub; shared CARLA paths are never purged.
 
-    temp = os.getenv("TEMP")
-    if temp:
-        for entry in os.listdir(temp):
-            if "Carla" in entry:
-                paths.append(os.path.join(temp, entry))
-
-    for p in paths:
-        if os.path.exists(p):
-            try:
-                shutil.rmtree(p, ignore_errors=True)
-                print(f"🧹 Purged CARLA cache directory: {p}")
-            except Exception as e:
-                print(f"⚠ Could not purge {p}: {e}")
+    A free RPC port does not prove that user-scoped CARLA cache/temp
+    directories belong to this process or run. Cleanup requires an explicit
+    future ownership protocol and is therefore disabled.
+    """
+    return False
 
 
 def _start_carla():
@@ -268,7 +255,8 @@ def restart_carla(
             details = "; ".join(describe_port_occupant(x) for x in occupied_ports)
             print(f"❌ Refusing automatic CARLA restart: {details}")
             return False
-        _purge_temp_dirs()
+        # Shared cache cleanup is intentionally disabled: port availability
+        # does not establish ownership of user-scoped CARLA directories.
 
     _start_carla()
 
@@ -362,9 +350,9 @@ def get_reliable_client() -> carla.Client:
                 time.sleep(2)
 
         elif SETTINGS.CARLA_KILL_ON_FAIL:
-            # Nothing holds this port, so there is nothing to kill -- the old
-            # by-name kill here was a no-op at best. Still purge the cache.
-            _purge_temp_dirs()
+            # A free port does not establish ownership of shared cache paths;
+            # startup must not delete user-scoped CARLA state.
+            pass
 
         launched_proc = _start_carla()
 

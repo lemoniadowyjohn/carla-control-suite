@@ -183,6 +183,23 @@ def test_kill_stale_processes_by_name_removed():
     assert not hasattr(cr, "_kill_stale_processes")
 
 
+def test_legacy_cache_purge_is_non_destructive(monkeypatch, tmp_path):
+    """Port state cannot authorize deletion of shared CARLA user data."""
+    local = tmp_path / "local" / "CarlaUE4"
+    roaming = tmp_path / "roaming" / "CarlaUE4"
+    temp = tmp_path / "temp" / "Carla-run-artifacts"
+    for path in (local, roaming, temp):
+        path.mkdir(parents=True)
+        (path / "keep.txt").write_text("preserve", encoding="utf-8")
+    monkeypatch.setenv("LOCALAPPDATA", str(local.parent))
+    monkeypatch.setenv("APPDATA", str(roaming.parent))
+    monkeypatch.setenv("TEMP", str(temp.parent))
+
+    assert cr._purge_temp_dirs() is False
+    assert all((path / "keep.txt").read_text(encoding="utf-8") == "preserve"
+               for path in (local, roaming, temp))
+
+
 def test_restart_carla_fails_closed_when_port_already_held(monkeypatch):
     """P2-4: occupancy is decided by _port_open (both the RPC and the
     streaming port), never by whether a holding PID could be resolved."""
@@ -232,9 +249,8 @@ def test_restart_carla_fails_closed_when_port_open_but_holder_pid_unknown(monkey
     assert started == [], "must not start a second instance when the port is occupied"
 
 
-def test_restart_carla_purges_and_starts_when_port_free(monkeypatch):
-    """Positive control for the test above: when nothing holds the port,
-    restart proceeds normally (purge + start) without any kill-by-name."""
+def test_restart_carla_starts_when_port_free_without_purging_shared_dirs(monkeypatch):
+    """Positive control: a free port allows startup but never shared-dir purge."""
     from ultimate_pipeline.core import carla_utils as cu
 
     monkeypatch.setattr(cr.SETTINGS, "CARLA_KILL_ON_FAIL", True, raising=False)
@@ -247,7 +263,7 @@ def test_restart_carla_purges_and_starts_when_port_free(monkeypatch):
     monkeypatch.setattr(cr, "_wait_for_ports", lambda *a, **k: True)
 
     assert cr.restart_carla(host="127.0.0.1", port=2000, retries=1, startup_wait_s=0.01) is True
-    assert purged == [True]
+    assert purged == []  # never purge shared user-scoped CARLA state
     assert started == [True]
 
 
@@ -273,8 +289,7 @@ def test_get_reliable_client_fails_closed_on_broken_but_listening_port(monkeypat
 
 
 def test_get_reliable_client_skips_kill_when_port_not_open(monkeypatch):
-    """Positive control: when the port isn't even open, there's nothing to
-    kill -- no process_iter/kill-by-name call, just purge + start."""
+    """A free port allows startup without process enumeration or cache purge."""
     monkeypatch.setattr(cr.SETTINGS, "CARLA_KILL_ON_FAIL", True, raising=False)
     monkeypatch.setattr(cr.SETTINGS, "CARLA_HOST", "127.0.0.1", raising=False)
     monkeypatch.setattr(cr.SETTINGS, "CARLA_PORT", 2000, raising=False)
@@ -297,7 +312,7 @@ def test_get_reliable_client_skips_kill_when_port_not_open(monkeypatch):
 
     with pytest.raises(RuntimeError):
         cr.get_reliable_client()
-    assert purged == [True]
+    assert purged == []  # never purge shared user-scoped CARLA state
     assert started == [True]
 
 
