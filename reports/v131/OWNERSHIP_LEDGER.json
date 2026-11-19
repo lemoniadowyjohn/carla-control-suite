@@ -1,7 +1,7 @@
 {
   "schema": "v131-ownership-ledger/v1",
   "candidate_branch": "integration/v131-pre-claude-candidate",
-  "candidate_head_before_report_commit": "bd13c0734d867d321e25bf34eca2fc2202d5d436",
+  "candidate_head_before_report_commit": "b38fb67c162409e23a60191dbadedc39c0ffb539",
   "candidate_worktree": "F:\\CARLA_RECOVERY\\worktrees\\v129-calib-admission-20261119",
   "writer": "Codex integration owner",
   "report_owner": "Codex/CD-00 equivalent integration lane",
@@ -62,7 +62,7 @@
   "last_source_fix_commit": "bd13c0734d867d321e25bf34eca2fc2202d5d436",
   "task_status": "OSM O1/O2/O3, RQ5 manifest schema and terminal run identity fail-closed test integrated; final focused suite 292 passed/1 missing-input test deselected; exact-head CI and independent review of bd13 pending",
   "task_id": "V131 integration: OSM O1/O2/O3 + fail-closed run identity admission",
-  "latest_candidate_head_at_snapshot": "bd13c0734d867d321e25bf34eca2fc2202d5d436",
+  "latest_candidate_head_at_snapshot": "b38fb67c162409e23a60191dbadedc39c0ffb539",
   "integration_merges": [
     {
       "source": "PR39 / O1",
@@ -135,5 +135,21 @@
     "ultimate_pipeline/topology/orphan_road_repair.py": "B485BA889497BDDB541BFCF48824A4F5336124A8F00FA89750B891667360AAEC",
     "ultimate_pipeline/core/terminal_authority.py": "5B6D530FD969E49AE7BA60938179F2784627205293DD47ABD5BE38FDC8DFD152",
     "tests/adversarial/test_terminal_authority.py": "5A62F8091CCD7158912D480DD25A889E596FDFAE5F6BA7861913748B1397B538"
+  },
+  "integration_line_dispositions": {
+    "release_acceptance": "EXCLUDED: PR63 head 6e6ac76 and PR70 32610a are not ancestors; OpenCode successor 7b655fb8 changes only three test fixtures. Full branch merge preview against candidate: 239 paths, 114 deletions, 52 candidate-critical deletions (v127/v131 evidence, map_coordinate_frames, applied rig, OSM direction/legal movement, RQ5 provenance/tests) and conflict in tests/adversarial/test_terminal_authority.py. Do not merge wholesale; selectively reconcile source and rerun exact tests.",
+    "calibration_intrinsics_crs": "PR65 4026fb5, PR66 d6f349, PR67 66c145, PR68 0e4997, PR69 e798d are ancestors in candidate; offline only, strict RQ3 executor remains NOT_RUN.",
+    "osm": "PR39/O1 5368eda merged as 906c88b; PR57/O2 694f1a merged as 0e41a7a; PR40/O3 5a360c merged as b878dc7 with PR45 e60c818 and PR46 941212 ancestry; candidate combined suite passed.",
+    "rq5": "PR52 230f4a ancestor; PR117 eval identity and PR122 invocation isolation ancestors; #50/#55 content was already present in candidate baseline; V135 schema fix ported as 6c927d4. No real training/evaluation.",
+    "lifecycle_fuzzer_metrics": "PR49 d30a054, PR56 af22f82, lifecycle followup 1e978746 are ancestors; runtime not run.",
+    "leases": "PR37/PR58 stack not integrated; WSL/NTFS durability unverified."
+  },
+  "external_status": {
+    "candidate_branch": "integration/v131-pre-claude-candidate",
+    "current_remote_head": "b38fb67c162409e23a60191dbadedc39c0ffb539",
+    "production_remote_head": "225ed15d0da6444cc257835ca777aba281553f3c",
+    "exact_head_github_checks": "NOT_REFRESHED: GitHub API unauthenticated rate limit exceeded and GitHub connector/browser session unavailable",
+    "existing_draft_pr": "https://github.com/lemoniadowyjohn/carla-control-suite/pull/71",
+    "production_merge": "NOT_AUTHORIZED"
   }
 }
