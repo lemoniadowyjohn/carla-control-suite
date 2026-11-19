@@ -8,15 +8,57 @@
   "skipped": 1,
   "failure_classification": "All 17 failures are import-time ModuleNotFoundError: torchvision missing, within tests/unit/test_rq5_execution_correctness.py. One optional sklearn test skipped in tests/unit/test_feature_gap.py.",
   "additional_evidence": {
-    "pr64_focus": {"exit_code": 0, "passed": 106, "warnings": 6},
-    "pr55_focus": {"exit_code": 0, "passed": 13},
-    "pr50_v2_authority": {"exit_code": 0, "passed": 6},
-    "pr67_focus": {"collected": 121, "passed": 118, "failed": 3, "reason": "pinned large-map XODR assets absent in sparse worktree; coordinate-frame and local-registration new tests passed"},
-    "pr49_focus": {"exit_code": 0, "passed": 5},
-    "pr56_focus": {"collected": 50, "passed": 49, "skipped": 1},
-    "full_offline_pytest": {"exit_code": 2, "collected": 8448, "collection_errors": 21, "executed": 0, "blockers": ["torch_geometric", "torchvision", "full map assets", "NumPy/PyTorch binary compatibility"]},
-    "compileall": {"result": "completed with pre-existing SyntaxWarning invalid escape in ultimate_pipeline/tools/calib_sanity_check.py"},
-    "git_diff_check": {"exit_code": 0}
+    "pr64_focus": {
+      "exit_code": 0,
+      "passed": 106,
+      "warnings": 6
+    },
+    "pr55_focus": {
+      "exit_code": 0,
+      "passed": 13
+    },
+    "pr50_v2_authority": {
+      "exit_code": 0,
+      "passed": 6
+    },
+    "pr67_focus": {
+      "collected": 121,
+      "passed": 118,
+      "failed": 3,
+      "reason": "pinned large-map XODR assets absent in sparse worktree; coordinate-frame and local-registration new tests passed"
+    },
+    "pr49_focus": {
+      "exit_code": 0,
+      "passed": 5
+    },
+    "pr56_focus": {
+      "collected": 50,
+      "passed": 49,
+      "skipped": 1
+    },
+    "full_offline_pytest": {
+      "exit_code": 2,
+      "collected": 8448,
+      "collection_errors": 21,
+      "executed": 0,
+      "blockers": [
+        "torch_geometric",
+        "torchvision",
+        "full map assets",
+        "NumPy/PyTorch binary compatibility"
+      ]
+    },
+    "compileall": {
+      "result": "completed with pre-existing SyntaxWarning invalid escape in ultimate_pipeline/tools/calib_sanity_check.py"
+    },
+    "git_diff_check": {
+      "exit_code": 0
+    }
   },
-  "carla_live": "NOT_RUN"
+  "carla_live": "NOT_RUN",
+  "raw_log": {
+    "path": "reports/v131/COMBINED_FOCUSED_TESTS.log",
+    "sha256": "DA30CA8CBD47908D1322DB3C634225E92C9D3B403E795340214D82322C0DF8F7",
+    "exit_code": 1
+  }
 }
