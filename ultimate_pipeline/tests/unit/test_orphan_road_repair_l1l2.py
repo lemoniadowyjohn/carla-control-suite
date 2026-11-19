@@ -66,6 +66,36 @@ def _root(*roads, junction_incoming=None):
     return root
 
 
+def _source_authority(orphan_way="wa", target_way="wb", shared="n2"):
+    """OSM ways that PROVE the orphan and the target are connected.
+
+    V103-O3 (registry T03): a repair requires positive OSM graph evidence --
+    the two roads' OSM ways must share an OSM node.  Geometry alone is not
+    source authority.
+    """
+    ways = [
+        {
+            "id": orphan_way,
+            "node_refs": ["n1", shared],
+            "geometry": [(0.0, 0.0), (100.0, 0.0)],
+            "metadata": {},
+            "restrictions": {},
+        },
+        {
+            "id": target_way,
+            "node_refs": [shared, "n3"],
+            "geometry": [(100.0, 0.0), (200.0, 0.0)],
+            "metadata": {},
+            "restrictions": {},
+        },
+    ]
+    associations = {
+        "A": {"osm_way_id": orphan_way},
+        "B": {"osm_way_id": target_way},
+    }
+    return {"osm_ways": ways, "associations": associations}
+
+
 def test_heading_not_double_converted():
     """XODR hdg is already in radians - no math.radians() conversion."""
     road = _xml_road("1", 0.0, 0.0, math.pi / 2, 100.0)
@@ -96,7 +126,7 @@ def test_repair_reciprocal_links_and_contactpoints():
     target = _xml_road("B", 100.0, 0.0, 0.0, 100.0)        # start (100,0), end (200,0)
     root = _root(orphan, target, junction_incoming="B")
 
-    report = repair_orphan_roads(root, max_snap_m=5.0)
+    report = repair_orphan_roads(root, max_snap_m=5.0, **_source_authority())
     assert report["repaired_connections"] == 1, report
     assert report["residual_unconnected"] == 0, report
 
@@ -131,7 +161,7 @@ def test_reverse_chain_contactpoints():
     orphan = _xml_road("A", 0.0, 0.0, 0.0, 100.0)     # start (0,0)
     root = _root(target, orphan, junction_incoming="B")
 
-    report = repair_orphan_roads(root, max_snap_m=5.0)
+    report = repair_orphan_roads(root, max_snap_m=5.0, **_source_authority())
     assert report["repaired_connections"] == 1, report
 
     op = orphan.find("link").find("predecessor")
@@ -352,3 +382,42 @@ def test_target_junction_internal_connector_rejected():
     assert orphan.find("link") is None
     assert connector.find("link") is None
     print("PASS: junction-internal connector rejected as repair target")
+
+def test_geometry_only_repair_is_refused_without_osm_source_proof():
+    """V103-O3 (registry T03): geometry alone must NEVER repair an orphan.
+
+    Before this change the repair snapped to the nearest connected road
+    endpoint using proximity, heading and Z only.  Those are *necessary
+    filters applied after* the source proof -- they can veto a proven
+    candidate, they can never create one.
+    """
+    orphan = _xml_road("A", 0.0, 0.0, 0.0, 100.0)
+    target = _xml_road("B", 100.0, 0.0, 0.0, 100.0)
+    root = _root(orphan, target, junction_incoming="B")
+
+    report = repair_orphan_roads(root, max_snap_m=5.0)
+
+    assert report["repaired_connections"] == 0, report
+    assert report["residual_unconnected"] == 1, report
+    assert report["residual_reasons"].get("no_source_proof") == 1, report
+    assert report["source_authority"]["required"] is True
+    assert report["source_authority"]["enabled"] is False
+    # The orphan must not have gained a one-sided link.
+    assert orphan.find("link") is None, "orphan must not gain an unproven link"
+    assert target.find("link") is None
+    print("PASS: geometry-only orphan repair is refused")
+
+
+def test_source_proof_is_reported_when_the_repair_succeeds():
+    """A source-proven repair records its proof in the report."""
+    orphan = _xml_road("A", 0.0, 0.0, 0.0, 100.0)
+    target = _xml_road("B", 100.0, 0.0, 0.0, 100.0)
+    root = _root(orphan, target, junction_incoming="B")
+
+    report = repair_orphan_roads(root, max_snap_m=5.0, **_source_authority())
+
+    assert report["repaired_connections"] == 1, report
+    assert report["source_authority"]["enabled"] is True
+    assert report["source_authority"]["proven_pair_count"] >= 1
+    print("PASS: source-proven repair records its proof")
+
