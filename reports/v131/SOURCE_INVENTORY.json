@@ -63,5 +63,8 @@
     4543969793,
     4543969796
   ],
-  "note": "All currently open pull requests were enumerated through GitHub REST at capture time with exact head/base metadata and changed-path lists. CI check-run summaries may include historical runs; PR71 exact-head jobs are separately refreshed."
+  "note": "All currently open pull requests were enumerated through GitHub REST at capture time with exact head/base metadata and changed-path lists. CI check-run summaries may include historical runs; PR71 exact-head jobs are separately refreshed.",
+  "open_pr_snapshot": "reports/v131/OPEN_PR_SNAPSHOT.json",
+  "open_pr_count": 51,
+  "open_pr_capture_scope": "All open PRs at API capture time; changed paths included; check-run summary includes raw runs and is not interpreted as latest status."
 }
