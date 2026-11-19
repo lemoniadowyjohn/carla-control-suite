@@ -60,5 +60,11 @@
     "path": "reports/v131/COMBINED_FOCUSED_TESTS.log",
     "sha256": "DA30CA8CBD47908D1322DB3C634225E92C9D3B403E795340214D82322C0DF8F7",
     "exit_code": 1
+  },
+  "compileall": {
+    "command": "python -m compileall -q ultimate_pipeline tools tests",
+    "exit_code": 0,
+    "log": "reports/v131/COMPILEALL.log",
+    "log_sha256": null
   }
 }
