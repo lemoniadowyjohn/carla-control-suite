@@ -269,13 +269,13 @@
       "affected_sha": "c9d351f0d5f2a6b0ad5cec5f75a0fd0d27aa9556",
       "area": "OSM legal movement",
       "command": "py -m pytest tests/unit/test_v103_o2_legal_movement.py -q",
-      "corrected_sha": "c9d351f0d5f2a6b0ad5cec5f75a0fd0d27aa9556",
+      "corrected_sha": "7087ed85f54944605d6a62007fa6c9732b89fd13",
       "evidence": "reports/v103/o2/ALLOWED_MOVEMENT_HANDOFF.md",
       "expected": "a missing OSM relation is never read as a permission; explicit denial, known default permission and no source evidence are distinct verdicts",
       "id": "V106-O2-LEGAL-MOVEMENT",
       "independent_review": "pending - the report interpretation (default permission vs unknown) is a policy decision for the release-authority owner",
-      "mutation_result": "4 mutation controls run, 4 DETECTED, 0 missed (only_* forbids its alternatives; the default permission never overrides a decided record; an undecidable oneway never yields a permission; a grade-separated crossing is a physical discontinuity)",
-      "observed": "the capability did not exist: no OSM restriction relation was parsed, no access or one-way precedence was resolved per actor, and no movement had a source-grounded verdict. Implemented as a NEW source layer with a versioned AllowedMovementReport and a non-destructive junction-connection comparison API.",
+      "mutation_result": "9 mutation controls run, 9 DETECTED, 0 missed. Two controls were reformulated after the first pass MISSED them: the via-way control was not meaningful (both code paths carry via_ways) and was retargeted at the connectivity check, and the weekday control did not change the outcome for 'Mo' so the test was strengthened with a mid-week day. Closing the gaps also found two real bugs: the weekday range was resolved lexically (weekday order is not lexical) and an explicitly-unresolved record was upgraded to the default permission.",
+      "observed": "the capability did not exist: no OSM restriction relation was parsed, no access or one-way precedence was resolved per actor, and no movement had a source-grounded verdict. Implemented as a NEW source layer with a versioned AllowedMovementReport and a non-destructive junction-connection comparison API. All three gaps the handoff stated as open are now CLOSED: a via-WAY restriction is evaluated as its own movement class (and forbids nothing when the via-way does not connect), a no_u_turn forbids the self-movement the node-based candidate set never contains, and a conditional restriction is decidable with a RestrictionContext clock.",
       "owner": "OpenCode (PR #57)",
       "priority": "P1",
       "reproducer": "tests/unit/test_v103_o2_legal_movement.py (32 tests)",
@@ -298,6 +298,25 @@
       "priority": "P1",
       "reproducer": "py reports/v103/o2/run_legal_movement_audit.py",
       "result": "FAIL - the source carries no turn restrictions",
+      "retry_eligible": false,
+      "status": "REPRODUCED"
+    },
+    {
+      "affected_file": "campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_perception_map_of_record_20260916_232831.xodr",
+      "affected_sha": "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+      "area": "Movement coverage",
+      "command": "py reports/v103/o2/run_legal_movement_audit.py --xodr <map-of-record>",
+      "corrected_sha": null,
+      "evidence": "reports/v103/o2/LEGAL_MOVEMENT_MOTOR_VEHICLE_SUMMARY.json",
+      "expected": "the OSM source can adjudicate the generated junction connections",
+      "id": "V106-O2-JUNCTION-COVERAGE",
+      "independent_review": "measured on the registry-pinned map-of-record; the two candidate readings (source too sparse, or the junctions are generated from OSM2ODR geometry rather than a per-connection OSM correspondence) are not distinguished here because the junction-construction path is not OpenCode's file",
+      "mutation_result": "n/a - a coverage finding, not a code defect",
+      "observed": "it cannot adjudicate ANY of them: of 32267 XODR roads only 75 carry an EXACT/HIGH oriented OSM binding, and of 22589 junction connections 0 have BOTH ends bound (115 have exactly one, 22474 neither). All 22589 comparison verdicts are UNKNOWN_NO_SOURCE. Verified as a COVERAGE result, not a binding-rule defect: all 75 bound roads do appear in some connection.",
+      "owner": "OpenCode (PR #57) + release-authority owner",
+      "priority": "P1",
+      "reproducer": "py reports/v103/o2/run_legal_movement_audit.py --xodr campaigns/ingolstadt_cooked_perception_v1/candidate/ingolstadt_perception_map_of_record_20260916_232831.xodr",
+      "result": "FAIL - the movement comparison adjudicates nothing on the real map",
       "retry_eligible": false,
       "status": "REPRODUCED"
     },
@@ -340,5 +359,5 @@
     }
   ],
   "schema": "v105_issue_registry/v1",
-  "updated_utc": "2026-11-13T08:37:33.520555+00:00"
+  "updated_utc": "2026-11-13T09:03:12.832915+00:00"
 }
