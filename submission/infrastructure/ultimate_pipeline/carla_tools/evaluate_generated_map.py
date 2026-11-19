@@ -22,11 +22,21 @@ def md5_file(path: str) -> str:
     return h.hexdigest()
 
 
-def _pose_to_carla_transform(pose: dict[str, float]) -> carla.Transform:
-    return carla.Transform(
-        carla.Location(x=pose["x"], y=pose["y"], z=pose["z"]),
-        carla.Rotation(roll=pose["roll"], pitch=pose["pitch"], yaw=pose["yaw"]),
-    )
+def inv_T(T: np.ndarray) -> np.ndarray:
+    R = T[:3, :3]
+    t = T[:3, 3]
+    Ti = np.eye(4, dtype=float)
+    Ti[:3, :3] = R.T
+    Ti[:3, 3] = -R.T @ t
+    return Ti
+
+
+def rotmat_to_rpy_deg(R: np.ndarray) -> carla.Rotation:
+    # ZYX
+    yaw = math.degrees(math.atan2(R[1, 0], R[0, 0]))
+    pitch = math.degrees(math.atan2(-R[2, 0], math.sqrt(R[2, 1] ** 2 + R[2, 2] ** 2)))
+    roll = math.degrees(math.atan2(R[2, 1], R[2, 2]))
+    return carla.Rotation(roll=float(roll), pitch=float(pitch), yaw=float(yaw))
 
 
 def fov_from_K_undistortion(K_undist: np.ndarray, width_px: int) -> float:
@@ -34,22 +44,56 @@ def fov_from_K_undistortion(K_undist: np.ndarray, width_px: int) -> float:
     return 2.0 * math.degrees(math.atan(width_px / (2.0 * fx)))
 
 
-def camera_transform_from_cTv(cTv: np.ndarray, flip_vehicle_y=True, opencv_camera_axes=True) -> carla.Transform:
-    """Compatibility entrypoint backed by the authoritative v2 frame contract."""
-    if not flip_vehicle_y or not opencv_camera_axes:
-        raise ValueError("evaluate_generated_map supports only CARLA_SENSOR_MOUNTING/v2 frames")
-    from ultimate_pipeline.sensors.transform_conventions import camera_attachment_pose_from_cTv
+# Common axis conversion toggles (keep ON if your calibration is robotics/OpenCV style)
+VEHICLE_Y_FLIP = np.diag([1.0, -1.0, 1.0])  # +Y left -> +Y right
+OPENCV_CAM_TO_CARLA = np.array(
+    [
+        [0.0, 0.0, 1.0],   # carla_x = cv_z
+        [1.0, 0.0, 0.0],   # carla_y = cv_x
+        [0.0, -1.0, 0.0],  # carla_z = -cv_y
+    ],
+    dtype=float
+)
+CARLA_TO_OPENCV = OPENCV_CAM_TO_CARLA.T
 
-    return _pose_to_carla_transform(camera_attachment_pose_from_cTv(cTv))
+
+def camera_transform_from_cTv(cTv: np.ndarray, flip_vehicle_y=True, opencv_camera_axes=True) -> carla.Transform:
+    # cTv: vehicle -> camera  (given)
+    # We need camera origin in vehicle coords => invert(cTv) to get camera -> vehicle
+    T_vc = cTv
+    T_cv = inv_T(T_vc)
+
+    R_cv = T_cv[:3, :3]
+    t_cv = T_cv[:3, 3]
+
+    if flip_vehicle_y:
+        t_cv = VEHICLE_Y_FLIP @ t_cv
+        R_cv = VEHICLE_Y_FLIP @ R_cv
+
+    if opencv_camera_axes:
+        # convert OpenCV camera axes to CARLA sensor axes
+        R_cv = R_cv @ CARLA_TO_OPENCV
+
+    return carla.Transform(
+        carla.Location(x=float(t_cv[0]), y=float(t_cv[1]), z=float(t_cv[2])),
+        rotmat_to_rpy_deg(R_cv),
+    )
 
 
 def lidar_transform_from_vTl(vTl: np.ndarray, flip_vehicle_y=True) -> carla.Transform:
-    """Compatibility entrypoint backed by the authoritative v2 frame contract."""
-    if not flip_vehicle_y:
-        raise ValueError("evaluate_generated_map supports only CARLA_SENSOR_MOUNTING/v2 frames")
-    from ultimate_pipeline.sensors.transform_conventions import lidar_attachment_pose_from_vTl
+    # vTl: LiDAR -> vehicle (given)
+    T_lv = vTl
+    R_lv = T_lv[:3, :3]
+    t_lv = T_lv[:3, 3]
 
-    return _pose_to_carla_transform(lidar_attachment_pose_from_vTl(vTl))
+    if flip_vehicle_y:
+        t_lv = VEHICLE_Y_FLIP @ t_lv
+        R_lv = VEHICLE_Y_FLIP @ R_lv
+
+    return carla.Transform(
+        carla.Location(x=float(t_lv[0]), y=float(t_lv[1]), z=float(t_lv[2])),
+        rotmat_to_rpy_deg(R_lv),
+    )
 
 
 def spawn_debug_props(world: carla.World, ego: carla.Actor) -> list[carla.Actor]:

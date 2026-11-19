@@ -51,39 +51,51 @@ def fov_from_K(K: Any, width_px: int) -> float:
     return float(2.0 * math.degrees(math.atan(width_px / (2.0 * fx))))
 
 def rotmat_to_euler_zyx_deg(R: np.ndarray) -> Tuple[float, float, float]:
-    from ultimate_pipeline.sensors.transform_conventions import carla_rotation_matrix_to_rpy_deg
-
-    return carla_rotation_matrix_to_rpy_deg(R)
+    # roll(X), pitch(Y), yaw(Z), ZYX convention
+    v = float(-R[2, 0])
+    v = max(-1.0, min(1.0, v))
+    pitch = math.asin(v)
+    roll = math.atan2(R[2, 1], R[2, 2])
+    yaw = math.atan2(R[1, 0], R[0, 0])
+    return math.degrees(roll), math.degrees(pitch), math.degrees(yaw)
 
 def vehicle_pose_from_sensor_to_vehicle(
     T_sensor_to_vehicle: np.ndarray,
     *,
     is_camera_optical_frame: bool,
 ) -> carla.Transform:
-    """Retired ambiguous adapter; source-calibration frames must be named."""
-    raise RuntimeError(
-        "Ambiguous sensor_to_vehicle transforms are disabled under CARLA_SENSOR_MOUNTING/v2; "
-        "use camera_transform_from_cTv or lidar_transform_from_vTl"
-    )
+    """
+    We attach with carla.Transform where:
+      - location is sensor origin in vehicle coordinates
+      - rotation describes sensor axes relative to vehicle
 
+    T_sensor_to_vehicle is expected as:
+      p_vehicle = R_v_s * p_sensor + t_v_s
+    where t_v_s is sensor origin in vehicle coords. (This matches your data well.)
+    """
 
-def _carla_transform_from_v2_pose(pose: Dict[str, Any]) -> carla.Transform:
-    return carla.Transform(
-        carla.Location(x=float(pose["x"]), y=float(pose["y"]), z=float(pose["z"])),
-        carla.Rotation(roll=float(pose["roll"]), pitch=float(pose["pitch"]), yaw=float(pose["yaw"])),
-    )
+    R_v_s = T_sensor_to_vehicle[:3, :3].copy()
+    t_v_s = T_sensor_to_vehicle[:3, 3].copy()
 
+    # If camera is in optical frame (x right, y down, z forward), convert to CARLA sensor axes.
+    if is_camera_optical_frame:
+        # CARLA sensor: x forward, y right, z up
+        # optical:      x right,   y down,  z forward
+        # R_carla_from_optical:
+        R_carla_from_optical = np.array(
+            [[0.0, 0.0, 1.0],
+             [1.0, 0.0, 0.0],
+             [0.0, -1.0, 0.0]],
+            dtype=float,
+        )
+        # We currently have R_vehicle_from_optical. Need R_vehicle_from_carlaSensor:
+        R_optical_from_carla = R_carla_from_optical.T
+        R_v_s = R_v_s @ R_optical_from_carla
 
-def camera_transform_from_cTv(cTv: Any) -> carla.Transform:
-    from ultimate_pipeline.sensors.transform_conventions import camera_attachment_pose_from_cTv
-
-    return _carla_transform_from_v2_pose(camera_attachment_pose_from_cTv(cTv))
-
-
-def lidar_transform_from_vTl(vTl: Any) -> carla.Transform:
-    from ultimate_pipeline.sensors.transform_conventions import lidar_attachment_pose_from_vTl
-
-    return _carla_transform_from_v2_pose(lidar_attachment_pose_from_vTl(vTl))
+    roll, pitch, yaw = rotmat_to_euler_zyx_deg(R_v_s)
+    loc = carla.Location(x=float(t_v_s[0]), y=float(t_v_s[1]), z=float(t_v_s[2]))
+    rot = carla.Rotation(roll=float(roll), pitch=float(pitch), yaw=float(yaw))
+    return carla.Transform(loc, rot)
 
 def try_project_to_road(world: carla.World, loc: carla.Location) -> carla.Location:
     try:
@@ -260,8 +272,6 @@ def attach_sensors_from_calib(
     *,
     camera_optical_frame: bool,
 ) -> Tuple[Dict[str, carla.Actor], List[carla.Sensor]]:
-    if not camera_optical_frame:
-        raise ValueError("visual calibration accepts only the declared OpenCV optical frame in v2")
     bp_lib = world.get_blueprint_library()
     out: Dict[str, carla.Actor] = {}
     listeners: List[carla.Sensor] = []
@@ -277,15 +287,18 @@ def attach_sensors_from_calib(
         bp.set_attribute("fov", str(fov_from_K(cam.K_undist, cam.width)))
         bp.set_attribute("sensor_tick", "0.0")
 
+        # Given: cTv is vehicle->camera (your definition).
+        # Convert to sensor->vehicle for pose extraction: inv(vehicle->camera) = camera->vehicle
         cTv = ensure_mat4(cam.cTv, f"{name}.cTv")
-        tf = camera_transform_from_cTv(cTv)
+        vTc = np.linalg.inv(cTv)  # camera->vehicle
+
+        tf = vehicle_pose_from_sensor_to_vehicle(vTc, is_camera_optical_frame=camera_optical_frame)
         actor = world.spawn_actor(bp, tf, attach_to=ego)
         out[name] = actor
 
     lidar_bp = bp_lib.find("sensor.lidar.ray_cast")
     if lidar_bp is None:
-        if lids:
-            raise RuntimeError("Required calibrated LiDAR blueprint sensor.lidar.ray_cast is unavailable")
+        print("⚠ Missing blueprint: sensor.lidar.ray_cast (skipping lidars)")
         return out, listeners
 
     for name, lid in lids.items():
@@ -298,8 +311,9 @@ def attach_sensors_from_calib(
         bp.set_attribute("lower_fov", "-30")
         bp.set_attribute("sensor_tick", "0.0")
 
-        vTl = ensure_mat4(lid.vTl, f"{name}.vTl")
-        tf = lidar_transform_from_vTl(vTl)
+        # Given: vTl is lidar->vehicle (your definition).
+        vTl = ensure_mat4(lid.vTl, f"{name}.vTl")  # already sensor->vehicle
+        tf = vehicle_pose_from_sensor_to_vehicle(vTl, is_camera_optical_frame=False)
 
         actor = world.spawn_actor(bp, tf, attach_to=ego)
         out[name] = actor

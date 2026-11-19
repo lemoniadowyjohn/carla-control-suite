@@ -17,43 +17,16 @@ if not os.environ.get("UP_SILENCE_DEPRECATIONS"):
     )
 
 
-TRUE_ENV_VALUES = {"1", "true", "yes", "on"}
-
-
-def _env_bool(name: str, default: bool = False) -> bool:
-    raw = os.getenv(name)
-    if raw is None:
-        return bool(default)
-    return raw.strip().lower() in TRUE_ENV_VALUES
-
-
-def rotation_matrix_to_carla_euler_degrees(matrix):
-    """Compatibility wrapper using the authoritative CARLA 0.9.16 signs."""
-    from ultimate_pipeline.sensors.transform_conventions import carla_rotation_matrix_to_rpy_deg
-
-    a = np.asarray(matrix, dtype=float)
-    if a.shape != (4, 4):
-        raise ValueError("rotation extraction requires a 4x4 homogeneous matrix")
-    if not np.all(np.isfinite(a[:3, :3])):
-        raise ValueError("rotation extraction requires finite rotation matrix values")
-    roll, pitch, yaw = carla_rotation_matrix_to_rpy_deg(a[:3, :3])
-    return float(pitch), float(yaw), float(roll)
-
-
 class SensorRig:
     def __init__(self, calib_file_path):
         with open(calib_file_path, 'r') as f:
             self.calib_data = json.load(f)
 
     def spawn_rig(self, client, ego_vehicle):
-        """Reject the retired ambiguous implementation without touching CARLA."""
-        raise RuntimeError(
-            "Legacy SensorRig spawning is disabled under CARLA_SENSOR_MOUNTING/v2; "
-            "use ultimate_pipeline.carla_tools.thesis_sensor_rig.ThesisSensorRig"
-        )
-
-        # Retained below only for historical source inspection. Runtime callers
-        # cannot reach this implementation.
+        """
+        Parses calib_data.json and attaches sensors to the ego_vehicle
+        preserving the exact mathematical constraints of the thesis.
+        """
         world = client.get_world()
         bp_lib = world.get_blueprint_library()
         sensors = {}
@@ -141,16 +114,16 @@ class SensorRig:
 
     @staticmethod
     def _numpy_to_carla_transform(matrix, sensor_type="camera"):
-        raise RuntimeError(
-            "Legacy anonymous matrix conversion is disabled; use an explicitly "
-            "framed CARLA_SENSOR_MOUNTING/v2 transform"
-        )
         """
         Converts a 4x4 numpy matrix (Source->Target) into a carla.Transform.
         Handling the coordinate system mismatch is CRITICAL here.
         """
         # Extract Translation
         x, y, z = matrix[0, 3], matrix[1, 3], matrix[2, 3]
+
+        # Extract Rotation (assuming ZYX euler or similar, simplified here)
+        # A robust implementation uses scipy.spatial.transform.Rotation
+        # Here we use a CARLA helper if available, or manual matrix decompose.
 
         # MATH HACK: CARLA uses LHS, standard matrices are RHS.
         # This usually requires swapping Y axis or Pitch/Yaw.
@@ -162,7 +135,19 @@ class SensorRig:
         # Create a transform from the matrix values directly
         # (This implies matrix is already in UE4 coords: X-fwd, Y-right, Z-up)
 
-        pitch, yaw, roll = rotation_matrix_to_carla_euler_degrees(matrix)
+        # Converting rotation matrix to pitch/yaw/roll is complex without SciPy.
+        # We will use CARLA's Transfrom constructor if we can, or just set Location
+        # and assume simpler rotation for the thesis prototype if not specified.
+
+        # FOR THESIS RIGOR: You should probably use `carla.Transform(carla.Location(x,y,z), carla.Rotation(...))`
+        # But deriving rotation from a raw 3x3 matrix manually is error-prone.
+        # Recommendation: Ensure `calib_data.json` matrices are converted to [x,y,z,roll,pitch,yaw] lists beforehand
+        # OR use a helper library.
+
+        # Placeholder for exact rotation extraction:
+        pitch = math.degrees(math.atan2(-matrix[2, 0], math.sqrt(matrix[0, 0] ** 2 + matrix[1, 0] ** 2)))
+        yaw = math.degrees(math.atan2(matrix[1, 0], matrix[0, 0]))
+        roll = math.degrees(math.atan2(matrix[2, 1], matrix[2, 2]))
 
         return carla.Transform(carla.Location(x=float(x), y=float(y), z=float(z)),
                                carla.Rotation(pitch=float(pitch), yaw=float(yaw), roll=float(roll)))

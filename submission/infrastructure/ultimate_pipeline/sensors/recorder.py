@@ -1151,7 +1151,6 @@ class SensorRecorder:
         write_fn: Any,
         sensor: Any = None,
         out_path: Optional[Path] = None,
-        sim_timestamp: Any = None,
     ) -> None:
         # Executing is counted separately from pending so a drain timeout can
         # report exactly what was still running.
@@ -1175,7 +1174,6 @@ class SensorRecorder:
                         output_path=Path(actual),
                         write_status="WRITTEN",
                         sensor=sensor,
-                        sim_timestamp=sim_timestamp,
                     )
                 self._record_saved_frame(
                     sensor_name=str(sensor_name),
@@ -1202,7 +1200,6 @@ class SensorRecorder:
         write_fn: Any,
         sensor: Any = None,
         out_path: Optional[Path] = None,
-        sim_timestamp: Any = None,
     ) -> bool:
         """Queue one write. False means the frame was DROPPED.
 
@@ -1242,7 +1239,6 @@ class SensorRecorder:
                 write_fn=write_fn,
                 sensor=sensor,
                 out_path=out_path,
-                sim_timestamp=sim_timestamp,
             )
             return True
         except Exception as exc:
@@ -1411,11 +1407,6 @@ class SensorRecorder:
                 # escaped before the finally decrement and permanently leaked
                 # _callbacks_in_flight, making every later drain wait forever.
                 frame_id = self._next_frame_id(data)
-                raw_timestamp = getattr(data, "timestamp", None)
-                try:
-                    sim_timestamp = float(raw_timestamp) if raw_timestamp is not None else None
-                except (TypeError, ValueError):
-                    sim_timestamp = None
                 # Exact frame-id authority: this is the actual CARLA callback
                 # frame, recorded before any queueing decision.
                 self._record_callback_frame(sensor_name, frame_id)
@@ -1455,7 +1446,6 @@ class SensorRecorder:
                                 frame_id=frame_id,
                                 sensor=sensor,
                                 out_path=out_path,
-                                sim_timestamp=sim_timestamp,
                                 write_fn=lambda data=data, out_path=out_path, viz_path=viz_path: self._write_semseg_frame(
                                 data, out_path=out_path, viz_path=viz_path
                             ),
@@ -1474,7 +1464,6 @@ class SensorRecorder:
                             frame_id=frame_id,
                             sensor=sensor,
                             out_path=out_path,
-                            sim_timestamp=sim_timestamp,
                             write_fn=lambda data=data, out_path=out_path: self._save_camera_frame(
                             data, out_path=out_path, apply_cityscapes=False
                         ),
@@ -1494,7 +1483,6 @@ class SensorRecorder:
                         frame_id=frame_id,
                         sensor=sensor,
                         out_path=out_path,
-                        sim_timestamp=sim_timestamp,
                         write_fn=lambda data=data, out_path=out_path: self._save_lidar_frame(
                             data, out_path=out_path
                         ),
@@ -1642,7 +1630,6 @@ class SensorRecorder:
                     {
                         "name": sensor_name,
                         "kind": sensor_kind,
-                        "actor_id": int(getattr(sensor, "id", -1) or -1) if sensor is not None else -1,
                         "type_id": type_id,
                         "frame_count": frame_count,
                         "output_dir": str(sensor_dir),
@@ -1684,11 +1671,6 @@ class SensorRecorder:
                 "last_tick_snapshot": self._last_tick_snapshot,
                 "manifest_write_error": str(self._manifest_error or ""),
             }
-        # These bindings contain callback frame IDs, simulation timestamps,
-        # and SHA-256 digests of the bytes actually written. They are kept in
-        # the recorder manifest so later rig receipts can bind to real output.
-        payload["artifact_bindings"] = self._artifact_report()["artifacts"]
-        payload["frame_correspondence"] = self.frame_correspondence()
         return payload
 
     def _write_manifest(self) -> bool:

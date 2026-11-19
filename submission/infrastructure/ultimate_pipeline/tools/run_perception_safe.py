@@ -21,7 +21,6 @@ Env toggles:
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
 import math
 import os
@@ -67,11 +66,6 @@ from ultimate_pipeline.carla_tools.runtime_enrichments import (
     parse_type_filter,
 )
 from ultimate_pipeline.carla_tools.thesis_sensor_rig import ThesisSensorRig
-from ultimate_pipeline.utils.file_hashing import safe_sha256_file
-from ultimate_pipeline.perception.capture_config import (
-    PairedCaptureConfig,
-    camera_count_for_config,
-)
 import socket
 
 
@@ -138,13 +132,6 @@ def _repo_root_dir() -> Path:
         if (parent / "AGENT_SYNC.md").is_file():
             return parent
     return here.parents[2]
-
-
-def _sha256_path_or_empty(path: Path) -> str:
-    try:
-        return hashlib.sha256(path.read_bytes()).hexdigest()
-    except OSError:
-        return ""
 
 
 def _portable_path_for_metadata(
@@ -406,25 +393,10 @@ def _compute_record_route_timeout_s(
     *,
     frames: int,
     fps: float,
-    camera_count: int = 1,
     duration_s: Optional[float] = None,
     override_timeout_s: Optional[float] = None,
     env_timeout_s: Optional[float] = None,
 ) -> float:
-    """Compute the subprocess.run() timeout budget for one record_route call.
-
-    `camera_count` matters: the 2026-05-14 RQ3 paired-capture attempt hit a
-    flat 60s timeout on the Town10HD side because that side used a 6-camera
-    rig while the timeout formula only ever accounted for `frames`/`fps`
-    (see submission/results/perception_rq3_bounded/capture_attempt_log.txt,
-    "record_route_timeout (60s process budget exhausted)" with only 1 tick
-    of 6 cameras captured in that window). Each additional camera adds a
-    PNG/semseg encode+write per tick, and sensor spawn/teardown cost also
-    grows with sensor count, so both the per-tick multiplier and the fixed
-    overhead/floor scale linearly with `camera_count`. For a single camera
-    this reduces exactly to the previous formula (floor=60s,
-    duration_s*4+30), so existing single-camera callers are unaffected.
-    """
     if override_timeout_s is not None:
         return max(5.0, float(override_timeout_s))
     if env_timeout_s is not None:
@@ -432,14 +404,7 @@ def _compute_record_route_timeout_s(
     resolved_duration_s = float(duration_s) if duration_s is not None else (
         float(frames) / float(max(float(fps), 1.0))
     )
-    resolved_camera_count = max(1, int(camera_count))
-    per_tick_multiplier_s = 4.0 * float(resolved_camera_count)
-    fixed_overhead_s = 30.0 * float(resolved_camera_count)
-    floor_s = 60.0 * float(resolved_camera_count)
-    return max(
-        floor_s,
-        float(resolved_duration_s) * per_tick_multiplier_s + fixed_overhead_s,
-    )
+    return max(60.0, float(resolved_duration_s) * 4.0 + 30.0)
 
 
 def _read_capture_status_payload(recording_dir: Path) -> Dict[str, Any]:
@@ -733,7 +698,6 @@ def _refresh_thesis_contract_artifacts(
             status.get("expected_map_name") or inputs.get("expected_map_name") or ""
         ),
         "xodr_in": str(inputs.get("xodr_in", "") or ""),
-        "xodr_in_sha256": str(inputs.get("xodr_in_sha256", "") or ""),
     }
 
     produced_artifacts = perception_status.get("produced_artifacts")
@@ -929,19 +893,7 @@ def _run_map_only_probe_subprocess(
     expected_map_name: str,
     use_current_world: bool,
     timeout_s: float,
-    xodr_path: Optional[Path] = None,
 ) -> Dict[str, Any]:
-    """
-    Run the isolated, sacrificial map-only probe subprocess.
-
-    NEW-251: ``generate_opendrive_world()`` is one of the most crash-capable
-    operations in the whole pipeline (native LowLevelFatalError, road-length
-    asserts, OOM, server disappearance, RPC timeout). It must always be executed
-    first in an isolated process that can die without taking the capture with it.
-    Passing ``xodr_path`` routes the probe into OpenDRIVE mode; previously the
-    probe was invoked only for a *named* town, so a generated-XODR capture went
-    straight to generation in the main process.
-    """
     probe_dir = out_dir / "map_probe"
     probe_dir.mkdir(parents=True, exist_ok=True)
     stdout_path = probe_dir / "map_probe_stdout.txt"
@@ -955,17 +907,13 @@ def _run_map_only_probe_subprocess(
         str(host),
         "--port",
         str(int(port)),
-        # NEW-251: --town stays required by the probe's CLI, so a generated-XODR
-        # run passes a placeholder identity label rather than nothing. The probe
-        # switches to XODR mode when --xodr-path is present.
-        "--town", str(town or "OpenDriveMap"),
+        "--town",
+        str(town),
         "--out",
         str(probe_dir),
         "--timeout-s",
         str(float(timeout_s)),
     ]
-    if xodr_path is not None:
-        cmd += ["--xodr-path", str(xodr_path)]
     if str(expected_map_name or "").strip():
         cmd += ["--expected-map-name", str(expected_map_name)]
     if bool(use_current_world):
@@ -1544,48 +1492,15 @@ def _provision_requested_town_map(
             from ultimate_pipeline.core.carla_opendrive_loader import (
                 load_opendrive_world_from_file,
             )
-
-            # NEW-250: compute the approved structural fingerprint of the source
-            # XODR and require the runtime world to match it. Without this, any
-            # generated world that ticked was accepted, and metrics could be
-            # attributed to a map that was never actually generated.
-            expected_structural_sha256 = ""
-            try:
-                from ultimate_pipeline.carla_tools.map_runtime_identity import (
-                    structural_fingerprint,
-                )
-
-                expected_structural_sha256 = str(
-                    structural_fingerprint(
-                        Path(xodr_path).read_text(encoding="utf-8", errors="replace")
-                    ).get("fingerprint_sha256")
-                    or ""
-                )
-            except Exception as exc:
-                print(f"[perception_safe] WARNING: source XODR fingerprint failed: {exc}")
-
-            world, xodr_identity = load_opendrive_world_from_file(
+            world = load_opendrive_world_from_file(
                 client,
                 xodr_path,
                 timeout_s=float(map_load_timeout_s),
                 retries=2,
                 do_reload=True,
-                return_identity=True,
-                expected_structural_sha256=expected_structural_sha256,
             )
             pair_status["xodr_loaded"] = True
             pair_status["xodr_path"] = str(xodr_path)
-            # NEW-250: record all three identities for the capture evidence.
-            pair_status["xodr_identity"] = {
-                "source_xodr_sha256": xodr_identity.get("source_xodr_sha256"),
-                "runtime_payload_sha256": xodr_identity.get("runtime_payload_sha256"),
-                "runtime_payload_differs_from_source": xodr_identity.get(
-                    "runtime_payload_differs_from_source"
-                ),
-                "runtime_map_structural_sha256": xodr_identity.get(
-                    "runtime_map_structural_sha256"
-                ),
-            }
         else:
             # Cooked map loading (Grid0828, Grid0821, Towns, etc.)
             candidates = get_load_world_candidates(requested_town)
@@ -1883,21 +1798,22 @@ def _rig_verification_strict_mode(args: argparse.Namespace) -> bool:
     )
 
 
-def _rig_verification_contract_errors(
-    rig_verification: Dict[str, Any], *, expected_source_calibration_sha256: str | None = None,
-    expected_calibration_bytes: bytes | None = None,
-) -> List[str]:
+def _rig_verification_contract_errors(rig_verification: Dict[str, Any]) -> List[str]:
     errors: List[str] = []
+    ctv_inverted = rig_verification.get(
+        "cTv_inverted",
+        rig_verification.get("ctv_inverted"),
+    )
+    vtl_inverted = rig_verification.get(
+        "vTl_inverted",
+        rig_verification.get("vtl_inverted"),
+    )
+    if ctv_inverted is not False:
+        errors.append("cTv_inverted must be false")
+    if vtl_inverted is not True:
+        errors.append("vTl_inverted must be true")
     if rig_verification.get("use_K_undistortion_only") is not True:
         errors.append("use_K_undistortion_only must be true")
-    contract = rig_verification.get("sensor_contract")
-    if not isinstance(contract, dict) or contract.get("calibration_contract_version") != "CARLA_SENSOR_MOUNTING/v2":
-        errors.append("CARLA_SENSOR_MOUNTING/v2 contract missing")
-    schema_version = rig_verification.get("schema_version")
-    if schema_version == 1:
-        errors.append("legacy_v1_rig_receipt_not_admissible")
-    elif schema_version != 2:
-        errors.append("unsupported_rig_verification_schema")
 
     sensors = rig_verification.get("sensors")
     if not isinstance(sensors, dict) or not sensors:
@@ -1924,22 +1840,6 @@ def _rig_verification_contract_errors(
                 f"missing relative_to_vehicle transform for sensor '{sensor_name}'"
             )
 
-    # v1 booleans and source-calibration hashes remain readable for historical
-    # runs, but only an applied v2 receipt can authorize live calibration use.
-    from ultimate_pipeline.sensors.applied_sensor_rig import (
-        validate_applied_sensor_rig_v2,
-    )
-
-    v2_receipt = rig_verification.get("applied_sensor_rig_v2")
-    errors.extend(
-        validate_applied_sensor_rig_v2(
-            v2_receipt,
-            require_live=True,
-            expected_source_calibration_sha256=expected_source_calibration_sha256,
-            expected_calibration_bytes=expected_calibration_bytes,
-        )
-    )
-
     return errors
 
 
@@ -1951,8 +1851,6 @@ def _write_canonical_rig_verification(
     existing_verification: Optional[Dict[str, Any]] = None,
     note: str = "",
 ) -> Tuple[Dict[str, Any], List[str]]:
-    calibration_bytes = calib_path.read_bytes()
-    expected_calibration_sha256 = hashlib.sha256(calibration_bytes).hexdigest()
     rig = ThesisSensorRig(calib_path)
     report_payload: Dict[str, Any] = (
         rig_report_payload if isinstance(rig_report_payload, dict) else {}
@@ -1969,24 +1867,6 @@ def _write_canonical_rig_verification(
         extra["note"] = str(note)
     rig_path = rig.write_rig_verification(out_dir, spawned, extra=extra)
     canonical = json.loads(rig_path.read_text(encoding="utf-8", errors="replace"))
-
-    # A recorder-produced v2 receipt contains observed ego/sensor world poses.
-    # Keep it authoritative instead of replacing it with a reconstruction from
-    # calibration defaults. Missing producer evidence remains fail-closed.
-    producer_receipt = report_payload.get("applied_sensor_rig_v2")
-    if isinstance(producer_receipt, dict):
-        canonical["applied_sensor_rig_v2"] = producer_receipt
-        from ultimate_pipeline.sensors.applied_sensor_rig import (
-            validate_applied_sensor_rig_v2,
-        )
-        producer_errors = validate_applied_sensor_rig_v2(
-            producer_receipt,
-            require_live=True,
-            expected_source_calibration_sha256=expected_calibration_sha256,
-            expected_calibration_bytes=calibration_bytes,
-        )
-        canonical["applied_sensor_rig_v2_errors"] = producer_errors
-        canonical["applied_sensor_rig_v2_live_accepted"] = not producer_errors
 
     merged: Dict[str, Any] = {}
     if isinstance(existing_verification, dict):
@@ -2008,11 +1888,7 @@ def _write_canonical_rig_verification(
                     merged_notes.append(note_value)
     merged["compliance_notes"] = merged_notes
 
-    errors = _rig_verification_contract_errors(
-        merged,
-        expected_source_calibration_sha256=expected_calibration_sha256,
-        expected_calibration_bytes=calibration_bytes,
-    )
+    errors = _rig_verification_contract_errors(merged)
     merged["rig_verification_contract_ok"] = not bool(errors)
     if errors:
         merged["ok"] = False
@@ -2200,8 +2076,8 @@ def _assert_supported_carla_version() -> None:
         return
 
     ver = str(getattr(carla, "__version__", ""))
-    if ver and not ver.startswith("0.9."):
-        raise RuntimeError(f"Unsupported CARLA version: {ver}")
+    if ver:
+        assert ver.startswith("0.9."), f"Unsupported CARLA version: {ver}"
 
 
 # Stable screenshot filenames (thesis requirement)
@@ -2695,9 +2571,6 @@ def _build_rig_verification_from_report(
                 "type": "camera",
                 "ctv_inverted": ctv_inv,
                 "cTv_inverted": ctv_inv,
-                "source_matrix_inverse_applied": True,
-                "attachment_derivation": "inverse_cTv_with_explicit_flu_fru_and_optical_basis_changes",
-                "legacy_v1_boolean_semantics": "historical_only_not_authoritative_for_v2_mounting",
                 "K_undistortion": k_undist,
                 "image_size": {"width": width_px, "height": height_px},
                 "derived_fov_deg": derived_fov,
@@ -2735,9 +2608,6 @@ def _build_rig_verification_from_report(
                 "type": "lidar",
                 "vtl_inverted": vtl_inv,
                 "vTl_inverted": vtl_inv,
-                "source_matrix_inverse_applied": False,
-                "attachment_derivation": "vTl_with_explicit_flu_fru_basis_changes",
-                "legacy_v1_boolean_semantics": "historical_only_not_authoritative_for_v2_mounting",
                 "transform_convention": sensor_data.get("transform_convention", ""),
             }
     if lidars_count == 0:
@@ -2753,20 +2623,16 @@ def _build_rig_verification_from_report(
 
     # v2-compatible contract view for validators
     verification["sensor_contract"] = {
-        "calibration_contract_version": "CARLA_SENSOR_MOUNTING/v2",
         "cameras": {
             "intrinsics_rule": "K_undistortion_only",
             "ignore_K_and_D": True,
-            "source_transform": "camera_optical_from_vehicle_flu",
-            "attachment_derivation": "inverse_cTv_with_explicit_flu_fru_and_optical_basis_changes",
-            "source_matrix_inverse_applied": True,
         },
-        "lidars": {
-            "source_transform": "vehicle_flu_from_lidar",
-            "attachment_derivation": "vTl_with_explicit_flu_fru_basis_changes",
-            "source_matrix_inverse_applied": False,
+        "transforms": {
+            "cTv_direction": "vehicle_to_camera",
+            "vTl_direction": "lidar_to_vehicle",
+            "cTv_inversion_forbidden": True,
+            "vTl_inversion_required": True,
         },
-        "legacy_v1_boolean_semantics": "historical_only_not_authoritative_for_v2_mounting",
     }
     verification["ok"] = bool(
         verification["thesis_compliance"].get(
@@ -2788,16 +2654,16 @@ def _build_rig_verification_from_report(
         )
     if not any_ctv_inverted:
         verification["compliance_notes"].append(
-            "Legacy v1 camera direction alias retained; v2 mounting derives inverse(cTv) with explicit basis changes"
+            "OK: No camera cTv transforms were inverted"
         )
     if lidars_count > 0:
         if all_vtl_inverted:
             verification["compliance_notes"].append(
-                "Legacy v1 LiDAR direction alias retained; v2 mounting applies vTl with explicit basis changes"
+                "OK: All LiDAR vTl transforms were inverted for attachment"
             )
         else:
             verification["compliance_notes"].append(
-                "Legacy v1 LiDAR direction alias differs from the frozen v1 value"
+                "WARN: One or more LiDAR vTl transforms were not inverted for attachment"
             )
 
     verification["sensors_summary"] = {
@@ -4208,16 +4074,6 @@ def main() -> int:
         if args.xodr_in
         else ""
     )
-    # Evidence binding (GAP-022): hash the ORIGINAL --xodr-in argument here, before
-    # any later normalization (e.g. the georeference rewrite further down replaces
-    # args.xodr_in with a generated _normalized_input.xodr copy). This is the sha256
-    # of the exact artifact the caller asked us to capture against, and it is what
-    # final_map_readiness_gate.evaluate_perception_status() cross-checks against the
-    # XODR it is evaluating -- so it must match that source file byte-for-byte, not
-    # an internal CARLA-loading intermediate.
-    xodr_in_sha256 = (
-        (safe_sha256_file(Path(args.xodr_in)) or "") if args.xodr_in else ""
-    )
     visual_qa_gate_required = bool(
         bool(getattr(args, "require_visual_qa_gate", False))
         or _env_bool("UP_REQUIRE_VISUAL_QA_GATE_FOR_PERCEPTION", False)
@@ -4280,24 +4136,9 @@ def main() -> int:
     stream_reachable = False
     estimated_duration_s = float(args.frames) / float(max(float(args.fps), 1.0))
     env_record_route_timeout_s = _env_float("UP_RECORD_ROUTE_TIMEOUT_S", -1.0)
-    # camera_count matters for the timeout budget (see
-    # _compute_record_route_timeout_s docstring): a 6-camera "thesis" rig
-    # needs materially more wall-clock time per tick than a single-camera
-    # probe, so derive the actual camera count from the resolved calib file
-    # (falling back to the static per-rig table) rather than assuming 1.
-    estimated_camera_count = camera_count_for_config(
-        PairedCaptureConfig(
-            frames=int(args.frames),
-            fps=int(args.fps),
-            rig=str(args.rig),
-            front_only=bool(args.front_only_strict),
-        ),
-        calib_path=str(calib_path),
-    )
     record_route_timeout_s = _compute_record_route_timeout_s(
         frames=int(args.frames),
         fps=float(args.fps),
-        camera_count=int(estimated_camera_count),
         duration_s=float(estimated_duration_s),
         override_timeout_s=(
             float(args.record_route_timeout_s)
@@ -4323,14 +4164,12 @@ def main() -> int:
         "manual_town": str(args.manual_town),
         "town": str(args.town or ""),
         "xodr_in": str(xodr_in_metadata),
-        "xodr_in_sha256": str(xodr_in_sha256),
         "expected_map_name": str(args.expected_map_name or ""),
         "map_probe_requested": bool(map_probe_requested),
         "visual_qa_gate_required": bool(visual_qa_gate_required),
         "visual_qa_gate": dict(upstream_visual_qa_gate),
         "rig": str(args.rig),
         "calib_path_resolved": str(calib_path_metadata),
-        "calib_sha256": _sha256_path_or_empty(calib_path),
         "calib_source": str(calib_source),
         "calib_exists": bool(calib_path.exists()),
         "thesis_capture_gate": dict(thesis_gate),
@@ -4354,7 +4193,6 @@ def main() -> int:
             "map_load_timeout_s": float(map_load_timeout_s),
             "map_probe_timeout_s": float(map_probe_timeout_s),
             "record_route_timeout_s": float(record_route_timeout_s),
-            "record_route_timeout_camera_count": int(estimated_camera_count),
             "rpc_probe_timeout_s": float(rpc_timeout_s),
             "stream_timeout_s": float(stream_timeout_s),
             "stream_wait_s": float(stream_wait_s),
@@ -4385,11 +4223,6 @@ def main() -> int:
         "failure_detail": "",
         "warnings": [],
         "output_dir": str(out_dir),
-        # GAP-022 evidence binding: sha256 of the XODR this capture was run
-        # against (empty when the run used a named --town instead of --xodr-in).
-        # final_map_readiness_gate.evaluate_perception_status() cross-checks this
-        # against the XODR it is evaluating and fails closed on a mismatch.
-        "xodr_sha256": str(xodr_in_sha256),
         "png_files": 0,
         "semseg_files": 0,
         "ply_files": 0,
@@ -4423,7 +4256,6 @@ def main() -> int:
         "calib_override_applied": False,
         "calib_override_applied_to": [],
         "calib_path_resolved": str(calib_path_metadata),
-        "calib_sha256": _sha256_path_or_empty(calib_path),
         "calib_source": str(calib_source),
         "calib_exists": bool(calib_path.exists()),
         "thesis_capture_gate": dict(thesis_gate),
@@ -4509,7 +4341,6 @@ def main() -> int:
             "manual_town": args.manual_town,
             "town": args.town or "",
             "xodr_in": str(xodr_in_metadata),
-            "xodr_in_sha256": str(xodr_in_sha256),
             "rig_mode": args.rig,
             "expected_map_name": str(args.expected_map_name or ""),
             "map_probe_requested": bool(map_probe_requested),
@@ -4981,15 +4812,9 @@ def main() -> int:
                 }
             pair_manifest["status"]["carla_client_ok"] = True
             requested_town = str(args.town or "").strip()
-            # NEW-251: an XODR run is exactly the case that most needs the isolated
-            # probe. It is no longer skipped for lacking a named town.
-            map_probe_xodr = Path(args.xodr_in).resolve() if args.xodr_in else None
-            map_probe_subject = requested_town or (
-                "OpenDriveMap" if map_probe_xodr is not None else ""
-            )
-            if map_probe_requested and not map_probe_subject:
-                if "map_probe_skipped_no_subject" not in perception_status["warnings"]:
-                    perception_status["warnings"].append("map_probe_skipped_no_subject")
+            if map_probe_requested and not requested_town:
+                if "map_probe_skipped_no_town" not in perception_status["warnings"]:
+                    perception_status["warnings"].append("map_probe_skipped_no_town")
             if (
                 requested_town
                 and _is_known_unstable_map(requested_town)
@@ -4999,16 +4824,15 @@ def main() -> int:
                     f"MAP_LOAD_FAILED: MAP_TRAVEL_RISK_{requested_town.upper()}: map travel to {requested_town} is blocked. "
                     f"Load {requested_town} manually and rerun with --use-current-world."
                 )
-            if map_probe_requested and map_probe_subject:
+            if map_probe_requested and requested_town:
                 map_probe = _run_map_only_probe_subprocess(
                     out_dir=out_dir,
                     host=str(args.host),
                     port=int(args.port),
-                    town=map_probe_subject,
+                    town=requested_town,
                     expected_map_name=expected_map_substr,
                     use_current_world=bool(route_use_current_world),
                     timeout_s=float(map_probe_timeout_s),
-                    xodr_path=map_probe_xodr,
                 )
                 run_info_payload["map_probe"] = dict(map_probe)
                 _write_json(out_dir / "run_info.json", run_info_payload)
@@ -5829,18 +5653,6 @@ def main() -> int:
             perception_status["listener_callbacks_registered"] = int(
                 listener_callbacks_registered
             )
-            if isinstance(rig_data_loaded, dict) and isinstance(
-                rig_data_loaded.get("applied_sensor_rig_v2"), dict
-            ):
-                from ultimate_pipeline.sensors.applied_sensor_rig import (
-                    bind_recorder_dataset_v2,
-                )
-                bound_receipt, binding_errors = bind_recorder_dataset_v2(
-                    rig_data_loaded["applied_sensor_rig_v2"],
-                    recording_dir / "recorder_manifest.json",
-                )
-                rig_data_loaded["applied_sensor_rig_v2"] = bound_receipt
-                rig_data_loaded["applied_sensor_rig_v2_binding_errors"] = binding_errors
             # Build thesis-compliant rig_verification.json with explicit compliance booleans
             rig_verification = _build_rig_verification_from_report(
                 rig_src,
