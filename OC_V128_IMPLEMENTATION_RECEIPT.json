@@ -1,0 +1,52 @@
+{
+  "ticket_id": "OC-05-F1",
+  "title": "Fail-closed object-density increase in RL fuzzer",
+  "reproduced_defect": "RL fuzzer _perturb_object_density silently ignored object_density_scale > 1.0. sample_action() samples up to 1.2, but _perturb_object_density capped keep_count at min(len(pairs), keep_count), so scale > 1.0 kept all objects and produced no evidence that the requested increase was unrealizable. Verified: scale 1.5 on 5 objects returned 5 objects (no increase, no status).",
+  "original_sha": "c3ef1820",
+  "candidate_sha": "f48c5a6b",
+  "branch": "fix/oc05-f1-object-density",
+  "worktree": "F:\\opencode_worktrees\\wt-oc-05",
+  "base_sha": "502dda260abb871b2333191bb33e1e7eecd1ece7",
+  "modified_files": [
+    "ultimate_pipeline/experiments/rl_fuzzer.py",
+    "tests/unit/test_oc05_rl_fuzzer_gnn_integrity.py",
+    "tests/unit/test_rl_fuzzer.py"
+  ],
+  "existing_pr_overlap": {
+    "PR_49": "fixes cubic lane-width scaling (a,b,c,d) ONLY; does NOT touch _perturb_object_density. Object-density code identical between production and PR #49 branch (dc86a409). Not in production (merge base 65eb0f14, behind 502dda26).",
+    "PR_65": "does not exist as a separate PR. Camera intrinsic work (d57271da) not in production either.",
+    "OC_01": "ea2d3ac8 - camera intrinsic realization, extrinsic-agnostic, no overlap with OC-05-F1"
+  },
+  "source_correction": {
+    "change": "_perturb_object_density now returns density_status=UNSUPPORTED_DENSITY_INCREASE when scale > 1.0, preserves all objects, records requested_scale and reason. Scale <= 1.0 preserves existing subsampling behavior. validate_action rejects nonfinite density values (NaN/Inf).",
+    "rationale": "Frozen RQ4 protocol does not authorize adding synthetic objects. No object-generation policy invented. Impossible density requests explicitly rejected rather than silently faked."
+  },
+  "tests_executed": 50,
+  "tests_passed": 50,
+  "tests_failed": 0,
+  "tests_skipped": 0,
+  "negative_controls": [
+    "scale > 1.0 returns UNSUPPORTED_DENSITY_INCREASE and does not modify input map (byte-identical)",
+    "scale == 1.0 preserves all objects with density_status=UNCHANGED",
+    "scale < 1.0 subsamples deterministically under fixed seed (same kept IDs)",
+    "invalid/nonfinite density (NaN/Inf) rejected by validate_action",
+    "PR #49 cubic lane-width scaling preserved (a,b,c,d all scaled uniformly)",
+    "input map never mutated for any scale factor"
+  ],
+  "reviewer_required": "Claude (independent QA, exact SHA f48c5a6b)",
+  "integration_owner": "Codex (merge to integration/production-large-map-20260918)",
+  "remaining_blockers": [
+    "Live CARLA runtime BLOCKED_EXTERNAL (no CarlaUE4.exe, disk C: 0.39 GB free)",
+    "CD-01 canonical sensor extrinsics not yet frozen (blocks downstream integration)",
+    "CD-05 CRS projection freeze not yet complete (blocks OC-03 geospatial tests)"
+  ],
+  "next_task": "OC-01 integration into CD-02 RQ3 receipt schema (effective K binding), or OC-03 geospatial projection tests after CD-05 CRS freeze",
+  "merge_allowed": "NO",
+  "evidence_grade": "VERIFIED_OFFLINE",
+  "resource_preflight": {
+    "disk_c_free_gb": 0.39,
+    "disk_f_free_gb": 30.59,
+    "ram_available_gb": 21.91,
+    "carla_server": "NOT_AVAILABLE"
+  }
+}

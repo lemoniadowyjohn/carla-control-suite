@@ -345,7 +345,9 @@ def test_perturb_lane_widths_skips_non_drivable_lane_types() -> None:
     assert stats == {"width_records_modified": 0, "width_records_dropped_nonpositive": 0}
 
 
-def test_object_density_scale_clamps_at_upper_bound(tmp_path) -> None:
+def test_object_density_scale_above_one_is_unsupported(tmp_path) -> None:
+    """Scale > 1.0 cannot add synthetic objects; fails closed with
+    UNSUPPORTED_DENSITY_INCREASE status instead of silently ignoring."""
     src = _make_map(tmp_path, n_objects=4)
     out = RLFuzzer(seed=0).apply_to_map(
         src,
@@ -353,7 +355,25 @@ def test_object_density_scale_clamps_at_upper_bound(tmp_path) -> None:
         out_dir=str(tmp_path / "fuzz"),
     )
     remaining = len(_read(out).findall(".//object"))
-    assert remaining == 4  # can't keep more than exist, even at scale > 1.0
+    assert remaining == 4  # all objects preserved, none added
+    import json as _json
+
+    report = _json.loads(open(out + ".json", encoding="utf-8").read())
+    assert report["objects"]["density_status"] == "UNSUPPORTED_DENSITY_INCREASE"
+    assert report["objects"]["requested_scale"] == OBJECT_DENSITY_MAX
+
+
+def test_validate_action_rejects_nonfinite_object_density() -> None:
+    """NaN and Inf density scales are rejected by validate_action."""
+    fuzzer = RLFuzzer()
+    with pytest.raises(ValueError, match="object_density_scale"):
+        fuzzer.validate_action(
+            {"lane_width_scale": 1.0, "curvature_noise": 0.0, "object_density_scale": float("nan")}
+        )
+    with pytest.raises(ValueError, match="object_density_scale"):
+        fuzzer.validate_action(
+            {"lane_width_scale": 1.0, "curvature_noise": 0.0, "object_density_scale": float("inf")}
+        )
 
 
 def test_object_density_handles_zero_objects(tmp_path) -> None:

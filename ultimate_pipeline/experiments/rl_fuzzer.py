@@ -161,25 +161,50 @@ class RLFuzzer:
         return {"arc_records_modified": modified, "arc_curvature_clamped": clamped}
 
     def _perturb_object_density(self, root: ET.Element, scale: float) -> Dict[str, Any]:
-        """Keep a seeded round(n * scale) subset of map objects."""
+        """Keep a seeded round(n * scale) subset of map objects.
+
+        The fuzzer can only subsample (remove) existing objects; it cannot
+        synthesize new ones. A density scale greater than 1.0 is therefore
+        not realizable and is reported explicitly as
+        ``UNSUPPORTED_DENSITY_INCREASE`` rather than silently ignored.
+        """
         # Stdlib ElementTree has no getparent(); collect parent->object pairs by walk.
         pairs: List[Any] = []
         for parent in root.iter():
             for obj in parent.findall("object"):
                 pairs.append((parent, obj))
+        objects_before = len(pairs)
         if not pairs:
-            return {"objects_before": 0, "objects_after": 0}
-        keep_count = int(round(len(pairs) * scale))
-        keep_count = max(0, min(len(pairs), keep_count))
-        keep_ids = set(self.rng.sample(range(len(pairs)), keep_count))
+            return {
+                "objects_before": 0,
+                "objects_after": 0,
+                "density_status": "UNCHANGED_EMPTY",
+                "requested_scale": scale,
+            }
+        if scale > 1.0:
+            # Fail-closed: adding synthetic objects is not authorized by the
+            # frozen RQ4 protocol. Report the unsupported request explicitly
+            # instead of silently ignoring the requested increase.
+            return {
+                "objects_before": objects_before,
+                "objects_after": objects_before,
+                "density_status": "UNSUPPORTED_DENSITY_INCREASE",
+                "requested_scale": scale,
+                "reason": "synthetic object addition not authorized",
+            }
+        keep_count = int(round(objects_before * scale))
+        keep_count = max(0, min(objects_before, keep_count))
+        keep_ids = set(self.rng.sample(range(objects_before), keep_count))
         removed = 0
-        for idx in range(len(pairs) - 1, -1, -1):
+        for idx in range(objects_before - 1, -1, -1):
             if idx not in keep_ids:
                 pairs[idx][0].remove(pairs[idx][1])
                 removed += 1
         return {
-            "objects_before": len(pairs),
-            "objects_after": len(pairs) - removed,
+            "objects_before": objects_before,
+            "objects_after": objects_before - removed,
+            "density_status": "CHANGED" if removed > 0 else "UNCHANGED",
+            "requested_scale": scale,
         }
 
     # ------------------------------------------------------------------
