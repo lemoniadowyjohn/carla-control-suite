@@ -27,7 +27,15 @@ def test_measure_acceptance_passes_require_component_reachability(monkeypatch, t
     xodr.write_text("<OpenDRIVE/>", encoding="utf-8")
     out_dir = tmp_path / "out"
 
-    monkeypatch.setattr(measure_mod, "run_gates", lambda xodr, out_dir, dem: {"fake": "reports"})
+    # V131: run_gates now receives the trusted release scope. The fake must
+    # honour the real signature so the spy proves the kwarg is forwarded.
+    run_gates_kwargs: dict = {}
+
+    def _fake_run_gates(xodr, out_dir, dem, **kwargs):
+        run_gates_kwargs.update(kwargs)
+        return {"fake": "reports"}
+
+    monkeypatch.setattr(measure_mod, "run_gates", _fake_run_gates)
 
     captured_kwargs: dict = {}
 
@@ -41,11 +49,16 @@ def test_measure_acceptance_passes_require_component_reachability(monkeypatch, t
         }
 
     monkeypatch.setattr(map_acceptance_mod, "build_map_acceptance", _fake_build_map_acceptance)
+    # V86: regen delegates to the shared measure_mod.evaluate_candidate, which
+    # binds build_map_acceptance at module import, so patch it there as well.
+    monkeypatch.setattr(measure_mod, "build_map_acceptance", _fake_build_map_acceptance)
 
     regen._measure_acceptance(xodr, out_dir)
 
     assert captured_kwargs.get("require_enrichment") is True
     assert captured_kwargs.get("require_component_reachability") is True
+    # The trusted map scope must reach the checker invocation.
+    assert "expected_scope" in run_gates_kwargs
 
 
 def test_measure_acceptance_hard_fails_on_fragmented_map(monkeypatch, tmp_path: Path):
@@ -68,7 +81,7 @@ def test_measure_acceptance_hard_fails_on_fragmented_map(monkeypatch, tmp_path: 
     monkeypatch.setattr(
         measure_mod,
         "run_gates",
-        lambda xodr, out_dir, dem: {"component_reachability": fragmented_component_report},
+        lambda xodr, out_dir, dem, **kwargs: {"component_reachability": fragmented_component_report},
     )
 
     acceptance = regen._measure_acceptance(xodr, out_dir)
