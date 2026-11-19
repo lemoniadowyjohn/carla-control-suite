@@ -156,7 +156,13 @@ def complete_synthetic_arm(
         result, code_commit=code_commit, label=label, incomplete=incomplete
     )
     result.setdefault("sensor_rig_sha256", receipt["applied_configuration_sha256"])
-    result.setdefault("runtime_sensor_rig_sha256", result["sensor_rig_sha256"])
+    if "runtime_sensor_rig_sha256" not in result:
+        from ultimate_pipeline.perception.rq3_capture_contract import runtime_sensor_rig_identity as _runtime_sensor_rig_identity
+        result["runtime_sensor_rig_sha256"] = _runtime_sensor_rig_identity(
+            sensor_rig_sha256=result["sensor_rig_sha256"],
+            camera_response_sha256=str(result.get("camera_response_sha256", "")),
+            simulation_physics_sha256=str(result.get("simulation_physics_sha256", "")),
+        )["runtime_sensor_rig_sha256"]
     result["applied_sensor_rig_v2"] = receipt
     result["applied_sensor_rig_v2_sha256"] = canonical_sha256(receipt)
     return result

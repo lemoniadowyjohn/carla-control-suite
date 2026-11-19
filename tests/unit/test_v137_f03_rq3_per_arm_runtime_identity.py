@@ -175,8 +175,6 @@ def test_production_arm_identity_assembly_binds_each_arm_independently():
         camera_response_sha="cam-shared-config",
         simulation_physics_sha="phys-shared-config",
         capture_config_sha256="cfg-shared-config",
-        runtime_sensor_rig_sha_manual=str(manual_rig.get("sensor_rig_sha256", "")),
-        runtime_sensor_rig_sha_auto=str(auto_rig.get("sensor_rig_sha256", "")),
     )
 
     # Shared configuration identities may legitimately be identical.
@@ -198,8 +196,21 @@ def test_production_arm_identity_assembly_binds_each_arm_independently():
     # Sensor/applied rig and runtime sensor-rig identities come from each arm's own artifacts.
     assert manual_arm["sensor_rig_sha256"] == str(manual_rig.get("sensor_rig_sha256", ""))
     assert auto_arm["sensor_rig_sha256"] == str(auto_rig.get("sensor_rig_sha256", ""))
-    assert manual_arm["runtime_sensor_rig_sha256"] == str(manual_rig.get("sensor_rig_sha256", ""))
-    assert auto_arm["runtime_sensor_rig_sha256"] == str(auto_rig.get("sensor_rig_sha256", ""))
+    manual_runtime = rq3.runtime_sensor_rig_identity(
+        sensor_rig_sha256=manual_arm["sensor_rig_sha256"],
+        camera_response_sha256="cam-shared-config",
+        simulation_physics_sha256="phys-shared-config",
+    )["runtime_sensor_rig_sha256"]
+    auto_runtime = rq3.runtime_sensor_rig_identity(
+        sensor_rig_sha256=auto_arm["sensor_rig_sha256"],
+        camera_response_sha256="cam-shared-config",
+        simulation_physics_sha256="phys-shared-config",
+    )["runtime_sensor_rig_sha256"]
+    assert manual_arm["runtime_sensor_rig_sha256"] == manual_runtime
+    assert auto_arm["runtime_sensor_rig_sha256"] == auto_runtime
+    # Runtime sensor-rig digest binds per-arm observed rig with response/physics context.
+    assert manual_arm["runtime_sensor_rig_sha256"] != manual_arm["sensor_rig_sha256"]
+    assert auto_arm["runtime_sensor_rig_sha256"] != auto_arm["sensor_rig_sha256"]
     # Auto must not be laundered from manual when independently derived inputs differ.
     assert auto_arm["weather_sha256"] != manual_arm["weather_sha256"]
     assert auto_arm["applied_sensor_rig_v2_sha256"] != manual_arm["applied_sensor_rig_v2_sha256"]
@@ -234,8 +245,6 @@ def test_production_arm_identity_assembly_rejects_swapped_and_unbound_evidence()
         auto_applied_rig=auto_receipt_arm["applied_sensor_rig_v2"],
         manual_weather_sha="1" * 64, auto_weather_sha="2" * 64,
         camera_response_sha="cam", simulation_physics_sha="phys", capture_config_sha256="cfg",
-        runtime_sensor_rig_sha_manual=str(manual_rig.get("sensor_rig_sha256", "")),
-        runtime_sensor_rig_sha_auto=str(auto_rig.get("sensor_rig_sha256", "")),
     )
 
     # Swapped/inconsistent evidence: auto base claims manual dataset but auto receipt observations differ.

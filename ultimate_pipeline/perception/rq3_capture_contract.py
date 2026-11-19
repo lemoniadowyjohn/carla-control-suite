@@ -452,6 +452,36 @@ def sim_timing_identity(
 
 
 # ---------------------------------------------------------------------------
+# Runtime sensor-rig identity
+# ---------------------------------------------------------------------------
+
+
+def runtime_sensor_rig_identity(
+    *,
+    sensor_rig_sha256: str,
+    camera_response_sha256: str,
+    simulation_physics_sha256: str,
+) -> Dict[str, Any]:
+    """Digest runtime sensing context bound to an observed/applied sensor rig.
+
+    The runtime sensor-rig digest binds the per-arm applied/observed sensor-rig
+    identity together with governed camera response and simulation physics
+    identities, because runtime sensing output depends on all three. Camera
+    response and physics remain separate required governed identity keys and
+    must also match independently.
+    """
+    normalized = {
+        "sensor_rig_sha256": str(sensor_rig_sha256 or ""),
+        "camera_response_sha256": str(camera_response_sha256 or ""),
+        "simulation_physics_sha256": str(simulation_physics_sha256 or ""),
+    }
+    return {
+        "runtime_sensor_rig": normalized,
+        "runtime_sensor_rig_sha256": sha256_text(canonical_dumps(normalized)),
+    }
+
+
+# ---------------------------------------------------------------------------
 # Capture-config identity
 # ---------------------------------------------------------------------------
 

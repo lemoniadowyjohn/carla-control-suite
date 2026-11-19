@@ -205,10 +205,10 @@ def _assemble_pair_arm_identities(
     camera_response_sha: str,
     simulation_physics_sha: str,
     capture_config_sha256: str,
-    runtime_sensor_rig_sha_manual: str,
-    runtime_sensor_rig_sha_auto: str,
     traffic_manager_sha256: str = "",
     vehicle_calibration_binding_sha256: str = "",
+    sim_timing_sha256: str = "",
+    route_manifest_sha256: str = "",
 ) -> tuple[Dict[str, Any], Dict[str, Any]]:
     """Assemble per-arm pair-manifest identities from independently observed inputs.
 
@@ -218,6 +218,7 @@ def _assemble_pair_arm_identities(
     independently to each arm's own observations/receipts. Never manufacture
     different hashes just to distinguish arms.
     """
+    from ultimate_pipeline.perception.rq3_capture_contract import runtime_sensor_rig_identity
     from ultimate_pipeline.sensors.applied_sensor_rig import (
         canonical_sha256,
         validate_applied_sensor_rig_v2,
@@ -244,13 +245,12 @@ def _assemble_pair_arm_identities(
             raise ValueError(f"{arm_name}:applied_receipt_sha_mismatch")
 
     # Bind per-arm identities from each arm's independently derived artifacts.
-    for arm, calib, rig, weather_sha, runtime_sha, receipt in (
+    for arm, calib, rig, weather_sha, receipt in (
         (
             manual_arm,
             manual_calib or {},
             manual_rig or {},
             manual_weather_sha,
-            runtime_sensor_rig_sha_manual,
             manual_receipt,
         ),
         (
@@ -258,19 +258,30 @@ def _assemble_pair_arm_identities(
             auto_calib or {},
             auto_rig or {},
             auto_weather_sha,
-            runtime_sensor_rig_sha_auto,
             auto_receipt,
         ),
     ):
+        sensor_rig_sha = str(rig.get("sensor_rig_sha256", ""))
+        runtime_rig = runtime_sensor_rig_identity(
+            sensor_rig_sha256=sensor_rig_sha,
+            camera_response_sha256=camera_response_sha,
+            simulation_physics_sha256=simulation_physics_sha,
+        )
         arm["weather_sha256"] = weather_sha
         arm["camera_response_sha256"] = camera_response_sha
         arm["simulation_physics_sha256"] = simulation_physics_sha
-        arm["runtime_sensor_rig_sha256"] = str(runtime_sha or "")
+        arm["runtime_sensor_rig_sha256"] = runtime_rig["runtime_sensor_rig_sha256"]
         arm["calibration_sha256"] = str(calib.get("calib_sha256", ""))
-        arm["sensor_rig_sha256"] = str(rig.get("sensor_rig_sha256", ""))
+        arm["sensor_rig_sha256"] = sensor_rig_sha
         arm["capture_config_sha256"] = capture_config_sha256
-        arm["traffic_manager_sha256"] = traffic_manager_sha256
-        arm["vehicle_calibration_binding_sha256"] = vehicle_calibration_binding_sha256
+        if route_manifest_sha256:
+            arm["route_manifest_sha256"] = route_manifest_sha256
+        if traffic_manager_sha256:
+            arm["traffic_manager_sha256"] = traffic_manager_sha256
+        if vehicle_calibration_binding_sha256:
+            arm["vehicle_calibration_binding_sha256"] = vehicle_calibration_binding_sha256
+        if sim_timing_sha256:
+            arm["sim_timing_sha256"] = sim_timing_sha256
         if receipt:
             arm["applied_sensor_rig_v2"] = receipt
             arm["applied_sensor_rig_v2_sha256"] = canonical_sha256(receipt)
@@ -545,9 +556,15 @@ def main(argv: Optional[List[str]] = None) -> int:
     )
     capture_config_id = capture_config_identity(capture_config)
 
-    # Route manifest
+    # Route manifest (propagate genuine artifact digest when present)
     route_manifest_path = str(pair_root / "route_manifest.json")
     route_manifest_sha256 = ""
+    try:
+        route_manifest_file = Path(route_manifest_path)
+        if route_manifest_file.is_file():
+            route_manifest_sha256 = manual_refs.sha256_file(route_manifest_file) if hasattr(manual_refs, "sha256_file") else sha256_file(str(route_manifest_file))
+    except Exception:
+        route_manifest_sha256 = ""
 
     # NEW-317: each arm must INDEPENDENTLY measure its own effective weather.
     # Previously a single `weather_sha256` was computed here, AFTER both arms had
@@ -600,11 +617,25 @@ def main(argv: Optional[List[str]] = None) -> int:
     from ultimate_pipeline.perception.environment.traffic_manager_session import (
         TM_DIGEST_FIELD,
     )
+    from ultimate_pipeline.perception.rq3_capture_contract import sim_timing_identity, sha256_file
 
     _cam_response = profile_report()
     camera_response_sha = _cam_response["camera_response_sha256"]
-    _physics = build_physics_profile(int(getattr(SETTINGS, "CAPTURE_FPS", 20)))
+    _capture_fps = int(getattr(SETTINGS, "CAPTURE_FPS", 20))
+    _physics = build_physics_profile(_capture_fps)
     simulation_physics_sha = _physics[PHYSICS_DIGEST_FIELD]
+    # Configured capture timing identity (genuine capture config evidence). TM sync
+    # is not observed here; do not fabricate verified TM/session evidence.
+    _fixed_delta = (1.0 / float(_capture_fps)) if _capture_fps > 0 else 0.0
+    _timing = sim_timing_identity(
+        synchronous_mode=True,
+        fixed_delta_seconds=_fixed_delta,
+        traffic_manager_sync=False,
+        fps_target=float(_capture_fps),
+        capture_ticks=int(args.frames),
+    )
+    sim_timing_sha = _timing["sim_timing_sha256"]
+
     # Derive per-arm identities independently from each arm's verified artifacts.
     # Shared calibration/config identities may legitimately be identical when the
     # same governed configuration is used; runtime evidence/dataset bindings must
@@ -625,10 +656,10 @@ def main(argv: Optional[List[str]] = None) -> int:
         camera_response_sha=camera_response_sha,
         simulation_physics_sha=simulation_physics_sha,
         capture_config_sha256=capture_config_id["capture_config_sha256"],
-        runtime_sensor_rig_sha_manual=str(manual_rig.get("sensor_rig_sha256", "")),
-        runtime_sensor_rig_sha_auto=str(auto_rig.get("sensor_rig_sha256", "")),
         traffic_manager_sha256="",
         vehicle_calibration_binding_sha256="",
+        sim_timing_sha256=sim_timing_sha,
+        route_manifest_sha256=route_manifest_sha256,
     )
 
     # Build manifest
@@ -653,6 +684,7 @@ def main(argv: Optional[List[str]] = None) -> int:
         runtime_sensor_rig_sha256=str(manual_arm.get("runtime_sensor_rig_sha256", "")) if str(manual_arm.get("runtime_sensor_rig_sha256", "")) == str(auto_arm.get("runtime_sensor_rig_sha256", "")) else "",
         vehicle_calibration_binding_sha256="",
         weather_schema_version=WEATHER_SCHEMA_VERSION,
+        sim_timing_sha256=sim_timing_sha if str(manual_arm.get("sim_timing_sha256", "")) == str(auto_arm.get("sim_timing_sha256", "")) and str(manual_arm.get("sim_timing_sha256", "")) else "",
         manual_arm=manual_arm,
         auto_arm=auto_arm,
         pair_valid=raw_pair_valid,
