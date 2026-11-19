@@ -1,4 +1,9 @@
+production_base=225ed15d0da6444cc257835ca777aba281553f3c
+integration_source_sha=8d7e5912f981253826e1fb87d78422bf135621e7
+lifecycle_safety_fix_sha=7b0194caf6dfac4bbcbc63e0ab5b9397b95ae1f2
+source_tested_sha_for_combined_suite=1085e00031ffae99ca770ee963dc6f90ffafde72
+independent_reviewed_pre_fix_sha=1c392707f3c7b6b6742e7fba204fac5d429e6c2f
 branch=integration/v131-pre-claude-candidate
-head=1085e00031ffae99ca770ee963dc6f90ffafde72
-base=225ed15d0da6444cc257835ca777aba281553f3c
+pr=https://github.com/lemoniadowyjohn/carla-control-suite/pull/71
+current_report_commit_sha=to-be-recorded-by-branch-ref-after-evidence-commit
 status=nonproduction candidate; no merge authorization

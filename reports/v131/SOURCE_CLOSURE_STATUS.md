@@ -10,3 +10,7 @@
 - PRODUCTION_GO: NO.
 
 Candidate readiness is reviewable source integration, not release readiness. The 17 failures are due to missing torchvision imports; no baseline comparison has established them as newly introduced. Sparse checkout also omits map assets used by three PR67 adjacent tests.
+
+## Follow-up safety correction
+
+The independent review's P0 shared-directory deletion finding was fixed in `ultimate_pipeline/carla_tools/carla_recovery.py` commit `7b0194caf6dfac4bbcbc63e0ab5b9397b95ae1f2`; both restart entrypoints now avoid cache/temp deletion. Targeted regression: 51 passed, 0 failed, 0 skipped. Exact source diff whitespace check was corrected in `8d7e5912f981253826e1fb87d78422bf135621e7`. Independent review of the resulting final SHA remains pending. RQ5 split proof, RQ3 planned-count wiring, CRS caller adoption and effective-K receipt wiring remain blockers.

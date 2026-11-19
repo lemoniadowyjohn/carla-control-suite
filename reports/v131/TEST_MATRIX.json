@@ -67,5 +67,38 @@
     "stdout": "empty",
     "stderr": "empty",
     "log": "NOT_CREATED: successful compileall emitted no output"
+  },
+  "lifecycle_purge_fix": {
+    "tested_commit": "8d7e5912f981253826e1fb87d78422bf135621e7",
+    "command": "python -m pytest ultimate_pipeline/carla_tools/tests/test_carla_recovery_helpers.py tests/unit/test_carla_utils_tier3_hardening.py tests/unit/test_carla_preflight_ownership.py -q --tb=short",
+    "exit_code": 0,
+    "collected": 51,
+    "passed": 51,
+    "failed": 0,
+    "skipped": 0,
+    "warnings": 5,
+    "raw_log": "reports/v131/LIFECYCLE_PURGE_FIX_TESTS.log",
+    "raw_log_sha256": "3fbd56625ebee7df082a3f067ed58e3fd78b0551120cfa2b40f1477d8afde59f",
+    "coverage": "shared CARLA cache preservation, startup without purge, port ownership and recovery helpers"
+  },
+  "independent_review": {
+    "reviewed_commit": "1c392707f3c7b6b6742e7fba204fac5d429e6c2f",
+    "verdict": "REQUEST_CHANGES",
+    "reviewer": "separate read-only reviewer agent",
+    "findings": [
+      "P0 shared CARLA cache/temp deletion in carla_recovery.py (fixed in source commit 7b0194caf6dfac4bbcbc63e0ab5b9397b95ae1f2)",
+      "P1 RQ5 trainer emits split_manifest_sha256=None while v2 verifier requires split manifest",
+      "P1 RQ3 expected-count validator has no production caller; strict executor accepts nonempty intersection",
+      "P1 combined reviewer suite omitted cross-arm tests; reviewer ran 112 tests with 102 passed and 10 failed (9 missing map fixture, 1 synthetic rig full-set mismatch)",
+      "P1 reviewer exact base-to-head diff-check identified two EOF blank lines (fixed in 8d7e5912f981253826e1fb87d78422bf135621e7)",
+      "P2 map coordinate API is not used by production route/capture callers",
+      "camera remap receipts are not wired into capture; exact effective-K acceptance remains incomplete"
+    ],
+    "limitation": "review was on earlier report-only head; fresh review of final candidate is requested",
+    "command": [
+      "python -m pytest ultimate_pipeline/tests/unit/test_applied_sensor_rig_v2.py ultimate_pipeline/tests/unit/test_wp_c_camera_intrinsic_realization.py ultimate_pipeline/tests/unit/test_map_coordinate_frames.py ultimate_pipeline/tests/unit/test_rq3_builder_false_pass_regression.py ultimate_pipeline/tests/unit/test_task1_2_cross_arm_sync.py tests/unit/test_v111_rq5_v2_split_pretraining_authority.py ultimate_pipeline/carla_tools/tests/test_carla_recovery_helpers.py -q -p no:cacheprovider --tb=short"
+    ],
+    "reported_result": "112 selected; 102 passed, 10 failed (9 absent pinned Ingolstadt XODR, 1 synthetic applied-rig full-set mismatch); raw command exit code not supplied by reviewer",
+    "remaining_exact_sha_review": "requested for integration source 8d7e5912f981253826e1fb87d78422bf135621e7 and final report commit"
   }
 }

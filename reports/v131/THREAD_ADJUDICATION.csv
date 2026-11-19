@@ -1,20 +1,20 @@
-"comment_id","path","original_concern","disposition","evidence","status"
-"4543949125","final_artifact_gates.py","XML declaration encoding/prefix","PENDING_REVIEW","not imported into candidate","thread resolution state not refreshed"
-"4543949130","map_acceptance.py","authoritative gate set","PENDING_REVIEW","not imported into candidate","thread resolution state not refreshed"
-"4543969658","map_acceptance.py","release checks skipped","PENDING_REVIEW","not imported into candidate","thread resolution state not refreshed"
-"4543969677","scripts/measure_candidate_acceptance.py","mixed artifact bytes","PENDING_REVIEW","not imported into candidate","thread resolution state not refreshed"
-"4543969687","map_acceptance.py","missing artifact identity","PENDING_REVIEW","not imported into candidate","thread resolution state not refreshed"
-"4543969692","final_artifact_gates.py","encoded XML declarations","PENDING_REVIEW","not imported into candidate","thread resolution state not refreshed"
-"4543969701","measure_candidate_acceptance.py","wrong footprint","PENDING_REVIEW","not imported into candidate","thread resolution state not refreshed"
-"4543969708","measure_candidate_acceptance.py","rejected input reaches other parsers","PENDING_REVIEW","not imported into candidate","thread resolution state not refreshed"
-"4543969719","final_artifact_gates.py","oversized XML allocation","PENDING_REVIEW","not imported into candidate","thread resolution state not refreshed"
-"4543969732","map_acceptance.py","malformed issue evidence","PENDING_REVIEW","not imported into candidate","thread resolution state not refreshed"
-"4543969741","final_artifact_gates.py","lane failures pass","PENDING_REVIEW","not imported into candidate","thread resolution state not refreshed"
-"4543969749","map_acceptance.py","diagnostic verdict used as release","PENDING_REVIEW","not imported into candidate","thread resolution state not refreshed"
-"4543969757","main_pipeline.py","failed run leaves passing receipt","PENDING_REVIEW","not imported into candidate","thread resolution state not refreshed"
-"4543969766","final_artifact_gates.py","DOCTYPE after 64KiB decoy","PENDING_REVIEW","not imported into candidate","thread resolution state not refreshed"
-"4543969773","measure_candidate_acceptance.py","concurrent runs mix files","PENDING_REVIEW","not imported into candidate","thread resolution state not refreshed"
-"4543969780","final_artifact_gates.py","snapshot mutation during checks","PENDING_REVIEW","not imported into candidate","thread resolution state not refreshed"
-"4543969786","final_artifact_gates.py","UTF-16 DOCTYPE bypass","PENDING_REVIEW","not imported into candidate","thread resolution state not refreshed"
-"4543969793","tests/unit/test_v86_acceptance_strict.py","root readonly assertion","PENDING_REVIEW","not imported into candidate","thread resolution state not refreshed"
-"4543969796","main_pipeline.py","later mutation earns release receipt","PENDING_REVIEW","not imported into candidate","thread resolution state not refreshed"
+comment_id,path,original_concern,disposition,evidence,status
+4543949125,final_artifact_gates.py,XML declaration encoding/prefix,OPEN_DEFECT,Candidate excludes PR30/#63 release implementation; exact candidate regression reproduction still required.,UNRESOLVED; no GitHub thread changed
+4543949130,map_acceptance.py,authoritative gate set,OPEN_DEFECT,Candidate excludes PR30/#63 release implementation; exact candidate regression reproduction still required.,UNRESOLVED; no GitHub thread changed
+4543969658,map_acceptance.py,release checks skipped,OPEN_DEFECT,Candidate excludes PR30/#63 release implementation; exact candidate regression reproduction still required.,UNRESOLVED; no GitHub thread changed
+4543969677,scripts/measure_candidate_acceptance.py,mixed artifact bytes,OPEN_DEFECT,Candidate excludes PR30/#63 release implementation; exact candidate regression reproduction still required.,UNRESOLVED; no GitHub thread changed
+4543969687,map_acceptance.py,missing artifact identity,OPEN_DEFECT,Candidate excludes PR30/#63 release implementation; exact candidate regression reproduction still required.,UNRESOLVED; no GitHub thread changed
+4543969692,final_artifact_gates.py,encoded XML declarations,OPEN_DEFECT,Candidate excludes PR30/#63 release implementation; exact candidate regression reproduction still required.,UNRESOLVED; no GitHub thread changed
+4543969701,measure_candidate_acceptance.py,wrong footprint,OPEN_DEFECT,Candidate excludes PR30/#63 release implementation; exact candidate regression reproduction still required.,UNRESOLVED; no GitHub thread changed
+4543969708,measure_candidate_acceptance.py,rejected input reaches other parsers,OPEN_DEFECT,Candidate excludes PR30/#63 release implementation; exact candidate regression reproduction still required. GitHub GraphQL reports this thread resolved; remaining candidate behavior is not adjudicated.,THREAD_RESOLVED_ON_PR30; candidate fix not integrated; source verification required
+4543969719,final_artifact_gates.py,oversized XML allocation,OPEN_DEFECT,Candidate excludes PR30/#63 release implementation; exact candidate regression reproduction still required.,UNRESOLVED; no GitHub thread changed
+4543969732,map_acceptance.py,malformed issue evidence,OPEN_DEFECT,Candidate excludes PR30/#63 release implementation; exact candidate regression reproduction still required.,UNRESOLVED; no GitHub thread changed
+4543969741,final_artifact_gates.py,lane failures pass,OPEN_DEFECT,Candidate excludes PR30/#63 release implementation; exact candidate regression reproduction still required.,UNRESOLVED; no GitHub thread changed
+4543969749,map_acceptance.py,diagnostic verdict used as release,OPEN_DEFECT,Candidate excludes PR30/#63 release implementation; exact candidate regression reproduction still required.,UNRESOLVED; no GitHub thread changed
+4543969757,main_pipeline.py,failed run leaves passing receipt,OPEN_DEFECT,Candidate excludes PR30/#63 release implementation; exact candidate regression reproduction still required.,UNRESOLVED; no GitHub thread changed
+4543969766,final_artifact_gates.py,DOCTYPE after 64KiB decoy,OPEN_DEFECT,Candidate excludes PR30/#63 release implementation; exact candidate regression reproduction still required.,UNRESOLVED; no GitHub thread changed
+4543969773,measure_candidate_acceptance.py,concurrent runs mix files,OPEN_DEFECT,Candidate excludes PR30/#63 release implementation; exact candidate regression reproduction still required.,UNRESOLVED; no GitHub thread changed
+4543969780,final_artifact_gates.py,snapshot mutation during checks,OPEN_DEFECT,Candidate excludes PR30/#63 release implementation; exact candidate regression reproduction still required.,UNRESOLVED; no GitHub thread changed
+4543969786,final_artifact_gates.py,UTF-16 DOCTYPE bypass,OPEN_DEFECT,Candidate excludes PR30/#63 release implementation; exact candidate regression reproduction still required.,UNRESOLVED; no GitHub thread changed
+4543969793,tests/unit/test_v86_acceptance_strict.py,root readonly assertion,OPEN_DEFECT,Candidate excludes PR30/#63 release implementation; exact candidate regression reproduction still required.,UNRESOLVED; no GitHub thread changed
+4543969796,main_pipeline.py,later mutation earns release receipt,OPEN_DEFECT,Candidate excludes PR30/#63 release implementation; exact candidate regression reproduction still required.,UNRESOLVED; no GitHub thread changed
