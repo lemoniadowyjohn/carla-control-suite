@@ -17,3 +17,6 @@ The independent review's P0 shared-directory deletion finding was fixed in `ulti
 
 
 The RQ3 cross-arm suite is not green: 113 collected, 102 passed, 11 failed; ten substantive failures remain due to omitted pinned map assets and an outdated/synthetic incomplete rig fixture. One timing failure passed isolation. Full offline CI is still blocked.
+
+
+Independent source review: REQUEST_CHANGES on exact commit `c95f9b4ece19b98fad2a1818f658fbe8686f0faa`; P0 lifecycle fix confirmed. RQ5/RQ3/CRS/intrinsics blockers prevent SOURCE_READY.

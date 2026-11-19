@@ -2,7 +2,7 @@
 
 | Review subject | State | Evidence / owner |
 |---|---|---|
-| Candidate source integration | Awaiting independent review | Exact candidate commit must be reviewed by Claude/OpenCode reviewer other than implementer |
+| Candidate source integration | REQUEST_CHANGES | Independent reviewer checked exact `c95f9b4ece19b98fad2a1818f658fbe8686f0faa`; P0 fixed, scientific source blockers remain |
 | #69 calibration and capture contract | Source integrated; physical acceptance pending | Unit/mock tests only; no live CARLA |
 | #65 native intrinsics | Offline verified in focused suite | Final rendered-frame compliance not verified |
 | #50/#55 RQ5 identity | Offline guards passed; training suite partial | `torchvision` absent; no actual training/evaluation |
@@ -14,3 +14,6 @@
 ## Independent review findings
 
 Reviewer verdict on prior candidate SHA `1c392707f3c7b6b6742e7fba204fac5d429e6c2f`: REQUEST_CHANGES. P0 shared cache purge was removed in `7b0194caf6dfac4bbcbc63e0ab5b9397b95ae1f2`; two EOF whitespace findings were fixed in `8d7e5912f981253826e1fb87d78422bf135621e7`. Remaining P1/P2 findings are RQ5 split manifest generation, production-wired RQ3 expected counts, CRS route adoption, and camera remap receipt wiring. Fresh review of the final commit remains pending.
+
+
+Final exact-SHA reviewer recheck: `c95f9b4ece19b98fad2a1818f658fbe8686f0faa`. Verdict remains REQUEST_CHANGES for release because RQ5 split proof, RQ3 expected-count wiring, CRS adoption and applied-intrinsics wiring are incomplete. Reviewer confirmed P0 purge removal and clean base-to-head diff.

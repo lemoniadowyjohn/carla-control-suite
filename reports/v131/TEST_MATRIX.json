@@ -82,7 +82,7 @@
     "coverage": "shared CARLA cache preservation, startup without purge, port ownership and recovery helpers"
   },
   "independent_review": {
-    "reviewed_commit": "1c392707f3c7b6b6742e7fba204fac5d429e6c2f",
+    "reviewed_commit": "c95f9b4ece19b98fad2a1818f658fbe8686f0faa",
     "verdict": "REQUEST_CHANGES",
     "reviewer": "separate read-only reviewer agent",
     "findings": [
@@ -99,7 +99,10 @@
       "python -m pytest ultimate_pipeline/tests/unit/test_applied_sensor_rig_v2.py ultimate_pipeline/tests/unit/test_wp_c_camera_intrinsic_realization.py ultimate_pipeline/tests/unit/test_map_coordinate_frames.py ultimate_pipeline/tests/unit/test_rq3_builder_false_pass_regression.py ultimate_pipeline/tests/unit/test_task1_2_cross_arm_sync.py tests/unit/test_v111_rq5_v2_split_pretraining_authority.py ultimate_pipeline/carla_tools/tests/test_carla_recovery_helpers.py -q -p no:cacheprovider --tb=short"
     ],
     "reported_result": "112 selected; 102 passed, 10 failed (9 absent pinned Ingolstadt XODR, 1 synthetic applied-rig full-set mismatch); raw command exit code not supplied by reviewer",
-    "remaining_exact_sha_review": "requested for integration source 8d7e5912f981253826e1fb87d78422bf135621e7 and final report commit"
+    "remaining_exact_sha_review": "requested for integration source 8d7e5912f981253826e1fb87d78422bf135621e7 and final report commit",
+    "review_status": "P0 fixed; RQ5 split provenance, RQ3 completeness, CRS adoption and effective-intrinsics wiring remain blockers",
+    "exact_sha_recheck": "reviewer verified final candidate SHA c95f9b4ece19b98fad2a1818f658fbe8686f0faa; report-only commits afterward do not change source implementation",
+    "reviewer_result": "Confirmed _purge_temp_dirs no-op; no purge calls in restart paths; base-to-final diff-check clean. Remaining blockers are listed in REVIEW_MATRIX.md."
   },
   "rq3_cross_arm_reproduction": {
     "tested_commit": "8d7e5912f981253826e1fb87d78422bf135621e7",
