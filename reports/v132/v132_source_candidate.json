@@ -3,22 +3,24 @@
   "candidate_branch": "integration/v132-pre-claude-source-candidate-20261119",
   "production_base_sha": "225ed15d0da6444cc257835ca777aba281553f3c",
   "production_base_verified_remote": true,
-  "integrated_source_commit": "49d037696a21cba1ca5763d4dd25de86cc47c4b4",
-  "integrated_stack_tip": "7b655fb8db9f92682f41ad1e08404bd7c5ff657d",
-  "merge_parents": [
-    "225ed15d0da6444cc257835ca777aba281553f3c",
-    "7b655fb8db9f92682f41ad1e08404bd7c5ff657d"
+  "candidate_head_after_source_tranches": "390a2c536c0ca5bb9131f43a4aa23265cf8272c2",
+  "integrated_source_commits": [
+    {"source": "PR #63/#70 + OC-A T3 correction", "commit": "49d037696a21cba1ca5763d4dd25de86cc47c4b4", "source_tip": "7b655fb8db9f92682f41ad1e08404bd7c5ff657d"},
+    {"source": "PR #49 RL fuzzer", "commit": "9010bc1b8c707c7ad7c28fa9a1f7be7d76f98523", "source_tip": "d30a0544e385e4b353f125a61cd678683d2c2a11"},
+    {"source": "PR #56 feature-gap missingness", "commit": "19b5be9862ce48013faee57c3c8d3e2d7633ded7", "source_tip": "af22f82c5095462b2bd2ae0f2a1c6b3bd09eba6c"},
+    {"source": "PR #57 OSM direction/legal-movement line", "commit": "578f72786cb6a943cef43c2929c47e6448d1bd83", "source_tip": "694f1a419a184c5dea2de74f66d47a902014dc51"},
+    {"source": "PR #40 O3 road graph/orphan repair; #45/#46 are ancestors", "commit": "390a2c536c0ca5bb9131f43a4aa23265cf8272c2", "source_tip": "5a360c600af940c78d82ca6e4a14e9f69c67ce07"}
   ],
+  "candidate_merge_parent": "225ed15d0da6444cc257835ca777aba281553f3c",
   "scope": {
-    "integrated": ["PR #63 release acceptance", "PR #70 trusted map scope", "T3 corrected acceptance test doubles/fixtures"],
+    "integrated": ["PR #63 release acceptance", "PR #70 trusted map scope", "T3 corrected acceptance test doubles/fixtures", "PR #49 RL fuzzer", "PR #56 feature-gap missingness", "PR #57 OSM O1/O2 line (common O1 files match #39 byte-for-byte)", "PR #40 O3 with verified #45/#46 ancestry"],
     "excluded": {
       "T1 calibration #65/#66/#68/#69 candidate 00f059fbc067aace82212e2b768f016b0bd0d71b": "EXCLUDED_REQUIRES_CHANGES: focused source suite reproduced 1 regression (test_matching_camera_response_identity_validates_the_pair); 141 passed, 1 failed. Do not weaken full sensor-set admission.",
       "T2 submission mirror recovery": "EXCLUDED_BLOCKED_INPUT_POLICY: exact dirty T2 worktree/ref and diff unavailable; prior audit found submission deprecation policy conflicts with submission-only APPLIED_SENSOR_RIG/v2 import test.",
-      "PR #67 CRS": "NOT_INTEGRATED: no candidate-stage overlap/test reconciliation performed.",
-      "OSM #39/#57 and #40/#45/#46": "NOT_INTEGRATED: parallel-line semantic reconciliation pending.",
-      "RQ5 #50/#52/#54/#55": "NOT_INTEGRATED: exact stack and complete dependency suite not reconciled.",
-      "PR #49 and #56": "NOT_INTEGRATED: source candidate selection deferred.",
-      "Lifecycle #35/#60/#64 and leases #37/#58": "NOT_INTEGRATED: platform-specific review/tests pending.",
+      "PR #67 CRS": "NOT_INTEGRATED: API is not consumed by required production geometric/domain-gap and RQ3 route consumers; integration would not close CRS behavior.",
+      "RQ5 #50/#52/#54/#55 + OC-D": "NOT_INTEGRATED: exact OC-D review found malformed v2 split/pretraining receipt accepted, producer emits split_manifest_sha256=None, and governed verification is optional for fresh runs; #50 patch-id duplicates OC-D change.",
+      "PR #39": "Not separately merged: the six shared O1 implementation files are byte-identical to #57; #57 selected as the single source line. O2 legal movement helpers still have no production callers.",
+      "Lifecycle #35/#60/#64 and leases #37/#58": "NOT_INTEGRATED: platform-specific ownership/fencing review and exact-head tests pending.",
       "GUI and remaining PRs": "NOT_INTEGRATED: require inventory dispositions and ancestry review."
     }
   },
@@ -39,6 +41,17 @@
       "skipped": 0,
       "environment": "Windows; PYTHONPATH cleared; candidate worktree"
     },
+    "combined_focused_matrix": {
+      "command": "Python 3.12.2 -m pytest -q -p no:cacheprovider -rfEsx tests/unit/test_regen_measure_acceptance_component_reachability.py tests/unit/test_regen_strict_preconditions.py tests/unit/test_v86_acceptance_strict.py tests/unit/test_v104_xml_admission.py tests/unit/test_v109_release_mandatory_identity.py tests/unit/test_v125_validate_release_acceptance_contract.py tests/unit/test_v85_acceptance_fail_closed.py tests/adversarial/test_terminal_authority.py tests/unit/test_v109_rl_fuzzer_width_polynomial.py tests/unit/test_feature_gap.py ultimate_pipeline/tests/unit/test_feature_gap_missingness.py ultimate_pipeline/tests/unit/test_feature_gap_consumer_failclosed.py tests/unit/test_v103_o1_osm_direction.py tests/unit/test_v104_p2_coverage_behaviour.py tests/unit/test_v104_p2_coverage_honesty.py tests/unit/test_v108_phase3_lane_semantics.py tests/unit/test_v103_o2_legal_movement.py tests/unit/test_v106_o2_gap_closure.py tests/unit/test_v103_o3_osm_road_graph.py tests/unit/test_v107_o3_geometry_endpoints.py tests/unit/test_v107_o3_registry_drift_failclosed.py tests/unit/test_v108_o3_direction_authority.py ultimate_pipeline/tests/unit/test_orphan_road_repair_l1l2.py",
+      "exit_code": 0,
+      "passed": 445,
+      "failed": 0,
+      "skipped": 1,
+      "skip_reason": "tests/unit/test_feature_gap.py:82 requires sklearn, not installed",
+      "environment": "Windows; Python 3.12.2; pytest 8.0.1; candidate worktree; no live CARLA",
+      "candidate_sha": "390a2c536c0ca5bb9131f43a4aa23265cf8272c2"
+    },
+    "pr40_o3_focused": {"passed": 60, "failed": 0, "skipped": 0, "exit_code": 0, "candidate_sha": "390a2c536c0ca5bb9131f43a4aa23265cf8272c2"},
     "full_offline_ci": "NOT_RUN",
     "github_checks_on_candidate": "NOT_RUN",
     "live_carla_and_scientific_evidence": "NOT_RUN"
@@ -48,11 +61,11 @@
     "pr30_threads": "UNRESOLVED; adjudication not verified from live GitHub in this run"
   },
   "readiness": {
-    "SOURCE_READY": "NO; candidate contains only release acceptance tranche and required stacks remain excluded",
-    "CI_READY": "NO; full offline and exact-head GitHub CI not run",
+    "SOURCE_READY": "PARTIAL; source-verified release, fuzzer, feature-gap and OSM/O3 tranches are integrated; calibration, CRS consumers, RQ5 and lifecycle/lease blockers remain",
+    "CI_READY": "NO; combined focused suites pass, but full offline CI and exact-head GitHub checks are not run",
     "RUNTIME_READY": "NO; live CARLA not run",
     "RESEARCH_READY": "NO; no newly admitted capture/training evidence",
     "MERGE_ALLOWED": "NO"
   },
-  "warnings": ["Focused test output was observed in terminal but not captured to a log artifact; no log hash is claimed.", "Do not infer production readiness from these focused offline tests."]
+  "warnings": ["Test output was observed in the execution session; no durable raw log artifact or log hash is claimed.", "PR #57 legal-movement code has no production call site; this integration does not claim legal-turn enforcement is operational.", "Do not infer production readiness from focused offline tests."]
 }

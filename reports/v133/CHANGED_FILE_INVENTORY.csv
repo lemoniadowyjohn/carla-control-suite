@@ -1,0 +1,6 @@
+source_line,candidate_commit,paths,behavior_or_scope
+OC-A #63/#70,49d037696a21cba1ca5763d4dd25de86cc47c4b4,"release acceptance, trusted map scope, XML admission, T3 tests",Candidate-snapshot and digest binding plus mandatory release authority; inherited OC-A stack
+PR #49,9010bc1b8c707c7ad7c28fa9a1f7be7d76f98523,"ultimate_pipeline/experiments/rl_fuzzer.py; tests/unit/test_v109_rl_fuzzer_width_polynomial.py",Polynomial width scaling/fuzzer contract
+PR #56,19b5be9862ce48013faee57c3c8d3e2d7633ded7,"ultimate_pipeline/domain_gap/feature_gap.py; related tests",Fail-closed missingness semantics
+PR #57,578f72786cb6a943cef43c2929c47e6448d1bd83,"OSM direction/legal-movement modules and tests",OSM O1/O2 source line; legal movement helper call sites remain absent
+PR #40 (#45/#46 ancestors),390a2c536c0ca5bb9131f43a4aa23265cf8272c2,"ultimate_pipeline/topology/orphan_road_repair.py; ultimate_pipeline/quality/osm_road_link_topology.py; ultimate_pipeline/pipeline_stages/stage_03_topology_repair.py; O3 tests/reports",Source-proven O3 road graph and orphan repair
