@@ -101,4 +101,3 @@ or LiDAR correspondence residual has been measured in this run.
 | LiDAR-camera correspondence residuals | NOT_RUN |
 | Independent calibration review | NOT_RUN |
 | Full offline production CI | NOT_RUN |
-

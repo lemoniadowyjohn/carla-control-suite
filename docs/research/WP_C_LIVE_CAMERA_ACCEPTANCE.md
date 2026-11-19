@@ -61,4 +61,3 @@ dataset only after all bytes exist.
   verifies final rendered frames, effective K, masks/remap, calibration identity,
   and the source-bound receipt. This procedure does not itself mark RQ3 admitted
   or scientifically complete.
-
