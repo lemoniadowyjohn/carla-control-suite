@@ -21,7 +21,7 @@ sys.path.insert(0, str(WORKTREE))
 import pytest
 
 from ultimate_pipeline.perception import rq3_capture_contract as rq3
-from ultimate_pipeline.sensors.transform_conventions import carla_ego_from_camera_from_cTv
+from ultimate_pipeline.sensors.transform_conventions import carla_ego_from_camera_from_cTv, carla_ego_from_lidar_from_vTl
 
 _CALIBRATION_PATH = Path(__file__).resolve().parents[2] / "ultimate_pipeline" / "sensors" / "calib_data.json"
 _CALIBRATION_BYTES = _CALIBRATION_PATH.read_bytes()
@@ -29,6 +29,8 @@ _CALIBRATION_SHA256 = hashlib.sha256(_CALIBRATION_BYTES).hexdigest()
 _CALIBRATION = json.loads(_CALIBRATION_BYTES.decode("utf-8"))
 _CAMERA_NAME = "front_left_camera"
 _CAMERA_MOUNT = carla_ego_from_camera_from_cTv(_CALIBRATION["cameras"][_CAMERA_NAME]["cTv"])
+_MOUNTS = {name: carla_ego_from_camera_from_cTv(item["cTv"]) for name, item in _CALIBRATION["cameras"].items()}
+_MOUNTS["middle_lidar"] = carla_ego_from_lidar_from_vTl(_CALIBRATION["lidars"]["middle_lidar"]["vTl"])
 from ultimate_pipeline.sensors.applied_sensor_rig import (
     build_applied_sensor_rig_v2, canonical_sha256,
 )
@@ -49,17 +51,21 @@ BATCH9_REQUIRED = (
 
 
 def _valid_applied_receipt(code_commit, calibration_sha, dataset_identity, dataset_sha, actor_id):
-    mount = _CAMERA_MOUNT.tolist()
+    mounts = {name: mount.tolist() for name, mount in _MOUNTS.items()}
+    identities = {name: {"actor_id": actor_id + index, "type_id": "sensor.lidar.ray_cast" if name == "middle_lidar" else "sensor.camera.rgb"} for index, name in enumerate(mounts)}
+    blueprints = {name: {"image_size_x": "1280", "fov": "90"} for name in mounts}
+    cameras = {name: {"width_px": 1280, "height_px": 720, "requested_K_undistortion": [[640, 0, 640], [0, 640, 360], [0, 0, 1]], "carla_nominal_K": [[640, 0, 640], [0, 640, 360], [0, 0, 1]]} for name in mounts if name != "middle_lidar"}
+    measurements = {name: {"frame_id": 777, "timestamp_s": 1.0, "dataset_identity": dataset_identity, "dataset_artifact_sha256": dataset_sha} for name in mounts}
     return build_applied_sensor_rig_v2(
         source_calibration_sha256=calibration_sha,
         code_commit=code_commit,
-        requested_parent_relative_matrices={_CAMERA_NAME: mount},
+        requested_parent_relative_matrices=mounts,
         ego_identity={"actor_id": actor_id + 100, "type_id": "vehicle.test"},
-        sensor_identities={_CAMERA_NAME: {"actor_id": actor_id, "type_id": "sensor.camera.rgb"}},
-        blueprint_configuration={_CAMERA_NAME: {"image_size_x": "1280", "fov": "90"}},
-        effective_camera_configuration={_CAMERA_NAME: {"width_px": 1280, "height_px": 720, "requested_K_undistortion": [[640, 0, 640], [0, 640, 360], [0, 0, 1]], "carla_nominal_K": [[640, 0, 640], [0, 640, 360], [0, 0, 1]]}},
-        applied_parent_relative_matrices={_CAMERA_NAME: mount},
-        runtime_measurements={_CAMERA_NAME: {"frame_id": actor_id, "timestamp_s": 1.0, "dataset_identity": dataset_identity, "dataset_artifact_sha256": dataset_sha}},
+        sensor_identities=identities,
+        blueprint_configuration=blueprints,
+        effective_camera_configuration=cameras,
+        applied_parent_relative_matrices=mounts,
+        runtime_measurements=measurements,
         verification_mode="online",
     )
 

@@ -79,7 +79,11 @@ def _residuals(requested: Any, observed: Any) -> dict[str, float]:
     position = float(np.linalg.norm(req[:3, 3] - obs[:3, 3]))
     delta = req[:3, :3].T @ obs[:3, :3]
     cosine = min(1.0, max(-1.0, (float(np.trace(delta)) - 1.0) / 2.0))
-    angular = math.degrees(math.acos(cosine))
+    # atan2 remains well-conditioned near zero; acos(trace) loses angular
+    # resolution when float32-backed CARLA matrices round trace to 3.0.
+    skew = delta - delta.T
+    sine = 0.5 * float(np.linalg.norm([skew[2, 1], skew[0, 2], skew[1, 0]]))
+    angular = math.degrees(math.atan2(sine, cosine))
     return {"position_m": position, "angle_deg": angular}
 
 
@@ -424,6 +428,10 @@ def validate_applied_sensor_rig_v2(
             requested_mounts = receipt.get("requested_parent_relative_matrices")
             applied_mounts = receipt.get("applied_parent_relative_matrices")
             if isinstance(requested_mounts, dict):
+                # RQ3 admission requires the complete calibrated rig. A valid
+                # subset (for example one camera) is not a valid experiment.
+                if set(requested_mounts) != set(trusted_mounts):
+                    errors.append("requested_sensor_set_does_not_match_trusted_calibration")
                 if set(requested_mounts) - set(trusted_mounts):
                     errors.append("receipt_contains_sensor_without_trusted_calibration_mount")
                 for name, requested_matrix in requested_mounts.items():
@@ -435,13 +443,11 @@ def validate_applied_sensor_rig_v2(
                             errors.append(f"{name}:requested_mount_does_not_match_source_calibration")
                     except (TypeError, ValueError) as exc:
                         errors.append(str(exc))
-                    if isinstance(applied_mounts, dict) and name in applied_mounts:
-                        try:
-                            applied_array = _rigid_matrix(applied_mounts[name], label=f"applied {name}")
-                            if not np.allclose(applied_array, trusted_mounts[name], rtol=0.0, atol=2e-6):
-                                errors.append(f"{name}:observed_mount_does_not_match_source_calibration")
-                        except (TypeError, ValueError) as exc:
-                            errors.append(str(exc))
+                    # Observed mounts are compared with the requested source
+                    # mount below using the runtime observation precision
+                    # policy. CARLA world transforms are float32-backed, so a
+                    # second 2e-6 comparison here rejects valid readbacks at
+                    # ordinary world coordinates while adding no assurance.
     if not re.fullmatch(r"[0-9a-f]{40}", str(receipt.get("code_commit", ""))):
         errors.append("code_commit_missing_or_invalid")
     requested = receipt.get("requested_parent_relative_matrices")

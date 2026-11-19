@@ -716,7 +716,9 @@ def test_semantic_remap_never_uses_bilinear():
     out = intr.remap_labels(labels, grid, "semantic_seg")
     assert out.dtype == np.int64
     assert out.shape == (height, width)
-    produced = set(np.unique(out).tolist())
+    # Invalid out-of-native-domain pixels use the explicit zero fill and must
+    # be excluded by the valid-image mask before label-domain assertions.
+    produced = set(np.unique(out[grid["valid"]]).tolist())
     assert produced.issubset(set(class_ids.tolist())), (
         f"a label remap must not synthesise class ids, got {sorted(produced)}"
     )

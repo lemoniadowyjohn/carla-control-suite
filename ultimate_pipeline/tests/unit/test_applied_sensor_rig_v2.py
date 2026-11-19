@@ -16,6 +16,7 @@ from ultimate_pipeline.sensors.applied_sensor_rig import (
 from ultimate_pipeline.sensors.transform_conventions import (
     carla_attachment_pose_from_matrix,
     carla_ego_from_camera_from_cTv,
+    carla_ego_from_lidar_from_vTl,
 )
 
 _CALIBRATION_PATH = Path(__file__).resolve().parents[2] / "sensors" / "calib_data.json"
@@ -26,6 +27,13 @@ _FRONT_CAMERA_NAME = "front_left_camera"
 _FRONT_CAMERA_MOUNT = carla_ego_from_camera_from_cTv(
     _CALIBRATION_DATA["cameras"][_FRONT_CAMERA_NAME]["cTv"]
 )
+_ALL_MOUNTS = {
+    name: carla_ego_from_camera_from_cTv(value["cTv"])
+    for name, value in _CALIBRATION_DATA["cameras"].items()
+}
+_ALL_MOUNTS.update({
+    "middle_lidar": carla_ego_from_lidar_from_vTl(_CALIBRATION_DATA["lidars"]["middle_lidar"]["vTl"])
+})
 
 
 def _carla_transform(matrix):
@@ -39,37 +47,49 @@ def _carla_transform(matrix):
 
 
 def _valid_receipt():
-    requested = _FRONT_CAMERA_MOUNT.copy()
     ego_world = np.eye(4)
     ego_world[:3, 3] = [100.0, -50.0, 0.5]
-    sensor_world = ego_world @ requested
-    observed = observed_parent_relative_mount(
-        _carla_transform(ego_world), _carla_transform(sensor_world)
-    )
+    requested = {name: matrix.copy() for name, matrix in _ALL_MOUNTS.items()}
+    observed = {
+        name: observed_parent_relative_mount(
+            _carla_transform(ego_world), _carla_transform(ego_world @ matrix)
+        )
+        for name, matrix in requested.items()
+    }
+    identities = {
+        name: {"actor_id": 202 + index, "type_id": "sensor.lidar.ray_cast" if name == "middle_lidar" else "sensor.camera.rgb"}
+        for index, name in enumerate(requested)
+    }
+    blueprints = {name: {"image_size_x": "1280", "fov": "90"} for name in requested}
+    camera_names = [name for name in requested if name != "middle_lidar"]
+    camera_config = {
+        name: {
+            "width_px": 1280,
+            "height_px": 720,
+            "requested_K_undistortion": [[640, 0, 640], [0, 640, 360], [0, 0, 1]],
+            "carla_nominal_K": [[640, 0, 640], [0, 640, 360], [0, 0, 1]],
+        }
+        for name in camera_names
+    }
+    measurements = {
+        name: {
+            "frame_id": 777,
+            "timestamp_s": 38.85,
+            "dataset_identity": "run-2026-11-18-arm-manual",
+            "dataset_artifact_sha256": "c" * 64,
+        }
+        for name in requested
+    }
     return build_applied_sensor_rig_v2(
         source_calibration_sha256=_CALIBRATION_SHA256,
         code_commit="b" * 40,
-        requested_parent_relative_matrices={_FRONT_CAMERA_NAME: requested},
+        requested_parent_relative_matrices=requested,
         ego_identity={"actor_id": 101, "type_id": "vehicle.tesla.model3"},
-        sensor_identities={_FRONT_CAMERA_NAME: {"actor_id": 202, "type_id": "sensor.camera.rgb"}},
-        blueprint_configuration={_FRONT_CAMERA_NAME: {"image_size_x": "1280", "fov": "90"}},
-        effective_camera_configuration={
-            _FRONT_CAMERA_NAME: {
-                "width_px": 1280,
-                "height_px": 720,
-                "requested_K_undistortion": [[640, 0, 640], [0, 640, 360], [0, 0, 1]],
-                "carla_nominal_K": [[640, 0, 640], [0, 640, 360], [0, 0, 1]],
-            }
-        },
-        applied_parent_relative_matrices={_FRONT_CAMERA_NAME: observed},
-        runtime_measurements={
-            _FRONT_CAMERA_NAME: {
-                "frame_id": 777,
-                "timestamp_s": 38.85,
-                "dataset_identity": "run-2026-11-18-arm-manual",
-                "dataset_artifact_sha256": "c" * 64,
-            }
-        },
+        sensor_identities=identities,
+        blueprint_configuration=blueprints,
+        effective_camera_configuration=camera_config,
+        applied_parent_relative_matrices=observed,
+        runtime_measurements=measurements,
         verification_mode="online",
     )
 
@@ -80,6 +100,23 @@ def test_observed_parent_mount_is_reconstructed_from_world_transforms():
     assert receipt["verification_status"] == "online_observation_claim_consistent_unattested"
     assert receipt["attestation_status"] == "UNATTESTED_SELF_REPORTED"
     assert validate_applied_sensor_rig_v2(receipt, require_live=True, expected_source_calibration_sha256=_CALIBRATION_SHA256) == []
+
+
+def test_live_receipt_rejects_a_valid_but_incomplete_sensor_subset():
+    from ultimate_pipeline.sensors.applied_sensor_rig import seal_applied_sensor_rig_v2
+
+    receipt = _valid_receipt()
+    for field in (
+        "requested_parent_relative_matrices", "applied_parent_relative_matrices",
+        "sensor_identities", "blueprint_configuration", "runtime_measurements",
+        "effective_camera_configuration", "residuals",
+    ):
+        receipt[field].pop("left_camera")
+    receipt = seal_applied_sensor_rig_v2(receipt)
+    errors = validate_applied_sensor_rig_v2(
+        receipt, require_live=True, expected_source_calibration_sha256=_CALIBRATION_SHA256
+    )
+    assert "requested_sensor_set_does_not_match_trusted_calibration" in errors
 
 
 def test_resealed_self_consistent_wrong_mount_is_rejected_against_raw_calibration():
@@ -99,7 +136,6 @@ def test_resealed_self_consistent_wrong_mount_is_rejected_against_raw_calibratio
         expected_source_calibration_sha256=_CALIBRATION_SHA256,
     )
     assert f"{_FRONT_CAMERA_NAME}:requested_mount_does_not_match_source_calibration" in errors
-    assert f"{_FRONT_CAMERA_NAME}:observed_mount_does_not_match_source_calibration" in errors
 
 
 def test_byte_distinct_selected_calibration_is_accepted_only_when_its_exact_bytes_are_supplied():
@@ -210,7 +246,11 @@ def test_recorder_dataset_binding_requires_and_hashes_real_common_artifacts(tmp_
             }
         }
     manifest = {
-        "sensors": [{"name": name, "actor_id": 202, "type_id": "sensor.camera.rgb"} for name in sensor_names],
+        "sensors": [
+            {"name": name, "actor_id": receipt["sensor_identities"][name]["actor_id"],
+             "type_id": receipt["sensor_identities"][name]["type_id"]}
+            for name in sensor_names
+        ],
         "artifact_bindings": artifact_bindings,
         "frame_correspondence": {
             "schema": "FRAME_CORRESPONDENCE/v1",
