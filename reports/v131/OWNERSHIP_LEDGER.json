@@ -1,13 +1,13 @@
 {
   "schema": "v131-ownership-ledger/v1",
   "candidate_branch": "integration/v131-pre-claude-candidate",
-  "candidate_head_before_report_commit": "c95f9b4ece19b98fad2a1818f658fbe8686f0faa",
+  "candidate_head_before_report_commit": "98657d8a3a48af2df9c5c2591eea8eb8369f314c",
   "candidate_worktree": "F:\\CARLA_RECOVERY\\worktrees\\v129-calib-admission-20261119",
   "writer": "Codex integration owner",
   "report_owner": "Codex/CD-00 equivalent integration lane",
   "owned_paths": [
-    "reports/v131/BLOCKERS.md",
     "reports/v131/BLOCKERS_FOR_CLAUDE.md",
+    "reports/v131/BLOCKERS.md",
     "reports/v131/CANDIDATE_SHA.txt",
     "reports/v131/COMBINED_FOCUSED_TESTS.log",
     "reports/v131/DEPENDENCY_DAG.md",
@@ -25,10 +25,106 @@
     "reports/v131/SOURCE_INVENTORY.json",
     "reports/v131/TEST_MATRIX.json",
     "reports/v131/THREAD_ADJUDICATION.csv",
-    "reports/v131/WORKTREE_ANCESTRY.csv"
+    "reports/v131/WORKTREE_ANCESTRY.csv",
+    "tests/adversarial/test_terminal_authority.py",
+    "tests/unit/test_rq5_execution_correctness.py",
+    "tests/unit/test_stage07_structural_osm_metadata.py",
+    "tests/unit/test_v103_o1_osm_direction.py",
+    "tests/unit/test_v103_o1_red_baseline.py",
+    "tests/unit/test_v103_o2_legal_movement.py",
+    "tests/unit/test_v103_o3_osm_road_graph.py",
+    "tests/unit/test_v104_p2_coverage_behaviour.py",
+    "tests/unit/test_v104_p2_coverage_honesty.py",
+    "tests/unit/test_v104_pr39_review_fixes.py",
+    "tests/unit/test_v104_safe_xml_boundary.py",
+    "tests/unit/test_v106_o2_gap_closure.py",
+    "tests/unit/test_v107_o3_geometry_endpoints.py",
+    "tests/unit/test_v107_o3_registry_drift_failclosed.py",
+    "tests/unit/test_v108_o3_direction_authority.py",
+    "tests/unit/test_v108_phase3_lane_semantics.py",
+    "tests/unit/test_v111_rq5_v2_split_pretraining_authority.py",
+    "tests/unit/test_v135_rq5_manifest_schema_validation.py",
+    "ultimate_pipeline/core/terminal_authority.py",
+    "ultimate_pipeline/enrichment/lane_generator.py",
+    "ultimate_pipeline/enrichment/lane_width_policy.py",
+    "ultimate_pipeline/enrichment/osm_direction.py",
+    "ultimate_pipeline/enrichment/osm_legal_movement.py",
+    "ultimate_pipeline/enrichment/osm_meta_index.py",
+    "ultimate_pipeline/enrichment/osm_restrictions.py",
+    "ultimate_pipeline/enrichment/osm_xodr_correspondence.py",
+    "ultimate_pipeline/perception/rq5_provenance.py",
+    "ultimate_pipeline/pipeline_stages/stage_03_topology_repair.py",
+    "ultimate_pipeline/pipeline_stages/stage_07_lanes.py",
+    "ultimate_pipeline/quality/osm_road_link_topology.py",
+    "ultimate_pipeline/tests/unit/test_orphan_road_repair_l1l2.py",
+    "ultimate_pipeline/topology/orphan_road_repair.py"
   ],
-  "last_source_fix_commit": "7b0194caf6dfac4bbcbc63e0ab5b9397b95ae1f2",
-  "task_status": "draft PR open; source review REQUEST_CHANGES; latest workflow refresh required after report-only update",
-  "task_id": "V131 integration candidate closure",
-  "latest_candidate_head_at_snapshot": "679745fc5f5af4d2152ee0f8ad721f60b81ee352"
+  "last_source_fix_commit": "98657d8a3a48af2df9c5c2591eea8eb8369f314c",
+  "task_status": "OSM O1/O2/O3 and RQ5 schema paths integrated; focused candidate verification 291 passed/1 sparse-input case deselected; full CI and exact-SHA independent review pending; draft PR remains nonproduction",
+  "task_id": "V131 integration: OSM O1/O2/O3 + fail-closed run identity admission",
+  "latest_candidate_head_at_snapshot": "98657d8a3a48af2df9c5c2591eea8eb8369f314c",
+  "integration_merges": [
+    {
+      "source": "PR39 / O1",
+      "head": "5368eda3448ef9a96588ad6ade8ac14a915bdd29",
+      "merge": "906c88b97501b5273e469eb88e6e3eb52c957b25",
+      "tests": "99 passed at O1 stage"
+    },
+    {
+      "source": "PR57 / O2",
+      "head": "694f1a419a184c5dea2de74f66d47a902014dc51",
+      "merge": "0e41a7a8caf95b3bf7deb3417a148e0c54f980eb",
+      "tests": "41 passed at O2 stage"
+    },
+    {
+      "source": "PR40 / O3 including PR45 and PR46",
+      "head": "5a360c600af940c78d82ca6e4a14e9f69c67ce07",
+      "merge": "b878dc7665ebd80ff38fb51098a3c83a41c78f19",
+      "tests": "60 passed at O3 stage"
+    },
+    {
+      "source": "V135 RQ5 schema validation",
+      "head": "72674984a5d05c7868a5cc1aba5683416dd07d3b",
+      "port": "6c927d432273de74a78ad01551f213a900de2b81",
+      "tests": "12 passed in final RQ5 focused suite"
+    }
+  ],
+  "verification_runs": [
+    {
+      "head": "98657d8a3a48af2df9c5c2591eea8eb8369f314c",
+      "command": "py -3.12 -m pytest -q -p no:cacheprovider tests/unit/test_stage07_structural_osm_metadata.py tests/unit/test_v103_o1_osm_direction.py tests/unit/test_v103_o1_red_baseline.py tests/unit/test_v104_p2_coverage_behaviour.py tests/unit/test_v104_p2_coverage_honesty.py tests/unit/test_v104_pr39_review_fixes.py tests/unit/test_v104_safe_xml_boundary.py tests/unit/test_v108_phase3_lane_semantics.py tests/unit/test_v103_o2_legal_movement.py tests/unit/test_v106_o2_gap_closure.py tests/unit/test_v103_o3_osm_road_graph.py tests/unit/test_v107_o3_geometry_endpoints.py tests/unit/test_v107_o3_registry_drift_failclosed.py tests/unit/test_v108_o3_direction_authority.py ultimate_pipeline/tests/unit/test_orphan_road_repair_l1l2.py tests/unit/test_v135_rq5_manifest_schema_validation.py tests/unit/test_v111_rq5_v2_split_pretraining_authority.py tests/adversarial/test_terminal_authority.py tests/unit/test_v85_acceptance_fail_closed.py ultimate_pipeline/tests/unit/test_c11_inputs_manifest_guard.py -k not test_real_campaign_inputs_manifest_verifies_against_repo --tb=short",
+      "exit_code": 0,
+      "passed": 291,
+      "failed": 0,
+      "skipped": 0,
+      "deselected": 1,
+      "note": "one campaign manifest test excluded because sparse checkout lacks campaigns/.../INPUTS_MANIFEST.json; standalone full command had 65 passed and one missing-input failure"
+    }
+  ],
+  "unresolved_review_findings": [
+    "V133 reviewer RQ5 split/pretraining finding: corrected logic already present in candidate; test_v111 and V135 suite pass; reviewer recheck pending exact SHA",
+    "V133 reviewer run identity write failure: corrected in 98657d8a; 2 positive/negative tests pass, broader terminal suite passes; independent exact-SHA recheck pending",
+    "release_acceptance.validate_release_acceptance later-stage capability propagation defect: latent API has no discovered production caller; remains unresolved and requires review/fix before source-ready",
+    "PR70 release integration remains excluded: exact head 32610a41442ba98c633c407bd4762abd167133a6 has a failing offline test job and skipped release gate"
+  ],
+  "readiness": {
+    "SOURCE_READY": "NO",
+    "FULL_OFFLINE_CI": "PENDING_EXACT_SHA_REFRESH",
+    "INDEPENDENT_SOURCE_REVIEW": "PENDING",
+    "CARLA_RUNTIME": "BLOCKED_EXTERNAL",
+    "RQ3_DATASET": "NOT_RUN",
+    "RQ5_MODEL_VALIDATION": "NOT_RUN",
+    "PRODUCTION_GO": "NO"
+  },
+  "source_sha256": {
+    "ultimate_pipeline/enrichment/osm_legal_movement.py": "8BF1B044FF0C28E4359F07422B744A05DB1A438ECD5F07299AB6DFF028B01AE1",
+    "ultimate_pipeline/perception/rq5_provenance.py": "41EED0AC5CD8596CEEA5AEFA75FC9BABB59725B90C627EA31D9566C5EEB22938",
+    "tests/unit/test_v135_rq5_manifest_schema_validation.py": "BFBF33BF2099122F2EF17A1BFB97C0CB6B2F83A815C05B136F938D937552A12E",
+    "ultimate_pipeline/topology/orphan_road_repair.py": "B485BA889497BDDB541BFCF48824A4F5336124A8F00FA89750B891667360AAEC",
+    "ultimate_pipeline/quality/osm_road_link_topology.py": "C6D6377BA958D1F0148D97B062159BDE3A164A1C855B3F99A698D529D5B4412E",
+    "tests/adversarial/test_terminal_authority.py": "BEAEB108233D6080502D2DDA1714B54CDB5AB40D309DA78C07D3DCA6B0108DDA",
+    "ultimate_pipeline/core/terminal_authority.py": "5B6D530FD969E49AE7BA60938179F2784627205293DD47ABD5BE38FDC8DFD152",
+    "ultimate_pipeline/enrichment/osm_direction.py": "8DF5385034A32259642325FE8CE9592E9A54343204504C0940F3FAB798C238E6",
+    "tests/unit/test_v111_rq5_v2_split_pretraining_authority.py": "E6F5696FCF45CA5F83EEA03A204A86B244776612D4E18A59A407341B2BCBD494"
+  }
 }
