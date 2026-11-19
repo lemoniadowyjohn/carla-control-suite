@@ -5,44 +5,89 @@ import hashlib
 import json
 from pathlib import Path
 
-import numpy as np
-
 from ultimate_pipeline.sensors.applied_sensor_rig import build_applied_sensor_rig_v2
-from ultimate_pipeline.sensors.transform_conventions import carla_ego_from_camera_from_cTv
+from ultimate_pipeline.sensors.canonical_lidar_spec import resolve_active_lidars
+from ultimate_pipeline.sensors.transform_conventions import (
+    carla_ego_from_camera_from_cTv,
+    carla_ego_from_lidar_from_vTl,
+)
 
-_CALIBRATION_PATH = Path(__file__).resolve().parents[2] / "ultimate_pipeline" / "sensors" / "calib_data.json"
+_CALIBRATION_PATH = (
+    Path(__file__).resolve().parents[2] / "ultimate_pipeline" / "sensors" / "calib_data.json"
+)
 _CALIBRATION_BYTES = _CALIBRATION_PATH.read_bytes()
 _CALIBRATION_SHA256 = hashlib.sha256(_CALIBRATION_BYTES).hexdigest()
 _CALIBRATION = json.loads(_CALIBRATION_BYTES.decode("utf-8"))
-_CAMERA_NAME = "front_left_camera"
+_CAMERA_NAMES = tuple(sorted(_CALIBRATION.get("cameras") or {}))
+_ACTIVE_LIDARS = resolve_active_lidars(_CALIBRATION, low_memory_profile=False)
+_SENSOR_NAMES = _CAMERA_NAMES + tuple(spec.name for spec in _ACTIVE_LIDARS)
+
 from ultimate_pipeline.tools.run_perception_safe import _rig_verification_contract_errors
 
 
+def _camera_configuration(name: str) -> dict:
+    camera = _CALIBRATION["cameras"][name]
+    width, height = (int(value) for value in camera["image_size"])
+    return {
+        "width_px": width,
+        "height_px": height,
+        "requested_K_undistortion": [list(row) for row in camera["K_undistortion"]],
+        "carla_nominal_K": [list(row) for row in camera["K"]],
+    }
+
+
+def _blueprint(name: str) -> dict:
+    if name in _CAMERA_NAMES:
+        width, height = (int(value) for value in _CALIBRATION["cameras"][name]["image_size"])
+        return {"blueprint_id": "sensor.camera.rgb", "attributes": {"image_size_x": str(width), "image_size_y": str(height)}}
+    return {"blueprint_id": "sensor.lidar.ray_cast", "attributes": {"range": "100"}}
+
+
 def _valid_verification():
-    mount = carla_ego_from_camera_from_cTv(_CALIBRATION["cameras"][_CAMERA_NAME]["cTv"])
+    mounts = {}
+    for name in _CAMERA_NAMES:
+        mounts[name] = carla_ego_from_camera_from_cTv(_CALIBRATION["cameras"][name]["cTv"])
+    for spec in _ACTIVE_LIDARS:
+        mounts[spec.name] = carla_ego_from_lidar_from_vTl(_CALIBRATION["lidars"][spec.name]["vTl"])
+
+    requested = {name: mounts[name].copy() for name in _SENSOR_NAMES}
+    ego_identity = {"actor_id": 11, "type_id": "vehicle.test"}
+    sensor_identities = {
+        name: {"actor_id": 100 + index, "type_id": ("sensor.camera.rgb" if name in _CAMERA_NAMES else "sensor.lidar.ray_cast")}
+        for index, name in enumerate(_SENSOR_NAMES)
+    }
+    blueprint_configuration = {name: _blueprint(name) for name in _SENSOR_NAMES}
+    effective_camera_configuration = {name: _camera_configuration(name) for name in _CAMERA_NAMES}
+    runtime_measurements = {
+        name: {
+            "frame_id": 7,
+            "timestamp_s": 0.35,
+            "dataset_identity": "run:hash",
+            "dataset_artifact_sha256": "c" * 64,
+        }
+        for name in _SENSOR_NAMES
+    }
     receipt = build_applied_sensor_rig_v2(
         source_calibration_sha256=_CALIBRATION_SHA256,
         code_commit="b" * 40,
-        requested_parent_relative_matrices={_CAMERA_NAME: mount},
-        ego_identity={"actor_id": 11, "type_id": "vehicle.test"},
-        sensor_identities={_CAMERA_NAME: {"actor_id": 12, "type_id": "sensor.camera.rgb"}},
-        blueprint_configuration={_CAMERA_NAME: {"blueprint_id": "sensor.camera.rgb", "attributes": {}}},
-        effective_camera_configuration={_CAMERA_NAME: {
-            "width_px": 640, "height_px": 480,
-            "requested_K_undistortion": [[320, 0, 320], [0, 320, 240], [0, 0, 1]],
-            "carla_nominal_K": [[320, 0, 320], [0, 320, 240], [0, 0, 1]],
-        }},
-        applied_parent_relative_matrices={_CAMERA_NAME: mount},
-        runtime_measurements={_CAMERA_NAME: {"frame_id": 7, "timestamp_s": 0.35, "dataset_identity": "run:hash", "dataset_artifact_sha256": "c" * 64}},
+        requested_parent_relative_matrices=requested,
+        ego_identity=ego_identity,
+        sensor_identities=sensor_identities,
+        blueprint_configuration=blueprint_configuration,
+        effective_camera_configuration=effective_camera_configuration,
+        applied_parent_relative_matrices=requested,
+        runtime_measurements=runtime_measurements,
         verification_mode="online",
     )
+    sensors_legacy = {name: {} for name in _SENSOR_NAMES}
+    applied_transforms = {"sensors": {name: {"relative_to_vehicle": {"x": 0, "y": 0, "z": 0}} for name in _SENSOR_NAMES}}
     return {
         "schema_version": 2,
         "calibration_contract_version": "CARLA_SENSOR_MOUNTING/v2",
         "sensor_contract": {"calibration_contract_version": "CARLA_SENSOR_MOUNTING/v2"},
         "use_K_undistortion_only": True,
-        "sensors": {_CAMERA_NAME: {}},
-        "applied_carla_transforms": {"sensors": {_CAMERA_NAME: {"relative_to_vehicle": {"x": 0, "y": 0, "z": 0}}}},
+        "sensors": sensors_legacy,
+        "applied_carla_transforms": applied_transforms,
         "applied_sensor_rig_v2": receipt,
     }
 
@@ -103,8 +148,9 @@ def test_source_only_receipt_fails_live_acceptance():
 
 def test_missing_applied_sensor_is_named():
     value = _valid_verification()
-    del value["applied_carla_transforms"]["sensors"][_CAMERA_NAME]
-    assert any(_CAMERA_NAME in error for error in _rig_verification_contract_errors(value))
+    missing = _SENSOR_NAMES[0]
+    del value["applied_carla_transforms"]["sensors"][missing]
+    assert any(missing in error for error in _rig_verification_contract_errors(value))
 
 
 def test_missing_v2_receipt_fails_closed():
