@@ -1,7 +1,7 @@
 {
   "schema": "v131-ownership-ledger/v1",
   "candidate_branch": "integration/v131-pre-claude-candidate",
-  "candidate_head_before_report_commit": "1085e00031ffae99ca770ee963dc6f90ffafde72",
+  "candidate_head_before_report_commit": "c95f9b4ece19b98fad2a1818f658fbe8686f0faa",
   "candidate_worktree": "F:\\CARLA_RECOVERY\\worktrees\\v129-calib-admission-20261119",
   "writer": "Codex integration owner",
   "report_owner": "Codex/CD-00 equivalent integration lane",
@@ -28,6 +28,7 @@
     "reports/v131/WORKTREE_ANCESTRY.csv"
   ],
   "last_source_fix_commit": "7b0194caf6dfac4bbcbc63e0ab5b9397b95ae1f2",
-  "task_status": "candidate source branch; independent QA pending",
-  "task_id": "V131 integration candidate closure"
+  "task_status": "draft PR open; source review REQUEST_CHANGES; latest workflow refresh required after report-only update",
+  "task_id": "V131 integration candidate closure",
+  "latest_candidate_head_at_snapshot": "679745fc5f5af4d2152ee0f8ad721f60b81ee352"
 }
