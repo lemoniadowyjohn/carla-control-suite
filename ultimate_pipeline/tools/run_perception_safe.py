@@ -1095,32 +1095,32 @@ def _restart_carla_and_wait(
     if not carla_exe:
         print("[run_perception_safe] WARNING: CARLA restart requested but no executable configured.", flush=True)
         return False
-    try:
-        import psutil  # type: ignore
-    except Exception:
-        psutil = None
-    if psutil is not None:
+
+    # V94 round 2, item 4: the automatic by-name kill that used to run here
+    # (psutil.process_iter matching "CarlaUE4" as a substring, falling back
+    # to `taskkill /F /IM CarlaUE4*.exe` without psutil) is permanently
+    # removed -- an image name does not identify a launch owner, a run, or
+    # a port. If something already holds either target port, fail closed
+    # and name the holder instead of killing into its namespace. No
+    # automatic orphan recovery replaces it (owner decision pending; see
+    # V93_RUNTIME_ROUND2_BRIEF.md item 6).
+    occupied = [
+        p for p in (int(rpc_port), int(stream_port))
+        if _tcp_port_open("localhost", p, timeout_s=0.2)
+    ]
+    if occupied:
         try:
-            for proc in psutil.process_iter(["name"]):
-                name = str(proc.info.get("name") or "")
-                if "CarlaUE4" in name:
-                    try:
-                        proc.kill()
-                    except Exception:
-                        pass
+            from ultimate_pipeline.core.carla_utils import describe_port_occupant
+            details = "; ".join(describe_port_occupant(p) for p in occupied)
         except Exception:
-            pass
-    else:
-        for image_name in ("CarlaUE4-Win64-Shipping.exe", "CarlaUE4.exe"):
-            try:
-                subprocess.run(
-                    ["taskkill", "/F", "/IM", image_name],
-                    capture_output=True,
-                    check=False,
-                )
-            except Exception:
-                pass
-    time.sleep(3.0)
+            details = f"ports {occupied} already occupied (holder could not be determined)"
+        print(
+            f"[run_perception_safe] WARNING: refusing automatic CARLA restart "
+            f"(no automatic kill-by-name): {details}",
+            flush=True,
+        )
+        return False
+
     cmd = [
         carla_exe,
         f"-carla-rpc-port={int(rpc_port)}",
