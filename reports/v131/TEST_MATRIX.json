@@ -1,0 +1,22 @@
+{
+  "candidate_tested_commit": "1085e00031ffae99ca770ee963dc6f90ffafde72",
+  "combined_focused_command": "python -m pytest ultimate_pipeline/tests/unit/test_applied_sensor_rig_v2.py tests/unit/test_calibration_independent_oracle.py ultimate_pipeline/tests/unit/test_wp_c_camera_intrinsic_realization.py ultimate_pipeline/tests/unit/test_rq3_route_rig_hardening.py ultimate_pipeline/tests/unit/test_rq3_paired_capture_contract.py tests/unit/test_rq3_batch9_pair_contract.py tests/unit/test_submission_applied_sensor_rig_mirror.py tests/unit/test_sensor_calibration_semantics.py tests/unit/test_v112_rq3_explicit_calibration.py tests/unit/test_v119_rq3_completeness_nonvacuous.py tests/unit/test_local_registration.py ultimate_pipeline/tests/unit/test_map_coordinate_frames.py tests/unit/test_v109_rl_fuzzer_width_polynomial.py tests/unit/test_feature_gap.py ultimate_pipeline/tests/unit/test_feature_gap_consumer_failclosed.py ultimate_pipeline/tests/unit/test_feature_gap_missingness.py tests/unit/test_v111_rq5_v2_split_pretraining_authority.py tests/unit/test_rq5_execution_correctness.py tests/unit/test_v117_rq5_eval_identity_guard.py tests/unit/test_v121_rq5_reused_checkpoint_claim.py tests/unit/test_v122_rq5_stale_evaluation_report.py tests/unit/test_carla_preflight_ownership.py tests/unit/test_carla_utils_tier3_hardening.py tests/unit/test_run_perception_safe_carla_restart_no_kill_by_name.py tests/unit/test_v94_carla_capture_readiness.py tests/unit/test_v94_carla_process_ownership.py ultimate_pipeline/carla_tools/tests/test_carla_recovery_helpers.py ultimate_pipeline/carla_tools/tests/test_thesis_sensor_rig_contract.py -q --tb=short -rs",
+  "exit_code": 1,
+  "collected": 406,
+  "passed": 388,
+  "failed": 17,
+  "skipped": 1,
+  "failure_classification": "All 17 failures are import-time ModuleNotFoundError: torchvision missing, within tests/unit/test_rq5_execution_correctness.py. One optional sklearn test skipped in tests/unit/test_feature_gap.py.",
+  "additional_evidence": {
+    "pr64_focus": {"exit_code": 0, "passed": 106, "warnings": 6},
+    "pr55_focus": {"exit_code": 0, "passed": 13},
+    "pr50_v2_authority": {"exit_code": 0, "passed": 6},
+    "pr67_focus": {"collected": 121, "passed": 118, "failed": 3, "reason": "pinned large-map XODR assets absent in sparse worktree; coordinate-frame and local-registration new tests passed"},
+    "pr49_focus": {"exit_code": 0, "passed": 5},
+    "pr56_focus": {"collected": 50, "passed": 49, "skipped": 1},
+    "full_offline_pytest": {"exit_code": 2, "collected": 8448, "collection_errors": 21, "executed": 0, "blockers": ["torch_geometric", "torchvision", "full map assets", "NumPy/PyTorch binary compatibility"]},
+    "compileall": {"result": "completed with pre-existing SyntaxWarning invalid escape in ultimate_pipeline/tools/calib_sanity_check.py"},
+    "git_diff_check": {"exit_code": 0}
+  },
+  "carla_live": "NOT_RUN"
+}

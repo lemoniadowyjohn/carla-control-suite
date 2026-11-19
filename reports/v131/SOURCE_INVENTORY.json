@@ -1,0 +1,18 @@
+{
+  "captured": "2026-11-19",
+  "repository": "lemoniadowyjohn/carla-control-suite",
+  "production_branch": "integration/production-large-map-20260918",
+  "production_sha": "225ed15d0da6444cc257835ca777aba281553f3c",
+  "candidate_branch": "integration/v131-pre-claude-candidate",
+  "candidate_sha_before_report_commit": "1085e00031ffae99ca770ee963dc6f90ffafde72",
+  "candidate_worktree": "F:\\CARLA_RECOVERY\\worktrees\\v129-calib-admission-20261119",
+  "v128_salvage_capsule": {"path": "F:\\opencode_worktrees\\salvage_v128_reports\\emergency_capsules\\capsule_20261118T233108Z", "exists": true, "modified": false},
+  "resources_mib": {"F_free": 3420000, "C_free": 9390000, "G_free": 2270000, "physical_memory_available": "read in current session; about 30 GiB at start"},
+  "candidate_source_status": "clean before reports; only reports/v131 was untracked",
+  "live_carla": "NOT_RUN",
+  "datasets": "No admitted paired RQ3 dataset was verified in this inventory",
+  "integrated": ["#69 #66 #68 stack", "#65", "#67", "#49", "#56", "#50", "#55 with #54 unique test edits already present", "#64", "V129 T1 partial", "V129 T2"],
+  "excluded": ["#70 failing checks", "#63 pending OC-A and review", "#37/#58 unresolved recovery review and WSL durability", "#39/#57 ancestry mismatch", "#40 with older-base #45/#46", "#31/#36 failing CI", "GUI #34/#43/#44 separate history", "#30/#48/#59 release authority pending review debt"],
+  "pr30_inline_comment_ids": [4543949125,4543949130,4543969658,4543969677,4543969687,4543969692,4543969701,4543969708,4543969719,4543969732,4543969741,4543969749,4543969757,4543969766,4543969773,4543969780,4543969786,4543969793,4543969796],
+  "note": "Inventory is bounded to the relevant V131 PRs and known stacks, not a verified complete 47-PR inventory. Live GraphQL thread-state and current CI refresh remain pending."
+}

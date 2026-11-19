@@ -1,0 +1,4 @@
+branch=integration/v131-pre-claude-candidate
+head=1085e00031ffae99ca770ee963dc6f90ffafde72
+base=225ed15d0da6444cc257835ca777aba281553f3c
+status=nonproduction candidate; no merge authorization
