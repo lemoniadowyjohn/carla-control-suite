@@ -908,3 +908,24 @@ class TestMainPipelineRunTerminalChain:
         run_status = json.loads((tmp_path / "run_status.json").read_text(encoding="utf-8"))
         assert run_status["status"] == "ok"
         assert run_status["stage"] == "done"
+
+
+def test_run_identity_write_failure_stops_admission(tmp_path, monkeypatch):
+    from ultimate_pipeline.core.terminal_authority import write_run_identity
+
+    def fail_write(*args, **kwargs):
+        raise OSError("disk full")
+
+    monkeypatch.setattr(Path, "write_text", fail_write)
+    with pytest.raises(OSError, match="disk full"):
+        write_run_identity(tmp_path, "run-1", "source-sha", "profile", "settings-sha", "2026-11-19T00:00:00Z")
+
+
+def test_run_identity_write_positive_control(tmp_path):
+    from ultimate_pipeline.core.terminal_authority import write_run_identity
+
+    write_run_identity(tmp_path, "run-1", "source-sha", "profile", "settings-sha", "2026-11-19T00:00:00Z")
+    payload = json.loads((tmp_path / "run_identity.json").read_text(encoding="utf-8"))
+    assert payload["run_id"] == "run-1"
+    assert payload["source_sha"] == "source-sha"
+    assert payload["settings_digest"] == "settings-sha"

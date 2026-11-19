@@ -106,20 +106,17 @@ def write_run_identity(
     settings_digest: str,
     started_at_utc: str,
 ) -> None:
-    """Write run_identity.json at admission time."""
-    try:
-        identity = {
-            "run_id": run_id,
-            "source_sha": source_sha,
-            "profile": profile,
-            "settings_digest": settings_digest,
-            "started_at_utc": started_at_utc,
-            "out_dir": str(out_dir),
-        }
-        path = Path(out_dir) / "run_identity.json"
-        path.write_text(json.dumps(identity, indent=2, sort_keys=True) + "\n", encoding="utf-8")
-    except Exception as e:
-        print(f"⚠️ Failed to write run_identity.json: {e}")
+    """Write run_identity.json at admission time or fail before pipeline work."""
+    identity = {
+        "run_id": run_id,
+        "source_sha": source_sha,
+        "profile": profile,
+        "settings_digest": settings_digest,
+        "started_at_utc": started_at_utc,
+        "out_dir": str(out_dir),
+    }
+    path = Path(out_dir) / "run_identity.json"
+    path.write_text(json.dumps(identity, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
 
 def read_run_identity(out_dir: str | os.PathLike[str]) -> dict | None:
