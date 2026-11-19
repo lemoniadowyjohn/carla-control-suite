@@ -190,6 +190,117 @@ def _collect_runner_artifacts(path: Path) -> Dict[str, Optional[str]]:
     }
 
 
+def _assemble_pair_arm_identities(
+    *,
+    manual_arm_base: Dict[str, Any],
+    auto_arm_base: Dict[str, Any],
+    manual_calib: Dict[str, Any],
+    auto_calib: Dict[str, Any],
+    manual_rig: Dict[str, Any],
+    auto_rig: Dict[str, Any],
+    manual_applied_rig: Dict[str, Any],
+    auto_applied_rig: Dict[str, Any],
+    manual_weather_sha: str,
+    auto_weather_sha: str,
+    camera_response_sha: str,
+    simulation_physics_sha: str,
+    capture_config_sha256: str,
+    runtime_sensor_rig_sha_manual: str,
+    runtime_sensor_rig_sha_auto: str,
+    traffic_manager_sha256: str = "",
+    vehicle_calibration_binding_sha256: str = "",
+) -> tuple[Dict[str, Any], Dict[str, Any]]:
+    """Assemble per-arm pair-manifest identities from independently observed inputs.
+
+    Pure/minimally dependent seam for offline testing. Shared calibration/config
+    identities may legitimately be identical when they refer to the same
+    configuration; runtime evidence and dataset identity must be bound
+    independently to each arm's own observations/receipts. Never manufacture
+    different hashes just to distinguish arms.
+    """
+    from ultimate_pipeline.sensors.applied_sensor_rig import (
+        canonical_sha256,
+        validate_applied_sensor_rig_v2,
+    )
+
+    def _normalize_receipt(receipt: Any) -> Dict[str, Any]:
+        return dict(receipt) if isinstance(receipt, dict) else {}
+
+    manual_receipt = _normalize_receipt(manual_applied_rig)
+    auto_receipt = _normalize_receipt(auto_applied_rig)
+    manual_arm = dict(manual_arm_base or {})
+    auto_arm = dict(auto_arm_base or {})
+
+    # Reject swapped evidence / inconsistent pre-bound receipt identity.
+    for arm_name, arm, receipt in (
+        ("manual", manual_arm, manual_receipt),
+        ("auto", auto_arm, auto_receipt),
+    ):
+        existing_receipt = arm.get("applied_sensor_rig_v2")
+        if isinstance(existing_receipt, dict) and receipt and existing_receipt != receipt:
+            raise ValueError(f"{arm_name}:inconsistent_applied_receipt_binding")
+        existing_sha = arm.get("applied_sensor_rig_v2_sha256")
+        if receipt and existing_sha and str(existing_sha) != canonical_sha256(receipt):
+            raise ValueError(f"{arm_name}:applied_receipt_sha_mismatch")
+
+    # Bind per-arm identities from each arm's independently derived artifacts.
+    for arm, calib, rig, weather_sha, runtime_sha, receipt in (
+        (
+            manual_arm,
+            manual_calib or {},
+            manual_rig or {},
+            manual_weather_sha,
+            runtime_sensor_rig_sha_manual,
+            manual_receipt,
+        ),
+        (
+            auto_arm,
+            auto_calib or {},
+            auto_rig or {},
+            auto_weather_sha,
+            runtime_sensor_rig_sha_auto,
+            auto_receipt,
+        ),
+    ):
+        arm["weather_sha256"] = weather_sha
+        arm["camera_response_sha256"] = camera_response_sha
+        arm["simulation_physics_sha256"] = simulation_physics_sha
+        arm["runtime_sensor_rig_sha256"] = str(runtime_sha or "")
+        arm["calibration_sha256"] = str(calib.get("calib_sha256", ""))
+        arm["sensor_rig_sha256"] = str(rig.get("sensor_rig_sha256", ""))
+        arm["capture_config_sha256"] = capture_config_sha256
+        arm["traffic_manager_sha256"] = traffic_manager_sha256
+        arm["vehicle_calibration_binding_sha256"] = vehicle_calibration_binding_sha256
+        if receipt:
+            arm["applied_sensor_rig_v2"] = receipt
+            arm["applied_sensor_rig_v2_sha256"] = canonical_sha256(receipt)
+
+    # Runtime evidence/dataset identity must be bound independently to each arm's
+    # own observations; reject swapped/incorrect bindings and unverified receipts.
+    for arm_name, arm, receipt in (
+        ("manual", manual_arm, manual_receipt),
+        ("auto", auto_arm, auto_receipt),
+    ):
+        if not receipt:
+            continue
+        ds_id = arm.get("dataset_identity")
+        ds_sha = arm.get("dataset_artifact_sha256")
+        for sample in (receipt.get("runtime_measurements") or {}).values():
+            if ds_id and sample.get("dataset_identity") not in ("", None) and sample.get("dataset_identity") != ds_id:
+                raise ValueError(f"{arm_name}:dataset_identity_binding_mismatch")
+            if ds_sha and sample.get("dataset_artifact_sha256") not in ("", None) and sample.get("dataset_artifact_sha256") != ds_sha:
+                raise ValueError(f"{arm_name}:dataset_artifact_sha256_binding_mismatch")
+        errors = validate_applied_sensor_rig_v2(
+            receipt,
+            require_live=True,
+            expected_source_calibration_sha256=str(arm.get("calibration_sha256", "")),
+        )
+        if errors:
+            raise ValueError(f"{arm_name}:applied_receipt_inconsistent:{errors[0]}")
+
+    return manual_arm, auto_arm
+
+
 def main(argv: Optional[List[str]] = None) -> int:
     parser = argparse.ArgumentParser(description="Capture paired perception runs (manual vs auto) for thesis visuals.")
     parser.add_argument("--manual_map", choices=["Grid0821", "Grid0828"], help="Named manual map to load for the manual run.")
@@ -494,32 +605,31 @@ def main(argv: Optional[List[str]] = None) -> int:
     camera_response_sha = _cam_response["camera_response_sha256"]
     _physics = build_physics_profile(int(getattr(SETTINGS, "CAPTURE_FPS", 20)))
     simulation_physics_sha = _physics[PHYSICS_DIGEST_FIELD]
-    # The rig digest binds calibration + effective rig; keep it distinct from
-    # the runtime rig digest, which additionally binds response + physics.
-    runtime_sensor_rig_sha = manual_rig["sensor_rig_sha256"]
-
+    # Derive per-arm identities independently from each arm's verified artifacts.
+    # Shared calibration/config identities may legitimately be identical when the
+    # same governed configuration is used; runtime evidence/dataset bindings must
+    # remain independently observed per arm (never copied across arms).
     manual_arm = dict(manual_arm)
     auto_arm = dict(auto_arm)
-    for arm, weather_sha, cam_sha, phys_sha in (
-        (manual_arm, manual_weather_sha, camera_response_sha, simulation_physics_sha),
-        (auto_arm, auto_weather_sha, camera_response_sha, simulation_physics_sha),
-    ):
-        arm["weather_sha256"] = weather_sha
-        arm["camera_response_sha256"] = cam_sha
-        arm["simulation_physics_sha256"] = phys_sha
-        arm["runtime_sensor_rig_sha256"] = runtime_sensor_rig_sha
-        arm["calibration_sha256"] = manual_calib["calib_sha256"]
-        arm["sensor_rig_sha256"] = manual_rig["sensor_rig_sha256"]
-        arm["capture_config_sha256"] = capture_config_id["capture_config_sha256"]
-        arm["traffic_manager_sha256"] = ""
-        arm["vehicle_calibration_binding_sha256"] = ""
-    for arm, receipt in ((manual_arm, manual_applied_rig), (auto_arm, auto_applied_rig)):
-        if receipt:
-            from ultimate_pipeline.sensors.applied_sensor_rig import canonical_sha256
-            arm["applied_sensor_rig_v2"] = receipt
-            arm["applied_sensor_rig_v2_sha256"] = canonical_sha256(receipt)
-            # The arm writer must bind these to the finalized dataset receipt.
-            # Missing identities stay absent and fail validation.
+    manual_arm, auto_arm = _assemble_pair_arm_identities(
+        manual_arm_base=manual_arm,
+        auto_arm_base=auto_arm,
+        manual_calib=manual_calib,
+        auto_calib=auto_calib,
+        manual_rig=manual_rig,
+        auto_rig=auto_rig,
+        manual_applied_rig=manual_applied_rig,
+        auto_applied_rig=auto_applied_rig,
+        manual_weather_sha=manual_weather_sha,
+        auto_weather_sha=auto_weather_sha,
+        camera_response_sha=camera_response_sha,
+        simulation_physics_sha=simulation_physics_sha,
+        capture_config_sha256=capture_config_id["capture_config_sha256"],
+        runtime_sensor_rig_sha_manual=str(manual_rig.get("sensor_rig_sha256", "")),
+        runtime_sensor_rig_sha_auto=str(auto_rig.get("sensor_rig_sha256", "")),
+        traffic_manager_sha256="",
+        vehicle_calibration_binding_sha256="",
+    )
 
     # Build manifest
     raw_pair_valid = bool(ok) and bool(manual_status.get("ok", ok)) and bool(auto_status.get("ok", ok))
@@ -532,15 +642,15 @@ def main(argv: Optional[List[str]] = None) -> int:
         auto_map_identity=auto_map_identity,
         route_manifest_path=route_manifest_path,
         route_manifest_sha256=route_manifest_sha256,
-        calibration_sha256=manual_calib["calib_sha256"],
+        calibration_sha256=str(manual_calib.get("calib_sha256", "")) if str(manual_calib.get("calib_sha256", "")) == str(auto_calib.get("calib_sha256", "")) else "",
         calibration_path=str(Path(calib_path).resolve()),
-        sensor_rig_sha256=manual_rig["sensor_rig_sha256"],
-        weather_sha256=manual_weather_sha,
+        sensor_rig_sha256=str(manual_rig.get("sensor_rig_sha256", "")) if str(manual_rig.get("sensor_rig_sha256", "")) == str(auto_rig.get("sensor_rig_sha256", "")) else "",
+        weather_sha256=manual_weather_sha if manual_weather_sha == auto_weather_sha else "",
         capture_config_sha256=capture_config_id["capture_config_sha256"],
         camera_response_sha256=camera_response_sha,
         traffic_manager_sha256="",
         simulation_physics_sha256=simulation_physics_sha,
-        runtime_sensor_rig_sha256=runtime_sensor_rig_sha,
+        runtime_sensor_rig_sha256=str(manual_arm.get("runtime_sensor_rig_sha256", "")) if str(manual_arm.get("runtime_sensor_rig_sha256", "")) == str(auto_arm.get("runtime_sensor_rig_sha256", "")) else "",
         vehicle_calibration_binding_sha256="",
         weather_schema_version=WEATHER_SCHEMA_VERSION,
         manual_arm=manual_arm,
