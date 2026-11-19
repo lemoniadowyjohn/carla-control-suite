@@ -66,15 +66,24 @@ def _rzyx(*, roll: float = 0.0, pitch: float = 0.0, yaw: float = 0.0) -> np.ndar
 
 def test_sensor_rig_rotation_extraction_known_zyx_angles(monkeypatch):
     monkeypatch.setenv("UP_SILENCE_DEPRECATIONS", "1")
+    import carla
     from ultimate_pipeline.carla_tools.sensor_rig import rotation_matrix_to_carla_euler_degrees
 
-    matrix = np.eye(4)
-    matrix[:3, :3] = _rzyx(roll=7.0, pitch=-11.0, yaw=23.0)
+    # CARLA's client matrix is the oracle: its pitch sign is part of the
+    # coordinate convention and differs from a generic ZYX helper's label.
+    source = carla.Transform(
+        carla.Location(x=1.0, y=-2.0, z=0.5),
+        carla.Rotation(roll=7.0, pitch=-11.0, yaw=23.0),
+    )
+    matrix = np.asarray(source.get_matrix(), dtype=float)
     pitch, yaw, roll = rotation_matrix_to_carla_euler_degrees(matrix)
+    reconstructed = carla.Transform(
+        carla.Location(x=1.0, y=-2.0, z=0.5),
+        carla.Rotation(roll=roll, pitch=pitch, yaw=yaw),
+    )
 
-    assert abs(pitch - (-11.0)) < 1e-6
+    assert np.allclose(reconstructed.get_matrix(), matrix, atol=1e-6, rtol=0)
     assert abs(yaw - 23.0) < 1e-6
-    assert abs(roll - 7.0) < 1e-6
 
 
 def test_sensor_rig_rotation_extraction_rejects_bad_shape_under_strict(monkeypatch):

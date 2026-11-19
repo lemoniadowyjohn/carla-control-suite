@@ -786,6 +786,7 @@ def test_model_manifest_binds_checkpoint_dataset_git_and_seed(tmp_path, monkeypa
 
 
 def test_verify_checkpoint_manifest_rejects_a_swapped_checkpoint(tmp_path):
+    from hashlib import sha256
     from ultimate_pipeline.perception import train_launcher
 
     model, contract = train_launcher._build_model(CARLA_SEMANTIC_NUM_CLASSES)
@@ -793,12 +794,22 @@ def test_verify_checkpoint_manifest_rejects_a_swapped_checkpoint(tmp_path):
     out_dir.mkdir()
     ckpt = out_dir / "seg_fcn_epoch001.pt"
     torch.save(model.state_dict(), ckpt)
+    # A valid v2 positive fixture must satisfy the independent split and
+    # pretraining contracts before exercising checkpoint byte identity.
+    split_manifest = out_dir / "split_manifest.json"
+    split_manifest.write_text('{"split": "synthetic_unit_test"}', encoding="utf-8")
     manifest = build_model_manifest(
         checkpoint=ckpt,
         train_dataset_identity={"identity_sha256": "abc", "root_count": 1},
         train_roots=["/gen"],
         camera=CAMERA,
         seed=1,
+        split_manifest_path=str(split_manifest),
+        split_manifest_sha256=sha256(split_manifest.read_bytes()).hexdigest(),
+        pretraining_contract={
+            "schema": "rq5_pretraining_contract_v1",
+            "source": "synthetic_unit_test",
+        },
     )
     write_model_manifest(out_dir, manifest)
 

@@ -1,0 +1,153 @@
+{
+  "active_lidar_names": [
+    "middle_lidar"
+  ],
+  "calibration_sha256": "d3ff2660b11ca56d16c6185e82d1b4c7fa94c5db27bb3469558442d79f4e97d9",
+  "carla_client_module": "C:\\Users\\admin\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\carla\\__init__.py",
+  "carla_parent_frame": "forward_right_up",
+  "carla_server_started": false,
+  "sensors": {
+    "back_left_camera": {
+      "basis_angle_errors": {
+        "forward_deg": 6.4750618068941515e-06,
+        "right_deg": 7.761331092373184e-06,
+        "up_deg": 8.824930397202536e-08
+      },
+      "carla_position_xyz_m": [
+        -0.5388611555099487,
+        -0.2631894052028656,
+        1.0718704462051392
+      ],
+      "matrix_max_abs_error": 1.1734273941410578e-07,
+      "position_error_m": 6.107162755749038e-08,
+      "rotation_angle_error_deg": 7.118443536508981e-06,
+      "source_sensor_position_xyz_m": [
+        -0.5388611397777358,
+        0.2631893997338302,
+        1.0718703874486006
+      ]
+    },
+    "back_right_camera": {
+      "basis_angle_errors": {
+        "forward_deg": 5.775502707810376e-06,
+        "right_deg": 5.32321094180215e-06,
+        "up_deg": 7.358233091270911e-08
+      },
+      "carla_position_xyz_m": [
+        0.29447340965270996,
+        -0.2205808311700821,
+        1.0065038204193115
+      ],
+      "matrix_max_abs_error": 9.86422895588035e-08,
+      "position_error_m": 1.5182534785009987e-08,
+      "rotation_angle_error_deg": 5.549596198008233e-06,
+      "source_sensor_position_xyz_m": [
+        0.29447339730973365,
+        0.22058083332513145,
+        1.0065038118451608
+      ]
+    },
+    "front_left_camera": {
+      "basis_angle_errors": {
+        "forward_deg": 1.710005057808361e-06,
+        "right_deg": 2.7707222407963624e-06,
+        "up_deg": 1.0388753083225218e-07
+      },
+      "carla_position_xyz_m": [
+        -0.23655050992965698,
+        -0.02729806676506996,
+        1.0096192359924316
+      ],
+      "matrix_max_abs_error": 5.790916457470985e-08,
+      "position_error_m": 5.364647282016206e-08,
+      "rotation_angle_error_deg": 2.2405242606041156e-06,
+      "source_sensor_position_xyz_m": [
+        -0.23655050256222285,
+        0.027298066529018734,
+        1.0096191828547874
+      ]
+    },
+    "front_right_camera": {
+      "basis_angle_errors": {
+        "forward_deg": 9.463501752882108e-07,
+        "right_deg": 1.6119381124496723e-07,
+        "up_deg": 2.3379995631015918e-08
+      },
+      "carla_position_xyz_m": [
+        -0.428931325674057,
+        -0.022945953533053398,
+        1.101969838142395
+      ],
+      "matrix_max_abs_error": 4.817147924995879e-08,
+      "position_error_m": 4.81865825167329e-08,
+      "rotation_angle_error_deg": 5.539128620056893e-07,
+      "source_sensor_position_xyz_m": [
+        -0.4289313244823816,
+        0.022945953345353653,
+        1.1019697899709158
+      ]
+    },
+    "left_camera": {
+      "basis_angle_errors": {
+        "forward_deg": 4.1480791674751224e-06,
+        "right_deg": 4.114318444570965e-06,
+        "up_deg": 1.2351685095953926e-08
+      },
+      "carla_position_xyz_m": [
+        -0.49995487928390503,
+        -0.6973344683647156,
+        0.9008052349090576
+      ],
+      "matrix_max_abs_error": 7.251425546486723e-08,
+      "position_error_m": 1.4900636479715772e-08,
+      "rotation_angle_error_deg": 4.131200687263604e-06,
+      "source_sensor_position_xyz_m": [
+        -0.4999548739693182,
+        0.6973344544446333,
+        0.9008052347847882
+      ]
+    },
+    "middle_lidar": {
+      "basis_angle_errors": {
+        "forward_deg": 1.1816165429163951e-06,
+        "right_deg": 1.0776873433215056e-06,
+        "up_deg": 3.1292872756054287e-07
+      },
+      "carla_position_xyz_m": [
+        -0.4920733869075775,
+        0.004297310020774603,
+        1.2406857013702393
+      ],
+      "matrix_max_abs_error": 4.627044680738379e-08,
+      "position_error_m": 3.148134623127299e-08,
+      "rotation_angle_error_deg": 1.1393564097090725e-06,
+      "source_sensor_position_xyz_m": [
+        -0.4920734,
+        -0.00429731,
+        1.24068573
+      ]
+    },
+    "right_camera": {
+      "basis_angle_errors": {
+        "forward_deg": 3.816342005903115e-06,
+        "right_deg": 3.819446182665499e-06,
+        "up_deg": 2.7705554775983294e-08
+      },
+      "carla_position_xyz_m": [
+        -0.6220107674598694,
+        0.6428943276405334,
+        0.8679538369178772
+      ],
+      "matrix_max_abs_error": 6.655245351041075e-08,
+      "position_error_m": 3.8030526750518565e-08,
+      "rotation_angle_error_deg": 3.817937736029876e-06,
+      "source_sensor_position_xyz_m": [
+        -0.6220107931269805,
+        -0.6428943079758415,
+        0.8679538168973812
+      ]
+    }
+  },
+  "source_vehicle_frame": "FLU",
+  "verification_mode": "offline_independent_oracle_plus_installed_carla_client"
+}

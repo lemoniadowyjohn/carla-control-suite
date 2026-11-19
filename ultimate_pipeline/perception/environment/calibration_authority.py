@@ -8,9 +8,10 @@ by counting how many marker centres project inside the image, then picks the
 higher score globally.  With no markers it always selects "no invert" because
 the loop initialises ``best_sum = -1`` and both candidates score ``0``.
 
-That contradicts the authoritative thesis rule, which fixes ``cTv``/
-``vTl`` semantics (``cTv`` = vehicle->camera used directly, **not** inverted;
-``vTl`` = lidar->vehicle, **inverted**).  A heuristic tool must never produce an
+That contradicts the authoritative v2 thesis rule, which fixes ``cTv``/
+``vTl`` frames (``cTv`` = camera_opencv_optical_from_vehicle_flu, mounted as
+``inverse(cTv)`` with explicit basis changes; ``vTl`` = vehicle_flu_from_lidar,
+mounted directly with explicit basis changes). A heuristic tool must never produce an
 artifact that can be mistaken for authoritative thesis calibration.
 
 This module
@@ -77,8 +78,8 @@ def diagnostic_status_block(
         "convention_search_performed": True,
         "contradicts_canonical_thesis_rule": True,
         "canonical_rule": (
-            "cTv = vehicle->camera used DIRECTLY (not inverted); "
-            "vTl = lidar->vehicle INVERTED to vehicle->lidar"
+            "CARLA_SENSOR_MOUNTING/v2: camera mount derives inverse(cTv) with explicit FLU/FRU and optical/CARLA basis changes; "
+            "LiDAR mount uses vTl with explicit FLU/FRU basis changes"
         ),
         "canonical_authority_module": "ultimate_pipeline.sensors.calibration_contract",
         "warning": (

@@ -17,18 +17,19 @@ from ultimate_pipeline.perception.rq3_capture_contract import (
     CLAIM_PAIRED_PROTOCOL_VALID,
     CLAIM_UNPAIRED_CAPTURE,
 )
+from ultimate_pipeline.tests.unit.rq3_v2_test_receipts import (
+    TEST_COMMIT,
+    complete_synthetic_arm,
+)
 
 #: A complete, internally-consistent identity block (synthetic values).
 BASE_IDENTITY: Dict[str, str] = {
-    "calibration_sha256": "sha_calibration",
-    "sensor_rig_sha256": "sha_sensor_rig",
     "weather_sha256": "sha_weather",
     "capture_config_sha256": "sha_capture_config",
     "route_manifest_sha256": "sha_route_manifest",
     "camera_response_sha256": "sha_camera_response",
     "traffic_manager_sha256": "sha_traffic_manager",
     "simulation_physics_sha256": "sha_simulation_physics",
-    "runtime_sensor_rig_sha256": "sha_runtime_sensor_rig",
     "vehicle_calibration_binding_sha256": "sha_vehicle_calibration_binding",
     "sim_timing_sha256": "sha_sim_timing",
     "pair_frame_index": "0",
@@ -53,7 +54,7 @@ def _arm(members, arm_name="manual"):
 def _complete_arm(**overrides) -> Dict[str, Any]:
     arm = dict(BASE_IDENTITY)
     arm.update(overrides)
-    return arm
+    return complete_synthetic_arm(arm)
 
 
 def _manifest(
@@ -83,7 +84,7 @@ def _manifest(
     top = {k: manual_arm.get(k, "") for k in REQUIRED_ARM_IDENTITY_KEYS}
     return build_pair_manifest(
         pair_id=pair_id,
-        software_git_sha="sha_software",
+        software_git_sha=TEST_COMMIT,
         carla_client_version="0.9.16",
         carla_server_version="0.9.16",
         manual_map_identity=manual_map_identity,

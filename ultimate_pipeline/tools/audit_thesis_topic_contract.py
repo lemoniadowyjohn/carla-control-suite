@@ -187,11 +187,14 @@ def _main_payload(repo_root: Path) -> Dict[str, Any]:
             "validation_method_present": _contains(thesis_sensor_rig, "_validate_loaded_calibration_contract"),
             "camera_uses_K_undistortion": _contains(thesis_sensor_rig, "K_undistortion"),
             "camera_image_size_enforced": _contains(thesis_sensor_rig, "_parse_image_size"),
-            "camera_cTv_direct_enforced": (
-                _contains(thesis_sensor_rig, "ctv_invert=False")
-                and _contains(transform_conventions, "Non-canonical camera cTv inversion requested")
+            "camera_inverse_cTv_v2_enforced": (
+                _contains(transform_conventions, "S @ inverse(cTv) @ M")
+                and _contains(thesis_sensor_rig, "carla_ego_from_camera_from_cTv")
             ),
-            "lidar_vTl_inversion_enforced": _contains(transform_conventions, "np.linalg.inv(T_lidar_vehicle)"),
+            "lidar_vTl_basis_conversion_v2_enforced": (
+                _contains(transform_conventions, "S @ vTl @ S")
+                and _contains(thesis_sensor_rig, "carla_ego_from_lidar_from_vTl")
+            ),
         },
         "perception_labels": {
             "supported_result_classes": [

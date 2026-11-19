@@ -93,6 +93,7 @@ import os
 import subprocess
 import sys
 from datetime import datetime
+from uuid import uuid4
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Sequence, Tuple
 
@@ -460,11 +461,15 @@ def eval_sim_labeled(
     min_frames: int = 1,
 ) -> Dict[str, Any]:
     """Run labeled sim evaluation against an explicitly identified split."""
-    eval_dir = out_dir / "eval" / condition_name
-    eval_dir.mkdir(parents=True, exist_ok=True)
+    # Every evaluator invocation writes into a newly created directory.
+    # A zero-exit child which fails to write its report must NEVER read a
+    # prior invocation's status=ok JSON for the same condition.
+    invocation_id = uuid4().hex
+    eval_dir = out_dir / "eval" / condition_name / f"invocation_{invocation_id}"
+    eval_dir.mkdir(parents=True, exist_ok=False)
 
     out_json = eval_dir / "sim_labeled_eval.json"
-    log_file = log_dir / f"eval_sim_{condition_name}.log"
+    log_file = log_dir / f"eval_sim_{condition_name}_{invocation_id}.log"
 
     cmd = [
         sys.executable, "-m", "ultimate_pipeline.perception.eval_sim_labeled",
@@ -491,6 +496,8 @@ def eval_sim_labeled(
 
     result: Dict[str, Any] = {
         "condition": condition_name,
+        "evaluation_invocation_id": invocation_id,
+        "evaluation_report_path": str(out_json),
         "ok": ret == 0 and payload.get("status") == "ok",
         "exit_code": int(ret),
         "status": payload.get("status") or ("missing_report" if not payload else "unknown"),
@@ -523,6 +530,17 @@ def eval_sim_labeled(
         result["model_identity_matches_request"] = bool(expected_model) and expected_model == result.get(
             "model_sha256"
         )
+    # A successful evaluator process is not enough to establish that its
+    # metrics describe the requested model and evaluation dataset.
+    identity_failures = []
+    if eval_dataset_identity is not None and not result["dataset_identity_matches_request"]:
+        identity_failures.append("evaluation dataset identity differs from the requested split")
+    if model_identity is not None and not result["model_identity_matches_request"]:
+        identity_failures.append("evaluated checkpoint identity differs from the requested model")
+    if identity_failures:
+        result["ok"] = False
+        result["status"] = "identity_mismatch"
+        result["errors"].extend(identity_failures)
     return result
 
 
@@ -539,11 +557,12 @@ def eval_real_unlabeled(
     min_images: int = 1,
 ) -> Dict[str, Any]:
     """Run unlabeled real-world shift evaluation."""
-    eval_dir = out_dir / "eval" / condition_name
-    eval_dir.mkdir(parents=True, exist_ok=True)
+    invocation_id = uuid4().hex
+    eval_dir = out_dir / "eval" / condition_name / f"invocation_{invocation_id}"
+    eval_dir.mkdir(parents=True, exist_ok=False)
 
     out_json = eval_dir / "real_u_eval_report.json"
-    log_file = log_dir / f"eval_real_u_{condition_name}.log"
+    log_file = log_dir / f"eval_real_u_{condition_name}_{invocation_id}.log"
 
     cmd = [
         sys.executable, "-m", "ultimate_pipeline.perception.eval_real_unlabeled",
@@ -573,6 +592,8 @@ def eval_real_unlabeled(
     real_block = payload.get("real") if isinstance(payload.get("real"), dict) else {}
     result: Dict[str, Any] = {
         "condition": condition_name,
+        "evaluation_invocation_id": invocation_id,
+        "evaluation_report_path": str(out_json),
         "ok": ret == 0 and payload.get("status") == "ok",
         "exit_code": int(ret),
         "status": payload.get("status") or ("missing_report" if not payload else "unknown"),
@@ -993,10 +1014,21 @@ def _run_condition(
     else:
         result["errors"].append("no admissible real-unlabeled directory was evaluated")
 
-    result["ok"] = bool(result["sim"].get("ok")) and bool(result["real"].get("ok"))
-    result["status"] = (
-        STATUS_TRAINED_AND_EVALUATED if result["ok"] else STATUS_EVAL_FAILED
-    )
+    evaluated_ok = bool(result["sim"].get("ok")) and bool(result["real"].get("ok"))
+    # Evaluation can succeed on an explicitly reused checkpoint, but reuse is
+    # NEVER evidence that this experimental condition trained a new model.
+    # Keep arm-level diagnostic results while refusing a newly-trained claim.
+    result["trained_this_run"] = bool(trained)
+    result["checkpoint_reused"] = not trained
+    result["evaluation_completed"] = evaluated_ok
+    if not trained:
+        result["ok"] = False
+        result["status"] = STATUS_CHECKPOINT_REUSED
+    else:
+        result["ok"] = evaluated_ok
+        result["status"] = (
+            STATUS_TRAINED_AND_EVALUATED if evaluated_ok else STATUS_EVAL_FAILED
+        )
     return result
 
 

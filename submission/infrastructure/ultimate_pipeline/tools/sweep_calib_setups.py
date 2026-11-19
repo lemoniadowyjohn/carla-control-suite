@@ -91,21 +91,12 @@ def rot_x_deg(deg: float) -> List[List[float]]:
             [0, 0,  0, 1]]
 
 def mat4_to_carla_transform(m: List[List[float]]) -> carla.Transform:
-    # Extract yaw/pitch/roll from rotation matrix in a CARLA-friendly way (ZYX)
-    R = [[m[r][c] for c in range(3)] for r in range(3)]
+    """Convert a sweep hypothesis matrix using CARLA 0.9.16 matrix semantics."""
+    from ultimate_pipeline.sensors.transform_conventions import carla_attachment_pose_from_matrix
 
-    # pitch = asin(-R[2][0])
-    v = max(-1.0, min(1.0, -R[2][0]))
-    pitch = math.asin(v)
-    if abs(v) > 0.9999:
-        yaw = math.atan2(-R[0][1], R[1][1])
-        roll = 0.0
-    else:
-        yaw = math.atan2(R[1][0], R[0][0])
-        roll = math.atan2(R[2][1], R[2][2])
-
-    loc = carla.Location(x=float(m[0][3]), y=float(m[1][3]), z=float(m[2][3]))
-    rot = carla.Rotation(roll=math.degrees(roll), pitch=math.degrees(pitch), yaw=math.degrees(yaw))
+    pose = carla_attachment_pose_from_matrix(m)
+    loc = carla.Location(x=pose["x"], y=pose["y"], z=pose["z"])
+    rot = carla.Rotation(roll=pose["roll"], pitch=pose["pitch"], yaw=pose["yaw"])
     return carla.Transform(loc, rot)
 
 

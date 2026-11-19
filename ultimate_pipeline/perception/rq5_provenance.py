@@ -672,10 +672,14 @@ def verify_checkpoint_manifest(
             failures.append("model manifest does not bind a git commit")
         if (payload.get("seed") or {}).get("seed") is None:
             failures.append("model manifest does not record a seed")
-            # CD-2 / batch 2: v2 contract enforcement -- split authority and
-            # pretraining contract must be present for a governed RQ5 artifact.
+        # v2 binds checkpoint training to a governed split and a verified
+        # pretraining contract. These are independent of whether a seed was
+        # supplied. Keep v1 manifest compatibility, as documented by
+        # SUPPORTED_MODEL_MANIFEST_SCHEMAS.
+        if payload.get("schema") == "rq5_model_manifest_v2":
             manifest_split = payload.get("split")
-            if not manifest_split or not manifest_split.get("split_manifest_sha256"):
+            if (not isinstance(manifest_split, Mapping)
+                    or not manifest_split.get("split_manifest_sha256")):
                 failures.append("model manifest missing split_manifest_sha256 (v2 contract)")
             if not payload.get("pretraining_contract"):
                 failures.append("model manifest missing pretraining_contract (v2 contract)")

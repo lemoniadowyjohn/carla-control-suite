@@ -287,6 +287,8 @@ def sensor_rig_identity(
     effective_sensors: Sequence[Mapping[str, Any]],
     *,
     calibration_sha256: str = "",
+    applied_sensor_rig_v2: Mapping[str, Any] | None = None,
+    calibration_bytes: bytes | None = None,
 ) -> Dict[str, Any]:
     """Digest the exact effective sensor rig (post filtering / degraded mode).
 
@@ -311,7 +313,7 @@ def sensor_rig_identity(
         "calibration_sha256": str(calibration_sha256),
         "sensor_rig": normalized,
     }
-    return {
+    result = {
         "effective_sensors": normalized,
         "sensor_rig_sha256": sha256_text(canonical_dumps(payload)),
         "sensor_count": len(normalized),
@@ -322,16 +324,40 @@ def sensor_rig_identity(
             e["sensor_name"] for e in normalized if "lidar" in str(e["blueprint"]).lower()
         ],
     }
+    from ultimate_pipeline.sensors.applied_sensor_rig import (
+        SCHEMA as APPLIED_RIG_SCHEMA,
+        validate_applied_sensor_rig_v2,
+    )
+    receipt = dict(applied_sensor_rig_v2 or {})
+    errors = validate_applied_sensor_rig_v2(
+        receipt,
+        require_live=True,
+        expected_source_calibration_sha256=calibration_sha256,
+        expected_calibration_bytes=calibration_bytes,
+    )
+    if not receipt or receipt.get("schema") != APPLIED_RIG_SCHEMA or errors:
+        result["applied_sensor_rig_v2_status"] = "NOT_ADMITTED"
+        result["applied_sensor_rig_v2_errors"] = errors or ["applied_sensor_rig_v2_missing"]
+        result["source_only_sensor_rig_sha256"] = result["sensor_rig_sha256"]
+    else:
+        result["applied_sensor_rig_v2_status"] = "CONSISTENCY_VALID_UNATTESTED"
+        result["applied_sensor_rig_v2_attestation_status"] = "UNATTESTED_SELF_REPORTED"
+        result["applied_sensor_rig_v2_errors"] = []
+        result["applied_sensor_rig_v2_sha256"] = sha256_text(canonical_dumps(receipt))
+        result["sensor_rig_sha256"] = str(receipt["applied_configuration_sha256"])
+    return result
 
 
 def sensor_rig_from_calib(
     calib_path: str,
     *,
     front_only: bool = False,
+    applied_sensor_rig_v2: Mapping[str, Any] | None = None,
 ) -> Dict[str, Any]:
     """Build the effective-rig identity directly from a calib JSON file."""
     try:
-        data = json.loads(Path(calib_path).read_text(encoding="utf-8"))
+        calibration_bytes = Path(calib_path).read_bytes()
+        data = json.loads(calibration_bytes.decode("utf-8"))
     except Exception as exc:
         return {
             "effective_sensors": [],
@@ -343,6 +369,8 @@ def sensor_rig_from_calib(
     return sensor_rig_identity(
         _calib_effective_sensors(data, front_only=front_only),
         calibration_sha256=calib_sha,
+        applied_sensor_rig_v2=applied_sensor_rig_v2,
+        calibration_bytes=calibration_bytes,
     )
 
 
@@ -465,9 +493,44 @@ def evaluate_frame_completeness(
     with partial frames is INCOMPLETE (never PASS). Missing required sensors
     or zero frames is FAIL.
     """
-    expected = dict(expected_cameras)
-    for name, count in (expected_lidars or {}).items():
-        expected[name] = int(count)
+    # Fail closed before evaluating any counts: a vacuous sensor requirement
+    # previously returned PASS, as did negative expected counts (0 >= -1).
+    # Require integral, positive requirements and nonnegative observed counts.
+    invalid_requirements: List[str] = []
+    if not isinstance(expected_cameras, Mapping):
+        invalid_requirements.append("expected_cameras must be a mapping")
+    if expected_lidars is not None and not isinstance(expected_lidars, Mapping):
+        invalid_requirements.append("expected_lidars must be a mapping")
+    if not isinstance(actual_counts, Mapping):
+        invalid_requirements.append("actual_counts must be a mapping")
+    cameras = dict(expected_cameras) if isinstance(expected_cameras, Mapping) else {}
+    lidars = dict(expected_lidars) if isinstance(expected_lidars, Mapping) else {}
+    if cameras.keys() & lidars.keys():
+        invalid_requirements.append("duplicate sensor names across cameras and lidars")
+    expected = dict(cameras)
+    expected.update(lidars)
+    if not expected:
+        invalid_requirements.append("at least one required sensor is mandatory")
+    for name, count in expected.items():
+        if not isinstance(name, str) or not name.strip():
+            invalid_requirements.append("required sensor name must be nonempty text")
+        if type(count) is not int or count <= 0:
+            invalid_requirements.append(f"invalid expected frame count for {name!r}")
+        if isinstance(actual_counts, Mapping) and name in actual_counts:
+            actual = actual_counts[name]
+            if type(actual) is not int or actual < 0:
+                invalid_requirements.append(f"invalid observed frame count for {name!r}")
+    if invalid_requirements:
+        return {
+            "status": COMPLETION_FAIL,
+            "complete": False,
+            "timed_out": bool(timed_out),
+            "save_error_count": len(save_errors or []),
+            "missing_sensors": [],
+            "per_sensor": [],
+            "closure": COMPLETION_FAIL,
+            "invalid_requirements": invalid_requirements,
+        }
 
     per_sensor: List[Dict[str, Any]] = []
     missing: List[str] = []
@@ -726,6 +789,7 @@ def build_pair_manifest(
     pair_valid: bool,
     invalid_reasons: Sequence[str],
     claim_level: str,
+    calibration_path: str = "",
     route_mode: str = MODE_THESIS_PAIRED_STRICT,
     pair_route_closure: str = "PAIR_ROUTE_VALID",
     camera_response_sha256: str = "",
@@ -748,6 +812,7 @@ def build_pair_manifest(
         "route_manifest_path": str(route_manifest_path),
         "route_manifest_sha256": str(route_manifest_sha256),
         "calibration_sha256": str(calibration_sha256),
+        "calibration_path": str(calibration_path),
         "sensor_rig_sha256": str(sensor_rig_sha256),
         "weather_sha256": str(weather_sha256),
         "weather_schema_version": str(weather_schema_version),
@@ -844,6 +909,50 @@ def validate_pair_manifest(
     if ml is not None and al is not None and ml != al:
         reasons.append("pair_frame_index_mismatch")
 
+    # A source calibration digest or legacy rig_verification/v1 file does not
+    # prove what CARLA applied. Each arm must carry an online APPLIED_SENSOR_RIG/v2
+    # receipt bound to its exact code, calibration, actors, runtime frames and
+    # captured dataset bytes.
+    from ultimate_pipeline.sensors.applied_sensor_rig import (
+        canonical_sha256 as _applied_rig_sha256,
+        validate_applied_sensor_rig_v2 as _validate_applied_rig,
+    )
+    for arm_name, arm in (("manual", manual), ("auto", auto)):
+        receipt = arm.get("applied_sensor_rig_v2")
+        calibration_path = arm.get("calibration_path") or manifest.get("calibration_path")
+        if not calibration_path:
+            from ultimate_pipeline.sensors.calibration_contract import canonical_calib_path
+            calibration_path = canonical_calib_path()
+        try:
+            calibration_bytes = Path(calibration_path).read_bytes()
+        except OSError:
+            calibration_bytes = None
+            reasons.append(f"{arm_name}:trusted_calibration_source_unavailable")
+        receipt_errors = _validate_applied_rig(
+            receipt,
+            require_live=True,
+            expected_source_calibration_sha256=str(arm.get("calibration_sha256", "")),
+            expected_calibration_bytes=calibration_bytes,
+        )
+        reasons.extend(
+            f"{arm_name}:applied_sensor_rig_v2:{error}" for error in receipt_errors
+        )
+        if isinstance(receipt, Mapping):
+            if receipt.get("source_calibration_sha256") != arm.get("calibration_sha256"):
+                reasons.append(f"{arm_name}:applied_rig_calibration_binding_mismatch")
+            if receipt.get("code_commit") != manifest.get("software_git_sha"):
+                reasons.append(f"{arm_name}:applied_rig_source_commit_mismatch")
+            if receipt.get("applied_configuration_sha256") != arm.get("sensor_rig_sha256"):
+                reasons.append(f"{arm_name}:applied_rig_configuration_identity_mismatch")
+            expected_receipt_sha = arm.get("applied_sensor_rig_v2_sha256")
+            if expected_receipt_sha != _applied_rig_sha256(receipt):
+                reasons.append(f"{arm_name}:applied_rig_receipt_digest_mismatch")
+            for sensor_name, sample in (receipt.get("runtime_measurements") or {}).items():
+                if sample.get("dataset_identity") != arm.get("dataset_identity"):
+                    reasons.append(f"{arm_name}:{sensor_name}:applied_rig_dataset_identity_mismatch")
+                if sample.get("dataset_artifact_sha256") != arm.get("dataset_artifact_sha256"):
+                    reasons.append(f"{arm_name}:{sensor_name}:applied_rig_dataset_digest_mismatch")
+
     # Propagate manifest-level failure reasons (e.g., capture_completion_failed,
     # terminal_status_failed, missing_dataset_sha) — must survive validation.
     manifest_reasons = list(manifest.get("invalid_reasons") or [])
@@ -854,7 +963,10 @@ def validate_pair_manifest(
     claim = manifest.get("claim_level")
     pair_valid = bool(manifest.get("pair_valid"))
 
-    if claim == CLAIM_PAIRED_INGOLSTADT_CAPTURE:
+    # A pair already declared invalid cannot become authoritative. Avoid
+    # resolving external map pins for this negative-control path; valid
+    # claims still require the same pinned-map checks below.
+    if pair_valid and claim == CLAIM_PAIRED_INGOLSTADT_CAPTURE:
         manual_map = manifest.get("manual_map_identity") or {}
         auto_map = manifest.get("auto_map_identity") or {}
         if not is_ingolstadt_manual_arm(manual_map):

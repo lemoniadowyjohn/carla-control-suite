@@ -8,7 +8,17 @@ marker step of a run.
 V5 replaces the historical best-effort contract (silent skipping + independently
 emitted SUCCESS.txt) with a fail-closed one. The tests below therefore assert
 that a requested artifact which is missing / unreadable / out-of-root / a
-duplicate / hash-failing now produces ``status == FAIL`` and **no** SUCCESS.txt.
+duplicate / hash-failing now produces ``status == FAIL`` and **no** PACK_COMPLETE.txt.
+
+V93-25: ``finalize_run_pack``'s own default ``emit_success=True`` path now
+writes ``PACK_COMPLETE.txt`` (a narrower "this requested file manifest hashed
+and verified" claim), not the literal governed ``SUCCESS.txt``. Only
+``write_success_txt`` may write the literal ``SUCCESS.txt``, and only when
+``final_run_verdict.json`` (status PASS) and ``run_status.json`` (status ok)
+are also present in the same out_dir -- the SUCCESS_MARKER invariant in
+signals/registry.py. ``_write_verdict_and_status_pass`` below is the shared
+test helper that satisfies that for the tests that exercise
+``write_success_txt`` directly.
 """
 from __future__ import annotations
 
@@ -25,6 +35,7 @@ from ultimate_pipeline.utils.finalize_run_pack import (
     CATEGORY_MISSING,
     CATEGORY_OUTSIDE_ROOT,
     CATEGORY_UNREADABLE,
+    PACK_COMPLETE_FILENAME,
     FinalizationError,
     classify_requested_paths,
     finalize_run_pack,
@@ -39,6 +50,16 @@ def _write(path, text="x"):
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(text, encoding="utf-8")
     return path
+
+
+def _write_verdict_and_status_pass(root) -> None:
+    """Satisfy write_success_txt's SUCCESS_MARKER gate (V93-25)."""
+    (root / "final_run_verdict.json").write_text(
+        json.dumps({"status": "PASS"}), encoding="utf-8"
+    )
+    (root / "run_status.json").write_text(
+        json.dumps({"status": "ok"}), encoding="utf-8"
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -56,7 +77,10 @@ def test_all_required_files_present_passes(tmp_path):
     assert receipt["requested_count"] == 2
     assert receipt["hashed_count"] == 2
     assert receipt["failures"] == []
-    assert (tmp_path / "SUCCESS.txt").is_file()
+    # V93-25: the generic default path writes PACK_COMPLETE.txt, not the
+    # literal governed SUCCESS.txt.
+    assert (tmp_path / PACK_COMPLETE_FILENAME).is_file()
+    assert not (tmp_path / "SUCCESS.txt").exists()
 
     expected = hash_file_sha256(tmp_path / "final.xodr")
     assert receipt["files"]["final.xodr"] == expected
@@ -210,15 +234,18 @@ def test_blank_entries_are_not_requested_artifacts(tmp_path):
 
 
 def test_success_txt_is_bound_to_manifest_and_signature(tmp_path):
+    """The generic default-path marker (PACK_COMPLETE.txt, V93-25) is bound
+    to the manifest/signature exactly as the old SUCCESS.txt test asserted."""
     _write(tmp_path / "a.bin", "aaa")
     receipt = finalize_run_pack(tmp_path, ["a.bin"], summary="run_full_domain_gap")
 
-    text = (tmp_path / "SUCCESS.txt").read_text(encoding="utf-8")
-    assert text.startswith("OK ")
+    text = (tmp_path / PACK_COMPLETE_FILENAME).read_text(encoding="utf-8")
+    assert text.startswith("PACK_COMPLETE ")
     assert "run_full_domain_gap" in text
     assert f"manifest_sha256={receipt['manifest_sha256']}" in text
     assert f"signature_sha256={receipt['signature_sha256']}" in text
     assert "status=PASS" in text
+    assert not (tmp_path / "SUCCESS.txt").exists()
 
 
 def test_success_never_precedes_a_complete_manifest(tmp_path):
@@ -276,9 +303,60 @@ def test_verify_detects_manifest_without_success_as_incomplete_evidence(tmp_path
     assert any("not PASS" in p for p in result["problems"])
 
 
+def test_verify_kills_the_pack_complete_on_fail_mutant(tmp_path):
+    """F4 (V93 round 2): reproduces, as a permanent regression test, the exact
+    mutant the review found -- ``if emit_success:`` with the
+    ``receipt["status"] == STATUS_PASS`` condition dropped at
+    ``finalize_run_pack.py`` ~520. Live-verified: with that condition
+    removed, ``finalize_run_pack`` wrote a real PACK_COMPLETE.txt for a FAIL
+    manifest, and the pre-F4 test suite (checking only SUCCESS.txt absence)
+    did not catch it. This test asserts the two things that now do:
+    (1) the real (unmutated) finalize_run_pack never writes PACK_COMPLETE.txt
+    on FAIL (already covered elsewhere, re-asserted here for locality), and
+    (2) verify_run_pack independently flags a HAND-CRAFTED PACK_COMPLETE.txt
+    that asserts PASS beside a FAIL manifest -- the exact shape the mutant
+    would have produced -- even if some other code path ever managed to
+    write one.
+    """
+    _write(tmp_path / "a.bin", "aaa")
+    receipt = finalize_run_pack(tmp_path, ["a.bin", "missing.bin"])
+    assert receipt["status"] == "FAIL"
+    assert not (tmp_path / PACK_COMPLETE_FILENAME).exists()
+
+    # Hand-craft the exact artifact the mutant produced (PACK_COMPLETE.txt
+    # asserting status=PASS, bound to a manifest that is actually FAIL).
+    manifest = json.loads((tmp_path / "signature.json").read_text(encoding="utf-8"))
+    assert manifest["status"] == "FAIL"
+    mutant_body = (
+        "PACK_COMPLETE 2026-01-01T00:00:00Z\n"
+        "status=PASS\n"
+        f"schema={manifest['schema']}\n"
+        f"manifest_sha256={hash_file_sha256(tmp_path / 'signature.json')}\n"
+        f"signature_sha256={manifest['signature_sha256']}\n"
+        f"requested_count={manifest['requested_count']}\n"
+        f"hashed_count={manifest['hashed_count']}\n"
+    )
+    (tmp_path / PACK_COMPLETE_FILENAME).write_text(mutant_body, encoding="utf-8")
+
+    result = verify_run_pack(tmp_path)
+    assert result["status"] == "FAIL"
+    assert any(
+        "PACK_COMPLETE.txt does not assert finalization status PASS" not in p
+        and "manifest status is" in p
+        for p in result["problems"]
+    )
+    # The PACK_COMPLETE-specific check does NOT fire here (the hand-crafted
+    # marker DOES claim PASS, matching the mutant exactly) -- it is the
+    # generic "manifest status is not PASS" check above that catches it,
+    # proving PACK_COMPLETE presence alone cannot override a FAIL manifest.
+    assert result["pack_complete_present"] is True
+
+
 def test_verify_detects_rewritten_success_binding(tmp_path):
     _write(tmp_path / "a.bin", "aaa")
-    finalize_run_pack(tmp_path, ["a.bin"])
+    finalize_run_pack(tmp_path, ["a.bin"], emit_success=False)
+    _write_verdict_and_status_pass(tmp_path)
+    write_success_txt(str(tmp_path))
     success = tmp_path / "SUCCESS.txt"
     text = success.read_text(encoding="utf-8").replace(
         "manifest_sha256=", "manifest_sha256=0000", 1
@@ -327,11 +405,71 @@ def test_write_success_txt_refuses_on_failed_finalization(tmp_path):
 def test_write_success_txt_allowed_after_pass(tmp_path):
     _write(tmp_path / "a.bin", "aaa")
     write_signature_json(str(tmp_path), ["a.bin"])
+    _write_verdict_and_status_pass(tmp_path)
     write_success_txt(str(tmp_path), summary="main_pipeline")
     text = (tmp_path / "SUCCESS.txt").read_text(encoding="utf-8")
     assert text.startswith("OK ")
     assert "summary=main_pipeline" in text
     assert verify_run_pack(tmp_path)["status"] == "PASS"
+
+
+def test_success_requires_acceptance_digest_to_match_packed_xodr(tmp_path):
+    from ultimate_pipeline.quality.final_artifact_gates import RELEASE_MANDATORY_GATES
+    from ultimate_pipeline.quality.map_acceptance import build_map_acceptance
+
+    final_xodr = _write(tmp_path / "final.xodr", "<OpenDRIVE/>")
+    accepted_sha = hash_file_sha256(final_xodr)
+    acceptance = build_map_acceptance(
+        {gate: {"ok": True} for gate in RELEASE_MANDATORY_GATES},
+        run_id="v126-terminal-binding",
+        purpose="release",
+        mandatory_gates=RELEASE_MANDATORY_GATES,
+        final_xodr_path=str(final_xodr),
+        evaluated_xodr_sha256=accepted_sha,
+    )
+    (tmp_path / "map_acceptance.json").write_text(
+        json.dumps(acceptance), encoding="utf-8"
+    )
+    _write_verdict_and_status_pass(tmp_path)
+
+    # Model a mutation after the PASS verdict and before finalization. The
+    # pack is internally consistent but must not promote the changed bytes.
+    _write(final_xodr, "<OpenDRIVE><road id='mutated'/></OpenDRIVE>")
+    receipt = finalize_run_pack(tmp_path, ["final.xodr"], emit_success=False)
+    assert receipt["status"] == "PASS"
+    with pytest.raises(FinalizationError, match="packed final XODR digest"):
+        write_success_txt(str(tmp_path), require_map_acceptance=True)
+    assert not (tmp_path / "SUCCESS.txt").exists()
+
+
+@pytest.mark.parametrize(
+    "verdict_payload,run_status_payload,missing",
+    [
+        (None, {"status": "ok"}, "final_run_verdict"),
+        ({"status": "FAIL"}, {"status": "ok"}, "final_run_verdict"),
+        ({"status": "PASS"}, None, "run_status"),
+        ({"status": "PASS"}, {"status": "running"}, "run_status"),
+    ],
+)
+def test_write_success_txt_refuses_without_verdict_and_run_status_pass(
+    tmp_path, verdict_payload, run_status_payload, missing
+):
+    """V93-25: the SUCCESS_MARKER invariant -- write_success_txt must refuse
+    without a PASS final_run_verdict.json AND an ok run_status.json, even
+    when the file-manifest finalization itself is a clean PASS."""
+    _write(tmp_path / "a.bin", "aaa")
+    write_signature_json(str(tmp_path), ["a.bin"])
+    if verdict_payload is not None:
+        (tmp_path / "final_run_verdict.json").write_text(
+            json.dumps(verdict_payload), encoding="utf-8"
+        )
+    if run_status_payload is not None:
+        (tmp_path / "run_status.json").write_text(
+            json.dumps(run_status_payload), encoding="utf-8"
+        )
+    with pytest.raises(FinalizationError, match=missing):
+        write_success_txt(str(tmp_path))
+    assert not (tmp_path / "SUCCESS.txt").exists()
 
 
 # ---------------------------------------------------------------------------
@@ -357,7 +495,7 @@ def test_release_root_with_spaces(tmp_path):
     _write(root / "a.bin", "aaa")
     receipt = finalize_run_pack(root, ["a.bin"])
     assert receipt["status"] == "PASS"
-    assert (root / "SUCCESS.txt").is_file()
+    assert (root / PACK_COMPLETE_FILENAME).is_file()
 
 
 def test_absolute_path_inside_root_is_accepted(tmp_path):
@@ -365,6 +503,23 @@ def test_absolute_path_inside_root_is_accepted(tmp_path):
     receipt = finalize_run_pack(tmp_path, [str(tmp_path / "a.bin")], emit_success=False)
     assert receipt["status"] == "PASS"
     assert receipt["files"]["a.bin"] == hashlib.sha256(b"aaa").hexdigest()
+
+
+def test_emit_success_false_suppresses_pack_complete_even_on_pass(tmp_path):
+    """V93-25 mutation coverage: every other ``emit_success=False`` call in
+    this file produces a FAIL manifest (where PACK_COMPLETE.txt is withheld
+    for an unrelated reason -- ``receipt["status"] != STATUS_PASS``) or
+    simply never checks for ``PACK_COMPLETE.txt``'s absence. None of them
+    kill the ``if receipt["status"] == STATUS_PASS and emit_success:`` ~538
+    mutant that drops ``and emit_success`` (live-verified: with that
+    condition removed, this exact PASS-manifest + ``emit_success=False`` call
+    wrote a real PACK_COMPLETE.txt, and the rest of this module's suite still
+    passed). This isolates ``emit_success`` on a genuinely PASSing manifest."""
+    _write(tmp_path / "a.bin", "aaa")
+    receipt = finalize_run_pack(tmp_path, ["a.bin"], emit_success=False)
+    assert receipt["status"] == "PASS"
+    assert not (tmp_path / PACK_COMPLETE_FILENAME).exists()
+    assert not (tmp_path / "SUCCESS.txt").exists()
 
 
 def test_no_temp_files_left_behind(tmp_path):

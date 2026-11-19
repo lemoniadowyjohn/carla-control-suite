@@ -202,13 +202,14 @@ def _rebase_to_local(xodr_in: Path, xodr_out: Path) -> Dict[str, Any]:
     header <offset> element and in the returned report.
     """
     import xml.etree.ElementTree as _ET
+    from ultimate_pipeline.quality.xml_admission import parse_xodr_file
 
     from ultimate_pipeline.geometry.opendrive_rebase import (
         planview_min_xy,
         rebase_xodr_coordinates,
     )
 
-    tree = _ET.parse(xodr_in)
+    tree = _ET.ElementTree(parse_xodr_file(xodr_in))
     root = tree.getroot()
     min_x, min_y = planview_min_xy(root)
     already_local = max(abs(min_x), abs(min_y)) < 10_000.0
@@ -334,20 +335,20 @@ def _find_final_xodr_historical_recovery(run_dir: Path) -> Path:
 
 
 def _measure_acceptance(final_xodr: Path, out_dir: Path) -> Dict[str, Any]:
-    from scripts.measure_candidate_acceptance import run_gates
-    from ultimate_pipeline.quality.map_acceptance import build_map_acceptance
+    from scripts.measure_candidate_acceptance import evaluate_candidate
 
     dem = REPO_ROOT / "cities" / "ingolstadt" / "dem" / "dem_ing.tif"
-    reports = run_gates(final_xodr, out_dir, dem)
-    acceptance = build_map_acceptance(
-        reports,
-        run_id=final_xodr.stem,
-        final_xodr_path=str(final_xodr),
-        out_dir=str(out_dir),
+    # V86 A6/A8/A9: map-of-record promotion is a release-purpose evaluation.
+    # It uses the XML boundary, an immutable snapshot every checker reads, a
+    # digest-bound verdict and a post-write identity check. It shares the
+    # implementation with the measure_candidate_acceptance CLI.
+    out_dir.mkdir(parents=True, exist_ok=True)
+    acceptance = evaluate_candidate(
+        final_xodr, out_dir, dem,
+        purpose="release",
         require_enrichment=True,
         require_component_reachability=True,
     )
-    _write_json(out_dir / "map_acceptance.json", acceptance)
     print(f"[acceptance] valid_for_experiments={acceptance['valid_for_experiments']}")
     for gate in acceptance.get("hard_fail_reasons", []):
         print(f"  FAIL {gate['gate']}: {gate['reason']}")
@@ -375,7 +376,33 @@ def _settings_snapshot() -> Dict[str, Any]:
 def _emit_candidate(final_xodr: Path, out_dir: Path, name: str, acceptance: Dict[str, Any], manifest_verification: Dict[str, Any] | None = None) -> Path:
     target = CANDIDATE_DIR / name
     target.parent.mkdir(parents=True, exist_ok=True)
-    shutil.copy2(final_xodr, target)
+    expected_sha = acceptance.get("evaluated_xodr_sha256")
+    if not isinstance(expected_sha, str) or len(expected_sha) != 64:
+        raise RuntimeError("release acceptance has no evaluated artifact digest")
+    if acceptance.get("final_xodr_sha256") != expected_sha:
+        raise RuntimeError("release acceptance final/evaluated artifact digests differ")
+
+    # Publish only the exact bytes accepted above.  The temporary file is in
+    # the destination directory so hard-link publication is same-filesystem,
+    # atomic, and refuses to overwrite an existing candidate.
+    temp_target = target.with_name(f".{target.name}.{os.getpid()}.candidate.tmp")
+    try:
+        with final_xodr.open("rb") as source, temp_target.open("xb") as dest:
+            shutil.copyfileobj(source, dest, length=1024 * 1024)
+            dest.flush()
+            os.fsync(dest.fileno())
+        if _sha256_file(temp_target) != expected_sha:
+            raise RuntimeError("source bytes changed after acceptance; refusing candidate publication")
+        try:
+            os.link(temp_target, target)
+        except FileExistsError as exc:
+            raise RuntimeError(f"candidate already exists; refusing overwrite: {target}") from exc
+        except OSError as exc:
+            raise RuntimeError(f"atomic no-overwrite candidate publication unavailable: {exc}") from exc
+        if _sha256_file(target) != expected_sha:
+            raise RuntimeError("published candidate digest differs from accepted artifact")
+    finally:
+        temp_target.unlink(missing_ok=True)
     if manifest_verification:
         _write_json(out_dir / "manifest_verification.json", manifest_verification)
     provenance = {
@@ -462,7 +489,7 @@ def cmd_verify_only(args: argparse.Namespace) -> int:
     out_dir.mkdir(parents=True, exist_ok=True)
     acceptance = _measure_acceptance(xodr, out_dir)
     print(f"sha256: {acceptance.get('final_xodr_sha256')}")
-    return 0 if acceptance["valid_for_experiments"] else 1
+    return 0 if acceptance.get("release_eligible") is True else 1
 
 
 def cmd_regen(args: argparse.Namespace) -> int:
@@ -524,7 +551,7 @@ def cmd_regen(args: argparse.Namespace) -> int:
         print(f"[frame] already local ({rebase_report.get('reason')}); no re-base needed")
 
     acceptance = _measure_acceptance(measured, out_dir / "acceptance")
-    if not acceptance["valid_for_experiments"]:
+    if acceptance.get("release_eligible") is not True:
         print("ERROR: acceptance FAILED; refusing to emit a candidate.", file=sys.stderr)
         return 1
 

@@ -294,7 +294,11 @@ def test_k_emit_candidate_records_manifest_verification(tmp_path, monkeypatch):
     monkeypatch.setattr(regen, "_git_dirty", lambda: [])
     monkeypatch.setattr(regen.subprocess, "check_output", lambda *a, **k: b"deadbeef")
 
-    hashes = {str(final): _sha(b"<OpenDRIVE/>")}
+    # V131: _emit_candidate now refuses a release acceptance without a bound
+    # evaluated/final artifact digest. This fixture supplies the exact bytes it
+    # publishes so the provenance assertions still exercise the real contract.
+    accepted_digest = _sha(b"<OpenDRIVE/>")
+    hashes = {str(final): accepted_digest}
 
     def _fake_sha(p: Path) -> str:
         return hashes.get(str(p), _sha(p.read_bytes()))
@@ -314,7 +318,11 @@ def test_k_emit_candidate_records_manifest_verification(tmp_path, monkeypatch):
         final,
         out_dir,
         "candidate.xodr",
-        {"valid_for_experiments": True},
+        {
+            "valid_for_experiments": True,
+            "evaluated_xodr_sha256": accepted_digest,
+            "final_xodr_sha256": accepted_digest,
+        },
         manifest_verification=manifest_verification,
     )
     provenance = json.loads((out_dir / "regen_provenance.json").read_text(encoding="utf-8"))
