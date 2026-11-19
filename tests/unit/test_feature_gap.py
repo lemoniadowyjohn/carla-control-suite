@@ -70,11 +70,12 @@ def test_compute_returns_all_three_metrics_as_finite_floats():
     assert all(np.isfinite(v) for v in out.values())
 
 
-def test_compute_handles_empty_inputs_without_raising():
+def test_compute_rejects_empty_inputs_as_missing_evidence():
     fg = FeatureDomainGap(output_dir=".")
-    out = fg.compute(np.zeros((0, 4)), np.zeros((0, 4)))
-    assert out["mmd"] == 0.0
-    assert out["mean_gap"] == 0.0
+    # Empty sample populations are not a measurement of zero domain gap.
+    # Fail closed rather than returning zero-valued MMD/Wasserstein/mean gap.
+    with pytest.raises(ValueError, match="empty feature population"):
+        fg.compute(np.zeros((0, 4)), np.zeros((0, 4)))
 
 
 def test_numpy_rbf_kernel_fallback_matches_sklearn_when_available():
