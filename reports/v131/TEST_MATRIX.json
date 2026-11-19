@@ -62,9 +62,10 @@
     "exit_code": 1
   },
   "compileall": {
-    "command": "python -m compileall -q ultimate_pipeline tools tests",
+    "command": "C:\\Users\\admin\\AppData\\Local\\Programs\\Python\\Python312\\python.exe -m compileall -q ultimate_pipeline tools tests",
     "exit_code": 0,
-    "log": "reports/v131/COMPILEALL.log",
-    "log_sha256": null
+    "stdout": "empty",
+    "stderr": "empty",
+    "log": "NOT_CREATED: successful compileall emitted no output"
   }
 }
