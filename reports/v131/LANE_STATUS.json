@@ -3,7 +3,7 @@
   "base_sha": "225ed15d0da6444cc257835ca777aba281553f3c",
   "branch": "integration/v131-pre-claude-candidate",
   "worktree": "F:\\CARLA_RECOVERY\\worktrees\\v129-calib-admission-20261119",
-  "head_sha": "185825704c00b82f41c2462ce15b9df36bcabe35",
+  "head_sha": "b8168134fe68bb5357146171c01904a1c0897da7",
   "source_reviewed_sha": "c95f9b4ece19b98fad2a1818f658fbe8686f0faa",
   "source_fix_sha": "7b0194caf6dfac4bbcbc63e0ab5b9397b95ae1f2",
   "status": "IMPLEMENTED",
@@ -56,9 +56,9 @@
   ],
   "github_ci": {
     "pr": 71,
-    "head_sha": "185825704c00b82f41c2462ce15b9df36bcabe35",
+    "head_sha": "b8168134fe68bb5357146171c01904a1c0897da7",
     "base_sha": "225ed15d0da6444cc257835ca777aba281553f3c",
-    "state": "6 latest jobs success; offline tests in_progress at last API read",
+    "state": "fresh checks pending after receipt-only push; previous head 185825704c00b82f41c2462ce15b9df36bcabe35 had 6 latest checks successful and offline tests in progress",
     "url": "https://github.com/lemoniadowyjohn/carla-control-suite/pull/71"
   },
   "findings": [
@@ -74,5 +74,6 @@
     "rq5_model_validation": "NOT_RUN",
     "production_go": "NO"
   },
-  "next_owner": "independent QA and provisioned offline runner; no production promotion"
+  "next_owner": "independent QA and provisioned offline runner; no production promotion",
+  "head_sha_scope": "Candidate branch head at this lane receipt snapshot; later metadata-only commits can advance the branch ref."
 }
