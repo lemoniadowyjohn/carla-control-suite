@@ -21,6 +21,7 @@ from __future__ import annotations
 
 import json
 import xml.etree.ElementTree as ET
+from ultimate_pipeline.quality.xml_admission import parse_xodr_file
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Dict, Any, Iterable, List, Optional, Tuple
@@ -166,7 +167,7 @@ def check_lane_link_targets_exist(
       ok, num_issues, issues (truncated), totals
     """
     p = Path(xodr_path)
-    tree = ET.parse(str(p))
+    tree = ET.ElementTree(parse_xodr_file(str(p)))
     root = tree.getroot()
 
     issues: List[Issue] = []
@@ -306,7 +307,7 @@ def repair_drop_invalid_lane_links(
     """
     inp = Path(in_xodr_path)
     outp = Path(out_xodr_path)
-    tree = ET.parse(str(inp))
+    tree = ET.ElementTree(parse_xodr_file(str(inp)))
     root = tree.getroot()
 
     removed = 0

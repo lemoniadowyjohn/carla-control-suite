@@ -175,6 +175,45 @@ def test_map_acceptance_without_validity_flag_is_incomplete():
     assert normalize_signal_status("MAP_ACCEPTANCE", {"schema": "map_acceptance_v1"}) == STATUS_INCOMPLETE
 
 
+@pytest.mark.parametrize("signal_id", ["MAP_ACCEPTANCE", "EXPERIMENT_READINESS"])
+@pytest.mark.parametrize(
+    "truthy_but_not_bool",
+    ["true", "1", "pass", "yes", "on", 1, 1.0],
+)
+def test_map_acceptance_requires_exact_bool_true_not_truthy_strings(
+    signal_id, truthy_but_not_bool
+):
+    """V93-15 residual: _truthy's "1"/"true"/"pass" acceptance must not leak
+    into MAP_ACCEPTANCE/EXPERIMENT_READINESS -- only exact bool True PASSes."""
+    assert (
+        normalize_signal_status(signal_id, {"valid_for_experiments": truthy_but_not_bool})
+        == STATUS_FAIL
+    )
+
+
+@pytest.mark.parametrize("signal_id", ["MAP_ACCEPTANCE", "EXPERIMENT_READINESS"])
+def test_map_acceptance_exact_bool_false_is_fail(signal_id):
+    assert normalize_signal_status(signal_id, {"valid_for_experiments": False}) == STATUS_FAIL
+
+
+@pytest.mark.parametrize("signal_id", ["MAP_ACCEPTANCE", "EXPERIMENT_READINESS"])
+def test_map_acceptance_exact_bool_true_is_pass(signal_id):
+    assert normalize_signal_status(signal_id, {"valid_for_experiments": True}) == STATUS_PASS
+
+
+def test_pipeline_health_requires_exact_bool_true():
+    assert normalize_signal_status("PIPELINE_HEALTH", {"overall_ok": "true"}) == STATUS_FAIL
+    assert normalize_signal_status("PIPELINE_HEALTH", {"overall_ok": 1}) == STATUS_FAIL
+    assert normalize_signal_status("PIPELINE_HEALTH", {"overall_ok": True}) == STATUS_PASS
+    assert normalize_signal_status("PIPELINE_HEALTH", {"overall_ok": False}) == STATUS_FAIL
+
+
+def test_g6_hygiene_requires_exact_bool_true():
+    assert normalize_signal_status("G6_HYGIENE", {"ok": "true"}) == STATUS_FAIL
+    assert normalize_signal_status("G6_HYGIENE", {"ok": 1}) == STATUS_FAIL
+    assert normalize_signal_status("G6_HYGIENE", {"ok": True}) == STATUS_PASS
+
+
 @pytest.mark.parametrize(
     "payload,expected",
     [

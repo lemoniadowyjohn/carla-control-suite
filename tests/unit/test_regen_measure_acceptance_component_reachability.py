@@ -41,6 +41,9 @@ def test_measure_acceptance_passes_require_component_reachability(monkeypatch, t
         }
 
     monkeypatch.setattr(map_acceptance_mod, "build_map_acceptance", _fake_build_map_acceptance)
+    # V86: regen delegates to the shared measure_mod.evaluate_candidate, which
+    # binds build_map_acceptance at module import, so patch it there as well.
+    monkeypatch.setattr(measure_mod, "build_map_acceptance", _fake_build_map_acceptance)
 
     regen._measure_acceptance(xodr, out_dir)
 

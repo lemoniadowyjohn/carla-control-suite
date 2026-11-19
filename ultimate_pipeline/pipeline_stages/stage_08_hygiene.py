@@ -148,6 +148,7 @@ def _step8h_map_hygiene(self, final_out: str) -> str:
         try:
             import copy as _copy
             import xml.etree.ElementTree as _ET
+            from ultimate_pipeline.quality.xml_admission import parse_xodr_file
 
             from ultimate_pipeline.tools.phase_g6_junction_lanelinks import (
                 audit_junction_lanelinks,
@@ -159,7 +160,7 @@ def _step8h_map_hygiene(self, final_out: str) -> str:
                 component_reachability_summary,
             )
 
-            g6_tree_before = _ET.parse(str(current_path))
+            g6_tree_before = _ET.ElementTree(parse_xodr_file(str(current_path)))
             g6_root_before = g6_tree_before.getroot()
             components_before = component_reachability_summary(g6_root_before)
 

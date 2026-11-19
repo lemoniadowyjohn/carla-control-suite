@@ -1,3 +1,6 @@
+import json
+from pathlib import Path
+
 from ultimate_pipeline.quality.check_geometric_continuity import (
     check_geometric_continuity,
 )
@@ -774,3 +777,60 @@ def test_map_acceptance_counts_traffic_light_objects_as_signals_fallback(tmp_pat
 
     assert acceptance["metrics"]["functional_signals_count"] == 0
     assert acceptance["metrics"]["traffic_light_object_count"] == 1
+
+
+def test_registry_fields_match_a_real_build_map_acceptance_payload():
+    """V93-26: SIGNAL_REGISTRY["MAP_ACCEPTANCE"]["fields"] previously listed
+    sha256/num_roads/num_junctions/reason, which build_map_acceptance never
+    emits. Every declared field must actually be present on a real payload."""
+    from ultimate_pipeline.signals.registry import SIGNAL_REGISTRY
+
+    acceptance = build_map_acceptance({}, run_id="registry-contract")
+    declared_fields = SIGNAL_REGISTRY["MAP_ACCEPTANCE"]["fields"]
+    missing = [f for f in declared_fields if f not in acceptance]
+    assert missing == [], (
+        f"registry declares fields the real producer never emits: {missing}"
+    )
+
+
+def test_registry_fields_no_longer_reference_the_stale_schema():
+    """The pre-V93-26 field list named fields this producer never had."""
+    from ultimate_pipeline.signals.registry import SIGNAL_REGISTRY
+
+    declared_fields = SIGNAL_REGISTRY["MAP_ACCEPTANCE"]["fields"]
+    assert "sha256" not in declared_fields
+    assert "num_roads" not in declared_fields
+    assert "num_junctions" not in declared_fields
+    assert "reason" not in declared_fields
+
+
+def test_root_acceptance_artifact_sha256_independently_verifies_the_nested_file(
+    tmp_path,
+):
+    """V93-17: the root payload's acceptance_artifact_sha256 is the hash of
+    the nested pre-link file AS WRITTEN -- an independently verifiable link,
+    not a self-referential digest. The root file itself (what main_pipeline
+    writes to out_dir/map_acceptance.json) is the one other consumers read;
+    the nested artifacts/<run_id>/map_acceptance.json is the pre-link
+    snapshot whose hash the root records."""
+    acceptance = build_map_acceptance(
+        {}, run_id="v93-17", out_dir=str(tmp_path)
+    )
+    nested_path = acceptance["acceptance_artifact"]
+    assert nested_path is not None
+
+    # Independently recompute the nested file's hash from its actual bytes on
+    # disk -- this must equal the root's recorded acceptance_artifact_sha256.
+    import hashlib
+
+    actual_nested_sha256 = hashlib.sha256(Path(nested_path).read_bytes()).hexdigest()
+    assert actual_nested_sha256 == acceptance["acceptance_artifact_sha256"]
+
+    # The nested file on disk must NOT itself contain acceptance_artifact /
+    # acceptance_artifact_sha256 / payload_sha256 -- those three fields are
+    # added to the RETURNED dict only after the nested file was written, so
+    # the hash is never computed over a document that embeds its own digest.
+    nested_on_disk = json.loads(Path(nested_path).read_text(encoding="utf-8"))
+    assert "acceptance_artifact" not in nested_on_disk
+    assert "acceptance_artifact_sha256" not in nested_on_disk
+    assert "payload_sha256" not in nested_on_disk

@@ -38,6 +38,7 @@ from __future__ import annotations
 import math
 import os
 import xml.etree.ElementTree as ET
+from ultimate_pipeline.quality.xml_admission import parse_xodr_file
 from typing import Any, Dict, List, Optional, Tuple
 
 from ultimate_pipeline.quality.check_elevation_continuity import (
@@ -214,7 +215,7 @@ def quarantine_island_roads(
     if allow_unknown_auto_delete is None:
         allow_unknown_auto_delete = _env_int("UP_ALLOW_UNKNOWN_AUTO_DELETE", 0) != 0
 
-    tree = ET.parse(xodr_in)
+    tree = ET.ElementTree(parse_xodr_file(xodr_in))
     root = tree.getroot()
     roads = root.findall("road")
     junctions = root.findall("junction")
@@ -410,7 +411,7 @@ def repair_degenerate_lanes(
     if min_lane_width is None:
         min_lane_width = _env_float("UP_MIN_LANE_WIDTH_M", 0.10)
 
-    tree = ET.parse(xodr_in)
+    tree = ET.ElementTree(parse_xodr_file(xodr_in))
     root = tree.getroot()
 
     details: List[Dict[str, Any]] = []
@@ -552,7 +553,7 @@ def repair_true_zseams(
     if eps_z is None:
         eps_z = _env_float("UP_ZSEAM_EPS_M", 0.5)
 
-    tree = ET.parse(xodr_in)
+    tree = ET.ElementTree(parse_xodr_file(xodr_in))
     root = tree.getroot()
 
     road_by_id: Dict[str, ET.Element] = {}
@@ -701,7 +702,7 @@ def repair_lane_width_discontinuities(
     if eps is None:
         eps = _env_float("UP_LANE_WIDTH_CONT_EPS", 0.10)
 
-    tree = ET.parse(xodr_in)
+    tree = ET.ElementTree(parse_xodr_file(xodr_in))
     root = tree.getroot()
 
     road_by_id: Dict[str, ET.Element] = {}
