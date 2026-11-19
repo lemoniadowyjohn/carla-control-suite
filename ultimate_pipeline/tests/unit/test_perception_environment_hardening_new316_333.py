@@ -34,6 +34,10 @@ import numpy as np
 import pytest
 
 from ultimate_pipeline.perception import rq3_capture_contract as rq3
+from ultimate_pipeline.tests.unit.rq3_v2_test_receipts import (
+    TEST_COMMIT,
+    complete_synthetic_arm,
+)
 from ultimate_pipeline.perception.environment import calibration_authority as auth
 from ultimate_pipeline.perception.environment import calibration_lifecycle as lifecycle
 from ultimate_pipeline.perception.environment import camera_intrinsics as intr
@@ -224,15 +228,12 @@ _WIDTH, _HEIGHT = 1920, 1080
 def _pair_manifest(*, manual_arm=None, auto_arm=None, top_overrides=None,
                    weather_sha="w1", claim_level=rq3.CLAIM_PAIRED_PROTOCOL_VALID):
     arm_base = {
-        "calibration_sha256": "calib1",
-        "sensor_rig_sha256": "rig1",
         "weather_sha256": weather_sha,
         "capture_config_sha256": "cfg1",
         "route_manifest_sha256": "route1",
         "camera_response_sha256": "cam1",
         "traffic_manager_sha256": "tm1",
         "simulation_physics_sha256": "ph1",
-        "runtime_sensor_rig_sha256": "rr1",
         "vehicle_calibration_binding_sha256": "vb1",
         # sim_timing_sha256 is a mandatory arm identity: an arm that never
         # recorded how it was timed cannot be shown to be comparable.
@@ -244,23 +245,25 @@ def _pair_manifest(*, manual_arm=None, auto_arm=None, top_overrides=None,
                 pair_frame_index=[0, 1, 2])
     manual.update(manual_arm or {})
     auto.update(auto_arm or {})
+    manual = complete_synthetic_arm(manual, code_commit=TEST_COMMIT, label="manual")
+    auto = complete_synthetic_arm(auto, code_commit=TEST_COMMIT, label="auto")
     top = {
-        "calibration_sha256": "calib1",
-        "sensor_rig_sha256": "rig1",
+        "calibration_sha256": manual["calibration_sha256"],
+        "sensor_rig_sha256": manual["sensor_rig_sha256"],
         "weather_sha256": weather_sha,
         "capture_config_sha256": "cfg1",
         "route_manifest_sha256": "route1",
         "camera_response_sha256": "cam1",
         "traffic_manager_sha256": "tm1",
         "simulation_physics_sha256": "ph1",
-        "runtime_sensor_rig_sha256": "rr1",
+        "runtime_sensor_rig_sha256": manual["runtime_sensor_rig_sha256"],
         "vehicle_calibration_binding_sha256": "vb1",
         "sim_timing_sha256": "st1",
     }
     top.update(top_overrides or {})
     return rq3.build_pair_manifest(
         pair_id="p-new316-333",
-        software_git_sha="deadbeef",
+        software_git_sha=TEST_COMMIT,
         carla_client_version="0.9.16",
         carla_server_version="0.9.16",
         manual_map_identity=rq3.cooked_arm_map_identity(

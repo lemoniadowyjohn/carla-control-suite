@@ -71,20 +71,27 @@ def test_missing_k_undistortion_fails_closed():
         effective_camera_intrinsics(cam)
 
 
-def test_rig_round_trip_uses_ctv_direct_and_vtl_inverse(tmp_path):
+def test_rig_round_trip_reports_explicit_carla_parent_mounts_v2(tmp_path):
     calib_path = tmp_path / "calib_data.json"
     calib_path.write_text(json.dumps(_tiny_calib()), encoding="utf-8")
 
     report = rig_round_trip_check(calib_path)
 
     assert report["verdict"] == "PASS"
+    from ultimate_pipeline.sensors.transform_conventions import (
+        carla_ego_from_camera_from_cTv,
+        carla_ego_from_lidar_from_vTl,
+    )
+
+    assert report["schema"] == "D2_SENSOR_CALIBRATION_ROUND_TRIP/v2"
+    assert report["verification_mode"] == "offline_source_only"
     np.testing.assert_allclose(
-        report["cameras"]["front"]["vehicle_to_camera_matrix"],
-        _tiny_calib()["cameras"]["front"]["cTv"],
+        report["cameras"]["front"]["T_carla_ego_from_carla_camera"],
+        carla_ego_from_camera_from_cTv(_tiny_calib()["cameras"]["front"]["cTv"]),
     )
     np.testing.assert_allclose(
-        report["lidars"]["middle"]["vehicle_to_lidar_matrix"],
-        np.linalg.inv(np.asarray(_tiny_calib()["lidars"]["middle"]["vTl"], dtype=float)),
+        report["lidars"]["middle"]["T_carla_ego_from_carla_lidar"],
+        carla_ego_from_lidar_from_vTl(_tiny_calib()["lidars"]["middle"]["vTl"]),
     )
 
 

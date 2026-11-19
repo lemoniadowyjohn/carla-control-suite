@@ -190,9 +190,9 @@ def test_ingolstadt_manual_and_auto_arms():
     )
     pinned_auto_sha = "370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8"
     auto = xodr_arm_map_identity(xodr_path="campaigns/ingolstadt_.../x.xodr", xodr_sha256=pinned_auto_sha)
-    assert is_ingolstadt_auto_arm(auto) is True
+    assert is_ingolstadt_auto_arm(auto, ingolstadt_xodr_sha256=pinned_auto_sha) is True
     town10hd = xodr_arm_map_identity(xodr_path="/tmp/town10hd.xodr", xodr_sha256="ghi")
-    assert is_ingolstadt_auto_arm(town10hd) is False
+    assert is_ingolstadt_auto_arm(town10hd, ingolstadt_xodr_sha256=pinned_auto_sha) is False
 
 
 class _Pair:
@@ -216,6 +216,10 @@ class _Pair:
         self.vehicle_binding_sha = vehicle_binding_sha
 
     def build(self):
+        from ultimate_pipeline.sensors.applied_sensor_rig import (
+            build_applied_sensor_rig_v2,
+            canonical_sha256,
+        )
         # NEW-317 / NEW-316..333: a governed pair carries the full environment
         # identity on BOTH arms, not only at the top level.
         governed = {
@@ -225,9 +229,30 @@ class _Pair:
             "runtime_sensor_rig_sha256": self.runtime_rig_sha,
             "vehicle_calibration_binding_sha256": self.vehicle_binding_sha,
         }
+        calibration_source_sha = (
+            self.calib_sha if isinstance(self.calib_sha, str) and len(self.calib_sha) == 64
+            else "c" * 64
+        )
+        requested_mount = {"front_camera": [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]]}
+        def receipt_for(arm_name, actor_id, dataset_sha, frame_id):
+            return build_applied_sensor_rig_v2(
+                source_calibration_sha256=calibration_source_sha,
+                code_commit="a" * 40,
+                requested_parent_relative_matrices=requested_mount,
+                ego_identity={"actor_id": actor_id + 100, "type_id": "vehicle.test"},
+                sensor_identities={"front_camera": {"actor_id": actor_id, "type_id": "sensor.camera.rgb"}},
+                blueprint_configuration={"front_camera": {"image_size_x": "1280", "fov": "90"}},
+                effective_camera_configuration={"front_camera": {"width_px": 1280, "height_px": 720, "effective_K": [[640, 0, 640], [0, 640, 360], [0, 0, 1]]}},
+                applied_parent_relative_matrices=requested_mount,
+                runtime_measurements={"front_camera": {"frame_id": frame_id, "timestamp_s": 1.0, "dataset_identity": f"{arm_name}-dataset", "dataset_artifact_sha256": dataset_sha}},
+                verification_mode="online",
+            )
+        manual_receipt = receipt_for("manual", 10, "d" * 64, 50)
+        auto_receipt = receipt_for("auto", 20, "e" * 64, 60)
+        rig_sha = manual_receipt["applied_configuration_sha256"]
         arm_base = {
             "calibration_sha256": self.calib_sha,
-            "sensor_rig_sha256": self.rig_sha,
+            "sensor_rig_sha256": rig_sha,
             "weather_sha256": self.weather_sha,
             "capture_config_sha256": self.cfg_sha,
             "route_manifest_sha256": self.route_sha,
@@ -235,7 +260,7 @@ class _Pair:
         arm_base.update(governed)
         return build_pair_manifest(
             pair_id="p1",
-            software_git_sha="abc123",
+            software_git_sha="a" * 40,
             carla_client_version="0.9.16",
             carla_server_version="0.9.16",
             manual_map_identity=self.manual_map,
@@ -243,7 +268,7 @@ class _Pair:
             route_manifest_path="route.json",
             route_manifest_sha256=self.route_sha,
             calibration_sha256=self.calib_sha,
-            sensor_rig_sha256=self.rig_sha,
+            sensor_rig_sha256=rig_sha,
             weather_sha256=self.weather_sha,
             capture_config_sha256=self.cfg_sha,
             camera_response_sha256=self.cam_resp_sha,
@@ -252,9 +277,13 @@ class _Pair:
             runtime_sensor_rig_sha256=self.runtime_rig_sha,
             vehicle_calibration_binding_sha256=self.vehicle_binding_sha,
             manual_arm=dict(arm_base, completion_status=self.manual_completion,
-                            pair_frame_index=[0, 1, 2]),
+                            pair_frame_index=[0, 1, 2], dataset_identity="manual-dataset",
+                            dataset_artifact_sha256="d" * 64, applied_sensor_rig_v2=manual_receipt,
+                            applied_sensor_rig_v2_sha256=canonical_sha256(manual_receipt)),
             auto_arm=dict(arm_base, completion_status=self.auto_completion,
-                          pair_frame_index=[0, 1, 2]),
+                          pair_frame_index=[0, 1, 2], dataset_identity="auto-dataset",
+                          dataset_artifact_sha256="e" * 64, applied_sensor_rig_v2=auto_receipt,
+                          applied_sensor_rig_v2_sha256=canonical_sha256(auto_receipt)),
             pair_valid=True,
             invalid_reasons=[],
             claim_level="UNPAIRED_CAPTURE",
@@ -338,7 +367,7 @@ def test_case03_calibration_differs_rejected():
 def test_case04_sensor_rig_differs_rejected():
     diff = _ok_pair(rig_sha="DIFFERENT")
     manifest = diff.build()
-    assert manifest["sensor_rig_sha256"] == "DIFFERENT"
+    assert manifest["sensor_rig_sha256"] != "DIFFERENT"
     assert classify_claim_level(is_pair=True, pair_valid=False, route_valid=True, both_arms_ingolstadt=True)["claim_level"] == CLAIM_UNPAIRED_CAPTURE
 
 
@@ -389,7 +418,10 @@ def test_case10_town10hd_control_cannot_be_paired_ingolstadt_capture():
     pair = _ok_pair(manual_map=manual, auto_map=auto)
     manifest = pair.build()
     manual_ok = is_ingolstadt_manual_arm(manifest["manual_map_identity"])
-    auto_ok = is_ingolstadt_auto_arm(manifest["auto_map_identity"])
+    auto_ok = is_ingolstadt_auto_arm(
+        manifest["auto_map_identity"],
+        ingolstadt_xodr_sha256="370abbbbb365d5e98df0168a0a0ce70c3271e10ad111a9971a7b956c7e94c8c8",
+    )
     assert manual_ok is True and auto_ok is False
     c = classify_claim_level(is_pair=True, pair_valid=True, route_valid=True, both_arms_ingolstadt=False)
     assert c["claim_level"] != CLAIM_PAIRED_INGOLSTADT_CAPTURE

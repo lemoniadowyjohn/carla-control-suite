@@ -1,0 +1,11 @@
+{
+  "actual_carla_signs_verified": true,
+  "carla_client_module": "C:\\Users\\admin\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\carla\\__init__.py",
+  "matrix_reconstruction_max_abs_error": 1.4901161193847656e-07,
+  "pitch_positive_forward_z": 0.7771459221839905,
+  "randomized_poses": 200,
+  "roll_positive_right_z": -0.7771459221839905,
+  "rotation_geodesic_max_error_deg": 9.862456732282016e-06,
+  "seed": 127,
+  "verification_mode": "client_api_only_no_server"
+}

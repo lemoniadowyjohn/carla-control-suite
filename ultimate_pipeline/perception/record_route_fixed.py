@@ -21,8 +21,8 @@ It supports:
 
 Thesis constraints:
 - Cameras: use K_undistortion only (pinhole), ignore K and D
-- Camera extrinsics: cTv vehicle->camera; attachment uses cTv directly (no inversion)
-- LiDAR extrinsics: vTl lidar->vehicle; attachment uses inverse(vTl)
+- Camera source: cTv maps vehicle_flu to camera_opencv_optical; attachment derives inverse(cTv) with explicit basis changes
+- LiDAR source: vTl maps lidar to vehicle_flu; attachment uses vTl with explicit basis changes
 """
 
 from __future__ import annotations
@@ -2795,7 +2795,6 @@ def _main_impl(argv: Optional[list[str]] = None) -> int:
                         flush=True,
                     )
             # Synthesize thesis-style rig report for run_perception_safe compatibility.
-            ctv_inverted = _env_bool("UP_CAMERA_CTV_INVERT", False)
             rig_entries = []
             calib_data = dict(getattr(setup, "_calib", {}) or {})
             for cam_name, cam_data in (calib_data.get("cameras", {}) or {}).items():
@@ -2811,9 +2810,13 @@ def _main_impl(argv: Optional[list[str]] = None) -> int:
                             "image_size": cam_data.get("image_size"),
                             "cTv": cam_data.get("cTv"),
                         },
-                        "ctv_inverted": bool(ctv_inverted),
-                        "inversion_applied": bool(ctv_inverted),
-                        "transform_convention": "Used cTv (vehicle->camera) via canonical transform_conventions path.",
+                        "ctv_inverted": False,
+                        "inversion_applied": False,
+                        "source_matrix_inverse_applied": True,
+                        "attachment_derivation": "inverse_cTv_with_explicit_flu_fru_and_optical_basis_changes",
+                        "calibration_contract_version": "CARLA_SENSOR_MOUNTING/v2",
+                        "legacy_v1_boolean_semantics": "historical_only_not_authoritative_for_v2_mounting",
+                        "transform_convention": "CARLA_SENSOR_MOUNTING/v2",
                     }
                 )
             for _lid_name, lid_data in (calib_data.get("lidars", {}) or {}).items():
@@ -2826,12 +2829,18 @@ def _main_impl(argv: Optional[list[str]] = None) -> int:
                         "raw": {"vTl": lid_data.get("vTl")},
                         "vtl_inverted": True,
                         "inversion_applied": True,
-                        "transform_convention": "Used inverse(vTl) (vehicle->lidar) via canonical transform_conventions path.",
+                        "source_matrix_inverse_applied": False,
+                        "attachment_derivation": "vTl_with_explicit_flu_fru_basis_changes",
+                        "calibration_contract_version": "CARLA_SENSOR_MOUNTING/v2",
+                        "legacy_v1_boolean_semantics": "historical_only_not_authoritative_for_v2_mounting",
+                        "transform_convention": "CARLA_SENSOR_MOUNTING/v2",
                     }
                 )
                 break
             sensor_rig_report = {
                 "schema_version": 2,
+                "calibration_contract_version": "CARLA_SENSOR_MOUNTING/v2",
+                "legacy_v1_boolean_semantics": "historical_only_not_authoritative_for_v2_mounting",
                 "ok": True,
                 "reason": "spawned",
                 "rig": "dominik",
@@ -3501,32 +3510,43 @@ def main(argv: Optional[list[str]] = None) -> int:
 
 
 def _main_impl_strict(args) -> int:
-    """Strict RQ3 capture entrypoint: never silent fallback to legacy."""
-    from ultimate_pipeline.perception.record_route_fixed import (
-        run_strict_rq3_capture, run_strict_capture_entrypoint,
+    """Fail closed until the CLI is wired to a real CARLA route executor.
+
+    The former path called the evidence adjudicator with world=None, empty
+    stages/frame sets and caller-authored COMPLETED status. That was not an
+    execution path. Keep the attempt under a unique directory and emit only a
+    NOT_RUN status; never create a capture receipt or success verdict here.
+    """
+    import uuid
+
+    out_dir = Path(getattr(args, "out_dir", "rq3_strict_output")).expanduser()
+    if not out_dir.is_absolute():
+        out_dir = Path.cwd() / out_dir
+    attempt_id = uuid.uuid4().hex
+    attempt_dir = out_dir / "strict_attempts" / attempt_id
+    attempt_dir.mkdir(parents=True, exist_ok=False)
+    _write_json(
+        attempt_dir / "STRICT_RQ3_EXECUTION_STATUS.json",
+        {
+            "schema": "STRICT_RQ3_EXECUTION_STATUS/v1",
+            "attempt_id": attempt_id,
+            "execution_mode": str(getattr(args, "execution_mode", "UNSPECIFIED")),
+            "status": "NOT_RUN",
+            "completion_status": "NOT_RUN",
+            "authoritative": False,
+            "failure_reason": "STRICT_CLI_RUNTIME_EXECUTOR_UNAVAILABLE",
+            "route_manifest_path": str(getattr(args, "route_manifest_path", "") or ""),
+            "route_manifest_sha256": str(getattr(args, "route_manifest_sha256", "") or ""),
+            "dataset_content_sha256": None,
+            "capture_completion_receipt_sha256": None,
+            "terminal_status": "NOT_RUN",
+        },
     )
-    return run_strict_capture_entrypoint(
-        out_dir=Path(getattr(args, "out_dir", "rq3_strict_output")),
-        session_id=str(getattr(args, "session_id", "rq3_default")),
-        arm_name=str(getattr(args, "town", "manual")),
-        world=None,
-        traffic_manager=None,
-        get_weather=lambda: None,
-        set_weather=lambda w: None,
-        destroy_actor=lambda a: None,
-        detach_listener=lambda s, cid: None,
-        quarantine_staging=lambda: None,
-        stages={},
-        arm_members=[],
-        other_arm_members=[],
-        expected_map_name=str(getattr(args, "town", "") or "Grid0828"),
-        observed_map_name=str(getattr(args, "town", "") or "Grid0828"),
-        dataset_content_sha256="",
-        capture_completion_receipt_sha256="",
-        terminal_status="COMPLETED",
-        route_manifest_path=str(getattr(args, "route_manifest_path", "/verified/route.json")),
-        route_manifest_sha256=str(getattr(args, "route_manifest_sha256", "")),
+    print(
+        "[STRICT_RQ3] NOT_RUN: live route executor is not wired; no capture was accepted",
+        flush=True,
     )
+    return STRICT_EXIT_SETUP_FAILURE
 
 
 # NOTE: the module-level ``if __name__ == "__main__"`` guard is placed at the
