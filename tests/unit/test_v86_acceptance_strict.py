@@ -553,17 +553,23 @@ def test_promotion_evaluation_runs_every_checker_on_the_snapshot(tmp_path, monke
     import scripts.measure_candidate_acceptance as mca
 
     seen = []
+    scopes = []
+    missing = object()
     real = mca.run_gates
 
-    def spy(xodr, out_dir, dem):
+    def spy(xodr, out_dir, dem, *, expected_scope=missing):
         seen.append(Path(xodr))
-        return real(xodr, out_dir, dem)
+        scopes.append(expected_scope)
+        return real(xodr, out_dir, dem, expected_scope=expected_scope)
 
     monkeypatch.setattr(mca, "run_gates", spy)
     cand = Path(_write(tmp_path, _xodr(_road(1, 0)), "cand.xodr"))
     acc = mca.evaluate_candidate(cand, tmp_path / "out", tmp_path / "no_dem.tif")
     assert len(seen) == 1 and seen[0].parent.name == ".acceptance_snapshot"
     assert seen[0].name == acc["evaluated_xodr_sha256"] + ".xodr"
+    # V131: every checker invocation receives the (possibly unavailable) scope
+    # as an explicit kwarg; absence would be a silent bypass.
+    assert len(scopes) == 1 and scopes[0] is not missing
 
 
 def test_promotion_doctype_input_never_reaches_any_checker(tmp_path, monkeypatch):
@@ -586,7 +592,7 @@ def test_promotion_candidate_replaced_after_write_is_not_release_eligible(tmp_pa
     cand = Path(_write(tmp_path, _xodr(_road(1, 0)), "cand.xodr"))
     good = {g: {"ok": True} for g in fag.RELEASE_MANDATORY_GATES}
 
-    def gates_then_tamper(xodr, out_dir, dem):
+    def gates_then_tamper(xodr, out_dir, dem, *, expected_scope=None):
         return good
 
     real_write = mca._write_json
