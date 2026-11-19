@@ -1,0 +1,62 @@
+============================= test session starts =============================
+platform win32 -- Python 3.12.2, pytest-8.0.1, pluggy-1.4.0
+rootdir: G:\CARLA_RECOVERY\worktrees\v127-calibration-p0-20261118
+configfile: pytest.ini
+plugins: anyio-4.2.0
+collected 474 items
+
+ultimate_pipeline\tests\unit\test_transform_conventions.py ............. [  2%]
+............................................                             [ 12%]
+ultimate_pipeline\tests\unit\test_applied_sensor_rig_v2.py ............. [ 14%]
+                                                                         [ 14%]
+ultimate_pipeline\carla_tools\tests\test_thesis_sensor_rig_contract.py . [ 14%]
+..............                                                           [ 17%]
+ultimate_pipeline\tests\test_contracts.py .............................. [ 24%]
+........................................................................ [ 39%]
+..................................                                       [ 46%]
+tests\unit\test_agent_sync_contract.py ......                            [ 47%]
+tests\unit\test_v112_rq3_explicit_calibration.py ...                     [ 48%]
+tests\unit\test_v119_rq3_completeness_nonvacuous.py ..................   [ 52%]
+ultimate_pipeline\tests\unit\test_integration_runtime_rig_environment_negative_controls.py . [ 52%]
+.......................................                                  [ 60%]
+ultimate_pipeline\tests\unit\test_rq3_paired_capture_contract.py ....... [ 62%]
+.........................                                                [ 67%]
+tests\unit\test_run_perception_safe_rig_contract.py .......              [ 68%]
+tests\unit\test_run_perception_safe_failure_classification.py .......... [ 71%]
+..................................                                       [ 78%]
+tests\unit\test_recorder_backpressure_and_frame_integrity.py ........... [ 80%]
+.............                                                            [ 83%]
+ultimate_pipeline\tests\unit\test_rq3_frame_set.py ..................... [ 87%]
+..                                                                       [ 88%]
+tests\unit\test_sensor_calibration_semantics.py ....                     [ 89%]
+tests\unit\test_rq3_batch9_pair_contract.py ............................ [ 94%]
+.......................                                                  [ 99%]
+tests\unit\test_submission_applied_sensor_rig_mirror.py .                [100%]
+
+============================== warnings summary ===============================
+ultimate_pipeline\config\settings.py:2036
+  G:\CARLA_RECOVERY\worktrees\v127-calibration-p0-20261118\ultimate_pipeline\config\settings.py:2036: RuntimeWarning: MANUAL_TILES_DIR resolved to missing dir: 'G:\CARLA_RECOVERY\worktrees\v127-calibration-p0-20261118\domain_gap_results\manual_tiles'. Set UP_MANUAL_TILES_DIR to a valid dir.
+    _warn_missing_setting_path(
+
+ultimate_pipeline\config\settings.py:2042
+  G:\CARLA_RECOVERY\worktrees\v127-calibration-p0-20261118\ultimate_pipeline\config\settings.py:2042: RuntimeWarning: BASE_OUTPUT_DIR resolved to missing dir: 'G:\CARLA_RECOVERY\worktrees\v127-calibration-p0-20261118\ultimate_pipeline_out'. Set UP_BASE_OUTPUT_DIR to a valid dir.
+    _warn_missing_setting_path(
+
+ultimate_pipeline\config\settings.py:2048
+  G:\CARLA_RECOVERY\worktrees\v127-calibration-p0-20261118\ultimate_pipeline\config\settings.py:2048: RuntimeWarning: COORDINATES_JSON resolved to missing file: 'G:\CARLA_RECOVERY\worktrees\v127-calibration-p0-20261118\ultimate_pipeline\config\coordinates.json'. Set UP_COORDINATES_JSON to a valid file.
+    _warn_missing_setting_path(
+
+ultimate_pipeline\config\settings.py:2054
+  G:\CARLA_RECOVERY\worktrees\v127-calibration-p0-20261118\ultimate_pipeline\config\settings.py:2054: RuntimeWarning: HPC_DIR resolved to missing dir: 'G:\CARLA_RECOVERY\worktrees\v127-calibration-p0-20261118\hpc'. Set UP_HPC_DIR to a valid dir.
+    _warn_missing_setting_path(
+
+ultimate_pipeline\config\settings.py:2060
+  G:\CARLA_RECOVERY\worktrees\v127-calibration-p0-20261118\ultimate_pipeline\config\settings.py:2060: RuntimeWarning: PIPELINE_OUT_DIR resolved to missing dir: 'G:\CARLA_RECOVERY\worktrees\v127-calibration-p0-20261118\ultimate_pipeline_out'. Set UP_PIPELINE_OUT_DIR to a valid dir.
+    _warn_missing_setting_path(
+
+ultimate_pipeline/carla_tools/tests/test_thesis_sensor_rig_contract.py::test_legacy_sensor_rig_cannot_spawn_ambiguous_mounts
+  G:\CARLA_RECOVERY\worktrees\v127-calibration-p0-20261118\ultimate_pipeline\carla_tools\tests\test_thesis_sensor_rig_contract.py:479: FutureWarning: sensor_rig.py is deprecated for thesis experiments; use thesis_sensor_rig.py (explicit conventions + axis handling).
+    from ultimate_pipeline.carla_tools.sensor_rig import SensorRig
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+====================== 474 passed, 6 warnings in 15.38s =======================

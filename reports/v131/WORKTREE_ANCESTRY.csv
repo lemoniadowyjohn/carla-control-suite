@@ -1,0 +1,18 @@
+item,sha,status,ancestry_or_state,evidence
+production,225ed15d0da6444cc257835ca777aba281553f3c,verified,authoritative base,origin ref fetched
+candidate,1085e00031ffae99ca770ee963dc6f90ffafde72,local clean source,descends from production,isolated F worktree
+#69,e798d778a18840938cdb30a88d0d4eec5c0786e3,integrated,#66 -> #68 -> #69,ancestry verified
+#65,4026fb5365e4dbfa0ca9de33c203b4f4911c8566,integrated,production-based,overlap calibration
+#67,66c1459d9a55a2482b7df740e628301ee8bdd726,integrated,production-based,local coordinate contract
+#49,d30a0544e385e4b353f125a61cd678683d2c2a11,integrated,production-based,RL width fuzzer
+#56,af22f82c5095462b2bd2ae0f2a1c6b3bd09eba6,integrated,production-based,feature gap missingness
+#55,4ad05dc3b5c67df24551468d385a0447a73fc106,integrated,#52 ancestor; #54 edits semantically included in PR55,do not double integrate #54
+#50,230f4aeb17d356c45fe8a4fb6e02272c79c0822a,integrated,parallel to #55,semantic overlay and tests
+#64,cc93b03a48ad9388e9d604630cb6bd6cc40c80be,integrated,#35 -> #60 -> #64,manual overlap review
+#70,32610a41442ba98c633c407bd4762abd167133a6,excluded,not candidate,offline test failures
+#63,6e6ac76fbaa03a83f9b601684b8bedf59a0f2591,excluded,pending OC-A and QA,checks green but source not admitted
+#37,2a2daada4f61cc4981f1b18ece6d61aaa3703107,excluded,production-based,2 unresolved threads; WSL durability unverified
+#58,2a2daada4f61cc4981f1b18ece6d61aaa3703107,duplicate,identical head to #37,do not integrate twice
+#39,5368eda3448ef9a96588ad6ade8ac14a915bdd29,excluded,#39 not ancestor of #57,needs semantic reconciliation
+#57,694f1a419a184c5dea2de74f66d47a902014dc51,excluded,independent base chain,needs semantic reconciliation
+#40,5a360c600af940c78d82ca6e4a14e9f69c67ce07,excluded,production-based,#45/#46 on older intermediate

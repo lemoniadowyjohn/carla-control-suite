@@ -608,21 +608,34 @@ def write_model_manifest(out_dir: Any, manifest: Mapping[str, Any]) -> Path:
     return target
 
 
+def _validate_model_manifest_payload(
+    payload: Any, *, source: str = "model manifest"
+) -> Dict[str, Any]:
+    """Validate a manifest object and reject unsupported/absent schemas.
+
+    Shared by file-loaded and in-memory Mapping manifests so both inputs receive
+    identical schema enforcement (v1 supported for compatibility; v2 receipts are
+    enforced during verification).
+    """
+    if not isinstance(payload, Mapping):
+        raise ValueError(f"{source} is not a JSON object")
+    validated = dict(payload)
+    schema = validated.get("schema")
+    if schema not in SUPPORTED_MODEL_MANIFEST_SCHEMAS:
+        raise ValueError(
+            f"unsupported model manifest schema {schema!r}; expected one of "
+            f"{SUPPORTED_MODEL_MANIFEST_SCHEMAS}"
+        )
+    return validated
+
+
 def load_model_manifest(manifest_path: Any) -> Dict[str, Any]:
     """Load and schema-check a model manifest."""
     path = Path(manifest_path)
     if not path.is_file():
         raise FileNotFoundError(f"model manifest not found: {path}")
     payload = json.loads(path.read_text(encoding="utf-8"))
-    if not isinstance(payload, dict):
-        raise ValueError(f"model manifest is not a JSON object: {path}")
-    schema = payload.get("schema")
-    if schema not in SUPPORTED_MODEL_MANIFEST_SCHEMAS:
-        raise ValueError(
-            f"unsupported model manifest schema {schema!r}; expected one of "
-            f"{SUPPORTED_MODEL_MANIFEST_SCHEMAS}"
-        )
-    return payload
+    return _validate_model_manifest_payload(payload, source=f"model manifest {path}")
 
 
 def verify_checkpoint_manifest(
@@ -642,22 +655,33 @@ def verify_checkpoint_manifest(
     ckpt_path = Path(checkpoint)
     if isinstance(manifest, (str, Path)):
         payload = load_model_manifest(manifest)
-    elif isinstance(manifest, Mapping):
-        payload = dict(manifest)
-    else:
+    elif manifest is None:
         return {
             "ok": False,
             "failures": ["no model manifest supplied"],
             "checkpoint": str(ckpt_path),
         }
+    else:
+        # Mapping inputs and in-memory payloads receive the same schema/object
+        # validation as file-loaded manifests (reject absent/unsupported schema,
+        # and reject non-object manifests consistently).
+        payload = _validate_model_manifest_payload(
+            manifest, source="model manifest (mapping input)"
+        )
 
     failures: List[str] = []
-    recorded = ((payload.get("checkpoint") or {}).get("sha256")) or ""
-    if not recorded:
-        failures.append("model manifest does not record a checkpoint sha256")
-    elif not ckpt_path.is_file():
-        failures.append(f"checkpoint file is missing: {ckpt_path}")
+    checkpoint_meta = payload.get("checkpoint")
+    if isinstance(checkpoint_meta, Mapping):
+        recorded = str(checkpoint_meta.get("sha256") or "")
     else:
+        recorded = ""
+        if checkpoint_meta is not None:
+            failures.append("model manifest field 'checkpoint' must be an object")
+    if not recorded and "model manifest field 'checkpoint' must be an object" not in failures:
+        failures.append("model manifest does not record a checkpoint sha256")
+    elif recorded and not ckpt_path.is_file():
+        failures.append(f"checkpoint file is missing: {ckpt_path}")
+    elif recorded:
         actual = sha256_file(ckpt_path)
         if actual.lower() != str(recorded).lower():
             failures.append(
@@ -665,20 +689,50 @@ def verify_checkpoint_manifest(
             )
 
     if require_provenance:
-        train_sha = ((payload.get("dataset") or {}).get("train_identity_sha256")) or ""
+        dataset_meta = payload.get("dataset")
+        if dataset_meta is not None and not isinstance(dataset_meta, Mapping):
+            failures.append("model manifest field 'dataset' must be an object")
+            train_sha = ""
+        else:
+            train_sha = str((dataset_meta or {}).get("train_identity_sha256") or "") if isinstance(dataset_meta, Mapping) else ""
         if not train_sha:
             failures.append("model manifest does not bind a training dataset identity")
-        if not (payload.get("code") or {}).get("commit"):
+
+        code_meta = payload.get("code")
+        if code_meta is not None and not isinstance(code_meta, Mapping):
+            failures.append("model manifest field 'code' must be an object")
+            commit = ""
+        else:
+            commit = str((code_meta or {}).get("commit") or "") if isinstance(code_meta, Mapping) else ""
+        if not commit:
             failures.append("model manifest does not bind a git commit")
-        if (payload.get("seed") or {}).get("seed") is None:
+
+        seed_meta = payload.get("seed")
+        if seed_meta is not None and not isinstance(seed_meta, Mapping):
+            failures.append("model manifest field 'seed' must be an object")
+            seed_val = None
+        else:
+            seed_val = (seed_meta or {}).get("seed") if isinstance(seed_meta, Mapping) else None
+        if seed_val is None:
             failures.append("model manifest does not record a seed")
-            # CD-2 / batch 2: v2 contract enforcement -- split authority and
-            # pretraining contract must be present for a governed RQ5 artifact.
+
+        # v2 binds checkpoint training to a governed split and a verified
+        # pretraining contract. These are independent of whether a seed was
+        # supplied. Keep v1 manifest compatibility, as documented by
+        # SUPPORTED_MODEL_MANIFEST_SCHEMAS.
+        if payload.get("schema") == "rq5_model_manifest_v2":
             manifest_split = payload.get("split")
-            if not manifest_split or not manifest_split.get("split_manifest_sha256"):
-                failures.append("model manifest missing split_manifest_sha256 (v2 contract)")
-            if not payload.get("pretraining_contract"):
-                failures.append("model manifest missing pretraining_contract (v2 contract)")
+            if not isinstance(manifest_split, Mapping) or not manifest_split.get(
+                "split_manifest_sha256"
+            ):
+                failures.append(
+                    "model manifest missing split_manifest_sha256 (v2 contract)"
+                )
+            pretraining_contract = payload.get("pretraining_contract")
+            if pretraining_contract is None or pretraining_contract == "" or pretraining_contract == {}:
+                failures.append(
+                    "model manifest missing pretraining_contract (v2 contract)"
+                )
 
     return {
         "ok": not failures,

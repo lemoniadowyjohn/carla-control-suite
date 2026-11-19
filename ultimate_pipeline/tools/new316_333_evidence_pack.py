@@ -16,7 +16,6 @@ from __future__ import annotations
 import argparse
 import json
 import platform
-import socket
 import subprocess
 import sys
 from datetime import datetime, timezone
@@ -73,19 +72,26 @@ def git(*args: str) -> str:
 
 
 def rpc_probe(host: str, ports: List[int], timeout: float = 1.5) -> Dict[str, Any]:
-    results = {}
+    """Probe CARLA application RPC, not merely an open TCP listener."""
+    results: Dict[str, Any] = {}
+    try:
+        import carla  # type: ignore
+    except Exception as exc:
+        return {"host": host, "ports": {str(p): f"CARLA_API_UNAVAILABLE:{type(exc).__name__}"
+                                          for p in ports},
+                "reachable": False, "evidence": "NO_CARLA_RPC_PROOF"}
     for port in ports:
-        sock = socket.socket()
-        sock.settimeout(timeout)
         try:
-            sock.connect((host, port))
-            results[str(port)] = "OPEN"
+            client = carla.Client(host, int(port))
+            client.set_timeout(float(timeout))
+            server_version = str(client.get_server_version())
+            results[str(port)] = {"status": "RPC_REACHABLE", "server_version": server_version}
         except Exception as exc:
-            results[str(port)] = f"CLOSED:{type(exc).__name__}"
-        finally:
-            sock.close()
-    reachable = any(v == "OPEN" for v in results.values())
-    return {"host": host, "ports": results, "reachable": reachable}
+            results[str(port)] = {"status": "RPC_UNAVAILABLE",
+                                  "error": f"{type(exc).__name__}:{exc}"}
+    reachable = any(v.get("status") == "RPC_REACHABLE" for v in results.values())
+    return {"host": host, "ports": results, "reachable": reachable,
+            "evidence": "CARLA_RPC_VERSION_ONLY_PENDING_RENDERED_FRAME_VERIFICATION"}
 
 
 def carla_api_version() -> Dict[str, Any]:
@@ -223,7 +229,7 @@ def main() -> int:
         "artifacts_written": ["weather_requested.json", "weather_effective.json"],
         "wired_into_production": "ultimate_pipeline/perception/record_route_fixed.py",
         "weather_preset_drift_detectable": clear_noon["parameters"] != cloudy_noon["parameters"],
-        "live_readback_verified": BLOCKED if not live else "verified",
+        "live_readback_verified": BLOCKED if not live else "RPC_REACHABLE_PENDING_CAPTURE",
     }
     write(out / "NEW316_WEATHER_HANDOFF.json", r316)
 
@@ -265,7 +271,7 @@ def main() -> int:
                 ).REQUIRED_ARM_IDENTITY_KEYS
             ),
         },
-        "live_evidence": BLOCKED if not live else "verified",
+        "live_evidence": BLOCKED if not live else "RPC_REACHABLE_PENDING_CAPTURE",
     }
     write(out / "NEW317_ARM_WEATHER_BINDING.json", r317)
 
@@ -385,6 +391,9 @@ def main() -> int:
         "camera_count": realization["camera_count"],
         "strategy_counts": realization["strategy_counts"],
         "exact_realization_full_frame": realization["exact_realization"],
+        "geometric_realization_only": True,
+        "exact_intrinsic_compliance": False,
+        "live_acceptance": "PENDING_INDEPENDENT_RENDERED_FRAME_VERIFICATION",
         "bounded_approximations": realization["bounded_approximations"],
         "per_camera": [
             {
@@ -453,7 +462,9 @@ def main() -> int:
             _la.VERDICT_MATHEMATICAL_PASS if math_verdict == PASS
             else "MATHEMATICAL_CONTRACT_FAIL"
         ),
-        live_evidence_available=bool(live),
+        # RPC reachability and version negotiation do not provide rendered
+        # observations; the live assay must remain blocked until those exist.
+        live_evidence_available=False,
     )
     r321["acceptance"] = acceptance
     write(out / "NEW321_LIVE_CALIBRATION_ACCEPTANCE.json", r321)
@@ -551,7 +562,7 @@ def main() -> int:
             "listeners stopped", "sensors destroyed", "temporary props destroyed",
             "ego destroyed", "world settings restored", "actor cleanup verified",
         ],
-        "live_verification": BLOCKED if not live else "verified",
+        "live_verification": BLOCKED if not live else "RPC_REACHABLE_PENDING_CAPTURE",
     }
     write(out / "NEW322_CALIBRATION_CLEANUP.json", r322)
 
@@ -682,8 +693,8 @@ def main() -> int:
         "defect_before": "calibrate_sensors_in_carla.py chose the extrinsic convention heuristically from marker visibility, contradicting the authoritative cTv/vTl thesis rule",
         "tool_status": _ca.STATUS_DIAGNOSTIC,
         "canonical_rule": (
-            "cTv = vehicle->camera used DIRECTLY (not inverted); "
-            "vTl = lidar->vehicle INVERTED"
+            "CARLA_SENSOR_MOUNTING/v2: camera mount derives inverse(cTv) with explicit FLU/FRU and optical/CARLA basis changes; "
+            "LiDAR mount uses vTl with explicit FLU/FRU basis changes"
         ),
         "canonical_authority_module": "ultimate_pipeline.sensors.calibration_contract",
         "export_schema_renamed": stamped["schema"],
@@ -1119,7 +1130,7 @@ def main() -> int:
         ),
         "no_capture_before_ready": True,
         "wired_into": "ultimate_pipeline/perception/record_route_fixed.py",
-        "live_verification": BLOCKED if not live else "verified",
+        "live_verification": BLOCKED if not live else "RPC_REACHABLE_PENDING_CAPTURE",
     }
     write(out / "NEW332_EXPERIMENT_START_STATE.json", r332)
 
@@ -1138,7 +1149,9 @@ def main() -> int:
             "rejected_by_loader": not rejected["loadable"],
         },
         "intrinsic_realization": {
-            "exact_full_frame": realization["exact_realization"],
+            "geometric_exact_full_frame": realization["exact_realization"],
+            "exact_intrinsic_compliance": False,
+            "live_acceptance": "PENDING_INDEPENDENT_RENDERED_FRAME_VERIFICATION",
             "strategy_counts": realization["strategy_counts"],
             "legacy_claim_withdrawn": legacy_claim_withdrawn,
         },
@@ -1152,7 +1165,7 @@ def main() -> int:
             "rig_replica_claimable_for_tesla": replica_ok["valid"],
         },
         "cleanup_transactional": r322["all_paths_clean"],
-        "live_acceptance": _la.VERDICT_BLOCKED if not live else "available",
+        "live_acceptance": _la.VERDICT_BLOCKED if not live else "PENDING_RENDERED_FRAME_VERIFICATION",
     })
 
     tm_matrix = {
@@ -1197,14 +1210,17 @@ def main() -> int:
         "static_calibration_contract": contract["verdict"],
         "calib_sha256": contract["calib_sha256"],
         "runtime_sensor_realization": {
-            "exact_full_frame": realization["exact_realization"],
+            "geometric_exact_full_frame": realization["exact_realization"],
+            "exact_intrinsic_compliance": False,
+            "live_acceptance": "PENDING_INDEPENDENT_RENDERED_FRAME_VERIFICATION",
             "strategy_counts": realization["strategy_counts"],
             "legacy_native_equals_K_undistortion_claim": "WITHDRAWN",
             "bounded_approximations": realization["bounded_approximations"],
         },
         "empirical_reprojection_acceptance": {
-            "verdict": _la.VERDICT_BLOCKED if not live else "available",
-            "reason": "no CARLA RPC; rendered observations unavailable",
+            "verdict": _la.VERDICT_BLOCKED,
+            "reason": ("CARLA RPC unavailable; rendered observations unavailable" if not live
+                       else "CARLA RPC reachable, but no rendered observations or independent annotations supplied"),
             "thresholds_declared_before_run": True,
             "predicted_vs_predicted_refused": True,
         },
@@ -1232,7 +1248,9 @@ def main() -> int:
         },
         "scientific_closure": {
             "STATIC_CALIBRATION_CONTRACT": contract["verdict"] == PASS,
-            "RUNTIME_SENSOR_REALIZATION": realization["exact_realization"],
+            "RUNTIME_SENSOR_REALIZATION": False,
+            "RUNTIME_SENSOR_REALIZATION_GEOMETRIC_POSSIBILITY": realization["exact_realization"],
+            "RUNTIME_SENSOR_REALIZATION_BLOCKED_BY": "NO_INDEPENDENT_FINAL_RENDERED_FRAME_VERIFICATION",
             "EMPIRICAL_REPROJECTION_ACCEPTANCE": False,
             "EMPIRICAL_REPROJECTION_ACCEPTANCE_BLOCKED_BY": "BLOCKED_EXTERNAL",
             "never_claim_fully_operational_from_matrix_tests": True,
@@ -1416,7 +1434,7 @@ def main() -> int:
         "simulation_physics_sha256": profile_hf[_pp.PHYSICS_DIGEST_FIELD],
         "experiment_start_state_ready_gate": _pp.SIMULATION_STATE_NOT_READY,
         "claim_boundary": proof["claim_boundary"],
-        "live_verification": BLOCKED if not live else "verified",
+        "live_verification": BLOCKED if not live else "RPC_REACHABLE_PENDING_CAPTURE",
     })
 
     write(out / "WEATHER_REPRODUCIBILITY_MATRIX.json", {
@@ -1432,7 +1450,7 @@ def main() -> int:
         "arm_digest_divergence_detected": m_id["weather_sha256"] != a_id["weather_sha256"],
         "missing_arm_fails": not missing_manual["valid"],
         "modes": list(_dw.VALID_MODES),
-        "live_verification": BLOCKED if not live else "verified",
+        "live_verification": BLOCKED if not live else "RPC_REACHABLE_PENDING_CAPTURE",
     })
 
     write(out / "PHYSICS_DETERMINISM_MATRIX.json", {
@@ -1446,7 +1464,7 @@ def main() -> int:
         "out_of_order_detected": len(out_of_order.proof()["order_violations"]) > 0,
         "digest": profile_hf[_pp.PHYSICS_DIGEST_FIELD],
         "pair_arms_must_share_digest": True,
-        "live_verification": BLOCKED if not live else "verified",
+        "live_verification": BLOCKED if not live else "RPC_REACHABLE_PENDING_CAPTURE",
     })
 
     findings = [

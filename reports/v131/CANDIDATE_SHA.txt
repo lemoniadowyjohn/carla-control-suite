@@ -1,0 +1,8 @@
+production_base=225ed15d0da6444cc257835ca777aba281553f3c
+integrated_source_and_safety_fix_sha=c95f9b4ece19b98fad2a1818f658fbe8686f0faa
+lifecycle_safety_fix_commit=7b0194caf6dfac4bbcbc63e0ab5b9397b95ae1f2
+combined_source_tested_commit=1085e00031ffae99ca770ee963dc6f90ffafde72
+branch=integration/v131-pre-claude-candidate
+pr=https://github.com/lemoniadowyjohn/carla-control-suite/pull/71
+independent_review=REQUEST_CHANGES at c95f9b4ece19b98fad2a1818f658fbe8686f0faa
+status=nonproduction candidate; report-only commits can advance branch ref

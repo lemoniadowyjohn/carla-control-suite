@@ -196,8 +196,8 @@ def main() -> int:
             "host": args.host,
             "port": int(args.port),
             "transform_notes": (
-                "cTv (vehicle->camera) is used directly; inversion is forbidden by the thesis contract. "
-                "vTl (lidar->vehicle) is inverted to vehicle->lidar for CARLA attachment."
+                "CARLA_SENSOR_MOUNTING/v2: camera attachment derives inverse(cTv) with explicit FLU/FRU and optical/CARLA basis changes; "
+                "LiDAR attachment uses vTl with explicit FLU/FRU basis changes."
             ),
             "reference_spawn_index": 0,
             "reference_spawn_transform": _tf_to_dict(ref_spawn),

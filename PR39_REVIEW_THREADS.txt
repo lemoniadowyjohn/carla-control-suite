@@ -1,0 +1,994 @@
+==============================================================================
+PR #39 ΓÇö REVIEW COMMENTS: 23
+==============================================================================
+------------------------------------------------------------------------------
+id=4551555409 user=chatgpt-codex-connector[bot] created=2026-11-12T14:13:14Z
+path=ultimate_pipeline/enrichment/osm_direction.py line=299 original_line=299 side=RIGHT
+in_reply_to=None
+BODY:
+**<sub><sub>![P1 Badge](https://img.shields.io/badge/P1-orange?style=flat)</sub></sub>  Preserve the existing side assignment for odd lane totals**
+
+For an odd `lanes` total without directional tags, this reverses the previous split: `driving_lane_counts()` previously returned `(total // 2, total - total // 2)` as `(backward, forward)`, whereas the new resolver assigns the smaller count to forward. The same reversal occurs in the unsupported branch. Consequently, `lanes=1` with no oneway tag now produces only a backward lane instead of only a forward lane, and `lanes=3, oneway=no` changes from one backward/two forward to two backward/one forward. This changes generated traffic direction even without a reversed OSM association. Preserve the historical forward/backward assignment before applying the orientation swap.
+
+Useful? React with ≡ƒæì┬á/ ≡ƒæÄ.
+
+<!-- codex-code-review-finding:v1 -->
+------------------------------------------------------------------------------
+id=4551555419 user=chatgpt-codex-connector[bot] created=2026-11-12T14:13:14Z
+path=ultimate_pipeline/enrichment/osm_direction.py line=523 original_line=523 side=RIGHT
+in_reply_to=None
+BODY:
+**<sub><sub>![P2 Badge](https://img.shields.io/badge/P2-yellow?style=flat)</sub></sub>  Exclude unsupported and fallback resolutions from authoritative coverage**
+
+When an oriented HIGH/EXACT match has only `lanes=2, oneway=reversible`, the resolver explicitly returns `unsupported`, but this predicate still increments `authoritative` and the release-required coverage report returns `PASS`. It also counts a match with no lane tags as authoritative despite its `incomplete` fallback resolution. Stage 07 publishes this status in `structural_osm_lane_correspondence.json`, so an entirely unsupported scan can appear release-eligible. Require a supported lane-resolution state, rather than merely the absence of a conflict, before counting authoritative coverage.
+
+AGENTS.md reference: [AGENTS.md:L83-L83](https://github.com/lemoniadowyjohn/carla-control-suite/blob/f14dd997a1ad1ca9482fa50af84db3ad63792dc2/AGENTS.md#L83-L83)
+
+Useful? React with ≡ƒæì┬á/ ≡ƒæÄ.
+
+<!-- codex-code-review-finding:v1 -->
+------------------------------------------------------------------------------
+id=4551555425 user=chatgpt-codex-connector[bot] created=2026-11-12T14:13:14Z
+path=ultimate_pipeline/enrichment/osm_direction.py line=179 original_line=179 side=RIGHT
+in_reply_to=None
+BODY:
+**<sub><sub>![P2 Badge](https://img.shields.io/badge/P2-yellow?style=flat)</sub></sub>  Preserve roundabout tags in the structural metadata extractor**
+
+For a roundabout whose one-way direction is implicit (`junction=roundabout`, `lanes=2`, no explicit `oneway`), this new branch is unreachable through Stage 07: `extract_structural_osm_lane_metadata_ways()` filters tags through `_STRUCTURAL_LANE_METADATA_TAGS`, which does not include `junction`. The resolver therefore receives only the lane total and generates a 1+1 split instead of two lanes in the legal direction. Extend the extraction whitelist alongside this parser so the production path receives the roundabout fact; direct parser tests do not exercise that handoff.
+
+Useful? React with ≡ƒæì┬á/ ≡ƒæÄ.
+
+<!-- codex-code-review-finding:v1 -->
+------------------------------------------------------------------------------
+id=4551582230 user=sourcery-ai[bot] created=2026-11-12T14:15:30Z
+path=ultimate_pipeline/enrichment/osm_direction.py line=431 original_line=431 side=RIGHT
+in_reply_to=None
+BODY:
+**≡ƒƒí Medium ┬╖ Ambiguous matches raise an exception**
+
+When the match class is not EXACT or HIGH, `build_directional_association` accesses the undefined `DirectionalState.AMBIGUOUS` member and raises `AttributeError` instead of returning an ambiguous association.
+
+Define and use the ambiguous state, or otherwise return an explicit ambiguous association without accessing an undefined enum member.
+
+<details>
+<summary>Prompt for AI agents</summary>
+
+~~~markdown
+In `ultimate_pipeline/enrichment/osm_direction.py` at line 431:
+
+**Ambiguous matches raise an exception**
+
+When the match class is not EXACT or HIGH, `build_directional_association` accesses the undefined `DirectionalState.AMBIGUOUS` member and raises `AttributeError` instead of returning an ambiguous association.
+
+Define and use the ambiguous state, or otherwise return an explicit ambiguous association without accessing an undefined enum member.
+~~~
+
+</details>
+------------------------------------------------------------------------------
+id=4551582252 user=sourcery-ai[bot] created=2026-11-12T14:15:30Z
+path=ultimate_pipeline/enrichment/osm_direction.py line=341 original_line=341 side=RIGHT
+in_reply_to=None
+BODY:
+**≡ƒƒá High ┬╖ Unknown orientation assigns lanes arbitrarily**
+
+When an EXACT/HIGH association has unknown OSM-to-XODR orientation, `resolve_directional_lane_counts` leaves OSM-relative counts unswapped and retains an authoritative state and confidence; remapping also treats unknown orientation as aligned. `driving_lane_counts` and lane generation therefore place lanes on an arbitrary XODR carriageway, while `is_authoritative` still reports the resolution as authoritative.
+
+Mark unknown orientation non-authoritative and prevent lane counts, turn patterns, and cycleway sides from being applied as aligned until the orientation is known.
+
+Also at `ultimate_pipeline/enrichment/lane_generator.py:256-257`, `ultimate_pipeline/enrichment/lane_generator.py:492-495`, `ultimate_pipeline/enrichment/osm_direction.py:218-220`, `ultimate_pipeline/enrichment/lane_width_policy.py:221-225`.
+
+<details>
+<summary>Prompt for AI agents</summary>
+
+~~~markdown
+In `ultimate_pipeline/enrichment/osm_direction.py` at lines 339-341:
+
+**Unknown orientation assigns lanes arbitrarily**
+
+When an EXACT/HIGH association has unknown OSM-to-XODR orientation, `resolve_directional_lane_counts` leaves OSM-relative counts unswapped and retains an authoritative state and confidence; remapping also treats unknown orientation as aligned. `driving_lane_counts` and lane generation therefore place lanes on an arbitrary XODR carriageway, while `is_authoritative` still reports the resolution as authoritative.
+
+Mark unknown orientation non-authoritative and prevent lane counts, turn patterns, and cycleway sides from being applied as aligned until the orientation is known.
+
+Also at `ultimate_pipeline/enrichment/lane_generator.py:256-257`, `ultimate_pipeline/enrichment/lane_generator.py:492-495`, `ultimate_pipeline/enrichment/osm_direction.py:218-220`, `ultimate_pipeline/enrichment/lane_width_policy.py:221-225`.
+~~~
+
+</details>
+------------------------------------------------------------------------------
+id=4551582276 user=sourcery-ai[bot] created=2026-11-12T14:15:30Z
+path=ultimate_pipeline/enrichment/osm_direction.py line=287 original_line=287 side=RIGHT
+in_reply_to=None
+BODY:
+**≡ƒƒá High ┬╖ Conditional one-way lanes appear authoritative**
+
+When a plain `oneway` tag and a `oneway:conditional` rule specify different permitted directions, `parse_oneway` and `resolve_directional_lane_counts` use the plain value without applying the conditional rule, then report static authoritative counts. Lane generation therefore assigns lanes to a direction that is wrong during the conditional period.
+
+Account for `oneway:conditional` when resolving direction and avoid reporting static authoritative counts when the condition changes the permitted direction.
+
+Also at `ultimate_pipeline/enrichment/osm_direction.py:175-181`, `ultimate_pipeline/enrichment/osm_direction.py:269`, `ultimate_pipeline/enrichment/osm_direction.py:274-285`, `ultimate_pipeline/enrichment/osm_direction.py:313-314`.
+
+<details>
+<summary>Prompt for AI agents</summary>
+
+~~~markdown
+In `ultimate_pipeline/enrichment/osm_direction.py` at line 287:
+
+**Conditional one-way lanes appear authoritative**
+
+When a plain `oneway` tag and a `oneway:conditional` rule specify different permitted directions, `parse_oneway` and `resolve_directional_lane_counts` use the plain value without applying the conditional rule, then report static authoritative counts. Lane generation therefore assigns lanes to a direction that is wrong during the conditional period.
+
+Account for `oneway:conditional` when resolving direction and avoid reporting static authoritative counts when the condition changes the permitted direction.
+
+Also at `ultimate_pipeline/enrichment/osm_direction.py:175-181`, `ultimate_pipeline/enrichment/osm_direction.py:269`, `ultimate_pipeline/enrichment/osm_direction.py:274-285`, `ultimate_pipeline/enrichment/osm_direction.py:313-314`.
+~~~
+
+</details>
+------------------------------------------------------------------------------
+id=4551582287 user=sourcery-ai[bot] created=2026-11-12T14:15:30Z
+path=ultimate_pipeline/pipeline_stages/stage_07_lanes.py line=52 original_line=52 side=RIGHT
+in_reply_to=None
+BODY:
+**≡ƒƒá High ┬╖ Roundabouts gain counterflow lanes**
+
+When a lane-counted OSM roundabout has no explicit `oneway` tag, `extract_structural_osm_lane_metadata_ways` drops `junction` before `parse_oneway` receives the tags, so the roundabout default is missed and its total lanes are split bidirectionally. The extractor also drops `oneway:conditional`, preventing the resolver from seeing that condition.
+
+Preserve `junction` and `oneway:conditional` through structural-tag extraction and pass them to the directional lane resolver.
+
+Also at `ultimate_pipeline/enrichment/osm_direction.py:177-180`, `ultimate_pipeline/enrichment/osm_direction.py:269`, `ultimate_pipeline/pipeline_stages/stage_07_lanes.py:68-75`.
+
+<details>
+<summary>Prompt for AI agents</summary>
+
+~~~markdown
+In `ultimate_pipeline/pipeline_stages/stage_07_lanes.py` at line 52:
+
+**Roundabouts gain counterflow lanes**
+
+When a lane-counted OSM roundabout has no explicit `oneway` tag, `extract_structural_osm_lane_metadata_ways` drops `junction` before `parse_oneway` receives the tags, so the roundabout default is missed and its total lanes are split bidirectionally. The extractor also drops `oneway:conditional`, preventing the resolver from seeing that condition.
+
+Preserve `junction` and `oneway:conditional` through structural-tag extraction and pass them to the directional lane resolver.
+
+Also at `ultimate_pipeline/enrichment/osm_direction.py:177-180`, `ultimate_pipeline/enrichment/osm_direction.py:269`, `ultimate_pipeline/pipeline_stages/stage_07_lanes.py:68-75`.
+~~~
+
+</details>
+------------------------------------------------------------------------------
+id=4551582303 user=sourcery-ai[bot] created=2026-11-12T14:15:30Z
+path=ultimate_pipeline/enrichment/osm_direction.py line=180 original_line=180 side=RIGHT
+in_reply_to=None
+BODY:
+**≡ƒƒá High ┬╖ Motorways gain counterflow lanes**
+
+When a `highway=motorway` or `highway=motorway_link` has a `lanes` tag but no explicit `oneway` tag, `parse_oneway` returns `UNKNOWN` because it recognizes only roundabouts as an implicit one-way default, so `resolve_directional_lane_counts` splits the total lanes between both directions and generates counterflow lanes.
+
+Recognize the implicit one-way default for motorways and motorway links in `parse_oneway`.
+
+<details>
+<summary>Prompt for AI agents</summary>
+
+~~~markdown
+In `ultimate_pipeline/enrichment/osm_direction.py` at lines 179-180:
+
+**Motorways gain counterflow lanes**
+
+When a `highway=motorway` or `highway=motorway_link` has a `lanes` tag but no explicit `oneway` tag, `parse_oneway` returns `UNKNOWN` because it recognizes only roundabouts as an implicit one-way default, so `resolve_directional_lane_counts` splits the total lanes between both directions and generates counterflow lanes.
+
+Recognize the implicit one-way default for motorways and motorway links in `parse_oneway`.
+~~~
+
+</details>
+------------------------------------------------------------------------------
+id=4551582316 user=sourcery-ai[bot] created=2026-11-12T14:15:31Z
+path=ultimate_pipeline/enrichment/osm_direction.py line=321 original_line=321 side=RIGHT
+in_reply_to=None
+BODY:
+**≡ƒƒá High ┬╖ One-way fallback adds counterflow**
+
+When the OSM way has a decidable one-way tag but no usable `lanes`, `lanes:forward`, or `lanes:backward` value, `resolve_directional_lane_counts` returns one lane in each direction without consulting the parsed `oneway` state, so `LaneGenerator` creates a counterflow driving lane for a one-way road with no lane-count tags.
+
+Keep the fallback state and confidence, but place the fallback lane only in the legal direction when `oneway` is decidable.
+
+<details>
+<summary>Prompt for AI agents</summary>
+
+~~~markdown
+In `ultimate_pipeline/enrichment/osm_direction.py` at lines 318-321:
+
+**One-way fallback adds counterflow**
+
+When the OSM way has a decidable one-way tag but no usable `lanes`, `lanes:forward`, or `lanes:backward` value, `resolve_directional_lane_counts` returns one lane in each direction without consulting the parsed `oneway` state, so `LaneGenerator` creates a counterflow driving lane for a one-way road with no lane-count tags.
+
+Keep the fallback state and confidence, but place the fallback lane only in the legal direction when `oneway` is decidable.
+~~~
+
+</details>
+------------------------------------------------------------------------------
+id=4551582330 user=sourcery-ai[bot] created=2026-11-12T14:15:31Z
+path=ultimate_pipeline/enrichment/osm_direction.py line=283 original_line=283 side=RIGHT
+in_reply_to=None
+BODY:
+**≡ƒƒá High ┬╖ Partial directional counts drop lanes**
+
+When a way has a total lane count and only one of `lanes:forward` or `lanes:backward`, `resolve_directional_lane_counts` treats a missing directional tag as zero, so `lanes=3` with only `lanes:forward=2` produces zero backward lanes and a conflict instead of accounting for the untagged direction. Lane generation then undercounts that carriageway.
+
+Use the total to resolve a missing directional count when that is unambiguous; otherwise flag the result as incomplete rather than treating the missing tag as zero.
+
+<details>
+<summary>Prompt for AI agents</summary>
+
+~~~markdown
+In `ultimate_pipeline/enrichment/osm_direction.py` at lines 275-283:
+
+**Partial directional counts drop lanes**
+
+When a way has a total lane count and only one of `lanes:forward` or `lanes:backward`, `resolve_directional_lane_counts` treats a missing directional tag as zero, so `lanes=3` with only `lanes:forward=2` produces zero backward lanes and a conflict instead of accounting for the untagged direction. Lane generation then undercounts that carriageway.
+
+Use the total to resolve a missing directional count when that is unambiguous; otherwise flag the result as incomplete rather than treating the missing tag as zero.
+~~~
+
+</details>
+------------------------------------------------------------------------------
+id=4551582349 user=sourcery-ai[bot] created=2026-11-12T14:15:31Z
+path=ultimate_pipeline/pipeline_stages/stage_07_lanes.py line=70 original_line=70 side=RIGHT
+in_reply_to=None
+BODY:
+**≡ƒƒá High ┬╖ Opposite matches control lane direction**
+
+When multiple equally eligible OSM ways with identical shared tags match one XODR road in opposite node-order directions, `build_metadata_associations` coalesces the ways without comparing orientation and selects one by class, confidence, and way ID. The selected direction then drives lane generation, turns, and cycleway sides even though another equally eligible way describes the opposite direction.
+
+Detect orientation disagreement among coalesced candidates and avoid selecting an authoritative direction when equally eligible matches oppose one another.
+
+<details>
+<summary>Prompt for AI agents</summary>
+
+~~~markdown
+In `ultimate_pipeline/pipeline_stages/stage_07_lanes.py` at lines 69-70:
+
+**Opposite matches control lane direction**
+
+When multiple equally eligible OSM ways with identical shared tags match one XODR road in opposite node-order directions, `build_metadata_associations` coalesces the ways without comparing orientation and selects one by class, confidence, and way ID. The selected direction then drives lane generation, turns, and cycleway sides even though another equally eligible way describes the opposite direction.
+
+Detect orientation disagreement among coalesced candidates and avoid selecting an authoritative direction when equally eligible matches oppose one another.
+~~~
+
+</details>
+------------------------------------------------------------------------------
+id=4551582370 user=sourcery-ai[bot] created=2026-11-12T14:15:31Z
+path=ultimate_pipeline/pipeline_stages/stage_07_lanes.py line=77 original_line=77 side=RIGHT
+in_reply_to=None
+BODY:
+**≡ƒƒí Medium ┬╖ Ambiguous matches disappear from coverage**
+
+When the correspondence scan contains ambiguous matches, `_build_structural_osm_metadata` filters out non-EXACT/HIGH associations before `directional_coverage_report` sees them, so the report omits their ambiguous count and can report zero matched roads when all matches are ambiguous.
+
+Pass ambiguous correspondence results into the coverage report so it can count them instead of filtering them out.
+
+<details>
+<summary>Prompt for AI agents</summary>
+
+~~~markdown
+In `ultimate_pipeline/pipeline_stages/stage_07_lanes.py` at lines 66-77:
+
+**Ambiguous matches disappear from coverage**
+
+When the correspondence scan contains ambiguous matches, `_build_structural_osm_metadata` filters out non-EXACT/HIGH associations before `directional_coverage_report` sees them, so the report omits their ambiguous count and can report zero matched roads when all matches are ambiguous.
+
+Pass ambiguous correspondence results into the coverage report so it can count them instead of filtering them out.
+~~~
+
+</details>
+------------------------------------------------------------------------------
+id=4551582385 user=sourcery-ai[bot] created=2026-11-12T14:15:31Z
+path=ultimate_pipeline/pipeline_stages/stage_07_lanes.py line=77 original_line=77 side=RIGHT
+in_reply_to=None
+BODY:
+**≡ƒƒí Medium ┬╖ Missing OSM data has no blocked coverage**
+
+When the configured OSM path is missing, invalid, or unavailable, `_build_structural_osm_metadata` returns before calling `directional_coverage_report`, so the stage artifact omits `directional_coverage` and callers see `NOT_RUN` instead of the promised `BLOCKED_INPUT` status.
+
+Emit a directional coverage report with `BLOCKED_INPUT` when the OSM source is unavailable.
+
+Also at `ultimate_pipeline/pipeline_stages/stage_07_lanes.py:78`, `ultimate_pipeline/pipeline_stages/stage_07_lanes.py:85`.
+
+<details>
+<summary>Prompt for AI agents</summary>
+
+~~~markdown
+In `ultimate_pipeline/pipeline_stages/stage_07_lanes.py` at line 77:
+
+**Missing OSM data has no blocked coverage**
+
+When the configured OSM path is missing, invalid, or unavailable, `_build_structural_osm_metadata` returns before calling `directional_coverage_report`, so the stage artifact omits `directional_coverage` and callers see `NOT_RUN` instead of the promised `BLOCKED_INPUT` status.
+
+Emit a directional coverage report with `BLOCKED_INPUT` when the OSM source is unavailable.
+
+Also at `ultimate_pipeline/pipeline_stages/stage_07_lanes.py:78`, `ultimate_pipeline/pipeline_stages/stage_07_lanes.py:85`.
+~~~
+
+</details>
+------------------------------------------------------------------------------
+id=4551582396 user=sourcery-ai[bot] created=2026-11-12T14:15:31Z
+path=ultimate_pipeline/enrichment/osm_direction.py line=502 original_line=502 side=RIGHT
+in_reply_to=None
+BODY:
+**≡ƒƒí Medium ┬╖ Unverified matches count as authoritative**
+
+When a coverage input has a known orientation but no match class, `directional_coverage_report` treats an absent or empty match class as non-ambiguous and can count the road as authoritative, allowing coverage to return `PASS` without evidence of an EXACT or HIGH match.
+
+Require an explicitly established EXACT or HIGH match class before counting a road as authoritative.
+
+<details>
+<summary>Prompt for AI agents</summary>
+
+~~~markdown
+In `ultimate_pipeline/enrichment/osm_direction.py` at line 502:
+
+**Unverified matches count as authoritative**
+
+When a coverage input has a known orientation but no match class, `directional_coverage_report` treats an absent or empty match class as non-ambiguous and can count the road as authoritative, allowing coverage to return `PASS` without evidence of an EXACT or HIGH match.
+
+Require an explicitly established EXACT or HIGH match class before counting a road as authoritative.
+~~~
+
+</details>
+------------------------------------------------------------------------------
+id=4551582407 user=sourcery-ai[bot] created=2026-11-12T14:15:31Z
+path=ultimate_pipeline/enrichment/osm_direction.py line=522 original_line=522 side=RIGHT
+in_reply_to=None
+BODY:
+**≡ƒƒí Medium ┬╖ Fallback roads pass coverage**
+
+When at least one matched, oriented road has no lane tags or an undecidable oneway, `directional_coverage_report` increments `authoritative` based on match class, known orientation, and absence of a total-count conflict, but ignores `resolved.is_authoritative`. A road with only fallback counts or an unsupported oneway therefore contributes to a release-required `PASS`, even though its lane resolution is incomplete or unsupported.
+
+Require `resolved.is_authoritative` before incrementing the coverage report's authoritative count.
+
+<details>
+<summary>Prompt for AI agents</summary>
+
+~~~markdown
+In `ultimate_pipeline/enrichment/osm_direction.py` at lines 519-522:
+
+**Fallback roads pass coverage**
+
+When at least one matched, oriented road has no lane tags or an undecidable oneway, `directional_coverage_report` increments `authoritative` based on match class, known orientation, and absence of a total-count conflict, but ignores `resolved.is_authoritative`. A road with only fallback counts or an unsupported oneway therefore contributes to a release-required `PASS`, even though its lane resolution is incomplete or unsupported.
+
+Require `resolved.is_authoritative` before incrementing the coverage report's authoritative count.
+~~~
+
+</details>
+------------------------------------------------------------------------------
+id=4551582421 user=sourcery-ai[bot] created=2026-11-12T14:15:31Z
+path=ultimate_pipeline/enrichment/osm_direction.py line=390 original_line=390 side=RIGHT
+in_reply_to=None
+BODY:
+**≡ƒƒí Medium ┬╖ Zero-confidence matches are trusted**
+
+When an otherwise valid EXACT/HIGH association has zero or otherwise unusable confidence, `RoadOSMDirectionalAssociation.is_trustworthy` checks match class, orientation, and state but ignores confidence, so callers accept an association with no usable confidence evidence as trustworthy.
+
+Include a valid, usable confidence check in `is_trustworthy`.
+
+Also at `ultimate_pipeline/enrichment/osm_direction.py:423-435`.
+
+<details>
+<summary>Prompt for AI agents</summary>
+
+~~~markdown
+In `ultimate_pipeline/enrichment/osm_direction.py` at lines 388-390:
+
+**Zero-confidence matches are trusted**
+
+When an otherwise valid EXACT/HIGH association has zero or otherwise unusable confidence, `RoadOSMDirectionalAssociation.is_trustworthy` checks match class, orientation, and state but ignores confidence, so callers accept an association with no usable confidence evidence as trustworthy.
+
+Include a valid, usable confidence check in `is_trustworthy`.
+
+Also at `ultimate_pipeline/enrichment/osm_direction.py:423-435`.
+~~~
+
+</details>
+------------------------------------------------------------------------------
+id=4551582442 user=sourcery-ai[bot] created=2026-11-12T14:15:31Z
+path=ultimate_pipeline/pipeline_stages/stage_07_lanes.py line=75 original_line=75 side=RIGHT
+in_reply_to=None
+BODY:
+**≡ƒƒí Medium ┬╖ Per-road contract never reaches geometry**
+
+When the production stage builds associations for lane geometry, the new stage hand-off constructs a flat tag mapping with four reserved keys, but never calls `build_directional_association` or passes its versioned record to lane generation. Thus the production hand-off does not carry the claimed per-road contract fields such as schema, source hash, span, contact points, or association state.
+
+Integrate the versioned association record into the correspondence-to-lane-stage hand-off, or narrow the contract claim to the fields actually propagated.
+
+<details>
+<summary>Prompt for AI agents</summary>
+
+~~~markdown
+In `ultimate_pipeline/pipeline_stages/stage_07_lanes.py` at lines 68-75:
+
+**Per-road contract never reaches geometry**
+
+When the production stage builds associations for lane geometry, the new stage hand-off constructs a flat tag mapping with four reserved keys, but never calls `build_directional_association` or passes its versioned record to lane generation. Thus the production hand-off does not carry the claimed per-road contract fields such as schema, source hash, span, contact points, or association state.
+
+Integrate the versioned association record into the correspondence-to-lane-stage hand-off, or narrow the contract claim to the fields actually propagated.
+~~~
+
+</details>
+------------------------------------------------------------------------------
+id=4551582458 user=sourcery-ai[bot] created=2026-11-12T14:15:31Z
+path=ultimate_pipeline/enrichment/osm_direction.py line=593 original_line=593 side=RIGHT
+in_reply_to=None
+BODY:
+**≡ƒƒí Medium ┬╖ Interrupted writes corrupt contract artifact**
+
+When the writer is interrupted during the write, or multiple jobs write to the same destination concurrently, `write_direction_contract` writes directly to the destination, so a process crash after truncation leaves an incomplete JSON file; a later reader cannot load the contract. Concurrent callers targeting the same path also have no coordination or atomic replacement, so overlapping writes can leave a corrupt artifact.
+
+Write to a unique temporary file in the destination directory, flush it, and atomically replace the destination when complete; coordinate callers if the same path can be written concurrently.
+
+<details>
+<summary>Prompt for AI agents</summary>
+
+~~~markdown
+In `ultimate_pipeline/enrichment/osm_direction.py` at lines 591-593:
+
+**Interrupted writes corrupt contract artifact**
+
+When the writer is interrupted during the write, or multiple jobs write to the same destination concurrently, `write_direction_contract` writes directly to the destination, so a process crash after truncation leaves an incomplete JSON file; a later reader cannot load the contract. Concurrent callers targeting the same path also have no coordination or atomic replacement, so overlapping writes can leave a corrupt artifact.
+
+Write to a unique temporary file in the destination directory, flush it, and atomically replace the destination when complete; coordinate callers if the same path can be written concurrently.
+~~~
+
+</details>
+------------------------------------------------------------------------------
+id=4551582473 user=sourcery-ai[bot] created=2026-11-12T14:15:31Z
+path=ultimate_pipeline/enrichment/lane_generator.py line=502 original_line=502 side=RIGHT
+in_reply_to=None
+BODY:
+**≡ƒƒí Medium ┬╖ Retries leave cycle lanes on both sides**
+
+When a road already has a biking lane from an earlier generation or input, and a later run maps its OSM cycleway side to the opposite XODR side, `_apply_cycle_lane_geometry` checks only the newly mapped target side for an existing biking lane. After a previous run created the lane on the old side, a retry with reversed orientation adds one on the new side without removing or remapping the old one, so the road ends up with a phantom cycle lane on the opposite side.
+
+Before adding a mapped cycle lane, reconcile existing biking lanes against the authoritative mapped side, moving or replacing stale generated lanes while preserving unrelated imported lanes.
+
+<details>
+<summary>Prompt for AI agents</summary>
+
+~~~markdown
+In `ultimate_pipeline/enrichment/lane_generator.py` at lines 497-502:
+
+**Retries leave cycle lanes on both sides**
+
+When a road already has a biking lane from an earlier generation or input, and a later run maps its OSM cycleway side to the opposite XODR side, `_apply_cycle_lane_geometry` checks only the newly mapped target side for an existing biking lane. After a previous run created the lane on the old side, a retry with reversed orientation adds one on the new side without removing or remapping the old one, so the road ends up with a phantom cycle lane on the opposite side.
+
+Before adding a mapped cycle lane, reconcile existing biking lanes against the authoritative mapped side, moving or replacing stale generated lanes while preserving unrelated imported lanes.
+~~~
+
+</details>
+------------------------------------------------------------------------------
+id=4551582490 user=sourcery-ai[bot] created=2026-11-12T14:15:31Z
+path=tests/unit/test_v103_o1_osm_direction.py line=300 original_line=300 side=RIGHT
+in_reply_to=None
+BODY:
+**≡ƒƒí Medium ┬╖ Reversed matches can be forced forward**
+
+When the matched OSM way runs opposite to the XODR reference, when the matched OSM way runs opposite to the XODR reference, `_build_structural_osm_metadata` can hard-code `forward` instead of preserving the associationΓÇÖs direction, and this test still passes because its fixture is aligned and it only asserts `forward`.
+
+Exercise a reversed correspondence through `_build_structural_osm_metadata` and assert that the reserved direction remains `reverse`.
+
+<details>
+<summary>Prompt for AI agents</summary>
+
+~~~markdown
+In `tests/unit/test_v103_o1_osm_direction.py` at line 300:
+
+**Reversed matches can be forced forward**
+
+When the matched OSM way runs opposite to the XODR reference, when the matched OSM way runs opposite to the XODR reference, `_build_structural_osm_metadata` can hard-code `forward` instead of preserving the associationΓÇÖs direction, and this test still passes because its fixture is aligned and it only asserts `forward`.
+
+Exercise a reversed correspondence through `_build_structural_osm_metadata` and assert that the reserved direction remains `reverse`.
+~~~
+
+</details>
+------------------------------------------------------------------------------
+id=4551582504 user=sourcery-ai[bot] created=2026-11-12T14:15:31Z
+path=ultimate_pipeline/pipeline_stages/stage_07_lanes.py line=74 original_line=74 side=RIGHT
+in_reply_to=None
+BODY:
+**≡ƒƒí Medium ┬╖ Coverage loses source identity**
+
+When the stage emits directional coverage for an available OSM file, `_build_structural_osm_metadata` does not compute or pass the OSM source hash, so the emitted directional coverage report uses the empty default `source_sha256`. Consumers cannot establish which OSM input the reported directional coverage describes.
+
+Compute a SHA-256 for the OSM source and include it in the per-road association metadata and the coverage report.
+
+Also at `ultimate_pipeline/pipeline_stages/stage_07_lanes.py:77-82`.
+
+<details>
+<summary>Prompt for AI agents</summary>
+
+~~~markdown
+In `ultimate_pipeline/pipeline_stages/stage_07_lanes.py` at lines 69-74:
+
+**Coverage loses source identity**
+
+When the stage emits directional coverage for an available OSM file, `_build_structural_osm_metadata` does not compute or pass the OSM source hash, so the emitted directional coverage report uses the empty default `source_sha256`. Consumers cannot establish which OSM input the reported directional coverage describes.
+
+Compute a SHA-256 for the OSM source and include it in the per-road association metadata and the coverage report.
+
+Also at `ultimate_pipeline/pipeline_stages/stage_07_lanes.py:77-82`.
+~~~
+
+</details>
+------------------------------------------------------------------------------
+id=4551601346 user=sourcery-ai[bot] created=2026-11-12T14:17:09Z
+path=reports/v103/o1/diagnose_correspondence_frame.py line=13 original_line=13 side=RIGHT
+in_reply_to=None
+BODY:
+**security (python.lang.security.use-defused-xml-parse):** The native Python `xml` library is vulnerable to XML External Entity (XXE) attacks.  These attacks can leak confidential data and "XML bombs" can cause denial of service. Do not use this library to parse untrusted input. Instead  the Python documentation recommends using `defusedxml`.
+
+```suggestion
+root = defusedxml.etree.ElementTree.parse(str(XODR)).getroot()
+```
+
+*Source: opengrep*
+------------------------------------------------------------------------------
+id=4551601397 user=sourcery-ai[bot] created=2026-11-12T14:17:09Z
+path=reports/v103/o1/run_realmap_coverage.py line=123 original_line=123 side=RIGHT
+in_reply_to=None
+BODY:
+**security (python.lang.security.use-defused-xml-parse):** The native Python `xml` library is vulnerable to XML External Entity (XXE) attacks.  These attacks can leak confidential data and "XML bombs" can cause denial of service. Do not use this library to parse untrusted input. Instead  the Python documentation recommends using `defusedxml`.
+
+```suggestion
+    root = defusedxml.etree.ElementTree.parse(str(xodr_path)).getroot()
+```
+
+*Source: opengrep*
+
+==============================================================================
+PR #39 ΓÇö REVIEWS: 3
+==============================================================================
+id=5875896169 user=chatgpt-codex-connector[bot] state=COMMENTED submitted=2026-11-12T14:13:14Z
+BODY:
+<!-- codex-review-receipt:v1 -->
+
+
+### ≡ƒÆí Codex Review
+
+Here are some automated review suggestions for this pull request.
+
+**Reviewed commit:** `f14dd997a1`
+    
+
+<details> <summary>Γä╣∩╕Å About Codex in GitHub</summary>
+<br/>
+
+[Your team has set up Codex to review pull requests in this repo](https://chatgpt.com/codex/cloud/settings/general). Reviews are triggered when you
+- Open a pull request for review
+- Mark a draft as ready
+- Comment "@codex review".
+
+If Codex has suggestions, it will comment; otherwise it will react with ≡ƒæì.
+
+
+
+
+Codex can also answer questions or update the PR. Try commenting "@codex address that feedback".
+            
+</details>
+----------------------------------------
+id=5875930047 user=sourcery-ai[bot] state=COMMENTED submitted=2026-11-12T14:15:30Z
+BODY:
+Hey - I've found 18 issues
+
+<details>
+<summary>Prompt for AI Agents</summary>
+
+~~~markdown
+Please address the comments from this code review:
+
+## Individual Comments
+
+### Comment 1
+<location path="ultimate_pipeline/enrichment/osm_direction.py" line_range="431" />
+<code_context>
++    state = DirectionalState.OK
++    extra = list(notes)
++    if match_class not in {"EXACT", "HIGH"}:
++        state = DirectionalState.AMBIGUOUS
++        extra.append("match_class_not_authoritative")
++    if orientation == ORIENTATION_UNKNOWN:
+</code_context>
+<issue_to_address>
+**Ambiguous matches raise an exception**
+
+When the match class is not EXACT or HIGH, `build_directional_association` accesses the undefined `DirectionalState.AMBIGUOUS` member and raises `AttributeError` instead of returning an ambiguous association.
+
+Define and use the ambiguous state, or otherwise return an explicit ambiguous association without accessing an undefined enum member.
+</issue_to_address>
+
+### Comment 2
+<location path="ultimate_pipeline/enrichment/osm_direction.py" line_range="339-341" />
+<code_context>
++    elif orientation == ORIENTATION_FORWARD:
++        orientation = ORIENTATION_FORWARD
++    else:
++        orientation = ORIENTATION_UNKNOWN
++        if source != "fallback":
++            notes.append("orientation_unknown")
++
++    return DirectionalLaneCounts(
+</code_context>
+<issue_to_address>
+**Unknown orientation assigns lanes arbitrarily**
+
+When an EXACT/HIGH association has unknown OSM-to-XODR orientation, `resolve_directional_lane_counts` leaves OSM-relative counts unswapped and retains an authoritative state and confidence; remapping also treats unknown orientation as aligned. `driving_lane_counts` and lane generation therefore place lanes on an arbitrary XODR carriageway, while `is_authoritative` still reports the resolution as authoritative.
+
+Mark unknown orientation non-authoritative and prevent lane counts, turn patterns, and cycleway sides from being applied as aligned until the orientation is known.
+
+Also at `ultimate_pipeline/enrichment/lane_generator.py:256-257`, `ultimate_pipeline/enrichment/lane_generator.py:492-495`, `ultimate_pipeline/enrichment/osm_direction.py:218-220`, `ultimate_pipeline/enrichment/lane_width_policy.py:221-225`.
+</issue_to_address>
+
+### Comment 3
+<location path="ultimate_pipeline/enrichment/osm_direction.py" line_range="287" />
+<code_context>
++            )
++    elif total_tag is not None:
++        total = int(total_tag)
++        if oneway is OnewayState.FORWARD:
++            forward, backward = total, 0
++            source = "osm:oneway+lanes"
+</code_context>
+<issue_to_address>
+**Conditional one-way lanes appear authoritative**
+
+When a plain `oneway` tag and a `oneway:conditional` rule specify different permitted directions, `parse_oneway` and `resolve_directional_lane_counts` use the plain value without applying the conditional rule, then report static authoritative counts. Lane generation therefore assigns lanes to a direction that is wrong during the conditional period.
+
+Account for `oneway:conditional` when resolving direction and avoid reporting static authoritative counts when the condition changes the permitted direction.
+
+Also at `ultimate_pipeline/enrichment/osm_direction.py:175-181`, `ultimate_pipeline/enrichment/osm_direction.py:269`, `ultimate_pipeline/enrichment/osm_direction.py:274-285`, `ultimate_pipeline/enrichment/osm_direction.py:313-314`.
+</issue_to_address>
+
+### Comment 4
+<location path="ultimate_pipeline/pipeline_stages/stage_07_lanes.py" line_range="52" />
+<code_context>
++            directional_coverage_report,
++        )
+
+         source_ways = extract_structural_osm_lane_metadata_ways(osm_path)
+         positioned_ways = project_positioned_osm_metadata_ways(source_ways, root)
+         associations, report = build_metadata_associations(positioned_ways, root)
+</code_context>
+<issue_to_address>
+**Roundabouts gain counterflow lanes**
+
+When a lane-counted OSM roundabout has no explicit `oneway` tag, `extract_structural_osm_lane_metadata_ways` drops `junction` before `parse_oneway` receives the tags, so the roundabout default is missed and its total lanes are split bidirectionally. The extractor also drops `oneway:conditional`, preventing the resolver from seeing that condition.
+
+Preserve `junction` and `oneway:conditional` through structural-tag extraction and pass them to the directional lane resolver.
+
+Also at `ultimate_pipeline/enrichment/osm_direction.py:177-180`, `ultimate_pipeline/enrichment/osm_direction.py:269`, `ultimate_pipeline/pipeline_stages/stage_07_lanes.py:68-75`.
+</issue_to_address>
+
+### Comment 5
+<location path="ultimate_pipeline/enrichment/osm_direction.py" line_range="179-180" />
+<code_context>
++    if raw is None:
++        junction = (_tag(tags, "junction") or "").strip().lower()
++        if junction == "roundabout":
++            return OnewayState.FORWARD
++        return OnewayState.UNKNOWN
++
++    value = raw.strip().lower()
+</code_context>
+<issue_to_address>
+**Motorways gain counterflow lanes**
+
+When a `highway=motorway` or `highway=motorway_link` has a `lanes` tag but no explicit `oneway` tag, `parse_oneway` returns `UNKNOWN` because it recognizes only roundabouts as an implicit one-way default, so `resolve_directional_lane_counts` splits the total lanes between both directions and generates counterflow lanes.
+
+Recognize the implicit one-way default for motorways and motorway links in `parse_oneway`.
+</issue_to_address>
+
+### Comment 6
+<location path="ultimate_pipeline/enrichment/osm_direction.py" line_range="318-321" />
+<code_context>
++            if oneway is OnewayState.UNKNOWN:
++                notes.append("oneway_unknown")
++    else:
++        forward, backward = 1, 1
++        source = "fallback"
++        confidence = 0.0
++        state = DirectionalState.INCOMPLETE
++        notes.append("no_lane_tags")
++
+</code_context>
+<issue_to_address>
+**One-way fallback adds counterflow**
+
+When the OSM way has a decidable one-way tag but no usable `lanes`, `lanes:forward`, or `lanes:backward` value, `resolve_directional_lane_counts` returns one lane in each direction without consulting the parsed `oneway` state, so `LaneGenerator` creates a counterflow driving lane for a one-way road with no lane-count tags.
+
+Keep the fallback state and confidence, but place the fallback lane only in the legal direction when `oneway` is decidable.
+</issue_to_address>
+
+### Comment 7
+<location path="ultimate_pipeline/enrichment/osm_direction.py" line_range="275-283" />
+<code_context>
++    notes: list[str] = []
++
++    if forward_tag is not None or backward_tag is not None:
++        forward = int(forward_tag or 0)
++        backward = int(backward_tag or 0)
++        source = "osm:lanes:forward+backward"
++        confidence = 1.0
++        state = DirectionalState.OK
++        if total_tag is not None and int(total_tag) != forward + backward:
++            state = DirectionalState.CONFLICTING
++            notes.append(
++                f"lanes_total_mismatch:{total_tag}!={forward + backward}"
++            )
++    elif total_tag is not None:
+</code_context>
+<issue_to_address>
+**Partial directional counts drop lanes**
+
+When a way has a total lane count and only one of `lanes:forward` or `lanes:backward`, `resolve_directional_lane_counts` treats a missing directional tag as zero, so `lanes=3` with only `lanes:forward=2` produces zero backward lanes and a conflict instead of accounting for the untagged direction. Lane generation then undercounts that carriageway.
+
+Use the total to resolve a missing directional count when that is unambiguous; otherwise flag the result as incomplete rather than treating the missing tag as zero.
+</issue_to_address>
+
+### Comment 8
+<location path="ultimate_pipeline/pipeline_stages/stage_07_lanes.py" line_range="69-70" />
+<code_context>
++            if association.get("class") not in {"EXACT", "HIGH"}:
++                continue
++            tags = dict(association.get("metadata") or {})
++            tags[DIRECTION_KEY] = str(
++                association.get("osm_direction") or ORIENTATION_UNKNOWN
++            )
++            tags[OSM_WAY_ID_KEY] = str(association.get("osm_way_id") or "")
+</code_context>
+<issue_to_address>
+**Opposite matches control lane direction**
+
+When multiple equally eligible OSM ways with identical shared tags match one XODR road in opposite node-order directions, `build_metadata_associations` coalesces the ways without comparing orientation and selects one by class, confidence, and way ID. The selected direction then drives lane generation, turns, and cycleway sides even though another equally eligible way describes the opposite direction.
+
+Detect orientation disagreement among coalesced candidates and avoid selecting an authoritative direction when equally eligible matches oppose one another.
+</issue_to_address>
+
+### Comment 9
+<location path="ultimate_pipeline/pipeline_stages/stage_07_lanes.py" line_range="66-77" />
+<code_context>
++        # of the tag mapping keeps working unchanged.
++        structural_osm_meta = {}
++        for road_id, association in sorted(associations.items()):
++            if association.get("class") not in {"EXACT", "HIGH"}:
++                continue
++            tags = dict(association.get("metadata") or {})
++            tags[DIRECTION_KEY] = str(
++                association.get("osm_direction") or ORIENTATION_UNKNOWN
++            )
++            tags[OSM_WAY_ID_KEY] = str(association.get("osm_way_id") or "")
++            tags[MATCH_CLASS_KEY] = str(association.get("class") or "")
++            tags[MATCH_CONFIDENCE_KEY] = str(association.get("confidence"))
++            structural_osm_meta[road_id] = tags
++
++        coverage = directional_coverage_report(
++            structural_osm_meta,
++            source_available=True,
+</code_context>
+<issue_to_address>
+**Ambiguous matches disappear from coverage**
+
+When the correspondence scan contains ambiguous matches, `_build_structural_osm_metadata` filters out non-EXACT/HIGH associations before `directional_coverage_report` sees them, so the report omits their ambiguous count and can report zero matched roads when all matches are ambiguous.
+
+Pass ambiguous correspondence results into the coverage report so it can count them instead of filtering them out.
+</issue_to_address>
+
+### Comment 10
+<location path="ultimate_pipeline/pipeline_stages/stage_07_lanes.py" line_range="77" />
+<code_context>
++            tags[MATCH_CONFIDENCE_KEY] = str(association.get("confidence"))
++            structural_osm_meta[road_id] = tags
++
++        coverage = directional_coverage_report(
++            structural_osm_meta,
++            source_available=True,
+</code_context>
+<issue_to_address>
+**Missing OSM data has no blocked coverage**
+
+When the configured OSM path is missing, invalid, or unavailable, `_build_structural_osm_metadata` returns before calling `directional_coverage_report`, so the stage artifact omits `directional_coverage` and callers see `NOT_RUN` instead of the promised `BLOCKED_INPUT` status.
+
+Emit a directional coverage report with `BLOCKED_INPUT` when the OSM source is unavailable.
+
+Also at `ultimate_pipeline/pipeline_stages/stage_07_lanes.py:78`, `ultimate_pipeline/pipeline_stages/stage_07_lanes.py:85`.
+</issue_to_address>
+
+### Comment 11
+<location path="ultimate_pipeline/enrichment/osm_direction.py" line_range="502" />
+<code_context>
++            not_assessable += 1
++
++        match_class = str(meta.get(MATCH_CLASS_KEY) or "").strip().upper()
++        road_ambiguous = bool(match_class) and match_class not in {"EXACT", "HIGH"}
++        if road_ambiguous:
++            ambiguous += 1
+</code_context>
+<issue_to_address>
+**Unverified matches count as authoritative**
+
+When a coverage input has a known orientation but no match class, `directional_coverage_report` treats an absent or empty match class as non-ambiguous and can count the road as authoritative, allowing coverage to return `PASS` without evidence of an EXACT or HIGH match.
+
+Require an explicitly established EXACT or HIGH match class before counting a road as authoritative.
+</issue_to_address>
+
+### Comment 12
+<location path="ultimate_pipeline/enrichment/osm_direction.py" line_range="519-522" />
+<code_context>
++        # is trustworthy, its orientation is known, and the source does not
++        # contradict itself.
++        if (
++            not road_ambiguous
++            and orientation != ORIENTATION_UNKNOWN
++            and not road_conflicting
++        ):
++            authoritative += 1
++
+</code_context>
+<issue_to_address>
+**Fallback roads pass coverage**
+
+When at least one matched, oriented road has no lane tags or an undecidable oneway, `directional_coverage_report` increments `authoritative` based on match class, known orientation, and absence of a total-count conflict, but ignores `resolved.is_authoritative`. A road with only fallback counts or an unsupported oneway therefore contributes to a release-required `PASS`, even though its lane resolution is incomplete or unsupported.
+
+Require `resolved.is_authoritative` before incrementing the coverage report's authoritative count.
+</issue_to_address>
+
+### Comment 13
+<location path="ultimate_pipeline/enrichment/osm_direction.py" line_range="388-390" />
+<code_context>
++    def is_trustworthy(self) -> bool:
++        """True when class, confidence and orientation are all usable."""
++        return (
++            self.match_class in {"EXACT", "HIGH"}
++            and self.is_oriented
++            and self.state == DirectionalState.OK.value
++        )
++
+</code_context>
+<issue_to_address>
+**Zero-confidence matches are trusted**
+
+When an otherwise valid EXACT/HIGH association has zero or otherwise unusable confidence, `RoadOSMDirectionalAssociation.is_trustworthy` checks match class, orientation, and state but ignores confidence, so callers accept an association with no usable confidence evidence as trustworthy.
+
+Include a valid, usable confidence check in `is_trustworthy`.
+
+Also at `ultimate_pipeline/enrichment/osm_direction.py:423-435`.
+</issue_to_address>
+
+### Comment 14
+<location path="ultimate_pipeline/pipeline_stages/stage_07_lanes.py" line_range="68-75" />
+<code_context>
++        for road_id, association in sorted(associations.items()):
++            if association.get("class") not in {"EXACT", "HIGH"}:
++                continue
++            tags = dict(association.get("metadata") or {})
++            tags[DIRECTION_KEY] = str(
++                association.get("osm_direction") or ORIENTATION_UNKNOWN
++            )
++            tags[OSM_WAY_ID_KEY] = str(association.get("osm_way_id") or "")
++            tags[MATCH_CLASS_KEY] = str(association.get("class") or "")
++            tags[MATCH_CONFIDENCE_KEY] = str(association.get("confidence"))
++            structural_osm_meta[road_id] = tags
++
++        coverage = directional_coverage_report(
+</code_context>
+<issue_to_address>
+**Per-road contract never reaches geometry**
+
+When the production stage builds associations for lane geometry, the new stage hand-off constructs a flat tag mapping with four reserved keys, but never calls `build_directional_association` or passes its versioned record to lane generation. Thus the production hand-off does not carry the claimed per-road contract fields such as schema, source hash, span, contact points, or association state.
+
+Integrate the versioned association record into the correspondence-to-lane-stage hand-off, or narrow the contract claim to the fields actually propagated.
+</issue_to_address>
+
+### Comment 15
+<location path="ultimate_pipeline/enrichment/osm_direction.py" line_range="591-593" />
+<code_context>
++    target = Path(out_path)
++    target.parent.mkdir(parents=True, exist_ok=True)
++    target.write_text(
++        json.dumps(payload, indent=2, sort_keys=True, ensure_ascii=True) + "\n",
++        encoding="utf-8",
++    )
++    return str(target)
+</code_context>
+<issue_to_address>
+**Interrupted writes corrupt contract artifact**
+
+When the writer is interrupted during the write, or multiple jobs write to the same destination concurrently, `write_direction_contract` writes directly to the destination, so a process crash after truncation leaves an incomplete JSON file; a later reader cannot load the contract. Concurrent callers targeting the same path also have no coordination or atomic replacement, so overlapping writes can leave a corrupt artifact.
+
+Write to a unique temporary file in the destination directory, flush it, and atomically replace the destination when complete; coordinate callers if the same path can be written concurrently.
+</issue_to_address>
+
+### Comment 16
+<location path="ultimate_pipeline/enrichment/lane_generator.py" line_range="497-502" />
+<code_context>
+         for side in ("left", "right"):
+             if is_dedicated(meta.get(f"cycleway:{side}")):
+-                sides.append((side, f"osm:cycleway:{side}", 1.0))
++                xodr_side = side
++                source = f"osm:cycleway:{side}"
++                if reversed_reference:
++                    xodr_side = "right" if side == "left" else "left"
++                    source = f"{source}@xodr-reverse"
++                sides.append((xodr_side, source, 1.0))
+         if not sides and is_dedicated(meta.get("cycleway")):
+             # The generic OSM tag confirms a facility but not a side.  Keep
+</code_context>
+<issue_to_address>
+**Retries leave cycle lanes on both sides**
+
+When a road already has a biking lane from an earlier generation or input, and a later run maps its OSM cycleway side to the opposite XODR side, `_apply_cycle_lane_geometry` checks only the newly mapped target side for an existing biking lane. After a previous run created the lane on the old side, a retry with reversed orientation adds one on the new side without removing or remapping the old one, so the road ends up with a phantom cycle lane on the opposite side.
+
+Before adding a mapped cycle lane, reconcile existing biking lanes against the authoritative mapped side, moving or replacing stale generated lanes while preserving unrelated imported lanes.
+</issue_to_address>
+
+### Comment 17
+<location path="tests/unit/test_v103_o1_osm_direction.py" line_range="300" />
+<code_context>
++
++    metadata, report = _build_structural_osm_metadata(root, str(osm_path))
++
++    assert metadata["42"][DIRECTION_KEY] == "forward"
++    assert metadata["42"][MATCH_CLASS_KEY] in {"EXACT", "HIGH"}
++    # The raw OSM tags are preserved verbatim.
+</code_context>
+<issue_to_address>
+**Reversed matches can be forced forward**
+
+When the matched OSM way runs opposite to the XODR reference, when the matched OSM way runs opposite to the XODR reference, `_build_structural_osm_metadata` can hard-code `forward` instead of preserving the associationΓÇÖs direction, and this test still passes because its fixture is aligned and it only asserts `forward`.
+
+Exercise a reversed correspondence through `_build_structural_osm_metadata` and assert that the reserved direction remains `reverse`.
+</issue_to_address>
+
+### Comment 18
+<location path="ultimate_pipeline/pipeline_stages/stage_07_lanes.py" line_range="69-74" />
+<code_context>
++            if association.get("class") not in {"EXACT", "HIGH"}:
++                continue
++            tags = dict(association.get("metadata") or {})
++            tags[DIRECTION_KEY] = str(
++                association.get("osm_direction") or ORIENTATION_UNKNOWN
++            )
++            tags[OSM_WAY_ID_KEY] = str(association.get("osm_way_id") or "")
++            tags[MATCH_CLASS_KEY] = str(association.get("class") or "")
++            tags[MATCH_CONFIDENCE_KEY] = str(association.get("confidence"))
++            structural_osm_meta[road_id] = tags
++
+</code_context>
+<issue_to_address>
+**Coverage loses source identity**
+
+When the stage emits directional coverage for an available OSM file, `_build_structural_osm_metadata` does not compute or pass the OSM source hash, so the emitted directional coverage report uses the empty default `source_sha256`. Consumers cannot establish which OSM input the reported directional coverage describes.
+
+Compute a SHA-256 for the OSM source and include it in the per-road association metadata and the coverage report.
+
+Also at `ultimate_pipeline/pipeline_stages/stage_07_lanes.py:77-82`.
+</issue_to_address>
+~~~
+
+</details>
+
+### Sourcery assessment
+
+**Needs a human reviewer.** 18 findings to address first, and a conditional or reversible oneway can produce an unsupported lane split while the coverage report still counts the road as authoritative, because it checks match class and orientation but not the resolution state. That can emit misleading lane geometry and coverage results; the generated outputs are bounded and can be corrected by rerunning after a fix.
+
+Blocking findings: `ultimate_pipeline/enrichment/osm_direction.py:431`, `ultimate_pipeline/enrichment/osm_direction.py:341`, `ultimate_pipeline/enrichment/osm_direction.py:287`, `ultimate_pipeline/pipeline_stages/stage_07_lanes.py:52`, `ultimate_pipeline/enrichment/osm_direction.py:180`, and 13 more
+
+***
+
+<details>
+<summary>Sourcery is free for open source - if you like our reviews please consider sharing them Γ£¿</summary>
+
+- [X](https://twitter.com/intent/tweet?text=I%20just%20got%20an%20instant%20code%20review%20from%20%40SourceryAI%2C%20and%20it%20was%20brilliant%21%20It%27s%20free%20for%20open%20source%20and%20has%20a%20free%20trial%20for%20private%20code.%20Check%20it%20out%20https%3A//sourcery.ai/%3Futm_source%3Dtwitter%26utm_medium%3Dsocial%26utm_campaign%3Dbot_review_share)
+- [Mastodon](https://mastodon.social/share?text=I%20just%20got%20an%20instant%20code%20review%20from%20%40SourceryAI%2C%20and%20it%20was%20brilliant%21%20It%27s%20free%20for%20open%20source%20and%20has%20a%20free%20trial%20for%20private%20code.%20Check%20it%20out%20https%3A//sourcery.ai/%3Futm_source%3Dmastodon%26utm_medium%3Dsocial%26utm_campaign%3Dbot_review_share)
+- [LinkedIn](https://www.linkedin.com/sharing/share-offsite/?url=https%3A//sourcery.ai/%3Futm_source%3Dlinkedin%26utm_medium%3Dsocial%26utm_campaign%3Dbot_review_share)
+- [Facebook](https://www.facebook.com/sharer/sharer.php?u=https%3A//sourcery.ai/%3Futm_source%3Dfacebook%26utm_medium%3Dsocial%26utm_campaign%3Dbot_review_share)
+
+</details>
+----------------------------------------
+id=5875954796 user=sourcery-ai[bot] state=COMMENTED submitted=2026-11-12T14:17:09Z
+BODY:
+New security issues found
+----------------------------------------

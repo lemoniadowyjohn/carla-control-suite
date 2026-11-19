@@ -1,0 +1,209 @@
+============================= test session starts =============================
+platform win32 -- Python 3.12.2, pytest-8.0.1, pluggy-1.4.0
+rootdir: F:\CARLA_RECOVERY\worktrees\v129-calib-admission-20261119
+configfile: pytest.ini
+plugins: anyio-4.2.0
+collected 406 items
+
+ultimate_pipeline\tests\unit\test_applied_sensor_rig_v2.py ............. [  3%]
+.                                                                        [  3%]
+tests\unit\test_calibration_independent_oracle.py ...                    [  4%]
+ultimate_pipeline\tests\unit\test_wp_c_camera_intrinsic_realization.py . [  4%]
+................                                                         [  8%]
+ultimate_pipeline\tests\unit\test_rq3_route_rig_hardening.py ........... [ 11%]
+..                                                                       [ 11%]
+ultimate_pipeline\tests\unit\test_rq3_paired_capture_contract.py ....... [ 13%]
+.........................                                                [ 19%]
+tests\unit\test_rq3_batch9_pair_contract.py ............................ [ 26%]
+.......................                                                  [ 32%]
+tests\unit\test_submission_applied_sensor_rig_mirror.py .                [ 32%]
+tests\unit\test_sensor_calibration_semantics.py ....                     [ 33%]
+tests\unit\test_v112_rq3_explicit_calibration.py ...                     [ 33%]
+tests\unit\test_v119_rq3_completeness_nonvacuous.py ..................   [ 38%]
+tests\unit\test_local_registration.py ......................             [ 43%]
+ultimate_pipeline\tests\unit\test_map_coordinate_frames.py ...........   [ 46%]
+tests\unit\test_v109_rl_fuzzer_width_polynomial.py .....                 [ 47%]
+tests\unit\test_feature_gap.py ......s                                   [ 49%]
+ultimate_pipeline\tests\unit\test_feature_gap_consumer_failclosed.py ... [ 50%]
+..........                                                               [ 52%]
+ultimate_pipeline\tests\unit\test_feature_gap_missingness.py ........... [ 55%]
+...................                                                      [ 60%]
+tests\unit\test_v111_rq5_v2_split_pretraining_authority.py ......        [ 61%]
+tests\unit\test_rq5_execution_correctness.py FFFFF..F............FFF.FFF [ 68%]
+FFFF.....F                                                               [ 70%]
+tests\unit\test_v117_rq5_eval_identity_guard.py ......                   [ 72%]
+tests\unit\test_v121_rq5_reused_checkpoint_claim.py ...                  [ 72%]
+tests\unit\test_v122_rq5_stale_evaluation_report.py ....                 [ 73%]
+tests\unit\test_carla_preflight_ownership.py ..                          [ 74%]
+tests\unit\test_carla_utils_tier3_hardening.py ...................       [ 79%]
+tests\unit\test_run_perception_safe_carla_restart_no_kill_by_name.py ... [ 79%]
+..                                                                       [ 80%]
+tests\unit\test_v94_carla_capture_readiness.py ............              [ 83%]
+tests\unit\test_v94_carla_process_ownership.py ........................  [ 89%]
+ultimate_pipeline\carla_tools\tests\test_carla_recovery_helpers.py ..... [ 90%]
+........................                                                 [ 96%]
+ultimate_pipeline\carla_tools\tests\test_thesis_sensor_rig_contract.py . [ 96%]
+..............                                                           [100%]
+
+================================== FAILURES ===================================
+________________ test_multi_root_training_consumes_every_root _________________
+tests\unit\test_rq5_execution_correctness.py:109: in test_multi_root_training_consumes_every_root
+    from ultimate_pipeline.perception import train_launcher
+ultimate_pipeline\perception\train_launcher.py:64: in <module>
+    from torchvision import models
+E   ModuleNotFoundError: No module named 'torchvision'
+_______________ test_multi_root_dataset_rejects_duplicate_roots _______________
+tests\unit\test_rq5_execution_correctness.py:132: in test_multi_root_dataset_rejects_duplicate_roots
+    from ultimate_pipeline.perception.min_train_segmentation import MultiRootSegDataset
+ultimate_pipeline\perception\min_train_segmentation.py:29: in <module>
+    import torchvision
+E   ModuleNotFoundError: No module named 'torchvision'
+_______________ test_multi_root_dataset_reports_unpaired_frames _______________
+tests\unit\test_rq5_execution_correctness.py:140: in test_multi_root_dataset_reports_unpaired_frames
+    from ultimate_pipeline.perception.min_train_segmentation import MultiRootSegDataset
+ultimate_pipeline\perception\min_train_segmentation.py:29: in <module>
+    import torchvision
+E   ModuleNotFoundError: No module named 'torchvision'
+_______________ test_runner_passes_every_k_root_to_the_trainer ________________
+tests\unit\test_rq5_execution_correctness.py:188: in test_runner_passes_every_k_root_to_the_trainer
+    code = rge.main(
+ultimate_pipeline\run_generalization_experiments.py:1139: in main
+    _run_condition(
+ultimate_pipeline\run_generalization_experiments.py:907: in _run_condition
+    trained, model_path, train_record = train_model(
+ultimate_pipeline\run_generalization_experiments.py:388: in train_model
+    ret = _run_subprocess(cmd, log_file=log_file)
+tests\unit\test_rq5_execution_correctness.py:164: in _fake_subprocess
+    from ultimate_pipeline.perception import train_launcher
+ultimate_pipeline\perception\train_launcher.py:64: in <module>
+    from torchvision import models
+E   ModuleNotFoundError: No module named 'torchvision'
+---------------------------- Captured stdout call -----------------------------
+[TRAIN] generated_k_k001: 1 dataset(s) (gen_0), epochs=1, seed=1337
+__________ test_failed_training_does_not_evaluate_a_stale_checkpoint __________
+tests\unit\test_rq5_execution_correctness.py:228: in test_failed_training_does_not_evaluate_a_stale_checkpoint
+    from ultimate_pipeline.perception import train_launcher
+ultimate_pipeline\perception\train_launcher.py:64: in <module>
+    from torchvision import models
+E   ModuleNotFoundError: No module named 'torchvision'
+_________ test_successful_retrain_cannot_evaluate_the_previous_model __________
+tests\unit\test_rq5_execution_correctness.py:373: in test_successful_retrain_cannot_evaluate_the_previous_model
+    rge.main(
+ultimate_pipeline\run_generalization_experiments.py:1139: in main
+    _run_condition(
+ultimate_pipeline\run_generalization_experiments.py:907: in _run_condition
+    trained, model_path, train_record = train_model(
+ultimate_pipeline\run_generalization_experiments.py:388: in train_model
+    ret = _run_subprocess(cmd, log_file=log_file)
+tests\unit\test_rq5_execution_correctness.py:369: in _dispatch
+    return _train(cmd) if "train_launcher" in " ".join(cmd) else _eval(cmd)
+tests\unit\test_rq5_execution_correctness.py:334: in _train
+    from ultimate_pipeline.perception import train_launcher
+ultimate_pipeline\perception\train_launcher.py:64: in <module>
+    from torchvision import models
+E   ModuleNotFoundError: No module named 'torchvision'
+---------------------------- Captured stdout call -----------------------------
+[TRAIN] generated_k_k001: 1 dataset(s) (gen_0), epochs=3, seed=1337
+________ test_zero_frame_labeled_eval_exits_nonzero_with_null_metrics _________
+tests\unit\test_rq5_execution_correctness.py:599: in test_zero_frame_labeled_eval_exits_nonzero_with_null_metrics
+    from ultimate_pipeline.perception import eval_sim_labeled as esl
+ultimate_pipeline\perception\eval_sim_labeled.py:51: in <module>
+    from torchvision import models
+E   ModuleNotFoundError: No module named 'torchvision'
+________________ test_empty_real_world_directory_exits_nonzero ________________
+tests\unit\test_rq5_execution_correctness.py:638: in test_empty_real_world_directory_exits_nonzero
+    from ultimate_pipeline.perception import eval_real_unlabeled as eru
+ultimate_pipeline\perception\eval_real_unlabeled.py:55: in <module>
+    from torchvision import models
+E   ModuleNotFoundError: No module named 'torchvision'
+_______ test_real_unlabeled_report_declares_it_cannot_produce_accuracy ________
+tests\unit\test_rq5_execution_correctness.py:674: in test_real_unlabeled_report_declares_it_cannot_produce_accuracy
+    from ultimate_pipeline.perception import eval_real_unlabeled as eru
+ultimate_pipeline\perception\eval_real_unlabeled.py:55: in <module>
+    from torchvision import models
+E   ModuleNotFoundError: No module named 'torchvision'
+______________ test_training_is_deterministic_for_a_frozen_seed _______________
+tests\unit\test_rq5_execution_correctness.py:736: in test_training_is_deterministic_for_a_frozen_seed
+    from ultimate_pipeline.perception import train_launcher
+ultimate_pipeline\perception\train_launcher.py:64: in <module>
+    from torchvision import models
+E   ModuleNotFoundError: No module named 'torchvision'
+__________ test_model_manifest_binds_checkpoint_dataset_git_and_seed __________
+tests\unit\test_rq5_execution_correctness.py:760: in test_model_manifest_binds_checkpoint_dataset_git_and_seed
+    from ultimate_pipeline.perception import train_launcher
+ultimate_pipeline\perception\train_launcher.py:64: in <module>
+    from torchvision import models
+E   ModuleNotFoundError: No module named 'torchvision'
+________ test_verify_checkpoint_manifest_rejects_a_swapped_checkpoint _________
+tests\unit\test_rq5_execution_correctness.py:790: in test_verify_checkpoint_manifest_rejects_a_swapped_checkpoint
+    from ultimate_pipeline.perception import train_launcher
+ultimate_pipeline\perception\train_launcher.py:64: in <module>
+    from torchvision import models
+E   ModuleNotFoundError: No module named 'torchvision'
+______ test_verify_checkpoint_manifest_requires_provenance_when_governed ______
+tests\unit\test_rq5_execution_correctness.py:828: in test_verify_checkpoint_manifest_requires_provenance_when_governed
+    from ultimate_pipeline.perception import train_launcher
+ultimate_pipeline\perception\train_launcher.py:64: in <module>
+    from torchvision import models
+E   ModuleNotFoundError: No module named 'torchvision'
+______________ test_strict_load_rejects_incompatible_checkpoint _______________
+tests\unit\test_rq5_execution_correctness.py:855: in test_strict_load_rejects_incompatible_checkpoint
+    from ultimate_pipeline.perception import train_launcher
+ultimate_pipeline\perception\train_launcher.py:64: in <module>
+    from torchvision import models
+E   ModuleNotFoundError: No module named 'torchvision'
+_______________ test_strict_load_rejects_unexpected_parameters ________________
+tests\unit\test_rq5_execution_correctness.py:891: in test_strict_load_rejects_unexpected_parameters
+    from ultimate_pipeline.perception import train_launcher
+ultimate_pipeline\perception\train_launcher.py:64: in <module>
+    from torchvision import models
+E   ModuleNotFoundError: No module named 'torchvision'
+______ test_evaluator_refuses_unbound_checkpoint_when_manifest_required _______
+tests\unit\test_rq5_execution_correctness.py:906: in test_evaluator_refuses_unbound_checkpoint_when_manifest_required
+    from ultimate_pipeline.perception import eval_sim_labeled as esl
+ultimate_pipeline\perception\eval_sim_labeled.py:51: in <module>
+    from torchvision import models
+E   ModuleNotFoundError: No module named 'torchvision'
+____________ test_checkpoint_disk_guard_receives_supported_keyword ____________
+tests\unit\test_rq5_execution_correctness.py:1065: in test_checkpoint_disk_guard_receives_supported_keyword
+    from ultimate_pipeline.perception import train_launcher, training_failure_guard
+ultimate_pipeline\perception\train_launcher.py:64: in <module>
+    from torchvision import models
+E   ModuleNotFoundError: No module named 'torchvision'
+============================== warnings summary ===============================
+ultimate_pipeline\config\settings.py:2036
+  F:\CARLA_RECOVERY\worktrees\v129-calib-admission-20261119\ultimate_pipeline\config\settings.py:2036: RuntimeWarning: MANUAL_TILES_DIR resolved to missing dir: 'F:\CARLA_RECOVERY\worktrees\v129-calib-admission-20261119\domain_gap_results\manual_tiles'. Set UP_MANUAL_TILES_DIR to a valid dir.
+    _warn_missing_setting_path(
+
+ultimate_pipeline\config\settings.py:2042
+  F:\CARLA_RECOVERY\worktrees\v129-calib-admission-20261119\ultimate_pipeline\config\settings.py:2042: RuntimeWarning: BASE_OUTPUT_DIR resolved to missing dir: 'F:\CARLA_RECOVERY\worktrees\v129-calib-admission-20261119\ultimate_pipeline_out'. Set UP_BASE_OUTPUT_DIR to a valid dir.
+    _warn_missing_setting_path(
+
+ultimate_pipeline\config\settings.py:2048
+  F:\CARLA_RECOVERY\worktrees\v129-calib-admission-20261119\ultimate_pipeline\config\settings.py:2048: RuntimeWarning: COORDINATES_JSON resolved to missing file: 'F:\CARLA_RECOVERY\worktrees\v129-calib-admission-20261119\ultimate_pipeline\config\coordinates.json'. Set UP_COORDINATES_JSON to a valid file.
+    _warn_missing_setting_path(
+
+ultimate_pipeline\config\settings.py:2054
+  F:\CARLA_RECOVERY\worktrees\v129-calib-admission-20261119\ultimate_pipeline\config\settings.py:2054: RuntimeWarning: HPC_DIR resolved to missing dir: 'F:\CARLA_RECOVERY\worktrees\v129-calib-admission-20261119\hpc'. Set UP_HPC_DIR to a valid dir.
+    _warn_missing_setting_path(
+
+ultimate_pipeline\config\settings.py:2060
+  F:\CARLA_RECOVERY\worktrees\v129-calib-admission-20261119\ultimate_pipeline\config\settings.py:2060: RuntimeWarning: PIPELINE_OUT_DIR resolved to missing dir: 'F:\CARLA_RECOVERY\worktrees\v129-calib-admission-20261119\ultimate_pipeline_out'. Set UP_PIPELINE_OUT_DIR to a valid dir.
+    _warn_missing_setting_path(
+
+C:\Users\admin\AppData\Local\Programs\Python\Python312\Lib\site-packages\dateutil\tz\tz.py:37
+  C:\Users\admin\AppData\Local\Programs\Python\Python312\Lib\site-packages\dateutil\tz\tz.py:37: DeprecationWarning: datetime.datetime.utcfromtimestamp() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.fromtimestamp(timestamp, datetime.UTC).
+    EPOCH = datetime.datetime.utcfromtimestamp(0)
+
+C:\Users\admin\AppData\Local\Programs\Python\Python312\Lib\site-packages\torch\nn\modules\transformer.py:20
+  C:\Users\admin\AppData\Local\Programs\Python\Python312\Lib\site-packages\torch\nn\modules\transformer.py:20: UserWarning: Failed to initialize NumPy: _ARRAY_API not found (Triggered internally at ..\torch\csrc\utils\tensor_numpy.cpp:84.)
+    device: torch.device = torch.device(torch._C._get_default_device()),  # torch.device('cpu'),
+
+ultimate_pipeline/carla_tools/tests/test_thesis_sensor_rig_contract.py::test_legacy_sensor_rig_cannot_spawn_ambiguous_mounts
+  F:\CARLA_RECOVERY\worktrees\v129-calib-admission-20261119\ultimate_pipeline\carla_tools\tests\test_thesis_sensor_rig_contract.py:479: FutureWarning: sensor_rig.py is deprecated for thesis experiments; use thesis_sensor_rig.py (explicit conventions + axis handling).
+    from ultimate_pipeline.carla_tools.sensor_rig import SensorRig
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+SKIPPED [1] tests\unit\test_feature_gap.py:82: could not import 'sklearn': No module named 'sklearn'
+=========== 17 failed, 388 passed, 1 skipped, 8 warnings in 36.42s ============

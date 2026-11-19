@@ -1,0 +1,79 @@
+{
+  "task_id": "V131 integration candidate closure",
+  "base_sha": "225ed15d0da6444cc257835ca777aba281553f3c",
+  "branch": "integration/v131-pre-claude-candidate",
+  "worktree": "F:\\CARLA_RECOVERY\\worktrees\\v129-calib-admission-20261119",
+  "head_sha": "b8168134fe68bb5357146171c01904a1c0897da7",
+  "source_reviewed_sha": "c95f9b4ece19b98fad2a1818f658fbe8686f0faa",
+  "source_fix_sha": "7b0194caf6dfac4bbcbc63e0ab5b9397b95ae1f2",
+  "status": "IMPLEMENTED",
+  "review_disposition": "REQUEST_CHANGES; P0 lifecycle issue fixed; RQ5/RQ3/CRS/intrinsics blockers remain",
+  "owned_files": [
+    "ultimate_pipeline/carla_tools/carla_recovery.py",
+    "ultimate_pipeline/carla_tools/tests/test_carla_recovery_helpers.py",
+    "reports/v131/*"
+  ],
+  "tests": [
+    {
+      "command": "python -m pytest ultimate_pipeline/carla_tools/tests/test_carla_recovery_helpers.py tests/unit/test_carla_utils_tier3_hardening.py tests/unit/test_carla_preflight_ownership.py -q --tb=short",
+      "tested_sha": "8d7e5912f981253826e1fb87d78422bf135621e7",
+      "exit_code": 0,
+      "collected": 51,
+      "passed": 51,
+      "failed": 0,
+      "skipped": 0,
+      "log": "reports/v131/LIFECYCLE_PURGE_FIX_TESTS.log",
+      "log_sha256": "3fbd56625ebee7df082a3f067ed58e3fd78b0551120cfa2b40f1477d8afde59f"
+    },
+    {
+      "command": "python -m pytest ultimate_pipeline/tests/unit/test_applied_sensor_rig_v2.py tests/unit/test_calibration_independent_oracle.py ultimate_pipeline/tests/unit/test_wp_c_camera_intrinsic_realization.py ultimate_pipeline/tests/unit/test_rq3_route_rig_hardening.py ultimate_pipeline/tests/unit/test_rq3_paired_capture_contract.py tests/unit/test_rq3_batch9_pair_contract.py tests/unit/test_submission_applied_sensor_rig_mirror.py tests/unit/test_sensor_calibration_semantics.py tests/unit/test_v112_rq3_explicit_calibration.py tests/unit/test_v119_rq3_completeness_nonvacuous.py tests/unit/test_local_registration.py ultimate_pipeline/tests/unit/test_map_coordinate_frames.py tests/unit/test_v109_rl_fuzzer_width_polynomial.py tests/unit/test_feature_gap.py ultimate_pipeline/tests/unit/test_feature_gap_consumer_failclosed.py ultimate_pipeline/tests/unit/test_feature_gap_missingness.py tests/unit/test_v111_rq5_v2_split_pretraining_authority.py tests/unit/test_rq5_execution_correctness.py tests/unit/test_v117_rq5_eval_identity_guard.py tests/unit/test_v121_rq5_reused_checkpoint_claim.py tests/unit/test_v122_rq5_stale_evaluation_report.py tests/unit/test_carla_preflight_ownership.py tests/unit/test_carla_utils_tier3_hardening.py tests/unit/test_run_perception_safe_carla_restart_no_kill_by_name.py tests/unit/test_v94_carla_capture_readiness.py tests/unit/test_v94_carla_process_ownership.py ultimate_pipeline/carla_tools/tests/test_carla_recovery_helpers.py ultimate_pipeline/carla_tools/tests/test_thesis_sensor_rig_contract.py -q --tb=short -rs",
+      "tested_sha": "1085e00031ffae99ca770ee963dc6f90ffafde72",
+      "exit_code": 1,
+      "collected": 406,
+      "passed": 388,
+      "failed": 17,
+      "skipped": 1,
+      "log": "reports/v131/COMBINED_FOCUSED_TESTS.log",
+      "log_sha256": "da30ca8cbd47908d1322db3c634225e92c9d3b403e795340214d82322c0df8f7"
+    },
+    {
+      "command": "python -m pytest ultimate_pipeline/tests/unit/test_applied_sensor_rig_v2.py ultimate_pipeline/tests/unit/test_wp_c_camera_intrinsic_realization.py ultimate_pipeline/tests/unit/test_map_coordinate_frames.py ultimate_pipeline/tests/unit/test_rq3_builder_false_pass_regression.py ultimate_pipeline/tests/unit/test_task1_2_cross_arm_sync.py tests/unit/test_v111_rq5_v2_split_pretraining_authority.py ultimate_pipeline/carla_tools/tests/test_carla_recovery_helpers.py -q -p no:cacheprovider --tb=short",
+      "tested_sha": "8d7e5912f981253826e1fb87d78422bf135621e7",
+      "exit_code": 1,
+      "collected": 113,
+      "passed": 102,
+      "failed": 11,
+      "skipped": 0,
+      "log": "reports/v131/RQ3_CROSS_ARM_REVIEW_TESTS.log",
+      "log_sha256": "7223f21f0e3aa43ee66e0ba59c05e6d9d1727044f420313359f7b93bda2cc3dd5"
+    },
+    {
+      "command": "python -m compileall -q ultimate_pipeline/carla_tools/carla_recovery.py ultimate_pipeline/carla_tools/tests/test_carla_recovery_helpers.py",
+      "tested_sha": "185825704c00b82f41c2462ce15b9df36bcabe35",
+      "exit_code": 0,
+      "log": "no stdout/stderr; exit recorded in terminal"
+    }
+  ],
+  "github_ci": {
+    "pr": 71,
+    "head_sha": "b8168134fe68bb5357146171c01904a1c0897da7",
+    "base_sha": "225ed15d0da6444cc257835ca777aba281553f3c",
+    "state": "fresh checks pending after receipt-only push; previous head 185825704c00b82f41c2462ce15b9df36bcabe35 had 6 latest checks successful and offline tests in progress",
+    "url": "https://github.com/lemoniadowyjohn/carla-control-suite/pull/71"
+  },
+  "findings": [
+    "P0 cache/temp deletion disabled and tested",
+    "P1 trainer emits no split manifest digest while verifier requires v2 digest",
+    "P1 expected per-sensor counts are not wired into canonical strict capture",
+    "P1 map coordinate helper is not adopted by route/capture production path",
+    "P1 effective intrinsics/remap receipt is not wired into canonical capture output"
+  ],
+  "evidence_status": {
+    "carla_runtime": "NOT_RUN",
+    "rq3_dataset": "NOT_ADMITTED",
+    "rq5_model_validation": "NOT_RUN",
+    "production_go": "NO"
+  },
+  "next_owner": "independent QA and provisioned offline runner; no production promotion",
+  "head_sha_scope": "Candidate branch head at this lane receipt snapshot; later metadata-only commits can advance the branch ref."
+}

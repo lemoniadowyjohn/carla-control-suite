@@ -1,0 +1,42 @@
+{
+  "carla_client_module": "C:\\Users\\admin\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\site-packages\\carla\\__init__.py",
+  "maximum_matrix_abs_error": 1.1734273941410578e-07,
+  "sensors": {
+    "back_left_camera": {
+      "attach_sensors_safe": 1.1734273941410578e-07,
+      "dominik_sensor_setup": 1.1734273941410578e-07,
+      "thesis_sensor_rig": 1.1734273941410578e-07
+    },
+    "back_right_camera": {
+      "attach_sensors_safe": 9.86422896698258e-08,
+      "dominik_sensor_setup": 9.86422896698258e-08,
+      "thesis_sensor_rig": 9.86422896698258e-08
+    },
+    "front_left_camera": {
+      "attach_sensors_safe": 5.7909164463687546e-08,
+      "dominik_sensor_setup": 5.7909164463687546e-08,
+      "thesis_sensor_rig": 5.7909164463687546e-08
+    },
+    "front_right_camera": {
+      "attach_sensors_safe": 4.817147880586958e-08,
+      "dominik_sensor_setup": 4.817147880586958e-08,
+      "thesis_sensor_rig": 4.817147880586958e-08
+    },
+    "left_camera": {
+      "attach_sensors_safe": 7.251425577711745e-08,
+      "dominik_sensor_setup": 7.251425577711745e-08,
+      "thesis_sensor_rig": 7.251425577711745e-08
+    },
+    "middle_lidar": {
+      "attach_sensors_safe": 4.627044680738379e-08,
+      "dominik_sensor_setup": 4.627044680738379e-08,
+      "thesis_sensor_rig": 4.627044680738379e-08
+    },
+    "right_camera": {
+      "attach_sensors_safe": 6.655245323675812e-08,
+      "dominik_sensor_setup": 6.655245323675812e-08,
+      "thesis_sensor_rig": 6.655245323675812e-08
+    }
+  },
+  "verification_mode": "offline_adapter_pose_conversion_no_actor_spawn"
+}

@@ -113,7 +113,13 @@ class RLFuzzer:
     def _perturb_lane_widths(
         root: ET.Element, scale: float
     ) -> Dict[str, Any]:
-        """Scale the a-coefficient of drivable-lane width records."""
+        """Scale the complete lane-width polynomial uniformly at every sOffset.
+
+        OpenDRIVE width is a + b*ds + c*ds**2 + d*ds**3.  Scaling only
+        a distorts the original profile and can create artificial seams.
+        Either scale all finite coefficients together or leave the record
+        unchanged; never partially mutate malformed width evidence.
+        """
         modified = 0
         clamped = 0
         for lane in root.findall(".//lane"):
@@ -121,20 +127,19 @@ class RLFuzzer:
                 continue
             for width in lane.findall("width"):
                 try:
-                    a = float(width.get("a", "0"))
+                    coefficients = {
+                        name: float(width.get(name, "0"))
+                        for name in ("a", "b", "c", "d")
+                    }
                 except (TypeError, ValueError):
-                    continue
-                if not math.isfinite(a):
-                    # NaN/Inf comparisons are always False, so the "<= 0.0"
-                    # drop check below would silently let a non-finite width
-                    # through and write it back verbatim -- guard explicitly.
                     clamped += 1
                     continue
-                new_a = a * scale
-                if new_a <= 0.0:
+                if (not all(math.isfinite(value) for value in coefficients.values())
+                        or coefficients["a"] * scale <= 0.0):
                     clamped += 1
                     continue
-                width.set("a", f"{new_a:.6f}")
+                for name, value in coefficients.items():
+                    width.set(name, f"{value * scale:.6f}")
                 modified += 1
         return {"width_records_modified": modified, "width_records_dropped_nonpositive": clamped}
 

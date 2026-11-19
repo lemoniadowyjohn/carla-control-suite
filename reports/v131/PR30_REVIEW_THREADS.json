@@ -1,0 +1,161 @@
+{
+  "captured_utc": "2026-11-19T15:30:46.7364306Z",
+  "pr": 30,
+  "head": "21dce53c1d6f8cd1d00a276ccd5aeedd1582de2e",
+  "thread_count": 19,
+  "unresolved_count": 18,
+  "threads": [
+    {
+      "thread_id": "PRRT_kwDOQ130bs62YnB2",
+      "resolved": false,
+      "comment_id": 4543949125,
+      "path": "ultimate_pipeline/quality/final_artifact_gates.py",
+      "line": null,
+      "finding_title": "An untrusted XODR can bypass this boundary and reach entity expansion: `parse_xodr_bytes()` accepts a UTF-16 document containing a DOCTYPE and internal entity because the byte regex cannot match its encoding. An ASCII document also bypasses it if a comment contains `<OpenDRIVE` before 64 KiB of padding and the actual DOCTYPE follows that padding. Both cases were reproduced locally and expanded the entity. Use an encoding-aware parser that rejects DTD/entity declarations rather than inferring the prolog from a substring and a fixed prefix."
+    },
+    {
+      "thread_id": "PRRT_kwDOQ130bs62YnB6",
+      "resolved": false,
+      "comment_id": 4543949130,
+      "path": "ultimate_pipeline/quality/map_acceptance.py",
+      "line": 648,
+      "finding_title": "When a caller supplies a nonempty but incomplete mandatory gate list, this guard accepts it and the new release verdict can certify an incomplete evaluation. For example, `build_map_acceptance({'artifact_structure': {'ok': True}}, purpose='release', mandatory_gates=('artifact_structure',))` returns `release_eligible=True` despite having no origin, connectivity, or other mandatory evidence. Require the supplied set to include every `RELEASE_MANDATORY_GATES` entry, or select that authoritative set internally for release-purpose evaluations."
+    },
+    {
+      "thread_id": "PRRT_kwDOQ130bs62Yp-y",
+      "resolved": false,
+      "comment_id": 4543969658,
+      "path": "ultimate_pipeline/quality/map_acceptance.py",
+      "line": 648,
+      "finding_title": "When a release caller supplies a nonempty subset or unrelated mandatory-gate list, `build_map_acceptance` evaluates only the supplied gate names and can set `release_eligible=True` without the authoritative checks, so the caller receives a release-eligible receipt without evaluating the required gates."
+    },
+    {
+      "thread_id": "PRRT_kwDOQ130bs62Yp-7",
+      "resolved": false,
+      "comment_id": 4543969677,
+      "path": "scripts/measure_candidate_acceptance.py",
+      "line": null,
+      "finding_title": "When the candidate changes during gate evaluation and is restored before acceptance hashes it, or changes after acceptance before being copied, `run_gates` reopens the mutable path for separate checks, while acceptance hashes the path later; regeneration can also copy that path after acceptance. Reports from different bytes can therefore be bound to the original digest, or unaccepted bytes can be emitted, and the caller sees a release-eligible result for an artifact the gates did not evaluate."
+    },
+    {
+      "thread_id": "PRRT_kwDOQ130bs62Yp_H",
+      "resolved": false,
+      "comment_id": 4543969687,
+      "path": "ultimate_pipeline/quality/map_acceptance.py",
+      "line": 1183,
+      "finding_title": "When a release caller supplies passing mandatory reports but omits both artifact identity arguments, `build_map_acceptance` can set `release_eligible=True` without an evaluated digest or published artifact digest, so the passing reports are not bound to any artifact."
+    },
+    {
+      "thread_id": "PRRT_kwDOQ130bs62Yp_M",
+      "resolved": false,
+      "comment_id": 4543969692,
+      "path": "ultimate_pipeline/quality/final_artifact_gates.py",
+      "line": null,
+      "finding_title": "When an input contains a DOCTYPE or ENTITY declaration encoded as UTF-16, `check_xml_boundary` searches raw bytes for ASCII declaration tokens, so the declaration evades the scan and reaches `ET.fromstring` despite the boundary policy."
+    },
+    {
+      "thread_id": "PRRT_kwDOQ130bs62Yp_S",
+      "resolved": false,
+      "comment_id": 4543969701,
+      "path": "scripts/measure_candidate_acceptance.py",
+      "line": null,
+      "finding_title": "When a release artifact omits roads required by its manifest or release profile, release entrypoints call structural validation without `expected_scope`, so the gate checks only generic validity and does not reject the missing roads or IDs; the artifact proceeds to acceptance."
+    },
+    {
+      "thread_id": "PRRT_kwDOQ130bs62Yp_V",
+      "resolved": true,
+      "comment_id": 4543969708,
+      "path": "scripts/measure_candidate_acceptance.py",
+      "line": 148,
+      "finding_title": "When the CLI’s structural parse rejects the input at the XML boundary, `run_gates` records `BLOCKED_INPUT` for `artifact_structure` but continues into path-based checks that reread and parse the original input, bypassing the boundary and potentially exhausting resources or aborting before an acceptance report is written."
+    },
+    {
+      "thread_id": "PRRT_kwDOQ130bs62Yp_f",
+      "resolved": false,
+      "comment_id": 4543969719,
+      "path": "ultimate_pipeline/quality/final_artifact_gates.py",
+      "line": null,
+      "finding_title": "When an artifact exceeds `MAX_XODR_BYTES`, `snapshot_final_artifact` and structural validation read the whole file before `parse_xodr_bytes` checks its size, so a large input can exhaust memory before the configured boundary rejects it."
+    },
+    {
+      "thread_id": "PRRT_kwDOQ130bs62Yp_p",
+      "resolved": false,
+      "comment_id": 4543969732,
+      "path": "ultimate_pipeline/quality/map_acceptance.py",
+      "line": 166,
+      "finding_title": "When a mandatory report has `ok=True` and a malformed issue-count or `issues` field, `_mandatory_gate_status` ignores nonnumeric count fields and non-list `issues` values, so malformed contradictory evidence resolves to PASS and can contribute to a release-eligible receipt."
+    },
+    {
+      "thread_id": "PRRT_kwDOQ130bs62Yp_y",
+      "resolved": false,
+      "comment_id": 4543969741,
+      "path": "ultimate_pipeline/quality/final_artifact_gates.py",
+      "line": 107,
+      "finding_title": "When a lane-section report has `ok=True` or `broken_count: 0` alongside a nonempty `failures` list, `normalize_lane_section_report` can preserve or derive a passing status without reconciling `failures`, and `_mandatory_gate_status` does not inspect that list, so the contradictory report passes the mandatory gate."
+    },
+    {
+      "thread_id": "PRRT_kwDOQ130bs62Yp_4",
+      "resolved": false,
+      "comment_id": 4543969749,
+      "path": "ultimate_pipeline/quality/map_acceptance.py",
+      "line": 1183,
+      "finding_title": "When a diagnostic acceptance is supplied to a release-facing consumer, `_require_valid_map_acceptance` and artifact-authority receipt paths check `valid_for_experiments` rather than `release_eligible`, so a diagnostic verdict can satisfy the release acceptance check."
+    },
+    {
+      "thread_id": "PRRT_kwDOQ130bs62Yp__",
+      "resolved": false,
+      "comment_id": 4543969757,
+      "path": "ultimate_pipeline/main_pipeline.py",
+      "line": 3647,
+      "finding_title": "When the published artifact changes after the acceptance receipt is written but before the identity check completes, `verify_artifact_unchanged` raises after `map_acceptance.json` has been durably written, leaving a receipt that still says `release_eligible: true` for a failed run."
+    },
+    {
+      "thread_id": "PRRT_kwDOQ130bs62YqAD",
+      "resolved": false,
+      "comment_id": 4543969766,
+      "path": "ultimate_pipeline/quality/final_artifact_gates.py",
+      "line": null,
+      "finding_title": "When an XML comment before the root contains `<OpenDRIVE` and a DOCTYPE follows beyond the first 64 KiB, `check_xml_boundary` can mistake `<OpenDRIVE` inside an earlier comment for the document root, then search only the first 64 KiB for declarations. A comment containing that marker followed by padding and a DOCTYPE lets the declaration reach the XML parser despite the boundary policy."
+    },
+    {
+      "thread_id": "PRRT_kwDOQ130bs62YqAJ",
+      "resolved": false,
+      "comment_id": 4543969773,
+      "path": "scripts/measure_candidate_acceptance.py",
+      "line": 149,
+      "finding_title": "When two acceptance processes target the same `--out-dir` concurrently, two CLI runs using the same output directory write the same named gate reports and acceptance receipt without coordination. Their writes can interleave, leaving one run’s acceptance alongside another run’s reports, so the persisted evidence no longer describes a single evaluation."
+    },
+    {
+      "thread_id": "PRRT_kwDOQ130bs62YqAN",
+      "resolved": false,
+      "comment_id": 4543969780,
+      "path": "ultimate_pipeline/quality/final_artifact_gates.py",
+      "line": 175,
+      "finding_title": "When a process with write access changes or replaces the snapshot after the initial digest check and before all path-based gates finish, `chmod(0o444)` only removes write permission; the file owner can restore it or replace the snapshot path. `compute_final_artifact_reports` checks the digest once, then path-based gates reopen that file, so a concurrent writer can make the gates evaluate different bytes while the digest check still reflects the original snapshot."
+    },
+    {
+      "thread_id": "PRRT_kwDOQ130bs62YqAR",
+      "resolved": false,
+      "comment_id": 4543969786,
+      "path": "ultimate_pipeline/quality/final_artifact_gates.py",
+      "line": null,
+      "finding_title": "When an untrusted candidate contains a DTD/entity declaration encoded as UTF-16, or a UTF-8 DTD is rejected by the first check and the CLI continues parsing the original file, when an untrusted candidate uses UTF-16 and includes a DTD/entity declaration, the ASCII-byte regex does not match it, so ElementTree parses the input despite the boundary policy. In the CLI, a rejected input also continues into validators that parse the original path directly, allowing hostile XML parsing workloads during acceptance."
+    },
+    {
+      "thread_id": "PRRT_kwDOQ130bs62YqAS",
+      "resolved": false,
+      "comment_id": 4543969793,
+      "path": "tests/unit/test_v86_acceptance_strict.py",
+      "line": 172,
+      "finding_title": "When the test runs with effective UID 0 on POSIX, `test_snapshot_is_content_addressed_and_read_only` line 172 uses `os.access(..., W_OK)`, which reports root's write privilege rather than the file's 0444 mode; the test fails even when the snapshot is correctly read-only for ordinary users."
+    },
+    {
+      "thread_id": "PRRT_kwDOQ130bs62YqAX",
+      "resolved": false,
+      "comment_id": 4543969796,
+      "path": "ultimate_pipeline/main_pipeline.py",
+      "line": 3642,
+      "finding_title": "When the final artifact changes after the added verification but before the authority receipt is built, a writer can change `final_out` after `verify_artifact_unchanged` succeeds but before acceptance evidence and the final authority receipt are recorded. The ledger then captures the changed file's digest as current evidence, while no later step compares it with `map_acceptance.evaluated_xodr_sha256`, allowing a published receipt to identify bytes the gates did not evaluate."
+    }
+  ]
+}

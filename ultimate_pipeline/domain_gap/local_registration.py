@@ -16,6 +16,7 @@ auto-local x[~6155..10922] y[~6424..9876], inside the auto extent [0..13267]x[0.
 """
 from __future__ import annotations
 
+import hashlib
 import xml.etree.ElementTree as ET
 from dataclasses import dataclass
 from typing import Dict, List, Optional, Sequence, Set, Tuple, Union
@@ -462,6 +463,13 @@ def compute_local_registration(
         cropped_auto_road_count=len(kept_roads),
         footprint_local_bounds=poly.bounds,
         provenance={
+            "comparison_scope": "local_shape_and_in_footprint_structure_only",
+            "absolute_geographic_accuracy_claim": "NOT_ESTABLISHED_BY_RQ2_LOCAL_REGISTRATION",
+            "map_content_identity": {
+                "auto_xodr_sha256": _sha256_file(auto_xodr),
+                "manual_xodr_sha256": _sha256_file(manual_xodr),
+            },
+            "coordinate_source": "XODR geoReference and header offset; registry/control-point authority is not implied",
             "footprint_kind": footprint,
             "auto_offset": auto_off,
             "auto_proj4": auto_proj,
@@ -480,3 +488,11 @@ def compute_local_registration(
             "cropped_auto_building_count": len(kept_buildings),
         },
     )
+
+
+def _sha256_file(path: str) -> str:
+    digest = hashlib.sha256()
+    with open(path, "rb") as stream:
+        for chunk in iter(lambda: stream.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()

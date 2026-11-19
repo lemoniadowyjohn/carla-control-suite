@@ -69,19 +69,12 @@ def _carla_api_probe(host: str, port: int, timeout_s: float = 10.0, tick_timeout
 
 
 def _kill_carla_windows() -> Dict[str, Any]:
-    out = {"attempted": True, "killed": False, "error": None}
-    if os.name != "nt":
-        out["error"] = "kill_windows_only"
-        return out
-    try:
-        cp = subprocess.run(["taskkill", "/IM", "CarlaUE4.exe", "/F"], capture_output=True, text=True, encoding="utf-8", errors="replace")
-        out["killed"] = (cp.returncode == 0)
-        if cp.returncode != 0:
-            out["error"] = ((cp.stdout or "") + "\n" + (cp.stderr or ""))[-2000:]
-    except Exception as e:
-        out["error"] = f"taskkill_failed:{e}"
-    return out
-
+    """Refuse image-wide termination when no launch-owned process handle exists."""
+    return {
+        "attempted": False,
+        "killed": False,
+        "error": "image_wide_termination_disabled_without_owned_process_handle",
+    }
 
 def _start_carla_server_windows(carla_exe: str, *, host: str, port: int, wait_s: float = 60.0, extra_args: Optional[list[str]] = None) -> Dict[str, Any]:
     out: Dict[str, Any] = {"attempted": True, "carla_exe": carla_exe, "pid": None, "started": False, "error": None}
@@ -153,18 +146,26 @@ def run_preflight(
         "kill": None,
     }
 
-    if (force_restart or autostart) and (not rpc_open or force_restart):
-        if force_restart:
-            result["kill"] = _kill_carla_windows()
-            time.sleep(2.0)
+    if force_restart:
+        result["kill"] = {
+            "attempted": False,
+            "killed": False,
+            "error": "image_wide_termination_disabled_without_owned_process_handle",
+        }
+        result["error"] = "force_restart_refused_without_owned_process_handle"
+    elif autostart and not rpc_open:
         exe = carla_exe or os.getenv("UP_CARLA_EXE") or os.getenv("CARLA_EXE") or ""
-        result["autostart"] = _start_carla_server_windows(exe, host=host, port=int(port), wait_s=float(autostart_wait_s))
+        result["autostart"] = _start_carla_server_windows(
+            exe, host=host, port=int(port), wait_s=float(autostart_wait_s)
+        )
         rpc_open = _tcp_probe(host, port, timeout_s=min(2.0, timeout_s))
         stream_open = _tcp_probe(host, streaming_port, timeout_s=min(2.0, timeout_s))
         result["rpc_open"] = rpc_open
         result["stream_open"] = stream_open
 
-    if not rpc_open:
+    if force_restart:
+        pass
+    elif not rpc_open:
         result["error"] = f"rpc_port_closed ({host}:{port})"
     elif skip_api:
         result["ok"] = rpc_open and stream_open
@@ -174,17 +175,6 @@ def run_preflight(
         api_result = _carla_api_probe(host, port, timeout_s=timeout_s)
         result.update(api_result)
         result["ok"] = bool(api_result.get("api_ok") and api_result.get("tick_ok"))
-
-        if (not result["ok"]) and force_restart:
-            result["kill_2"] = _kill_carla_windows()
-            time.sleep(2.0)
-            exe = carla_exe or os.getenv("UP_CARLA_EXE") or os.getenv("CARLA_EXE") or ""
-            result["autostart_2"] = _start_carla_server_windows(exe, host=host, port=int(port), wait_s=float(autostart_wait_s))
-            api2 = _carla_api_probe(host, port, timeout_s=timeout_s)
-            result["api_probe_after_restart"] = api2
-            result["ok"] = bool(api2.get("api_ok") and api2.get("tick_ok"))
-            if not result["ok"] and not result.get("error"):
-                result["error"] = api2.get("error")
 
     result["elapsed_s"] = round(time.monotonic() - t0, 3)
 

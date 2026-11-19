@@ -1,0 +1,36 @@
+============================= test session starts =============================
+platform win32 -- Python 3.12.2, pytest-8.0.1, pluggy-1.4.0
+rootdir: F:\CARLA_RECOVERY\worktrees\v129-calib-admission-20261119
+configfile: pytest.ini
+plugins: anyio-4.2.0
+collected 51 items
+
+ultimate_pipeline\carla_tools\tests\test_carla_recovery_helpers.py ..... [  9%]
+.........................                                                [ 58%]
+tests\unit\test_carla_utils_tier3_hardening.py ...................       [ 96%]
+tests\unit\test_carla_preflight_ownership.py ..                          [100%]
+
+============================== warnings summary ===============================
+ultimate_pipeline\config\settings.py:2036
+  F:\CARLA_RECOVERY\worktrees\v129-calib-admission-20261119\ultimate_pipeline\config\settings.py:2036: RuntimeWarning: MANUAL_TILES_DIR resolved to missing dir: 'F:\CARLA_RECOVERY\worktrees\v129-calib-admission-20261119\domain_gap_results\manual_tiles'. Set UP_MANUAL_TILES_DIR to a valid dir.
+    _warn_missing_setting_path(
+
+ultimate_pipeline\config\settings.py:2042
+  F:\CARLA_RECOVERY\worktrees\v129-calib-admission-20261119\ultimate_pipeline\config\settings.py:2042: RuntimeWarning: BASE_OUTPUT_DIR resolved to missing dir: 'F:\CARLA_RECOVERY\worktrees\v129-calib-admission-20261119\ultimate_pipeline_out'. Set UP_BASE_OUTPUT_DIR to a valid dir.
+    _warn_missing_setting_path(
+
+ultimate_pipeline\config\settings.py:2048
+  F:\CARLA_RECOVERY\worktrees\v129-calib-admission-20261119\ultimate_pipeline\config\settings.py:2048: RuntimeWarning: COORDINATES_JSON resolved to missing file: 'F:\CARLA_RECOVERY\worktrees\v129-calib-admission-20261119\ultimate_pipeline\config\coordinates.json'. Set UP_COORDINATES_JSON to a valid file.
+    _warn_missing_setting_path(
+
+ultimate_pipeline\config\settings.py:2054
+  F:\CARLA_RECOVERY\worktrees\v129-calib-admission-20261119\ultimate_pipeline\config\settings.py:2054: RuntimeWarning: HPC_DIR resolved to missing dir: 'F:\CARLA_RECOVERY\worktrees\v129-calib-admission-20261119\hpc'. Set UP_HPC_DIR to a valid dir.
+    _warn_missing_setting_path(
+
+ultimate_pipeline\config\settings.py:2060
+  F:\CARLA_RECOVERY\worktrees\v129-calib-admission-20261119\ultimate_pipeline\config\settings.py:2060: RuntimeWarning: PIPELINE_OUT_DIR resolved to missing dir: 'F:\CARLA_RECOVERY\worktrees\v129-calib-admission-20261119\ultimate_pipeline_out'. Set UP_PIPELINE_OUT_DIR to a valid dir.
+    _warn_missing_setting_path(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+======================= 51 passed, 5 warnings in 9.17s ========================
+EXIT_CODE=0

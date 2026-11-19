@@ -908,3 +908,73 @@ class TestMainPipelineRunTerminalChain:
         run_status = json.loads((tmp_path / "run_status.json").read_text(encoding="utf-8"))
         assert run_status["status"] == "ok"
         assert run_status["stage"] == "done"
+
+
+def test_run_identity_write_failure_stops_admission(tmp_path, monkeypatch):
+    from ultimate_pipeline.core.terminal_authority import write_run_identity
+
+    def fail_write(*args, **kwargs):
+        raise OSError("disk full")
+
+    monkeypatch.setattr(Path, "write_text", fail_write)
+    with pytest.raises(OSError, match="disk full"):
+        write_run_identity(tmp_path, "run-1", "source-sha", "profile", "settings-sha", "2026-11-19T00:00:00Z")
+
+
+def test_run_identity_write_positive_control(tmp_path):
+    from ultimate_pipeline.core.terminal_authority import write_run_identity
+
+    write_run_identity(tmp_path, "run-1", "source-sha", "profile", "settings-sha", "2026-11-19T00:00:00Z")
+    payload = json.loads((tmp_path / "run_identity.json").read_text(encoding="utf-8"))
+    assert payload["run_id"] == "run-1"
+    assert payload["source_sha"] == "source-sha"
+    assert payload["settings_digest"] == "settings-sha"
+
+
+def test_main_pipeline_stops_before_stages_when_run_identity_write_fails(tmp_path, monkeypatch):
+    from ultimate_pipeline import main_pipeline as main_module
+
+    class MockSettings:
+        RELEASE_PROFILE = "structural_release"
+        ENABLE_CARLA = False
+        DETERMINISTIC_MODE = False
+        KEEP_LAST_RUNS = 10
+        INPUT_XODR = str(tmp_path / "input.xodr")
+        OSM_FILE = str(tmp_path / "input.osm")
+        DEM_TIF = str(tmp_path / "dem.tif")
+        GPS_BOUNDS = {"lat_min": 0, "lat_max": 1, "lon_min": 0, "lon_max": 1}
+        BASE_OUTPUT_DIR = str(tmp_path)
+        LOG_DIR = str(tmp_path / "logs")
+        STAGE_DIRS = {}
+
+        def output_dir(self):
+            return str(tmp_path)
+
+        def logs_dir(self):
+            return str(tmp_path / "logs")
+
+        def stage_path(self, name):
+            return str(tmp_path / f"{name}.xodr")
+
+        def load_gps_bounds(self):
+            return self.GPS_BOUNDS
+
+        def to_dict(self):
+            return {}
+
+    (tmp_path / "input.xodr").write_text("<OpenDRIVE/>", encoding="utf-8")
+    (tmp_path / "input.osm").write_text("<osm/>", encoding="utf-8")
+    (tmp_path / "dem.tif").write_text("fixture", encoding="utf-8")
+    pipeline = main_module.MainPipeline(settings=MockSettings())
+    internal_calls = []
+    pipeline._run_internal = lambda: internal_calls.append("run")
+
+    def fail_identity(*args, **kwargs):
+        raise OSError("identity storage unavailable")
+
+    monkeypatch.setattr(main_module, "write_run_identity", fail_identity)
+    with pytest.raises(OSError, match="identity storage unavailable"):
+        pipeline.run()
+
+    assert internal_calls == []
+    assert not (tmp_path / "SUCCESS.txt").exists()

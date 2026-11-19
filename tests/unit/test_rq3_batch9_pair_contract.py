@@ -10,6 +10,8 @@ Two properties are asserted:
 """
 from __future__ import annotations
 
+import hashlib
+import json
 import sys
 from pathlib import Path
 
@@ -19,6 +21,19 @@ sys.path.insert(0, str(WORKTREE))
 import pytest
 
 from ultimate_pipeline.perception import rq3_capture_contract as rq3
+from ultimate_pipeline.sensors.transform_conventions import carla_ego_from_camera_from_cTv, carla_ego_from_lidar_from_vTl
+
+_CALIBRATION_PATH = Path(__file__).resolve().parents[2] / "ultimate_pipeline" / "sensors" / "calib_data.json"
+_CALIBRATION_BYTES = _CALIBRATION_PATH.read_bytes()
+_CALIBRATION_SHA256 = hashlib.sha256(_CALIBRATION_BYTES).hexdigest()
+_CALIBRATION = json.loads(_CALIBRATION_BYTES.decode("utf-8"))
+_CAMERA_NAME = "front_left_camera"
+_CAMERA_MOUNT = carla_ego_from_camera_from_cTv(_CALIBRATION["cameras"][_CAMERA_NAME]["cTv"])
+_MOUNTS = {name: carla_ego_from_camera_from_cTv(item["cTv"]) for name, item in _CALIBRATION["cameras"].items()}
+_MOUNTS["middle_lidar"] = carla_ego_from_lidar_from_vTl(_CALIBRATION["lidars"]["middle_lidar"]["vTl"])
+from ultimate_pipeline.sensors.applied_sensor_rig import (
+    build_applied_sensor_rig_v2, canonical_sha256,
+)
 
 BATCH9_REQUIRED = (
     "calibration_sha256",
@@ -35,22 +50,67 @@ BATCH9_REQUIRED = (
 )
 
 
+def _valid_applied_receipt(code_commit, calibration_sha, dataset_identity, dataset_sha, actor_id):
+    mounts = {name: mount.tolist() for name, mount in _MOUNTS.items()}
+    identities = {name: {"actor_id": actor_id + index, "type_id": "sensor.lidar.ray_cast" if name == "middle_lidar" else "sensor.camera.rgb"} for index, name in enumerate(mounts)}
+    blueprints = {name: {"image_size_x": "1280", "fov": "90"} for name in mounts}
+    cameras = {name: {"width_px": 1280, "height_px": 720, "requested_K_undistortion": [[640, 0, 640], [0, 640, 360], [0, 0, 1]], "carla_nominal_K": [[640, 0, 640], [0, 640, 360], [0, 0, 1]]} for name in mounts if name != "middle_lidar"}
+    measurements = {name: {"frame_id": 777, "timestamp_s": 1.0, "dataset_identity": dataset_identity, "dataset_artifact_sha256": dataset_sha} for name in mounts}
+    return build_applied_sensor_rig_v2(
+        source_calibration_sha256=calibration_sha,
+        code_commit=code_commit,
+        requested_parent_relative_matrices=mounts,
+        ego_identity={"actor_id": actor_id + 100, "type_id": "vehicle.test"},
+        sensor_identities=identities,
+        blueprint_configuration=blueprints,
+        effective_camera_configuration=cameras,
+        applied_parent_relative_matrices=mounts,
+        runtime_measurements=measurements,
+        verification_mode="online",
+    )
+
+
 def _base_manifest(**overrides):
+    selected_bytes = overrides.pop("selected_calibration_bytes", _CALIBRATION_BYTES)
+    calibration_path = overrides.pop("calibration_path", "")
+    calibration_sha = hashlib.sha256(selected_bytes).hexdigest()
+    code_commit = "b" * 40
+    manual_dataset_sha = "c" * 64
+    auto_dataset_sha = "d" * 64
+    manual_receipt = _valid_applied_receipt(
+        code_commit, calibration_sha, "manual-dataset", manual_dataset_sha, 101
+    )
+    auto_receipt = _valid_applied_receipt(
+        code_commit, calibration_sha, "auto-dataset", auto_dataset_sha, 201
+    )
+    rig_sha = manual_receipt["applied_configuration_sha256"]
     arms = {k: "v" for k in BATCH9_REQUIRED}
+    arms["calibration_sha256"] = calibration_sha
+    arms["sensor_rig_sha256"] = rig_sha
     manifest = {
         "schema_version": rq3.MANIFEST_SCHEMA_VERSION,
         "pair_id": "p-batch9",
         "claim_level": rq3.CLAIM_PAIRED_PROTOCOL_VALID,
         "pair_frame_index": [0, 1, 2],
+        "software_git_sha": code_commit,
         "manual_map_identity": rq3.cooked_arm_map_identity(
             requested_map_name="Grid0828", resolved_carla_map_name="Grid0828"),
         "auto_map_identity": rq3.xodr_arm_map_identity(
             xodr_path="campaigns/ingolstadt_auto.xodr", xodr_sha256="x"),
         "pair_valid": True,
         "invalid_reasons": [],
-        "manual_arm": dict(arms, completion_status=rq3.COMPLETION_PASS),
-        "auto_arm": dict(arms, completion_status=rq3.COMPLETION_PASS),
+        "manual_arm": dict(arms, completion_status=rq3.COMPLETION_PASS,
+                            dataset_identity="manual-dataset", dataset_artifact_sha256=manual_dataset_sha,
+                            applied_sensor_rig_v2=manual_receipt,
+                            applied_sensor_rig_v2_sha256=canonical_sha256(manual_receipt)),
+        "auto_arm": dict(arms, completion_status=rq3.COMPLETION_PASS,
+                         dataset_identity="auto-dataset", dataset_artifact_sha256=auto_dataset_sha,
+                         applied_sensor_rig_v2=auto_receipt,
+                         applied_sensor_rig_v2_sha256=canonical_sha256(auto_receipt)),
         **{k: "v" for k in BATCH9_REQUIRED},
+        "calibration_sha256": calibration_sha,
+        "calibration_path": calibration_path,
+        "sensor_rig_sha256": rig_sha,
     }
     manifest.update(overrides)
     return manifest
@@ -98,6 +158,18 @@ def test_arm_to_pair_mismatch_invalidates_the_pair(key):
 def test_fully_matching_manifest_validates():
     r = rq3.validate_pair_manifest(_base_manifest())
     assert r["valid"] is True, r.get("invalid_reasons")
+
+
+def test_pair_admits_byte_distinct_selected_calibration_when_path_and_sha_match(tmp_path):
+    selected_bytes = _CALIBRATION_BYTES + b"\n"
+    selected_path = tmp_path / "selected-calib.json"
+    selected_path.write_bytes(selected_bytes)
+    manifest = _base_manifest(
+        selected_calibration_bytes=selected_bytes,
+        calibration_path=str(selected_path),
+    )
+    result = rq3.validate_pair_manifest(manifest)
+    assert result["valid"] is True, result.get("invalid_reasons")
 
 
 # --- 2. pair_valid=False can never surface as valid=True -------------------

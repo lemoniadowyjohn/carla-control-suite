@@ -1,0 +1,142 @@
+{
+  "candidate_tested_commit": "1085e00031ffae99ca770ee963dc6f90ffafde72",
+  "combined_focused_command": "python -m pytest ultimate_pipeline/tests/unit/test_applied_sensor_rig_v2.py tests/unit/test_calibration_independent_oracle.py ultimate_pipeline/tests/unit/test_wp_c_camera_intrinsic_realization.py ultimate_pipeline/tests/unit/test_rq3_route_rig_hardening.py ultimate_pipeline/tests/unit/test_rq3_paired_capture_contract.py tests/unit/test_rq3_batch9_pair_contract.py tests/unit/test_submission_applied_sensor_rig_mirror.py tests/unit/test_sensor_calibration_semantics.py tests/unit/test_v112_rq3_explicit_calibration.py tests/unit/test_v119_rq3_completeness_nonvacuous.py tests/unit/test_local_registration.py ultimate_pipeline/tests/unit/test_map_coordinate_frames.py tests/unit/test_v109_rl_fuzzer_width_polynomial.py tests/unit/test_feature_gap.py ultimate_pipeline/tests/unit/test_feature_gap_consumer_failclosed.py ultimate_pipeline/tests/unit/test_feature_gap_missingness.py tests/unit/test_v111_rq5_v2_split_pretraining_authority.py tests/unit/test_rq5_execution_correctness.py tests/unit/test_v117_rq5_eval_identity_guard.py tests/unit/test_v121_rq5_reused_checkpoint_claim.py tests/unit/test_v122_rq5_stale_evaluation_report.py tests/unit/test_carla_preflight_ownership.py tests/unit/test_carla_utils_tier3_hardening.py tests/unit/test_run_perception_safe_carla_restart_no_kill_by_name.py tests/unit/test_v94_carla_capture_readiness.py tests/unit/test_v94_carla_process_ownership.py ultimate_pipeline/carla_tools/tests/test_carla_recovery_helpers.py ultimate_pipeline/carla_tools/tests/test_thesis_sensor_rig_contract.py -q --tb=short -rs",
+  "exit_code": 1,
+  "collected": 406,
+  "passed": 388,
+  "failed": 17,
+  "skipped": 1,
+  "failure_classification": "All 17 failures are import-time ModuleNotFoundError: torchvision missing, within tests/unit/test_rq5_execution_correctness.py. One optional sklearn test skipped in tests/unit/test_feature_gap.py.",
+  "additional_evidence": {
+    "pr64_focus": {
+      "exit_code": 0,
+      "passed": 106,
+      "warnings": 6
+    },
+    "pr55_focus": {
+      "exit_code": 0,
+      "passed": 13
+    },
+    "pr50_v2_authority": {
+      "exit_code": 0,
+      "passed": 6
+    },
+    "pr67_focus": {
+      "collected": 121,
+      "passed": 118,
+      "failed": 3,
+      "reason": "pinned large-map XODR assets absent in sparse worktree; coordinate-frame and local-registration new tests passed"
+    },
+    "pr49_focus": {
+      "exit_code": 0,
+      "passed": 5
+    },
+    "pr56_focus": {
+      "collected": 50,
+      "passed": 49,
+      "skipped": 1
+    },
+    "full_offline_pytest": {
+      "exit_code": 2,
+      "collected": 8448,
+      "collection_errors": 21,
+      "executed": 0,
+      "blockers": [
+        "torch_geometric",
+        "torchvision",
+        "full map assets",
+        "NumPy/PyTorch binary compatibility"
+      ]
+    },
+    "compileall": {
+      "result": "completed with pre-existing SyntaxWarning invalid escape in ultimate_pipeline/tools/calib_sanity_check.py"
+    },
+    "git_diff_check": {
+      "exit_code": 0
+    }
+  },
+  "carla_live": "NOT_RUN",
+  "raw_log": {
+    "path": "reports/v131/COMBINED_FOCUSED_TESTS.log",
+    "sha256": "DA30CA8CBD47908D1322DB3C634225E92C9D3B403E795340214D82322C0DF8F7",
+    "exit_code": 1
+  },
+  "compileall": {
+    "command": "C:\\Users\\admin\\AppData\\Local\\Programs\\Python\\Python312\\python.exe -m compileall -q ultimate_pipeline tools tests",
+    "exit_code": 0,
+    "stdout": "empty",
+    "stderr": "empty",
+    "log": "NOT_CREATED: successful compileall emitted no output"
+  },
+  "lifecycle_purge_fix": {
+    "tested_commit": "8d7e5912f981253826e1fb87d78422bf135621e7",
+    "command": "python -m pytest ultimate_pipeline/carla_tools/tests/test_carla_recovery_helpers.py tests/unit/test_carla_utils_tier3_hardening.py tests/unit/test_carla_preflight_ownership.py -q --tb=short",
+    "exit_code": 0,
+    "collected": 51,
+    "passed": 51,
+    "failed": 0,
+    "skipped": 0,
+    "warnings": 5,
+    "raw_log": "reports/v131/LIFECYCLE_PURGE_FIX_TESTS.log",
+    "raw_log_sha256": "3fbd56625ebee7df082a3f067ed58e3fd78b0551120cfa2b40f1477d8afde59f",
+    "coverage": "shared CARLA cache preservation, startup without purge, port ownership and recovery helpers"
+  },
+  "independent_review": {
+    "reviewed_commit": "c95f9b4ece19b98fad2a1818f658fbe8686f0faa",
+    "verdict": "REQUEST_CHANGES",
+    "reviewer": "separate read-only reviewer agent",
+    "findings": [
+      "P0 shared CARLA cache/temp deletion in carla_recovery.py (fixed in source commit 7b0194caf6dfac4bbcbc63e0ab5b9397b95ae1f2)",
+      "P1 RQ5 trainer emits split_manifest_sha256=None while v2 verifier requires split manifest",
+      "P1 RQ3 expected-count validator has no production caller; strict executor accepts nonempty intersection",
+      "P1 combined reviewer suite omitted cross-arm tests; reviewer ran 112 tests with 102 passed and 10 failed (9 missing map fixture, 1 synthetic rig full-set mismatch)",
+      "P1 reviewer exact base-to-head diff-check identified two EOF blank lines (fixed in 8d7e5912f981253826e1fb87d78422bf135621e7)",
+      "P2 map coordinate API is not used by production route/capture callers",
+      "camera remap receipts are not wired into capture; exact effective-K acceptance remains incomplete"
+    ],
+    "limitation": "review was on earlier report-only head; fresh review of final candidate is requested",
+    "command": [
+      "python -m pytest ultimate_pipeline/tests/unit/test_applied_sensor_rig_v2.py ultimate_pipeline/tests/unit/test_wp_c_camera_intrinsic_realization.py ultimate_pipeline/tests/unit/test_map_coordinate_frames.py ultimate_pipeline/tests/unit/test_rq3_builder_false_pass_regression.py ultimate_pipeline/tests/unit/test_task1_2_cross_arm_sync.py tests/unit/test_v111_rq5_v2_split_pretraining_authority.py ultimate_pipeline/carla_tools/tests/test_carla_recovery_helpers.py -q -p no:cacheprovider --tb=short"
+    ],
+    "reported_result": "112 selected; 102 passed, 10 failed (9 absent pinned Ingolstadt XODR, 1 synthetic applied-rig full-set mismatch); raw command exit code not supplied by reviewer",
+    "remaining_exact_sha_review": "requested for integration source 8d7e5912f981253826e1fb87d78422bf135621e7 and final report commit",
+    "review_status": "P0 fixed; RQ5 split provenance, RQ3 completeness, CRS adoption and effective-intrinsics wiring remain blockers",
+    "exact_sha_recheck": "reviewer verified final candidate SHA c95f9b4ece19b98fad2a1818f658fbe8686f0faa; report-only commits afterward do not change source implementation",
+    "reviewer_result": "Confirmed _purge_temp_dirs no-op; no purge calls in restart paths; base-to-final diff-check clean. Remaining blockers are listed in REVIEW_MATRIX.md."
+  },
+  "rq3_cross_arm_reproduction": {
+    "tested_commit": "8d7e5912f981253826e1fb87d78422bf135621e7",
+    "command": "python -m pytest ultimate_pipeline/tests/unit/test_applied_sensor_rig_v2.py ultimate_pipeline/tests/unit/test_wp_c_camera_intrinsic_realization.py ultimate_pipeline/tests/unit/test_map_coordinate_frames.py ultimate_pipeline/tests/unit/test_rq3_builder_false_pass_regression.py ultimate_pipeline/tests/unit/test_task1_2_cross_arm_sync.py tests/unit/test_v111_rq5_v2_split_pretraining_authority.py ultimate_pipeline/carla_tools/tests/test_carla_recovery_helpers.py -q -p no:cacheprovider --tb=short",
+    "exit_code": 1,
+    "collected": 113,
+    "passed": 102,
+    "failed": 11,
+    "skipped": 0,
+    "raw_log": "reports/v131/RQ3_CROSS_ARM_REVIEW_TESTS.log",
+    "raw_log_sha256": "7223f21f0e3aa43ee66eba59c05e6d9d1727044f420313359f7b93bda2cc3dd5",
+    "classification": {
+      "map_asset_missing": 9,
+      "synthetic_rig_fails_full_set_contract": 1,
+      "stale_callback_timeout_flake": 1
+    },
+    "followup": "The stale_callback test passed in isolated rerun (1 passed); 10 failures remain: 9 require pinned Ingolstadt XODR assets absent from sparse checkout, 1 synthetic applied-rig fixture lacks the trusted full sensor set."
+  },
+  "whole_range_diff_check": {
+    "command": "git diff --check 225ed15d0da6444cc257835ca777aba281553f3c..HEAD",
+    "exit_code": 0,
+    "checked_source_commit": "8d7e5912f981253826e1fb87d78422bf135621e7",
+    "note": "The report-only commits after this source commit do not alter source whitespace."
+  },
+  "lifecycle_compileall": {
+    "command": "python -m compileall -q ultimate_pipeline/carla_tools/carla_recovery.py ultimate_pipeline/carla_tools/tests/test_carla_recovery_helpers.py",
+    "tested_commit": "185825704c00b82f41c2462ce15b9df36bcabe35",
+    "exit_code": 0,
+    "output": "no output"
+  },
+  "latest_ci_at_snapshot": {
+    "pr": 71,
+    "head": "185825704c00b82f41c2462ce15b9df36bcabe35",
+    "latest_job_state": "6 success, offline tests in_progress",
+    "workflow_run": "https://github.com/lemoniadowyjohn/carla-control-suite/actions/runs/44558576328"
+  }
+}

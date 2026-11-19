@@ -35,7 +35,6 @@ import time
 import socket
 import subprocess
 import sys
-import shutil
 try:
     import psutil  # type: ignore
     _PSUTIL_AVAILABLE = True
@@ -161,50 +160,35 @@ def dump_carla_crash(context: dict):
     except Exception as e:
         print(f"⚠ Failed to write CARLA crash dump: {e}")
 
-def _kill_stale_processes():
-    """Kill leftover Unreal/Carla processes."""
-    if not _PSUTIL_AVAILABLE:
-        # Soft-fail on environments where psutil isn't installed
-        return
-    targets = ["CarlaUE4", "UE4Editor", "UE4Editor-Cmd", "CarlaUE4-Win64-Shipping"]
-
-    for proc in psutil.process_iter(["pid", "name"]):
-        name = proc.info["name"]
-        if not name:
-            continue
-        if any(t in name for t in targets):
-            try:
-                proc.kill()
-                proc.wait(1)
-                print(f"💀 Killed stale CARLA process: {name}")
-            except Exception:
-                pass
+# V94 round 2, item 4: the automatic by-name kill that used to live here
+# (substring match over ["CarlaUE4", "UE4Editor", "UE4Editor-Cmd",
+# "CarlaUE4-Win64-Shipping"] via psutil.process_iter) is permanently removed.
+# An image name does not identify a launch owner, a run, or a port -- it
+# matched UE4Editor too, so it could kill an unrelated editor session or
+# another operator's simulator. restart_carla()/get_reliable_client() below
+# now fail closed (naming the PID holding the port, when determinable, via
+# ultimate_pipeline.core.carla_utils.describe_port_occupant) instead of
+# calling this. No automatic orphan recovery is built to replace it -- that
+# is an owner decision pending (see V93_RUNTIME_ROUND2_BRIEF.md item 6).
 
 
 def _purge_temp_dirs():
-    """Delete directories that often corrupt CARLA loads."""
-    paths = [
-        os.path.join(os.getenv("LOCALAPPDATA", ""), "CarlaUE4"),
-        os.path.join(os.getenv("APPDATA", ""), "CarlaUE4"),
-    ]
+    """Legacy compatibility stub; shared CARLA paths are never purged.
 
-    temp = os.getenv("TEMP")
-    if temp:
-        for entry in os.listdir(temp):
-            if "Carla" in entry:
-                paths.append(os.path.join(temp, entry))
-
-    for p in paths:
-        if os.path.exists(p):
-            try:
-                shutil.rmtree(p, ignore_errors=True)
-                print(f"🧹 Purged CARLA cache directory: {p}")
-            except Exception as e:
-                print(f"⚠ Could not purge {p}: {e}")
+    A free RPC port does not prove that user-scoped CARLA cache/temp
+    directories belong to this process or run. Cleanup requires an explicit
+    future ownership protocol and is therefore disabled.
+    """
+    return False
 
 
 def _start_carla():
-    """Start CARLA server in detached mode."""
+    """Start CARLA server in detached mode.
+
+    Returns the launched Popen handle (P2-5: callers use this to tell a
+    process they started themselves apart from a foreign holder of the
+    port, instead of abandoning/forgetting it).
+    """
     exe = SETTINGS.CARLA_SERVER_PATH
     if not exe or not os.path.exists(exe):
         raise RuntimeError(f"CARLA exe missing: {exe}")
@@ -212,14 +196,14 @@ def _start_carla():
     print("🚀 Starting CARLA server…")
 
     if sys.platform.startswith("win"):
-        subprocess.Popen(
+        return subprocess.Popen(
             [exe, "-quality-level=Low", "-RenderOffScreen"],
             creationflags=subprocess.CREATE_NEW_PROCESS_GROUP,
             stdout=subprocess.DEVNULL,
             stderr=subprocess.DEVNULL,
         )
     else:
-        subprocess.Popen(
+        return subprocess.Popen(
             [exe, "-quality-level=Low", "-RenderOffScreen"],
             stdout=subprocess.DEVNULL,
             stderr=subprocess.DEVNULL,
@@ -252,10 +236,27 @@ def restart_carla(
     wait_s = float(startup_wait_s or SETTINGS.CARLA_STARTUP_WAIT)
     max_tries = int(retries or SETTINGS.CARLA_CONNECT_RETRIES)
 
-    # Reset CARLA and purge cache
+    # Automatic image-wide kill-by-name is permanently disabled (see the
+    # comment above _purge_temp_dirs's former neighbor, _kill_stale_processes,
+    # for why). If something already holds EITHER port, fail closed instead
+    # of silently killing it.
+    #
+    # P2-4: occupancy is decided by _port_open on both the RPC and the
+    # streaming port -- never by whether a holding PID could be resolved.
+    # psutil can fail to resolve a PID (AccessDenied, or no psutil at all)
+    # for a port that is genuinely occupied; treating "PID unknown" as "port
+    # free" purged %LOCALAPPDATA%\CarlaUE4 and the Carla temp dirs underneath
+    # a live simulator, then started a second instance into its namespace.
+    # describe_port_occupant is used only to build the message.
     if SETTINGS.CARLA_KILL_ON_FAIL:
-        _kill_stale_processes()
-        _purge_temp_dirs()
+        occupied_ports = [x for x in (p, sp) if _port_open(h, x)]
+        if occupied_ports:
+            from ultimate_pipeline.core.carla_utils import describe_port_occupant
+            details = "; ".join(describe_port_occupant(x) for x in occupied_ports)
+            print(f"❌ Refusing automatic CARLA restart: {details}")
+            return False
+        # Shared cache cleanup is intentionally disabled: port availability
+        # does not establish ownership of user-scoped CARLA directories.
 
     _start_carla()
 
@@ -314,6 +315,7 @@ def get_reliable_client() -> carla.Client:
         )
 
     attempts = 0
+    launched_proc = None  # P2-5: a process THIS call started, if any
     while attempts < SETTINGS.CARLA_CONNECT_RETRIES:
         attempts += 1
 
@@ -324,18 +326,35 @@ def get_reliable_client() -> carla.Client:
                 print(f"?? Connected to CARLA successfully (RPC:{port}, Stream:{streaming_port}).")
                 return client
             except Exception:
-                print("? CARLA responded but world unavailable - purging + restart")
+                # P2-5: a CARLA this very loop just launched can still be
+                # loading -- that is not a foreign holder. Keep retrying it
+                # (and keep its handle, rather than abandoning it and
+                # starting a second instance on top) until it either comes
+                # up or this loop's retry budget is exhausted. Only fail
+                # closed on a holder this loop did not start.
+                self_launched_and_alive = (
+                    launched_proc is not None and launched_proc.poll() is None
+                )
+                if self_launched_and_alive:
+                    print(f"⏳ CARLA started by this loop is still loading on {host}:{port} - retrying.")
+                    time.sleep(2)
+                    continue
                 if SETTINGS.CARLA_KILL_ON_FAIL:
-                    _kill_stale_processes()
-                    _purge_temp_dirs()
+                    from ultimate_pipeline.core.carla_utils import describe_port_occupant
+                    raise RuntimeError(
+                        f"CARLA responded on port {port} but its world is unavailable, and it "
+                        f"is not a process this loop started; refusing automatic image-wide "
+                        f"kill-by-name. {describe_port_occupant(port)}"
+                    )
+                print("? CARLA responded but world unavailable - retrying")
                 time.sleep(2)
 
         elif SETTINGS.CARLA_KILL_ON_FAIL:
-            # Port closed or unusable → kill + purge + start
-            _kill_stale_processes()
-            _purge_temp_dirs()
+            # A free port does not establish ownership of shared cache paths;
+            # startup must not delete user-scoped CARLA state.
+            pass
 
-        _start_carla()
+        launched_proc = _start_carla()
 
         print(f"⏳ Waiting {SETTINGS.CARLA_STARTUP_WAIT:.0f}s for CARLA to boot (Attempt {attempts}/{SETTINGS.CARLA_CONNECT_RETRIES})…")
         time.sleep(SETTINGS.CARLA_STARTUP_WAIT)

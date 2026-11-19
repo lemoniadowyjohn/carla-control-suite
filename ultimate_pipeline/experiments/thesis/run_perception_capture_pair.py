@@ -37,7 +37,12 @@ def _resolve_calib_path(explicit_path: Optional[str]) -> str:
         if p.is_file():
             print(f"Using explicit calib path: {p}")
             return str(p)
-        print(f"Warning: Explicit calib path not found: {p}, trying fallbacks")
+        # In a paired thesis experiment the selected calibration is part of
+        # the scientific contract. Silently replacing a missing explicit rig
+        # with another JSON file invalidates sensor-equivalence claims.
+        raise FileNotFoundError(
+            f"explicit --calib-json does not exist: {p}"
+        )
 
     if standard_path.is_file():
         print(f"Using standard calib path: {standard_path}")
@@ -377,14 +382,26 @@ def main(argv: Optional[List[str]] = None) -> int:
     # Compute arm-level identities
     manual_calib = calibration_identity(calib_path)
     auto_calib = calibration_identity(calib_path)
-    manual_rig = sensor_rig_from_calib(calib_path)
-    auto_rig = sensor_rig_from_calib(calib_path)
 
     # Read arm manifests if present
     manual_arm_manifest_path = manual_dir / "pair_manifest.json"
     auto_arm_manifest_path = auto_dir / "pair_manifest.json"
     manual_arm = _safe_read_json(manual_arm_manifest_path) if manual_arm_manifest_path.is_file() else {}
     auto_arm = _safe_read_json(auto_arm_manifest_path) if auto_arm_manifest_path.is_file() else {}
+
+    def _applied_rig_receipt(arm_dir: Path) -> Dict[str, Any]:
+        verification = _safe_read_json(arm_dir / "rig_verification.json")
+        receipt = verification.get("applied_sensor_rig_v2") if isinstance(verification, dict) else None
+        return receipt if isinstance(receipt, dict) else {}
+
+    manual_applied_rig = _applied_rig_receipt(manual_dir)
+    auto_applied_rig = _applied_rig_receipt(auto_dir)
+    manual_rig = sensor_rig_from_calib(
+        calib_path, applied_sensor_rig_v2=manual_applied_rig
+    )
+    auto_rig = sensor_rig_from_calib(
+        calib_path, applied_sensor_rig_v2=auto_applied_rig
+    )
 
     # Build the authoritative pair manifest
     pair_id = f"thesis_pair_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}"
@@ -496,6 +513,13 @@ def main(argv: Optional[List[str]] = None) -> int:
         arm["capture_config_sha256"] = capture_config_id["capture_config_sha256"]
         arm["traffic_manager_sha256"] = ""
         arm["vehicle_calibration_binding_sha256"] = ""
+    for arm, receipt in ((manual_arm, manual_applied_rig), (auto_arm, auto_applied_rig)):
+        if receipt:
+            from ultimate_pipeline.sensors.applied_sensor_rig import canonical_sha256
+            arm["applied_sensor_rig_v2"] = receipt
+            arm["applied_sensor_rig_v2_sha256"] = canonical_sha256(receipt)
+            # The arm writer must bind these to the finalized dataset receipt.
+            # Missing identities stay absent and fail validation.
 
     # Build manifest
     raw_pair_valid = bool(ok) and bool(manual_status.get("ok", ok)) and bool(auto_status.get("ok", ok))
@@ -509,6 +533,7 @@ def main(argv: Optional[List[str]] = None) -> int:
         route_manifest_path=route_manifest_path,
         route_manifest_sha256=route_manifest_sha256,
         calibration_sha256=manual_calib["calib_sha256"],
+        calibration_path=str(Path(calib_path).resolve()),
         sensor_rig_sha256=manual_rig["sensor_rig_sha256"],
         weather_sha256=manual_weather_sha,
         capture_config_sha256=capture_config_id["capture_config_sha256"],
