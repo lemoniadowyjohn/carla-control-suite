@@ -100,5 +100,28 @@
     ],
     "reported_result": "112 selected; 102 passed, 10 failed (9 absent pinned Ingolstadt XODR, 1 synthetic applied-rig full-set mismatch); raw command exit code not supplied by reviewer",
     "remaining_exact_sha_review": "requested for integration source 8d7e5912f981253826e1fb87d78422bf135621e7 and final report commit"
+  },
+  "rq3_cross_arm_reproduction": {
+    "tested_commit": "8d7e5912f981253826e1fb87d78422bf135621e7",
+    "command": "python -m pytest ultimate_pipeline/tests/unit/test_applied_sensor_rig_v2.py ultimate_pipeline/tests/unit/test_wp_c_camera_intrinsic_realization.py ultimate_pipeline/tests/unit/test_map_coordinate_frames.py ultimate_pipeline/tests/unit/test_rq3_builder_false_pass_regression.py ultimate_pipeline/tests/unit/test_task1_2_cross_arm_sync.py tests/unit/test_v111_rq5_v2_split_pretraining_authority.py ultimate_pipeline/carla_tools/tests/test_carla_recovery_helpers.py -q -p no:cacheprovider --tb=short",
+    "exit_code": 1,
+    "collected": 113,
+    "passed": 102,
+    "failed": 11,
+    "skipped": 0,
+    "raw_log": "reports/v131/RQ3_CROSS_ARM_REVIEW_TESTS.log",
+    "raw_log_sha256": "7223f21f0e3aa43ee66eba59c05e6d9d1727044f420313359f7b93bda2cc3dd5",
+    "classification": {
+      "map_asset_missing": 9,
+      "synthetic_rig_fails_full_set_contract": 1,
+      "stale_callback_timeout_flake": 1
+    },
+    "followup": "The stale_callback test passed in isolated rerun (1 passed); 10 failures remain: 9 require pinned Ingolstadt XODR assets absent from sparse checkout, 1 synthetic applied-rig fixture lacks the trusted full sensor set."
+  },
+  "whole_range_diff_check": {
+    "command": "git diff --check 225ed15d0da6444cc257835ca777aba281553f3c..HEAD",
+    "exit_code": 0,
+    "checked_source_commit": "8d7e5912f981253826e1fb87d78422bf135621e7",
+    "note": "The report-only commits after this source commit do not alter source whitespace."
   }
 }

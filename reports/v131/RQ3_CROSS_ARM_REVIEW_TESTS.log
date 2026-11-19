@@ -1,0 +1,165 @@
+============================= test session starts =============================
+platform win32 -- Python 3.12.2, pytest-8.0.1, pluggy-1.4.0
+rootdir: F:\CARLA_RECOVERY\worktrees\v129-calib-admission-20261119
+configfile: pytest.ini
+plugins: anyio-4.2.0
+collected 113 items
+
+ultimate_pipeline\tests\unit\test_applied_sensor_rig_v2.py ............. [ 11%]
+.                                                                        [ 12%]
+ultimate_pipeline\tests\unit\test_wp_c_camera_intrinsic_realization.py . [ 13%]
+...............F                                                         [ 27%]
+ultimate_pipeline\tests\unit\test_map_coordinate_frames.py ...........   [ 37%]
+ultimate_pipeline\tests\unit\test_rq3_builder_false_pass_regression.py . [ 38%]
+...........                                                              [ 47%]
+ultimate_pipeline\tests\unit\test_task1_2_cross_arm_sync.py ..........FF [ 58%]
+FFFFF..FF.F                                                              [ 68%]
+tests\unit\test_v111_rq5_v2_split_pretraining_authority.py ......        [ 73%]
+ultimate_pipeline\carla_tools\tests\test_carla_recovery_helpers.py ..... [ 77%]
+.........................                                                [100%]
+
+================================== FAILURES ===================================
+__________________ test_stale_mock_sensor_frame_fails_closed __________________
+ultimate_pipeline\tests\unit\test_wp_c_camera_intrinsic_realization.py:446: in test_stale_mock_sensor_frame_fails_closed
+    harness._record_one_frame(World(), {"front_camera": sensor}, queues, tmp_path, 0.01)
+ultimate_pipeline\tools\verify_camera_intrinsics_live.py:295: in _record_one_frame
+    raise TimeoutError(f"sensor_frame_timeout:{name}:{frame_id}")
+E   TimeoutError: sensor_frame_timeout:front_camera:11
+
+During handling of the above exception, another exception occurred:
+ultimate_pipeline\tests\unit\test_wp_c_camera_intrinsic_realization.py:445: in test_stale_mock_sensor_frame_fails_closed
+    with pytest.raises(TimeoutError, match="stale_callback_timeout"):
+E   AssertionError: Regex pattern did not match.
+E    Regex: 'stale_callback_timeout'
+E    Input: 'sensor_frame_timeout:front_camera:11'
+_____________ test_task2_complete_contract_passes_protocol_claim ______________
+ultimate_pipeline\tests\unit\test_task1_2_cross_arm_sync.py:233: in test_task2_complete_contract_passes_protocol_claim
+    assert validation["valid"] is True, validation["invalid_reasons"]
+E   AssertionError: ['manual:applied_sensor_rig_v2:requested_sensor_set_does_not_match_trusted_calibration', 'auto:applied_sensor_rig_v2:requested_sensor_set_does_not_match_trusted_calibration']
+E   assert False is True
+________________ test_task2_different_calibration_blocks_claim ________________
+ultimate_pipeline\tests\unit\test_task1_2_cross_arm_sync.py:239: in test_task2_different_calibration_blocks_claim
+    validation = validate_pair_manifest(m)
+ultimate_pipeline\perception\rq3_capture_contract.py:974: in validate_pair_manifest
+    if not is_ingolstadt_auto_arm(auto_map):
+ultimate_pipeline\perception\rq3_capture_contract.py:719: in is_ingolstadt_auto_arm
+    pinned = verify_pinned_map("auto_map_of_record")
+ultimate_pipeline\carla_tools\map_registry.py:1000: in verify_pinned_map
+    raise MapRegistryDriftError(
+E   ultimate_pipeline.carla_tools.map_registry.MapRegistryDriftError: pinned map 'auto_map_of_record' -> 'auto_map_of_record': file not found at F:\CARLA_RECOVERY\worktrees\v129-calib-admission-20261119\campaigns\ingolstadt_cooked_perception_v1\candidate\ingolstadt_perception_map_of_record_20260916_232831.xodr
+________________ test_task2_different_sensor_rig_blocks_claim _________________
+ultimate_pipeline\tests\unit\test_task1_2_cross_arm_sync.py:248: in test_task2_different_sensor_rig_blocks_claim
+    validation = validate_pair_manifest(m)
+ultimate_pipeline\perception\rq3_capture_contract.py:974: in validate_pair_manifest
+    if not is_ingolstadt_auto_arm(auto_map):
+ultimate_pipeline\perception\rq3_capture_contract.py:719: in is_ingolstadt_auto_arm
+    pinned = verify_pinned_map("auto_map_of_record")
+ultimate_pipeline\carla_tools\map_registry.py:1000: in verify_pinned_map
+    raise MapRegistryDriftError(
+E   ultimate_pipeline.carla_tools.map_registry.MapRegistryDriftError: pinned map 'auto_map_of_record' -> 'auto_map_of_record': file not found at F:\CARLA_RECOVERY\worktrees\v129-calib-admission-20261119\campaigns\ingolstadt_cooked_perception_v1\candidate\ingolstadt_perception_map_of_record_20260916_232831.xodr
+__________________ test_task2_different_weather_blocks_claim __________________
+ultimate_pipeline\tests\unit\test_task1_2_cross_arm_sync.py:256: in test_task2_different_weather_blocks_claim
+    validation = validate_pair_manifest(m)
+ultimate_pipeline\perception\rq3_capture_contract.py:974: in validate_pair_manifest
+    if not is_ingolstadt_auto_arm(auto_map):
+ultimate_pipeline\perception\rq3_capture_contract.py:719: in is_ingolstadt_auto_arm
+    pinned = verify_pinned_map("auto_map_of_record")
+ultimate_pipeline\carla_tools\map_registry.py:1000: in verify_pinned_map
+    raise MapRegistryDriftError(
+E   ultimate_pipeline.carla_tools.map_registry.MapRegistryDriftError: pinned map 'auto_map_of_record' -> 'auto_map_of_record': file not found at F:\CARLA_RECOVERY\worktrees\v129-calib-admission-20261119\campaigns\ingolstadt_cooked_perception_v1\candidate\ingolstadt_perception_map_of_record_20260916_232831.xodr
+____________ test_task2_different_runtime_sensor_rig_blocks_claim _____________
+ultimate_pipeline\tests\unit\test_task1_2_cross_arm_sync.py:264: in test_task2_different_runtime_sensor_rig_blocks_claim
+    validation = validate_pair_manifest(m)
+ultimate_pipeline\perception\rq3_capture_contract.py:974: in validate_pair_manifest
+    if not is_ingolstadt_auto_arm(auto_map):
+ultimate_pipeline\perception\rq3_capture_contract.py:719: in is_ingolstadt_auto_arm
+    pinned = verify_pinned_map("auto_map_of_record")
+ultimate_pipeline\carla_tools\map_registry.py:1000: in verify_pinned_map
+    raise MapRegistryDriftError(
+E   ultimate_pipeline.carla_tools.map_registry.MapRegistryDriftError: pinned map 'auto_map_of_record' -> 'auto_map_of_record': file not found at F:\CARLA_RECOVERY\worktrees\v129-calib-admission-20261119\campaigns\ingolstadt_cooked_perception_v1\candidate\ingolstadt_perception_map_of_record_20260916_232831.xodr
+_______________ test_task2_missing_timing_identity_blocks_claim _______________
+ultimate_pipeline\tests\unit\test_task1_2_cross_arm_sync.py:274: in test_task2_missing_timing_identity_blocks_claim
+    validation = validate_pair_manifest(m)
+ultimate_pipeline\perception\rq3_capture_contract.py:974: in validate_pair_manifest
+    if not is_ingolstadt_auto_arm(auto_map):
+ultimate_pipeline\perception\rq3_capture_contract.py:719: in is_ingolstadt_auto_arm
+    pinned = verify_pinned_map("auto_map_of_record")
+ultimate_pipeline\carla_tools\map_registry.py:1000: in verify_pinned_map
+    raise MapRegistryDriftError(
+E   ultimate_pipeline.carla_tools.map_registry.MapRegistryDriftError: pinned map 'auto_map_of_record' -> 'auto_map_of_record': file not found at F:\CARLA_RECOVERY\worktrees\v129-calib-admission-20261119\campaigns\ingolstadt_cooked_perception_v1\candidate\ingolstadt_perception_map_of_record_20260916_232831.xodr
+____________ test_task2_invalid_route_correspondence_blocks_claim _____________
+ultimate_pipeline\tests\unit\test_task1_2_cross_arm_sync.py:282: in test_task2_invalid_route_correspondence_blocks_claim
+    validation = validate_pair_manifest(m)
+ultimate_pipeline\perception\rq3_capture_contract.py:974: in validate_pair_manifest
+    if not is_ingolstadt_auto_arm(auto_map):
+ultimate_pipeline\perception\rq3_capture_contract.py:719: in is_ingolstadt_auto_arm
+    pinned = verify_pinned_map("auto_map_of_record")
+ultimate_pipeline\carla_tools\map_registry.py:1000: in verify_pinned_map
+    raise MapRegistryDriftError(
+E   ultimate_pipeline.carla_tools.map_registry.MapRegistryDriftError: pinned map 'auto_map_of_record' -> 'auto_map_of_record': file not found at F:\CARLA_RECOVERY\worktrees\v129-calib-admission-20261119\campaigns\ingolstadt_cooked_perception_v1\candidate\ingolstadt_perception_map_of_record_20260916_232831.xodr
+__________________ test_task2_tampered_manifest_blocks_claim __________________
+ultimate_pipeline\tests\unit\test_task1_2_cross_arm_sync.py:312: in test_task2_tampered_manifest_blocks_claim
+    validation = validate_pair_manifest(m)
+ultimate_pipeline\perception\rq3_capture_contract.py:974: in validate_pair_manifest
+    if not is_ingolstadt_auto_arm(auto_map):
+ultimate_pipeline\perception\rq3_capture_contract.py:719: in is_ingolstadt_auto_arm
+    pinned = verify_pinned_map("auto_map_of_record")
+ultimate_pipeline\carla_tools\map_registry.py:1000: in verify_pinned_map
+    raise MapRegistryDriftError(
+E   ultimate_pipeline.carla_tools.map_registry.MapRegistryDriftError: pinned map 'auto_map_of_record' -> 'auto_map_of_record': file not found at F:\CARLA_RECOVERY\worktrees\v129-calib-admission-20261119\campaigns\ingolstadt_cooked_perception_v1\candidate\ingolstadt_perception_map_of_record_20260916_232831.xodr
+_____________ test_task2_wrong_runtime_map_identity_blocks_claim ______________
+ultimate_pipeline\tests\unit\test_task1_2_cross_arm_sync.py:326: in test_task2_wrong_runtime_map_identity_blocks_claim
+    validation = validate_pair_manifest(m)
+ultimate_pipeline\perception\rq3_capture_contract.py:974: in validate_pair_manifest
+    if not is_ingolstadt_auto_arm(auto_map):
+ultimate_pipeline\perception\rq3_capture_contract.py:719: in is_ingolstadt_auto_arm
+    pinned = verify_pinned_map("auto_map_of_record")
+ultimate_pipeline\carla_tools\map_registry.py:1000: in verify_pinned_map
+    raise MapRegistryDriftError(
+E   ultimate_pipeline.carla_tools.map_registry.MapRegistryDriftError: pinned map 'auto_map_of_record' -> 'auto_map_of_record': file not found at F:\CARLA_RECOVERY\worktrees\v129-calib-admission-20261119\campaigns\ingolstadt_cooked_perception_v1\candidate\ingolstadt_perception_map_of_record_20260916_232831.xodr
+______ test_task2_map_eligibility_alone_does_not_grant_capture_validity _______
+ultimate_pipeline\tests\unit\test_task1_2_cross_arm_sync.py:364: in test_task2_map_eligibility_alone_does_not_grant_capture_validity
+    pair = validate_ingolstadt_pair(manual_arm=manual_identity, auto_arm=auto_identity)
+ultimate_pipeline\perception\experiment_map_pair_authority.py:85: in validate_ingolstadt_pair
+    auto_result = validate_auto_arm(auto_arm)
+ultimate_pipeline\perception\experiment_map_pair_authority.py:61: in validate_auto_arm
+    pinned = verify_pinned_map("auto_map_of_record")
+ultimate_pipeline\carla_tools\map_registry.py:1000: in verify_pinned_map
+    raise MapRegistryDriftError(
+E   ultimate_pipeline.carla_tools.map_registry.MapRegistryDriftError: pinned map 'auto_map_of_record' -> 'auto_map_of_record': file not found at F:\CARLA_RECOVERY\worktrees\v129-calib-admission-20261119\campaigns\ingolstadt_cooked_perception_v1\candidate\ingolstadt_perception_map_of_record_20260916_232831.xodr
+============================== warnings summary ===============================
+ultimate_pipeline\config\settings.py:2036
+  F:\CARLA_RECOVERY\worktrees\v129-calib-admission-20261119\ultimate_pipeline\config\settings.py:2036: RuntimeWarning: MANUAL_TILES_DIR resolved to missing dir: 'F:\CARLA_RECOVERY\worktrees\v129-calib-admission-20261119\domain_gap_results\manual_tiles'. Set UP_MANUAL_TILES_DIR to a valid dir.
+    _warn_missing_setting_path(
+
+ultimate_pipeline\config\settings.py:2042
+  F:\CARLA_RECOVERY\worktrees\v129-calib-admission-20261119\ultimate_pipeline\config\settings.py:2042: RuntimeWarning: BASE_OUTPUT_DIR resolved to missing dir: 'F:\CARLA_RECOVERY\worktrees\v129-calib-admission-20261119\ultimate_pipeline_out'. Set UP_BASE_OUTPUT_DIR to a valid dir.
+    _warn_missing_setting_path(
+
+ultimate_pipeline\config\settings.py:2048
+  F:\CARLA_RECOVERY\worktrees\v129-calib-admission-20261119\ultimate_pipeline\config\settings.py:2048: RuntimeWarning: COORDINATES_JSON resolved to missing file: 'F:\CARLA_RECOVERY\worktrees\v129-calib-admission-20261119\ultimate_pipeline\config\coordinates.json'. Set UP_COORDINATES_JSON to a valid file.
+    _warn_missing_setting_path(
+
+ultimate_pipeline\config\settings.py:2054
+  F:\CARLA_RECOVERY\worktrees\v129-calib-admission-20261119\ultimate_pipeline\config\settings.py:2054: RuntimeWarning: HPC_DIR resolved to missing dir: 'F:\CARLA_RECOVERY\worktrees\v129-calib-admission-20261119\hpc'. Set UP_HPC_DIR to a valid dir.
+    _warn_missing_setting_path(
+
+ultimate_pipeline\config\settings.py:2060
+  F:\CARLA_RECOVERY\worktrees\v129-calib-admission-20261119\ultimate_pipeline\config\settings.py:2060: RuntimeWarning: PIPELINE_OUT_DIR resolved to missing dir: 'F:\CARLA_RECOVERY\worktrees\v129-calib-admission-20261119\ultimate_pipeline_out'. Set UP_PIPELINE_OUT_DIR to a valid dir.
+    _warn_missing_setting_path(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED ultimate_pipeline/tests/unit/test_wp_c_camera_intrinsic_realization.py::test_stale_mock_sensor_frame_fails_closed
+FAILED ultimate_pipeline/tests/unit/test_task1_2_cross_arm_sync.py::test_task2_complete_contract_passes_protocol_claim
+FAILED ultimate_pipeline/tests/unit/test_task1_2_cross_arm_sync.py::test_task2_different_calibration_blocks_claim
+FAILED ultimate_pipeline/tests/unit/test_task1_2_cross_arm_sync.py::test_task2_different_sensor_rig_blocks_claim
+FAILED ultimate_pipeline/tests/unit/test_task1_2_cross_arm_sync.py::test_task2_different_weather_blocks_claim
+FAILED ultimate_pipeline/tests/unit/test_task1_2_cross_arm_sync.py::test_task2_different_runtime_sensor_rig_blocks_claim
+FAILED ultimate_pipeline/tests/unit/test_task1_2_cross_arm_sync.py::test_task2_missing_timing_identity_blocks_claim
+FAILED ultimate_pipeline/tests/unit/test_task1_2_cross_arm_sync.py::test_task2_invalid_route_correspondence_blocks_claim
+FAILED ultimate_pipeline/tests/unit/test_task1_2_cross_arm_sync.py::test_task2_tampered_manifest_blocks_claim
+FAILED ultimate_pipeline/tests/unit/test_task1_2_cross_arm_sync.py::test_task2_wrong_runtime_map_identity_blocks_claim
+FAILED ultimate_pipeline/tests/unit/test_task1_2_cross_arm_sync.py::test_task2_map_eligibility_alone_does_not_grant_capture_validity
+================= 11 failed, 102 passed, 5 warnings in 16.36s =================
+EXIT_CODE=1
