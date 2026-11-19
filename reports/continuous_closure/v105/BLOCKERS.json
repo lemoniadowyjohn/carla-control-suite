@@ -1,0 +1,48 @@
+{
+  "blockers": [
+    {
+      "class": "BLOCKED_EXTERNAL",
+      "id": "B-XML-001",
+      "owner": "Chat 1 / Codex",
+      "recovery_action": "Port the encoding-aware, comment-aware, whole-document scan semantics demonstrated in reports/v103/o1/safe_xml.py into quality/final_artifact_gates.py, re-run the four Scope 1 cases plus the two legitimate controls.",
+      "summary": "V96-XMLBOUND-001 has no corrected implementation; the file is Chat 1 owned and the fix must land on the Chat 1 branch with its own review."
+    },
+    {
+      "class": "BLOCKED_EXTERNAL",
+      "id": "B-GUI-001",
+      "owner": "Codex (PR #34)",
+      "recovery_action": "Implement the six corrections in reports/v104/V104_FINAL_REVIEW_REPORT.md section 6.2 and drive tests/unit/v104_gui_authority_adversarial.py from 6 failed / 9 passed to 15 passed.",
+      "summary": "6 GUI release-authority defects reproduced; the source is Codex owned."
+    },
+    {
+      "class": "BLOCKED_OWNERSHIP",
+      "id": "B-LOCK-001",
+      "owner": "Codex C3",
+      "recovery_action": "Codex resolves all nine under one owner and an approved dependency order; PR #28 is reconciled into PR #37 rather than retired.",
+      "summary": "9 locking review findings are open across PR #28 and PR #37; worktree_lock.py is a Codex single-writer file."
+    },
+    {
+      "class": "BLOCKED_EXTERNAL",
+      "id": "B-BRANCH-001",
+      "owner": "repository owner",
+      "recovery_action": "Owner applies the ruleset in reports/v103/o5/BRANCH_POLICY_CHECKLIST.md and passes the refusal test (a push without the gate must be refused).",
+      "summary": "The production branch is not protected and the repository has zero rulesets; governance cannot be reported as enforced."
+    },
+    {
+      "class": "BLOCKED_RESOURCES",
+      "id": "B-TORCH-001",
+      "owner": "CI / research owner",
+      "recovery_action": "Install the gnn extra, or partition the 23 torch-dependent modules for the approved offline profile so the non-GNN research tests can run.",
+      "summary": "The torch optional extra is not installed, so 23 research test modules cannot be collected; R30/R31 cannot be honestly moved."
+    },
+    {
+      "class": "BLOCKED_EXTERNAL",
+      "id": "B-CARLA-001",
+      "owner": "operator",
+      "recovery_action": "Operator approval for a live CARLA 0.9.16 certification run against the accepted candidate SHA.",
+      "summary": "No CARLA runtime, Unreal cook or operator authorization was used; no runtime certification exists."
+    }
+  ],
+  "schema": "v105_blockers/v1",
+  "updated_utc": "2026-11-13T08:37:33.520555+00:00"
+}
