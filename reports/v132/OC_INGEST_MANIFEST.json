@@ -1,0 +1,125 @@
+{
+  "schema": "v132.oc_ingest_manifest.v1",
+  "review_date": "2026-11-19",
+  "production_sha": "225ed15d0da6444cc257835ca777aba281553f3c",
+  "candidate": {
+    "branch": "integration/v132-pre-claude-source-candidate-20261119",
+    "sha_at_review": "764f0e697b5a8ebd915d8fcc2cb1266bf770df05",
+    "clean_at_review": true,
+    "base_sha": "225ed15d0da6444cc257835ca777aba281553f3c",
+    "integrated_oc_a_tip": "7b655fb8db9f92682f41ad1e08404bd7c5ff657d",
+    "integrated_source_merge": "49d037696a21cba1ca5763d4dd25de86cc47c4b4",
+    "oc_d_tip_integrated": false
+  },
+  "remote_verification": {
+    "production": "225ed15d0da6444cc257835ca777aba281553f3c",
+    "oc_a": "7b655fb8db9f92682f41ad1e08404bd7c5ff657d",
+    "oc_d": "675a0fd2c54c705d57e85772c8d6bee0ec5d156a",
+    "oc_a_check_runs": 0,
+    "oc_a_commit_status": "pending_no_status_contexts",
+    "oc_a_pr_count_for_exact_branch": 0,
+    "oc_d_check_runs": 0,
+    "oc_d_commit_status": "pending_no_status_contexts",
+    "oc_d_pr_count_for_exact_branch": 0
+  },
+  "lanes": {
+    "OC-A": {
+      "status": "TEST_ONLY_VERIFIED_INTEGRATED",
+      "sha": "7b655fb8db9f92682f41ad1e08404bd7c5ff657d",
+      "commits_since_production": 29,
+      "new_commits_after_pr70": 1,
+      "changed_files": [
+        "tests/unit/test_regen_measure_acceptance_component_reachability.py",
+        "tests/unit/test_regen_strict_preconditions.py",
+        "tests/unit/test_v86_acceptance_strict.py"
+      ],
+      "evidence": "112 focused acceptance tests passed on current V132 candidate; previous OpenCode independent review APPROVE; no exact-head GitHub checks"
+    },
+    "OC-B": {
+      "status": "PRIOR_HANDOFF_VERIFIED_NOT_REFRESHED_NOT_INTEGRATED",
+      "sha": "e798d778a18840938cdb30a88d0d4eec5c0786e3",
+      "stack": "#66 -> #68 -> #69",
+      "blocker": "T1 final candidate has a reproduced regression; strict live route executor remains NOT_RUN; no fresh tests/CI in this closure"
+    },
+    "OC-C": {
+      "status": "SOURCE_MODIFIED_REVIEW_PENDING_BLOCKED_NOT_INTEGRATED",
+      "sha": "66c1459d9a55a2482b7df740e628301ee8bdd726",
+      "blocker": "prior handoff found zero production callers for CRS API; current exact-head CI/review not refreshed"
+    },
+    "OC-D": {
+      "status": "SOURCE_MODIFIED_REQUEST_CHANGES_NOT_INTEGRATED",
+      "sha": "675a0fd2c54c705d57e85772c8d6bee0ec5d156a",
+      "base_sha": "4ad05dc3b5c67df24551468d385a0447a73fc106",
+      "commits_since_production": 8,
+      "new_commits_after_pr55": 1,
+      "lineage": "#52 -> #54 -> #55; PR #50 is parallel, not an ancestor",
+      "patch_id_matches_pr50": "62c805fdf5335226f1e6798d55dad6e5c6bfa1f5",
+      "changed_files": [
+        "tests/unit/test_rq5_execution_correctness.py",
+        "tests/unit/test_v111_rq5_v2_split_pretraining_authority.py",
+        "ultimate_pipeline/perception/rq5_provenance.py"
+      ],
+      "independent_review": "REQUEST_CHANGES at exact SHA",
+      "tests": {"rq5_targeted": "19 passed, 0 failed, 0 skipped", "split_disjointness_node": "1 passed, 0 failed, 0 skipped"},
+      "blockers": [
+        "verifier checks presence/truthiness only and accepts nonexistent split path, all-zero digest, and garbage pretraining value",
+        "train_launcher.py:733 emits split_manifest_sha256=None in its v2 model manifest",
+        "run_generalization_experiments.py:780,957 makes required provenance opt-in for fresh training"
+      ],
+      "patch_identity": "PR #50 exact diff patch-id matches; do not import #50 separately"
+    },
+    "OC-E": {
+      "status": "PRIOR_VERIFICATION_NOT_IMPORTED",
+      "PR49": {"sha": "d30a0544e385e4b353f125a61cd678683d2c2a11", "tests": "5 passed"},
+      "PR56": {"sha": "af22f82c5095462b2bd2ae0f2a1c6b3bd09eba6c", "tests": "49 passed, 1 skipped (sklearn unavailable)"},
+      "PR40": {"sha": "5a360c600af940c78d82ca6e4a14e9f69c67ce07", "tests": "38 passed; orphan remeasurement NOT_RUN"},
+      "OSM39_57": {"status": "BLOCKED_CONFLICT", "heads": ["5368eda3448ef9a96588ad6ade8ac14a915bdd29", "694f1a419a184c5dea2de74f66d47a902014dc51"]}
+    },
+    "OC-F": {
+      "status": "BLOCKED_NOT_INTEGRATED",
+      "lifecycle": "#35 -> #60 -> #64: ownership tests and exact-head CI pending",
+      "leases": "#37 requires fencing/symlink verification; #58 head not located",
+      "gui": "#34/#43 are not production descendants",
+      "gnn": "BLOCKED_MODEL_UNVALIDATED"
+    }
+  },
+  "oc_d_independent_review": {
+    "scope_sha": "675a0fd2c54c705d57e85772c8d6bee0ec5d156a",
+    "verdict": "REQUEST_CHANGES",
+    "environment": "Windows; Python 3.12.2; pytest 8.0.1; PYTHONPATH cleared; torch 2.2.0+cpu; NumPy 2.5.3; torchvision unavailable",
+    "findings": [
+      {"id": "OCD-R1", "severity": "P1", "location": "ultimate_pipeline/perception/rq5_provenance.py:681-685", "issue": "v2 check verifies only truthiness of split hash and pretraining field; no digest/path/content/schema verification. Malformed stale receipt reproduction returns ok=True."},
+      {"id": "OCD-R2", "severity": "P1", "location": "ultimate_pipeline/perception/train_launcher.py:715-734", "issue": "normal v2 manifest producer passes split_manifest_sha256=None; governed verification rejects its output."},
+      {"id": "OCD-R3", "severity": "P1", "location": "ultimate_pipeline/run_generalization_experiments.py:780,955-958", "issue": "require_manifest defaults false and fresh runs can skip governed provenance verification unless caller sets the flag."}
+    ],
+    "repro": {"expected": "reject", "actual": "ok=True", "split_file_exists": false, "split_sha256": "0000000000000000000000000000000000000000000000000000000000000000", "pretraining_contract": "unverified nonempty garbage"},
+    "limitations": "Full test_rq5_execution_correctness.py not run; torchvision missing and torch reports NumPy ABI warning. No training or evaluation executed."
+  },
+  "candidate_comparison": {
+    "candidate_paths_vs_production": 60,
+    "oc_d_paths_vs_production": 7,
+    "changed_path_overlap": [],
+    "merge_base": "225ed15d0da6444cc257835ca777aba281553f3c",
+    "merge_attempted": false,
+    "reason": "semantic P1 admission defects block OC-D ingestion despite zero filename overlap"
+  },
+  "artifacts": {
+    "rq5_19_tests": {"path": "reports/v132/ocd_independent_review/rq5_19_tests.txt", "sha256": "82B60617A8D386654A259A7F8EBEF3F7B1F624973338A58D25E5998C27D5726F"},
+    "rq5_19_collected_nodeids": {"path": "reports/v132/ocd_independent_review/rq5_19_collected_nodeids.txt", "sha256": "3EAFF141F10C9E254FF511CB2A25BDC0DA507A609F7BE0394B533F16708A3113"},
+    "split_disjointness_test": {"path": "reports/v132/ocd_independent_review/split_disjointness_test.txt", "sha256": "A048953CDE5BE8230D94F6F18C543E8CE79F3A9528252418C33AF2DEE75EF6CE"},
+    "malformed_v2_repro": {"path": "reports/v132/ocd_independent_review/malformed_v2_receipt_repro.txt", "sha256": "E6365C66BF29475100CE8B780E3E774A50AAF6D44BEF4AE8A82D044137835836"},
+    "review_markdown": {"path": "reports/v132/OC_D_INDEPENDENT_REVIEW.md", "sha256": "1CF8D39DB931436026A407268682CA1BDE65F6865374B745EB2BD548154CAEAA"}
+  },
+  "ci_and_science": {
+    "github_exact_heads": "NO CHECK RUNS OR STATUS CONTEXTS on OC-A/OC-D; no PRs found for exact branches",
+    "full_offline_ci": "NOT_RUN",
+    "carla_runtime": "NOT_RUN",
+    "rq5_training_heldout_evaluation": "NOT_RUN",
+    "SOURCE_READY": "NO",
+    "CI_READY": "NO",
+    "RUNTIME_READY": "NO",
+    "RESEARCH_READY": "NO",
+    "MERGE_ALLOWED": "NO"
+  }
+}
+

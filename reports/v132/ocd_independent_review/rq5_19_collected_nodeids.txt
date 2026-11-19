@@ -1,0 +1,35 @@
+============================= test session starts =============================
+platform win32 -- Python 3.12.2, pytest-8.0.1, pluggy-1.4.0
+rootdir: F:\opencode_worktrees\v131\ocd-rq5
+configfile: pytest.ini
+plugins: anyio-4.2.0
+collected 19 items
+
+<Dir ocd-rq5>
+  <Package tests>
+    <Dir unit>
+      <Module test_v111_rq5_v2_split_pretraining_authority.py>
+        <Function test_v2_requires_split_and_pretraining_independently_of_seed[None-None-expected0]>
+        <Function test_v2_requires_split_and_pretraining_independently_of_seed[split1-None-expected1]>
+        <Function test_v2_requires_split_and_pretraining_independently_of_seed[None-pretraining2-expected2]>
+        <Function test_v2_with_both_contracts_passes>
+        <Function test_v1_compatibility_not_affected>
+        <Function test_optional_provenance_mode_keeps_legacy_diagnostic_compatibility>
+      <Module test_v117_rq5_eval_identity_guard.py>
+        <Function test_sim_eval_rejects_identity_mismatch_even_after_successful_subprocess[wrong_dataset-expected_model-expected_errors0]>
+        <Function test_sim_eval_rejects_identity_mismatch_even_after_successful_subprocess[expected_dataset-wrong_model-expected_errors1]>
+        <Function test_sim_eval_rejects_identity_mismatch_even_after_successful_subprocess[wrong_dataset-wrong_model-expected_errors2]>
+        <Function test_sim_eval_rejects_identity_mismatch_even_after_successful_subprocess[-expected_model-expected_errors3]>
+        <Function test_sim_eval_rejects_identity_mismatch_even_after_successful_subprocess[expected_dataset--expected_errors4]>
+        <Function test_sim_eval_matching_identities_pass_with_successful_subprocess>
+      <Module test_v121_rq5_reused_checkpoint_claim.py>
+        <Function test_checkpoint_reuse_never_emits_new_training_success[True]>
+        <Function test_checkpoint_reuse_never_emits_new_training_success[False]>
+        <Function test_fresh_training_retains_success_status>
+      <Module test_v122_rq5_stale_evaluation_report.py>
+        <Function test_old_condition_report_cannot_satisfy_new_invocation[sim]>
+        <Function test_old_condition_report_cannot_satisfy_new_invocation[real]>
+        <Function test_two_invocations_have_distinct_reports_and_preserve_prior_evidence[sim]>
+        <Function test_two_invocations_have_distinct_reports_and_preserve_prior_evidence[real]>
+
+========================= 19 tests collected in 0.67s =========================

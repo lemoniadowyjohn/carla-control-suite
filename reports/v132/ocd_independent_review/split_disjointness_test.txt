@@ -1,0 +1,16 @@
+============================= test session starts =============================
+platform win32 -- Python 3.12.2, pytest-8.0.1, pluggy-1.4.0
+rootdir: F:\opencode_worktrees\v131\ocd-rq5
+configfile: pytest.ini
+plugins: anyio-4.2.0
+collected 1 item
+
+tests\unit\test_rq5_execution_correctness.py .                           [100%]
+
+============================== warnings summary ===============================
+C:\Users\admin\AppData\Local\Programs\Python\Python312\Lib\site-packages\torch\nn\modules\transformer.py:20
+  C:\Users\admin\AppData\Local\Programs\Python\Python312\Lib\site-packages\torch\nn\modules\transformer.py:20: UserWarning: Failed to initialize NumPy: _ARRAY_API not found (Triggered internally at ..\torch\csrc\utils\tensor_numpy.cpp:84.)
+    device: torch.device = torch.device(torch._C._get_default_device()),  # torch.device('cpu'),
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+======================== 1 passed, 1 warning in 2.61s =========================

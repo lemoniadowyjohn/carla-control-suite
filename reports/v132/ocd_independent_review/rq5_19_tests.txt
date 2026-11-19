@@ -1,0 +1,13 @@
+============================= test session starts =============================
+platform win32 -- Python 3.12.2, pytest-8.0.1, pluggy-1.4.0
+rootdir: F:\opencode_worktrees\v131\ocd-rq5
+configfile: pytest.ini
+plugins: anyio-4.2.0
+collected 19 items
+
+tests\unit\test_v111_rq5_v2_split_pretraining_authority.py ......        [ 31%]
+tests\unit\test_v117_rq5_eval_identity_guard.py ......                   [ 63%]
+tests\unit\test_v121_rq5_reused_checkpoint_claim.py ...                  [ 78%]
+tests\unit\test_v122_rq5_stale_evaluation_report.py ....                 [100%]
+
+============================= 19 passed in 0.93s ==============================
